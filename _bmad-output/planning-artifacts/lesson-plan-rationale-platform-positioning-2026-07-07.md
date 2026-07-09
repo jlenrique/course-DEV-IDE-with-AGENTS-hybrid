@@ -78,6 +78,16 @@ These are **each their own arc**, sequenced after the workbook is proven end-to-
 3. **`course-purpose-and-operator-owned-lo-inputs`** — make `course_purpose` + a ratified operator-owned LO set first-class inputs to Irene Pass-1 (today: corpus + references only). Completes the operator's "LOs + source + purpose" triad so the plan can genuinely be "the rationale for everything." *Trigger: with item 1 or when a course needs purpose-governed planning.*
 4. **`collateral-projector-family`** — a projector family (drill / job-aid / quiz / summary) off the general `G0EnrichmentResult` substrate, so "fungible forms" is plural. Plugs into the `kind` discriminant added in S7. Retire the `mechanism_only_never_produced` status + tejal default of the one existing form. *Trigger: operator requests a second collateral kind.*
 
+### 4.1 Canonical evolution rule (operator-ratified 2026-07-09)
+
+**The planning→selection contract is durable foundation, not a throwaway demo.**
+
+- **Today's contracted choice** may be coarse (closed catalog bundles + gap-fill disposition). That is the spine.
+- **Future iterations** grow the *vocabulary and option space inside the same pattern*: more workflows, richer lesson-plan structure, smarter specialist judgment, finer asset attributes/fidelity/collateral forms.
+- **Operator feel over time:** from "pick a bundle with eyes open about gaps" toward **commissioning bespoke lessons and materials** for a given purpose, audience, and assessed source.
+- **Conversational Marcus-SPOC** sits **on top of** the ratification/selection contract (elicit → record → emit canonical intent → existing selection edge). It must not invent a parallel selection engine or bypass the catalog/composition boundary.
+- **Replaceable:** thin scripted-recorder UX only. **Not replaceable without deliberate party reopen:** S8 selection semantics and the assess → purpose/audience → gap-fill/workflow ratification → `ComponentSelection` path.
+
 ---
 
 ## 5. S7 scope boundary (honest)

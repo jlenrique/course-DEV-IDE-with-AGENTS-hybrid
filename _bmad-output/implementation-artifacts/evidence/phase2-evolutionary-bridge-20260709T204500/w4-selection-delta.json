@@ -1,0 +1,14 @@
+{
+  "before_bundle_id": "narrated-deck",
+  "after_bundle_id": "narrated-deck-with-motion",
+  "before_selection": {
+    "deck": true,
+    "motion": false,
+    "workbook": false
+  },
+  "after_selection": {
+    "deck": true,
+    "motion": true,
+    "workbook": false
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "schema_version": "0.1",
+  "purpose": "Introduce generative AI foundations despite missing lecture video",
+  "audience": "HAI 510 enrolled learners",
+  "source_assessment": {
+    "course_or_corpus_id": "aziz-nazha-hai-510-generative-ai-in-healthcare",
+    "richness": "thin",
+    "tags": [
+      "course-source-bundle",
+      "source_purpose:new_build",
+      "module:module-01-foundations-of-ai-in-healthcare",
+      "required_gaps_present",
+      "scoped_manifest_present"
+    ],
+    "gap_summaries": [
+      {
+        "kind": "empty_lesson_dir",
+        "count": 1,
+        "sample_message": "Lesson directory has no non-scaffold local lesson source files."
+      },
+      {
+        "kind": "empty_source_dir",
+        "count": 2,
+        "sample_message": "Source directory has no non-scaffold local source files."
+      },
+      {
+        "kind": "source_availability",
+        "count": 4,
+        "sample_message": "No non-scaffold local production source content detected; reference files and syllabi do not mark the course source-complete."
+      }
+    ],
+    "gap_count": 7,
+    "asset_record_count": 1,
+    "detected_file_count": 8,
+    "notes": "Assessed from LessonPlanningInputBundle gap_ledger and asset_records; does not claim full lecture ingestion."
+  },
+  "assets_to_create": [
+    {
+      "kind": "narrated_deck",
+      "attributes": {
+        "mode": "deck-only"
+      }
+    }
+  ],
+  "workflow": "narrated-deck",
+  "gap_fill": {
+    "chosen": "wait",
+    "considered": [
+      "wait",
+      "lighter_collateral",
+      "synthesize"
+    ],
+    "rationale": "Wait on lecture assets; ship deck-only now."
+  },
+  "claim_fence": "Does not claim full lecture ingestion or lecture-complete selection.",
+  "s8_intent": {
+    "ratification_status": "ratified",
+    "bundle_id": "narrated-deck",
+    "collateral": null,
+    "input_bundle": null,
+    "source_ref": null
+  }
+}

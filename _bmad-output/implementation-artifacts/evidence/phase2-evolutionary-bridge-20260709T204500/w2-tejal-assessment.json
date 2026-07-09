@@ -1,0 +1,16 @@
+{
+  "course_or_corpus_id": "tejal-c1m1-p4",
+  "richness": "rich",
+  "tags": [
+    "curated-corpus-leaf",
+    "bucket:slides",
+    "bucket:references",
+    "bucket:assessments",
+    "top_level_source_files"
+  ],
+  "gap_summaries": [],
+  "gap_count": 0,
+  "asset_record_count": 10,
+  "detected_file_count": 10,
+  "notes": "Assessed from curated corpus leaf layout; does not claim full lecture ingestion or remote LMS sync."
+}

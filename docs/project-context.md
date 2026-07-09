@@ -1,3 +1,17 @@
+# Current Context Addendum - 2026-07-09 Session 28
+
+**Phase-2 evolutionary bridge COMPLETE-with-named-fenced-residuals** (party
+4/4 close). Story
+`phase2-evolutionary-planning-to-selection-bridge.md` (done): assessed source →
+purpose/audience → structured gap-fill → emit S8 ratified intent → frozen
+`collateral_selection` resolver. Evidence
+`phase2-evolutionary-bridge-20260709T204500/` W1–W4; W5 compose not claimed.
+Spine inventory PARTIAL-MET. Residuals: interactive SPOC planning REPL,
+auto Irene→selection, compose liveproof, SME/projector/LO UX, full lecture
+ingestion. S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
 # Current Context Addendum - 2026-07-09 Session 27
 
 **S8 stays FULLY COMPLETE — do not reopen** (operator). Post-S8 Irene-literal
