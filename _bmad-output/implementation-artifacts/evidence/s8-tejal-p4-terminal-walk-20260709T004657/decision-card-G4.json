@@ -1,0 +1,38 @@
+{
+  "card": {
+    "artifact_paths": [
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/decision-card-G0E.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/checkpoint.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/cost-report.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/trace-fixture.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/run_summary.yaml",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/decision-card-G0R.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/decision-card-G1.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/conversation/G1/0000.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/decision-card-G2B.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/decision-card-G2C.json",
+      "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/decision-card-G3.json"
+    ],
+    "card_id": "d39e26ee-c4a2-4e33-ab63-8691f7d5f36d",
+    "created_at": "2026-07-09T05:17:33.875668Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "final_status": "partial",
+    "gate_focus": "fidelity_gate",
+    "gate_id": "G4",
+    "meta": {
+      "affected_nodes": [
+        "10"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "outcome_summary": "Production graph reached closeout review.",
+    "schema_version": "v1",
+    "trial_id": "1bd08699-614d-4412-ad52-bbe6edb1d6c5",
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/checkpoint.json",
+  "digest": "b69d8b55e981c2152559371cc9b4dbfbcd51c6d6c77ff72d7bef39edb3f9c0b6",
+  "issued_at": "2026-07-09T05:17:33.875668Z",
+  "server_nonce": "4c4f4f4281b24340bc6e5762afe9234a"
+}

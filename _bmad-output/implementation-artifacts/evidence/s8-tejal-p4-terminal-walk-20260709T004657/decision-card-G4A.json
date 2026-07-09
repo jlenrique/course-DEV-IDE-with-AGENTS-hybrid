@@ -1,0 +1,99 @@
+{
+  "card": {
+    "card_id": "87af2472-3546-4f79-bcaa-23ec70e1cab7",
+    "created_at": "2026-07-09T05:18:43.726406Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gate_focus": "voice_selection",
+    "gate_id": "G4A",
+    "meta": {
+      "affected_nodes": [
+        "11-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Approve the proposed voice, or edit to select an alternate.",
+    "pick_context": [
+      {
+        "kind": "production-runner",
+        "node_id": "11-gate"
+      },
+      {
+        "content": "# Enrique - G2 - 2026-07-09T05:17:34.085903Z\n## Received\ninput keys: cache_prefix\n## Decided\nenrique emitted cache payload because its act node completed successfully.\n## Emitted artifacts\n- `none`\n## Resolution trail (model_resolution_trail entries)\n- per_specialist -> gpt-5: specialist 'enrique' declared default_model='gpt-5' in model_config.yaml\n- per_specialist -> gpt-5: elevenlabs.dispatch.ok\n## Persistence\n- trial_id: 1bd08699-614d-4412-ad52-bbe6edb1d6c5\n- specialist_id: enrique\n- gate_id: G2\n- schema: specialist-summary.v1\n- deferred: false\n",
+        "kind": "specialist-summary",
+        "path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/specialist-summaries/enrique-20260709T051734085903Z.md"
+      },
+      {
+        "kind": "voice-options",
+        "voices": [
+          {
+            "characteristics": {
+              "accent": "american",
+              "age": "young",
+              "descriptive": "professional",
+              "gender": "female",
+              "language": "en",
+              "use_case": "entertainment_tv"
+            },
+            "sample_audio_url": "https://storage.googleapis.com/eleven-public-prod/premade/voices/EXAVITQu4vr4xnSDxMaL/01a3e33c-6e99-4ee7-8543-ff2216a32186.mp3",
+            "voice_id": "EXAVITQu4vr4xnSDxMaL",
+            "voice_name": "Sarah - Mature, Reassuring, Confident"
+          },
+          {
+            "characteristics": {
+              "accent": "american",
+              "age": "middle_aged",
+              "descriptive": "professional",
+              "gender": "female",
+              "language": "en",
+              "use_case": "informative_educational"
+            },
+            "sample_audio_url": "https://api.us.elevenlabs.io/v1/voices/0GoLoBHogFMTLhDROxLD/previews/audio?payload=eyJ2b2ljZV9zb3VyY2UiOiJjdXN0b20iLCJ3b3Jrc3BhY2VfaWQiOiJkMGNkODQ5YWQ1ZWY0ODQ4OGY5NjliZmY4MTBkNDlmNyIsImZpbGVuYW1lIjoiRHYyMEFkOFpYY2EyOXJ0QUNFemsubXAzIiwidGltZXN0YW1wIjoxNzgyNzQ4ODAwMDAwMDAwfQ%3D%3D",
+            "voice_id": "0GoLoBHogFMTLhDROxLD",
+            "voice_name": "Shannon - Modern Professional American Woman"
+          },
+          {
+            "characteristics": {
+              "accent": "american",
+              "age": "young",
+              "descriptive": "casual",
+              "gender": "male",
+              "language": "en",
+              "use_case": "social_media"
+            },
+            "sample_audio_url": "https://storage.googleapis.com/eleven-public-prod/database/user/dw99Ah475cYNfLo7yaoSxyWlMpQ2/voices/W6zuQRTYRBdAK8ypjo5V/AVYpEqe4TvOl322NqHPf.mp3",
+            "voice_id": "W6zuQRTYRBdAK8ypjo5V",
+            "voice_name": "Stark - Classic American Voice"
+          },
+          {
+            "characteristics": {
+              "accent": "american",
+              "age": "middle_aged",
+              "descriptive": "casual",
+              "gender": "male",
+              "language": "en",
+              "use_case": "conversational"
+            },
+            "sample_audio_url": "https://api.us.elevenlabs.io/v1/voices/1SM7GgM6IMuvQlz2BwM3/previews/audio?payload=eyJ2b2ljZV9zb3VyY2UiOiJjdXN0b20iLCJ3b3Jrc3BhY2VfaWQiOiJmOTRlMjYwMjAwNzY0Njc4YmFiYzgwN2I5MzViZmIwYiIsImZpbGVuYW1lIjoieTk0RzFyR2l4YXFMMkZ2UDNUdGUubXAzIiwidGltZXN0YW1wIjoxNzgyNzQ4ODAwMDAwMDAwfQ%3D%3D",
+            "voice_id": "1SM7GgM6IMuvQlz2BwM3",
+            "voice_name": "Mark - ConvoAI"
+          }
+        ]
+      }
+    ],
+    "schema_version": "v1",
+    "selected_voice_id": null,
+    "trial_id": "1bd08699-614d-4412-ad52-bbe6edb1d6c5",
+    "verb": "approve",
+    "voice_candidates": [
+      "EXAVITQu4vr4xnSDxMaL",
+      "0GoLoBHogFMTLhDROxLD",
+      "W6zuQRTYRBdAK8ypjo5V",
+      "1SM7GgM6IMuvQlz2BwM3"
+    ]
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/checkpoint.json",
+  "digest": "cb55e888eed715da3ab9856c695dbbd705faf03dd516ad864994c879a66b9b42",
+  "issued_at": "2026-07-09T05:18:43.726406Z",
+  "server_nonce": "1da791eafd96459b98c56cdab71daa6b"
+}

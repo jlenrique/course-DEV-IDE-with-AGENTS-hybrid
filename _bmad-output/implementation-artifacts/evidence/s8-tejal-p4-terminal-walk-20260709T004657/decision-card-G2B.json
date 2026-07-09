@@ -1,0 +1,178 @@
+{
+  "card": {
+    "card_id": "d3f3d507-17c6-4f4d-aedf-e215795816cd",
+    "created_at": "2026-07-09T04:56:08.387096Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gamma_settings": [
+      {
+        "dimensions": "fluid",
+        "image_model": "gpt-image-2-mini",
+        "image_source": "aiGenerated",
+        "image_style_preset": "illustration",
+        "language": "en",
+        "production_mode": "api",
+        "text_mode": "preserve",
+        "theme": "njim9kuhfnljvaa",
+        "variant_id": "A"
+      }
+    ],
+    "gate_focus": "variant_selection",
+    "gate_id": "G2B",
+    "meta": {
+      "affected_nodes": [
+        "07B-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Approve the proposed slide variants, or edit to select alternates.",
+    "pick_context": [
+      {
+        "kind": "production-runner",
+        "node_id": "07B-gate"
+      },
+      {
+        "content": "# Quinn-R - specialist-complete - 2026-07-09T04:55:37.897433Z\n## Received\ninput keys: cache_prefix\n## Decided\nquinn_r emitted cache payload because its act node completed successfully.\n## Emitted artifacts\n- `none`\n## Resolution trail (model_resolution_trail entries)\n- per_specialist -> gpt-5: specialist 'quinn_r' declared default_model='gpt-5' in model_config.yaml\n- per_specialist -> gpt-5: qrr.parsed.ok\n## Persistence\n- trial_id: 1bd08699-614d-4412-ad52-bbe6edb1d6c5\n- specialist_id: quinn_r\n- gate_id: specialist-complete\n- schema: specialist-summary.v1\n- deferred: false\n",
+        "kind": "specialist-summary",
+        "path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/specialist-summaries/quinn_r-20260709T045537897433Z.md"
+      },
+      {
+        "kind": "variant-options",
+        "slides": [
+          {
+            "slide_id": "slide-01",
+            "variants": [
+              {
+                "display_title": "Module 1 Completion and Mindset Consolidation",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\1bd08699-614d-4412-ad52-bbe6edb1d6c5\\exports\\gary\\A_slide-01.png",
+                "gamma_settings": {
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "preserve",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-02",
+            "variants": [
+              {
+                "display_title": "Bridge from Mindset to Leadership Identity",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\1bd08699-614d-4412-ad52-bbe6edb1d6c5\\exports\\gary\\A_slide-02.png",
+                "gamma_settings": {
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "preserve",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-03",
+            "variants": [
+              {
+                "display_title": "Why Ideas Alone Are Not Enough",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\1bd08699-614d-4412-ad52-bbe6edb1d6c5\\exports\\gary\\A_slide-03.png",
+                "gamma_settings": {
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "preserve",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-04",
+            "variants": [
+              {
+                "display_title": "Preview of the Leadership Journey Ahead",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\1bd08699-614d-4412-ad52-bbe6edb1d6c5\\exports\\gary\\A_slide-04.png",
+                "gamma_settings": {
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "preserve",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-05",
+            "variants": [
+              {
+                "display_title": "Source-Constrained Production Note",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\1bd08699-614d-4412-ad52-bbe6edb1d6c5\\exports\\gary\\A_slide-05.png",
+                "gamma_settings": {
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "preserve",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "gamma-settings",
+        "settings": [
+          {
+            "dimensions": "fluid",
+            "image_model": "gpt-image-2-mini",
+            "image_source": "aiGenerated",
+            "image_style_preset": "illustration",
+            "language": "en",
+            "production_mode": "api",
+            "text_mode": "preserve",
+            "theme": "njim9kuhfnljvaa",
+            "variant_id": "A"
+          }
+        ]
+      }
+    ],
+    "schema_version": "v1",
+    "selected_variant_id": null,
+    "trial_id": "1bd08699-614d-4412-ad52-bbe6edb1d6c5",
+    "variant_candidates": [
+      "A"
+    ],
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/1bd08699-614d-4412-ad52-bbe6edb1d6c5/checkpoint.json",
+  "digest": "6933e2a7fe1dc371d7a6839592e7e491d75edc311a34878728b4c23b3b59457c",
+  "issued_at": "2026-07-09T04:56:08.388102Z",
+  "server_nonce": "505c81fa488d4265afd2be93ead787df"
+}
