@@ -1,0 +1,40 @@
+{
+  "schema_version": "0.1",
+  "purpose": "Ship deck only while waiting on motion assets",
+  "audience": "APC C1 learners",
+  "source_assessment": {
+    "course_or_corpus_id": "tejal-c1m1-p4-assessments-bridge",
+    "richness": "rich",
+    "tags": [
+      "curated-corpus-leaf",
+      "bucket:slides",
+      "bucket:references",
+      "bucket:assessments",
+      "top_level_source_files"
+    ],
+    "gap_summaries": [],
+    "gap_count": 0,
+    "asset_record_count": 10,
+    "detected_file_count": 10,
+    "notes": "Assessed from curated corpus leaf layout; does not claim full lecture ingestion or remote LMS sync."
+  },
+  "assets_to_create": [],
+  "workflow": "narrated-deck",
+  "gap_fill": {
+    "chosen": "lighter_collateral",
+    "considered": [
+      "lighter_collateral",
+      "wait",
+      "synthesize"
+    ],
+    "rationale": "Defer motion; ship narrated deck now"
+  },
+  "claim_fence": "Does not claim full lecture ingestion or lecture-complete selection.",
+  "s8_intent": {
+    "ratification_status": "ratified",
+    "bundle_id": "narrated-deck",
+    "collateral": null,
+    "input_bundle": null,
+    "source_ref": null
+  }
+}

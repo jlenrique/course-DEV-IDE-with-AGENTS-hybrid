@@ -171,6 +171,43 @@ def test_act_emits_coverage_receipt_on_partial(tmp_path: Path) -> None:
     bundle.mkdir()
     corpus = "# Corpus\n\nGenerative AI in clinic documentation risks."
     (bundle / "extracted.md").write_text(corpus, encoding="utf-8")
+    # Seed companion files so provenance digests can be computed.
+    run_dir = tmp_path / "run-pc-partial"
+    run_dir.mkdir()
+    (run_dir / "planning-ratification.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "0.1",
+                "purpose": "Teach clinicians when generative AI is appropriate",
+                "audience": "Practicing clinicians new to generative AI",
+                "source_assessment": {
+                    "course_or_corpus_id": "hai",
+                    "richness": "thin",
+                    "tags": ["course-source-bundle", "module:m1"],
+                    "gap_summaries": [],
+                    "gap_count": 0,
+                    "asset_record_count": 1,
+                    "detected_file_count": 1,
+                },
+                "assets_to_create": [],
+                "workflow": "narrated-deck",
+                "gap_fill": {
+                    "chosen": "synthesize",
+                    "considered": ["synthesize", "wait"],
+                    "rationale": "thin",
+                },
+                "claim_fence": (
+                    "Does not claim full lecture ingestion or "
+                    "lecture-complete selection."
+                ),
+                "s8_intent": {
+                    "ratification_status": "ratified",
+                    "bundle_id": "narrated-deck",
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     units = [
         _unit(
             title="Clinic use cases for generative AI",
@@ -196,10 +233,107 @@ def test_act_emits_coverage_receipt_on_partial(tmp_path: Path) -> None:
     output = json.loads(result["cache_state"]["cache_prefix"])
     assert "planning_context_coverage" in output
     assert output["planning_context_coverage"]["lo_coverage"] == "partial"
+    assert "planning_provenance" in output["lesson_plan"]
+    prov = output["lesson_plan"]["planning_provenance"]
+    assert prov["schema_version"] == "0.1"
+    assert prov["ratification_path"] == "planning-ratification.json"
+    assert prov["ratification_digest"] and prov["ratification_digest"].startswith(
+        "sha256:"
+    )
+    assert prov["coverage_lo_status"] == "partial"
     # Prompt must have carried the labeled section (Murat three-signal).
     assert handle.chat.calls
     user = handle.chat.calls[0][1]["content"]
     assert pass1_act._PLANNING_CONTEXT_SECTION_MARKER in user
+
+
+def test_absent_path_omits_planning_provenance(tmp_path: Path) -> None:
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    (bundle / "extracted.md").write_text("# Corpus\n\nCells.", encoding="utf-8")
+    handle = _RecordingHandle(_response_for_units([_unit()]))
+    result = pass1_act.act(
+        _state(
+            {
+                "mode": "pass-1",
+                "run_id": "run-pc-absent-prov",
+                "runs_root": str(tmp_path),
+                "bundle_reference": str(bundle),
+            }
+        ),
+        handle=handle,
+        model_id="gpt-5.4",
+    )
+    output = json.loads(result["cache_state"]["cache_prefix"])
+    assert "planning_provenance" not in output
+    assert "planning_provenance" not in output["lesson_plan"]
+
+
+def test_claim_b_plan_delta_vs_control_hashes(tmp_path: Path) -> None:
+    """Claim B: treatment plan with context differs from control without context."""
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    (bundle / "extracted.md").write_text(
+        "# Corpus\n\nClinic generative AI documentation.",
+        encoding="utf-8",
+    )
+    units_control = [_unit(title="Generic intro", learning_objective="Cover basics")]
+    units_treatment = [
+        _unit(
+            title="Clinic use cases for generative AI",
+            learning_objective=(
+                "Identify appropriate generative-AI use cases in clinic"
+            ),
+        ),
+        _unit(
+            unit_id="u2",
+            title="Documentation risks of generative AI",
+            learning_objective=(
+                "List risks of generative AI in clinical documentation"
+            ),
+        ),
+    ]
+    control = pass1_act.act(
+        _state(
+            {
+                "mode": "pass-1",
+                "run_id": "control",
+                "runs_root": str(tmp_path),
+                "bundle_reference": str(bundle),
+            }
+        ),
+        handle=_RecordingHandle(_response_for_units(units_control)),
+        model_id="gpt-5.4",
+    )
+    treatment = pass1_act.act(
+        _state(
+            {
+                "mode": "pass-1",
+                "run_id": "treatment",
+                "runs_root": str(tmp_path),
+                "bundle_reference": str(bundle),
+                "planning_context": _planning_context_payload(),
+            }
+        ),
+        handle=_RecordingHandle(_response_for_units(units_treatment)),
+        model_id="gpt-5.4",
+    )
+    c_out = json.loads(control["cache_state"]["cache_prefix"])
+    t_out = json.loads(treatment["cache_state"]["cache_prefix"])
+    c_hash = hashlib.sha256(
+        Path(c_out["artifact_path"]).read_bytes()
+    ).hexdigest()
+    t_hash = hashlib.sha256(
+        Path(t_out["artifact_path"]).read_bytes()
+    ).hexdigest()
+    assert c_hash != t_hash
+    assert "planning_context_coverage" in t_out
+    assert t_out["planning_context_coverage"]["lo_coverage"] == "present"
+    assert "planning_provenance" in t_out["lesson_plan"]
+    assert "planning_provenance" not in c_out["lesson_plan"]
+    # Purpose/audience ack when tokens overlap plan text.
+    assert t_out["planning_context_coverage"]["purpose_acknowledged"] is True
+    assert t_out["planning_context_coverage"]["audience_acknowledged"] is True
 
 
 def test_act_fails_loud_on_total_ignore(tmp_path: Path) -> None:

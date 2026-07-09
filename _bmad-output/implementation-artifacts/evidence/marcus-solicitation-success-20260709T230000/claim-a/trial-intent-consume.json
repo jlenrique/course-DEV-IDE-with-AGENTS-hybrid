@@ -1,0 +1,9 @@
+{
+  "intent": "_bmad-output\\implementation-artifacts\\evidence\\marcus-solicitation-success-20260709T230000\\claim-a\\live-run-dir\\ratified-collateral-intent.yaml",
+  "bundle_resolved": "narrated-deck",
+  "threaded_selection": {
+    "deck": true,
+    "motion": false,
+    "workbook": false
+  }
+}

@@ -1,0 +1,74 @@
+# Session GOAL — Marcus planning ratification surface + lesson-plan-as-pipe (next ~3h)
+**Date:** 2026-07-09  
+**Branch:** `dev/lesson-planning-2026-07-09`  
+**Product:** Marcus-SPOC local runtime — not concierge/proofing convenience  
+**Do not reopen:** S8; step-1 selection bridge; Irene planning-context handoff (already done at `b69aa2de`)  
+**Styleguide policy:** never ad-hoc-edit approved registry guides  
+**Operator standing rules:** party consensus + orchestrator agree = approval; live-test each major component as created; impasse = Quinn → John → human; spawn real BMAD seats (John/Winston/Amelia/Murat)
+
+---
+
+## Binding product thesis (this session)
+
+Elicitation/ingestion-derived information should reach downstream **primarily through the lesson plan** (and stable links/refs it carries), not by fanning `planning_context` into every specialist.
+
+**Already landed:**
+1. Assess → ratify library → selection intent (`source_assessment` + `planning_ratification`)
+2. Purpose/audience/LOs/assessment → Irene Pass-1 framing (`planning_context` handoff)
+
+**Missing for bespoke feel:** Marcus does not yet elicit purpose/audience/workflow/gap-fill and write `planning-ratification.json` + intent as part of the operator path. Irene’s plan emit does not yet carry machine-checkable links back to those artifacts.
+
+---
+
+## Ambitious-but-fenced 3h goal
+
+**Land a thin Marcus-facing planning ratification surface that:**
+1. Shows (or computes) a source assessment for the run/course under discussion
+2. Elicits/confirms purpose, audience, workflow choice, and gap-fill tradeoff
+3. Calls the **existing** `ratify_planning_decision` / `write_ratification_artifacts` (no second planning engine)
+4. Writes `planning-ratification.json` + `ratified-collateral-intent.yaml` into a run-scoped or start-ready location
+5. Optionally enriches Irene Pass-1 **lesson_plan output** with stable refs/digests to ratification + ratified LOs (lesson-plan-as-pipe seed) — only if party keeps it in the claim envelope
+6. Live-proves: elicit/confirm → files on disk → Irene load path sees context (scoped; **not** full compose)
+
+**OPERATOR AMENDMENT (mid-session):** Full asset compose liveproof / W5 is
+**REQUIRED** for session COMPLETE. Party bound W5 = local `compose_and_digest`
+on changed selection + delta + trial `run_summary` (no Gamma spend).
+
+**Claim fence (MUST NOT claim):**
+- Full interactive stop-and-chat planning REPL rewrite of all SPOC
+- Full lecture ingestion / HAI-PHS content ingest
+- SME routing / projector family
+- Automatic Irene-collateral→selection without ratification
+- Gamma-spend / published live deck AFK-HIL walk (distinct from W5 local compose)
+- Reopening S8 or rebuilding step-1 bridge
+- Fanning planning_context to Gary/narration/workbook specialists
+
+**Named residuals OK to leave fenced:** richer LO matching; full compose; SME/projector; the three tiny handoff leftovers (LOs-only-in-ratification; non-str coerce; runs_root None) unless trivial.
+
+---
+
+## Execution protocol (BMAD)
+
+1. **Party green-light** (fully spawned John / Winston / Amelia / Murat) on this claim envelope + ACs; fold MUST amendments; dual-gate OK.
+2. Promote story `ready-for-dev`; activate shadow monitor.
+3. Implement RED-first; **live-test each major component as built**.
+4. Dual-gate code review; remediate HIGH/MED honesty gaps; re-live-test.
+5. Bank scoped evidence; party CLOSE; update inventory/STATE/project-context; commit + push.
+
+---
+
+## Suggested AC skeleton (party may amend)
+
+- **AC-M1** — Thin Marcus/CLI or SPOC-adjacent command/surface can drive ratification using existing library
+- **AC-M2** — Writes both companion JSON + S8 intent YAML; fail-loud on invalid gap-fill/workflow
+- **AC-M3** — Source assessment required before ratify (reuse assessors)
+- **AC-M4** — Written artifacts are loadable by `load_planning_context` / trial intent path
+- **AC-M5** — (if in envelope) lesson_plan emit carries refs to ratification and/or ratified-los digests/paths
+- **AC-M6** — Absent/opt-out path: runs without ratification still behave as today
+- **AC-M7** — Claim fence + per-component live-tests banked
+
+---
+
+## Done bar (~3h)
+
+Party CLOSE COMPLETE or COMPLETE-with-named-fenced-residuals; evidence stamped; commit pushed to `origin/dev/lesson-planning-2026-07-09`.

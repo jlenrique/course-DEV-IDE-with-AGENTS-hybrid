@@ -171,6 +171,65 @@ _PLANNING_CONTEXT_SECTION_MARKER = (
 )
 
 
+def _sha256_file(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _build_planning_provenance(
+    *,
+    context: Any,
+    receipt_lo_status: str,
+    run_dir: Path | None,
+) -> dict[str, Any] | None:
+    """Additive lesson_plan provenance pointers (Claim B SUCCESS definition).
+
+    Digests match companion files under ``run_dir`` when present. Omit entirely
+    when no planning context was consumed (caller gates that).
+    """
+    if run_dir is None:
+        # Still emit path names from context.sources_present without digests.
+        sources = list(getattr(context, "sources_present", ()) or ())
+        ratification_path = (
+            "planning-ratification.json"
+            if "planning-ratification.json" in sources
+            else None
+        )
+        los_path = (
+            "ratified-los.json" if "ratified-los.json" in sources else None
+        )
+        return {
+            "schema_version": "0.1",
+            "ratification_path": ratification_path,
+            "ratification_digest": None,
+            "ratified_los_path": los_path,
+            "ratified_los_digest": None,
+            "intent_path": (
+                "ratified-collateral-intent.yaml" if ratification_path else None
+            ),
+            "intent_digest": None,
+            "coverage_lo_status": receipt_lo_status,
+        }
+    rat_path = run_dir / "planning-ratification.json"
+    los_path = run_dir / "ratified-los.json"
+    intent_path = run_dir / "ratified-collateral-intent.yaml"
+    return {
+        "schema_version": "0.1",
+        "ratification_path": (
+            "planning-ratification.json" if rat_path.is_file() else None
+        ),
+        "ratification_digest": _sha256_file(rat_path),
+        "ratified_los_path": "ratified-los.json" if los_path.is_file() else None,
+        "ratified_los_digest": _sha256_file(los_path),
+        "intent_path": (
+            "ratified-collateral-intent.yaml" if intent_path.is_file() else None
+        ),
+        "intent_digest": _sha256_file(intent_path),
+        "coverage_lo_status": receipt_lo_status,
+    }
+
+
 def _planning_context_section(payload: dict[str, Any]) -> str:
     """Labeled advisory framing section; empty string when context absent."""
     raw = payload.get("planning_context")
@@ -927,6 +986,7 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
     # ECH-06: skip lo_ignore heuristic when LLM format fallback substituted a
     # synthetic unit — that mismatch is a format triage problem, not LO ignore.
     planning_coverage_receipt: dict[str, Any] | None = None
+    planning_provenance: dict[str, Any] | None = None
     raw_planning = payload.get("planning_context")
     if isinstance(raw_planning, dict) and raw_planning:
         from app.marcus.lesson_plan.planning_context import (
@@ -966,6 +1026,26 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
                         encoding="utf-8",
                     )
                 raise
+        # Claim B SUCCESS: additive planning_provenance digests on the plan
+        # (Winston pipe). Pointers only — full bodies stay in companion files.
+        run_id_for_prov = str(payload.get("run_id") or state.run_id)
+        runs_root_for_prov = payload.get("runs_root")
+        run_dir_for_prov = (
+            Path(str(runs_root_for_prov)) / run_id_for_prov
+            if runs_root_for_prov
+            else None
+        )
+        planning_provenance = _build_planning_provenance(
+            context=context,
+            receipt_lo_status=(
+                "framing_only"
+                if not context.learning_objectives
+                else str(receipt.lo_coverage)
+            ),
+            run_dir=run_dir_for_prov,
+        )
+        if planning_provenance is not None:
+            plan = {**plan, "planning_provenance": planning_provenance}
     run_id = str(payload.get("run_id") or state.run_id)
     runs_root_value = payload.get("runs_root")
     runs_root = Path(str(runs_root_value)) if runs_root_value else None
@@ -983,6 +1063,8 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
     }
     if planning_coverage_receipt is not None:
         output["planning_context_coverage"] = planning_coverage_receipt
+    if planning_provenance is not None:
+        output["planning_provenance"] = planning_provenance
     entries_count = state.cache_state.entries_count if state.cache_state is not None else 0
     return {
         "cache_state": {

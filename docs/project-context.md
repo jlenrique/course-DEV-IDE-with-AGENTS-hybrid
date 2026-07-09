@@ -1,3 +1,19 @@
+# Current Context Addendum - 2026-07-09 Session 28 (solicitation surface)
+
+**Marcus plan-ratify + Claims A/B:** COMPLETE-with-named-fenced-residuals.
+Evidence `marcus-solicitation-success-20260709T230000/`. Success definition:
+`marcus-solicitation-lesson-plan-success-definition-2026-07-09.md`.
+
+**Holds:** CLI assess→ratify→write; W5 local compose + selection delta + trial
+thread; Irene emit coverage + `planning_provenance`; plan≠control (mocked act).
+
+**Fenced:** live OpenAI Pass-1 on Tejal `runs/<uuid>/`; interactive SPOC REPL;
+Gamma; “bespoke” claim.
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
 # Current Context Addendum - 2026-07-09 Session 28 (continued)
 
 **Step 2→3 DONE:** `planning-context-to-irene-pass1-handoff` =

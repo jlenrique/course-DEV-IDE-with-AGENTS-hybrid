@@ -1,0 +1,25 @@
+{
+  "purpose": "Ship deck only while waiting on motion assets",
+  "audience": "APC C1 learners",
+  "richness": "rich",
+  "intent_source": "ratified",
+  "bundle_id": "narrated-deck",
+  "delta_changed": true,
+  "before_selection": {
+    "deck": true,
+    "motion": true,
+    "workbook": false
+  },
+  "after_selection": {
+    "deck": true,
+    "motion": false,
+    "workbook": false
+  },
+  "composed_graph_digest": "0528d29f56bb3f11eaa96b560a3846f8b4e07b41e355a386a43d481e576c2a5f",
+  "input_closure_digest": "936867b7d755bcfcc1de73648cfb79f8bd05b94b8ced1ee413365a0c91b054c2",
+  "component_selection": {
+    "deck": true,
+    "motion": false,
+    "workbook": false
+  }
+}
