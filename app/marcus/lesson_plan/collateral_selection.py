@@ -15,7 +15,8 @@ from typing import Any, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
-from app.marcus.lesson_plan.bundle_catalog import BundleId, get_bundle
+from app.marcus.course_source.input_bundle import LessonPlanningInputBundle
+from app.marcus.lesson_plan.bundle_catalog import BUNDLE_CATALOG, BundleId, get_bundle
 from app.marcus.lesson_plan.collateral_spec import CollateralSpec
 from app.models.state.component_selection import ComponentSelection
 
@@ -45,6 +46,13 @@ class RatifiedLessonPlanCollateralIntent(BaseModel):
     collateral: CollateralSpec | None = Field(
         default=None,
         description="Optional local collateral spec carried by the ratified lesson plan.",
+    )
+    input_bundle: LessonPlanningInputBundle | None = Field(
+        default=None,
+        description=(
+            "Optional ratified lesson-planning input bundle whose component "
+            "selection must resolve through the closed bundle catalog."
+        ),
     )
     source_ref: str | None = Field(
         default=None,
@@ -86,11 +94,65 @@ def _default_result(source: Literal["absent", "unratified"]) -> ResolvedCollater
 def _bundle_from_collateral(collateral: CollateralSpec | None) -> str:
     if collateral is None:
         raise CollateralSelectionError(
-            "ratified collateral intent requires bundle_id or collateral"
+            "ratified collateral intent requires bundle_id, collateral, or input_bundle"
         )
     if collateral.declaration == "present":
         return "narrated-deck-with-workbook"
     return _DEFAULT_BUNDLE_ID
+
+
+def _bundle_from_component_selection(selection: ComponentSelection) -> str:
+    matches = [
+        record.id for record in BUNDLE_CATALOG.values() if record.selection == selection
+    ]
+    if len(matches) == 1:
+        return matches[0]
+    if matches:
+        raise CollateralSelectionError(
+            "input_bundle.component_selection matches multiple closed catalog bundles"
+        )
+    raise CollateralSelectionError(
+        "input_bundle.component_selection must match one closed catalog bundle"
+    )
+
+
+def _bundle_from_intent(intent: RatifiedLessonPlanCollateralIntent) -> str:
+    if (
+        intent.bundle_id == "narrated-deck-with-workbook"
+        and intent.collateral is not None
+        and intent.collateral.declaration != "present"
+    ):
+        raise CollateralSelectionError(
+            "narrated-deck-with-workbook requires collateral.declaration == "
+            "'present' with a workbook payload"
+        )
+    claims: list[tuple[str, str]] = []
+    if intent.bundle_id is not None:
+        claims.append(("bundle_id", intent.bundle_id))
+    if intent.collateral is not None and (
+        intent.collateral.declaration == "present"
+        or (intent.bundle_id is None and intent.input_bundle is None)
+    ):
+        claims.append(("collateral", _bundle_from_collateral(intent.collateral)))
+    if intent.input_bundle is not None:
+        claims.append(
+            (
+                "input_bundle.component_selection",
+                _bundle_from_component_selection(intent.input_bundle.component_selection),
+            )
+        )
+    if not claims:
+        raise CollateralSelectionError(
+            "ratified collateral intent requires bundle_id, collateral, or input_bundle"
+        )
+    winner_name, winner_bundle = claims[0]
+    for name, bundle_id in claims[1:]:
+        if bundle_id != winner_bundle:
+            raise CollateralSelectionError(
+                f"ratified collateral intent conflict: {winner_name} selects "
+                f"{winner_bundle!r} but {name} selects {bundle_id!r}"
+            )
+    return winner_bundle
 
 
 def _validate_bundle_collateral_pair(
@@ -155,7 +217,7 @@ def resolve_lesson_plan_collateral_selection(
                 f"closed ratified intent validation failed: {exc}"
             ) from exc
 
-    bundle_id = intent.bundle_id or _bundle_from_collateral(intent.collateral)
+    bundle_id = _bundle_from_intent(intent)
     _validate_bundle_collateral_pair(bundle_id=bundle_id, collateral=intent.collateral)
     record = get_bundle(bundle_id)
     if record is None:

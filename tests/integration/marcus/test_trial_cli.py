@@ -8,9 +8,29 @@ import yaml
 
 from app.marcus.cli.__main__ import main
 from app.marcus.cli.trial import start_trial
+from app.marcus.course_source.input_bundle import build_lesson_planning_input_bundle
 from app.models.state.component_selection import ComponentSelection
 
 TRIAL_ID = "12345678-1234-4234-8234-123456789abc"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+EVIDENCE = (
+    REPO_ROOT
+    / "_bmad-output"
+    / "implementation-artifacts"
+    / "evidence"
+    / "s7p2-story-b-syllabus-metadata-20260708T110225"
+)
+HAI_ROOT = (
+    REPO_ROOT
+    / "course-content"
+    / "courses"
+    / "aziz-nazha-hai-510-generative-ai-in-healthcare"
+)
+HAI_PROPOSAL = (
+    EVIDENCE
+    / "hai-510"
+    / "module-metadata.yaml"
+)
 
 
 @pytest.fixture(autouse=True)
@@ -155,6 +175,58 @@ def test_start_trial_ratified_collateral_intent_runs_local_runtime(
         "deck": True,
         "motion": True,
         "workbook": True,
+    }
+    assert (run_dir / "run.json").exists()
+
+
+def test_start_trial_ratified_input_bundle_intent_runs_local_runtime(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
+    monkeypatch.delenv("LANGSMITH_PROJECT", raising=False)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setattr("app.marcus.cli.trial._load_env_if_available", lambda: None)
+    intent_path = tmp_path / "ratified-input-bundle-intent.yaml"
+    input_bundle = build_lesson_planning_input_bundle(
+        course_root=HAI_ROOT,
+        proposal_path=HAI_PROPOSAL,
+        module_id="module-01-foundations-of-ai-in-healthcare",
+        operator_focus="Plan around missing lecture video and slide source.",
+    )
+    intent_path.write_text(
+        yaml.safe_dump(
+            {
+                "ratification_status": "ratified",
+                "source_ref": HAI_PROPOSAL.relative_to(REPO_ROOT).as_posix(),
+                "input_bundle": input_bundle.model_dump(mode="json"),
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+
+    result = start_trial(
+        preset="production",
+        input_path=Path("tests/fixtures/trial_corpus/README.md"),
+        operator_id="operator_test",
+        allow_offline_cost_report=True,
+        runs_root=tmp_path,
+        lesson_plan_collateral_intent_path=intent_path,
+    )
+
+    run_dir = tmp_path / result["trial_id"]
+    start_receipt = json.loads((run_dir / "trial-start.json").read_text(encoding="utf-8"))
+    assert start_receipt["lesson_plan_collateral_bundle_id"] == (
+        "narrated-deck-with-motion"
+    )
+    summary = yaml.safe_load(
+        (run_dir / "run_summary.yaml").read_text(encoding="utf-8")
+    )
+    assert summary["component_selection"] == {
+        "deck": True,
+        "motion": True,
+        "workbook": False,
     }
     assert (run_dir / "run.json").exists()
 
