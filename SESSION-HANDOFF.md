@@ -31,7 +31,7 @@
 
 **Ambient left untouched:** `runs/*` trial dirs; `runs/compositor/`; `_tmp-regression*`; `workbooks-test/`; Meeting Recording deconstruct; shadow-monitor dirty ledgers unless staged intentionally.
 
-**Push:** working-branch push MANDATORY at WRAPUP — see closeout commit on `origin/dev/lesson-planning-2026-07-09`.
+**Push:** working-branch push MANDATORY at WRAPUP — done: `0f3c6d5c` on `origin/dev/lesson-planning-2026-07-09` (trigger: WRAPUP Step 12 / safety-checkpoint).
 
 ---
 
