@@ -35,7 +35,7 @@
 
 **Ambient left untouched:** `runs/*` trial dirs; `runs/compositor/`; `_tmp-regression*`; `workbooks-test/`; Meeting Recording deconstruct; unrelated shadow-monitor/product-gap leftovers; `_artifacts/a2-offline-compare-report.json` (local scratch).
 
-**Push:** working-branch push MANDATORY at WRAPUP — see Step 12 closeout below (SHA pinned after push).
+**Push:** working-branch push MANDATORY at WRAPUP — done: `9aa8ae1e` on `origin/dev/batch-mode-2026-07-10` (trigger: WRAPUP Step 12 / safety-checkpoint). Master merge SKIPPED (scoped Batch branch).
 
 ---
 
