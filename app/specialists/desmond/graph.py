@@ -17,6 +17,7 @@ from app.models.adapter import make_chat_model
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
+from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.texas.graph import SanctumLockViolation as _SanctumLockViolation
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -60,12 +61,13 @@ TRANSITIONS: tuple[tuple[str, str], ...] = (
 )
 
 
-class HandoffParseError(RuntimeError):  # noqa: N818
-    """Raised when Desmond handoff output cannot be parsed."""
+class HandoffParseError(SpecialistDispatchError):  # noqa: N818
+    """Raised when Desmond handoff output cannot be parsed.
 
-    def __init__(self, message: str, *, tag: str) -> None:
-        super().__init__(message)
-        self.tag = tag
+    Re-based onto SpecialistDispatchError (Tejal P4 fullwalk 2026-07-10): a bare
+    RuntimeError killed the walk on LLM heading variance instead of error-pausing
+    recoverably. Advisory-missing is also retryable dispatch variance.
+    """
 
 
 def _new_dispatch_trail_entry(
@@ -255,12 +257,19 @@ def _parse_handoff(raw_content: Any) -> dict[str, Any]:
             "desmond handoff cannot be empty",
             tag="handoff.parsed.empty",
         )
-    if not re.search(r"^## Automation Advisory[ \t]*$", parsed_text, re.MULTILINE):
+    if not re.search(r"^## Automation Advisory:?[ \t]*$", parsed_text, re.MULTILINE):
         raise HandoffParseError(
             "desmond handoff missing mandatory Automation Advisory section",
             tag="handoff.parsed.advisory-missing",
         )
-    advisory = parsed_text.split("## Automation Advisory", 1)[1].strip()
+    # Split on the canonical heading; tolerate an optional trailing colon the
+    # model sometimes emits (still exact ``## Automation Advisory`` stem).
+    advisory = re.split(
+        r"^## Automation Advisory:?[ \t]*$",
+        parsed_text,
+        maxsplit=1,
+        flags=re.MULTILINE,
+    )[1].strip()
     return {
         "tag": "handoff.parsed.ok",
         "handoff_text": parsed_text,

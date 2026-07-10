@@ -47,10 +47,26 @@ def test_retryable_tag_exceeding_budget_fails_loud() -> None:
 
 def test_non_retryable_tag_fails_immediately() -> None:
     # a deterministic substrate defect must NOT be retried (fail-loud preserved).
-    adapter = _FlakyAdapter("gamma.export.brief-unmatched", fail_times=1)
+    # Note: gamma.export.brief-unmatched is intentionally RETRYABLE (LLM variance);
+    # use a deterministic tag outside _RETRYABLE_DISPATCH_TAGS.
+    adapter = _FlakyAdapter("cd.directive.malformed", fail_times=1)
     with pytest.raises(SpecialistDispatchError):
         pr._invoke_specialist_with_retry(adapter, {}, "07")
     assert adapter.calls == 1  # no retry
+
+
+def test_gamma_brief_unmatched_is_retryable() -> None:
+    """gamma.export.brief-unmatched is LLM-variance class — absorbed in budget."""
+    adapter = _FlakyAdapter("gamma.export.brief-unmatched", fail_times=1)
+    assert pr._invoke_specialist_with_retry(adapter, {}, "07") == "ENVELOPE_OK"
+    assert adapter.calls == 2
+
+
+def test_desmond_advisory_missing_is_retryable() -> None:
+    """handoff.parsed.advisory-missing is LLM heading variance — absorbed in budget."""
+    adapter = _FlakyAdapter("handoff.parsed.advisory-missing", fail_times=1)
+    assert pr._invoke_specialist_with_retry(adapter, {}, "14.5") == "ENVELOPE_OK"
+    assert adapter.calls == 2
 
 
 def test_happy_path_no_retry() -> None:

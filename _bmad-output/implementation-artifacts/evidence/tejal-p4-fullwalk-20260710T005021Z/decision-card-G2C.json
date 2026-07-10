@@ -1,0 +1,30 @@
+{
+  "card": {
+    "blocking_issues": [],
+    "card_id": "dc1086d1-44a6-4e66-90d8-739083ba4415",
+    "created_at": "2026-07-10T04:59:20.514978Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gate_focus": "pre_composition_qa",
+    "gate_id": "G2C",
+    "meta": {
+      "affected_nodes": [
+        "07C"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "readiness_status": "ready",
+    "ready_nodes": [
+      "07D",
+      "07D.5",
+      "07E"
+    ],
+    "schema_version": "v1",
+    "trial_id": "22b27500-6e67-4dd7-8308-fd89defe3d99",
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/checkpoint.json",
+  "digest": "70346b4ee6777189177ad9ba3746472864438f3db4f18668fd94c1ba27ba12fa",
+  "issued_at": "2026-07-10T04:59:20.514978Z",
+  "server_nonce": "d357bf0468d644c3b5bb0f66a5bdb5b3"
+}

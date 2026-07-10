@@ -1,3 +1,40 @@
+# Session Handoff — 2026-07-10 (WRAPUP: **Mine-next trust + Tejal P4 fullwalk COMPLETE-with-fences; next = Batch switch** — Class S)
+
+**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` (WRAPUP commit + push). **Opened as:** S (substrate + live production walk). **Class drift:** none.
+
+**What was completed:**
+1. **Mine-next Track A** (N6 corrupt-envelope fail-loud, N3 quiz projector, N2 SPOC `--plan-dialogue`) + closes/evidence.
+2. **Trust Waves 1–2** (T1 UDAC map, T2 reenter_at_node, T3 join-collapse, T4a–T4c fidelity precision/positive-carry/flag-ON activation) — CLOSE-WITH-CONDITIONS; flag default stays OFF.
+3. **Pass-2 speakable dual-view** (party APPROVE-WITH-AMENDMENTS): always-on per-slide speakable figures; prompt-only redact unrendered source figures; source-authority rewrite (no SOURCE WINS); gate stays fail-loud. Liveproof reenter@08 on `22b27500…` cleared `figure-contradiction`.
+4. **Desmond substrate:** `HandoffParseError` → `SpecialistDispatchError`; `handoff.parsed.advisory-missing` retryable; trailing-colon heading accept. Taxonomy EXCLUSIONS row retired.
+5. **Variant-selection recover:** absent Gary + picks set → noop defer; re-apply after Gary dispatch.
+6. **Tejal P4 fullwalk** trial `22b27500-6e67-4dd7-8308-fd89defe3d99` → **`completed`** (deck PNGs, 9 audio+vtt, workbook `u01@1`, Desmond advisory, compositor). Grade **PASS-WITH-FENCES** (motion slide-01 only; node-15 / Desmond brief-file residuals filed). No Descript publish.
+7. Operator chose **next = Batch LLM switch, then workbook customization** — not another fullwalk.
+
+**What is next:** BMAD green-light / implement Batch LLM `realtime|batch` run-start switch (spec already filed; transport-only; Tranche A first). Then workbook artifact customization. Do not reopen S8.
+
+**Unresolved / risks:** Tejal residuals (full-deck motion, node-15 contribution, Desmond brief-on-disk); classic-condense HELR not fully retired (speakable down-payment only); fidelity default-OFF; Mine-next N1/N4/N5 HOLD; Cora Step 0 skipped (consecutive-skip tripwire).
+
+**Key lessons:** (a) Blind Pass-2 re-roll is not a fix when source figures aren't on-deck — dual-view contract is. (b) Bare RuntimeError on Desmond killed the walk — dispatch-family rebase is load-bearing. (c) Completed ≠ every SUCCESS-METRICS checkbox; score honestly PASS-WITH-FENCES.
+
+**Validation summary:**
+- Step 0a/0b/0c: SKIPPED — Cora/`/harmonize` unregistered (same as session 28); substitute = party 4/4 speakable green-light + Murat validation plan + focused pytest (75 passed speakable/Desmond/taxonomy/retry/variant) + live Tejal completion. Tripwire noted (force full sweep when Cora available).
+- Step 1: ruff clean on touched Irene/Desmond/retry paths after unused-import fix; 75 focused tests green.
+- Step 4a: SKIPPED — no formal epic/story Kanban flip this session (quick-dev / liveproof; no sprint-status story rows advanced).
+- Step 3: SKIPPED — no bmm-workflow-status phase transition.
+- Live: Tejal completed; Pass-2 contradiction cleared; Desmond+workbook landed.
+- Step 11: class S matches diff (app/specialists + production_runner + tests + evidence + docs). Single worktree. Master merge SKIPPED (scoped branch).
+
+**Content creation summary:** Tejal Part-4 production artifacts (deck/audio/workbook) for trial `22b27500…`; workbook at `_bmad-output/artifacts/workbooks/u01@1.{docx,md}`.
+
+**Artifact update checklist:** evidence packs ✅; deferred-inventory residuals + Batch pull-forward ✅; STATE-OF-THE-APP / project-context ✅; next-session-start-here ✅; SESSION-HANDOFF (this) ✅; sprint-status no Kanban change (skip); bmm-workflow-status skip; KG/ONBOARDING regen recommended later (≥10 app files) not blocking; master merge SKIPPED; no `reports/dev-coherence/`.
+
+**Ambient left untouched:** `runs/*` trial dirs; `runs/compositor/`; `_tmp-regression*`; `workbooks-test/`; Meeting Recording deconstruct; shadow-monitor dirty ledgers unless staged intentionally.
+
+**Push:** working-branch push MANDATORY at WRAPUP — see closeout commit on `origin/dev/lesson-planning-2026-07-09`.
+
+---
+
 # Session Handoff — 2026-07-09 (session 28 WRAPUP: **Marcus plan-ratify Claims A+B COMPLETE (Claim B live bespoke)** — Class S)
 
 **Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` @ `4a1879b3` (+ this WRAPUP docs commit). **Opened as:** S (substrate + live OpenAI Pass-1). **Class drift:** none.

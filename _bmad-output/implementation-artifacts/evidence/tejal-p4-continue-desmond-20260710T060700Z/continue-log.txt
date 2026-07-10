@@ -1,0 +1,8 @@
+# continue after Desmond rebase
+flag=1
+
+[2026-07-10T06:10:00.893108+00:00] start status=paused-at-gate gate=G4A err=None
+[2026-07-10T06:10:00.899151+00:00] [loop 0] status=paused-at-gate gate=G4A err=None
+[2026-07-10T06:10:00.900239+00:00] resume approve G4A
+[2026-07-10T06:11:19.262929+00:00]   -> completed gate=None err=None
+[2026-07-10T06:11:19.290030+00:00] FINAL verdict=pass reason=walk_completed_desmond_workbook score={"status": "completed", "gate": null, "err": null, "contribs": [["g0-enrichment", "g0_enrichment"], ["irene-refinement", "irene_refinement"], ["02", "texas"], ["03", "texas"], ["04A", "irene_pass1"], ["04.55", "research_wiring"], ["4.75", "cd"], ["05", "irene_pass1"], ["05B", "irene_pass1"], ["06", "package_builder"], ["07", "gary"], ["7.5", "vera"], ["07B", "quinn_r"], ["07D.5", "motion_planner"], ["07E", "kira"], ["07F", "quinn_r"], ["07G", "vision"], ["08", "irene"], ["08B", "quinn_r"], ["11", "enrique"], ["11B", "enrique"], ["12", "enrique"], ["13", "quinn_r"], ["14", "compositor"], ["14.5", "desmond"], ["07W", "workbook_producer"]], "png_count": 11, "motion_count": 0, "audio_count": 0, "workbook_docx_count": 0, "has_08": true, "has_11_enrique": true, "has_14_compositor": true, "has_14_5_desmond": true, "has_07W_workbook": true, "workbook_paths": []}

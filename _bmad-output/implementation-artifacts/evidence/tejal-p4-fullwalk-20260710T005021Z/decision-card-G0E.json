@@ -1,0 +1,776 @@
+{
+  "card": {
+    "card_id": "191e304d-4e07-4d47-aaa7-bf81cce686e5",
+    "coverage_plan": {},
+    "created_at": "2026-07-10T04:54:19.337534Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "dissents": [
+      {
+        "against": "src-005-c002",
+        "disposition": "upheld",
+        "marcus_position": "typed src-005-c002 (Corpus - tejal-c1m1-p4-assessments-bridge > Source) as slide; a defensible alternative reading is workbook",
+        "operator_position": ""
+      }
+    ],
+    "enumeration_provenance": [
+      {
+        "connector": "local_file",
+        "locator": "assessments/comprehensive-module-knowledge-check.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-001"
+      },
+      {
+        "connector": "local_file",
+        "locator": "assessments/discussion-post-3-graded-peer-evaluation.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-002"
+      },
+      {
+        "connector": "local_file",
+        "locator": "assessments/innovation-leader-playbook-entry-1.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-003"
+      },
+      {
+        "connector": "local_file",
+        "locator": "assessments/innovation-leader-playbook-master-grading-rubric.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-004"
+      },
+      {
+        "connector": "local_file",
+        "locator": "README.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-005"
+      },
+      {
+        "connector": "local_file",
+        "locator": "references/module-1-core-conceptual-pillars.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-006"
+      },
+      {
+        "connector": "local_file",
+        "locator": "references/source-gap-ledger.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-007"
+      },
+      {
+        "connector": "local_file",
+        "locator": "references/source-provenance.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-008"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-1-summary-bridge-to-module-2.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+        "source_id": "src-009"
+      }
+    ],
+    "gate_focus": "source_enrichment",
+    "gate_id": "G0E",
+    "meta": {
+      "affected_nodes": [
+        "g0-enrichment-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Confirm the source TYPE manifest + candidate provisional LOs (or edit/reject). Marcus proposes; you decide.",
+    "provisional_los": [
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-001",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Comprehensive Module Knowledge Check",
+            "quoted_span": "Comprehensive Module Knowledge Check",
+            "source_id": "src-001"
+          }
+        ],
+        "statement": "Understand the material introduced by src-001 (Comprehensive Module Knowledge Check).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-002",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation",
+            "quoted_span": "**Format:** Graded, mandatory asynchronous discussion board in Canvas.",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Understand the material introduced by src-002 (**Format:** Graded, mandatory asynchronous discussion board ).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-003",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Innovation Leader Playbook Entry #1",
+            "quoted_span": "**Format:** The first entry in the learner's personal Innovation Leader Playbook, a living document the learner can return to throughout the program.",
+            "source_id": "src-003"
+          }
+        ],
+        "statement": "Understand the material introduced by src-003 (**Format:** The first entry in the learner's personal Innova).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-004",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Innovation Leader Playbook: Master Grading Rubric",
+            "quoted_span": "Innovation Leader Playbook: Master Grading Rubric",
+            "source_id": "src-004"
+          }
+        ],
+        "statement": "Understand the material introduced by src-004 (Innovation Leader Playbook: Master Grading Rubric).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-005",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Corpus - tejal-c1m1-p4-assessments-bridge",
+            "quoted_span": "**S8 proof intent:** S8 full-close composed proof.",
+            "source_id": "src-005"
+          }
+        ],
+        "statement": "Understand the material introduced by src-005 (**S8 proof intent:** S8 full-close composed proof.).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-006",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Core Conceptual Pillars of Module 1",
+            "quoted_span": "These pillars are carried from the surrounding C1M1 bridge/summary context in the source outline.",
+            "source_id": "src-006"
+          }
+        ],
+        "statement": "Understand the material introduced by src-006 (These pillars are carried from the surrounding C1M1 bridge/s).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-007",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Source Gap Ledger",
+            "quoted_span": "This ledger is part of the S8 proof corpus. It records available and missing source material so downstream production does not silently invent assets.",
+            "source_id": "src-007"
+          }
+        ],
+        "statement": "Understand the material introduced by src-007 (This ledger is part of the S8 proof corpus. It records avail).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-008",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Source Provenance",
+            "quoted_span": "**Curated corpus:** `course-content/courses/tejal-c1m1-p4-assessments-bridge`",
+            "source_id": "src-008"
+          }
+        ],
+        "statement": "Understand the material introduced by src-008 (**Curated corpus:** `course-content/courses/tejal-c1m1-p4-as).",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "low",
+        "objective_id": "lo-g0-009",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Summary Slide & Bridge to Module 2",
+            "quoted_span": "**Visual Format:** Closing video with talking head and text overlay.",
+            "source_id": "src-009"
+          }
+        ],
+        "statement": "Understand the material introduced by src-009 (**Visual Format:** Closing video with talking head and text ).",
+        "status": "provisional"
+      }
+    ],
+    "reconcile": {
+      "n_components": 43,
+      "n_files_covered": 9,
+      "n_files_ignored": 0,
+      "n_files_in": 9,
+      "n_flagged": 11,
+      "n_ungrounded": 0
+    },
+    "schema_version": "v1",
+    "traversal_roots": [
+      {
+        "kind": "corpus_dir",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge"
+      }
+    ],
+    "trial_id": "22b27500-6e67-4dd7-8308-fd89defe3d99",
+    "typed_components": [
+      {
+        "component_id": "src-001-c001",
+        "excerpt": "Comprehensive Module Knowledge Check",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Comprehensive Module Knowledge Check",
+        "locator": "Comprehensive Module Knowledge Check",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c002",
+        "excerpt": "According to the course's Innovation Lexicon, which of the following is the most accurate definition of \"Innovation\" in this context?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 1 - Remember - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 1 - Remember - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c003",
+        "excerpt": "Why is \"Psychological Safety\" considered a mandatory prerequisite for systemic innovation in a healthcare setting?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 2 - Understand - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 2 - Understand - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c004",
+        "excerpt": "How does adopting a \"Growth Mindset\" specifically alter a physician-innovator's approach to an operational failure?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 3 - Understand - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 3 - Understand - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c005",
+        "excerpt": "According to the macroeconomic data presented, what is the current projected \"doubling time\" for medical knowledge?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 4 - Remember - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 4 - Remember - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c006",
+        "excerpt": "While 66% of physicians are currently using some form of AI in practice, formal training on how to oversee these tools safely remains severely limited.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 5 - Remember - True/False",
+        "locator": "Comprehensive Module Knowledge Check > Question 5 - Remember - True/False",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c007",
+        "excerpt": "Based on the economic realities shaping healthcare transformation, what were National Health Expenditures projected to reach in 2024?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 6 - Remember - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 6 - Remember - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c008",
+        "excerpt": "When mapping the steps of a traditional clinical diagnosis directly to the Design Thinking framework, formulating a differential diagnosis and selecting a treatment plan corresponds to which steps?",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 7 - Understand - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 7 - Understand - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "exercise_lab"
+      },
+      {
+        "component_id": "src-001-c009",
+        "excerpt": "What is the primary operational purpose of utilizing the \"5 Whys\" framework in healthcare intrapreneurship?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 8 - Understand - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 8 - Understand - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c010",
+        "excerpt": "Which of the following is highlighted as a core overlapping trait required for both effective Physicianship and Innovation Leadership?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 9 - Remember - Multiple Choice",
+        "locator": "Comprehensive Module Knowledge Check > Question 9 - Remember - Multiple Choice",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-001-c011",
+        "excerpt": "Expected Value is a subjective assessment that reflects an individual's personal satisfaction and risk tolerance, while Expected Utility is an objective metric that remains the same regardless of who ",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Question 10 - Understand - True/False",
+        "locator": "Comprehensive Module Knowledge Check > Question 10 - Understand - True/False",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-002-c001",
+        "excerpt": "**Format:** Graded, mandatory asynchronous discussion board in Canvas.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation",
+        "locator": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "discussion_forum"
+      },
+      {
+        "component_id": "src-002-c002",
+        "excerpt": "\"This is the portfolio exercise for Module 1. We are going to apply the rigor of a clinical Morbidity and Mortality (M&M) conference to operational failures. You will propose a reframed problem, and y",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Context Text",
+        "locator": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation > Context Text",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "exercise_lab"
+      },
+      {
+        "component_id": "src-002-c003",
+        "excerpt": "Prompt",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Prompt",
+        "locator": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation > Prompt",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-002-c004",
+        "excerpt": "Select one recurring operational, clinical, or administrative failure from your own experience so far.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "1. The Initial Presentation",
+        "locator": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation > Prompt > 1. The Initial Presentation",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-002-c005",
+        "excerpt": "You must formally review at least two peers' presentations. In your review:",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "2. The Peer Differential",
+        "locator": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation > Prompt > 2. The Peer Differential",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-003-c001",
+        "excerpt": "**Format:** The first entry in the learner's personal Innovation Leader Playbook, a living document the learner can return to throughout the program.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Innovation Leader Playbook Entry #1",
+        "locator": "Innovation Leader Playbook Entry #1",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-003-c002",
+        "excerpt": "**Prompt:** Critically evaluate your own mindset, motivations, and work environment to establish a baseline for your innovation journey.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Task 1 - Evaluate: My Innovator's Starting Point",
+        "locator": "Innovation Leader Playbook Entry #1 > Task 1 - Evaluate: My Innovator's Starting Point",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-003-c003",
+        "excerpt": "**Prompt:** Source the initial seeds of innovation from your own experience. Briefly describe three distinct ideas, one from each category:",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Task 2 - Create: My Initial Idea Portfolio",
+        "locator": "Innovation Leader Playbook Entry #1 > Task 2 - Create: My Initial Idea Portfolio",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-003-c004",
+        "excerpt": "**Design Brief 5: The Opportunity Radar**",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Task 3 - Create: My Opportunity Radar",
+        "locator": "Innovation Leader Playbook Entry #1 > Task 3 - Create: My Opportunity Radar",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "exercise_lab"
+      },
+      {
+        "component_id": "src-004-c001",
+        "excerpt": "Innovation Leader Playbook: Master Grading Rubric",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Innovation Leader Playbook: Master Grading Rubric",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "rubric"
+      },
+      {
+        "component_id": "src-004-c002",
+        "excerpt": "- **Exemplary (4 points):** Demonstrates mastery, deep synthesis of concepts, and executive-level readiness.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Grading Scale",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric > Grading Scale",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-004-c003",
+        "excerpt": "Evaluates the learner's ability to move from a surface-level chief complaint to a systemic root cause.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "1. Analytical Depth and Problem Framing",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric > 1. Analytical Depth and Problem Framing",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-004-c004",
+        "excerpt": "Evaluates how accurately the learner integrates module-specific tools such as Design Thinking, the Intrapreneurship Formula, and the Opportunity Radar.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "2. Application of Innovation Frameworks",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric > 2. Application of Innovation Frameworks",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-004-c005",
+        "excerpt": "Evaluates the learner's situational awareness as an intrapreneur navigating a complex health system.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "3. Organizational Feasibility and Actionability",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric > 3. Organizational Feasibility and Actionability",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-004-c006",
+        "excerpt": "Evaluates the learner's capacity for self-critique, growth mindset, and psychological safety.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "4. Reflective Vulnerability and Mindset",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric > 4. Reflective Vulnerability and Mindset",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-004-c007",
+        "excerpt": "Evaluates clarity, concision, and professionalism.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "5. Executive Communication",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric > 5. Executive Communication",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-004-c008",
+        "excerpt": "- **18-20 points:** Honors / Pass. The entry is portfolio-ready.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Faculty Guide",
+        "locator": "Innovation Leader Playbook: Master Grading Rubric > Faculty Guide",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-005-c001",
+        "excerpt": "**S8 proof intent:** S8 full-close composed proof.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Corpus - tejal-c1m1-p4-assessments-bridge",
+        "locator": "Corpus - tejal-c1m1-p4-assessments-bridge",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "workbook"
+      },
+      {
+        "component_id": "src-005-c002",
+        "excerpt": "- **Source of truth:** `course-content/courses/tejal-c1m1-fresh-outline/source-outline.md`",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Source",
+        "locator": "Corpus - tejal-c1m1-p4-assessments-bridge > Source",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-005-c003",
+        "excerpt": "- `slides/` - **PRIMARY bridge material**: the summary / bridge-to-Module-2 closing video storyboard and narration. Part 4 does not provide a conventional multi-slide lecture sequence.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Layout",
+        "locator": "Corpus - tejal-c1m1-p4-assessments-bridge > Layout",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "rubric"
+      },
+      {
+        "component_id": "src-005-c004",
+        "excerpt": "- No standalone Part 4 lecture-slide deck is present in the source section.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Known Gaps",
+        "locator": "Corpus - tejal-c1m1-p4-assessments-bridge > Known Gaps",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-005-c005",
+        "excerpt": "The adequacy wrinkle is material: Part 4 is assessment/bridge-heavy relative to Parts 2 and 3. G0R should pressure-test whether this source is adequate for a full narrated-deck + motion + workbook pro",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Proof Notes",
+        "locator": "Corpus - tejal-c1m1-p4-assessments-bridge > Proof Notes",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "workbook"
+      },
+      {
+        "component_id": "src-006-c001",
+        "excerpt": "These pillars are carried from the surrounding C1M1 bridge/summary context in the source outline.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Core Conceptual Pillars of Module 1",
+        "locator": "Core Conceptual Pillars of Module 1",
+        "other_type": null,
+        "parent_source_id": "src-006",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-007-c001",
+        "excerpt": "This ledger is part of the S8 proof corpus. It records available and missing source material so downstream production does not silently invent assets.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Source Gap Ledger",
+        "locator": "Source Gap Ledger",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "exercise_lab"
+      },
+      {
+        "component_id": "src-007-c002",
+        "excerpt": "- Part 4 discussion-board assignment.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Available Source",
+        "locator": "Source Gap Ledger > Available Source",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "rubric"
+      },
+      {
+        "component_id": "src-007-c003",
+        "excerpt": "- No standalone Part 4 lecture-slide deck is available in the source section.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Missing or Thin Source",
+        "locator": "Source Gap Ledger > Missing or Thin Source",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-007-c004",
+        "excerpt": "If a workflow requires any missing item above, it should fail loud, request source, or document the downgraded claim. It must not fabricate missing slide, media, motion, DOI, or workbook-source proven",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Downstream Instruction",
+        "locator": "Source Gap Ledger > Downstream Instruction",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "workbook"
+      },
+      {
+        "component_id": "src-008-c001",
+        "excerpt": "**Curated corpus:** `course-content/courses/tejal-c1m1-p4-assessments-bridge`",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Source Provenance",
+        "locator": "Source Provenance",
+        "other_type": null,
+        "parent_source_id": "src-008",
+        "source_type": "exercise_lab"
+      },
+      {
+        "component_id": "src-009-c001",
+        "excerpt": "**Visual Format:** Closing video with talking head and text overlay.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Summary Slide & Bridge to Module 2",
+        "locator": "Summary Slide & Bridge to Module 2",
+        "other_type": null,
+        "parent_source_id": "src-009",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-009-c002",
+        "excerpt": "- **0:00-0:15, On Camera:** Dr. Naik speaks directly to the learner with an encouraging, forward-looking tone.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Video Storyboard",
+        "locator": "Summary Slide & Bridge to Module 2 > Video Storyboard",
+        "other_type": null,
+        "parent_source_id": "src-009",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-009-c003",
+        "excerpt": "\"Congratulations on completing Module 1. We must ask a critical question: Now that you understand the mindset of an innovator, how do you begin your own personal journey?",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Narration / Speaker Notes",
+        "locator": "Summary Slide & Bridge to Module 2 > Narration / Speaker Notes",
+        "other_type": null,
+        "parent_source_id": "src-009",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-009-c004",
+        "excerpt": "The source provides a storyboard and narration but no rendered video, no image file, and no motion asset. Motion should not be inferred as available source.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Source Gap",
+        "locator": "Summary Slide & Bridge to Module 2 > Source Gap",
+        "other_type": null,
+        "parent_source_id": "src-009",
+        "source_type": "narration"
+      }
+    ],
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/checkpoint.json",
+  "digest": "33a7cb68d86a1a9186ec077a488caae8bca701dafced825d36c6a8ceed42ee70",
+  "issued_at": "2026-07-10T04:54:19.347678Z",
+  "server_nonce": "66289a6cdb314c1d9ee9997262056cc4"
+}

@@ -1,0 +1,161 @@
+{
+  "verdict": "pass_with_fences",
+  "reason": "pass2_cleared_no_10_90_in_narration_paused_g4a_desmond_handoff_out_of_claim",
+  "facts": {
+    "at": "2026-07-10T05:42:02.888647+00:00",
+    "run_id": "22b27500-6e67-4dd7-8308-fd89defe3d99",
+    "flag": "1",
+    "events": [
+      {
+        "op": "start",
+        "status": "paused-at-error",
+        "err": "irene.pass2.figure-contradiction"
+      },
+      {
+        "op": "recover08",
+        "status": "paused-at-gate",
+        "trial_id": "22b27500-6e67-4dd7-8308-fd89defe3d99",
+        "paused_gate": "G3",
+        "paused_error_tag": null,
+        "run_registry_path": "state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\run.json",
+        "cost_report_json": "state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\cost-report.json",
+        "production_clone_launch_evidence": true,
+        "transport_kind": "cli",
+        "reenter_at_node": "08"
+      },
+      {
+        "op": "loop",
+        "i": 0,
+        "status": "paused-at-gate",
+        "gate": "G3",
+        "err": null
+      },
+      {
+        "op": "resume",
+        "gate": "G3",
+        "status": "paused-at-gate",
+        "err": null
+      },
+      {
+        "op": "loop",
+        "i": 1,
+        "status": "paused-at-gate",
+        "gate": "G4",
+        "err": null
+      },
+      {
+        "op": "resume",
+        "gate": "G4",
+        "status": "paused-at-gate",
+        "err": null
+      },
+      {
+        "op": "loop",
+        "i": 2,
+        "status": "paused-at-gate",
+        "gate": "G4A",
+        "err": null
+      },
+      {
+        "op": "resume",
+        "gate": "G4A",
+        "error": "Traceback (most recent call last):\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\irene-figure-contradiction-reenter08-20260710T054100Z\\reenter08_driver.py\", line 185, in main\n    env = drive_verdict(gate)\n          ^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\irene-figure-contradiction-reenter08-20260710T054100Z\\reenter08_driver.py\", line 73, in drive_verdict\n    return resume_production_trial(\n           ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 3004, in resume_production_trial\n    return _continue_production_walk(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 3565, in _continue_production_walk\n    production_envelope, run_state = _dispatch_specialist_at_node(\n                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 2224, in _dispatch_specialist_at_node\n    production_envelope = _invoke_specialist_with_retry(adapter, invoke_kwargs, node.id)\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 1850, in _invoke_specialist_with_retry\n    return adapter.invoke_specialist(**invoke_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\dispatch_adapter.py\", line 180, in invoke_specialist\n    state = self._invoke_compiled_graph(compiled_graph, state)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\dispatch_adapter.py\", line 251, in _invoke_compiled_graph\n    result = compiled_graph.invoke(state, config=config)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\.venv\\Lib\\site-packages\\langgraph\\pregel\\main.py\", line 3365, in invoke\n    for chunk in self.stream(\n                 ^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\.venv\\Lib\\site-packages\\langgraph\\pregel\\main.py\", line 2759, in stream\n    for _ in runner.tick(\n             ^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\.venv\\Lib\\site-packages\\langgraph\\pregel\\_runner.py\", line 167, in tick\n    run_with_retry(\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\.venv\\Lib\\site-packages\\langgraph\\pregel\\_retry.py\", line 126, in run_with_retry\n    return task.proc.invoke(task.input, config)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\.venv\\Lib\\site-packages\\langgraph\\_internal\\_runnable.py\", line 656, in invoke\n    input = context.run(step.invoke, input, config, **kwargs)\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\.venv\\Lib\\site-packages\\langgraph\\_internal\\_runnable.py\", line 400, in invoke\n    ret = self.func(*args, **kwargs)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\specialists\\desmond\\graph.py\", line 321, in _act\n    parsed = _parse_handoff(raw_content)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\specialists\\desmond\\graph.py\", line 259, in _parse_handoff\n    raise HandoffParseError(\napp.specialists.desmond.graph.HandoffParseError: desmond handoff missing mandatory Automation Advisory section\nDuring task with name 'act' and id 'cd62b413-ea9f-3c6c-0e53-8c2899ffcd14'\n"
+      }
+    ],
+    "final_status": "paused-at-gate",
+    "final_err": null,
+    "final_gate": "G4A",
+    "recovers": 1,
+    "contribs": [
+      [
+        "g0-enrichment",
+        "g0_enrichment"
+      ],
+      [
+        "irene-refinement",
+        "irene_refinement"
+      ],
+      [
+        "02",
+        "texas"
+      ],
+      [
+        "03",
+        "texas"
+      ],
+      [
+        "04A",
+        "irene_pass1"
+      ],
+      [
+        "04.55",
+        "research_wiring"
+      ],
+      [
+        "4.75",
+        "cd"
+      ],
+      [
+        "05",
+        "irene_pass1"
+      ],
+      [
+        "05B",
+        "irene_pass1"
+      ],
+      [
+        "06",
+        "package_builder"
+      ],
+      [
+        "07",
+        "gary"
+      ],
+      [
+        "7.5",
+        "vera"
+      ],
+      [
+        "07B",
+        "quinn_r"
+      ],
+      [
+        "07D.5",
+        "motion_planner"
+      ],
+      [
+        "07E",
+        "kira"
+      ],
+      [
+        "07F",
+        "quinn_r"
+      ],
+      [
+        "07G",
+        "vision"
+      ],
+      [
+        "08",
+        "irene"
+      ],
+      [
+        "08B",
+        "quinn_r"
+      ],
+      [
+        "11",
+        "enrique"
+      ]
+    ]
+  },
+  "liveproof": {
+    "node_08_landed": true,
+    "figure_contradiction_recurred": false,
+    "narration_has_10_or_90_percent": false,
+    "slide_05_paraphrase_ok": true,
+    "enrique_9_of_9": true,
+    "final_gate": "G4A",
+    "out_of_claim_error": "desmond HandoffParseError missing Automation Advisory"
+  }
+}

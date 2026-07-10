@@ -1,0 +1,226 @@
+{
+  "ratified_los": [
+    {
+      "adequacy": {
+        "missing": [
+          "assessment-grade detail for: Understand the material introduced by src-001 (Comprehensive"
+        ],
+        "rationale": "teach-leg supported but assess-leg partial from source for: Understand the material introduced by src-001 (Comprehensive",
+        "suggested_followups": [
+          "external-content-expected"
+        ],
+        "verdict": "thin"
+      },
+      "bloom_level": "remember",
+      "confidence": "low",
+      "objective_id": "lo-g0-001",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Comprehensive Module Knowledge Check",
+          "quoted_span": "Comprehensive Module Knowledge Check",
+          "source_id": "src-001"
+        }
+      ],
+      "statement": "Understand the material introduced by src-001 (Comprehensive Module Knowledge Check).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [
+          "assessment-grade detail for: Understand the material introduced by src-002 (**Format:** G"
+        ],
+        "rationale": "teach-leg supported but assess-leg partial from source for: Understand the material introduced by src-002 (**Format:** G",
+        "suggested_followups": [
+          "external-content-expected"
+        ],
+        "verdict": "thin"
+      },
+      "bloom_level": "analyze",
+      "confidence": "low",
+      "objective_id": "lo-g0-002",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Discussion Post 3: Graded Peer Evaluation - The M&M of Innovation",
+          "quoted_span": "**Format:** Graded, mandatory asynchronous discussion board in Canvas.",
+          "source_id": "src-002"
+        }
+      ],
+      "statement": "Understand the material introduced by src-002 (**Format:** Graded, mandatory asynchronous discussion board ).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [],
+        "rationale": "source span supports both the teach-leg and assess-leg for: Understand the material introduced by src-003 (**Format:** T",
+        "suggested_followups": [],
+        "verdict": "adequate"
+      },
+      "bloom_level": "remember",
+      "confidence": "low",
+      "objective_id": "lo-g0-003",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Innovation Leader Playbook Entry #1",
+          "quoted_span": "**Format:** The first entry in the learner's personal Innovation Leader Playbook, a living document the learner can return to throughout the program.",
+          "source_id": "src-003"
+        }
+      ],
+      "statement": "Understand the material introduced by src-003 (**Format:** The first entry in the learner's personal Innova).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [
+          "assessment-grade detail for: Understand the material introduced by src-004 (Innovation Le"
+        ],
+        "rationale": "teach-leg supported but assess-leg partial from source for: Understand the material introduced by src-004 (Innovation Le",
+        "suggested_followups": [
+          "external-content-expected"
+        ],
+        "verdict": "thin"
+      },
+      "bloom_level": "create",
+      "confidence": "low",
+      "objective_id": "lo-g0-004",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Innovation Leader Playbook: Master Grading Rubric",
+          "quoted_span": "Innovation Leader Playbook: Master Grading Rubric",
+          "source_id": "src-004"
+        }
+      ],
+      "statement": "Understand the material introduced by src-004 (Innovation Leader Playbook: Master Grading Rubric).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [
+          "assessment-grade detail for: Understand the material introduced by src-005 (**S8 proof in"
+        ],
+        "rationale": "teach-leg supported but assess-leg partial from source for: Understand the material introduced by src-005 (**S8 proof in",
+        "suggested_followups": [
+          "external-content-expected"
+        ],
+        "verdict": "thin"
+      },
+      "bloom_level": "apply",
+      "confidence": "low",
+      "objective_id": "lo-g0-005",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Corpus - tejal-c1m1-p4-assessments-bridge",
+          "quoted_span": "**S8 proof intent:** S8 full-close composed proof.",
+          "source_id": "src-005"
+        }
+      ],
+      "statement": "Understand the material introduced by src-005 (**S8 proof intent:** S8 full-close composed proof.).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [],
+        "rationale": "source span supports both the teach-leg and assess-leg for: Understand the material introduced by src-006 (These pillars",
+        "suggested_followups": [],
+        "verdict": "adequate"
+      },
+      "bloom_level": "create",
+      "confidence": "low",
+      "objective_id": "lo-g0-006",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Core Conceptual Pillars of Module 1",
+          "quoted_span": "These pillars are carried from the surrounding C1M1 bridge/summary context in the source outline.",
+          "source_id": "src-006"
+        }
+      ],
+      "statement": "Understand the material introduced by src-006 (These pillars are carried from the surrounding C1M1 bridge/s).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [],
+        "rationale": "source span supports both the teach-leg and assess-leg for: Understand the material introduced by src-007 (This ledger i",
+        "suggested_followups": [],
+        "verdict": "adequate"
+      },
+      "bloom_level": "remember",
+      "confidence": "low",
+      "objective_id": "lo-g0-007",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Source Gap Ledger",
+          "quoted_span": "This ledger is part of the S8 proof corpus. It records available and missing source material so downstream production does not silently invent assets.",
+          "source_id": "src-007"
+        }
+      ],
+      "statement": "Understand the material introduced by src-007 (This ledger is part of the S8 proof corpus. It records avail).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [
+          "assessment-grade detail for: Understand the material introduced by src-008 (**Curated cor"
+        ],
+        "rationale": "teach-leg supported but assess-leg partial from source for: Understand the material introduced by src-008 (**Curated cor",
+        "suggested_followups": [
+          "external-content-expected"
+        ],
+        "verdict": "thin"
+      },
+      "bloom_level": "apply",
+      "confidence": "low",
+      "objective_id": "lo-g0-008",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Source Provenance",
+          "quoted_span": "**Curated corpus:** `course-content/courses/tejal-c1m1-p4-assessments-bridge`",
+          "source_id": "src-008"
+        }
+      ],
+      "statement": "Understand the material introduced by src-008 (**Curated corpus:** `course-content/courses/tejal-c1m1-p4-as).",
+      "status": "ratified"
+    },
+    {
+      "adequacy": {
+        "missing": [
+          "assessment-grade detail for: Understand the material introduced by src-009 (**Visual Form"
+        ],
+        "rationale": "teach-leg supported but assess-leg partial from source for: Understand the material introduced by src-009 (**Visual Form",
+        "suggested_followups": [
+          "external-content-expected"
+        ],
+        "verdict": "thin"
+      },
+      "bloom_level": "apply",
+      "confidence": "low",
+      "objective_id": "lo-g0-009",
+      "origin": "g0",
+      "recommendation": "keep",
+      "source_refs": [
+        {
+          "locator": "Summary Slide & Bridge to Module 2",
+          "quoted_span": "**Visual Format:** Closing video with talking head and text overlay.",
+          "source_id": "src-009"
+        }
+      ],
+      "statement": "Understand the material introduced by src-009 (**Visual Format:** Closing video with talking head and text ).",
+      "status": "ratified"
+    }
+  ]
+}

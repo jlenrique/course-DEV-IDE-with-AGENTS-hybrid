@@ -1,0 +1,31 @@
+{
+  "artifact_counts": {
+    "audio": 0,
+    "mp4s": 1,
+    "pngs": 9
+  },
+  "checks": {
+    "bundle_id_ok": true,
+    "c1_terminal_completed": false,
+    "c2_no_descript_publish_required": true,
+    "c3_plan_companions_present": true,
+    "c3_ratified_los_on_disk": true,
+    "c4_fidelity_flag_was_on": true,
+    "c4_fidelity_sail_or_honest_halt": true,
+    "c4_note": "fidelity halt tag=irene.pass2.figure-contradiction",
+    "c5_audio": false,
+    "c5_deck_png": true,
+    "c5_desmond_brief": false,
+    "c5_motion_mp4": true,
+    "c5_workbook_docx": false,
+    "c5_workbook_md": false,
+    "cleared_gamma_brief_unmatched": true,
+    "extracted_md_present": true,
+    "g0_edit_confirm": true,
+    "no_driver_exception": true
+  },
+  "fidelity_halt": true,
+  "final_error_tag": "irene.pass2.figure-contradiction",
+  "final_status": "paused-at-error",
+  "grade": "PARTIAL"
+}

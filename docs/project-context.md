@@ -1,3 +1,31 @@
+# Current Context Addendum - 2026-07-10 (session WRAPUP: Tejal P4 + trust + next = Batch)
+
+**Session class:** S. Branch `dev/lesson-planning-2026-07-09`.
+
+**Landed this session (durable at WRAPUP commit):**
+- Mine-next Track A (N6/N3/N2) + trust Waves 1–2 (T1–T4c) local substrate
+- Pass-2 speakable dual-view (narration ⊆ perceived; source provenance ≠ speech license)
+- Desmond `HandoffParseError` → `SpecialistDispatchError` + `handoff.parsed.advisory-missing` retryable
+- Variant-selection recover noop when Gary dropped (reenter-at-07)
+- Tejal P4 fullwalk trial `22b27500-6e67-4dd7-8308-fd89defe3d99` **completed**
+  (PASS-WITH-FENCES: motion slide-01 only; node-15 / Desmond brief-file residuals filed)
+
+**Fidelity:** `MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE` exercised ON for the walk;
+**product default remains OFF.**
+
+**Next (operator-chosen):** Batch LLM run-start `realtime|batch` switch
+(spec `epic-batch-llm-execution-mode-spec-2026-07-01.md`), then workbook
+customization. Do not reopen S8. Do not re-run Tejal fullwalk for fence polish.
+
+**Evidence anchors:**
+- `…/evidence/tejal-p4-fullwalk-20260710T005021Z/`
+- `…/evidence/irene-figure-contradiction-reenter08-20260710T054100Z/`
+- `…/evidence/tejal-p4-continue-desmond-20260710T060700Z/`
+- `…/evidence/mine-next-trust-e2e-20260710T043111Z/`
+- Close: `mine-next-trust-wave2-e2e-close-2026-07-10.md`
+
+---
+
 # Current Context Addendum - 2026-07-10 (Phase-2 Six Mine-Now + integrated E2E)
 
 **Six Mine-Now program:** CLOSED-all-6 + integrated E2E amendment (party 4/4).

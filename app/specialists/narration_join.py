@@ -79,4 +79,30 @@ def phantom_segment_ids(rows: list[dict[str, Any]]) -> list[str]:
     )
 
 
-__all__ = ["join_narration_segments", "phantom_segment_ids"]
+def collapsed_segment_ids(rows: list[dict[str, Any]]) -> list[str]:
+    """Sorted segment ids that appear more than once in joined rows.
+
+    Non-bijective DETECTOR sibling to :func:`phantom_segment_ids` (Mine-next
+    trust T3 / ``join-narration-segments-silent-collapse-hardening``).
+
+    Distinct narrations flooded onto one join key (duplicate delta ids) leave
+    non-empty text on every row — phantoms miss it; this detector surfaces the
+    collapse so Enrique/G5/publisher can refuse or audit before spend.
+    Detection only; refusal semantics belong to callers.
+    """
+    counts: dict[str, int] = {}
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        segment_id = str(row.get("segment_id") or row.get("id") or "")
+        if not segment_id:
+            continue
+        counts[segment_id] = counts.get(segment_id, 0) + 1
+    return sorted(segment_id for segment_id, count in counts.items() if count > 1)
+
+
+__all__ = [
+    "collapsed_segment_ids",
+    "join_narration_segments",
+    "phantom_segment_ids",
+]

@@ -1,0 +1,16 @@
+{
+  "lane": "N2",
+  "name": "spoc-plan-dialogue-wire",
+  "passed": true,
+  "predicates": {
+    "companion_written": true,
+    "confirm_decline_fail_loud": true,
+    "intent_written": true,
+    "los_count_2": true,
+    "los_written": true,
+    "planning_context_framing": true,
+    "run_id": "71dcecbb-b230-4e7e-ae12-381460e80b33",
+    "spoc_exit_0": true
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\71dcecbb-b230-4e7e-ae12-381460e80b33"
+}

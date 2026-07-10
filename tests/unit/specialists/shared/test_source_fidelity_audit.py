@@ -36,8 +36,9 @@ def test_module_is_read_only_caller_of_frozen_neck() -> None:
         "app.specialists._shared.source_fidelity_audit"
     )
     neck = importlib.import_module("app.specialists._shared.figure_tokens")
-    # The neck must still export exactly its original public surface.
-    assert set(neck.__all__) == {"_FIGURE_RE", "_figures", "_normalize_figure"}
+    # Frozen neck remains read-only for callers; T4a may ADD exports
+    # (PERCENT_TOLERANCE_PP / _figure_near_match) but must keep the original trio.
+    assert {"_FIGURE_RE", "_figures", "_normalize_figure"} <= set(neck.__all__)
     # The audit module references the frozen-neck callables (read-only caller).
     src = (audit_mod.__file__ or "")
     assert src  # module is importable from a real file

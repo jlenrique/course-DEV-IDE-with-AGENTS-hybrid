@@ -805,18 +805,23 @@ def recover_trial(
     trial_id: UUID,
     runs_root: Path = RUNS_ROOT,
     max_specialist_calls: int | None = None,
+    reenter_at_node: str | None = None,
 ) -> dict[str, Any]:
     """Continue an error-paused trial from its failed node (S4 part 2).
 
     No verdict file: dispatch-error pauses carry no operator decision — the
     operator fixes the transient cause and re-enters the walk. Gate pauses
     still require `trial resume` + a verdict.
+
+    ``reenter_at_node`` (optional): upstream manifest node id to rewind to
+    when the fix is before the failed node (Mine-next trust T2).
     """
     _load_env_if_available()
     envelope = recover_production_trial(
         trial_id=trial_id,
         runs_root=runs_root,
         max_specialist_calls=max_specialist_calls,
+        reenter_at_node=reenter_at_node,
     )
     result = {
         "status": envelope.status,
@@ -829,6 +834,7 @@ def recover_trial(
         else None,
         "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
         "transport_kind": "cli",
+        "reenter_at_node": reenter_at_node,
     }
     (runs_root / str(trial_id) / "trial-recover.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
@@ -842,6 +848,7 @@ def recover_trial_cli(args: argparse.Namespace) -> int:
         trial_id=args.trial_id,
         runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
         max_specialist_calls=args.max_specialist_calls,
+        reenter_at_node=getattr(args, "reenter_at_node", None),
     )
     print(json.dumps(payload, sort_keys=True))
     return 0
@@ -966,6 +973,15 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         help=(
             "Maximum downstream specialist calls to make during this recovery "
             "continuation. Defaults to the paused runner cap."
+        ),
+    )
+    recover.add_argument(
+        "--reenter-at-node",
+        required=False,
+        help=(
+            "Optional upstream manifest node id: drop contributions from that "
+            "node through the failed index and restart the walk there "
+            "(Mine-next trust T2). Default retries the failed node only."
         ),
     )
 

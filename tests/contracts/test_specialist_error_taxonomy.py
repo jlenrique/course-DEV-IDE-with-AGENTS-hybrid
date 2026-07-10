@@ -48,7 +48,8 @@ EXCLUSIONS: frozenset[str] = frozenset(
         "app.specialists.vyx.graph.OperatorInstructionsParseError",
         "app.specialists.cd.graph.CdDirectiveParseError",
         "app.specialists.dan._act.DanAuxParseError",
-        "app.specialists.desmond.graph.HandoffParseError",
+        # 2026-07-10 RETIRED: HandoffParseError re-based to SpecialistDispatchError
+        # (Tejal P4 — advisory-missing was killing the walk instead of pausing).
         # legacy-probe path only
         "app.specialists.enrique.elevenlabs_dispatch.ElevenlabsDispatchError",
         # 2026-06-12 live-path tranche RETIRED: GaryActError,
@@ -132,6 +133,7 @@ def test_known_rebased_classes() -> None:
     from app.marcus.orchestrator.package_builders import BuilderInputError
     from app.specialists._shared.voice_provider_text import VoiceProviderTextError
     from app.specialists.compositor._act import CompositorActError
+    from app.specialists.desmond.graph import HandoffParseError
     from app.specialists.enrique._act import EnriqueActError
     from app.specialists.gary._act import GaryActError
     from app.specialists.gary.graph import ReceiptParseError
@@ -151,6 +153,7 @@ def test_known_rebased_classes() -> None:
         QRRParseError,
         EnriqueActError,
         CompositorActError,
+        HandoffParseError,
         GaryActError,
         ReceiptParseError,
         BundleParseError,

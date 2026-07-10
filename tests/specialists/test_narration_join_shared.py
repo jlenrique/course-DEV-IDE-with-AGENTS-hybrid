@@ -57,7 +57,8 @@ def test_consumers_import_the_one_join() -> None:
     # G5 grounding imports inside the function (cycle-import hygiene) —
     # pin via source reference to the shared module.
     source = inspect.getsource(qcd.run_g5_grounding)
-    assert "narration_join import join_narration_segments" in source
+    assert "narration_join import" in source
+    assert "join_narration_segments" in source
     # No consumer re-implements the policy locally (docstrings may MENTION
     # perception_source; code must not READ it).
     for module in (storyboard_publisher, enrique_act):
@@ -88,9 +89,38 @@ def test_phantom_detection_single_homed() -> None:
     assert enrique_act.phantom_segment_ids is phantom_segment_ids
     # Module-qualified pin (review patch): a private re-implementation or an
     # import from elsewhere must not satisfy this.
-    assert "narration_join import join_narration_segments, phantom_segment_ids" in (
-        inspect.getsource(qcd.run_g5_grounding)
-    )
+    g5_source = inspect.getsource(qcd.run_g5_grounding)
+    assert "narration_join import" in g5_source
+    assert "join_narration_segments" in g5_source
+    assert "phantom_segment_ids" in g5_source
+    assert "collapsed_segment_ids" in g5_source
+
+
+def test_collapsed_segment_ids_detects_duplicate_join_keys() -> None:
+    """Mine-next T3: duplicate delta ids flood distinct slides; detector surfaces them."""
+    from app.specialists.narration_join import collapsed_segment_ids
+
+    narration = [
+        {"id": "seg-1", "narration_text": "First."},
+        {"id": "seg-2", "narration_text": "Second."},
+    ]
+    deltas = [
+        {"id": "seg-1", "visual_references": [{"perception_source": "s1"}]},
+        {"id": "seg-1", "visual_references": [{"perception_source": "s2"}]},
+        {"id": "seg-2", "visual_references": [{"perception_source": "s3"}]},
+    ]
+    rows = join_narration_segments(narration, deltas)
+    assert collapsed_segment_ids(rows) == ["seg-1"]
+    assert collapsed_segment_ids(join_narration_segments(NARRATION, DELTAS)) == []
+
+
+def test_collapsed_detector_imported_by_spend_consumers() -> None:
+    from app.marcus.orchestrator import storyboard_publisher
+    from app.specialists.enrique import _act as enrique_act
+    from app.specialists.narration_join import collapsed_segment_ids
+
+    assert enrique_act.collapsed_segment_ids is collapsed_segment_ids
+    assert storyboard_publisher.collapsed_segment_ids is collapsed_segment_ids
 
 
 def test_publisher_segment_manifest_byte_stable_through_shared_join(tmp_path) -> None:

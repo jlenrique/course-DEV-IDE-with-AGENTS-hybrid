@@ -23,6 +23,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
@@ -1270,6 +1271,74 @@ def narrate_gate(gate_id: str, card: dict[str, Any], run_dir: Path) -> str:
     return "\n".join(lines)
 
 
+def narrate_plan_dialogue_preflight() -> str:
+    """Frame operator-owned LO + workflow ratification as a SPOC planning beat."""
+    return "\n".join(
+        [
+            _RULE,
+            f"{_M} Before we produce, we ratify the plan together — purpose, audience, "
+            "workflow, gap-fill, and learning objectives. Confirm before I write "
+            "companions into the run directory.",
+        ]
+    )
+
+
+def run_plan_dialogue_preflight(
+    *,
+    corpus_dir: Path,
+    output_dir: Path,
+    script: Path | None = None,
+    input_fn: Callable[[str], str] = input,
+    print_fn: Callable[[str], None] = print,
+    operator_focus: str = "Plan from available source; note gaps honestly.",
+    collateral_spec: Path | None = None,
+) -> dict[str, Path]:
+    """SPOC-owned planning ceremony (Mine-next N2-lite).
+
+    Wires :func:`run_plan_dialogue` into the Marcus-SPOC surface so the operator
+    does not need a separate CLI-only ``plan-dialogue`` invocation. Writes
+    ratification companions under ``output_dir``. Does **not** open the 2B
+    memory OS (explicit OUT of N2-lite).
+    """
+    import argparse
+
+    from app.marcus.cli.plan_dialogue_cli import (
+        PlanDialogueError,
+        run_plan_dialogue,
+    )
+
+    print_fn(narrate_plan_dialogue_preflight())
+    args = argparse.Namespace(
+        output_dir=Path(output_dir),
+        corpus_dir=Path(corpus_dir),
+        course_root=None,
+        proposal_path=None,
+        module_id=None,
+        operator_focus=operator_focus,
+        corpus_id="",
+        collateral_spec=collateral_spec,
+        script=Path(script) if script is not None else None,
+    )
+    try:
+        # When --plan-script is set, let run_plan_dialogue load it; do not
+        # override with a live input_fn (would ignore the script).
+        if script is not None:
+            paths = run_plan_dialogue(args, output_sink=print_fn)
+        else:
+            paths = run_plan_dialogue(
+                args,
+                input_source=input_fn,
+                output_sink=print_fn,
+            )
+    except PlanDialogueError:
+        raise
+    print_fn(
+        f"{_M} Planning companions written — "
+        f"workflow + LOs are operator-owned for this run."
+    )
+    return paths
+
+
 def run_marcus_spoc(
     trial_id: UUID,
     decisions: dict[str, dict[str, Any]] | None = None,
@@ -1346,9 +1415,39 @@ def main(argv: list[str] | None = None) -> int:
     import argparse
 
     parser = argparse.ArgumentParser(prog="python -m app.marcus.cli.marcus_spoc")
-    parser.add_argument("--trial-id", required=True, type=UUID)
+    parser.add_argument(
+        "--trial-id",
+        required=False,
+        type=UUID,
+        help="Existing trial to walk (required unless --plan-dialogue).",
+    )
     parser.add_argument("--decisions-file", required=False)
     parser.add_argument("--runs-root", required=False)
+    # Mine-next N2-lite: SPOC-owned planning ceremony (LO + workflow ratification).
+    parser.add_argument(
+        "--plan-dialogue",
+        action="store_true",
+        help=(
+            "Run operator-owned LO/workflow planning via the SPOC surface "
+            "(writes companions under --plan-output-dir). Does not require "
+            "--trial-id."
+        ),
+    )
+    parser.add_argument(
+        "--corpus-dir",
+        type=Path,
+        help="Corpus leaf for --plan-dialogue (required with --plan-dialogue).",
+    )
+    parser.add_argument(
+        "--plan-output-dir",
+        type=Path,
+        help="Output directory for plan-dialogue companions (default: runs/<uuid>/).",
+    )
+    parser.add_argument(
+        "--plan-script",
+        type=Path,
+        help="Optional YAML/JSON script of plan-dialogue answers (non-TTY).",
+    )
     # S5-3b (D4 / F-1801 Reading A): the first-class production ARM for live G0
     # enrichment. Default OFF — the canonical run wakes the G0E/G0R HIL gates + the
     # DETERMINISTIC recorded enrichment (byte-stable, $0). Passing this flag sets
@@ -1367,6 +1466,28 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     args = parser.parse_args(argv)
+    if args.plan_dialogue:
+        if args.corpus_dir is None:
+            parser.error("--plan-dialogue requires --corpus-dir")
+        from uuid import uuid4
+
+        from app.marcus.cli.plan_dialogue_cli import PlanDialogueError
+
+        out = args.plan_output_dir or (RUNS_ROOT / str(uuid4()))
+        try:
+            paths = run_plan_dialogue_preflight(
+                corpus_dir=args.corpus_dir,
+                output_dir=out,
+                script=args.plan_script,
+            )
+        except PlanDialogueError as exc:
+            print(f"plan-dialogue failed: {exc}", file=sys.stderr)
+            return 2
+        print(json.dumps({k: str(v) for k, v in paths.items()}, sort_keys=True))
+        if args.trial_id is None:
+            return 0
+    if args.trial_id is None:
+        parser.error("--trial-id is required unless --plan-dialogue completes alone")
     if args.g0_dispatch_live:
         # Arm the underlying impl seam for the whole run (auditable in the run record
         # via the enrichment_mode receipt stamp, which will resolve to 'live').
@@ -1394,11 +1515,13 @@ __all__ = [
     "narrate_gate",
     "narrate_inline_style_list",
     "narrate_kickoff_beat1",
+    "narrate_plan_dialogue_preflight",
     "narrate_pick_recommendation",
     "narrate_picker_preflight",
     "narrate_picker_publish_degrade",
     "run_marcus_spoc",
     "run_picker_preflight",
+    "run_plan_dialogue_preflight",
 ]
 
 

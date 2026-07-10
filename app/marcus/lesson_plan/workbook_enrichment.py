@@ -395,20 +395,24 @@ _RESEARCH_ENTRIES_KEY = "research_entries"
 _RUN_ENVELOPE_BASENAME = "run.json"
 
 
+class RunEnvelopeCorruptError(ValueError):
+    """Raised when ``run.json`` exists but cannot be deserialized honestly.
+
+    Distinct from genuine absence (``None``): corrupt envelopes must not
+    silently collapse into absent-collateral no-ops (Mine-next N6 /
+    ``run-envelope-corrupt-vs-absent-fail-loud``).
+    """
+
+
 def load_run_envelope(run_dir: Path) -> Any | None:
     """Disk-read ``<run_dir>/run.json`` -> ``ProductionEnvelope`` (or ``None``).
 
     READ-ONLY. Deserializes the persisted trial envelope via the ``app.models.*``
-    model classes (M3-safe: the MODEL, never the orchestrator). Never raises on a
-    missing/corrupt/legacy artifact — absence returns ``None`` so the producer
-    degrades to its declaration handling.
+    model classes (M3-safe: the MODEL, never the orchestrator).
 
-    DOCUMENTED TRADEOFF (S7 remediation item-7, harvest to postmortem): absent
-    vs. legacy vs. CORRUPT ``run.json`` all collapse into a single ``None`` here.
-    Consequently a *corrupt* run.json on a ``declaration=="present"`` run reads as
-    absent-collateral and silently no-op-skips rather than failing loud. Accepted
-    for S7 (fail-soft read seam); a corrupt-vs-absent distinction (fail-loud on
-    corrupt) is deferred.
+    - Missing file → ``None`` (genuine absence; producer may skip).
+    - Present but unreadable / invalid JSON / ValidationError →
+      :class:`RunEnvelopeCorruptError` (fail-loud; never silent no-op).
     """
     artifact = run_dir / _RUN_ENVELOPE_BASENAME
     if not artifact.is_file():
@@ -422,11 +426,17 @@ def load_run_envelope(run_dir: Path) -> Any | None:
     )
 
     try:
-        trial = ProductionTrialEnvelope.model_validate_json(
-            artifact.read_text(encoding="utf-8")
-        )
-    except (OSError, ValidationError, ValueError):
-        return None
+        raw = artifact.read_text(encoding="utf-8")
+    except OSError as exc:
+        raise RunEnvelopeCorruptError(
+            f"run.json unreadable at {artifact}: {exc}"
+        ) from exc
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(raw)
+    except (ValidationError, ValueError) as exc:
+        raise RunEnvelopeCorruptError(
+            f"run.json corrupt at {artifact}: {exc}"
+        ) from exc
     return trial.production_envelope
 
 
@@ -467,6 +477,7 @@ def research_entries_from_run(run_dir: Path) -> list[dict[str, Any]]:
 
 __all__ = [
     "ENRICHMENT_CARD_BASENAME",
+    "RunEnvelopeCorruptError",
     "WorkbookEnrichmentProjection",
     "citation_renders_authoritative",
     "collateral_from_run",

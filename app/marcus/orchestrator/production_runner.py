@@ -1136,9 +1136,11 @@ def _apply_per_slide_variant_selection(
     gary = production_envelope.latest_for_specialist("gary")
     rows = gary.output.get("gary_slide_output") if gary is not None else None
     if not isinstance(rows, list):
-        raise VariantSelectionError(
-            "per-slide variant selection is set, but latest Gary output has no gary_slide_output"
-        )
+        # Mine-next T2 recover ``reenter_at_node=07`` drops Gary before the
+        # continuation walk starts. Variant picks stay in run_state; apply
+        # after Gary re-dispatches (see ``_dispatch_specialist_at_node``).
+        # Raising here made upstream re-entry unrecoverable.
+        return production_envelope
     variants_by_slide: dict[str, set[str]] = {}
     for row in rows:
         if not isinstance(row, dict):
@@ -1204,9 +1206,8 @@ def _apply_deckwide_variant_selection(
     gary = production_envelope.latest_for_specialist("gary")
     rows = gary.output.get("gary_slide_output") if gary is not None else None
     if not isinstance(rows, list):
-        raise VariantSelectionError(
-            "selected_variant_id is set, but latest Gary output has no gary_slide_output"
-        )
+        # Same reenter-at-07 deferral as the per-slide path.
+        return production_envelope
     original_slide_ids = {
         slide_id
         for row in rows
@@ -1623,13 +1624,15 @@ def _runner_payload_for_specialist(
                 PlanningContextError,
                 load_planning_context,
             )
-            from app.specialists.dispatch_errors import SpecialistDispatchError
 
             try:
                 planning_ctx = load_planning_context(runs_root / str(trial_id))
             except PlanningContextError as exc:
                 # BH-1 / ECH-03: wrap as SpecialistDispatchError so both walkers
                 # route through recoverable _pause_at_error (not un-persisted crash).
+                # Use the module-level import — a local re-import here would shadow
+                # SpecialistDispatchError for the whole function (UnboundLocalError
+                # on the earlier cd.directive.* raise sites).
                 raise SpecialistDispatchError(
                     f"irene_pass1 planning_context load failed: {exc}",
                     tag="irene_pass1.planning_context.malformed",
@@ -1826,6 +1829,10 @@ _RETRYABLE_DISPATCH_TAGS: frozenset[str] = frozenset(
         # brief<->page title match fails for one variant; a re-roll matches (observed on
         # variant B slide-06, 2026-06-24). LLM-variance class — auto-retry like Pass-2.
         "gamma.export.brief-unmatched",
+        # Desmond LLM intermittently omits the exact ``## Automation Advisory``
+        # heading (Tejal P4 fullwalk 2026-07-10). Re-roll is the right fix once
+        # HandoffParseError is SpecialistDispatchError (recoverable pause + retry).
+        "handoff.parsed.advisory-missing",
     }
 )
 _MAX_DISPATCH_RETRIES = 3  # total attempts = 1 + 3; irene needed 3 re-rolls in T5a-rerun
@@ -2219,6 +2226,10 @@ def _dispatch_specialist_at_node(
     if runner_payload is not None:
         invoke_kwargs["runner_supplied_payload"] = runner_payload
     production_envelope = _invoke_specialist_with_retry(adapter, invoke_kwargs, node.id)
+    # After Gary lands, apply deferred Storyboard-A / deck-wide variant picks
+    # (needed when recover re-entered at 07 with selections already in run_state).
+    if specialist_id == "gary":
+        production_envelope = _apply_variant_selection(production_envelope, run_state)
     run_state = run_state.model_copy(
         update={"production_envelope": production_envelope}
     )
@@ -3017,6 +3028,7 @@ def recover_production_trial(
     trial_id: UUID,
     runs_root: Path = RUNS_ROOT,
     max_specialist_calls: int | None = None,
+    reenter_at_node: str | None = None,
 ) -> ProductionTrialEnvelope:
     """Continue an error-paused trial from the failed node — no verdict needed.
 
@@ -3026,6 +3038,12 @@ def recover_production_trial(
     and re-enters the walk at the node that failed. Idempotent with respect to
     completed work: every prior contribution is per-node keyed, so recovery
     re-dispatches only the failed node and onward.
+
+    Mine-next trust T2 (``recover-with-reenter-node-affordance``): when the fix
+    is UPSTREAM of the failed node, pass ``reenter_at_node=<manifest node_id>``
+    to drop contributions from that node through the failed index and restart
+    the walk there. Default (``None``) preserves today's unshifted failed-node
+    retry.
     """
     run_dir = _run_dir(trial_id, runs_root)
     envelope = ProductionTrialEnvelope.model_validate_json(
@@ -3069,6 +3087,44 @@ def recover_production_trial(
         runs_root=runs_root,
         directive_path=directive_path,
     )
+    failed_index = int(error_pause["node_index"])
+    start_index = failed_index
+    non_evidence_reason = "recovered-after-error-pause"
+    if reenter_at_node is not None:
+        selection = (
+            run_state.component_selection or ComponentSelection.production_default()
+        )
+        manifest = compose_manifest(
+            load_manifest(Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)),
+            selection,
+        )
+        node_ids = [node.id for node in manifest.nodes]
+        try:
+            reenter_index = node_ids.index(reenter_at_node)
+        except ValueError as exc:
+            raise RuntimeError(
+                f"reenter_at_node={reenter_at_node!r} is not a node in the "
+                f"composed manifest for trial {trial_id}; known={node_ids}"
+            ) from exc
+        if reenter_index > failed_index:
+            raise RuntimeError(
+                f"reenter_at_node={reenter_at_node!r} is DOWNSTREAM of the "
+                f"failed node (index {reenter_index} > failed {failed_index}); "
+                "upstream re-entry only — omit the flag to retry the failed node"
+            )
+        drop_ids = set(node_ids[reenter_index : failed_index + 1])
+        dropped = envelope.production_envelope.drop_contributions_from_nodes(drop_ids)
+        run_state = run_state.model_copy(
+            update={"production_envelope": envelope.production_envelope}
+        )
+        (run_dir / "run.json").write_text(
+            envelope.model_dump_json(indent=2) + "\n",
+            encoding="utf-8",
+        )
+        start_index = reenter_index
+        non_evidence_reason = (
+            f"recovered-reenter-at-node:{reenter_at_node}:dropped={dropped}"
+        )
     return _continue_production_walk(
         trial_id=trial_id,
         envelope=envelope,
@@ -3076,8 +3132,8 @@ def recover_production_trial(
         runner=runner,
         manifest_path=Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH),
         runs_root=runs_root,
-        # Unshifted on purpose: recovery retries the failed node itself.
-        start_index=int(error_pause["node_index"]),
+        # Default: unshifted failed-node retry. With reenter_at_node: upstream.
+        start_index=start_index,
         last_gate_crossed=error_pause.get("last_gate_crossed"),
         max_specialist_calls=(
             max_specialist_calls
@@ -3086,8 +3142,9 @@ def recover_production_trial(
         ),
         directive_path=directive_path,
         bundle_dir=bundle_dir,
-        non_evidence_reason="recovered-after-error-pause",
+        non_evidence_reason=non_evidence_reason,
     )
+
 
 
 def _continue_production_walk(

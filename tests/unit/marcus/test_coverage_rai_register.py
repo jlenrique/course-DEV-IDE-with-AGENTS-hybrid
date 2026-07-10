@@ -29,6 +29,29 @@ def test_g3_coverage_receipt_asset_registered() -> None:
     assert spec.digest_algo is DigestAlgo.CANONICAL_SHA256
 
 
+def test_g1_locked_lesson_plan_asset_registered() -> None:
+    specs = GATE_ASSET_MAP["G1"]
+    assert len(specs) == 1
+    assert specs[0].asset_id == "locked-lesson-plan"
+    assert specs[0].rel_path == "irene-pass1.lesson-plan.json"
+    assert specs[0].digest_algo is DigestAlgo.CANONICAL_SHA256
+
+
+def test_g2c_authorized_storyboard_asset_registered() -> None:
+    specs = GATE_ASSET_MAP["G2C"]
+    assert len(specs) == 1
+    assert specs[0].asset_id == "authorized-storyboard"
+    assert specs[0].rel_path == "storyboard-publish-G2C.json"
+    assert specs[0].digest_algo is DigestAlgo.CANONICAL_SHA256
+
+
+def test_gate_asset_map_universality_pins_verifiable_run_dir_rows() -> None:
+    """Mine-next T1: G0E/G0R/G1/G2C/G3 are pinned; G4/G4A stay OUT until run-dir paths exist."""
+    assert set(GATE_ASSET_MAP) >= {"G0E", "G0R", "G1", "G2C", "G3"}
+    assert "G4" not in GATE_ASSET_MAP
+    assert "G4A" not in GATE_ASSET_MAP
+
+
 def test_enrique_declares_coverage_receipt_used() -> None:
     enrique = CONSUMER_REGISTRY["enrique"]
     by_asset = {c.asset_id: c.usage for c in enrique.consumes}

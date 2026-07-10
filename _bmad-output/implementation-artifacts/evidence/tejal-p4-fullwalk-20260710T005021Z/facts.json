@@ -1,0 +1,217 @@
+{
+  "allow_offline_cost_report": false,
+  "artifacts_found": {
+    "assembly_guide": null,
+    "audio": [],
+    "desmond_brief": null,
+    "extracted_md": "bundle/extracted.md",
+    "irene_pass1_json": null,
+    "mp4s": [
+      "motion/slide-01.mp4"
+    ],
+    "pngs": [
+      "exports/gary/A-creative_slide-01.png",
+      "exports/gary/A-creative_slide-02.png",
+      "exports/gary/A-creative_slide-03.png",
+      "exports/gary/A-creative_slide-04.png",
+      "exports/gary/A-creative_slide-05.png",
+      "exports/gary/A-creative_slide-06.png",
+      "exports/gary/A-creative_slide-08.png",
+      "exports/gary/A-literal_slide-07.png",
+      "exports/gary/A-literal_slide-09.png"
+    ],
+    "ratified_los": "ratified-los.json",
+    "workbook_docx": null,
+    "workbook_md": null
+  },
+  "auto_confirm_directive": false,
+  "bundle_expected": "narrated-deck-with-workbook",
+  "copied_artifacts": [
+    "model_resolution_trail.json",
+    "directive.yaml",
+    "trial-start.json",
+    "run.json",
+    "run_summary.yaml",
+    "ratified-los.json",
+    "planning-ratification.json",
+    "marcus-planning-dialogue.md",
+    "decision-card-G0E.json",
+    "decision-card-G0R.json",
+    "decision-card-G1.json",
+    "decision-card-G2B.json",
+    "decision-card-G2C.json"
+  ],
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p4-assessments-bridge",
+  "descript_publish_required": false,
+  "evidence": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\tejal-p4-fullwalk-20260710T005021Z",
+  "fidelity_flag_env": "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE",
+  "fidelity_flag_on": true,
+  "fidelity_flag_still_on": true,
+  "final_error_tag": "irene.pass2.figure-contradiction",
+  "final_paused_gate": null,
+  "final_status": "paused-at-error",
+  "finished_at": "2026-07-10T05:09:57.138758+00:00",
+  "g0_confirm_path": [
+    "e",
+    "c"
+  ],
+  "g0_edit_applied": true,
+  "guide": "hil-2026-apc-crossroads-classic-preserve",
+  "hil_variety_exercised": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:9",
+    "G2C:approve"
+  ],
+  "hil_variety_unique": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:9",
+    "G2C:approve"
+  ],
+  "in_situ_patches": [
+    {
+      "at": "2026-07-10T05:09:57.120111+00:00",
+      "detail": "05021Z\\tejal_p4_fullwalk_driver.py\", line 421, in maybe_recover\n    payload = recover_trial(\n              ^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\cli\\trial.py\", line 820, in recover_trial\n    envelope = recover_production_trial(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 3119, in recover_production_trial\n    return _continue_production_walk(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 3187, in _continue_production_walk\n    production_envelope = _apply_variant_selection(\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 1193, in _apply_variant_selection\n    return _apply_per_slide_variant_selection(production_envelope, run_state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 1139, in _apply_per_slide_variant_selection\n    raise VariantSelectionError(\napp.marcus.orchestrator.production_runner.VariantSelectionError: per-slide variant selection is set, but latest Gary output has no gary_slide_output\n",
+      "known_good": {
+        "at": "2026-07-10T04:59:20.619557+00:00",
+        "gate": "G2C"
+      },
+      "tag": "irene.pass2.figure-contradiction"
+    }
+  ],
+  "intent": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\s8-tejal-p4-ratified-collateral-intent.yaml",
+  "known_good_checkpoint": {
+    "at": "2026-07-10T04:59:20.619557+00:00",
+    "gate": "G2C"
+  },
+  "minted_at": "2026-07-10T04:52:40.650516+00:00",
+  "operator_id": "juanl",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C"
+  ],
+  "pause_sequence_unique": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C"
+  ],
+  "plan_companions": {
+    "dialogue_md": true,
+    "planning_ratification": true,
+    "ratified_los": true
+  },
+  "plan_dialogue_exit": 0,
+  "recover_sequence": [
+    {
+      "error": "Traceback (most recent call last):\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\tejal-p4-fullwalk-20260710T005021Z\\tejal_p4_fullwalk_driver.py\", line 421, in maybe_recover\n    payload = recover_trial(\n              ^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\cli\\trial.py\", line 820, in recover_trial\n    envelope = recover_production_trial(\n               ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 3119, in recover_production_trial\n    return _continue_production_walk(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 3187, in _continue_production_walk\n    production_envelope = _apply_variant_selection(\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 1193, in _apply_variant_selection\n    return _apply_per_slide_variant_selection(production_envelope, run_state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\app\\marcus\\orchestrator\\production_runner.py\", line 1139, in _apply_per_slide_variant_selection\n    raise VariantSelectionError(\napp.marcus.orchestrator.production_runner.VariantSelectionError: per-slide variant selection is set, but latest Gary output has no gary_slide_output\n",
+      "reenter_at_node": "07",
+      "tag": "irene.pass2.figure-contradiction"
+    }
+  ],
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99",
+  "runs_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs",
+  "scorecard": {
+    "artifact_counts": {
+      "audio": 0,
+      "mp4s": 1,
+      "pngs": 9
+    },
+    "checks": {
+      "bundle_id_ok": true,
+      "c1_terminal_completed": false,
+      "c2_no_descript_publish_required": true,
+      "c3_plan_companions_present": true,
+      "c3_ratified_los_on_disk": true,
+      "c4_fidelity_flag_was_on": true,
+      "c4_fidelity_sail_or_honest_halt": true,
+      "c4_note": "fidelity halt tag=irene.pass2.figure-contradiction",
+      "c5_audio": false,
+      "c5_deck_png": true,
+      "c5_desmond_brief": false,
+      "c5_motion_mp4": true,
+      "c5_workbook_docx": false,
+      "c5_workbook_md": false,
+      "cleared_gamma_brief_unmatched": true,
+      "extracted_md_present": true,
+      "g0_edit_confirm": true,
+      "no_driver_exception": true
+    },
+    "fidelity_halt": true,
+    "final_error_tag": "irene.pass2.figure-contradiction",
+    "final_status": "paused-at-error",
+    "grade": "PARTIAL"
+  },
+  "selection_code": "SGP-22b275006e674dd78308fd89defe3d99-A:hil-2026-apc-crossroads-classic-preserve",
+  "start_elapsed_s": 98.7,
+  "start_trial_result": {
+    "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/cost-report.json",
+    "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/cost-report.md",
+    "directive_digest": "e9d191c265b49b2800963d767443ddf9c303e72fbda977ef002099aa14d20600",
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/directive.yaml",
+    "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+    "langsmith_trace_status": "skipped-no-langsmith-env",
+    "lesson_plan_collateral_bundle_id": "narrated-deck-with-workbook",
+    "lesson_plan_collateral_intent_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml",
+    "lesson_plan_selection_source": "ratified",
+    "operator_id": "juanl",
+    "preset": "production",
+    "production_clone_launch_evidence": false,
+    "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/run.json",
+    "status": "registered-offline",
+    "transport_kind": "cli",
+    "trial_id": "22b27500-6e67-4dd7-8308-fd89defe3d99"
+  },
+  "story": "tejal-p4-fullwalk-fidelity-on-desmond",
+  "trial_id": "22b27500-6e67-4dd7-8308-fd89defe3d99",
+  "trial_start_bundle_id": "narrated-deck-with-workbook",
+  "trial_start_component_selection": null,
+  "verdict_sequence": [
+    {
+      "err": null,
+      "gate": "G0E",
+      "next_gate": "G0R",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G0R",
+      "next_gate": "G1",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G1",
+      "next_gate": "G2B",
+      "next_status": "paused-at-gate",
+      "verb": "edit"
+    },
+    {
+      "err": null,
+      "gate": "G2B",
+      "next_gate": "G2C",
+      "next_status": "paused-at-gate",
+      "verb": "select"
+    },
+    {
+      "err": "irene.pass2.figure-contradiction",
+      "gate": "G2C",
+      "next_gate": null,
+      "next_status": "paused-at-error",
+      "verb": "approve"
+    }
+  ]
+}

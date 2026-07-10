@@ -1,0 +1,1215 @@
+## Source corpus (the ONLY content basis for narration)
+
+# Source bundle: Source bundle for 22b27500-6e67-4dd7-8308-fd89defe3d99
+
+## module-1-core-conceptual-pillars
+
+# Core Conceptual Pillars of Module 1
+
+These pillars are carried from the surrounding C1M1 bridge/summary context in the source outline. [evidence: src-001]
+
+1. **The Intrapreneurial Mandate:** The course is about innovating inside the hospital, which requires navigating existing politics, budgets, and legacy systems. [evidence: src-001]
+2. **Kind vs. Wicked Environments:** Clinical medicine is often a kind environment with repetitive patterns and clearer rules; healthcare innovation is wicked, ambiguous, and variable. [evidence: src-001]
+3. **Functional Flexibility:** Clinical leaders must be willing to abandon rigid specialty tools and borrow frameworks from operations, business, and psychology. [evidence: src-001]
+4. **Clinical Diagnosis vs. Systemic Diagnosis:** Just as a doctor should not prescribe before diagnosing, a leader should not buy or build a solution without diagnosing the operational root cause. [evidence: src-001]
+5. **Falling in Love with the Problem:** Innovators fail when they fall in love with a solution and ignore the actual problem. [evidence: src-001]
+6. **Symptom vs. Root Cause:** Content should clearly separate visible pain from invisible system failure. [evidence: src-001]
+7. **The Lead Domino:** Solving the true root cause can knock down many downstream symptoms. [evidence: src-001]
+8. **The 5 Whys Framework:** The primary operational tool of the module. It walks a learner through asking why until a root cause emerges. [evidence: src-001]
+9. **The Opportunity Radar:** Innovation ideas come from systematically auditing past frustrations, present workarounds, and future trends. [evidence: src-001]
+10. **Psychological Safety as a Prerequisite:** Teams cannot diagnose broken systems if people are too afraid to report what is actually broken. [evidence: src-001]
+
+## slide-1-summary-bridge-to-module-2
+
+# Summary Slide & Bridge to Module 2
+
+**Visual Format:** Closing video with talking head and text overlay. [evidence: src-001]
+
+## Video Storyboard
+
+- **0:00-0:15, On Camera:** Dr. Naik speaks directly to the learner with an encouraging, forward-looking tone. [evidence: src-001]
+- **On-Screen Text:** Module 1 Complete: The Mindset is Set. [evidence: src-001]
+- **0:15-0:30, Graphic Overlay:** A transitional graphic showing a bridge connecting "Module 1: Mindset" to "Module 2: Leadership Identity." [evidence: src-001]
+
+## Narration / Speaker Notes
+
+"Congratulations on completing Module 1. We must ask a critical question: Now that you understand the mindset of an innovator, how do you begin your own personal journey? [evidence: src-001]
+
+You have mapped out the macro forces changing medicine, and you have filled your Opportunity Radar with vital targets. But an idea is only as good as the leader who champions it. What are the core characteristics you need to cultivate to succeed in a complex matrixed health system? [evidence: src-001]
+
+You are no longer just reacting to the system; you are preparing to redesign it. But an opportunity is only as viable as the leader championing it. Having the right idea is only [SOURCE FIGURE NOT ON DECK — paraphrase without digit-form] of the battle; the other [SOURCE FIGURE NOT ON DECK — paraphrase without digit-form] is having the political savvy, the communication skills, and the leadership identity to get others to follow you. [evidence: src-001]
+
+In Module 2, we will move from Mindset to Identity. You will begin to define who you are as a leader, how you communicate your vision, and how you can inspire others to join your cause. The clinical problem is waiting; it is time to build the leader who will solve it. See you in Module 2." [evidence: src-001]
+
+## Source Gap
+
+The source provides a storyboard and narration but no rendered video, no image file, and no motion asset. Motion should not be inferred as available source. [evidence: src-001]
+
+
+## Source figure authority - authoritative SOURCE numerals (provenance only; speech still requires on-screen presence)
+
+These are the ONLY numerals with SOURCE provenance (digit-form $N / N% / Nx). Provenance is necessary but NOT sufficient to speak:
+1. Speak a digit-form figure only if it is in that slide's perceived speakable set (on-screen binds speech).
+2. Speak a digit-form figure only if it also appears in this source set (no confabulation).
+3. When a source figure IS on the perceived deck for the slide you are narrating, you MUST speak it (positive carry).
+4. When a source figure is NOT on the perceived deck for that slide, paraphrase WITHOUT the digit-form numeral. Do not speak it. If the teaching point requires the numeral on-screen, that is an upstream Gamma/deck defect — not a license to invent VO figures.
+5. When the deck shows a same-kind numeral that contradicts source, do not resolve by narrating either value as a workaround; the run fails loud for Gamma repair (VO must never desync from on-screen).
+
+Source-provenance surfaces: 10%, 90%
+Source∩deck (speakable when on the narrated slide): <none — source∩deck empty; paraphrase source numerals>
+
+## Perceived speakable figures (digit-form; SOLE on-screen authority for spoken numerals)
+
+Digit-form spoken figures ($N / N% / Nx) MUST be ⊆ this slide's set. If the set is empty, paraphrase any source teaching point WITHOUT digit-form numerals — do not invent on-screen authority.
+
+- slide-01: <none — paraphrase; do not speak digit-form figures>
+- slide-02: <none — paraphrase; do not speak digit-form figures>
+- slide-03: <none — paraphrase; do not speak digit-form figures>
+- slide-04: <none — paraphrase; do not speak digit-form figures>
+- slide-05: <none — paraphrase; do not speak digit-form figures>
+- slide-06: <none — paraphrase; do not speak digit-form figures>
+- slide-07: <none — paraphrase; do not speak digit-form figures>
+- slide-08: <none — paraphrase; do not speak digit-form figures>
+- slide-09: <none — paraphrase; do not speak digit-form figures>
+
+## Visual authority - perceived slide evidence (SOLE visual authority)
+
+- slide-01: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Module 1 Completion and Transition Prompt
+  - perceived_extracted_text: LEAD THE WAY 未来を創る Module 1 Completion and Transition Prompt Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey. MODULE 1 COMPLETE
+  - perceived_layout: The slide is split vertically with a full-height illustrated panel on the left and a white content area on the right. The right side contains a large centered title, a paragraph below it, and a small rounded label near the lower left of the text area.
+  - reading_path: split_image_text
+  - perceived_text_block: LEAD THE WAY
+  - perceived_text_block: MODULE 1 COMPLETE
+  - perceived_text_block: Module 1 Completion and Transition Prompt
+  - perceived_text_block: Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey.
+  - perceived_text_block: 未来を創る
+  - perceived_visual_element: {"bbox":[0.0,0.0,0.37,1.0],"id":"left-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Full-height edge-bleed illustrative background with atmospheric doorway scene.","text":"LEAD THE WAY \u672a\u6765\u3092\u5275\u308b"}
+  - perceived_visual_element: {"bbox":[0.01,0.24,0.09,0.36],"id":"left-slogan","kind":"callout","role_tier":"4","role_tier_reason":"Prominent poster-like label text within the left visual panel.","text":"LEAD THE WAY"}
+  - perceived_visual_element: {"bbox":[0.04,0.41,0.06,0.55],"id":"left-japanese-text","kind":"callout","role_tier":"4","role_tier_reason":"Small vertical label text within the left visual panel.","text":"\u672a\u6765\u3092\u5275\u308b"}
+  - perceived_visual_element: {"bbox":[0.43,0.29,0.89,0.43],"id":"main-title","kind":"title","role_tier":"4","role_tier_reason":"Largest primary text block functioning as the slide heading.","text":"Module 1 Completion and Transition Prompt"}
+  - perceived_visual_element: {"bbox":[0.43,0.49,0.92,0.63],"id":"body-text","kind":"callout","role_tier":"2_5","role_tier_reason":"Supporting explanatory text below the title.","text":"Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey."}
+  - perceived_visual_element: {"bbox":[0.43,0.68,0.6,0.72],"id":"status-chip","kind":"callout","role_tier":"4","role_tier_reason":"Small rounded status tag beneath the body text.","text":"MODULE 1 COMPLETE"}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-creative_slide-01.png
+- slide-02: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: What Module 1 Established
+  - perceived_extracted_text: 方針 目的・戦略・実行 戦略思考 シナリオプランニング 孫子の兵法 RANGE 120 NM BEARING 045° SPEED 18.6 KT COURSE 045° 戦略マップ 機会 リスク 観測エリア 配置案 行動計画 目標設定 情報収集・分析 戦略立案 実行・検証 洞察 →行動 成果 What Module 1 Established Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module. Macro Forces Mapped Seeing the larger system forces shaping the health landscape Opportunity Radar Populated Identifying innovation targets within the system Mindset Established Prerequisites in place for the next module's leadership journey
+  - perceived_layout: The slide is split vertically, with a full-height illustrative desk/navigation scene on the left and a white content area on the right. The right side has a large title at top, a short explanatory paragraph beneath it, and a pale green bordered three-section summary card below.
+  - reading_path: split_image_text
+  - perceived_text_block: Macro Forces Mapped Seeing the larger system forces shaping the health landscape
+  - perceived_text_block: Mindset Established Prerequisites in place for the next module's leadership journey
+  - perceived_text_block: Opportunity Radar Populated Identifying innovation targets within the system
+  - perceived_text_block: Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module.
+  - perceived_text_block: What Module 1 Established
+  - perceived_text_block: 方針 目的・戦略・実行 戦略思考 シナリオプランニング 孫子の兵法 RANGE 120 NM BEARING 045° SPEED 18.6 KT COURSE 045° 戦略マップ 機会 リスク 観測エリア 配置案 行動計画 目標設定 情報収集・分析 戦略立案 実行・検証 洞察 →行動 成果
+  - perceived_visual_element: {"bbox":[0.0,0.0,0.395,1.0],"id":"left-illustration","kind":"photo","role_tier":"2","role_tier_reason":"Large supporting illustration occupying the left half; reinforces strategy/navigation theme but is not the main reading path.","text":"\u65b9\u91dd \u76ee\u7684\u30fb\u6226\u7565\u30fb\u5b9f\u884c \u6226\u7565\u601d\u8003 \u30b7\u30ca\u30ea\u30aa\u30d7\u30e9\u30f3\u30cb\u30f3\u30b0 \u5b6b\u5b50\u306e\u5175\u6cd5 RANGE 120 NM BEARING 045\u00b0 SPEED 18.6 KT COURSE 045\u00b0 \u6226\u7565\u30de\u30c3\u30d7 \u6a5f\u4f1a \u30ea\u30b9\u30af \u89b3\u6e2c\u30a8\u30ea\u30a2 \u914d\u7f6e\u6848 \u884c\u52d5\u8a08\u753b \u76ee\u6a19\u8a2d\u5b9a \u60c5\u5831\u53ce\u96c6\u30fb\u5206\u6790 \u6226\u7565\u7acb\u6848 \u5b9f\u884c\u30fb\u691c\u8a3c \u6d1e\u5bdf \u2192\u884c\u52d5 \u6210\u679c"}
+  - perceived_visual_element: {"bbox":[0.455,0.105,0.975,0.18],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large top heading labels the slide topic and anchors navigation.","text":"What Module 1 Established"}
+  - perceived_visual_element: {"bbox":[0.455,0.245,0.96,0.36],"id":"intro-paragraph","kind":"callout","role_tier":"2","role_tier_reason":"Prominent explanatory text under the title provides context for the summary card.","text":"Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module."}
+  - perceived_visual_element: {"bbox":[0.455,0.41,0.985,0.895],"id":"summary-card","kind":"diagram","role_tier":"2_5","role_tier_reason":"Structured bordered summary exhibit with divided sections that the viewer confirms against the explanatory paragraph.","text":"Macro Forces Mapped Seeing the larger system forces shaping the health landscape Opportunity Radar Populated Identifying innovation targets within the system Mindset Established Prerequisites in place for the next module's leadership journey"}
+  - perceived_visual_element: {"bbox":[0.47,0.445,0.71,0.67],"id":"macro-forces-cell","kind":"callout","role_tier":"2_5","role_tier_reason":"Top-left section of the summary card with bold outcome label and supporting description.","text":"Macro Forces Mapped Seeing the larger system forces shaping the health landscape"}
+  - perceived_visual_element: {"bbox":[0.47,0.69,0.97,0.87],"id":"mindset-cell","kind":"callout","role_tier":"2_5","role_tier_reason":"Bottom full-width section of the summary card with bold outcome label and supporting description.","text":"Mindset Established Prerequisites in place for the next module's leadership journey"}
+  - perceived_visual_element: {"bbox":[0.73,0.445,0.97,0.67],"id":"opportunity-radar-cell","kind":"callout","role_tier":"2_5","role_tier_reason":"Top-right section of the summary card with bold outcome label and supporting description.","text":"Opportunity Radar Populated Identifying innovation targets within the system"}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-creative_slide-02.png
+- slide-03: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Recap Beat: From Macro Forces to Opportunity Radar
+  - perceived_extracted_text: Recap Beat: From Macro Forces to Opportunity Radar Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar. つながる未来 共創・共生・共栄 Seeing the System The first dimension of Module 1 mindset work was developing the capacity to perceive macro forces — the structural, economic, and social currents that shape the health system from the outside in. Targeting the Opportunity The second dimension was translating that systemic awareness into concrete innovation targets. The Opportunity Radar gave form to what the learner could now see — turning perception into possibility.
+  - perceived_layout: A large dark-blue title sits at the upper left, with a teal introductory sentence below it. The lower half is split between a large blue system illustration on the left and explanatory text blocks with bold headings on the right.
+  - reading_path: split_image_text
+  - perceived_text_block: Recap Beat: From Macro Forces to Opportunity Radar
+  - perceived_text_block: Seeing the System
+  - perceived_text_block: Targeting the Opportunity
+  - perceived_text_block: The first dimension of Module 1 mindset work was developing the capacity to perceive macro forces — the structural, economic, and social currents that shape the health system from the outside in.
+  - perceived_text_block: The second dimension was translating that systemic awareness into concrete innovation targets. The Opportunity Radar gave form to what the learner could now see — turning perception into possibility.
+  - perceived_text_block: Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar.
+  - perceived_text_block: つながる未来
+  - perceived_text_block: 共創・共生・共栄
+  - perceived_visual_element: {"bbox":[0.06,0.07,0.91,0.18],"id":"title_main","kind":"title","role_tier":"4","role_tier_reason":"Large headline functions as the primary slide label.","text":"Recap Beat: From Macro Forces to Opportunity Radar"}
+  - perceived_visual_element: {"bbox":[0.06,0.23,0.88,0.29],"id":"intro_sentence","kind":"callout","role_tier":"4","role_tier_reason":"Prominent explanatory text directly frames the slide content.","text":"Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar."}
+  - perceived_visual_element: {"bbox":[0.06,0.43,0.61,0.83],"id":"system_illustration","kind":"diagram","role_tier":"2","role_tier_reason":"Large illustrative system scene with icons and connections, but no readable technical labels to trace.","text":"\u3064\u306a\u304c\u308b\u672a\u6765 \u5171\u5275\u30fb\u5171\u751f\u30fb\u5171\u6804"}
+  - perceived_visual_element: {"bbox":[0.65,0.34,0.82,0.37],"id":"seeing_heading","kind":"callout","role_tier":"4","role_tier_reason":"Bold section heading labels the right-column explanation.","text":"Seeing the System"}
+  - perceived_visual_element: {"bbox":[0.65,0.4,0.93,0.6],"id":"seeing_paragraph","kind":"callout","role_tier":"4","role_tier_reason":"Main explanatory paragraph text intended to be read.","text":"The first dimension of Module 1 mindset work was developing the capacity to perceive macro forces \u2014 the structural, economic, and social currents that shape the health system from the outside in."}
+  - perceived_visual_element: {"bbox":[0.65,0.63,0.91,0.66],"id":"targeting_heading","kind":"callout","role_tier":"4","role_tier_reason":"Bold section heading labels the second right-column explanation.","text":"Targeting the Opportunity"}
+  - perceived_visual_element: {"bbox":[0.65,0.68,0.94,0.93],"id":"targeting_paragraph","kind":"callout","role_tier":"4","role_tier_reason":"Main explanatory paragraph text intended to be read.","text":"The second dimension was translating that systemic awareness into concrete innovation targets. The Opportunity Radar gave form to what the learner could now see \u2014 turning perception into possibility."}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-creative_slide-03.png
+- slide-04: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Recap Beat: From Reaction to Redesign
+  - perceived_extracted_text: Recap Beat: From Reaction to Redesign Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it. Reaction Responding to pressures, constraints, and disruptions as they arrive Redesign Actively shaping the system from a position of intentional leadership の課題 これからの未来 より良い医療のために 長時間労働 分断 非効率 現状維持 紙の記録 複雑な業務 バラバラなシステム 地域に信頼される病院 一歩ずつ、未来の医療へ。
+  - perceived_layout: The slide is split into a wide white content area on the left and a full-height illustrative image panel on the right. The left side has a large title, a subtitle, and two stacked pale-green definition cards with circular icons.
+  - reading_path: two_up_comparison
+  - perceived_text_block: Reaction Responding to pressures, constraints, and disruptions as they arrive
+  - perceived_text_block: Recap Beat: From Reaction to Redesign
+  - perceived_text_block: Redesign Actively shaping the system from a position of intentional leadership
+  - perceived_text_block: Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it.
+  - perceived_text_block: の課題 これからの未来 より良い医療のために 長時間労働 分断 非効率 現状維持 紙の記録 複雑な業務 バラバラなシステム 地域に信頼される病院 一歩ずつ、未来の医療へ。
+  - perceived_visual_element: {"bbox":[0.06,0.08,0.55,0.2],"id":"title-main","kind":"title","role_tier":"4","role_tier_reason":"Large primary heading used as the slide label.","text":"Recap Beat: From Reaction to Redesign"}
+  - perceived_visual_element: {"bbox":[0.06,0.25,0.55,0.32],"id":"subtitle","kind":"callout","role_tier":"4","role_tier_reason":"Foreground explanatory text directly under the title.","text":"Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it."}
+  - perceived_visual_element: {"bbox":[0.06,0.35,0.565,0.63],"id":"reaction-card","kind":"callout","role_tier":"4","role_tier_reason":"Prominent labeled definition card.","text":"Reaction Responding to pressures, constraints, and disruptions as they arrive"}
+  - perceived_visual_element: {"bbox":[0.06,0.66,0.565,0.95],"id":"redesign-card","kind":"callout","role_tier":"4","role_tier_reason":"Prominent labeled definition card.","text":"Redesign Actively shaping the system from a position of intentional leadership"}
+  - perceived_visual_element: {"bbox":[0.075,0.375,0.13,0.455],"id":"reaction-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small shield icon inside the Reaction card.","text":""}
+  - perceived_visual_element: {"bbox":[0.075,0.685,0.13,0.765],"id":"redesign-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small magnifying glass icon inside the Redesign card.","text":""}
+  - perceived_visual_element: {"bbox":[0.625,0.0,1.0,1.0],"id":"right-illustration","kind":"photo","role_tier":"2","role_tier_reason":"Large illustrative supporting image contrasting a dark current state with a bright future state.","text":"\u306e\u8ab2\u984c \u3053\u308c\u304b\u3089\u306e\u672a\u6765 \u3088\u308a\u826f\u3044\u533b\u7642\u306e\u305f\u3081\u306b \u9577\u6642\u9593\u52b4\u50cd \u5206\u65ad \u975e\u52b9\u7387 \u73fe\u72b6\u7dad\u6301 \u7d19\u306e\u8a18\u9332 \u8907\u96d1\u306a\u696d\u52d9 \u30d0\u30e9\u30d0\u30e9\u306a\u30b7\u30b9\u30c6\u30e0 \u5730\u57df\u306b\u4fe1\u983c\u3055\u308c\u308b\u75c5\u9662 \u4e00\u6b69\u305a\u3064\u3001\u672a\u6765\u306e\u533b\u7642\u3078\u3002"}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-creative_slide-04.png
+- slide-05: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Why Ideas Alone Are Not Enough
+  - perceived_extracted_text: Why Ideas Alone Are Not Enough Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system. A brilliant idea without a capable champion is just a hypothesis waiting to expire. In a matrixed health system, the strength of an innovation concept is only one variable. The human capacity to navigate politics, build coalitions, and sustain momentum is equally — if not more — decisive. The idea needs a carrier.
+  - perceived_layout: A large dark-blue title sits at the upper left, with a large rounded photo of a light bulb on a tabletop occupying the lower-left half. The right side contains three stacked text regions: an introductory claim, a highlighted quote with a vertical green rule, and a longer explanatory paragraph.
+  - reading_path: split_image_text
+  - perceived_text_block: A brilliant idea without a capable champion is just a hypothesis waiting to expire.
+  - perceived_text_block: In a matrixed health system, the strength of an innovation concept is only one variable. The human capacity to navigate politics, build coalitions, and sustain momentum is equally — if not more — decisive. The idea needs a carrier.
+  - perceived_text_block: Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system.
+  - perceived_text_block: Why Ideas Alone Are Not Enough
+  - perceived_visual_element: {"bbox":[0.06,0.08,0.65,0.14],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large prominent heading labels the slide topic.","text":"Why Ideas Alone Are Not Enough"}
+  - perceived_visual_element: {"bbox":[0.06,0.32,0.61,0.77],"id":"photo_light_bulb","kind":"photo","role_tier":"2","role_tier_reason":"Illustrative supporting image of a light bulb and shadows, glanced at to reinforce the idea theme.","text":""}
+  - perceived_visual_element: {"bbox":[0.63,0.2,0.92,0.39],"id":"right_intro_claim","kind":"callout","role_tier":"4","role_tier_reason":"Prominent right-column instructional text conveys the main claim to read.","text":"Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system."}
+  - perceived_visual_element: {"bbox":[0.63,0.43,0.91,0.59],"id":"quote_callout","kind":"callout","role_tier":"4","role_tier_reason":"Indented quote with a vertical green rule visually marks a key takeaway.","text":"A brilliant idea without a capable champion is just a hypothesis waiting to expire."}
+  - perceived_visual_element: {"bbox":[0.63,0.62,0.92,0.9],"id":"bottom_explanation","kind":"text","role_tier":"4","role_tier_reason":"Large readable body paragraph provides the concluding explanation.","text":"In a matrixed health system, the strength of an innovation concept is only one variable. The human capacity to navigate politics, build coalitions, and sustain momentum is equally \u2014 if not more \u2014 decisive. The idea needs a carrier."}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-creative_slide-05.png
+- slide-06: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Tension Beat: The Idea-Leader Gap
+  - perceived_extracted_text: SPECIALTY DERYICES BEHAVIORAL HEALTH REGULATORY COMPLIANCE FINANCIAL MANAGEMENT LEGAL & RISK INFORMATION SYSTEMS STRATEGIC PLANNING CODING & DOCUMENTATION CARE COORDINATION POPULATION HEALTH WORKFORCE SHORTAGE Tension Beat: The Idea-Leader Gap Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system. The Viable Opportunity The Opportunity Radar has surfaced a real, addressable clinical problem. The innovation target is legitimate and the need is urgent. The Matrixed System Health systems are complex, multi-stakeholder environments where even strong ideas face institutional friction, competing priorities, and structural resistance. The Gap Without a leader equipped to champion the opportunity — to navigate, persuade, and persist — the idea stalls. Viability alone does not guarantee progress.
+  - perceived_layout: The slide is split vertically: a large illustrated maze-like health system scene fills the left half, while the right half contains a large title, subtitle, and three stacked bordered callout cards. The callout cards have green vertical accent bars on the left and blue text on white backgrounds.
+  - reading_path: split_image_text
+  - perceived_text_block: BEHAVIORAL HEALTH
+  - perceived_text_block: CARE COORDINATION
+  - perceived_text_block: CODING & DOCUMENTATION
+  - perceived_text_block: POPULATION HEALTH
+  - perceived_text_block: REGULATORY COMPLIANCE FINANCIAL MANAGEMENT LEGAL & RISK INFORMATION SYSTEMS STRATEGIC PLANNING
+  - perceived_text_block: Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system.
+  - perceived_text_block: SPECIALTY DERYICES
+  - perceived_text_block: Tension Beat: The Idea-Leader Gap
+  - perceived_text_block: The Gap Without a leader equipped to champion the opportunity — to navigate, persuade, and persist — the idea stalls. Viability alone does not guarantee progress.
+  - perceived_text_block: The Matrixed System Health systems are complex, multi-stakeholder environments where even strong ideas face institutional friction, competing priorities, and structural resistance.
+  - perceived_text_block: The Viable Opportunity The Opportunity Radar has surfaced a real, addressable clinical problem. The innovation target is legitimate and the need is urgent.
+  - perceived_text_block: WORKFORCE SHORTAGE
+  - perceived_visual_element: {"bbox":[0.0,0.0,0.5,1.0],"id":"left-illustration","kind":"photo","role_tier":"2","role_tier_reason":"Large supporting illustration occupying the left half, used to evoke a complex health-system maze.","text":"SPECIALTY DERYICES BEHAVIORAL HEALTH REGULATORY COMPLIANCE FINANCIAL MANAGEMENT LEGAL & RISK INFORMATION SYSTEMS STRATEGIC PLANNING CODING & DOCUMENTATION CARE COORDINATION POPULATION HEALTH WORKFORCE SHORTAGE"}
+  - perceived_visual_element: {"bbox":[0.57,0.06,0.98,0.17],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large primary heading labels the slide topic.","text":"Tension Beat: The Idea-Leader Gap"}
+  - perceived_visual_element: {"bbox":[0.57,0.21,0.94,0.28],"id":"subtitle","kind":"callout","role_tier":"2","role_tier_reason":"Prominent explanatory sentence directly under the title.","text":"Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system."}
+  - perceived_visual_element: {"bbox":[0.57,0.31,0.98,0.51],"id":"callout-viable-opportunity","kind":"callout","role_tier":"2_5","role_tier_reason":"Bordered content card with heading and supporting explanatory text.","text":"The Viable Opportunity The Opportunity Radar has surfaced a real, addressable clinical problem. The innovation target is legitimate and the need is urgent."}
+  - perceived_visual_element: {"bbox":[0.57,0.53,0.98,0.73],"id":"callout-matrixed-system","kind":"callout","role_tier":"2_5","role_tier_reason":"Bordered content card with heading and supporting explanatory text.","text":"The Matrixed System Health systems are complex, multi-stakeholder environments where even strong ideas face institutional friction, competing priorities, and structural resistance."}
+  - perceived_visual_element: {"bbox":[0.57,0.75,0.98,0.95],"id":"callout-gap","kind":"callout","role_tier":"2_5","role_tier_reason":"Bordered content card with heading and supporting explanatory text.","text":"The Gap Without a leader equipped to champion the opportunity \u2014 to navigate, persuade, and persist \u2014 the idea stalls. Viability alone does not guarantee progress."}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-creative_slide-06.png
+- slide-07: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Develop Beat: The Leadership Capacities Required
+  - perceived_extracted_text: Develop Beat: The Leadership Capacities Required Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity. Political Savvy Navigating systems, relationships, and power dynamics with awareness and intention. Communication Skills Articulating vision clearly and persuasively to move people and organizations forward. Leadership Identity Owning who you are as a leader — the foundation from which all other capacities grow.
+  - perceived_layout: The slide is split vertically with a full-height illustration on the left and a white content area on the right. The right side contains a large title, an explanatory paragraph, and three pale green capacity cards with small circular icons.
+  - reading_path: split_image_text
+  - perceived_text_block: Communication Skills Articulating vision clearly and persuasively to move people and organizations forward.
+  - perceived_text_block: Develop Beat: The Leadership Capacities Required
+  - perceived_text_block: Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity.
+  - perceived_text_block: Leadership Identity Owning who you are as a leader — the foundation from which all other capacities grow.
+  - perceived_text_block: Political Savvy Navigating systems, relationships, and power dynamics with awareness and intention.
+  - perceived_visual_element: {"bbox":[0,0,0.36,1],"id":"left-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Edge-bleed evocative illustration with no internal labels, used as thematic background.","text":""}
+  - perceived_visual_element: {"bbox":[0.42,0.06,0.86,0.22],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large heading functions as the main section label.","text":"Develop Beat: The Leadership Capacities Required"}
+  - perceived_visual_element: {"bbox":[0.42,0.27,0.93,0.36],"id":"intro-text","kind":"callout","role_tier":"2_5","role_tier_reason":"Explanatory text establishes what the capacity cards confirm.","text":"Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity."}
+  - perceived_visual_element: {"bbox":[0.42,0.38,0.65,0.69],"id":"card-political-savvy","kind":"callout","role_tier":"2_5","role_tier_reason":"Content card with heading and description to confirm one named capacity.","text":"Political Savvy Navigating systems, relationships, and power dynamics with awareness and intention."}
+  - perceived_visual_element: {"bbox":[0.42,0.71,0.9,0.94],"id":"card-leadership-identity","kind":"callout","role_tier":"2_5","role_tier_reason":"Content card with heading and description to confirm one named capacity.","text":"Leadership Identity Owning who you are as a leader \u2014 the foundation from which all other capacities grow."}
+  - perceived_visual_element: {"bbox":[0.44,0.41,0.49,0.47],"id":"icon-political-savvy","kind":"icon","role_tier":"4","role_tier_reason":"Small icon inside the card, area under 0.05, used as a label marker.","text":""}
+  - perceived_visual_element: {"bbox":[0.44,0.75,0.49,0.81],"id":"icon-leadership-identity","kind":"icon","role_tier":"4","role_tier_reason":"Small icon inside the card, area under 0.05, used as a label marker.","text":""}
+  - perceived_visual_element: {"bbox":[0.67,0.38,0.9,0.69],"id":"card-communication-skills","kind":"callout","role_tier":"2_5","role_tier_reason":"Content card with heading and description to confirm one named capacity.","text":"Communication Skills Articulating vision clearly and persuasively to move people and organizations forward."}
+  - perceived_visual_element: {"bbox":[0.69,0.41,0.74,0.47],"id":"icon-communication-skills","kind":"icon","role_tier":"4","role_tier_reason":"Small icon inside the card, area under 0.05, used as a label marker.","text":""}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-literal_slide-07.png
+- slide-08: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Resolve Beat: Leadership as the Next Build
+  - perceived_extracted_text: Resolve Beat: Leadership as the Next Build Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem. Leader Built Module 2: develop leadership identity to champion opportunity Mindset Built Module 1: mapped forces and Opportunity Radar The transition is clear: Module 1 gave the learner the eyes to see the opportunity. Module 2 will build the hands — and the identity — to carry it forward. The clinical problem is waiting. The next build is the leader. The mindset is the foundation. The leader is the structure built upon it. 創造 CREATE DESIGN BUILD INSPIRE
+  - perceived_layout: The slide is split with a white text-heavy left panel and a full-height illustrated architectural scene on the right. The left panel contains a large title, subtitle, a simple green timeline diagram with two labeled modules, a paragraph, and a pale green callout box at the bottom.
+  - reading_path: enumerated_process
+  - perceived_text_block: Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem.
+  - perceived_text_block: CREATE DESIGN BUILD INSPIRE
+  - perceived_text_block: Leader Built Module 2: develop leadership identity to champion opportunity
+  - perceived_text_block: Mindset Built Module 1: mapped forces and Opportunity Radar
+  - perceived_text_block: Resolve Beat: Leadership as the Next Build
+  - perceived_text_block: The mindset is the foundation. The leader is the structure built upon it.
+  - perceived_text_block: The transition is clear: Module 1 gave the learner the eyes to see the opportunity. Module 2 will build the hands — and the identity — to carry it forward. The clinical problem is waiting. The next build is the leader.
+  - perceived_text_block: 創造
+  - perceived_visual_element: {"bbox":[0.05,0.06,0.52,0.18],"id":"title-main","kind":"title","role_tier":"4","role_tier_reason":"Large heading labels the slide topic at the top left.","text":"Resolve Beat: Leadership as the Next Build"}
+  - perceived_visual_element: {"bbox":[0.06,0.22,0.52,0.29],"id":"subtitle","kind":"callout","role_tier":"2_5","role_tier_reason":"Prominent explanatory statement beneath the title guides interpretation of the slide.","text":"Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem."}
+  - perceived_visual_element: {"bbox":[0.06,0.63,0.56,0.77],"id":"body-paragraph","kind":"callout","role_tier":"2_5","role_tier_reason":"Large explanatory paragraph provides the key narrative transition after the diagram.","text":"The transition is clear: Module 1 gave the learner the eyes to see the opportunity. Module 2 will build the hands \u2014 and the identity \u2014 to carry it forward. The clinical problem is waiting. The next build is the leader."}
+  - perceived_visual_element: {"bbox":[0.06,0.82,0.54,0.93],"id":"bottom-callout","kind":"callout","role_tier":"2_5","role_tier_reason":"Pale green boxed takeaway emphasizes the core summary statement.","text":"The mindset is the foundation. The leader is the structure built upon it."}
+  - perceived_visual_element: {"bbox":[0.07,0.32,0.54,0.59],"id":"timeline-diagram","kind":"diagram","role_tier":"3","role_tier_reason":"A structured timeline-like diagram with internal labels and connecting vertical lines must be traced to compare modules.","text":"Leader Built Module 2: develop leadership identity to champion opportunity Mindset Built Module 1: mapped forces and Opportunity Radar"}
+  - perceived_visual_element: {"bbox":[0.075,0.85,0.095,0.87],"id":"callout-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small outline icon inside the callout acts as a label marker and is under the small-icon area gate.","text":""}
+  - perceived_visual_element: {"bbox":[0.6,0.0,1.0,1.0],"id":"right-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Full-height edge-bleed illustrative background image with evocative construction/leadership scene and no technical labels to trace.","text":"\u5275\u9020 CREATE DESIGN BUILD INSPIRE"}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-creative_slide-08.png
+- slide-09: source=vision.perception_artifacts; coverage=perceived; confidence=HIGH
+  - perceived_slide_title: Preview of Module 2: From Mindset to Identity
+  - perceived_extracted_text: Preview of Module 2: From Mindset to Identity Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause. 1 Define Leadership Identity Clarify who you are as a leader and what you stand for at your core. 2 Communicate Vision Translate your identity into a compelling vision others can see and believe in. 3 Inspire Others to Join Move from mindset to movement — rallying people around a shared cause. Module 1 Complete. You've built the mindset. Now it's time to step fully into your identity as a leader.
+  - perceived_layout: The slide is split vertically with a large warm illustration of open doors and a bridge at sunrise on the left, and a white content area on the right. The right side has a large title, intro paragraph, three numbered chevron step blocks, and a pale green callout box at the bottom.
+  - reading_path: enumerated_process
+  - perceived_text_block: 1
+  - perceived_text_block: 2
+  - perceived_text_block: 3
+  - perceived_text_block: Clarify who you are as a leader and what you stand for at your core.
+  - perceived_text_block: Communicate Vision
+  - perceived_text_block: Define Leadership Identity
+  - perceived_text_block: Inspire Others to Join
+  - perceived_text_block: Module 1 Complete. You've built the mindset. Now it's time to step fully into your identity as a leader.
+  - perceived_text_block: Move from mindset to movement — rallying people around a shared cause.
+  - perceived_text_block: Preview of Module 2: From Mindset to Identity
+  - perceived_text_block: Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause.
+  - perceived_text_block: Translate your identity into a compelling vision others can see and believe in.
+  - perceived_visual_element: {"bbox":[0,0,0.36,1],"id":"left-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Large edge-bleed scenic illustration used as evocative background with no internal labels.","text":""}
+  - perceived_visual_element: {"bbox":[0.42,0.06,0.9,0.17],"id":"title","kind":"title","role_tier":"1","role_tier_reason":"Largest text at top right establishes the slide topic immediately.","text":"Preview of Module 2: From Mindset to Identity"}
+  - perceived_visual_element: {"bbox":[0.42,0.22,0.89,0.32],"id":"intro-paragraph","kind":"callout","role_tier":"2","role_tier_reason":"Supporting explanatory paragraph below the title.","text":"Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause."}
+  - perceived_visual_element: {"bbox":[0.42,0.35,0.5,0.49],"id":"step-1-marker","kind":"icon","role_tier":"4","role_tier_reason":"Small numbered chevron acts as a label for the first step.","text":"1"}
+  - perceived_visual_element: {"bbox":[0.42,0.49,0.5,0.64],"id":"step-2-marker","kind":"icon","role_tier":"4","role_tier_reason":"Small numbered chevron acts as a label for the second step.","text":"2"}
+  - perceived_visual_element: {"bbox":[0.42,0.64,0.5,0.8],"id":"step-3-marker","kind":"icon","role_tier":"4","role_tier_reason":"Small numbered chevron acts as a label for the third step.","text":"3"}
+  - perceived_visual_element: {"bbox":[0.42,0.82,0.91,0.94],"id":"bottom-callout","kind":"callout","role_tier":"2","role_tier_reason":"Highlighted summary callout in a shaded box at the bottom.","text":"Module 1 Complete. You've built the mindset. Now it's time to step fully into your identity as a leader."}
+  - perceived_visual_element: {"bbox":[0.44,0.85,0.46,0.88],"id":"bottom-callout-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small outlined icon inside the callout box serves as a visual tag.","text":""}
+  - perceived_visual_element: {"bbox":[0.52,0.37,0.9,0.47],"id":"step-1-text","kind":"bullet","role_tier":"2","role_tier_reason":"Supporting step text paired with the numbered marker.","text":"Define Leadership Identity Clarify who you are as a leader and what you stand for at your core."}
+  - perceived_visual_element: {"bbox":[0.52,0.52,0.91,0.62],"id":"step-2-text","kind":"bullet","role_tier":"2","role_tier_reason":"Supporting step text paired with the numbered marker.","text":"Communicate Vision Translate your identity into a compelling vision others can see and believe in."}
+  - perceived_visual_element: {"bbox":[0.52,0.67,0.91,0.77],"id":"step-3-text","kind":"bullet","role_tier":"2","role_tier_reason":"Supporting step text paired with the numbered marker.","text":"Inspire Others to Join Move from mindset to movement \u2014 rallying people around a shared cause."}
+  - perceived_source_png_path: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\22b27500-6e67-4dd7-8308-fd89defe3d99\exports\gary\A-literal_slide-09.png
+
+## Expected visual plan - brief/Gary signals (subordinate; may be stale; defer to perceived)
+
+These expected-plan signals are subordinate planning context only. They may be stale. When they conflict with perceived slide evidence, use the perceived visual authority above and ignore the expected plan.
+
+- slide-01: gary_visual_description=Module 1 Completion and Transition Prompt — Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey.
+- slide-02: gary_visual_description=What Module 1 Established — Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module.
+- slide-03: gary_visual_description=Recap Beat: From Macro Forces to Opportunity Radar — Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar.
+- slide-04: gary_visual_description=Recap Beat: From Reaction to Redesign — Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it.
+- slide-05: gary_visual_description=Why Ideas Alone Are Not Enough — Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system.
+- slide-06: gary_visual_description=Tension Beat: The Idea-Leader Gap — Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system.
+- slide-07: gary_visual_description=Develop Beat: The Leadership Capacities Required — Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity.
+- slide-08: gary_visual_description=Resolve Beat: Leadership as the Next Build — Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem.
+- slide-09: gary_visual_description=Preview of Module 2: From Mindset to Identity — Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause.
+
+## Reading path cadence guidance
+
+Follow each slide's classified scan order when sequencing visual references. Use cadence tokens naturally; do not invent unseen elements to satisfy a pattern.
+
+- slide-01: reading_path=split_image_text; scan_order=left-illustration -> left-slogan -> main-title -> left-japanese-text -> body-text -> status-chip; cadence_tokens=text side, image side, the main message, visual context
+- slide-02: reading_path=split_image_text; scan_order=left-illustration -> title -> intro-paragraph -> summary-card -> macro-forces-cell -> opportunity-radar-cell -> mindset-cell; cadence_tokens=text side, image side, the main message, visual context
+- slide-03: reading_path=split_image_text; scan_order=title_main -> intro_sentence -> seeing_heading -> seeing_paragraph -> system_illustration -> targeting_heading -> targeting_paragraph; cadence_tokens=text side, image side, the main message, visual context
+- slide-04: reading_path=two_up_comparison; scan_order=right-illustration -> title-main -> subtitle -> reaction-card -> reaction-icon -> redesign-card -> redesign-icon; cadence_tokens=compared with, by contrast, on one side, on the other side
+- slide-05: reading_path=split_image_text; scan_order=title -> right_intro_claim -> photo_light_bulb -> quote_callout -> bottom_explanation; cadence_tokens=text side, image side, the main message, visual context
+- slide-06: reading_path=split_image_text; scan_order=left-illustration -> title -> subtitle -> callout-viable-opportunity -> callout-matrixed-system -> callout-gap; cadence_tokens=text side, image side, the main message, visual context
+- slide-07: reading_path=split_image_text; scan_order=left-illustration -> title -> intro-text -> card-political-savvy -> card-communication-skills -> icon-political-savvy -> icon-communication-skills -> card-leadership-identity -> icon-leadership-identity; cadence_tokens=text side, image side, the main message, visual context
+- slide-08: reading_path=enumerated_process; scan_order=title-main -> subtitle -> timeline-diagram -> right-illustration -> body-paragraph -> bottom-callout -> callout-icon; cadence_tokens=first, then, produces, feeds, launch, iterate
+- slide-09: reading_path=enumerated_process; scan_order=title -> intro-paragraph -> left-illustration -> step-1-marker -> step-2-marker -> step-1-text -> step-2-text -> step-3-marker -> bottom-callout -> bottom-callout-icon -> step-3-text; cadence_tokens=first, then, produces, feeds, launch, iterate
+
+## Sanctum digest (sorted file listing + sha256)
+
+BOND.md	d0ac1dbebca5016542e84b3347647f02010fbfbb32ab80b06dc2451c9fa1a622
+CAPABILITIES.md	1a0bc1d3292df323ce5a643747e563710e3041f8c710055657ba228df7dc5460
+CREED.md	ec1c775ac84149c5092fd38aff5bc04ee3e7dc8ab1d1effea303db8cdfa04ee2
+INDEX.md	080dea75f44ce8dd115de6da64e116981327b453fb222872e8bba95b0f33da47
+MEMORY.md	52b616649c79af298425ace8aa86937de01e2119f5bf1497056fa669d66f4ef5
+PERSONA.md	446a6689f58b773a9a0dd73418901f04ee44fff59b04a528f558ef704189877b
+capabilities/.gitkeep	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+references/blooms-taxonomy-application.md	447096ebe9497aaa4421ee00774a3f34d1435ac61035eb5e01d1ce1f3978cc20
+references/capability-authoring.md	927c9903ebede13e05f819ead52c1f82955d9360f831e7cafcb68c08cbe0aaf3
+references/cluster-decision-criteria.md	1dffc32fbe93b1b0b6e0329702331ac1831c46588dce5e2d7ed407ac01f8720c
+references/cluster-density-controls.md	2f3bcbe4bcf18d6e3d61ba38a1c5f252470a94bc03ed90521a9f3f5e79287a3c
+references/cluster-exemplars.md	a1a4402e0fbe71cc522321f2328c7c0626e844056d0d634b957648d8ddde3f1e
+references/cluster-narrative-arc-schema.md	913591351b8d3c15753bbde646663c5bf7105e96d1b91327e3bf9a775f10e40c
+references/cluster-planning.md	5d96527676ddb93879cb89365d3260b827dbd2db1385ee975f680003031589b8
+references/cognitive-load-management.md	eb2c4b316f6e74b08e0fa42f9dfae3186bd5b2c78a86ac6c1fc67badc87dd99f
+references/content-sequencing.md	61e4eba8bf515899f1344a0f1dfe776ac99c92cabd46b28aaad7490631cdaff1
+references/degradation-handling.md	3cf226745057963144c8d9d3d97414ffbd3695acf6d8054ad9fa04cedeb485d0
+references/delegation-intent-verification.md	062767ce1ee40c73d5870ae4d9ce80763441789ae57da9775318d41a9acf6f40
+references/delegation-protocol.md	3115e53aba1dd4a0c4ba2a580e76183dfaa45acf468c5a13962c48145990bf29
+references/external-agent-registry.md	8fa1741d0ec3401b04b31fb63ca596d99147d6e914126b81b2bf064a55999ec6
+references/interstitial-brief-specification.md	b414f1deb77049f74aa288abc085d37fef09fdbc10bd5fa92810b0674960aba8
+references/learning-objective-decomposition.md	725bcb9bdefd2460ea489f2943847242fc8665d23875b7aef116331224d1ee1d
+references/manual-animation-support.md	8c8de4f99649a07d9227c0556ca856196b70ec8c0c5ad16dece4322df2b824d6
+references/memory-guidance.md	c4410c96507bcf2776ea758c7fa07e17d920261386e667f901d44d334f9c4dfa
+references/motion-perception-confirmation.md	e64a57ee53cd8f22bed0ed066c065dcbe29131722f6d2b998d5712742cc98dd8
+references/motion-plan-hydration.md	29a2b3937f5aa6020c079a211fd3bb5af84201ab0c44fd5e7433e3f2fe341dc5
+references/pass-2-authoring-template.md	7a3185ecad8226d67ff9e43fbb456b12386f6ad35ef18aa95d2da13e566ba8f6
+references/pass-2-grammar-riders-examples.md	81ea711aea4f9cf1a4dc583ad938fd8369a20d4b03d48da0e1e3925feb0cce01
+references/pass-2-procedure.md	0186f488f34304c6916ea1edc0dc3ae6fd0164020b1c2bf9f3006bbf5bbda523
+references/pedagogical-framework.md	6dbd5e306b8ff5894a6c6e99e98f098b32128b5039a163c5a89716e7830dc146
+references/perception-contract-enforcement.md	0c468f08ff9b7e1c4766754a8fc7b57c4cbe1e8e9387154c9722d7ec0e81c249
+references/retrieval-intake-contract.md	0267631498820d7abad9e5ac009bd60dea8409bca0add79b951a5215f435bb77
+references/runtime-variability-framework.md	761387090e124e5bff289667fb9014c62d672df336f158f8094ab3eeafd6cf02
+references/save-memory.md	8bb5e8257c69d84958f4c3438d844681c014f3cafb1ad8db4e4bd9b761644513
+references/spoken-bridging-language.md	f77f20acd1070165acd556c2b82ba8306e15b986e1b8f6284e09c1e1dc9075c9
+references/template-assessment-brief.md	cbc42e08e51eb2c9d7f3df606e5df4122d1c937abdb5b10c2b508eefc2920d68
+references/template-dialogue-script.md	058499198249a71b1aad6724d4312af97eca5f74e54485dabbd5283710b36b6b
+references/template-first-person-explainer.md	3850c588f19cec56e4ef6e68c55c66783fe4a5c7c2b0041b9cb1a3fed06bf6f6
+references/template-lesson-plan.md	828615e4085289e7a47c3c7a7ceaaaf364880b94afb2f8c0ab12df47508b57e8
+references/template-narration-script.md	b581a8c40e9cdc696522bafc61ad5b78e8e3695dbcdb19720ab43202df8fc976
+references/template-segment-manifest.md	05a2d847b8395bc56d5cb7aec14e44025c208c2d3a4adc2a2a6d5f28db5e481f
+references/template-slide-brief.md	d7e74420e2cd540b2a630366dda76b623e97580718247fd4e1128761d8629362
+references/visual-reference-injection.md	59b4a4f0ae424f689c4f410d31c56e0441f0b13a3ca3a29be53d81810d147ca8
+scripts/__init__.py	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+scripts/manifest_visual_enrichment.py	5fbe13bb48ec00d0fcc8afdc4ce4b5e9d2dd64247c16049ec9dd2e0b7885c4f4
+scripts/manual_animation_workflow.py	7fe83e870d80cb414759ff77cde9e1c583cbd701ba642a5c7bfc9ea916672dea
+scripts/motion_gate_receipt_reader.py	ad2609c4104004a582b4926ffa2f57f072c70b87ae6a14d0b05e816ddba6d6fb
+scripts/perception_contract.py	e57c03ab214126bce3b4bfe5a692be1f5e2215b2c1d9c2c670427d7af56f4a93
+scripts/visual_reference_injector.py	dd4234c68300493f9c44907f1ef8e2d0ca1f56f27db4c755494cac4e39bf9406
+sessions/.gitkeep	e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+
+## L5 references (fixed order — STRUCTURE AND FORMAT ONLY; any subject matter inside these references is exemplar, NOT course content)
+
+### Reference: cluster-narrative-arc-schema.md
+---
+name: cluster-narrative-arc-schema
+code: NA
+description: Cluster narrative arc schema — narrative_arc field rules, master_behavioral_intent subordination, develop sub-type assignment
+---
+
+# Cluster Narrative Arc Schema
+
+This document defines the schema for cluster-level narrative arcs and behavioral intent in interstitial slide clusters. It establishes the value rules for the `narrative_arc`, `master_behavioral_intent`, and `develop_type` fields used by downstream cluster work.
+
+## Scope
+
+This reference defines how Irene should populate and validate:
+
+- `narrative_arc`
+- `master_behavioral_intent`
+- `develop_type`
+
+All three are represented in the segment manifest template consumed by downstream cluster planning, narration, and review flows.
+
+## Narrative Arc Field Schema
+
+### Sentence Structure
+
+The `narrative_arc` field contains a single sentence describing the cluster's learner journey.
+
+Format:
+
+`From [start state] to [end state] through/via [mechanism]`
+
+- **start state:** the learner's cognitive or affective position entering the head slide
+- **end state:** the learner's position leaving the resolve slide
+- **mechanism:** what the cluster does to move the learner between states
+
+The sentence must be specific enough that a narration writer and review gate can verify each segment serves it.
+
+### Quality Bar
+
+Pass:
+- `From overload awareness to capacity management through targeted interventions`
+- `From confusion to clarity through progressive disclosure`
+- `From skepticism to confidence through evidence-based reasoning`
+
+Fail:
+- `From introduction to understanding`
+- `From problem to solution`
+- `From start to finish through explanation`
+
+The failure mode is always the same: the sentence is generic enough to fit almost any cluster and therefore guides nothing.
+
+### Inheritance Rule
+
+The `narrative_arc` is set on the head slide and inherited by all cluster members.
+
+## Sophia's Four-Beat Framework Mapping
+
+Cluster positions map to Sophia's narrative beats as follows:
+
+| Sophia Beat | Cluster Position | Narrative Role |
+|---|---|---|
+| orient | establish | Plant the hook, state the thesis, orient the learner |
+| complicate | tension | Introduce the "yes but", contrast, complication |
+| illuminate | develop | Deepen, reframe, or exemplify to move the learner through the tension |
+| resolve | resolve | Land the meaning, echo the head, close the arc |
+
+When all four beats are present, the canonical beat order is:
+
+`establish -> tension -> develop -> resolve`
+
+Shorter clusters may collapse one middle beat for a 2-interstitial structure, but `develop` should not be documented as the default beat before `tension`.
+
+## Master Behavioral Intent Schema
+
+### Definition
+
+The `master_behavioral_intent` is the cluster-level behavioral directive. It sets the dominant affect for the cluster and constrains the allowable segment-level `behavioral_intent` values.
+
+### Vocabulary
+
+Use the same enumerated vocabulary as segment-level `behavioral_intent`:
+
+- `credible`
+- `alarming`
+- `provocative`
+- `reflective`
+- `moving`
+- `clear-guidance`
+- `attention-reset`
+
+Fail examples:
+- `make it feel important`
+- `emotionally strong`
+- `be persuasive somehow`
+
+Those are free-form instructions, not contract values.
+
+### Subordination Rule
+
+Segment-level `behavioral_intent` values must serve, not contradict, the cluster's `master_behavioral_intent`. A segment may intensify or modulate the master intent, but it may not reverse it.
+
+Valid combination:
+- Master: `alarming`
+- Establish: `credible`
+- Tension: `alarming`
+- Resolve: `clear-guidance`
+
+Invalid combination:
+- Master: `credible`
+- Tension: `provocative`
+
+That second pairing asks the cluster to build trust and then undercut it with a contradictory affect.
+
+## Develop Sub-Type Assignment Rules
+
+Each `develop`-position interstitial must use one of these sub-types:
+
+- `deepen` - extend the establish concept
+- `reframe` - change the frame of reference
+- `exemplify` - provide a concrete case or instance
+
+Within a cluster, each `develop` interstitial must use a distinct sub-type.
+
+Assignment guidance:
+- `deepen` for unpacking an idea already introduced
+- `reframe` for misconception correction or perspective shift
+- `exemplify` for abstract concepts that need a concrete case
+
+## C1M1 MVP Example
+
+**Cluster Topic:** Cognitive Load Theory
+
+- `narrative_arc`: `From overload awareness to capacity management through targeted interventions`
+- `master_behavioral_intent`: `clear-guidance`
+- Establish: `credible`
+- Tension: `alarming`
+- Develop: `exemplify`
+- Resolve: `clear-guidance`
+
+This pattern works because the cluster earns trust, surfaces consequence, clarifies through example, and then lands on an actionable instructional takeaway.
+
+## Contract Authority
+
+This schema is the authoritative contract for:
+
+- Irene Pass 1 cluster planning (Epic 20B)
+- Interstitial brief writing
+- Narration alignment validation
+- Storyboard cluster rendering
+
+All downstream cluster-aware agents and gates must honor these rules.
+
+
+### Reference: pass-2-authoring-template.md
+# Irene Pass 2 Authoring Template
+
+Canonical authoring-time contract for Irene Pass 2 output.
+
+Slab 6.4 source of truth: [`app/specialists/irene/authoring/pass_2_template.py`](../../../app/specialists/irene/authoring/pass_2_template.py).
+Generated JSON Schema: [`schema/irene_pass_2_authoring.v1.schema.json`](../../../schema/irene_pass_2_authoring.v1.schema.json).
+Procedural validator: [`skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py`](../../bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py).
+
+Validation order is contractual:
+
+1. Schema-first validation with `IrenePass2AuthoringEnvelope`.
+2. Procedural validation with `validate-irene-pass2-handoff.py`.
+
+The Pydantic model is authoritative for field names, closed values, cardinality,
+UTC timestamp shape, local PNG path shape, and cross-artifact identity checks.
+The procedural validator remains authoritative for narration-prose checks,
+bridge cadence, cluster arc continuity, behavioral-intent parity, motion
+perception confirmation, and visual-reference traceability in spoken narration.
+
+## Pydantic Field Inventory
+
+Top-level fields:
+`schema_version`, `run_id`, `generated_at_utc`, `composition_mode`,
+`gary_slide_output`, `perception_artifacts`, `segment_manifest`,
+`narration_script_markers`, `procedural_rules`.
+
+Gary slide fields:
+`slide_id`, `card_number`, `file_path`, `source_ref`.
+
+Perception artifact fields:
+`slide_id`, `source_image_path`, `visual_elements`.
+
+Segment fields:
+`id`, `slide_id`, `card_number`, `narration_text`, `behavioral_intent`,
+`visual_file`, `visual_detail_load`, `timing_role`, `content_density`,
+`duration_rationale`, `bridge_type`, `visual_references`, `cluster_id`,
+`cluster_role`, `cluster_position`.
+
+Visual reference fields:
+`element`, `location_on_slide`, `narration_cue`, `perception_source`.
+
+## Closed Values
+
+- `composition_mode`: isolated, composed.
+- `visual_detail_load`: light, medium, heavy.
+- `content_density`: light, medium, heavy.
+- `bridge_type`: none, intro, outro, pivot, both, cluster_boundary.
+- `cluster_role`: head, interstitial.
+- `cluster_position`: establish, tension, develop, resolve.
+- `procedural_rules`: behavioral_intent_parity, bridge_cadence,
+  cluster_arc_continuity, motion_perception_confirmation,
+  narration_cue_presence, traceable_visual_references.
+
+## Required Authoring Guarantees
+
+- `generated_at_utc` is timezone-aware UTC.
+- Every Gary `file_path`, perception `source_image_path`, and segment
+  `visual_file` is a local PNG path.
+- Every Gary slide has a matching perception artifact.
+- Each perception `source_image_path` exactly matches the Gary `file_path` for
+  the same `slide_id`.
+- Each segment `visual_file` and `card_number` exactly match the Gary slide
+  output for the same `slide_id`.
+- Each segment `id` appears in `narration_script_markers`.
+- If a segment has `cluster_id`, it must also have `cluster_role`.
+- `procedural_rules` must list the complete validator-enforced rule set.
+
+## Minimal Passing Shape
+
+```yaml
+schema_version: irene-pass-2-authoring.v1
+run_id: PASS2-GOLDEN-001
+generated_at_utc: 2026-04-28T10:00:00Z
+composition_mode: composed
+gary_slide_output:
+  - slide_id: slide-01
+    card_number: 1
+    file_path: bundle/slide-01.png
+    source_ref: slide-brief.md#Slide 1
+perception_artifacts:
+  - slide_id: slide-01
+    source_image_path: bundle/slide-01.png
+    visual_elements:
+      - description: Clinician at workstation
+segment_manifest:
+  segments:
+    - id: seg-01
+      slide_id: slide-01
+      card_number: 1
+      narration_text: Notice the clinician at the workstation as the systems signal appears.
+      behavioral_intent: credible
+      visual_file: bundle/slide-01.png
+      visual_detail_load: medium
+      timing_role: concept-build
+      content_density: medium
+      duration_rationale: Medium density needs guided explanation while keeping visual attention on the workstation.
+      bridge_type: none
+      visual_references:
+        - element: Clinician at workstation
+          location_on_slide: center
+          narration_cue: clinician at the workstation
+          perception_source: slide-01
+narration_script_markers:
+  - seg-01
+procedural_rules:
+  - behavioral_intent_parity
+  - bridge_cadence
+  - cluster_arc_continuity
+  - motion_perception_confirmation
+  - narration_cue_presence
+  - traceable_visual_references
+```
+
+## Worked Examples From B-Run Section 08
+
+### Example 1: Empty Perception And Path Drift
+
+B-Run Section 08 recorded an empty perception list and later path drift between
+perception image paths and Gary slide outputs. The Pydantic contract prevents
+that by requiring at least one perception artifact and by enforcing exact path
+parity against the Gary output.
+
+```yaml
+gary_slide_output:
+  - slide_id: slide-04
+    card_number: 4
+    file_path: bundle/gamma-export/slide-04.png
+    source_ref: slide-brief.md#Slide 4
+perception_artifacts:
+  - slide_id: slide-04
+    source_image_path: bundle/gamma-export/slide-04.png
+```
+
+If `perception_artifacts` is empty or `source_image_path` points elsewhere,
+schema-first validation rejects the handoff before narration work proceeds.
+
+### Example 2: Invalid Visual Detail Vocabulary
+
+B-Run Section 08 recorded invalid visual-detail values. The Pydantic contract
+uses the same closed density vocabulary as the procedural validator.
+
+```yaml
+visual_detail_load: heavy
+content_density: medium
+```
+
+Values outside light, medium, and heavy are rejected by both Pydantic and the
+generated JSON Schema.
+
+### Example 3: Cluster Arc And Bridge Cadence
+
+B-Run Section 08 recorded a cluster head resolving too early and a boundary
+that lacked required bridge treatment. The schema makes cluster role and arc
+position explicit so the procedural validator can reason over the sequence.
+
+```yaml
+cluster_id: c-u07
+cluster_role: head
+cluster_position: establish
+bridge_type: cluster_boundary
+```
+
+For clustered segments, Irene must choose the role and position deliberately.
+The procedural validator then rejects disordered arcs, resolve-without-middle
+beats, missing callbacks, and cluster-boundary bridge-cadence failures.
+
+## Operating Rule
+
+Irene Pass 2 should author against this contract before emitting downstream
+artifacts. If schema-first validation fails, repair the structured handoff
+before invoking procedural validation. If procedural validation fails, repair the
+specific validator-reported rule without loosening the Pydantic contract.
+
+
+### Reference: pass-2-grammar-riders-examples.md
+---
+name: pass-2-grammar-riders-examples
+description: Per-pattern narration-grammar worked examples for the reading-path repertoire
+---
+
+# Pass 2 narration-grammar riders — examples
+
+This companion to [pass-2-authoring-template.md](./pass-2-authoring-template.md) carries one worked example per reading-path pattern in the v1.1 repertoire. Each example shows (a) the pattern's canonical scan order, (b) the expected narration cadence tokens, and (c) a sample `narration_text` that passes the `pass_2_emission_lint.py` pattern-aware shape check.
+
+**Three-way parity:** the pattern headings below must stay aligned with the enum in [state/config/reading-path-patterns.yaml](../../../state/config/reading-path-patterns.yaml) and the JSON Schema enum in [state/config/schemas/segment-manifest.schema.json](../../../state/config/schemas/segment-manifest.schema.json). A parity test asserts the three stay in lockstep.
+
+---
+
+## Narration voice (overarching — governs every pattern below)
+
+The reading-path pattern tells you the **order** and **emphasis** to speak in. Use that knowledge **invisibly**: narrate *about the content* like a teacher explaining the idea, in the pattern's scan order — do **not** recite the slide's geography or describe the act of looking. The listener should learn *what is true*, not *where it sits on the slide*.
+
+- ❌ **Spatial meta-commentary (avoid):** "At the title we see…", "On the right there's an image of…", "The leftmost column shows…", "In the top-left quadrant…", "The text side carries the message…". This narrates the *map*, not the *territory*, and breaks the conversational voice.
+- ✅ **Content-first voice (use):** say what the thing *means*, in the order the eye would take it, letting conceptual transitions carry the flow — "first… then…", "this builds on…", "by contrast…", "the takeaway is…". The geometry is the script writer's private guide, never spoken aloud.
+
+**Worked contrast (same left-to-right scan order; only the second speaks to the audience):**
+
+```text
+❌  At the title we see "The Real Barrier." Below it are three boxes. The box on
+    the left says clinicians have ideas; the middle box says they lack process;
+    the box on the right says they lack a safe space to experiment.
+
+✅  The real barrier isn't a shortage of ideas — clinicians generate those every
+    day. What's missing is the structure to pursue them, and the psychological
+    safety to experiment without fear.
+```
+
+The per-pattern **cadence tokens** below name each pattern's *ordering signature* — honor the order, but render it in this content-first voice, and **prefer the non-spatial token options** where a pattern lists them (e.g. "first/then", "by contrast", "this builds on") over the spatial ones ("the column to the right", "the text side"). Images obey their **role tier**: a *decorative* image is never narrated; an *illustrative* image is referenced only if it carries the claim; an *instructional* diagram is walked through by its **logic**, not its coordinates.
+
+---
+
+## Pattern: z_pattern
+
+**Canonical scan:** top-left → top-right → bottom-left → bottom-right
+**Cadence tokens (any of):** to begin / the frame / which leads to / the upshot / the takeaway / headline / body / visual
+**Lint:** warning
+
+**When to choose it:** quadrant-balanced slide with a headline, a body block, a supporting visual, and a call to action.
+
+**Sample narration:**
+
+```text
+The headline frames the problem: clinician burnout is a systems signal. The
+body beneath walks through three drivers: cognitive load, moral injury,
+misaligned incentives. The visual on the right anchors the frame — a
+hallway scene with the weight of the day visible. The call to action
+closes: design one system-level experiment this week.
+```
+
+Cadence token hit: `headline` + `body` + `visual` + `call to action`.
+
+---
+
+## Pattern: f_pattern
+
+**Canonical scan:** left-column top-down → selective right-side scan on evidence markers
+**Cadence tokens (any of):** evidence / drill into / as shown / note the / data shows / callout
+**Lint:** warning
+
+**When to choose it:** text-heavy handouts, reference documents, dense prose columns with right-side evidence callouts.
+
+**Sample narration:**
+
+```text
+Reading top-to-bottom, the left column lays out the clinical reasoning
+chain. Note the second paragraph — the evidence for early diuretic
+discontinuation is strong but context-sensitive. The callout at the right
+margin highlights the two trials that inform this. Data shows a 19%
+reduction in length-of-stay when the protocol is followed as specified.
+```
+
+Cadence token hit: `note the` + `evidence` + `callout` + `data shows`.
+
+---
+
+## Pattern: center_out
+
+**Canonical scan:** establish-hero → orbit-annotations clockwise → return-to-hero
+**Cadence tokens (any of):** returning to the center / back to the hero / circling back / center again / back to the main / returning to the heart
+**Lint:** warning
+
+**When to choose it:** hero graphic with orbital annotations; central concept with radial supports.
+
+**Sample narration:**
+
+```text
+Start at the center of the graphic — the patient at the heart of the
+clinical workflow. Clockwise from the top, the first annotation names the
+clinician's time; the second names the EHR burden; the third names the
+billing cycle; the fourth names the hand-off boundary. Each orbits the
+central patient figure for a reason. Returning to the center, notice the
+patient is the anchor of every upstream decision — not the product of it.
+```
+
+Cadence token hit: `returning to the center`.
+
+---
+
+## Pattern: top_down
+
+**Canonical scan:** single sweep top-to-bottom following the spine
+**Cadence tokens (any of):** next item / continuing down / further down / proceeding through / step by step / in order
+**Lint:** warning
+
+**When to choose it:** vertical spine; ordered lists; process ladders.
+
+**Sample narration:**
+
+```text
+The spine runs top to bottom: intake, triage, work-up, disposition. Intake
+is where the clinician first encounters the patient context. Continuing
+down, triage sets the acuity and the urgency of intervention. Next item,
+work-up, orders and interprets the studies that distinguish between the
+top differentials. Finally, disposition commits to a path — admit,
+observe, discharge.
+```
+
+Cadence token hit: `continuing down` + `next item`.
+
+---
+
+## Pattern: multi_column
+
+**Canonical scan:** column-major — each column top-to-bottom before advancing right
+**Cadence tokens (any of):** another facet / a separate thread / the next grouping / in parallel / a distinct angle / turning next to / separately
+**Lint:** warning
+
+**When to choose it:** 2-4 column layouts where each column is self-contained.
+
+**Sample narration:**
+
+```text
+The diagnostic reasoning comes first: what the history suggests, what the
+exam confirmed, what the imaging narrowed. A separate thread is the
+treatment plan — the first-line intervention, the monitoring checkpoints,
+and the stop rules. A distinct angle closes the encounter: the safety-net
+plan, with return precautions, the follow-up window, and the shared
+decision the patient and family make together.
+```
+
+Cadence token hit: `a separate thread` + `a distinct angle`.
+
+---
+
+## Pattern: grid_quadrant
+
+**Canonical scan:** declared sweep order (row-major default; column-major if axis labels demand)
+**Cadence tokens (any of):** compared to / contrast / whereas / whilst / on the other hand / vs / versus / by contrast / different from / in comparison
+**Lint:** warning
+
+**When to choose it:** 2×2 or 3×3 matrices (comparison frameworks, decision grids).
+
+**Sample narration:**
+
+```text
+The matrix sets benefit on the vertical axis and effort on the horizontal
+axis. The top-left quadrant captures the high-benefit, low-effort
+interventions — the obvious starting point. Whereas the top-right
+captures high-benefit, high-effort work — worth doing, but only after the
+easier wins land. By contrast, the bottom-left is low-benefit, low-effort
+— only worth doing if the team needs the practice. In contrast to all
+three, the bottom-right is a trap: high-effort for low-benefit. Avoid it.
+```
+
+Cadence token hit: `whereas` + `by contrast` + `in contrast`.
+
+---
+
+## Pattern: sequence_numbered
+
+**Canonical scan:** follow ordinal order, ignore spatial layout
+**Cadence tokens (any of):** first / second / third / fourth / next / then / finally / step 1 / step 2 / step 3 / step a / step b / step c
+**Lint:** **FAIL-CLOSED** — ordinal-marker absence is a contract violation
+
+**When to choose it:** explicit ordinal markers are visible on the artifact.
+
+**Sample narration:**
+
+```text
+Step 1 confirms the diagnosis with a focused history and exam. Step 2
+initiates the first-line treatment within the 30-minute window. Step 3
+orders the monitoring labs that tell you whether step 2 is working.
+Finally, step 4 reassesses at the 2-hour checkpoint — escalate if the
+response is inadequate, hold steady if the labs trend correctly.
+```
+
+Cadence token hit: `step 1` + `step 2` + `step 3` + `finally` + `step 4`.
+
+---
+
+## Pattern: split_image_text
+
+**Canonical scan:** title-anchor on text side -> walk text structure -> reference image only by role
+**Cadence tokens (any of):** the main message / the core claim / the takeaway / visual context
+**Lint:** warning
+
+**When to choose it:** side-by-side image and text where the message lives in the text and the image is contextual unless its role tier says otherwise.
+
+**Sample narration:**
+
+```text
+The main message is the claim itself: clinicians already solve ambiguous
+problems every day. The image is only visual context — it sets the scene,
+so we touch it lightly and return to the point.
+```
+
+Cadence token hit: `the main message` + `visual context`.
+
+---
+
+## Pattern: two_up_comparison
+
+**Canonical scan:** establish frame -> side A -> side B -> synthesis
+**Cadence tokens (any of):** compared with / by contrast / on one side / on the other side
+**Lint:** warning
+
+**When to choose it:** explicit oppositional panes or nested comparison pairs.
+
+**Sample narration:**
+
+```text
+On one side, clinical reasoning narrows uncertainty at the bedside. On the
+other side, design thinking tests a solution with users. Compared with a linear
+checklist, the contrast is the point: both loops learn from evidence.
+```
+
+Cadence token hit: `on one side` + `on the other side` + `compared with`.
+
+---
+
+## Pattern: text_hero_divider
+
+**Canonical scan:** single-impression headline or divider beat
+**Cadence tokens (any of):** pause on / single message / transition / section opener
+**Lint:** warning
+
+**When to choose it:** section openers, poster slides, and sparse CTA cards.
+
+**Sample narration:**
+
+```text
+Pause on the single message here: this is the inflection point. As a section
+opener, it gives the audience a transition before the next example.
+```
+
+Cadence token hit: `pause on` + `single message` + `section opener` + `transition`.
+
+---
+
+## Pattern: enumerated_process
+
+**Canonical scan:** transform-sequence in load-bearing order
+**Cadence tokens (any of):** first / then / produces / feeds / launch / iterate
+**Lint:** **FAIL-CLOSED** -- process-marker absence is a contract violation
+
+**When to choose it:** genuine process slides where the order changes meaning; numerals alone are not enough.
+
+**Sample narration:**
+
+```text
+First, the team frames the need. That feeds a small pilot, which produces
+evidence. Then the group can launch the stronger version and iterate from the
+data it just created.
+```
+
+Cadence token hit: `first` + `feeds` + `produces` + `then` + `launch` + `iterate`.
+
+---
+
+## Pattern: diagram_driven
+
+**Canonical scan:** establish framework -> walk load-bearing relationships -> return to claim
+**Cadence tokens (any of):** framework / diagram / flow / structure / canvas
+**Lint:** warning
+
+**When to choose it:** foreground, opaque, instructional diagrams that are structurally load-bearing.
+
+**Sample narration:**
+
+```text
+The framework starts with the learner need, moves through the canvas, and
+follows the flow into the course decision. The diagram matters because the
+structure shows how each choice constrains the next one.
+```
+
+Cadence token hit: `framework` + `canvas` + `flow` + `diagram` + `structure`.
+
+---
+
+## Parity discipline
+
+Adding, removing, or renaming a pattern in this file requires a matching change in:
+
+1. [state/config/reading-path-patterns.yaml](../../../state/config/reading-path-patterns.yaml) — the enum registry.
+2. [state/config/schemas/segment-manifest.schema.json](../../../state/config/schemas/segment-manifest.schema.json) — the JSON Schema enum inside the `reading_path` sub-object.
+3. [scripts/validators/pass_2_emission_lint.py](../../../scripts/validators/pass_2_emission_lint.py) — the `_check_reading_path_pattern` lookup.
+4. [scripts/utilities/reading_path_classifier.py](../../../scripts/utilities/reading_path_classifier.py) — the `_SCORERS` mapping and `READING_PATH_PATTERNS` tuple.
+5. This file — add the matching `## Pattern: <name>` heading + worked example.
+
+The three-way parity test (`tests/contracts/test_reading_path_parity.py`) asserts registry ↔ schema ↔ headings stay in lockstep.
+
+
+### Reference: pass-2-procedure.md
+---
+name: pass-2-procedure
+description: Irene's Pass 2 procedure — perception enforcement, narration with visual references, motion hydration and confirmation
+---
+
+# Pass 2 Procedure
+
+> **Structural contract for segment-manifest emission** lives at [`./pass-2-authoring-template.md`](./pass-2-authoring-template.md). Read it before writing the manifest. Covers the three §7.1 failure modes (§6.3 no `motion_asset` legacy key; §6.4 `visual_file` on every non-null-visual-mode segment; §6.5 `motion_duration_seconds` carried forward from Motion Gate receipt). Pass 2 output is linted at end of Pack v4.2 §08 via [`scripts/validators/pass_2_emission_lint.py`](../../../scripts/validators/pass_2_emission_lint.py); failing lint blocks §08B Storyboard B.
+
+Pass 2 begins after Gary generates slides and the operator approves them at HIL Gate 2. The context envelope includes approved `gary_slide_output`, may include prior `perception_artifacts` or `literal_visual_publish` staging receipts, and for motion-enabled runs includes `context_paths.motion_plan` / `motion_plan.yaml`.
+
+## Intake
+
+Pass 2 intake also consumes `narration_profile_controls` (11 keys from the Creative Director's creative directive, resolved into `state/config/narration-script-parameters.yaml` by the CD→resolver pipeline). These controls shape narration density, bridging weight, rhetorical register, and arc awareness. Read them from the active narration-script-parameters and apply them alongside bridge cadence and cluster word budgets.
+
+## Retrieval intake (corroborate-only v1)
+
+When retrieval artifacts are present, consume the Irene intake envelope before writing cluster narration. Required intake keys are `run_id`, `pass_2_cluster_id`, `suggested_resources_ref`, `intake_mode`, and `evidence_bolster_active`; `extraction_report_ref` is optional but expected in retrieval-enabled runs.
+
+Scope lock for this version:
+
+- Intake mode support is bounded to corroboration behavior (`intake_mode: corroborate`, or corroboration branch within `mixed`).
+- The additive output field on a segment is `retrieval_provenance`.
+- Full shape and worked examples live in [`./retrieval-intake-contract.md`](./retrieval-intake-contract.md).
+
+Convergence-to-language mapping:
+
+- Dual-source convergence (scite + consensus agreeing): `Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence.`
+- Single-source convergence (scite only): `According to scite.ai citation-context analysis.`
+- Single-source convergence (consensus only): `Per Consensus research synthesis.`
+- Unknown or partial convergence: `According to available retrieval evidence.`
+
+Graceful degradation rule:
+
+- If the suggested-resources payload is empty for the cluster, or extraction rows yield no usable retrieval provenance, emit narration without intake phrasing and append `retrieval_empty_for_cluster_<cluster_id>` to `known_losses`.
+- `evidence_bolster_active` governs whether corroboration phrasing is expected to appear when valid intake exists; it does not override empty-retrieval fail-closed behavior.
+
+## Step 0 — Mandatory Perception Contract (Story 13.1)
+
+Before any narration work, enforce the perception contract via `./scripts/perception_contract.py::enforce_perception_contract(envelope)`. This validates `perception_artifacts` presence, generates them inline via the image sensory bridge if absent, retries LOW-confidence slides once, and escalates persistent LOW to Marcus. Narration MUST NOT begin until this returns `status: "ready"` or Marcus authorizes proceeding despite LOW confidence.
+
+See `skills/sensory-bridges/references/perception-protocol.md` for the five-step protocol.
+
+## Step 1 — Parse and confirm perception
+
+Read Gary's actual slide PNGs and metadata from `gary_slide_output`. Use `perception_artifacts[]` (canonical sensory bridge output, structured and confidence-scored) as the ground truth for what is visually on screen.
+
+State interpretation with confidence per the universal perception protocol: "I see Slide N shows [description]. Confidence: HIGH/MEDIUM/LOW."
+
+The `gary_slide_output[].visual_description` free-text field provides creative context; `perception_artifacts[]` provides auditable ground truth. Any `literal_visual_publish` metadata from Gary is provenance only; Irene still narrates from the approved local slide PNGs in `gary_slide_output`.
+
+## Step 2 — Write narration with visual references, spoken bridges, and earned timing variance (Stories 13.2, 23.1)
+
+Load `./runtime-variability-framework.md` and `./spoken-bridging-language.md`. Read `state/config/narration-script-parameters.yaml` for the active `bridge_cadence` caps (minutes and slides), cluster word budgets, and for `bridge_frequency_scale` / `spoken_bridge_policy` — these may change per run.
+
+For each slide, run `./scripts/visual_reference_injector.py::inject_visual_references` to select visual elements from `perception_artifacts` and produce `visual_references[]` metadata. Weave `visual_references_per_slide` (from `narration-script-parameters.yaml`, default 2, ±1 tolerance) explicit deictic references into the narration flow. Each reference names a specific perceived visual element with spatial context and narrates an insight about it.
+
+Write narration that *complements* the confirmed visual content (not duplicates — narrate the insight, not the structure). Use Marcus's `runtime_plan` as a planning signal, but make slide-length variation come primarily from slide purpose, concept density, and visual burden rather than from arbitrary expansion.
+
+### Cluster-aware processing
+
+When the manifest contains clustered segments (`cluster_id` present), process them cluster-by-cluster in manifest order so the head segment establishes the semantic envelope before any interstitials. Every clustered segment must still be grounded in its own perceived slide, not inferred from the head alone. Apply the cluster contract explicitly:
+
+- **Head segments** (`cluster_role: head`) use `cluster_head_word_range` and establish the topic, hook, and cluster frame.
+- **Interstitials** (`cluster_role: interstitial`) use `interstitial_word_range`, focus on the slide's `isolation_target`, and assume the visual carries most of the meaning; narration supplies the missing interpretation rather than reteaching the whole topic.
+- Interstitials must not introduce new concepts outside the head segment's instructional scope. Treat the head slide's `source_ref` plus the current interstitial's perceived detail as the allowed semantic boundary.
+- **Segment `behavioral_intent`** must serve the cluster's `master_behavioral_intent`. It may intensify or modulate the cluster affect, but it must not contradict or redirect it.
+
+### Bridge cadence discipline
+
+Follow the configured **bridge cadence** so explicit intros/outros appear often enough in **spoken** narration (not only as manifest tags): when `bridge_type` is `intro`, `outro`, `both`, `pivot`, or `cluster_boundary`, the learner-facing narration text must include natural connective language unless enforcement is off.
+
+In clustered runs, suppress routine within-cluster bridges by default. Only `cluster_position: tension` may carry `bridge_type: pivot`, and that pivot should be a brief tonal turn rather than a full seam recap. Seams between clusters should use `bridge_type: cluster_boundary` with a two-part beat: one sentence synthesizing what the prior cluster established, then one sentence pulling the learner into the next topic.
+
+Scale bridge verbosity with `bridge_frequency_scale` while respecting cadence caps. For every segment, record `timing_role`, `content_density`, `visual_detail_load`, a concise `duration_rationale`, and `bridge_type` when that segment carries an explicit bridge beat.
+
+Produce narration script + segment manifest. Optionally produce dialogue scripts, assessment briefs, first-person explainers if requested. Return structured results to Marcus.
+
+## Step 3 — Motion-enabled branch (Epic 14)
+
+If `motion_enabled: true`, load `context_paths.motion_plan` / `motion_plan.yaml` and treat it as the source of truth for per-slide Gate 2M designations. Run `./scripts/manifest_visual_enrichment.py::apply_motion_plan_to_segments` so the segment manifest inherits `motion_type`, `motion_asset_path`, `motion_source`, `motion_duration_seconds`, `motion_brief`, and `motion_status` from the motion plan.
+
+Fail closed on unknown `slide_id` mappings or incomplete non-static assignments. If `motion_enabled: false`, keep every segment explicitly static.
+
+## Step 4 — Motion perception confirmation (Epic 14)
+
+Before final handoff on any non-static segment, run `./scripts/perception_contract.py::enforce_motion_perception_contract(...)`. Approved/generated/imported motion assets must be readable and perception-confirmed before Irene returns the final manifest to Marcus.
+
+Static segments bypass this step and remain governed by the approved slide PNG plus image perception artifacts.
+
+
+### Reference: retrieval-intake-contract.md
+# Retrieval intake contract
+
+Audience-segmented reference for Irene's retrieval-intake seam (corroborate-only v1). This contract documents how Tracy/Texas retrieval outputs become additive segment metadata and attribution phrasing in Pass 2.
+
+## For Irene authors
+
+### Intake envelope keys
+
+Required keys:
+
+- `run_id`
+- `pass_2_cluster_id`
+- `suggested_resources_ref`
+- `intake_mode`
+- `evidence_bolster_active`
+
+Optional key:
+
+- `extraction_report_ref`
+
+### Scope lock
+
+- v1 behavior consumes corroboration outcomes only (`intake_mode: corroborate`, or corroborate branch when `intake_mode: mixed`).
+- If no usable corroboration intake is available, do not force retrieval language.
+
+### Additive segment field
+
+When intake is usable, emit:
+
+```yaml
+retrieval_provenance:
+  - source_id: scite:support-101
+    providers: [scite, consensus]
+    convergence_signal:
+      providers_agreeing: [scite, consensus]
+      providers_disagreeing: []
+      single_source_only: []
+```
+
+### Convergence-to-language table
+
+| Convergence shape | Narration attribution phrase |
+|---|---|
+| `providers_agreeing` contains both `scite` and `consensus`, and `single_source_only` empty | `Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence.` |
+| scite-only convergence | `According to scite.ai citation-context analysis.` |
+| consensus-only convergence | `Per Consensus research synthesis.` |
+| unknown/partial convergence | `According to available retrieval evidence.` |
+
+### Empty retrieval behavior
+
+When suggested resources are empty for a cluster, or extraction report rows do not yield usable retrieval provenance, narration proceeds without intake phrase injection and appends:
+
+```text
+retrieval_empty_for_cluster_<cluster_id>
+```
+
+to `known_losses`.
+
+## For operators
+
+- `evidence_bolster_active: true` means Pass 2 should consume corroboration intake where available.
+- `evidence_bolster_active: false` means retrieval intake may be present but should not be treated as mandatory narration posture.
+- `known_losses` sentinel `retrieval_empty_for_cluster_<cluster_id>` indicates graceful fail-closed behavior, not a crash.
+- `retrieval_provenance` is additive metadata for auditability and should not break legacy segment consumers.
+
+## For dev-agents
+
+- Runtime seam: `marcus/irene/intake.py`.
+- Schema contract: `state/config/schemas/irene-retrieval-intake.schema.json`.
+- Segment additive surface: `state/config/schemas/segment-manifest.schema.json` (`retrieval_provenance`).
+- Procedure lockstep: `skills/bmad-agent-content-creator/references/pass-2-procedure.md`.
+- Contract tests:
+  - `tests/irene/test_retrieval_intake.py`
+  - `tests/contracts/test_pass_2_procedure_parity.py`
+
+## Worked example (corroborate-only)
+
+Input posture: Tracy `output.posture: corroborate`, evidence found true, extraction report includes dual convergence (`scite` + `consensus`).
+
+Expected outcome:
+
+- Narration may use: `Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence.`
+- Segment receives additive `retrieval_provenance` with convergence metadata.
+
+## Cross-links
+
+- [`retrieval-contract.md`](../../bmad-agent-texas/references/retrieval-contract.md) — Texas retrieval contract (Shape 3-Disciplined).
+- [`pass-2-authoring-template.md`](./pass-2-authoring-template.md) — Pass 2 segment-manifest contract and emission examples.
+- [`_bmad-output/implementation-artifacts/irene-retrieval-intake.md`](../../../_bmad-output/implementation-artifacts/irene-retrieval-intake.md) — story spec + party-mode decisions.
+
+
+### Reference: spoken-bridging-language.md
+---
+name: spoken-bridging-language
+code: SB
+description: Spoken pedagogical bridging — align manifest bridge_type with learner-heard intro/outro language per cadence + frequency scale
+---
+
+# Spoken Bridging Language (Irene Pass 2)
+
+**Purpose:** Ensure learner-facing **audio** includes explicit connective tissue when the segment manifest marks `bridge_type` as `intro`, `outro`, `both`, or `cluster_boundary`. Metadata alone is not sufficient: ElevenLabs and learners only experience what appears in `narration_text` / the narration script body.
+
+## Relationship to cadence and scale
+
+- **When bridges must appear** is governed by `runtime_variability.bridge_cadence` in `state/config/narration-script-parameters.yaml` (`require_intro_or_outro_every_minutes`, `require_intro_or_outro_every_slides`). Future runs may tighten or loosen those caps; Irene must re-read them each Pass 2.
+- Clustered runs may override cadence with `cluster_bridge_cadence_override: true`, which means seams between clusters should usually carry `bridge_type: cluster_boundary` before slide/minute caps force a generic bridge.
+- **How prominent each bridge line is** (one short beat vs a fuller orient/summary) is guided by `pedagogical_bridging.bridge_frequency_scale` (`minimal` | `moderate` | `rich`). This does not replace cadence; it modulates verbosity once a bridge is warranted.
+- Inside a cluster, `within_cluster_bridge_policy.default: none` suppresses routine bridge language. Only `cluster_position: tension` may use a brief pivot beat when the policy explicitly allows it.
+
+## Authoring rules
+
+1. For every segment with `bridge_type: intro`, the **spoken narration** must include at least one natural intro-class cue (section orient, welcome beat, or explicit pivot) that matches one of the configured `intro_phrase_patterns` substrings (case-insensitive), unless the production run disables enforcement.
+2. For `bridge_type: outro`, include at least one outro-class cue (handoff, summary stitch, forward pointer) matching `outro_phrase_patterns`.
+3. For `bridge_type: both`, include **both** an intro-class and an outro-class cue somewhere in the same segment's narration (order flexible; avoid mechanical bookending if it harms flow).
+4. For `bridge_type: cluster_boundary`, write a two-part seam: one sentence synthesizing what the prior cluster established, then one sentence pulling the learner toward the next topic.
+5. For `bridge_type: none`, do **not** add fake bridges solely to satisfy cadence metadata. Move the explicit bridge to the next segment where `bridge_type` is non-`none` and cadence allows.
+
+## Delegation to writers
+
+When Irene delegates narration prose, the delegation brief must state:
+
+- The required `bridge_type` for that segment.
+- The configured cadence caps (minutes/slides) so the writer knows how many segments need explicit bridges across the lesson.
+- The `bridge_frequency_scale` so the writer knows whether bridges should be **minimal** (short clause), **moderate** (sentence), or **rich** (short paragraph beat).
+- Whether the segment is inside a cluster, at a cluster seam, or at a tension pivot.
+
+Returned prose must be edited so the **Narration** body satisfies the patterns above before Irene locks the manifest.
+
+## Validator
+
+Deterministic checks live in `skills/bmad-agent-marcus/scripts/validate-irene-pass2-handoff.py` and use `pedagogical_bridging.spoken_bridge_policy` patterns from the same YAML file. Vera documents this as **G4-16** in `skills/bmad-agent-fidelity-assessor/references/gate-evaluation-protocol.md` (G4 deterministic checks list).
+
+
+## Envelope payload (sorted-keys JSON)
+
+```json
+{"bundle_reference":"tejal-c1m1-p4-assessments-bridge","gary_slide_output":[{"card_number":1,"dispatch_variant":"A","display_title":"Module 1 Completion and Transition Prompt","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-01.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"pBSXp91BkrkWx5dd2gv4L","slide_id":"slide-01","variant_id":"A","visual_description":"Module 1 Completion and Transition Prompt \u2014 Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey."},{"card_number":2,"dispatch_variant":"A","display_title":"What Module 1 Established","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-02.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"pBSXp91BkrkWx5dd2gv4L","slide_id":"slide-02","variant_id":"A","visual_description":"What Module 1 Established \u2014 Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module."},{"card_number":3,"dispatch_variant":"A","display_title":"Recap Beat: From Macro Forces to Opportunity Radar","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-03.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"pBSXp91BkrkWx5dd2gv4L","slide_id":"slide-03","variant_id":"A","visual_description":"Recap Beat: From Macro Forces to Opportunity Radar \u2014 Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar."},{"card_number":4,"dispatch_variant":"A","display_title":"Recap Beat: From Reaction to Redesign","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-04.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"pBSXp91BkrkWx5dd2gv4L","slide_id":"slide-04","variant_id":"A","visual_description":"Recap Beat: From Reaction to Redesign \u2014 Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it."},{"card_number":5,"dispatch_variant":"A","display_title":"Why Ideas Alone Are Not Enough","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-05.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"pBSXp91BkrkWx5dd2gv4L","slide_id":"slide-05","variant_id":"A","visual_description":"Why Ideas Alone Are Not Enough \u2014 Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system."},{"card_number":6,"dispatch_variant":"A","display_title":"Tension Beat: The Idea-Leader Gap","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-06.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"pBSXp91BkrkWx5dd2gv4L","slide_id":"slide-06","variant_id":"A","visual_description":"Tension Beat: The Idea-Leader Gap \u2014 Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system."},{"card_number":7,"dispatch_variant":"A","display_title":"Develop Beat: The Leadership Capacities Required","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-literal_slide-07.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"mHYlWsyPWWmx9OpozLWyW","slide_id":"slide-07","variant_id":"A","visual_description":"Develop Beat: The Leadership Capacities Required \u2014 Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity."},{"card_number":8,"dispatch_variant":"A","display_title":"Resolve Beat: Leadership as the Next Build","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-08.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"pBSXp91BkrkWx5dd2gv4L","slide_id":"slide-08","variant_id":"A","visual_description":"Resolve Beat: Leadership as the Next Build \u2014 Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem."},{"card_number":9,"dispatch_variant":"A","display_title":"Preview of Module 2: From Mindset to Identity","file_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-literal_slide-09.png","gamma_settings":{"dimensions":"fluid","image_model":"gpt-image-2-mini","image_source":"aiGenerated","image_style_preset":"illustration","language":"en","production_mode":"api","text_mode":"preserve","theme":"njim9kuhfnljvaa","variant_id":"A"},"generation_id":"mHYlWsyPWWmx9OpozLWyW","slide_id":"slide-09","variant_id":"A","visual_description":"Preview of Module 2: From Mindset to Identity \u2014 Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause."}],"lesson_plan":{"title":"Tejal P4"},"perception_artifacts":[{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.95,"coverage":"perceived","dominant_image_role":"1","extracted_text":"LEAD THE WAY \u672a\u6765\u3092\u5275\u308b Module 1 Completion and Transition Prompt Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey. MODULE 1 COMPLETE","image_role_flags":["tier_2_5_candidate"],"image_roles":["1","4","4","4","2_5","4"],"layout_description":"The slide is split vertically with a full-height illustrated panel on the left and a white content area on the right. The right side contains a large centered title, a paragraph below it, and a small rounded label near the lower left of the text area.","macro_layout":"split_image_text","narration_cadence":"moderate","provider_model_id":"gpt-5.5","reading_path":"split_image_text","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":["tier_2_5_candidate"],"image_roles":["1","4","4","4","2_5","4"],"macro_layout":"single_text_block","narration_cadence":"dense","reading_path":"top_down","reading_path_flags":null,"text_substructure":"dense_exposition"},"reading_path_rationale":{"callout_intent":"No open question, quiz, or action demand is present.","image_role":"The left image is atmospheric/decorative and not needed to understand the slide content.","macro_layout":"Full-height visual panel on the left with the main title and supporting text on the right.","narration_cadence":"Moderate density: more than a divider, but not heavy exposition.","text_substructure":"One dominant title with a brief supporting transition statement and status chip."},"reading_path_source":"llm_primary","slide_id":"slide-01","slide_title":"Module 1 Completion and Transition Prompt","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-01.png","text_blocks":["LEAD THE WAY","\u672a\u6765\u3092\u5275\u308b","Module 1 Completion and Transition Prompt","Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey.","MODULE 1 COMPLETE"],"text_substructure":"hero_message","visual_elements":[{"bbox":[0.0,0.0,0.37,1.0],"id":"left-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Full-height edge-bleed illustrative background with atmospheric doorway scene.","text":"LEAD THE WAY \u672a\u6765\u3092\u5275\u308b"},{"bbox":[0.01,0.24,0.09,0.36],"id":"left-slogan","kind":"callout","role_tier":"4","role_tier_reason":"Prominent poster-like label text within the left visual panel.","text":"LEAD THE WAY"},{"bbox":[0.04,0.41,0.06,0.55],"id":"left-japanese-text","kind":"callout","role_tier":"4","role_tier_reason":"Small vertical label text within the left visual panel.","text":"\u672a\u6765\u3092\u5275\u308b"},{"bbox":[0.43,0.29,0.89,0.43],"id":"main-title","kind":"title","role_tier":"4","role_tier_reason":"Largest primary text block functioning as the slide heading.","text":"Module 1 Completion and Transition Prompt"},{"bbox":[0.43,0.49,0.92,0.63],"id":"body-text","kind":"callout","role_tier":"2_5","role_tier_reason":"Supporting explanatory text below the title.","text":"Recognize that Module 1 is complete and orient to the transition from innovator mindset toward the learner's next leadership-identity journey."},{"bbox":[0.43,0.68,0.6,0.72],"id":"status-chip","kind":"callout","role_tier":"4","role_tier_reason":"Small rounded status tag beneath the body text.","text":"MODULE 1 COMPLETE"}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.92,"coverage":"perceived","dominant_image_role":"1","extracted_text":"\u65b9\u91dd \u76ee\u7684\u30fb\u6226\u7565\u30fb\u5b9f\u884c \u6226\u7565\u601d\u8003 \u30b7\u30ca\u30ea\u30aa\u30d7\u30e9\u30f3\u30cb\u30f3\u30b0 \u5b6b\u5b50\u306e\u5175\u6cd5 RANGE 120 NM BEARING 045\u00b0 SPEED 18.6 KT COURSE 045\u00b0 \u6226\u7565\u30de\u30c3\u30d7 \u6a5f\u4f1a \u30ea\u30b9\u30af \u89b3\u6e2c\u30a8\u30ea\u30a2 \u914d\u7f6e\u6848 \u884c\u52d5\u8a08\u753b \u76ee\u6a19\u8a2d\u5b9a \u60c5\u5831\u53ce\u96c6\u30fb\u5206\u6790 \u6226\u7565\u7acb\u6848 \u5b9f\u884c\u30fb\u691c\u8a3c \u6d1e\u5bdf \u2192\u884c\u52d5 \u6210\u679c What Module 1 Established Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module. Macro Forces Mapped Seeing the larger system forces shaping the health landscape Opportunity Radar Populated Identifying innovation targets within the system Mindset Established Prerequisites in place for the next module's leadership journey","image_role_flags":["tier_2_5_candidate"],"image_roles":["2","4","2","2_5","2_5","2_5","2_5"],"layout_description":"The slide is split vertically, with a full-height illustrative desk/navigation scene on the left and a white content area on the right. The right side has a large title at top, a short explanatory paragraph beneath it, and a pale green bordered three-section summary card below.","macro_layout":"split_image_text","narration_cadence":"moderate","provider_model_id":"gpt-5.5","reading_path":"split_image_text","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":["tier_2_5_candidate"],"image_roles":["2","4","2","2_5","2_5","2_5","2_5"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"dense_exposition"},"reading_path_rationale":{"callout_intent":"No invitation, quiz, or action-demand CTA is present.","image_role":"The left strategy/navigation illustration sets mood and theme; the text does not require narrating it as content.","macro_layout":"Full-height image/illustration on the left and text content on the right form a vertical split.","narration_cadence":"Moderate density: title, one context paragraph, and three concise summary outcomes.","text_substructure":"The summary card contains coordinate outcome boxes that can be read as peers, not a load-bearing sequence."},"reading_path_source":"llm_primary","slide_id":"slide-02","slide_title":"What Module 1 Established","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-02.png","text_blocks":["\u65b9\u91dd \u76ee\u7684\u30fb\u6226\u7565\u30fb\u5b9f\u884c \u6226\u7565\u601d\u8003 \u30b7\u30ca\u30ea\u30aa\u30d7\u30e9\u30f3\u30cb\u30f3\u30b0 \u5b6b\u5b50\u306e\u5175\u6cd5 RANGE 120 NM BEARING 045\u00b0 SPEED 18.6 KT COURSE 045\u00b0 \u6226\u7565\u30de\u30c3\u30d7 \u6a5f\u4f1a \u30ea\u30b9\u30af \u89b3\u6e2c\u30a8\u30ea\u30a2 \u914d\u7f6e\u6848 \u884c\u52d5\u8a08\u753b \u76ee\u6a19\u8a2d\u5b9a \u60c5\u5831\u53ce\u96c6\u30fb\u5206\u6790 \u6226\u7565\u7acb\u6848 \u5b9f\u884c\u30fb\u691c\u8a3c \u6d1e\u5bdf \u2192\u884c\u52d5 \u6210\u679c","What Module 1 Established","Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module.","Macro Forces Mapped Seeing the larger system forces shaping the health landscape","Opportunity Radar Populated Identifying innovation targets within the system","Mindset Established Prerequisites in place for the next module's leadership journey"],"text_substructure":"peer_boxes","visual_elements":[{"bbox":[0.0,0.0,0.395,1.0],"id":"left-illustration","kind":"photo","role_tier":"2","role_tier_reason":"Large supporting illustration occupying the left half; reinforces strategy/navigation theme but is not the main reading path.","text":"\u65b9\u91dd \u76ee\u7684\u30fb\u6226\u7565\u30fb\u5b9f\u884c \u6226\u7565\u601d\u8003 \u30b7\u30ca\u30ea\u30aa\u30d7\u30e9\u30f3\u30cb\u30f3\u30b0 \u5b6b\u5b50\u306e\u5175\u6cd5 RANGE 120 NM BEARING 045\u00b0 SPEED 18.6 KT COURSE 045\u00b0 \u6226\u7565\u30de\u30c3\u30d7 \u6a5f\u4f1a \u30ea\u30b9\u30af \u89b3\u6e2c\u30a8\u30ea\u30a2 \u914d\u7f6e\u6848 \u884c\u52d5\u8a08\u753b \u76ee\u6a19\u8a2d\u5b9a \u60c5\u5831\u53ce\u96c6\u30fb\u5206\u6790 \u6226\u7565\u7acb\u6848 \u5b9f\u884c\u30fb\u691c\u8a3c \u6d1e\u5bdf \u2192\u884c\u52d5 \u6210\u679c"},{"bbox":[0.455,0.105,0.975,0.18],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large top heading labels the slide topic and anchors navigation.","text":"What Module 1 Established"},{"bbox":[0.455,0.245,0.96,0.36],"id":"intro-paragraph","kind":"callout","role_tier":"2","role_tier_reason":"Prominent explanatory text under the title provides context for the summary card.","text":"Recall the major mindset outcomes named in the close: mapping macro forces and populating the Opportunity Radar as prerequisites to the next module."},{"bbox":[0.455,0.41,0.985,0.895],"id":"summary-card","kind":"diagram","role_tier":"2_5","role_tier_reason":"Structured bordered summary exhibit with divided sections that the viewer confirms against the explanatory paragraph.","text":"Macro Forces Mapped Seeing the larger system forces shaping the health landscape Opportunity Radar Populated Identifying innovation targets within the system Mindset Established Prerequisites in place for the next module's leadership journey"},{"bbox":[0.47,0.445,0.71,0.67],"id":"macro-forces-cell","kind":"callout","role_tier":"2_5","role_tier_reason":"Top-left section of the summary card with bold outcome label and supporting description.","text":"Macro Forces Mapped Seeing the larger system forces shaping the health landscape"},{"bbox":[0.73,0.445,0.97,0.67],"id":"opportunity-radar-cell","kind":"callout","role_tier":"2_5","role_tier_reason":"Top-right section of the summary card with bold outcome label and supporting description.","text":"Opportunity Radar Populated Identifying innovation targets within the system"},{"bbox":[0.47,0.69,0.97,0.87],"id":"mindset-cell","kind":"callout","role_tier":"2_5","role_tier_reason":"Bottom full-width section of the summary card with bold outcome label and supporting description.","text":"Mindset Established Prerequisites in place for the next module's leadership journey"}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.96,"coverage":"perceived","dominant_image_role":"2","extracted_text":"Recap Beat: From Macro Forces to Opportunity Radar Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar. \u3064\u306a\u304c\u308b\u672a\u6765 \u5171\u5275\u30fb\u5171\u751f\u30fb\u5171\u6804 Seeing the System The first dimension of Module 1 mindset work was developing the capacity to perceive macro forces \u2014 the structural, economic, and social currents that shape the health system from the outside in. Targeting the Opportunity The second dimension was translating that systemic awareness into concrete innovation targets. The Opportunity Radar gave form to what the learner could now see \u2014 turning perception into possibility.","image_role_flags":null,"image_roles":["4","4","2","4","4","4","4"],"layout_description":"A large dark-blue title sits at the upper left, with a teal introductory sentence below it. The lower half is split between a large blue system illustration on the left and explanatory text blocks with bold headings on the right.","macro_layout":"split_image_text","narration_cadence":"dense","provider_model_id":"gpt-5.5","reading_path":"split_image_text","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":null,"image_roles":["4","4","2","4","4","4","4"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"peer_boxes"},"reading_path_rationale":{"callout_intent":"No question, quiz, or action-demand CTA is present.","image_role":"The system illustration supports the theme of seeing macro forces but is not a technical diagram requiring walkthrough.","macro_layout":"Large illustration occupies the left/lower half while explanatory text blocks occupy the right side.","narration_cadence":"Multiple paragraphs plus an intro sentence require a fuller scaffolded narration.","text_substructure":"The slide uses headed explanatory paragraphs rather than a strict sequence or comparison."},"reading_path_source":"llm_primary","slide_id":"slide-03","slide_title":"Recap Beat: From Macro Forces to Opportunity Radar","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-03.png","text_blocks":["Recap Beat: From Macro Forces to Opportunity Radar","Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar.","\u3064\u306a\u304c\u308b\u672a\u6765","\u5171\u5275\u30fb\u5171\u751f\u30fb\u5171\u6804","Seeing the System","The first dimension of Module 1 mindset work was developing the capacity to perceive macro forces \u2014 the structural, economic, and social currents that shape the health system from the outside in.","Targeting the Opportunity","The second dimension was translating that systemic awareness into concrete innovation targets. The Opportunity Radar gave form to what the learner could now see \u2014 turning perception into possibility."],"text_substructure":"dense_exposition","visual_elements":[{"bbox":[0.06,0.07,0.91,0.18],"id":"title_main","kind":"title","role_tier":"4","role_tier_reason":"Large headline functions as the primary slide label.","text":"Recap Beat: From Macro Forces to Opportunity Radar"},{"bbox":[0.06,0.23,0.88,0.29],"id":"intro_sentence","kind":"callout","role_tier":"4","role_tier_reason":"Prominent explanatory text directly frames the slide content.","text":"Understand that the learner's mindset work in Module 1 included both seeing larger system forces and identifying innovation targets through the Opportunity Radar."},{"bbox":[0.06,0.43,0.61,0.83],"id":"system_illustration","kind":"diagram","role_tier":"2","role_tier_reason":"Large illustrative system scene with icons and connections, but no readable technical labels to trace.","text":"\u3064\u306a\u304c\u308b\u672a\u6765 \u5171\u5275\u30fb\u5171\u751f\u30fb\u5171\u6804"},{"bbox":[0.65,0.34,0.82,0.37],"id":"seeing_heading","kind":"callout","role_tier":"4","role_tier_reason":"Bold section heading labels the right-column explanation.","text":"Seeing the System"},{"bbox":[0.65,0.4,0.93,0.6],"id":"seeing_paragraph","kind":"callout","role_tier":"4","role_tier_reason":"Main explanatory paragraph text intended to be read.","text":"The first dimension of Module 1 mindset work was developing the capacity to perceive macro forces \u2014 the structural, economic, and social currents that shape the health system from the outside in."},{"bbox":[0.65,0.63,0.91,0.66],"id":"targeting_heading","kind":"callout","role_tier":"4","role_tier_reason":"Bold section heading labels the second right-column explanation.","text":"Targeting the Opportunity"},{"bbox":[0.65,0.68,0.94,0.93],"id":"targeting_paragraph","kind":"callout","role_tier":"4","role_tier_reason":"Main explanatory paragraph text intended to be read.","text":"The second dimension was translating that systemic awareness into concrete innovation targets. The Opportunity Radar gave form to what the learner could now see \u2014 turning perception into possibility."}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.92,"coverage":"perceived","dominant_image_role":"1","extracted_text":"Recap Beat: From Reaction to Redesign Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it. Reaction Responding to pressures, constraints, and disruptions as they arrive Redesign Actively shaping the system from a position of intentional leadership \u306e\u8ab2\u984c \u3053\u308c\u304b\u3089\u306e\u672a\u6765 \u3088\u308a\u826f\u3044\u533b\u7642\u306e\u305f\u3081\u306b \u9577\u6642\u9593\u52b4\u50cd \u5206\u65ad \u975e\u52b9\u7387 \u73fe\u72b6\u7dad\u6301 \u7d19\u306e\u8a18\u9332 \u8907\u96d1\u306a\u696d\u52d9 \u30d0\u30e9\u30d0\u30e9\u306a\u30b7\u30b9\u30c6\u30e0 \u5730\u57df\u306b\u4fe1\u983c\u3055\u308c\u308b\u75c5\u9662 \u4e00\u6b69\u305a\u3064\u3001\u672a\u6765\u306e\u533b\u7642\u3078\u3002","image_role_flags":null,"image_roles":["4","4","4","4","4","4","2"],"layout_description":"The slide is split into a wide white content area on the left and a full-height illustrative image panel on the right. The left side has a large title, a subtitle, and two stacked pale-green definition cards with circular icons.","macro_layout":"split_image_text","narration_cadence":"moderate","provider_model_id":"gpt-5.5","reading_path":"two_up_comparison","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":null,"image_roles":["4","4","4","4","4","4","2"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"dense_exposition"},"reading_path_rationale":{"callout_intent":"No response prompt, quiz, or action demand; ordinary informative framing.","image_role":"Large illustration depicts the current-state/future-state contrast that supports the slide's reaction-to-redesign message.","macro_layout":"Left text panel with stacked cards and a full-height image panel on the right.","narration_cadence":"Moderate density with title, subtitle, and two definition beats.","text_substructure":"Two labeled cards contrast Reaction with Redesign as the core reframing."},"reading_path_source":"llm_primary","slide_id":"slide-04","slide_title":"Recap Beat: From Reaction to Redesign","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-04.png","text_blocks":["Recap Beat: From Reaction to Redesign","Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it.","Reaction Responding to pressures, constraints, and disruptions as they arrive","Redesign Actively shaping the system from a position of intentional leadership","\u306e\u8ab2\u984c \u3053\u308c\u304b\u3089\u306e\u672a\u6765 \u3088\u308a\u826f\u3044\u533b\u7642\u306e\u305f\u3081\u306b \u9577\u6642\u9593\u52b4\u50cd \u5206\u65ad \u975e\u52b9\u7387 \u73fe\u72b6\u7dad\u6301 \u7d19\u306e\u8a18\u9332 \u8907\u96d1\u306a\u696d\u52d9 \u30d0\u30e9\u30d0\u30e9\u306a\u30b7\u30b9\u30c6\u30e0 \u5730\u57df\u306b\u4fe1\u983c\u3055\u308c\u308b\u75c5\u9662 \u4e00\u6b69\u305a\u3064\u3001\u672a\u6765\u306e\u533b\u7642\u3078\u3002"],"text_substructure":"comparison_pair","visual_elements":[{"bbox":[0.06,0.08,0.55,0.2],"id":"title-main","kind":"title","role_tier":"4","role_tier_reason":"Large primary heading used as the slide label.","text":"Recap Beat: From Reaction to Redesign"},{"bbox":[0.06,0.25,0.55,0.32],"id":"subtitle","kind":"callout","role_tier":"4","role_tier_reason":"Foreground explanatory text directly under the title.","text":"Understand the closing reframing that the learner is moving from reacting to the health system toward redesigning it."},{"bbox":[0.06,0.35,0.565,0.63],"id":"reaction-card","kind":"callout","role_tier":"4","role_tier_reason":"Prominent labeled definition card.","text":"Reaction Responding to pressures, constraints, and disruptions as they arrive"},{"bbox":[0.075,0.375,0.13,0.455],"id":"reaction-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small shield icon inside the Reaction card.","text":""},{"bbox":[0.06,0.66,0.565,0.95],"id":"redesign-card","kind":"callout","role_tier":"4","role_tier_reason":"Prominent labeled definition card.","text":"Redesign Actively shaping the system from a position of intentional leadership"},{"bbox":[0.075,0.685,0.13,0.765],"id":"redesign-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small magnifying glass icon inside the Redesign card.","text":""},{"bbox":[0.625,0.0,1.0,1.0],"id":"right-illustration","kind":"photo","role_tier":"2","role_tier_reason":"Large illustrative supporting image contrasting a dark current state with a bright future state.","text":"\u306e\u8ab2\u984c \u3053\u308c\u304b\u3089\u306e\u672a\u6765 \u3088\u308a\u826f\u3044\u533b\u7642\u306e\u305f\u3081\u306b \u9577\u6642\u9593\u52b4\u50cd \u5206\u65ad \u975e\u52b9\u7387 \u73fe\u72b6\u7dad\u6301 \u7d19\u306e\u8a18\u9332 \u8907\u96d1\u306a\u696d\u52d9 \u30d0\u30e9\u30d0\u30e9\u306a\u30b7\u30b9\u30c6\u30e0 \u5730\u57df\u306b\u4fe1\u983c\u3055\u308c\u308b\u75c5\u9662 \u4e00\u6b69\u305a\u3064\u3001\u672a\u6765\u306e\u533b\u7642\u3078\u3002"}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.99,"coverage":"perceived","dominant_image_role":"1","extracted_text":"Why Ideas Alone Are Not Enough Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system. A brilliant idea without a capable champion is just a hypothesis waiting to expire. In a matrixed health system, the strength of an innovation concept is only one variable. The human capacity to navigate politics, build coalitions, and sustain momentum is equally \u2014 if not more \u2014 decisive. The idea needs a carrier.","image_role_flags":null,"image_roles":["4","2","4","4","4"],"layout_description":"A large dark-blue title sits at the upper left, with a large rounded photo of a light bulb on a tabletop occupying the lower-left half. The right side contains three stacked text regions: an introductory claim, a highlighted quote with a vertical green rule, and a longer explanatory paragraph.","macro_layout":"split_image_text","narration_cadence":"dense","provider_model_id":"gpt-5.5","reading_path":"split_image_text","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":null,"image_roles":["4","2","4","4","4"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"dense_exposition"},"reading_path_rationale":{"callout_intent":"No question, quiz, or action-demand CTA is present.","image_role":"The light-bulb photo is evocative theme imagery for ideas, with no internal labels or required walkthrough.","macro_layout":"Large photo occupies the left half while stacked text occupies the right half.","narration_cadence":"Multiple prose blocks require a denser explanatory narration.","text_substructure":"The slide uses a claim, quote, and explanatory paragraph rather than peer items or a sequence."},"reading_path_source":"llm_primary","slide_id":"slide-05","slide_title":"Why Ideas Alone Are Not Enough","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-05.png","text_blocks":["Why Ideas Alone Are Not Enough","Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system.","A brilliant idea without a capable champion is just a hypothesis waiting to expire.","In a matrixed health system, the strength of an innovation concept is only one variable. The human capacity to navigate politics, build coalitions, and sustain momentum is equally \u2014 if not more \u2014 decisive. The idea needs a carrier."],"text_substructure":"dense_exposition","visual_elements":[{"bbox":[0.06,0.08,0.65,0.14],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large prominent heading labels the slide topic.","text":"Why Ideas Alone Are Not Enough"},{"bbox":[0.06,0.32,0.61,0.77],"id":"photo_light_bulb","kind":"photo","role_tier":"2","role_tier_reason":"Illustrative supporting image of a light bulb and shadows, glanced at to reinforce the idea theme.","text":""},{"bbox":[0.63,0.2,0.92,0.39],"id":"right_intro_claim","kind":"callout","role_tier":"4","role_tier_reason":"Prominent right-column instructional text conveys the main claim to read.","text":"Understand the source claim that idea quality is insufficient without the leader who can champion the opportunity inside a complex health system."},{"bbox":[0.63,0.43,0.91,0.59],"id":"quote_callout","kind":"callout","role_tier":"4","role_tier_reason":"Indented quote with a vertical green rule visually marks a key takeaway.","text":"A brilliant idea without a capable champion is just a hypothesis waiting to expire."},{"bbox":[0.63,0.62,0.92,0.9],"id":"bottom_explanation","kind":"text","role_tier":"4","role_tier_reason":"Large readable body paragraph provides the concluding explanation.","text":"In a matrixed health system, the strength of an innovation concept is only one variable. The human capacity to navigate politics, build coalitions, and sustain momentum is equally \u2014 if not more \u2014 decisive. The idea needs a carrier."}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.93,"coverage":"perceived","dominant_image_role":"1","extracted_text":"SPECIALTY DERYICES BEHAVIORAL HEALTH REGULATORY COMPLIANCE FINANCIAL MANAGEMENT LEGAL & RISK INFORMATION SYSTEMS STRATEGIC PLANNING CODING & DOCUMENTATION CARE COORDINATION POPULATION HEALTH WORKFORCE SHORTAGE Tension Beat: The Idea-Leader Gap Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system. The Viable Opportunity The Opportunity Radar has surfaced a real, addressable clinical problem. The innovation target is legitimate and the need is urgent. The Matrixed System Health systems are complex, multi-stakeholder environments where even strong ideas face institutional friction, competing priorities, and structural resistance. The Gap Without a leader equipped to champion the opportunity \u2014 to navigate, persuade, and persist \u2014 the idea stalls. Viability alone does not guarantee progress.","image_role_flags":["tier_2_5_candidate"],"image_roles":["2","4","2","2_5","2_5","2_5"],"layout_description":"The slide is split vertically: a large illustrated maze-like health system scene fills the left half, while the right half contains a large title, subtitle, and three stacked bordered callout cards. The callout cards have green vertical accent bars on the left and blue text on white backgrounds.","macro_layout":"split_image_text","narration_cadence":"dense","provider_model_id":"gpt-5.5","reading_path":"split_image_text","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":["tier_2_5_candidate"],"image_roles":["2","4","2","2_5","2_5","2_5"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"dense_exposition"},"reading_path_rationale":{"callout_intent":"No invitation, quiz, or concrete action demand is present; the callouts are informational.","image_role":"The illustration depicts the matrixed health-system context referenced by the slide, but it is not a technical diagram requiring walk-through.","macro_layout":"Left half is a large health-system illustration; right half contains the title, subtitle, and stacked text cards.","narration_cadence":"Text density is high enough to require scaffolded explanation rather than brief beats.","text_substructure":"The right side is paragraph-heavy explanatory copy organized into three stacked thematic cards, not a transform sequence."},"reading_path_source":"llm_primary","slide_id":"slide-06","slide_title":"Tension Beat: The Idea-Leader Gap","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-06.png","text_blocks":["SPECIALTY DERYICES","BEHAVIORAL HEALTH","REGULATORY COMPLIANCE FINANCIAL MANAGEMENT LEGAL & RISK INFORMATION SYSTEMS STRATEGIC PLANNING","CODING & DOCUMENTATION","CARE COORDINATION","POPULATION HEALTH","WORKFORCE SHORTAGE","Tension Beat: The Idea-Leader Gap","Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system.","The Viable Opportunity The Opportunity Radar has surfaced a real, addressable clinical problem. The innovation target is legitimate and the need is urgent.","The Matrixed System Health systems are complex, multi-stakeholder environments where even strong ideas face institutional friction, competing priorities, and structural resistance.","The Gap Without a leader equipped to champion the opportunity \u2014 to navigate, persuade, and persist \u2014 the idea stalls. Viability alone does not guarantee progress."],"text_substructure":"dense_exposition","visual_elements":[{"bbox":[0.0,0.0,0.5,1.0],"id":"left-illustration","kind":"photo","role_tier":"2","role_tier_reason":"Large supporting illustration occupying the left half, used to evoke a complex health-system maze.","text":"SPECIALTY DERYICES BEHAVIORAL HEALTH REGULATORY COMPLIANCE FINANCIAL MANAGEMENT LEGAL & RISK INFORMATION SYSTEMS STRATEGIC PLANNING CODING & DOCUMENTATION CARE COORDINATION POPULATION HEALTH WORKFORCE SHORTAGE"},{"bbox":[0.57,0.06,0.98,0.17],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large primary heading labels the slide topic.","text":"Tension Beat: The Idea-Leader Gap"},{"bbox":[0.57,0.21,0.94,0.28],"id":"subtitle","kind":"callout","role_tier":"2","role_tier_reason":"Prominent explanatory sentence directly under the title.","text":"Recognize the challenge that a viable opportunity can still fail if the leader cannot carry it through a matrixed health system."},{"bbox":[0.57,0.31,0.98,0.51],"id":"callout-viable-opportunity","kind":"callout","role_tier":"2_5","role_tier_reason":"Bordered content card with heading and supporting explanatory text.","text":"The Viable Opportunity The Opportunity Radar has surfaced a real, addressable clinical problem. The innovation target is legitimate and the need is urgent."},{"bbox":[0.57,0.53,0.98,0.73],"id":"callout-matrixed-system","kind":"callout","role_tier":"2_5","role_tier_reason":"Bordered content card with heading and supporting explanatory text.","text":"The Matrixed System Health systems are complex, multi-stakeholder environments where even strong ideas face institutional friction, competing priorities, and structural resistance."},{"bbox":[0.57,0.75,0.98,0.95],"id":"callout-gap","kind":"callout","role_tier":"2_5","role_tier_reason":"Bordered content card with heading and supporting explanatory text.","text":"The Gap Without a leader equipped to champion the opportunity \u2014 to navigate, persuade, and persist \u2014 the idea stalls. Viability alone does not guarantee progress."}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.98,"coverage":"perceived","dominant_image_role":"1","extracted_text":"Develop Beat: The Leadership Capacities Required Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity. Political Savvy Navigating systems, relationships, and power dynamics with awareness and intention. Communication Skills Articulating vision clearly and persuasively to move people and organizations forward. Leadership Identity Owning who you are as a leader \u2014 the foundation from which all other capacities grow.","image_role_flags":["tier_2_5_candidate"],"image_roles":["1","4","2_5","2_5","4","2_5","4","2_5","4"],"layout_description":"The slide is split vertically with a full-height illustration on the left and a white content area on the right. The right side contains a large title, an explanatory paragraph, and three pale green capacity cards with small circular icons.","macro_layout":"split_image_text","narration_cadence":"moderate","provider_model_id":"gpt-5.5","reading_path":"split_image_text","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":["tier_2_5_candidate"],"image_roles":["1","4","2_5","2_5","4","2_5","4","2_5","4"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"dense_exposition"},"reading_path_rationale":{"callout_intent":"No explicit question, quiz, or real CTA; the slide primarily informs.","image_role":"Left illustration is evocative with no labels or load-bearing content; small icons only type the cards.","macro_layout":"Full-height illustration on the left with the title and content cards on the right creates a half image/half text split.","narration_cadence":"Moderate density: title, brief setup sentence, and three concise peer cards.","text_substructure":"Three leadership capacities are coordinate peer cards and can be read in natural order without a required sequence."},"reading_path_source":"llm_primary","slide_id":"slide-07","slide_title":"Develop Beat: The Leadership Capacities Required","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-literal_slide-07.png","text_blocks":["Develop Beat: The Leadership Capacities Required","Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity.","Political Savvy Navigating systems, relationships, and power dynamics with awareness and intention.","Communication Skills Articulating vision clearly and persuasively to move people and organizations forward.","Leadership Identity Owning who you are as a leader \u2014 the foundation from which all other capacities grow."],"text_substructure":"peer_boxes","visual_elements":[{"bbox":[0,0,0.36,1],"id":"left-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Edge-bleed evocative illustration with no internal labels, used as thematic background.","text":""},{"bbox":[0.42,0.06,0.86,0.22],"id":"title","kind":"title","role_tier":"4","role_tier_reason":"Large heading functions as the main section label.","text":"Develop Beat: The Leadership Capacities Required"},{"bbox":[0.42,0.27,0.93,0.36],"id":"intro-text","kind":"callout","role_tier":"2_5","role_tier_reason":"Explanatory text establishes what the capacity cards confirm.","text":"Identify the specific capacities named in the source as necessary for success: political savvy, communication skills, and leadership identity."},{"bbox":[0.42,0.38,0.65,0.69],"id":"card-political-savvy","kind":"callout","role_tier":"2_5","role_tier_reason":"Content card with heading and description to confirm one named capacity.","text":"Political Savvy Navigating systems, relationships, and power dynamics with awareness and intention."},{"bbox":[0.44,0.41,0.49,0.47],"id":"icon-political-savvy","kind":"icon","role_tier":"4","role_tier_reason":"Small icon inside the card, area under 0.05, used as a label marker.","text":""},{"bbox":[0.67,0.38,0.9,0.69],"id":"card-communication-skills","kind":"callout","role_tier":"2_5","role_tier_reason":"Content card with heading and description to confirm one named capacity.","text":"Communication Skills Articulating vision clearly and persuasively to move people and organizations forward."},{"bbox":[0.69,0.41,0.74,0.47],"id":"icon-communication-skills","kind":"icon","role_tier":"4","role_tier_reason":"Small icon inside the card, area under 0.05, used as a label marker.","text":""},{"bbox":[0.42,0.71,0.9,0.94],"id":"card-leadership-identity","kind":"callout","role_tier":"2_5","role_tier_reason":"Content card with heading and description to confirm one named capacity.","text":"Leadership Identity Owning who you are as a leader \u2014 the foundation from which all other capacities grow."},{"bbox":[0.44,0.75,0.49,0.81],"id":"icon-leadership-identity","kind":"icon","role_tier":"4","role_tier_reason":"Small icon inside the card, area under 0.05, used as a label marker.","text":""}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.96,"coverage":"perceived","dominant_image_role":"3","extracted_text":"Resolve Beat: Leadership as the Next Build Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem. Leader Built Module 2: develop leadership identity to champion opportunity Mindset Built Module 1: mapped forces and Opportunity Radar The transition is clear: Module 1 gave the learner the eyes to see the opportunity. Module 2 will build the hands \u2014 and the identity \u2014 to carry it forward. The clinical problem is waiting. The next build is the leader. The mindset is the foundation. The leader is the structure built upon it. \u5275\u9020 CREATE DESIGN BUILD INSPIRE","image_role_flags":["tier_2_5_candidate"],"image_roles":["4","2_5","2","2_5","2_5","4","1"],"layout_description":"The slide is split with a white text-heavy left panel and a full-height illustrated architectural scene on the right. The left panel contains a large title, subtitle, a simple green timeline diagram with two labeled modules, a paragraph, and a pale green callout box at the bottom.","macro_layout":"split_image_text","narration_cadence":"dense","provider_model_id":"gpt-5.5","reading_path":"enumerated_process","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":["tier_2_5_candidate"],"image_roles":["4","2_5","2","2_5","2_5","4","1"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"peer_boxes"},"reading_path_rationale":{"callout_intent":"The callouts summarize and frame the lesson but do not ask for audience response, quiz, or real CTA action.","image_role":"The left-panel timeline diagram has internal module labels and connector structure that should be walked through as part of the transition.","macro_layout":"Left text panel is paired with a full-height right-side illustration, forming a clear image/text split.","narration_cadence":"Multiple text blocks, a diagram, paragraph, and takeaway callout require a denser narration pass.","text_substructure":"The content frames an order-dependent move from Module 1 mindset to Module 2 leader-building, not permutable peers."},"reading_path_source":"llm_primary","slide_id":"slide-08","slide_title":"Resolve Beat: Leadership as the Next Build","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-creative_slide-08.png","text_blocks":["Resolve Beat: Leadership as the Next Build","Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem.","Leader Built Module 2: develop leadership identity to champion opportunity","Mindset Built Module 1: mapped forces and Opportunity Radar","The transition is clear: Module 1 gave the learner the eyes to see the opportunity. Module 2 will build the hands \u2014 and the identity \u2014 to carry it forward. The clinical problem is waiting. The next build is the leader.","The mindset is the foundation. The leader is the structure built upon it.","\u5275\u9020","CREATE DESIGN BUILD INSPIRE"],"text_substructure":"enumerated_process","visual_elements":[{"bbox":[0.05,0.06,0.52,0.18],"id":"title-main","kind":"title","role_tier":"4","role_tier_reason":"Large heading labels the slide topic at the top left.","text":"Resolve Beat: Leadership as the Next Build"},{"bbox":[0.06,0.22,0.52,0.29],"id":"subtitle","kind":"callout","role_tier":"2_5","role_tier_reason":"Prominent explanatory statement beneath the title guides interpretation of the slide.","text":"Accept that the next step after mindset is to build the leader capable of solving the waiting clinical problem."},{"bbox":[0.07,0.32,0.54,0.59],"id":"timeline-diagram","kind":"diagram","role_tier":"3","role_tier_reason":"A structured timeline-like diagram with internal labels and connecting vertical lines must be traced to compare modules.","text":"Leader Built Module 2: develop leadership identity to champion opportunity Mindset Built Module 1: mapped forces and Opportunity Radar"},{"bbox":[0.06,0.63,0.56,0.77],"id":"body-paragraph","kind":"callout","role_tier":"2_5","role_tier_reason":"Large explanatory paragraph provides the key narrative transition after the diagram.","text":"The transition is clear: Module 1 gave the learner the eyes to see the opportunity. Module 2 will build the hands \u2014 and the identity \u2014 to carry it forward. The clinical problem is waiting. The next build is the leader."},{"bbox":[0.06,0.82,0.54,0.93],"id":"bottom-callout","kind":"callout","role_tier":"2_5","role_tier_reason":"Pale green boxed takeaway emphasizes the core summary statement.","text":"The mindset is the foundation. The leader is the structure built upon it."},{"bbox":[0.075,0.85,0.095,0.87],"id":"callout-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small outline icon inside the callout acts as a label marker and is under the small-icon area gate.","text":""},{"bbox":[0.6,0.0,1.0,1.0],"id":"right-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Full-height edge-bleed illustrative background image with evocative construction/leadership scene and no technical labels to trace.","text":"\u5275\u9020 CREATE DESIGN BUILD INSPIRE"}]},{"artifact_path":"","callout_intent":null,"card_number":null,"confidence":"HIGH","confidence_score":0.98,"coverage":"perceived","dominant_image_role":"1","extracted_text":"Preview of Module 2: From Mindset to Identity Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause. 1 Define Leadership Identity Clarify who you are as a leader and what you stand for at your core. 2 Communicate Vision Translate your identity into a compelling vision others can see and believe in. 3 Inspire Others to Join Move from mindset to movement \u2014 rallying people around a shared cause. Module 1 Complete. You've built the mindset. Now it's time to step fully into your identity as a leader.","image_role_flags":null,"image_roles":["1","1","2","4","2","4","2","4","2","2","4"],"layout_description":"The slide is split vertically with a large warm illustration of open doors and a bridge at sunrise on the left, and a white content area on the right. The right side has a large title, intro paragraph, three numbered chevron step blocks, and a pale green callout box at the bottom.","macro_layout":"split_image_text","narration_cadence":"moderate","provider_model_id":"gpt-5.5","reading_path":"enumerated_process","reading_path_degraded":false,"reading_path_flags":null,"reading_path_geometry":{"callout_intent":null,"image_role_flags":null,"image_roles":["1","1","2","4","2","4","2","4","2","2","4"],"macro_layout":"split_image_text","narration_cadence":"dense","reading_path":"split_image_text","reading_path_flags":null,"text_substructure":"peer_boxes"},"reading_path_rationale":{"callout_intent":"The bottom callout is a transition/summary, not an explicit response prompt, quiz, or action demand.","image_role":"The dominant image is a mood-setting illustration with no labels or content the text depends on.","macro_layout":"Large evocative image on the left and text content on the right form a vertical split.","narration_cadence":"Moderate density with title, intro, three steps, and a closing callout.","text_substructure":"The numbered blocks form an ordered progression from defining identity to communicating vision to inspiring others."},"reading_path_source":"llm_primary","slide_id":"slide-09","slide_title":"Preview of Module 2: From Mindset to Identity","source_png_path":"C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\22b27500-6e67-4dd7-8308-fd89defe3d99\\exports\\gary\\A-literal_slide-09.png","text_blocks":["Preview of Module 2: From Mindset to Identity","Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause.","1","Define Leadership Identity","Clarify who you are as a leader and what you stand for at your core.","2","Communicate Vision","Translate your identity into a compelling vision others can see and believe in.","3","Inspire Others to Join","Move from mindset to movement \u2014 rallying people around a shared cause.","Module 1 Complete. You've built the mindset. Now it's time to step fully into your identity as a leader."],"text_substructure":"enumerated_process","visual_elements":[{"bbox":[0,0,0.36,1],"id":"left-illustration","kind":"photo","role_tier":"1","role_tier_reason":"Large edge-bleed scenic illustration used as evocative background with no internal labels.","text":""},{"bbox":[0.42,0.06,0.9,0.17],"id":"title","kind":"title","role_tier":"1","role_tier_reason":"Largest text at top right establishes the slide topic immediately.","text":"Preview of Module 2: From Mindset to Identity"},{"bbox":[0.42,0.22,0.89,0.32],"id":"intro-paragraph","kind":"callout","role_tier":"2","role_tier_reason":"Supporting explanatory paragraph below the title.","text":"Preview that Module 2 will focus on defining leadership identity, communicating vision, and inspiring others to join the cause."},{"bbox":[0.42,0.35,0.5,0.49],"id":"step-1-marker","kind":"icon","role_tier":"4","role_tier_reason":"Small numbered chevron acts as a label for the first step.","text":"1"},{"bbox":[0.52,0.37,0.9,0.47],"id":"step-1-text","kind":"bullet","role_tier":"2","role_tier_reason":"Supporting step text paired with the numbered marker.","text":"Define Leadership Identity Clarify who you are as a leader and what you stand for at your core."},{"bbox":[0.42,0.49,0.5,0.64],"id":"step-2-marker","kind":"icon","role_tier":"4","role_tier_reason":"Small numbered chevron acts as a label for the second step.","text":"2"},{"bbox":[0.52,0.52,0.91,0.62],"id":"step-2-text","kind":"bullet","role_tier":"2","role_tier_reason":"Supporting step text paired with the numbered marker.","text":"Communicate Vision Translate your identity into a compelling vision others can see and believe in."},{"bbox":[0.42,0.64,0.5,0.8],"id":"step-3-marker","kind":"icon","role_tier":"4","role_tier_reason":"Small numbered chevron acts as a label for the third step.","text":"3"},{"bbox":[0.52,0.67,0.91,0.77],"id":"step-3-text","kind":"bullet","role_tier":"2","role_tier_reason":"Supporting step text paired with the numbered marker.","text":"Inspire Others to Join Move from mindset to movement \u2014 rallying people around a shared cause."},{"bbox":[0.42,0.82,0.91,0.94],"id":"bottom-callout","kind":"callout","role_tier":"2","role_tier_reason":"Highlighted summary callout in a shaded box at the bottom.","text":"Module 1 Complete. You've built the mindset. Now it's time to step fully into your identity as a leader."},{"bbox":[0.44,0.85,0.46,0.88],"id":"bottom-callout-icon","kind":"icon","role_tier":"4","role_tier_reason":"Small outlined icon inside the callout box serves as a visual tag.","text":""}]}]}
+```
+
+## Task
+
+Author Pass 2 narration + segment manifest deltas per the procedure above, grounded EXCLUSIVELY in the source corpus and the perceived visual authority block. Treat the expected visual plan as demoted, possibly stale context; never use it as visual authority. Digit-form spoken figures ($N / N% / Nx) MUST be ⊆ that slide's perceived speakable set; if the set is empty, paraphrase without digit-form numerals. If a slide is marked `UNVERIFIED — no perceived authority`, say that exact token or avoid visual claims for that slide. Every visual_reference's `perception_source` MUST be one of the roster slide ids verbatim. Return your output as a JSON object with two top-level keys: `narration_script` (an array of segment objects) and `segment_manifest_deltas` (an array of manifest patch objects). Be explicit about visual references and cluster-boundary bridges.

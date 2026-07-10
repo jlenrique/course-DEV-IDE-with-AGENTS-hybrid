@@ -509,16 +509,13 @@ class AssetSpec(BaseModel):
 
 
 # Per §F.2 M-2: stamp ratified_at + produced_by_node off ``last_gate_crossed``.
-# Finding-A (HONEST minimum): v1 pins ONLY the assets that VERIFIABLY land on disk
-# in the run dir today — `g0-enrichment.json` (G0E) and `ratified-los.json` (G0R),
-# both confirmed on the Step-8 live run dir. The remaining M-2 rows (G1
-# locked-lesson-plan, G2C authorized-storyboard, G3/G4/G4A voice-selection /
-# pass2-envelope / synthesis) are NOT yet pinned because their on-disk path is not
-# reliably materialised (e.g. the CF-A run's `exports/` was empty — storyboard
-# publish stubbed). Completing the map is the filed follow-on
-# `udac-v1-universality-complete-gate-asset-map` (deferred inventory). The gate
-# writer no-ops harmlessly on any mapped asset whose file is absent, so adding a row
-# later is a one-line, side-effect-free extension.
+# Mine-next trust T1 (2026-07-10): pin every gate whose run-dir path is
+# VERIFIABLY materialised by a production writer. The gate writer no-ops
+# harmlessly on any mapped asset whose file is absent, so rows are
+# side-effect-free until the file lands. Residual G4/G4A voice-selection +
+# Pass-2 envelope paths remain under bundle_dir (not run-dir root) and stay
+# OUT of this map until a run-dir projection exists — see deferred
+# ``udac-v1-universality-complete-gate-asset-map`` residual note.
 GATE_ASSET_MAP: Final[dict[str, tuple[AssetSpec, ...]]] = {
     "G0E": (
         AssetSpec(
@@ -531,6 +528,22 @@ GATE_ASSET_MAP: Final[dict[str, tuple[AssetSpec, ...]]] = {
         AssetSpec(
             asset_id="ratified-los",
             rel_path="ratified-los.json",
+            digest_algo=DigestAlgo.CANONICAL_SHA256,
+        ),
+    ),
+    # G1: Irene Pass-1 locked lesson plan (JSON companion beside irene-pass1.md).
+    "G1": (
+        AssetSpec(
+            asset_id="locked-lesson-plan",
+            rel_path="irene-pass1.lesson-plan.json",
+            digest_algo=DigestAlgo.CANONICAL_SHA256,
+        ),
+    ),
+    # G2C: durable storyboard-publish receipt written by storyboard_publisher.
+    "G2C": (
+        AssetSpec(
+            asset_id="authorized-storyboard",
+            rel_path="storyboard-publish-G2C.json",
             digest_algo=DigestAlgo.CANONICAL_SHA256,
         ),
     ),
