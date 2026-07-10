@@ -1,8 +1,12 @@
 # EPIC SPEC — Run-Start Batch LLM Execution Mode + Node-Level Model/Profile Registry
 
-**Status:** SPEC (ready-to-activate draft; NOT yet built). **Authored:** 2026-07-01 (Opus 4.8) from the operator handoff brief `openai-batch-mode-run-option-brief-2026-07-01.md`. **Governance:** the formal epic (`bmad-create-epics-and-stories`) + party GREEN-LIGHT fire at the **optimal juncture** (below) BEFORE build; Fable 5 (next session) may refine this draft. **Boundary (binding, from the brief):** product work ONLY if it improves the Marcus-SPOC runtime orchestrator; proofing runs inform defects/constraints, never the target [[feedback_spoc_is_goal_not_concierge_proofing_runs]].
+**Status:** **v1 CLOSED 2026-07-10** (party CLOSE 4/4; close letter `batch-llm-epic-v1-close-2026-07-10.md`). A1-EXT remains TRAIL/deferred. **Authored:** 2026-07-01 from `openai-batch-mode-run-option-brief-2026-07-01.md`. **Amended:** 2026-07-10 research + party green-light. **Governance:** party record `_bmad-output/planning-artifacts/batch-llm-party-greenlight-2026-07-10.md`. **Boundary (binding):** product work ONLY if it improves the Marcus-SPOC runtime orchestrator; proofing runs inform defects/constraints, never the target [[feedback_spoc_is_goal_not_concierge_proofing_runs]].
 
-**⛔ Model policy (operator-confirmed 2026-07-01):** the production pipeline's standard model STAYS **OpenAI GPT-5**; batch mode uses **OpenAI GPT-5 batch calling + smaller/cheaper OpenAI models (gpt-5-mini/nano) for lighter nodes.** This epic is entirely OpenAI-pipeline work. **Fable 5 (`claude-fable-5`) is the IDE/AGENT model — the brain of the sessions that BUILD this epic — and is NEVER invoked by production runs; it is not a component of this epic and not a perception/pipeline candidate** (the brief's Anthropic-candidate mention is superseded). Fable 5's only relevance here: it may let us build this epic more confidently/sooner when its optimal juncture arrives.
+**⛔ Model policy (operator-confirmed 2026-07-01; transport amended 2026-07-10):** production models stay in the **OpenAI GPT-5 family** for v1 (cascade today: vision → `gpt-5.5`). Batch mode uses **LiteLLM’s Batch + Files SDK** (`custom_llm_provider="openai"` first) so the same adapter can later route other providers’ batch APIs without rewriting nodes. **Fable 5 (`claude-fable-5`) is the IDE/AGENT model only — NEVER a production/pipeline model.**
+
+**⛔ Transport policy (operator-corrected 2026-07-10):** LiteLLM is **already installed** on the operator machine (verified `.venv` dist **1.90.2**). This epic **hooks it up** (declare in `pyproject.toml`, adapter, tests) — it does **not** treat LiteLLM as a future install. Do **not** build a parallel raw-OpenAI-only Batch client as the product path.
+
+**⛔ Endpoint correction (2026-07-10 research):** LiteLLM `create_batch` accepts endpoint Literal **`/v1/chat/completions` | `/v1/embeddings` | `/v1/completions` only** — **not** `/v1/responses`. Perception batch rows MUST use multimodal **`/v1/chat/completions`** (matches current `perceive_png` `image_url` shape). July-1 `/v1/responses` Batch wording is **superseded** for v1.
 
 ## The one binding invariant (what makes this surgical)
 **Batch is TRANSPORT, not SEMANTICS.** A run-start `execution_mode` switch (`realtime | batch`) changes transport + timing for *eligible request sites only*; node inputs and outputs stay **contract-equivalent** to realtime. Downstream nodes must not know or care which transport produced an artifact — same schema, same validation. This clean adapter seam (zero downstream contract change) is precisely why the lift is "not especially heavy but must be surgical."
@@ -10,47 +14,99 @@
 ## The planning insight — TWO tranches by dependency + timing
 The brief bundles 7 stories. They split cleanly into a **foundational tranche (node model/profile registry + eval harness)** and the **async batch machinery** — both deferred to the clean runtime boundary, Tranche A landing first as Tranche B's prerequisite. This split is the whole "optimal juncture" answer. *(The earlier "Fable-coupled, pull forward" framing of Tranche A is retracted per the 2026-07-01 operator correction — no pull-forward; Fable 5 is the agent model, not a pipeline model.)*
 
-### TRANCHE A — Node-level model/profile registry + quality-eval harness (FOUNDATIONAL; first within the deferred epic)
-Decoupled from the async machinery — small, surgical, no pause/resume risk. It is the **foundational substrate the batch feature needs before Tranche B** — per-node PRODUCTION-model selection + a way to compare candidate PRODUCTION perception models before choosing a batch default. **⛔ NB (operator-corrected 2026-07-01): this is about PRODUCTION models (the gpt-5 family) — it is NOT a "Fable-5 adoption vehicle." Fable 5 is the IDE/AGENT model (powers Claude Code + spawned agents), NEVER wired into the app pipeline** [[project_fable5_regained_opportunity_scan]]. Tranche A is NOT coupled to the immediate Leg-C/Fable work; it travels WITH the batch epic (see juncture). The Leg-C D1 fix is the Pass-1 output-contract extension, not a production-model swap.
+### TRANCHE A — Node-level model/profile registry + quality-eval harness + LiteLLM dependency honesty (FOUNDATIONAL)
 
-- **A1 — Node-level model/profile registry.** Each LLM node declares `provider/model/reasoning_effort/text_verbosity/max_output_tokens` via a profile (`llm_execution.nodes.<node>`), `default_mode: realtime`. Registers PRODUCTION candidate models per node (gpt-5 family; other production providers as desired) — **mirror the existing `gpt-5.5` `vision-perceiver-real` wiring** (registry/pricing/cascade rows + config). AC: a node's PRODUCTION model/profile is declaratively selectable; default behavior byte-preserved. Surgical; no runtime-orchestration change. (NOT for Fable 5 — that is the agent model, not a pipeline node model.)
-- **A2 — Perception quality-evaluation harness.** A FROZEN slide set; run current/default + `gpt-5`/`gpt-5-mini`/`gpt-5-nano` (PRODUCTION perception candidates — the brief's mention of Fable 5 here is SUPERSEDED; Fable 5 is not a pipeline model); score: schema validity, OCR/extracted-text fidelity, visual-element coverage, layout/reading-path quality, figure/numeric fidelity, downstream Irene Pass-2 usefulness, 07G pass/fail, cost + turnaround. AC: a reproducible comparison across ≥ full `gpt-5` + `gpt-5-mini`. Reuse the smoke sidecar `scratchpad/anthropic-batch-perception-smoke/openai_batch_smoke.py`.
+Decoupled from pause/resume risk where possible. Foundational substrate before promoting the run-start switch.
 
-**🆕 Operator scope additions (2026-07-01, in-session directive — binding on the formal epic):**
-- **A1-EXT — per-node model TIERING across ALL LLM nodes (not just perception).** The registry is the seam through which each LLM node — realtime OR batch — resolves to the model **best suited and most economical for its needs**. The epic assigns every LLM node an explicit tier: **frontier** (the LLM-emergent creative/perceptual work — operator-named candidates: **Irene Pass-1 clustering / Pass-2 narration** and **07G slide perception**; the 07G swap path is PROTECTED-invariant-gated, non-waivable perception read-path-match), **mid** (e.g. G0 component-extraction, directive composition), **economy** (`gpt-5-mini`/`gpt-5-nano` for lighter structured-output nodes). Tier assignments are **harness-validated per node** (extend A2's method beyond perception where a node's output quality is measurable), same OpenAI family, never vibes. AC: a tier column in the node registry, every LLM node assigned, each economy/mid downgrade backed by an eval artifact.
-- **A3 — batch-eligibility determination (WHICH nodes are batch-appropriate).** The epic must produce a per-node **eligibility matrix** (`batch_eligible: true|false` + rationale, carried in the registry), judged against explicit criteria: (a) per-item independence / natural fan-out (e.g. per-slide perception) with a stable join key (`custom_id`); (b) no mid-node HIL-gate or conversational dependency; (c) latency tolerance — the node's position tolerates the batch window (up to 24h) under the pause/resume substrate; (d) volume × token cost high enough to be worth the transport; (e) retry/idempotency compatibility with the existing gate policy. Non-eligible nodes stay realtime permanently (B6 routes only eligible ones). AC: every LLM node classified with rationale; the first eligible node (slide perception) justified against all five criteria, not by assertion.
+- **A0 — LiteLLM dependency + hookup research closeout (NEW 2026-07-10).** Declare `litellm>=1.90.2,<2` in `pyproject.toml` (machine already has **1.90.2**). Document true Batch path; **forbid** `batch_completion` as cost path. AC: dep + import smoke; version assert starts with `1.90`; research cited; naming trap in adapter docstring. Hermetic CLOSE only — not “hookup done.”
+- **A1 — Vision-first model/profile registry (party-narrowed 2026-07-10; model policy operator-corrected same day).** v1 ships `llm_execution.nodes.vision` (provider/model/reasoning/verbosity/max_completion_tokens, `default_mode: realtime`, optional **batch profile**). Realtime cascade default (`gpt-5.5`) stays byte-preserved. **Batch model MUST match realtime (`gpt-5.5`) or the nearest GPT-5-family member available on Batch** — do not default product batch to `gpt-4.1-mini` (that id remains harness baseline evidence only). **Full every-LLM-node registry is NOT a v1 bar.**
+- **A2 — Perception quality-evaluation harness (v1 = 07G only).** Frozen slide set; compare realtime vs batch + gpt-5 family candidates for **perception only**. Rebuild LiteLLM-backed smoke. Do not expand into Irene/G0 platform eval in this epic’s ship claim.
+- **A1-EXT — per-node model TIERING (all LLM nodes).** **TRAIL / follow-on** after first perception green. **MUST NOT gate B2–B6.** Filed in deferred-inventory; not in first-slice ready-for-dev set.
+- **A3 — batch-eligibility matrix (vision-first for v1 ship).** Full matrix on disk with rationales; **v1 routing enforces vision (07G) only**. Workbook/enrichment/Mine-6 = NO. AC: vision justified on criteria (a)–(e); other nodes classified but not batch-routed in v1.
 
-### TRANCHE B — Batch execution adapter + async run machinery (the actual batch feature; own small epic; later juncture)
-Heavier only because it touches the runtime orchestrator (pause/resume, cost reporting). Do it at a clean boundary so it stays surgical.
-- **B1 — Batch execution adapter scaffold.** OpenAI Batch client wrapper; JSONL builder, submit/poll/cancel/result-download; persistent receipts + input manifest + row-level parsing; join by stable `custom_id`. AC: submit → poll → download → join-by-custom_id → per-row schema validation.
-- **B2 — Perception node batch route.** One row per slide (`custom_id = <run_id>:<slide_id>`), `/v1/responses`, stable schema/instructions first + slide image/content last; same `PerceptionArtifact` shape as realtime; strict JSON parse + schema validation; per-slide failure isolation (fail-loud or retry per existing gate policy). AC: batch perception → schema-equivalent artifacts, robust to out-of-order rows.
-- **B3 — Run pause/resume for batch wait.** A clear "waiting for provider batch" run state; **idempotent** poll/resume (repeated polls must not duplicate artifacts or alter downstream state); operator-visible status + 24h-window/expiry behavior. **Builds on the existing `production_runner` error-pause/recover + rewind-recover substrate — lower lift.** ⚠️ the two-walks gotcha applies: the batch side-effect (submit vs resume-consume) must fire in the walk that OWNS the post-pause resume [[project_production_runner_two_walks]]. AC: a batch-mode run pauses + resumes with zero duplicate downstream execution.
-- **B4 — Cost + latency reporting.** Final report: batch ids, turnaround, input/cached/output/reasoning tokens, failed rows, retries, estimated cost; **three scenarios — conservative (no cache), observed (actual cached-token accounting), projected (recent avg cache-hit ratio by node/model/profile).** AC: report breaks down realtime vs batch + the three cost scenarios.
-- **B5 — Prompt-caching optimization.** Stable-prefix prompt layout (stable schema/rubric/shared-context first, dynamic slide payload last); stable `prompt_cache_key` per node/profile/prompt-VERSION (never per-slide); track `usage.input_tokens_details.cached_tokens`; **regression pin on the stable prefix** (drift = red). AC: cached_tokens measured not assumed; a prefix-drift regression pin.
-- **B6 — Run-start `execution_mode` switch (the operator-facing product surface).** Marcus-SPOC exposes `realtime | batch` at run start; routes ELIGIBLE nodes per the selected mode + node profiles (non-eligible nodes stay realtime); explicit operator wording ("batch may reduce cost/improve throughput but can pause the run…"). AC: operator chooses realtime vs batch at run start; eligible nodes route accordingly. **Do NOT promote to normal production until B3 (pause/resume) + B4 (cost accounting) land** (brief's binding caution).
+### TRANCHE B — LiteLLM Batch adapter + async run machinery (product path)
 
-## ⭐ Optimal-juncture recommendation (operator-corrected 2026-07-01 — Fable 5 does NOT couple to this)
-- **The whole epic (Tranche A then B) is a clean DEFERRED epic — recommended at the FIRST clean runtime boundary, AFTER the Gamma Styleguide arc closes** (Phase-1 machinery done, likely + Phase-2), when the runtime-orchestration surface (`production_runner` pause/resume, cost reporting) can get focused surgical attention without mid-arc fragmentation. Earlier only if perception cost/throughput becomes a live pain point (then A1+B1+B2 land opportunistically). **No pull-forward** — the earlier "fold Tranche A into a Fable-5 adoption spike" rationale is **RETRACTED** (Fable 5 is the agent model, not a pipeline model, so there is no Fable adoption for Tranche A to serve).
-- **Internal sequencing:** A1 (registry) → prerequisite for B1/B2/B6; A2 (harness) independent; B3 (pause/resume) reuses the concierge/two-walks substrate.
-- **Why this juncture:** the async/pause-resume + cost machinery touches the runtime orchestrator currently mid-Gamma-arc — an arc boundary keeps the surgery focused and reuses the proven pause substrate. The operator holds the GO.
+- **B1 — LiteLLM Batch adapter at `app/runtime/llm_batch/` (party-locked path).** Modules: `adapter.py`, `jsonl.py`, `join.py`, `receipts.py`. Sibling to `make_chat_model` — **`app/models/adapter.py` stays ChatOpenAI-only.** Files+Batches SDK; `endpoint="/v1/chat/completions"`; receipts under `runs/<uuid>/llm_batch/`; join by `custom_id`. **Hermetic anti-`batch_completion` import/use guard required** (docstring alone insufficient). Pre-upload JSONL size budget + fail-loud oversize. AC: submit→poll→download→join→validate under T0; size policy in AC.
+- **B2 — Perception (07G) batch route.** JSONL mirrors `perceive_png` (system+text before `image_url`); **`max_completion_tokens` set explicitly**; parse via **`provider._parse_response`** (shared — no forked validator); malformed-row = fail-loud per `custom_id` (no silent skip; no fake in-batch multi-turn repair). Resume-from-receipt never re-submit. AC: schema-equivalent artifacts; T2 hermetic; optional T3 live evidence for production claims.
+- **B3 — Distinct pause class `waiting_for_provider_batch`.** Not gate-pause stamp; not `paused-at-error` stamp. Reuse pause/recover *substrate*; own status + resume verb (poll/cancel/expire). Resume attaches to existing receipt/batch_id — **never re-upload on resume**. First-wins artifact write. Two-walks: side-effects on shared chokepoint or proven single-walk with parity test. AC: T5 zero duplicate artifacts on double-resume.
+- **B4 — Cost + latency reporting.** Self-aggregate from output-file usage (not LiteLLM Enterprise-only). Three scenarios. AC: realtime vs batch breakdown.
+- **B5 — Prompt-caching optimization.** Stable prefix pin; measure cached_tokens.
+- **B6 — Run-start switch with split DoD.** **AC-land:** SPOC exposes `realtime|batch`; routes A3-eligible (vision) only; pause wording; depends on B1+B2+A3. **AC-promote:** blocked until B3+B4 `done` in sprint-status — promoting without them = governance fail.
+
+## Party MUST amendments (folded 2026-07-10 — John/Winston/Amelia/Murat 4/4 GO-WITH-AMENDMENTS)
+
+Binding authoring constraints for stories (do not relitigate transport/endpoint/LiteLLM):
+
+1. A1-EXT + full-node A1 off critical path; vision-first ship.
+2. Adapter path locked: `app/runtime/llm_batch/`.
+3. Shared `_parse_response`; shape/contract parity ≠ byte identity (T4).
+4. Distinct batch-wait pause; resume-from-receipt; JSONL size budget.
+5. **Batch model = realtime model** (`gpt-5.5`) or nearest GPT-5-family Batch-available member — operator 2026-07-10 (supersedes earlier “may diverge to gpt-4.1-mini default” framing; harness `gpt-4.1-mini` smoke stays quality baseline only).
+6. B6 land vs promote; hermetic vs liveproof claim fences (T0–T2/T6/T7 vs T3–T5).
+7. Anti-`batch_completion` hermetic guard on product adapter.
+
+**Claim envelope (v1 ship):** Marcus-SPOC opt-in batch for 07G; contract-equivalent perception; pause/resume without duplicate side effects; cost report; realtime unchanged; LiteLLM declared+wired. **Non-claims:** all-node tiering; workbook batch; multi-provider beyond openai first; `make_chat_model` replacement; production-default promote before B3+B4; byte-identical prose.
+
+## ⭐ Optimal-juncture recommendation (amended 2026-07-10 — operator PULL-FORWARD)
+- **2026-07-01 deferral (after Gamma arc) is SUPERSEDED** by operator pull-forward 2026-07-10 WRAPUP: next session = Batch mode switch (then workbook customization). Branch: `dev/batch-mode-2026-07-10`.
+- **Internal sequencing:** **A0 (LiteLLM dep)** → A1/A3 (registry + eligibility) → **B1 (LiteLLM adapter)** → A2/B2 (harness + perception route) → B3 → B4/B5 → B6 (switch). A1-EXT may trail first perception green.
+- Party GREEN-LIGHT on this amended spec before `bmad-create-epics-and-stories` / first story create.
 
 ## Dependencies / sequencing
-`A1 (registry)` → prerequisite for `B1/B2/B6`. `A2 (harness)` is independent + immediately useful (production perception-model comparison — gpt-5 vs mini/nano — ahead of the batch default choice). `A1-EXT (tiering)` consumes A2's method; `A3 (eligibility matrix)` → prerequisite for `B6` routing (B6 routes only A3-eligible nodes). `B3` reuses the existing pause/resume substrate. `B4/B5` are additive. `B6` is the product-surface capstone, gated on B3+B4.
+`A0` → unlocks honest B1. `A1` + `A3` → prerequisite for B2/B6 routing. `B1` → prerequisite for B2/B3/B4. `A2` informs batch default model choice. `B6` gated on B3+B4. Workbook customization is a **separate** follow-on after Batch (not a batch-eligible node).
+
+## Test matrix (binding — from 2026-07-10 research)
+| ID | Layer | Pass bar |
+|---|---|---|
+| T0 | Hermetic mock LiteLLM | join by custom_id; out-of-order; failed row isolated |
+| T1 | Hermetic JSONL builder | stable prompt prefix pin |
+| T2 | Hermetic parse | batch row → `VisionProviderResponse` |
+| T3 | Live `--run-live` | ≥2-slide LiteLLM→OpenAI Batch completes; schema-valid |
+| T4 | Live parity | realtime vs batch shape parity on same PNGs |
+| T5 | Integration | pause/resume idempotent; no duplicate artifacts |
+| T6 | Negative | key missing / expiry / partial failure fail-loud |
+| T7 | Regression | realtime path unchanged when mode=realtime |
 
 ## Guardrails / binding invariants
-- **SPOC-is-the-goal** (the brief's own boundary) — every element earns its place by improving the SPOC runtime.
+- **SPOC-is-the-goal** — every element earns its place by improving the SPOC runtime.
+- **LiteLLM is the Batch transport** — already installed; declare + wire; no parallel raw-OpenAI Batch product path.
 - **Transport-only / contract-equivalent** — downstream is transport-blind; same schema validation realtime vs batch.
-- **Adapter isolation** — provider-specific mechanics behind an adapter; LangGraph lets each node choose its own LLM resource/profile; non-eligible nodes untouched.
-- **Idempotent pause/resume** — no duplicate artifacts; the two-walks side-effect discipline applies.
-- **Calibrate `max_output_tokens`** — avoid hidden-reasoning starvation (observed in tiny gpt-5 heartbeats).
-- **Measure, don't assume** — `cached_tokens` measured per row; join by `custom_id` never order; validate per row; don't fail a run for slow turnaround alone (only expiry/failure/operator-policy).
-- **No-mocks live testing per component** [[feedback_no_mocks_real_live_apis]] [[feedback_incremental_live_testing_not_deferred]]; smoke evidence already exists (scratchpad sidecar).
+- **Adapter isolation** — provider mechanics behind LiteLLM Batch adapter; realtime `make_chat_model` preserved in v1.
+- **Naming trap** — never ship `batch_completion` as the cost-savings Batch mode.
+- **Endpoint** — v1 perception Batch uses `/v1/chat/completions` multimodal rows (not `/v1/responses`).
+- **Idempotent pause/resume** — no duplicate artifacts; two-walks side-effect discipline applies.
+- **Calibrate `max_output_tokens` / `max_completion_tokens`** — avoid hidden-reasoning starvation.
+- **Measure, don't assume** — `cached_tokens` measured; join by `custom_id`; validate per row; slow ≠ failed unless expiry/policy.
+- **No-mocks live testing per component** for T3–T5; hermetic T0–T2 always.
 
-## Evidence already in hand (from the brief)
-Working smoke: `gpt-4.1-mini` 2-slide vision batch (usable JSON), `gpt-5` heartbeat (~41 min), `gpt-5-nano` shared-prefix cache probe (5248 cached tokens one row). Realtime prompt caching proven for gpt-5/mini/nano (~5248-5376 / 5312-5392 cached). Batch cache is per-row variable (row1 5248, row2 0) → measure, don't assume. Turnaround variable (1–41 min observed; 24h window) → design for pause.
+## Evidence already in hand (from the brief) — BINDING
 
-## Placement in the development path (operator-corrected)
-1. **The Gamma arc continues unaffected** — the Leg-C live baseline / D1 / CLOSE → Leg-D/E → Phase-2 proceed. This epic does NOT interleave (its earlier "next-session Tranche-A spike" framing is retracted — it rested on the Fable-pipeline conflation).
-2. **At the Gamma-arc close (or a live perception cost/throughput pain point):** formal `bmad-create-epics-and-stories` + party GREEN-LIGHT for the whole epic, then build A1→A2→B1→B6 surgically. The operator holds the optimal-juncture GO.
+> **Operator note 2026-07-10:** OpenAI Batch endpoints have **already** been live-tested successfully for producing **good PNG slide reads** (usable JSON perception). Do **not** treat multimodal Batch vision as an open *provider* feasibility question in A1/A2/B2. Mine and reuse the brief’s scratch evidence as the **quality baseline**.
+>
+> **Dispatch delta (operator 2026-07-10; binding):** product calls are facilitated by **LiteLLM**, not the scratchpad’s raw OpenAI Batch client. Provider capability (PNG → good JSON) transfers; **dispatch details may differ** (LiteLLM `create_file` / `create_batch` / retrieve / `file_content` kwargs, `custom_llm_provider="openai"`, response/receipt field shapes, error wrapping, async twins). T3/T4 therefore prove the **LiteLLM-mediated dispatch path + contract parity** — they do not rediscover “can Batch read PNGs?”, and they must not assume byte-identical client plumbing to the July-1 smoke.
 
-*(Fable 5's role — the agent model powering the sessions that BUILD this epic — is unchanged by any of the above; it is not a component of the epic.)*
+**PNG vision Batch — proven good reads (primary):**
+| Field | Value |
+| --- | --- |
+| Batch id | `batch_6a457bcac6488190b79224e61ea89b26` |
+| Model | `gpt-4.1-mini` |
+| Result | completed **2/2**; **usable JSON perception artifacts** (good reads) |
+| Fixtures | `scratchpad/leg3-c-u03-persubslide-bundle/gamma-export/c-u03-persubslide-probe_slide_01.png` + `_02.png` |
+| Harness | `scratchpad/anthropic-batch-perception-smoke/openai_batch_smoke.py` → `vision-submit` |
+| Brief SSOT | `openai-batch-mode-run-option-brief-2026-07-01.md` §Local Scratch Evidence |
+
+**Supporting Batch smokes (same harness):**
+- `batch_6a457ea8e08481909cc6457a9f25442a` — `gpt-5-nano` heartbeat, 1/1 visible JSON
+- `batch_6a45781aa2bc8190b62bc3ec389e0c41` — `gpt-5` heartbeat, 1/1, ~41 min turnaround
+- `batch_6a4581c643a48190b933482132430efe` — `gpt-5-nano` shared-prefix cache probe, 2/2; row1 `5248` cached / row2 `0` → measure, don’t assume
+
+**Realtime prompt caching (same era):** gpt-5 / mini / nano ~5248–5376 / 5312–5392 cached on subsequent calls.
+
+**Claim fence:** prior smoke proves **provider Batch + multimodal PNG → usable perception JSON** (quality baseline; that run used `gpt-4.1-mini`). It does **not** close LiteLLM product adapter (B1), LiteLLM-mediated dispatch parity (T3), runner pause (B3), or SPOC switch (B6). Product path wires **only** via LiteLLM Files+Batches (`endpoint="/v1/chat/completions"`, `custom_llm_provider="openai"` first). **Product batch model = realtime `gpt-5.5`** (or nearest GPT-5-family Batch-available member) — not the harness `gpt-4.1-mini` id.
+
+## Placement in the development path (amended 2026-07-10)
+1. **Operator pull-forward ACTIVE** — Batch is the live frontier on `dev/batch-mode-2026-07-10` (not waiting on Gamma-arc close).
+2. **Research closed:** `_bmad-output/planning-artifacts/research/technical-litellm-batch-hookup-research-2026-07-10.md`.
+3. **Next:** party GREEN-LIGHT → `bmad-create-epics-and-stories` → implement A0→B6 surgically (perception-first; workbook customization is a separate post-Batch track).
+
+*(Fable 5 remains the IDE/agent model powering sessions that BUILD this epic — not a pipeline component.)*

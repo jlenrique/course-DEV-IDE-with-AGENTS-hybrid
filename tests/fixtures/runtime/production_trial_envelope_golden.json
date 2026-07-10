@@ -17,5 +17,7 @@
     "contributions": []
   },
   "cost_report_path": null,
-  "artifact_paths": []
+  "artifact_paths": [],
+  "paused_error_tag": null,
+  "waiting_batch_id": null
 }

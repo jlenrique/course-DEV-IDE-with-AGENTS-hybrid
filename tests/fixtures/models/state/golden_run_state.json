@@ -29,5 +29,6 @@
     "last_invalidated_at": null
   },
   "production_envelope": null,
-  "component_selection": null
+  "component_selection": null,
+  "llm_execution_mode": "realtime"
 }

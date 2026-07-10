@@ -28,6 +28,8 @@ dependencies = [
     "langchain>=1.2,<2",
     "langchain-core>=1.3,<2",
     "langchain-openai>=1.1,<2",
+    # Batch LLM transport (epic-batch-llm-execution-mode A0 — verified .venv 1.90.2 on 2026-07-10)
+    "litellm>=1.90.2,<2",
     "langgraph>=1.1,<2",
     "langgraph-checkpoint>=4.0,<5",
     "langgraph-checkpoint-postgres>=3.0,<4",

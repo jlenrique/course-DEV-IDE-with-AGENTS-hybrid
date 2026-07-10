@@ -81,9 +81,17 @@ from app.models.runtime.trial_economics_report import (
 from app.models.state.cache_state import CacheState
 from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
-from app.models.state.run_state import RunState
+from app.models.state.run_state import LlmExecutionMode, RunState
 from app.runtime.cascade_config import ensure_pricing_covers_cascade, load_cascade, load_pricing
 from app.runtime.economics import RUNS_ROOT, measure_trial_cost, record_trial_cost_report
+from app.runtime.llm_batch.adapter import LiteLlmBatchAdapter
+from app.runtime.llm_batch.cost_report import emit_batch_cost_report_fail_soft
+from app.runtime.llm_batch.errors import WaitingForProviderBatchError
+from app.runtime.llm_batch.receipts import (
+    normalize_batch_object,
+    read_receipt,
+    write_receipt,
+)
 from app.specialists._shared.voice_direction_map import voice_direction_active
 from app.specialists.dispatch_errors import SpecialistDispatchError
 
@@ -1395,6 +1403,33 @@ def _active_node_handler(compiled_graph: Any, node_id: str) -> Any:
     return compiled_graph.nodes[node_id].runnable.func
 
 
+def apply_llm_execution_mode_overlay(
+    *,
+    specialist_id: str,
+    run_state: RunState,
+    runner_payload: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    """Inject Batch mode into vision runner payload only when opted in.
+
+    Winston B6-land MUST: overlay ``llm_execution_mode=batch`` only for
+    ``specialist_id == "vision"`` and only when RunState mode is exactly
+    ``batch``. Do **not** overlay ``realtime`` (missing key == realtime in B2).
+    Non-vision payloads must never carry the key from this seam.
+    """
+
+    if specialist_id != "vision":
+        if runner_payload and "llm_execution_mode" in runner_payload:
+            return {
+                key: value
+                for key, value in runner_payload.items()
+                if key != "llm_execution_mode"
+            }
+        return runner_payload
+    if run_state.llm_execution_mode != "batch":
+        return runner_payload
+    return {**(runner_payload or {}), "llm_execution_mode": "batch"}
+
+
 def _runner_payload_for_specialist(
     *,
     specialist_id: str,
@@ -2223,6 +2258,11 @@ def _dispatch_specialist_at_node(
         operator_voice = _operator_selected_voice(run_state)
         if operator_voice:
             runner_payload = {**(runner_payload or {}), "selected_voice_id": operator_voice}
+    runner_payload = apply_llm_execution_mode_overlay(
+        specialist_id=specialist_id,
+        run_state=run_state,
+        runner_payload=runner_payload,
+    )
     if runner_payload is not None:
         invoke_kwargs["runner_supplied_payload"] = runner_payload
     production_envelope = _invoke_specialist_with_retry(adapter, invoke_kwargs, node.id)
@@ -2363,6 +2403,198 @@ def _pause_at_error(
     return envelope
 
 
+def _pause_at_provider_batch(
+    *,
+    waiting: WaitingForProviderBatchError,
+    node_id: str,
+    node_index: int,
+    specialist_id: str,
+    trial_id: UUID,
+    envelope: ProductionTrialEnvelope,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    child_runs: list[SimpleNamespace],
+    trace_metadata: dict[str, str],
+    last_gate_crossed: str | None,
+    graph_step_completed: bool,
+    specialist_calls: int,
+    manifest_path: Path,
+    runs_root: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
+) -> ProductionTrialEnvelope:
+    """Pause while a LiteLLM Batch job is still non-terminal (B3)."""
+
+    LOGGER.info(
+        "provider batch waiting at node %s (specialist %s) batch_id=%s — "
+        "pausing trial %s (resume: trial resume-batch --trial-id %s)",
+        node_id,
+        specialist_id,
+        waiting.batch_id,
+        trial_id,
+        trial_id,
+    )
+    pause_path = _run_dir(trial_id, runs_root) / "provider-batch-pause.json"
+    _write_json(
+        pause_path,
+        {
+            "trial_id": str(trial_id),
+            "node_index": node_index,
+            "node_id": node_id,
+            "specialist_id": specialist_id,
+            "tag": waiting.tag,
+            "message": str(waiting),
+            "batch_id": waiting.batch_id,
+            "receipt_path": waiting.receipt_path.as_posix(),
+            "last_gate_crossed": last_gate_crossed,
+            "run_state": run_state.model_dump(mode="json"),
+            "runner": {
+                "corpus_path": envelope.corpus_path,
+                "preset": envelope.preset,
+                "operator_id": envelope.operator_id,
+                "manifest_path": manifest_path.as_posix(),
+                "allow_offline_cost_report": allow_offline_cost_report,
+                "max_specialist_calls": max_specialist_calls,
+                "directive_path": directive_path.as_posix() if directive_path else None,
+                "bundle_dir": bundle_dir.as_posix() if bundle_dir else None,
+            },
+            "resume_command": f"trial resume-batch --trial-id {trial_id}",
+        },
+    )
+    trace_root = (
+        _trace_root(
+            trial_id=trial_id,
+            metadata=trace_metadata,
+            child_runs=child_runs,
+        )
+        if child_runs
+        else None
+    )
+    cost_report_path = (
+        _record_cost(
+            trial_id=trial_id,
+            runs_root=runs_root,
+            trace_root=trace_root,
+            allow_offline_cost_report=allow_offline_cost_report,
+        )
+        if trace_root is not None or allow_offline_cost_report
+        else envelope.cost_report_path
+    )
+    evidence = _has_production_evidence(
+        graph_step_completed=graph_step_completed,
+        specialist_calls=specialist_calls,
+        allow_offline_cost_report=allow_offline_cost_report,
+    )
+    envelope = envelope.model_copy(
+        update={
+            "status": "waiting_for_provider_batch",
+            "paused_gate": None,
+            "paused_error_tag": None,
+            "waiting_batch_id": waiting.batch_id,
+            "production_clone_launch_evidence": evidence,
+            "production_clone_launch_evidence_reason": (
+                f"waiting-for-provider-batch:{waiting.batch_id}"
+            ),
+            "production_envelope": production_envelope,
+            "cost_report_path": cost_report_path,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
+                pause_path,
+                cost_report_path,
+            ),
+        }
+    )
+    _persist_envelope(envelope, runs_root)
+    return envelope
+
+
+def _dispatch_specialist_catching_batch_wait(
+    *,
+    adapter: Any,
+    node: Any,
+    manifest: Any,
+    specialist_id: str,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    child_runs: list[SimpleNamespace],
+    trial_id: UUID,
+    runs_root: Path,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
+    node_index: int,
+    envelope: ProductionTrialEnvelope,
+    trace_metadata: dict[str, str],
+    last_gate_crossed: str | None,
+    graph_step_completed: bool,
+    specialist_calls: int,
+    manifest_path: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int,
+) -> tuple[ProductionEnvelope, RunState] | ProductionTrialEnvelope:
+    """Shared two-walk chokepoint: dispatch, provider-batch wait, or error-pause."""
+
+    try:
+        return _dispatch_specialist_at_node(
+            adapter=adapter,
+            node=node,
+            manifest=manifest,
+            specialist_id=specialist_id,
+            production_envelope=production_envelope,
+            run_state=run_state,
+            child_runs=child_runs,
+            trial_id=trial_id,
+            runs_root=runs_root,
+            directive_path=directive_path,
+            bundle_dir=bundle_dir,
+        )
+    except WaitingForProviderBatchError as waiting:
+        return _pause_at_provider_batch(
+            waiting=waiting,
+            node_id=node.id,
+            node_index=node_index,
+            specialist_id=specialist_id,
+            trial_id=trial_id,
+            envelope=envelope,
+            production_envelope=production_envelope,
+            run_state=run_state,
+            child_runs=child_runs,
+            trace_metadata=trace_metadata,
+            last_gate_crossed=last_gate_crossed,
+            graph_step_completed=graph_step_completed,
+            specialist_calls=specialist_calls,
+            manifest_path=manifest_path,
+            runs_root=runs_root,
+            allow_offline_cost_report=allow_offline_cost_report,
+            max_specialist_calls=max_specialist_calls,
+            directive_path=directive_path,
+            bundle_dir=bundle_dir,
+        )
+    except SpecialistDispatchError as exc:
+        return _pause_at_error(
+            error=exc,
+            node_id=node.id,
+            node_index=node_index,
+            specialist_id=specialist_id,
+            trial_id=trial_id,
+            envelope=envelope,
+            production_envelope=production_envelope,
+            run_state=run_state,
+            child_runs=child_runs,
+            trace_metadata=trace_metadata,
+            last_gate_crossed=last_gate_crossed,
+            graph_step_completed=graph_step_completed,
+            specialist_calls=specialist_calls,
+            manifest_path=manifest_path,
+            runs_root=runs_root,
+            allow_offline_cost_report=allow_offline_cost_report,
+            max_specialist_calls=max_specialist_calls,
+            directive_path=directive_path,
+            bundle_dir=bundle_dir,
+        )
+
+
 def run_production_trial(
     corpus_path: Path,
     preset: Literal["production", "explore"],
@@ -2376,6 +2608,7 @@ def run_production_trial(
     pause_at_gates: bool = True,
     directive_path: Path | None = None,
     component_selection: ComponentSelection | None = None,
+    llm_execution_mode: LlmExecutionMode = "realtime",
 ) -> ProductionTrialEnvelope:
     """Register, compose, and start a production trial.
 
@@ -2423,6 +2656,7 @@ def run_production_trial(
         status="running",
         graph_version=DEFAULT_GRAPH_VERSION,
         component_selection=selection,
+        llm_execution_mode=llm_execution_mode,
         cache_state=CacheState(
             cache_prefix=json.dumps(
                 {
@@ -2794,42 +3028,31 @@ def run_production_trial(
                     graph_step_completed = True
                     continue
                 if _has_live_openai() and not allow_offline_cost_report:
-                    try:
-                        production_envelope, run_state = _dispatch_specialist_at_node(
-                            adapter=adapter,
-                            node=node,
-                            manifest=manifest,
-                            specialist_id=specialist_id,
-                            production_envelope=production_envelope,
-                            run_state=run_state,
-                            child_runs=child_runs,
-                            trial_id=effective_trial_id,
-                            runs_root=runs_root,
-                            directive_path=directive_path,
-                            bundle_dir=bundle_dir,
-                        )
-                    except SpecialistDispatchError as exc:
-                        return _pause_at_error(
-                            error=exc,
-                            node_id=node.id,
-                            node_index=index,
-                            specialist_id=specialist_id,
-                            trial_id=effective_trial_id,
-                            envelope=envelope,
-                            production_envelope=production_envelope,
-                            run_state=run_state,
-                            child_runs=child_runs,
-                            trace_metadata=trace_metadata,
-                            last_gate_crossed=last_gate_crossed,
-                            graph_step_completed=graph_step_completed,
-                            specialist_calls=specialist_calls,
-                            manifest_path=manifest_path,
-                            runs_root=runs_root,
-                            allow_offline_cost_report=allow_offline_cost_report,
-                            max_specialist_calls=max_specialist_calls,
-                            directive_path=directive_path,
-                            bundle_dir=bundle_dir,
-                        )
+                    dispatched = _dispatch_specialist_catching_batch_wait(
+                        adapter=adapter,
+                        node=node,
+                        manifest=manifest,
+                        specialist_id=specialist_id,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trial_id=effective_trial_id,
+                        runs_root=runs_root,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                        node_index=index,
+                        envelope=envelope,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                    )
+                    if isinstance(dispatched, ProductionTrialEnvelope):
+                        return dispatched
+                    production_envelope, run_state = dispatched
                     specialist_calls += 1
                 graph_step_completed = True
 
@@ -3020,6 +3243,154 @@ def resume_production_trial(
         directive_path=directive_path,
         bundle_dir=bundle_dir,
         extra_artifacts=(run_dir / "resume-command.json",),
+    )
+
+
+def resume_batch_production_trial(
+    *,
+    trial_id: UUID,
+    runs_root: Path = RUNS_ROOT,
+    max_specialist_calls: int | None = None,
+    adapter: LiteLlmBatchAdapter | None = None,
+) -> ProductionTrialEnvelope:
+    """Poll existing provider Batch receipt and continue when completed (B3).
+
+    Never re-uploads. If still non-terminal, remains ``waiting_for_provider_batch``.
+    Terminal failed/expired/cancelled fail loud.
+    """
+
+    from app.specialists.vision.batch_route import TERMINAL_STATUSES
+
+    run_dir = _run_dir(trial_id, runs_root)
+    envelope = ProductionTrialEnvelope.model_validate_json(
+        (run_dir / "run.json").read_text(encoding="utf-8"),
+        context={"anomaly_sink": run_dir / "anomalies.jsonl"},
+    )
+    if envelope.status != "waiting_for_provider_batch":
+        raise RuntimeError(
+            f"trial {trial_id} is not waiting for a provider batch; "
+            f"status={envelope.status!r} — use `trial resume-batch` only for "
+            "waiting_for_provider_batch runs"
+        )
+    pause_path = run_dir / "provider-batch-pause.json"
+    pause = json.loads(pause_path.read_text(encoding="utf-8"))
+    if pause.get("trial_id") != str(trial_id):
+        raise RuntimeError(
+            "persisted provider-batch-pause record does not match the trial: "
+            f"{pause.get('trial_id')!r} != {trial_id}"
+        )
+    batch_id = str(pause.get("batch_id") or envelope.waiting_batch_id or "")
+    if not batch_id:
+        raise RuntimeError(f"trial {trial_id} provider-batch-pause missing batch_id")
+
+    receipt = read_receipt(runs_root, str(trial_id))
+    client = adapter or LiteLlmBatchAdapter()
+    batch_obj = client.retrieve_batch(batch_id)
+    polled = normalize_batch_object(
+        batch_obj,
+        run_id=str(trial_id),
+        row_count=receipt.row_count,
+        model=receipt.model,
+        submitted_at=receipt.submitted_at,
+    )
+    receipt = polled.model_copy(
+        update={
+            "submitted_at": receipt.submitted_at,
+            "metadata": dict(receipt.metadata),
+            "model": receipt.model or polled.model,
+        }
+    )
+    write_receipt(runs_root, receipt)
+
+    resume_receipt_path = run_dir / "trial-resume-batch.json"
+    _write_json(
+        resume_receipt_path,
+        {
+            "trial_id": str(trial_id),
+            "batch_id": batch_id,
+            "status": receipt.status,
+            "still_waiting": receipt.status not in TERMINAL_STATUSES,
+        },
+    )
+
+    if receipt.status not in TERMINAL_STATUSES:
+        LOGGER.info(
+            "trial %s batch %s still status=%s — remaining waiting_for_provider_batch",
+            trial_id,
+            batch_id,
+            receipt.status,
+        )
+        return envelope.model_copy(
+            update={
+                "artifact_paths": _merge_artifact_paths(
+                    envelope.artifact_paths, resume_receipt_path
+                )
+            }
+        )
+
+    if receipt.status != "completed":
+        raise RuntimeError(
+            f"provider batch {batch_id!r} ended status={receipt.status!r} "
+            f"(tag=vision.batch.not-completed); no realtime fallback"
+        )
+
+    # Cost report is emitted again after vision join on continue; also emit a
+    # receipt-only stub here if join has not run yet (fail-soft empty join).
+    from app.runtime.llm_batch.join import JoinResult
+
+    emit_batch_cost_report_fail_soft(
+        runs_root=runs_root,
+        receipt=receipt,
+        joined=JoinResult(
+            by_custom_id={},
+            order_seen=(),
+            missing_custom_ids=(),
+            unexpected_custom_ids=(),
+        ),
+    )
+
+    runner = pause.get("runner") or {}
+    run_state = RunState.model_validate_json(json.dumps(pause["run_state"]))
+    run_state = run_state.model_copy(
+        update={"production_envelope": envelope.production_envelope}
+    )
+    directive_path = _resolve_resume_directive_path(
+        runner, trial_id=trial_id, runs_root=runs_root
+    )
+    bundle_dir = _resolve_resume_bundle_dir(
+        runner,
+        trial_id=trial_id,
+        runs_root=runs_root,
+        directive_path=directive_path,
+    )
+    # Clear waiting stamp before continue so a later pause can re-set it.
+    envelope = envelope.model_copy(
+        update={
+            "status": "in-flight",
+            "waiting_batch_id": None,
+            "paused_gate": None,
+            "paused_error_tag": None,
+        }
+    )
+    _persist_envelope(envelope, runs_root)
+    return _continue_production_walk(
+        trial_id=trial_id,
+        envelope=envelope,
+        run_state=run_state,
+        runner=runner,
+        manifest_path=Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH),
+        runs_root=runs_root,
+        start_index=int(pause["node_index"]),
+        last_gate_crossed=pause.get("last_gate_crossed"),
+        max_specialist_calls=(
+            max_specialist_calls
+            if max_specialist_calls is not None
+            else int(runner.get("max_specialist_calls") or 1)
+        ),
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
+        extra_artifacts=(resume_receipt_path,),
+        non_evidence_reason="resumed-after-provider-batch",
     )
 
 
@@ -3565,42 +3936,31 @@ def _continue_production_walk(
                     graph_step_completed = True
                     continue
                 if _has_live_openai() and not allow_offline_cost_report:
-                    try:
-                        production_envelope, run_state = _dispatch_specialist_at_node(
-                            adapter=adapter,
-                            node=node,
-                            manifest=manifest,
-                            specialist_id=specialist_id,
-                            production_envelope=production_envelope,
-                            run_state=run_state,
-                            child_runs=child_runs,
-                            trial_id=trial_id,
-                            runs_root=runs_root,
-                            directive_path=directive_path,
-                            bundle_dir=bundle_dir,
-                        )
-                    except SpecialistDispatchError as exc:
-                        return _pause_at_error(
-                            error=exc,
-                            node_id=node.id,
-                            node_index=index,
-                            specialist_id=specialist_id,
-                            trial_id=trial_id,
-                            envelope=envelope,
-                            production_envelope=production_envelope,
-                            run_state=run_state,
-                            child_runs=child_runs,
-                            trace_metadata=trace_metadata,
-                            last_gate_crossed=last_gate_crossed,
-                            graph_step_completed=graph_step_completed,
-                            specialist_calls=specialist_calls,
-                            manifest_path=manifest_path,
-                            runs_root=runs_root,
-                            allow_offline_cost_report=allow_offline_cost_report,
-                            max_specialist_calls=max_specialist_calls,
-                            directive_path=directive_path,
-                            bundle_dir=bundle_dir,
-                        )
+                    dispatched = _dispatch_specialist_catching_batch_wait(
+                        adapter=adapter,
+                        node=node,
+                        manifest=manifest,
+                        specialist_id=specialist_id,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trial_id=trial_id,
+                        runs_root=runs_root,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                        node_index=index,
+                        envelope=envelope,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                    )
+                    if isinstance(dispatched, ProductionTrialEnvelope):
+                        return dispatched
+                    production_envelope, run_state = dispatched
                     specialist_calls += 1
                 graph_step_completed = True
 
@@ -3677,7 +4037,9 @@ __all__ = [
     "DEFAULT_MANIFEST_PATH",
     "GateBypassError",
     "MissingUpstreamContributionError",
+    "apply_llm_execution_mode_overlay",
     "recover_production_trial",
+    "resume_batch_production_trial",
     "resume_production_trial",
     "run_production_trial",
 ]

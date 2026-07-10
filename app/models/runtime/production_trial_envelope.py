@@ -21,6 +21,7 @@ ProductionTrialStatus = Literal[
     "in-flight",
     "paused-at-gate",
     "paused-at-error",
+    "waiting_for_provider_batch",
     "completed",
     "failed",
 ]
@@ -62,6 +63,9 @@ class ProductionTrialEnvelope(BaseModel):
     # stable machine tag of the SpecialistDispatchError that paused the run
     # (recoverable via `trial recover`, no operator verdict required).
     paused_error_tag: str | None = None
+    # B3: set with status "waiting_for_provider_batch" — LiteLLM Batch id
+    # being polled via `trial resume-batch` (not gate resume / not recover).
+    waiting_batch_id: str | None = None
     langsmith_trace_id: str | None = None
     production_clone_launch_evidence: bool
     production_clone_launch_evidence_reason: str | None = None
@@ -104,6 +108,10 @@ class ProductionTrialEnvelope(BaseModel):
             violations.append("status=paused-at-gate requires paused_gate")
         if self.status == "paused-at-error" and self.paused_error_tag is None:
             violations.append("status=paused-at-error requires paused_error_tag")
+        if self.status == "waiting_for_provider_batch" and not self.waiting_batch_id:
+            violations.append(
+                "status=waiting_for_provider_batch requires waiting_batch_id"
+            )
         if self.status == "completed" and self.completed_at is None:
             violations.append("status=completed requires completed_at")
         if not violations:

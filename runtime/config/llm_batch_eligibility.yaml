@@ -1,0 +1,101 @@
+# runtime/config/llm_batch_eligibility.yaml
+# Batch-eligibility matrix (A3) — vision-first for v1 ship.
+# v1 routing enforces only sites with batch_eligible=true AND v1_routed=true.
+# Criteria (a)–(e) are the binding rubric for classifying sites.
+
+version: 1
+
+criteria:
+  a: "Independent fan-out units (N request bodies with no cross-row dependency during generation)"
+  b: "Stable join key (custom_id / slide_id) for out-of-order reassembly"
+  c: "No mid-node HIL or interactive turnaround required while the provider batch runs"
+  d: "Contract-equivalent artifact schema already exists on the realtime path"
+  e: "Site is an OpenAI-compatible LLM call (not deterministic / non-LLM tooling)"
+
+sites:
+  vision:
+    batch_eligible: true
+    v1_routed: true
+    criteria_met: [a, b, c, d, e]
+    rationale: >
+      07G slide perception: N independent multimodal PNG reads, join by
+      slide_id/custom_id, no mid-node HIL, VisionProviderResponse/PerceptionArtifact
+      already contract-shaped, OpenAI LLM. Provider quality baseline:
+      batch_6a457bcac6488190b79224e61ea89b26 (gpt-4.1-mini, 2/2 usable JSON).
+      Product dispatch via LiteLLM (dispatch details may differ from scratch smoke).
+
+  reading_path_llm:
+    batch_eligible: true
+    v1_routed: false
+    criteria_met: [a, b, c, d, e]
+    rationale: >
+      Secondary fan-out after perception artifacts exist — strong candidate later;
+      not v1-routed (vision-first ship).
+
+  irene_warm_callbacks:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: [a, b, d, e]
+    rationale: >
+      Per-segment warm callbacks may batch later; mid-flow coupling and HIL-adjacent
+      timing keep them out of v1 (criterion c not confidently met).
+
+  workbook_producer:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: []
+    rationale: "Deterministic workbook generation — no OpenAI LLM (fails e)."
+
+  workbook_enrichment:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: []
+    rationale: "Deterministic enrichment — no OpenAI LLM (fails e)."
+
+  mine6_prose_uplift:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: []
+    rationale: "Mine-6 prose uplift is not an OpenAI Batch transport target (fails e / out of epic claim)."
+
+  irene_pass1:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: [d, e]
+    rationale: "Monolithic / HIL-adjacent planning — weak fan-out (fails a/c)."
+
+  irene_pass2:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: [d, e]
+    rationale: "Monolithic / HIL-adjacent Pass-2 — weak fan-out (fails a/c)."
+
+  g0_extraction:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: [d, e]
+    rationale: "Monolithic extraction — not independent slide-style fan-out (fails a/c)."
+
+  cd:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: [d, e]
+    rationale: "Creative-directive control-plane step — not batch fan-out (fails a/c)."
+
+  marcus_pre_gate:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: [d, e]
+    rationale: "Pre-gate Marcus orchestration — HIL-adjacent / monolithic (fails a/c)."
+
+  gary:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: []
+    rationale: "Gamma dispatch/export is tool/API-heavy, not OpenAI Batch perception fan-out."
+
+  enrique:
+    batch_eligible: false
+    v1_routed: false
+    criteria_met: []
+    rationale: "ElevenLabs voice synthesis — not OpenAI Batch LLM transport."

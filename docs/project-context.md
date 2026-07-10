@@ -1,4 +1,24 @@
+# Current Context Addendum - 2026-07-10 (session WRAPUP: Batch LLM v1 CLOSED)
+
+**Session class:** S. Branch `dev/batch-mode-2026-07-10`.
+
+**Landed this session (durable at WRAPUP commit):**
+- Batch LLM Execution Mode **v1 CLOSED** (party CLOSE 4/4)
+- Full spine: A0→A1+A3→B1→B2→B3→B4→B5→B6-land→B6-promote + A2
+- Opt-in `--llm-execution-mode batch` (default realtime); vision-only; gpt-5.5 both arms
+- `waiting_for_provider_batch` + `trial resume-batch`; cost report; `prompt_cache_key=stable_perception_v1`
+- A2 LiteLLM harness hermetic + optional `--run-live`
+
+**Explicit non-claims / deferred:** A1-EXT all-node tiering TRAIL; workbook not batch-eligible; batch not production default.
+
+**Next (operator-chosen):** Workbook artifact customization. Do not reopen S8 or Batch v1.
+
+**Close letter:** `_bmad-output/implementation-artifacts/batch-llm-epic-v1-close-2026-07-10.md`
+
+---
+
 # Current Context Addendum - 2026-07-10 (session WRAPUP: Tejal P4 + trust + next = Batch)
+
 
 **Session class:** S. Branch `dev/lesson-planning-2026-07-09`.
 

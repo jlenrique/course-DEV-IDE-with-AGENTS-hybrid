@@ -1,4 +1,65 @@
+# Session Handoff — 2026-07-10 (WRAPUP: **Batch LLM Execution Mode v1 CLOSED** — Class S)
+
+**Final class:** S. **Branch:** `dev/batch-mode-2026-07-10`. **Opened as:** S (Batch epic BMAD spine through formal close). **Class drift:** none.
+
+**What was completed:**
+1. Full Batch LLM v1 spine via BMAD create-story → party → implement → code-review → Kanban: A0, A1, A3, B1, B2, B3, B4, B5, B6-land, B6-promote, A2.
+2. Product surface: opt-in `--llm-execution-mode batch` (default realtime); vision-only overlay; `waiting_for_provider_batch` + `trial resume-batch`; cost report; shared `prompt_cache_key=stable_perception_v1`.
+3. A2 LiteLLM perception harness (hermetic done-bar; optional `--run-live`); B5 shared cache-key derivation realtime+batch.
+4. Party **CLOSE 4/4** formal epic close; A1-EXT remains TRAIL/deferred. Close letter: `batch-llm-epic-v1-close-2026-07-10.md`.
+
+**What is next:** Workbook artifact customization (primary frontier). Do not reopen Batch v1 or S8; pull A1-EXT only by explicit operator/party ask.
+
+**Unresolved / risks:**
+- A1-EXT deferred (all-node tiering)
+- Live A2 `--run-live` not required for close (hermetic done-bar)
+- Tejal/motion/HELR residuals unchanged
+- **Step 0a/0b/0c SKIPPED** — Cora/`/harmonize` unregistered (consecutive-skip tripwire; force full sweep when Cora available). Proceed-with-acknowledged-gap.
+
+**Key lessons:** (a) Batch = transport only; claim fence must stay opt-in/vision-only. (b) Product batch model = realtime `gpt-5.5` (harness `gpt-4.1-mini` is narrative baseline only). (c) A2/B5 were residuals after promote but operator required full story close before epic formal close.
+
+**Validation summary:**
+- Step 0a/0b/0c: SKIPPED — Cora unregistered; tripwire noted.
+- Step 1: ruff clean on Batch touchpaths; focused suite **89 passed** (llm_batch + vision batch + orchestrator pause/mode + trial CLI + sprint-status yaml).
+- Step 4a: sprint-status updated (epic + A0–B6 + A2 + B5 done; A1-EXT deferred); `tests/test_sprint_status_yaml.py` green.
+- Step 3: SKIPPED — no bmm-workflow-status phase transition (implementation Kanban only).
+- Step 4b: SKIPPED — no agent/skill created or modified.
+- Step 5: `docs/project-context.md` Batch-close addendum; agent-environment unchanged.
+- Step 6: SKIPPED — no course-content staging promotion.
+- Step 9: KG/ONBOARDING regen recommended (≥10 app files) — not blocking; operator may run `/understand` later.
+- Step 11: class S matches diff; single worktree; master merge SKIPPED (scoped branch).
+
+**Content creation summary:** none this session (substrate + harness only).
+
+**Artifact update checklist:** sprint-status ✅; stories SSOT + close letter ✅; deferred-inventory ✅; STATE-OF-THE-APP ✅; project-context ✅; next-session-start-here ✅; SESSION-HANDOFF (this) ✅; bmm-workflow-status skip; KG/ONBOARDING recommend later; master merge SKIPPED; no `reports/dev-coherence/` (Step 0 skip).
+
+**Ambient left untouched:** `runs/*` trial dirs; `runs/compositor/`; `_tmp-regression*`; `workbooks-test/`; Meeting Recording deconstruct; unrelated shadow-monitor/product-gap leftovers; `_artifacts/a2-offline-compare-report.json` (local scratch).
+
+**Push:** working-branch push MANDATORY at WRAPUP — see Step 12 closeout below (SHA pinned after push).
+
+---
+
+# Session Handoff — 2026-07-10 (Batch LLM Execution Mode **v1 CLOSED** — Class S)
+
+**Final class:** S. **Branch:** `dev/batch-mode-2026-07-10`. **Opened as:** S (Batch epic BMAD spine through formal close).
+
+**What was completed:**
+1. Full Batch LLM v1 spine: A0→A1+A3→B1→B2→B3→B4→B6-land→B6-promote, then residuals **A2** + **B5**.
+2. **A2** LiteLLM perception harness (hermetic + optional `--run-live`); frozen leg3 c-u03 PNGs; party GO-WITH-AMENDMENTS; code-review APPROVE.
+3. **B5** shared `prompt_cache_key` (`stable_perception_v1`) on realtime+batch; hermetic prefix pin; code-review APPROVE.
+4. Party **CLOSE 4/4** formal epic close; A1-EXT remains TRAIL/deferred. Close letter: `batch-llm-epic-v1-close-2026-07-10.md`.
+
+**What is next:** Workbook artifact customization (primary frontier). Do not reopen Batch v1; pull A1-EXT only by explicit operator/party ask.
+
+**Unresolved / risks:** A1-EXT deferred; live A2 `--run-live` not required for close; Tejal/motion/HELR residuals unchanged.
+
+**Key claim fence:** opt-in batch only; vision-only; default realtime; no workbook batch; no all-node tiering in v1.
+
+---
+
 # Session Handoff — 2026-07-10 (WRAPUP: **Mine-next trust + Tejal P4 fullwalk COMPLETE-with-fences; next = Batch switch** — Class S)
+
+
 
 **Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` (WRAPUP commit + push). **Opened as:** S (substrate + live production walk). **Class drift:** none.
 
