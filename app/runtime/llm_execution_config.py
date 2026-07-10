@@ -2,7 +2,10 @@
 
 Config SSOT: ``runtime/config/llm_execution.yaml`` (adjacent to
 ``model_cascade.yaml``). Does **not** mutate the economics cascade — realtime
-vision remains ``gpt-5.5`` there; batch may diverge (default ``gpt-4.1-mini``).
+vision remains ``gpt-5.5`` there. Operator binding (2026-07-10, see the YAML
+header): batch model MUST match realtime; ``batch_model_fallback_family``
+declares GPT-5-family fallback as policy only — this module does not
+auto-substitute — and ``gpt-4.1-*`` is never a product default.
 """
 
 from __future__ import annotations
@@ -45,7 +48,11 @@ class NodeExecutionProfile(BaseModel):
     batch: NodeTransportProfile | None = None
 
     def profile_for(self, mode: ExecutionMode) -> NodeTransportProfile:
-        """Return the transport profile for ``mode`` (batch falls back to realtime)."""
+        """Return the transport profile for ``mode``.
+
+        Raises ``ValueError`` if ``mode`` is ``batch`` and the node has no
+        batch profile override — there is no silent fallback to realtime.
+        """
 
         if mode == "batch":
             if self.batch is None:
