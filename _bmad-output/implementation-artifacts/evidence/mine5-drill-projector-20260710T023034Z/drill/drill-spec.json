@@ -1,0 +1,59 @@
+{
+  "schema_version": "0.1",
+  "kind": "deck-companion-drill",
+  "title": "Practice drill (4 items)",
+  "items": [
+    {
+      "item_id": "drill-src-001-c001",
+      "learning_objective_id": "lo-g0-001",
+      "prompt": "Using the source material, respond: # **Slide 1: Why One Number Frames This Lesson**",
+      "expected_focus": "remember",
+      "source_refs": [
+        {
+          "ref_id": "ref-src-001-c001",
+          "locator": "Slide 1",
+          "excerpt": "# **Slide 1: Why One Number Frames This Lesson**"
+        }
+      ]
+    },
+    {
+      "item_id": "drill-src-001-c003",
+      "learning_objective_id": "lo-g0-002",
+      "prompt": "Using the source material, respond: \"Welcome. This short lesson is deliberately narrow. Rather than survey many trends, we anchor everything to one decisive workforce number and what it means for clinical leadersh...",
+      "expected_focus": "understand",
+      "source_refs": [
+        {
+          "ref_id": "ref-src-001-c003",
+          "locator": "Slide 1",
+          "excerpt": "\"Welcome. This short lesson is deliberately narrow. Rather than survey many trends, we anchor everything to one decisive workforce number and what it means for clinical leadership.\""
+        }
+      ]
+    },
+    {
+      "item_id": "drill-src-002-c001",
+      "learning_objective_id": "lo-g0-003",
+      "prompt": "Using the source material, respond: # **Slide 2: The 70% Clinician Burnout Figure**",
+      "expected_focus": "apply",
+      "source_refs": [
+        {
+          "ref_id": "ref-src-002-c001",
+          "locator": "Slide 2",
+          "excerpt": "# **Slide 2: The 70% Clinician Burnout Figure**"
+        }
+      ]
+    },
+    {
+      "item_id": "drill-src-002-c004",
+      "learning_objective_id": "lo-g0-004",
+      "prompt": "Using the source material, respond: \"70% of frontline clinicians report at least one symptom of professional burnout. Say it plainly: 70%. This 70% figure is the single headline statistic of the entire lesson.\"",
+      "expected_focus": "create",
+      "source_refs": [
+        {
+          "ref_id": "ref-src-002-c004",
+          "locator": "Slide 2",
+          "excerpt": "\"70% of frontline clinicians report at least one symptom of professional burnout. Say it plainly: 70%. This 70% figure is the single headline statistic of the entire lesson.\""
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1",
+  "scope": "lesson_leaf",
+  "root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p4-assessments-bridge",
+  "ok": true,
+  "errors": [],
+  "digests": [
+    {
+      "relative_path": "slides/",
+      "sha256": "68b4eb8dc042a591fb457ba7329bcd78fcfc2e246d702b6b268a2dfe9fd42b67",
+      "present": true
+    },
+    {
+      "relative_path": "references/",
+      "sha256": "132dcb7a1f06fba166ad818a3f66a4e55f39b74c0eff9a3972b6dc1233c0523b",
+      "present": true
+    },
+    {
+      "relative_path": "assessments/",
+      "sha256": "ff74f668abfd25005eee68a62c06c0c5f320fccabfd5db86d4de64a5b0fcbb20",
+      "present": true
+    }
+  ],
+  "kind_counts": {}
+}

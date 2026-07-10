@@ -1,0 +1,26 @@
+{
+  "item": "per-sme-voice",
+  "mine": "3",
+  "pass": true,
+  "predicates": {
+    "tejal_bound": true,
+    "hai_unbound_gap": true,
+    "phs_unbound_gap": true,
+    "hai_not_tejal_guide": true,
+    "divergence_ge_1": true,
+    "attribution_diverges": true,
+    "unknown_sme_hard_fail": true,
+    "run_id": "c3342690-b17a-4029-8811-f3f9b6d1b189",
+    "diverged_fields": [
+      "sme_key",
+      "styleguide_id",
+      "attribution",
+      "approval_route",
+      "voice_profile_ref",
+      "unbound",
+      "fallback"
+    ]
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\c3342690-b17a-4029-8811-f3f9b6d1b189",
+  "stamp": "20260710T023031Z"
+}

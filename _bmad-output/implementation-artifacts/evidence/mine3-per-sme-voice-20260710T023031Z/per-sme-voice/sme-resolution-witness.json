@@ -1,0 +1,44 @@
+{
+  "tejal": {
+    "sme_key": "tejal",
+    "display_name": "Tejal",
+    "styleguide_id": "hil-2026-apc-crossroads-classic",
+    "attribution": "Faculty voice: Tejal (APC Crossroads / HIL 2026)",
+    "approval_route": "sme-tejal-workbook-signoff",
+    "voice_profile_ref": "voice/tejal-apc-crossroads",
+    "unbound": false,
+    "fallback": false,
+    "reason": "Bound to named Gamma variant hil-2026-apc-crossroads-classic (Tejal theme)."
+  },
+  "hai-510": {
+    "sme_key": "hai-510",
+    "display_name": "Aziz Nazha",
+    "styleguide_id": null,
+    "attribution": "Faculty voice: Aziz Nazha (HAI 510) \u2014 styleguide unbound",
+    "approval_route": "sme-hai-510-needs-named-variant",
+    "voice_profile_ref": "voice/hai-510-unbound",
+    "unbound": true,
+    "fallback": true,
+    "reason": "Marked gap: no HAI-510 named Gamma variant yet. Must not reuse Tejal styleguide_id. Downstream treats style as unresolved (fallback=true)."
+  },
+  "phs-620": {
+    "sme_key": "phs-620",
+    "display_name": "Juan Leon",
+    "styleguide_id": null,
+    "attribution": "Faculty voice: Juan Leon (PHS 620) \u2014 styleguide unbound",
+    "approval_route": "sme-phs-620-needs-named-variant",
+    "voice_profile_ref": "voice/phs-620-unbound",
+    "unbound": true,
+    "fallback": true,
+    "reason": "Marked gap: no PHS-620 named Gamma variant yet. Must not reuse Tejal styleguide_id. Downstream treats style as unresolved (fallback=true)."
+  },
+  "diverged_fields": [
+    "sme_key",
+    "styleguide_id",
+    "attribution",
+    "approval_route",
+    "voice_profile_ref",
+    "unbound",
+    "fallback"
+  ]
+}

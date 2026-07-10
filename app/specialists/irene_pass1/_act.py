@@ -791,6 +791,14 @@ def write_lesson_plan(plan: dict[str, Any], *, run_id: str, runs_root: Path | No
     # Soft-canonicalize fidelity so alias callers (literal_text / literal-image)
     # still surface a line even when they bypass parse_pass1_response.
     plan = normalize_fidelity(plan)
+    # Mine 1: machine-readable companion for auto ComponentSelection derive.
+    # Markdown remains the human artifact; JSON is the selection-edge input.
+    json_path = run_dir / "irene-pass1.lesson-plan.json"
+    json_path.write_text(
+        json.dumps(plan, indent=2, ensure_ascii=True, default=str) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     lines = ["# Irene Pass-1 Lesson Plan", ""]
     if plan.get("lesson_summary"):
         lines.extend([str(plan["lesson_summary"]), ""])

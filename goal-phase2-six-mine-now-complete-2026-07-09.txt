@@ -1,0 +1,55 @@
+# Session GOAL — Complete all 6 Phase-2 "Mine now" items (operator-binding)
+**Date:** 2026-07-09  
+**Branch:** `dev/lesson-planning-2026-07-09`  
+**Product:** Marcus-SPOC local runtime — not concierge/proofing convenience  
+**Do not reopen:** S8; parked HELR `irene-pass2-figure-contradiction-classic-condense`  
+**Styleguide policy:** never ad-hoc-edit approved registry guides — named variants only  
+
+---
+
+## Operator binding (this session / arc)
+
+Continue BMAD workflows + party-mode teams + dev agents in the same loops as before,
+including **live validation of components as they are completed**, to **fully complete
+each of the 6 "Mine now" items**.
+
+**This goal is NOT satisfied, and the session is NOT ready to close, until a BMAD
+party-mode team agrees that each of the 6 specified aspects has been fully developed
+and validated:**
+
+| # | Operator short name | Inventory / mine target |
+|---|---------------------|-------------------------|
+| 1 | Automatic Lesson_plan | Automatic `lesson_plan["collateral"] → ComponentSelection` (spine residual) |
+| 2 | Interactive SPOC | Interactive SPOC planning REPL + LO ratification UX |
+| 3 | Per-SME voice | Per-SME voice / styleguide / attribution / approval routing |
+| 4 | Canonical processed-source structure | Canonical processed-source structure + ingestion/enrichment harden |
+| 5 | Drill | Drill collateral projector (projector-family seed) |
+| 6 | workbook-learner-ready-prose-uplift | Workbook learner-ready prose uplift (trigger-fired) |
+
+---
+
+## Standing rules (unchanged)
+
+- Party consensus + orchestrator agree = approval; spawn real BMAD seats (John / Winston / Amelia / Murat).
+- Impasse = Quinn → John → human.
+- Live-test each major component as built; bank evidence under `runs/<uuid>/` + evidence mirrors.
+- Every change must improve the SPOC product (CRITICAL DESIGN GUARDRAIL).
+
+---
+
+## Execution protocol
+
+1. **Party GREEN-LIGHT** claim envelopes + measurable SUCCESS predicates + sequencing for all 6.
+2. For each item: story/quick-dev → RED-first implement → per-component live-test → code review → party CLOSE that item.
+3. **Final party CLOSE** that all 6 are fully developed + validated (session close gate).
+4. Update deferred-inventory / STATE / project-context / sprint-status; commit + push.
+
+---
+
+## Explicit non-claims (unless party expands)
+
+- Full Gamma spend / published AFK-HIL deck walk as required for every item
+- Reopening S8 or Pass-2 numeral HELR
+- Full Epic 15–18 platform delivery
+- Batch LLM Execution Mode
+- Real HAI lecture video / PHS Confluence bulk ingest beyond what Mine 4 needs for canonical structure proof

@@ -1,0 +1,23 @@
+{
+  "item": "canonical-processed-source",
+  "mine": "4A",
+  "pass": true,
+  "predicates": {
+    "lesson_leaf_ok": true,
+    "run_dir_ok_with_kind": true,
+    "kind_counts_nonempty": true,
+    "negative_missing_kind_fail_loud": true,
+    "negative_incomplete_tree_fail_loud": true,
+    "contract_doc_present": true,
+    "run_id": "09e01f7f-39aa-4179-be34-980a7fbe01ae",
+    "kind_counts": {
+      "lecture": 4,
+      "project_artifact": 3,
+      "reading": 2
+    },
+    "leaf_errors": [],
+    "run_errors": []
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\09e01f7f-39aa-4179-be34-980a7fbe01ae",
+  "stamp": "20260710T022613Z"
+}

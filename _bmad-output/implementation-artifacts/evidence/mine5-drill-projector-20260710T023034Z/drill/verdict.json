@@ -1,0 +1,19 @@
+{
+  "item": "drill",
+  "mine": "5",
+  "pass": true,
+  "predicates": {
+    "projection_nonempty": true,
+    "kind_is_drill": true,
+    "artifact_nonempty": true,
+    "markdown_has_prompt": true,
+    "markdown_has_lo": true,
+    "schema_roundtrip": true,
+    "empty_source_warned": true,
+    "empty_render_refused": true,
+    "run_id": "3ced40a6-1ad7-4fab-9f75-6c114fab1848",
+    "item_count": 4
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\3ced40a6-1ad7-4fab-9f75-6c114fab1848",
+  "stamp": "20260710T023034Z"
+}

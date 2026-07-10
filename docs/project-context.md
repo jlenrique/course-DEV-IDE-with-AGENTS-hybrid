@@ -1,3 +1,26 @@
+# Current Context Addendum - 2026-07-10 (Phase-2 Six Mine-Now COMPLETE)
+
+**Six Mine-Now program:** CLOSED-all-6-with-named-fenced-residuals (party 4/4).
+Letter: `phase2-six-mine-now-final-close-2026-07-10.md`.
+Greenlight: `phase2-six-mine-now-greenlight-2026-07-09.md`.
+
+| # | Aspect | Evidence |
+|---|--------|----------|
+| 1 | Automatic Lesson_plan | `mine1-auto-selection-20260710T021943Z/` |
+| 2 | Interactive SPOC | `mine2a-interactive-planning-20260710T022630Z/` |
+| 3 | Per-SME voice | `mine3-per-sme-voice-20260710T023031Z/` |
+| 4 | Canonical processed-source | `mine4a-canonical-shape-pin-20260710T022613Z/` |
+| 5 | Drill | `mine5-drill-projector-20260710T023034Z/` |
+| 6 | Workbook prose uplift | `mine6-prose-uplift-20260710T023242Z/` |
+
+**Fenced residuals:** 2B memory OS; 4B normalize/writeback; HAI/PHS Gamma
+variants; drill JSON Schema; in-graph SME revoicer default wire; Gamma full
+walk; happy-path coverage JSON write; on-read digest verify.
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
 # Current Context Addendum - 2026-07-09 Session 28 (Claim B live bespoke)
 
 **Marcus plan-ratify Claims A+B:** COMPLETE-with-named-fenced-residuals.
@@ -12,8 +35,9 @@ Driver: `scripts/utilities/bank_marcus_claim_b_live_irene.py`.
 **Holds:** plan-ratify → `runs/<uuid>/` → live Pass-1 → coverage+provenance+
 plan≠control; digests match companions; `lo_coverage=present` + LO touch.
 
-**Still fenced:** interactive SPOC REPL; Gamma; SME/projector; lecture ingest;
-happy-path coverage JSON write in `act()`; on-read digest verify.
+**Still fenced (superseded in part by Six Mine-Now 2026-07-10):** Gamma;
+lecture ingest; happy-path coverage JSON write in `act()`; on-read digest
+verify. (Interactive SPOC / SME / projector / auto-selection MET in Mines 1–5.)
 
 S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
 

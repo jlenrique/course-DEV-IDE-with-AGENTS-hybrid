@@ -1,0 +1,24 @@
+{
+  "schema_version": "0.1",
+  "scope": "run_dir",
+  "root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\09e01f7f-39aa-4179-be34-980a7fbe01ae",
+  "ok": true,
+  "errors": [],
+  "digests": [
+    {
+      "relative_path": "bundle/extracted.md",
+      "sha256": "32b3bb654d4ed56718c8ed68a5c47cb39245276c38072d6977d192410f87107e",
+      "present": true
+    },
+    {
+      "relative_path": "g0-enrichment.json",
+      "sha256": "587fc8b74023b3bb9c54e9747f40079b9e24b8fa8bc43b84f8f51684ee576229",
+      "present": true
+    }
+  ],
+  "kind_counts": {
+    "lecture": 4,
+    "project_artifact": 3,
+    "reading": 2
+  }
+}

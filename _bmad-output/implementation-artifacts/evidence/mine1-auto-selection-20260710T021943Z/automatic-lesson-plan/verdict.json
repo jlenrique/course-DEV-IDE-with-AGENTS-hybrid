@@ -1,0 +1,19 @@
+{
+  "item": "automatic-lesson-plan",
+  "predicate": "plan_collateral_derives_selection_and_compose_consumes",
+  "pass": true,
+  "actual": {
+    "lesson_plan_ref": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/runs/799db384-9b04-4436-9f34-e11608bf6385/irene-pass1.lesson-plan.json",
+    "bundle_id": "narrated-deck-with-workbook",
+    "selection": {
+      "deck": true,
+      "motion": true,
+      "workbook": true
+    },
+    "source": "plan_collateral",
+    "composed_graph_digest": "c53873edfaa9d570b4fba2945a6808674260f90ea8ed23602237cbccbfb24a44",
+    "baseline_differs": true
+  },
+  "negative_absent_collateral_fail_loud": true,
+  "run_dir": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/runs/799db384-9b04-4436-9f34-e11608bf6385"
+}

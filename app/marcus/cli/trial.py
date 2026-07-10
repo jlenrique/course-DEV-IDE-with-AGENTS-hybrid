@@ -34,6 +34,7 @@ from app.marcus.lesson_plan.bundle_catalog import get_bundle
 from app.marcus.lesson_plan.collateral_selection import (
     CollateralSelectionError,
     load_lesson_plan_collateral_selection,
+    load_selection_from_lesson_plan_json,
 )
 from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
@@ -606,39 +607,69 @@ class _StartSelection:
     selection: ComponentSelection | None
     lesson_plan_collateral_intent_path: Path | None = None
     lesson_plan_collateral_bundle_id: str | None = None
+    selection_source: str | None = None
 
 
 def _resolve_start_component_selection(args: argparse.Namespace) -> _StartSelection:
-    """Resolve runtime selection from ratified lesson-plan intent or front door.
+    """Resolve runtime selection from plan collateral, ratified intent, or front door.
 
-    Ratified lesson-plan collateral intent has precedence once present. Without
-    that file, the existing manual bundle/front-door path is unchanged.
+    Precedence (Phase-2 Mine 1):
+    1. ``--lesson-plan-collateral-intent`` (ratified intent file) when source=ratified
+    2. ``--lesson-plan-json`` (Irene Pass-1 plan JSON) — auto-derive from collateral
+    3. Manual ``--bundle`` / front-door default
+
+    Auto-derive fails loud on missing/invalid collateral (Winston Option A).
     """
     intent_path = getattr(args, "lesson_plan_collateral_intent", None)
-    if not intent_path:
-        return _StartSelection(selection=_resolve_bundle_selection(args))
-    intent_file = Path(intent_path)
-    resolved = load_lesson_plan_collateral_selection(intent_file)
-    if resolved.source != "ratified":
+    plan_json_path = getattr(args, "lesson_plan_json", None)
+
+    if intent_path:
+        intent_file = Path(intent_path)
+        resolved = load_lesson_plan_collateral_selection(intent_file)
+        if resolved.source == "ratified":
+            bundle = getattr(args, "bundle", None)
+            if bundle:
+                record = get_bundle(bundle)
+                if record is None:
+                    raise CollateralSelectionError(
+                        f"{bundle!r} is not a bundle in the closed catalog"
+                    )
+                if record.selection != resolved.selection:
+                    raise CollateralSelectionError(
+                        "lesson-plan collateral intent selection conflicts with --bundle"
+                    )
+            return _StartSelection(
+                selection=resolved.selection,
+                lesson_plan_collateral_intent_path=intent_file,
+                lesson_plan_collateral_bundle_id=resolved.bundle_id,
+                selection_source="ratified",
+            )
+        # Unratified intent file: fall through to plan-json or bundle.
+
+    if plan_json_path:
+        plan_file = Path(plan_json_path)
+        resolved = load_selection_from_lesson_plan_json(plan_file)
+        bundle = getattr(args, "bundle", None)
+        if bundle:
+            record = get_bundle(bundle)
+            if record is None:
+                raise CollateralSelectionError(
+                    f"{bundle!r} is not a bundle in the closed catalog"
+                )
+            if record.selection != resolved.selection:
+                raise CollateralSelectionError(
+                    "lesson-plan collateral selection conflicts with --bundle"
+                )
         return _StartSelection(
-            selection=_resolve_bundle_selection(args),
-            lesson_plan_collateral_intent_path=intent_file,
+            selection=resolved.selection,
+            lesson_plan_collateral_intent_path=plan_file,
+            lesson_plan_collateral_bundle_id=resolved.bundle_id,
+            selection_source="plan_collateral",
         )
-    bundle = getattr(args, "bundle", None)
-    if bundle:
-        record = get_bundle(bundle)
-        if record is None:
-            raise CollateralSelectionError(
-                f"{bundle!r} is not a bundle in the closed catalog"
-            )
-        if record.selection != resolved.selection:
-            raise CollateralSelectionError(
-                "lesson-plan collateral intent selection conflicts with --bundle"
-            )
+
     return _StartSelection(
-        selection=resolved.selection,
-        lesson_plan_collateral_intent_path=intent_file,
-        lesson_plan_collateral_bundle_id=resolved.bundle_id,
+        selection=_resolve_bundle_selection(args),
+        selection_source="bundle" if getattr(args, "bundle", None) else "default",
     )
 
 
@@ -862,6 +893,16 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "Local YAML/JSON ratified lesson-plan collateral intent. When present, "
             "it resolves through the curated bundle catalog and feeds the existing "
             "ComponentSelection runtime seam."
+        ),
+    )
+    start.add_argument(
+        "--lesson-plan-json",
+        required=False,
+        help=(
+            "Irene Pass-1 lesson-plan JSON (irene-pass1.lesson-plan.json). "
+            "Derives ComponentSelection from lesson_plan.collateral automatically "
+            "(fail-loud on missing/invalid collateral). Precedence below "
+            "--lesson-plan-collateral-intent when that file is ratified."
         ),
     )
     start.add_argument(

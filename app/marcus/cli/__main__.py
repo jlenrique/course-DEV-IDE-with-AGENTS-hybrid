@@ -5,6 +5,10 @@ import sys
 
 from app.marcus.cli.adhoc_cli import adhoc_ask_cli, build_adhoc_parser
 from app.marcus.cli.gate_cli import main as gate_main
+from app.marcus.cli.plan_dialogue_cli import (
+    build_plan_dialogue_parser,
+    plan_dialogue_cli,
+)
 from app.marcus.cli.plan_ratify_cli import (
     build_plan_ratify_parser,
     plan_ratify_cli,
@@ -36,6 +40,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     build_plan_ratify_parser(plan_ratify)
 
+    plan_dialogue = subparsers.add_parser(
+        "plan-dialogue",
+        help=(
+            "Interactive (or --script) planning REPL: elicit purpose/audience/"
+            "workflow/gap-fill/LOs with confirm-before-write; emit ratification "
+            "companions + ratified-los.json + transcript"
+        ),
+    )
+    build_plan_dialogue_parser(plan_dialogue)
+
     return parser
 
 
@@ -50,6 +64,8 @@ def main(argv: list[str] | None = None) -> int:
         return adhoc_ask_cli(args)
     if args.command == "plan-ratify":
         return plan_ratify_cli(args)
+    if args.command == "plan-dialogue":
+        return plan_dialogue_cli(args)
     if args.command == "trial" and args.trial_command == "start":
         return start_trial_cli(args)
     if args.command == "trial" and args.trial_command == "resume":

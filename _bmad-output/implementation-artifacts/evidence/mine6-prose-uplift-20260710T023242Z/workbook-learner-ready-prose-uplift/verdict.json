@@ -1,0 +1,54 @@
+{
+  "item": "workbook-learner-ready-prose-uplift",
+  "mine": "6",
+  "pass": true,
+  "predicates": {
+    "markers_cleared": true,
+    "deixis_reduced": true,
+    "sme_attribution_present": true,
+    "idempotent_second_pass": true,
+    "per_segment_deltas": true,
+    "run_id": "576a818a-29ce-42b8-9bd8-35f52cb0c17d",
+    "total_before_markers": 3,
+    "total_after_markers": 0,
+    "deixis_before": 11,
+    "deixis_after": 0,
+    "per_seg": [
+      {
+        "segment_id": "seg-01",
+        "revoice_marker_before": 1,
+        "revoice_marker_after": 0,
+        "deixis_hits_before": 4,
+        "deixis_hits_after": 0,
+        "chars_before": 215,
+        "chars_after": 218,
+        "deixis_reduced": true,
+        "markers_cleared": true
+      },
+      {
+        "segment_id": "seg-02",
+        "revoice_marker_before": 1,
+        "revoice_marker_after": 0,
+        "deixis_hits_before": 4,
+        "deixis_hits_after": 0,
+        "chars_before": 205,
+        "chars_after": 208,
+        "deixis_reduced": true,
+        "markers_cleared": true
+      },
+      {
+        "segment_id": "seg-03",
+        "revoice_marker_before": 1,
+        "revoice_marker_after": 0,
+        "deixis_hits_before": 3,
+        "deixis_hits_after": 0,
+        "chars_before": 194,
+        "chars_after": 197,
+        "deixis_reduced": true,
+        "markers_cleared": true
+      }
+    ]
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\576a818a-29ce-42b8-9bd8-35f52cb0c17d",
+  "stamp": "20260710T023242Z"
+}
