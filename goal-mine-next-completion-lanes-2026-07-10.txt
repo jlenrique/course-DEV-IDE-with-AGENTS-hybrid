@@ -1,0 +1,90 @@
+# Session GOAL — Mine-next project-completion lanes (operator-binding)
+**Date:** 2026-07-10  
+**Branch:** `dev/lesson-planning-2026-07-09`  
+**Product:** Marcus-SPOC local runtime — not concierge/proofing convenience  
+**Do not reopen:** S8; parked HELR `irene-pass2-figure-contradiction-classic-condense`  
+**Prior close:** Six Mine-Now + integrated E2E (`8099669e…`) — stay closed as substrate  
+
+---
+
+## Operator binding
+
+Continue BMAD workflows + party-mode teams + dev agents in the same loops as
+Six Mine-Now, including **live validation of components as completed**, to
+advance each **Mine-next** lane from STATE-OF-THE-APP longer roadmap.
+
+**Session / arc is NOT ready to close until party agrees each in-scope lane's
+SUCCESS predicates are MET** (or explicitly HOLD with operator-named gate).
+
+| # | Operator short name | Inventory / mine target |
+|---|---------------------|-------------------------|
+| N1 | Real HAI/PHS ingestion | HAI video/slides + PHS Confluence/Canvas → canonical processed source |
+| N2 | SPOC LO + workflow | Operator-owned LO ratification + workflow selection **in SPOC** (beyond CLI) |
+| N3 | Multi-collateral projectors | job-aid / quiz / summary siblings (drill already seeded); input≠output boundary |
+| N4 | Course/SME registry completion | Named Gamma variants + approval routing beyond Mine 3 seed |
+| N5 | Full local SPOC production proof | Terminal walk on **real course content** (not Tejal-only adjunct) |
+| N6 | Trust-complete hardening | Fidelity flag-ON path, positive-carry, UDAC universality, bundle-carrier, reenter_at_node, reading-path P2-4b holdout |
+| N7 | Batch LLM Execution Mode | Specced epic — **after** full live E2E; **interactive operator spec** for where batching helps |
+
+---
+
+## Standing rules (unchanged)
+
+- Party consensus + orchestrator agree = approval; spawn real BMAD seats.
+- Impasse = Quinn → John → human.
+- Live-test each major component; bank `runs/<uuid>/` + evidence stamps.
+- Every change must improve the SPOC product (CRITICAL DESIGN GUARDRAIL).
+
+---
+
+## Operator alerts (binding)
+
+### A. Real HAI / PHS content required
+**ALERT:** Development on **N1**, **N4 completion** (HAI/PHS named Gamma variants),
+and **N5** (full SPOC proof on real course content) **cannot honestly claim
+completion** without operator-delivered real course media / access:
+
+- HAI 510: lecture video + slides for ≥1 module leaf  
+- PHS 620: authorized Confluence and/or Canvas source for ≥1 module  
+
+Until delivered, those lanes are **HOLD** (substrate work on Tejal may continue
+only if explicitly fenced as non-completion).
+
+### B. Batch LLM — interactive operator spec required
+**Do not** silently GO Batch LLM. After the **full local SPOC live E2E** (N5 bar),
+pause for **live interaction with the operator** to decide where batching helps
+most (e.g. image perception and mapping). Spec already exists at
+`epic-batch-llm-execution-mode-spec-2026-07-01.md` — operator amends eligibility
+before `bmad-create-epics-and-stories` / build.
+
+### C. Live E2E before Batch
+Complete **N5-class full local SPOC production proof** (or party-waived Tejal
+terminal walk with named residual) **before** any Batch LLM implementation.
+
+---
+
+## Sequencing (party to ratify)
+
+```
+Track A (now, Tejal — no media gate):
+  N6 trust slice(s)  ∥  N3 projector sibling  ∥  N2 SPOC wire (2B-lite)
+
+Track B (operator media gate):
+  N1 ingest one leaf  →  N4 bind one SME variant (optional parallel once CD authors guide)
+
+Track C (after A+B minimum):
+  N5 full local SPOC terminal proof on real course content
+
+Track D (after N5 + operator interactive batching spec):
+  N7 Batch LLM epic (formal BMAD epic/stories)
+```
+
+---
+
+## Explicit non-claims (unless party expands)
+
+- S8 reopen; Epics 15–18 wholesale  
+- Full multi-module HAI/PHS bulk ingest in one arc  
+- 2B full conversational memory OS  
+- Batch LLM before N5 E2E + operator batching dialogue  
+- Silent Tejal reuse for unbound SMEs  

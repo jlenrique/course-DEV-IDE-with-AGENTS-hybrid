@@ -33,7 +33,9 @@ from app.marcus.cli.marcus_spoc import (
 from app.marcus.lesson_plan.bundle_catalog import get_bundle
 from app.marcus.lesson_plan.collateral_selection import (
     CollateralSelectionError,
+    ResolvedCollateralSelection,
     load_lesson_plan_collateral_selection,
+    load_selection_from_lesson_plan_json,
 )
 from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
@@ -383,17 +385,39 @@ def start_trial(
     run_dir = runs_root / str(effective_trial_id)
     gamma_settings = _load_gamma_settings_file(gamma_settings_file)
     lesson_plan_bundle_id = lesson_plan_collateral_bundle_id
+    selection_source_receipt: str | None = None
     if lesson_plan_collateral_intent_path is not None:
-        resolved_collateral_selection = load_lesson_plan_collateral_selection(
-            lesson_plan_collateral_intent_path
-        )
-        if resolved_collateral_selection.source == "ratified":
+        # Prefer plan-collateral JSON (Mine 1 auto path) when the file is an
+        # Irene lesson-plan companion; otherwise load ratified intent YAML.
+        path = Path(lesson_plan_collateral_intent_path)
+        resolved_collateral_selection: ResolvedCollateralSelection | None = None
+        try:
+            # Detect lesson-plan JSON: has collateral / plan_units, no ratification.
+            raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, yaml.YAMLError):
+            raw = None
+        if isinstance(raw, dict) and (
+            "collateral" in raw
+            or "plan_units" in raw
+            or isinstance(raw.get("lesson_plan"), dict)
+        ) and raw.get("ratification_status") != "ratified":
+            resolved_collateral_selection = load_selection_from_lesson_plan_json(path)
+            selection_source_receipt = "plan_collateral"
+        else:
+            resolved_collateral_selection = load_lesson_plan_collateral_selection(path)
+            if resolved_collateral_selection.source == "ratified":
+                selection_source_receipt = "ratified"
+        if (
+            resolved_collateral_selection is not None
+            and resolved_collateral_selection.source
+            in {"ratified", "plan_collateral"}
+        ):
             if (
                 component_selection is not None
                 and component_selection != resolved_collateral_selection.selection
             ):
                 raise CollateralSelectionError(
-                    "lesson-plan collateral intent selection conflicts with the "
+                    "lesson-plan collateral selection conflicts with the "
                     "explicit component_selection argument"
                 )
             component_selection = resolved_collateral_selection.selection
@@ -574,6 +598,7 @@ def start_trial(
             else None
         ),
         "lesson_plan_collateral_bundle_id": lesson_plan_bundle_id,
+        "lesson_plan_selection_source": selection_source_receipt,
         "transport_kind": "cli",
     }
     (run_dir / "trial-start.json").write_text(
@@ -606,39 +631,69 @@ class _StartSelection:
     selection: ComponentSelection | None
     lesson_plan_collateral_intent_path: Path | None = None
     lesson_plan_collateral_bundle_id: str | None = None
+    selection_source: str | None = None
 
 
 def _resolve_start_component_selection(args: argparse.Namespace) -> _StartSelection:
-    """Resolve runtime selection from ratified lesson-plan intent or front door.
+    """Resolve runtime selection from plan collateral, ratified intent, or front door.
 
-    Ratified lesson-plan collateral intent has precedence once present. Without
-    that file, the existing manual bundle/front-door path is unchanged.
+    Precedence (Phase-2 Mine 1):
+    1. ``--lesson-plan-collateral-intent`` (ratified intent file) when source=ratified
+    2. ``--lesson-plan-json`` (Irene Pass-1 plan JSON) — auto-derive from collateral
+    3. Manual ``--bundle`` / front-door default
+
+    Auto-derive fails loud on missing/invalid collateral (Winston Option A).
     """
     intent_path = getattr(args, "lesson_plan_collateral_intent", None)
-    if not intent_path:
-        return _StartSelection(selection=_resolve_bundle_selection(args))
-    intent_file = Path(intent_path)
-    resolved = load_lesson_plan_collateral_selection(intent_file)
-    if resolved.source != "ratified":
+    plan_json_path = getattr(args, "lesson_plan_json", None)
+
+    if intent_path:
+        intent_file = Path(intent_path)
+        resolved = load_lesson_plan_collateral_selection(intent_file)
+        if resolved.source == "ratified":
+            bundle = getattr(args, "bundle", None)
+            if bundle:
+                record = get_bundle(bundle)
+                if record is None:
+                    raise CollateralSelectionError(
+                        f"{bundle!r} is not a bundle in the closed catalog"
+                    )
+                if record.selection != resolved.selection:
+                    raise CollateralSelectionError(
+                        "lesson-plan collateral intent selection conflicts with --bundle"
+                    )
+            return _StartSelection(
+                selection=resolved.selection,
+                lesson_plan_collateral_intent_path=intent_file,
+                lesson_plan_collateral_bundle_id=resolved.bundle_id,
+                selection_source="ratified",
+            )
+        # Unratified intent file: fall through to plan-json or bundle.
+
+    if plan_json_path:
+        plan_file = Path(plan_json_path)
+        resolved = load_selection_from_lesson_plan_json(plan_file)
+        bundle = getattr(args, "bundle", None)
+        if bundle:
+            record = get_bundle(bundle)
+            if record is None:
+                raise CollateralSelectionError(
+                    f"{bundle!r} is not a bundle in the closed catalog"
+                )
+            if record.selection != resolved.selection:
+                raise CollateralSelectionError(
+                    "lesson-plan collateral selection conflicts with --bundle"
+                )
         return _StartSelection(
-            selection=_resolve_bundle_selection(args),
-            lesson_plan_collateral_intent_path=intent_file,
+            selection=resolved.selection,
+            lesson_plan_collateral_intent_path=plan_file,
+            lesson_plan_collateral_bundle_id=resolved.bundle_id,
+            selection_source="plan_collateral",
         )
-    bundle = getattr(args, "bundle", None)
-    if bundle:
-        record = get_bundle(bundle)
-        if record is None:
-            raise CollateralSelectionError(
-                f"{bundle!r} is not a bundle in the closed catalog"
-            )
-        if record.selection != resolved.selection:
-            raise CollateralSelectionError(
-                "lesson-plan collateral intent selection conflicts with --bundle"
-            )
+
     return _StartSelection(
-        selection=resolved.selection,
-        lesson_plan_collateral_intent_path=intent_file,
-        lesson_plan_collateral_bundle_id=resolved.bundle_id,
+        selection=_resolve_bundle_selection(args),
+        selection_source="bundle" if getattr(args, "bundle", None) else "default",
     )
 
 
@@ -750,18 +805,23 @@ def recover_trial(
     trial_id: UUID,
     runs_root: Path = RUNS_ROOT,
     max_specialist_calls: int | None = None,
+    reenter_at_node: str | None = None,
 ) -> dict[str, Any]:
     """Continue an error-paused trial from its failed node (S4 part 2).
 
     No verdict file: dispatch-error pauses carry no operator decision — the
     operator fixes the transient cause and re-enters the walk. Gate pauses
     still require `trial resume` + a verdict.
+
+    ``reenter_at_node`` (optional): upstream manifest node id to rewind to
+    when the fix is before the failed node (Mine-next trust T2).
     """
     _load_env_if_available()
     envelope = recover_production_trial(
         trial_id=trial_id,
         runs_root=runs_root,
         max_specialist_calls=max_specialist_calls,
+        reenter_at_node=reenter_at_node,
     )
     result = {
         "status": envelope.status,
@@ -774,6 +834,7 @@ def recover_trial(
         else None,
         "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
         "transport_kind": "cli",
+        "reenter_at_node": reenter_at_node,
     }
     (runs_root / str(trial_id) / "trial-recover.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
@@ -787,6 +848,7 @@ def recover_trial_cli(args: argparse.Namespace) -> int:
         trial_id=args.trial_id,
         runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
         max_specialist_calls=args.max_specialist_calls,
+        reenter_at_node=getattr(args, "reenter_at_node", None),
     )
     print(json.dumps(payload, sort_keys=True))
     return 0
@@ -865,6 +927,16 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         ),
     )
     start.add_argument(
+        "--lesson-plan-json",
+        required=False,
+        help=(
+            "Irene Pass-1 lesson-plan JSON (irene-pass1.lesson-plan.json). "
+            "Derives ComponentSelection from lesson_plan.collateral automatically "
+            "(fail-loud on missing/invalid collateral). Precedence below "
+            "--lesson-plan-collateral-intent when that file is ratified."
+        ),
+    )
+    start.add_argument(
         "--allow-unproven-bundle",
         action="store_true",
         help=(
@@ -901,6 +973,15 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         help=(
             "Maximum downstream specialist calls to make during this recovery "
             "continuation. Defaults to the paused runner cap."
+        ),
+    )
+    recover.add_argument(
+        "--reenter-at-node",
+        required=False,
+        help=(
+            "Optional upstream manifest node id: drop contributions from that "
+            "node through the failed index and restart the walk there "
+            "(Mine-next trust T2). Default retries the failed node only."
         ),
     )
 

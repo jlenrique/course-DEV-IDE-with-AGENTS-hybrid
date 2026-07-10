@@ -52,7 +52,11 @@ class StyleguideResolution(BaseModel):
     model_config = ConfigDict(extra="forbid", validate_assignment=True)
 
     sme_name: str
+    sme_key: str | None = None
     styleguide_id: str | None = None
+    attribution: str = ""
+    approval_route: str = ""
+    voice_profile_ref: str = ""
     fallback: bool = False
     reason: str = ""
 
@@ -198,13 +202,33 @@ def _scoped_manifest(
 
 
 def _styleguide_resolution(sme_name: str) -> StyleguideResolution:
+    """Resolve SME-keyed styleguide/attribution/approval/voice (Mine 3).
+
+    Unknown SME names hard-fail via the registry (never silent Tejal).
+    """
+    from app.marcus.course_source.sme_registry import (
+        SmeRegistryError,
+        resolve_sme_profile,
+    )
+
+    try:
+        profile = resolve_sme_profile(sme_name)
+    except SmeRegistryError as exc:
+        raise ValueError(str(exc)) from exc
     return StyleguideResolution(
         sme_name=sme_name,
-        styleguide_id=None,
-        fallback=True,
-        reason=(
+        sme_key=profile.sme_key,
+        styleguide_id=profile.styleguide_id,
+        attribution=profile.attribution,
+        approval_route=profile.approval_route,
+        voice_profile_ref=profile.voice_profile_ref,
+        fallback=profile.fallback,
+        reason=profile.reason
+        or (
             "No SME-specific styleguide is available; downstream planning must "
             "treat style as unresolved."
+            if profile.fallback
+            else ""
         ),
     )
 

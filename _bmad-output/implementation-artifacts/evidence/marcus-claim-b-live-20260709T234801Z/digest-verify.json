@@ -1,0 +1,21 @@
+{
+  "stamp": "20260709T234801Z",
+  "run_dir": "runs/bc8359aa-fdd9-4551-a9a1-e6483941c962",
+  "checks": {
+    "ratification_digest": {
+      "emitted": "sha256:887395185d177d17d81a5f528329db13be335a4b9ba825863b7b75802fa4c770",
+      "computed": "sha256:887395185d177d17d81a5f528329db13be335a4b9ba825863b7b75802fa4c770",
+      "match": true
+    },
+    "ratified_los_digest": {
+      "emitted": "sha256:2636f98da1205fa071be87592d992f2206fcb4d6900a0752a8fe0b243a8858b3",
+      "computed": "sha256:2636f98da1205fa071be87592d992f2206fcb4d6900a0752a8fe0b243a8858b3",
+      "match": true
+    },
+    "intent_digest": {
+      "emitted": "sha256:67808b3f81c58958d1ce96d5693a1ec5e8e56c679333b762cd91ea56b42bc7a7",
+      "computed": "sha256:67808b3f81c58958d1ce96d5693a1ec5e8e56c679333b762cd91ea56b42bc7a7",
+      "match": true
+    }
+  }
+}

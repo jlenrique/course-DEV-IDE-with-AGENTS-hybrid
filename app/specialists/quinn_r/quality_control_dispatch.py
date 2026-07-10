@@ -73,9 +73,22 @@ def run_g5_grounding(payload: dict[str, Any]) -> dict[str, Any]:
             "(narration_script + segment_manifest_deltas projections)",
             tag="quinn_r.g5.input-missing",
         )
-    from app.specialists.narration_join import join_narration_segments, phantom_segment_ids
+    from app.specialists.narration_join import (
+        collapsed_segment_ids,
+        join_narration_segments,
+        phantom_segment_ids,
+    )
 
     rows = join_narration_segments(narration, deltas)
+    # Mine-next trust T3: non-bijective collapse is fail-loud at G5 (observability
+    # path); Enrique refuses the same shape pre-spend.
+    collapsed = collapsed_segment_ids(rows)
+    if collapsed:
+        raise StoryboardBInputError(
+            f"narration join collapsed segment id(s) {collapsed} onto multiple "
+            "slides (non-bijective); refusing G5 coverage on a flooded join",
+            tag="quinn_r.g5.join-collapsed",
+        )
     # dp-v1.2 rider (Amelia R1): a delta with no matching narration joins
     # with empty text — drop it BEFORE coverage counting so its slide
     # reports uncovered (CoverageGapError) instead of silently passing

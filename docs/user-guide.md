@@ -1,5 +1,27 @@
 # User Guide — Course Content Production System
 
+## Current Status - Marcus-SPOC Lesson Planning (2026-07-09)
+
+This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target.
+
+### What Works Now
+
+- The durable Phase-2 baseline includes S7 course-source assessment/bundles, the S8 planning-to-selection bridge, the Irene planning-context handoff, and Marcus `plan-ratify` Claim A/B through the live bespoke Irene Pass-1 close at `fa48fb5b`.
+- Operators can ratify planning context for purpose, audience, learning objectives, source assessment, and collateral intent. Irene Pass-1 can receive that context as framing while the source corpus remains the topic authority.
+- The ratified collateral-intent path can drive local W5 composition on the Marcus-SPOC runtime. The active product-gap frontier is automatic `lesson_plan["collateral"]` to `ComponentSelection`, interactive planning dialogue, SME routing, ingestion hardening, and additional collateral projectors.
+
+### What Is Still Fenced
+
+- Do not treat S8 as open work. New work should build on the bridge rather than replacing the selection contract.
+- Full free-form SPOC planning, Gamma/published-walk claims, HAI/PHS real ingestion, per-SME voice/styleguide routing, projector-family expansion, and workbook prose uplift remain residual or in-flight until committed close evidence says otherwise.
+- Never ad-hoc-edit approved styleguide registry guides. Non-Tejal production must not silently borrow Tejal voice or approval routing.
+
+### How To Read The Rest Of This Guide
+
+Use this current-status block first, then use the older sections below for workflow vocabulary and historical operator patterns. Current project status lives in [`docs/STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md), [`SESSION-HANDOFF.md`](../SESSION-HANDOFF.md), and [`next-session-start-here.md`](../next-session-start-here.md).
+
+## Legacy Context
+
 > **Migration Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration unconditionally SHIPPED 2026-04-27. Slab 7 orchestrational arc COMPLETE (7a+7b+7c closed 2026-05-01 / 2026-05-01 / 2026-05-07). Pre-Trial-3 cleanup arc S1-S6 currently in progress (S1+S2+S3+S4 closed; S5+S6 in flight). **First tracked trial (Trial-3) launches post-cleanup-close** against v5 canonical pack + post-Slab-7c substrate. v5 canonical pack: `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`. Trial methodology: `docs/trials/methodology.md`. Legacy v4.2 retained as mapping-checklist legacy-axis frozen authority.
 
 

@@ -1,0 +1,273 @@
+{
+  "card": {
+    "card_id": "b2a243e1-1830-4051-8912-6fd4ee4b2395",
+    "created_at": "2026-07-09T19:32:40.324109Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gamma_settings": [
+      {
+        "amount": "brief",
+        "dimensions": "fluid",
+        "image_model": "gpt-image-2-mini",
+        "image_source": "aiGenerated",
+        "image_style_preset": "illustration",
+        "language": "en",
+        "production_mode": "api",
+        "text_mode": "condense",
+        "theme": "njim9kuhfnljvaa",
+        "variant_id": "A"
+      }
+    ],
+    "gate_focus": "variant_selection",
+    "gate_id": "G2B",
+    "meta": {
+      "affected_nodes": [
+        "07B-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Approve the proposed slide variants, or edit to select alternates.",
+    "pick_context": [
+      {
+        "kind": "production-runner",
+        "node_id": "07B-gate"
+      },
+      {
+        "content": "# Quinn-R - specialist-complete - 2026-07-09T19:31:25.069807Z\n## Received\ninput keys: cache_prefix\n## Decided\nquinn_r emitted cache payload because its act node completed successfully.\n## Emitted artifacts\n- `none`\n## Resolution trail (model_resolution_trail entries)\n- per_specialist -> gpt-5: specialist 'quinn_r' declared default_model='gpt-5' in model_config.yaml\n- per_specialist -> gpt-5: qrr.parsed.ok\n## Persistence\n- trial_id: 235f2b82-5989-4a6f-9e6b-22e9697f58d2\n- specialist_id: quinn_r\n- gate_id: specialist-complete\n- schema: specialist-summary.v1\n- deferred: false\n",
+        "kind": "specialist-summary",
+        "path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/specialist-summaries/quinn_r-20260709T193125069807Z.md"
+      },
+      {
+        "kind": "variant-options",
+        "slides": [
+          {
+            "slide_id": "slide-01",
+            "variants": [
+              {
+                "display_title": "Module 1 Complete: The Mindset Is Set",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-literal_slide-01.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-02",
+            "variants": [
+              {
+                "display_title": "What Changes After the Mindset: From Seeing Systems to Starting the Journey",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-creative_slide-02.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-03",
+            "variants": [
+              {
+                "display_title": "The Opportunity Is Mapped, But the Leader Must Be Built",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-creative_slide-03.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-04",
+            "variants": [
+              {
+                "display_title": "Mindset Alone Is Not Enough in a Matrixed Health System",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-creative_slide-04.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-05",
+            "variants": [
+              {
+                "display_title": "Bridge Graphic: From Mindset to Identity",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-literal_slide-05.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-06",
+            "variants": [
+              {
+                "display_title": "Preview of Module 2 Leadership Identity Work",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-creative_slide-06.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-07",
+            "variants": [
+              {
+                "display_title": "Leader Identity: Define and Communicate the Vision",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-creative_slide-07.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-08",
+            "variants": [
+              {
+                "display_title": "Inspire Others to Join the Cause",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-creative_slide-08.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          },
+          {
+            "slide_id": "slide-09",
+            "variants": [
+              {
+                "display_title": "Source-Constrained Production Note: Motion Must Not Be Assumed",
+                "file_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2\\exports\\gary\\A-literal_slide-09.png",
+                "gamma_settings": {
+                  "amount": "brief",
+                  "dimensions": "fluid",
+                  "image_model": "gpt-image-2-mini",
+                  "image_source": "aiGenerated",
+                  "image_style_preset": "illustration",
+                  "language": "en",
+                  "production_mode": "api",
+                  "text_mode": "condense",
+                  "theme": "njim9kuhfnljvaa",
+                  "variant_id": "A"
+                },
+                "variant": "A"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "kind": "gamma-settings",
+        "settings": [
+          {
+            "amount": "brief",
+            "dimensions": "fluid",
+            "image_model": "gpt-image-2-mini",
+            "image_source": "aiGenerated",
+            "image_style_preset": "illustration",
+            "language": "en",
+            "production_mode": "api",
+            "text_mode": "condense",
+            "theme": "njim9kuhfnljvaa",
+            "variant_id": "A"
+          }
+        ]
+      }
+    ],
+    "schema_version": "v1",
+    "selected_variant_id": null,
+    "trial_id": "235f2b82-5989-4a6f-9e6b-22e9697f58d2",
+    "variant_candidates": [
+      "A"
+    ],
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/checkpoint.json",
+  "digest": "ce426d32dc4ca41f98b4b15b5ff8305775539bd0634ec5a8cdcbfe939ef12e28",
+  "issued_at": "2026-07-09T19:32:40.324109Z",
+  "server_nonce": "b2b86366772643bc95afa7e075aa211f"
+}

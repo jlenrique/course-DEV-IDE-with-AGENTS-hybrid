@@ -1,0 +1,20 @@
+ratification_status: ratified
+bundle_id: narrated-deck-with-workbook
+collateral:
+  schema_version: '1.1'
+  declaration: present
+  workbook:
+    kind: deck-companion-workbook
+    sections:
+    - section_id: sec-1
+      learning_objective_id: obj-1
+      title: Read in depth
+      depth_delta:
+        deferred_from_slide: slide-1
+        deferred_depth: the supporting method
+        retained_on_slide: null
+      exercises: []
+      narrative_intent: ''
+  research_goals: []
+input_bundle: null
+source_ref: null

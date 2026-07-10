@@ -71,3 +71,13 @@
 - [blind] Studio + any literal hard-fails the whole variant (spec Always). Creative-only Studio / per-slide Classic split is Ask First / out of scope.
 - [reject→defer note] Binary cohorting groups non-contiguous creatives into one Gamma call — intentional per binary-cohort design; adjacency restyle risk accepted; revisit only if live decks show island restyle defects.
 - [edge] Mixed-cohort slides lacking `slide_id` can still synthesize colliding `slide-01` ids across cohorts if both cohorts start index at 1 — patched generation_id mapping; unique-id refuse before partition remains optional hardening.
+
+
+## Deferred from: green-light of spec-irene-pass1-fidelity-emit-recovery (2026-07-09)
+
+- [follow-on] `literal-visual-production-streamline` — brainstorm + design a less-cumbersome production path for `literal-visual` slides under the styleguide regime (rebrand PNG / §06B / URL injection). Filed in `_bmad-output/planning-artifacts/deferred-inventory.md`. Not in this slice; emit ≠ production.
+
+## Deferred from: code review of spec-irene-pass1-fidelity-emit-recovery (2026-07-09)
+
+- [edge] Refinement carry of fidelity is prompt-only: if the model drops recognized tags on a refinement pass, normalize does not merge them back from the incoming plan. Spec Always asks carry-forward via prompt; a deterministic merge backstop is a follow-on if live refinements strip tags.
+- [blind] Soft-omit of unknown fidelity values is intentional (spec Always); fail-loud on typos remains Ask-First / sibling of the prior Gary-path defer.

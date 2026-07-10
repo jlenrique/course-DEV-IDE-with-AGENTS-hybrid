@@ -28,7 +28,7 @@ from typing import Any
 import yaml
 
 from app.specialists.dispatch_errors import SpecialistDispatchError
-from app.specialists.narration_join import join_narration_segments
+from app.specialists.narration_join import collapsed_segment_ids, join_narration_segments
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 GENERATOR_SCRIPT = (
@@ -193,6 +193,13 @@ def _write_segment_manifest_for_b(
             "Irene Pass-2 deltas joined to zero slides; storyboard-B has no "
             "narration overlay to publish",
             tag="storyboard.input.missing-irene",
+        )
+    collapsed = collapsed_segment_ids(segments)
+    if collapsed:
+        raise StoryboardPublishError(
+            f"narration join collapsed segment id(s) {collapsed} onto multiple "
+            "slides; refusing storyboard publish on a non-bijective join",
+            tag="storyboard.join.collapsed-segment-ids",
         )
     # Re-attach the fields the frozen join neck omits (1.3-carry cluster
     # labels; P5 voice_direction; enhanced-vo.1 slide_key) — the ONLY

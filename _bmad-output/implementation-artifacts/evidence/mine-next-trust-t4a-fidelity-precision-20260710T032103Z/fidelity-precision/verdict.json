@@ -1,0 +1,18 @@
+{
+  "lane": "T4a",
+  "name": "fidelity-precision-before-flag-on",
+  "note": "Flag remains default-OFF; positive-carry + live activation still OPEN",
+  "passed": true,
+  "predicates": {
+    "comma_money_parses": true,
+    "default_flag_off": true,
+    "far_match_67_to_60_rejected": true,
+    "near_match_18_4_to_18": true,
+    "percent_tolerance_band": true,
+    "plain_money_parses": true,
+    "real_conflict_still_raises": true,
+    "run_id": "37941977-2d12-4a62-ad64-6d23e754d006",
+    "tolerant_gate_no_raise": true
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\37941977-2d12-4a62-ad64-6d23e754d006"
+}

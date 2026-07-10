@@ -56,6 +56,10 @@ Use this the first time you open this BMAD project in a new tool context. Once c
 2. Read [`docs/ONBOARDING.md`](docs/ONBOARDING.md) (~285 lines) for the architectural mental model + complexity hotspots + 15-step guided tour. This is the fastest cold-start ramp asset; the knowledge-graph scan it derives from is at `.understand-anything/knowledge-graph.json`.
 3. If the session involves production orchestration, content production, or APP runs: read [`skills/bmad-agent-marcus/SKILL.md`](skills/bmad-agent-marcus/SKILL.md) and follow its activation sequence (sanctum batch under `_bmad/memory/bmad-agent-marcus/`) before any specialist invocation. Per CLAUDE.md "Marcus first" cold-start rule.
 4. Skim [`docs/agent-environment.md`](docs/agent-environment.md) for the MCP/API/skill inventory, and [`CLAUDE.md`](CLAUDE.md) for project rules (sprint governance, push cadence, deferred-inventory governance).
+5. **Cursor dual-agent-family check (when opening in Cursor):** confirm `.cursor/rules/bmad-dual-agent-families.mdc` is present (alwaysApply). Know which family this session needs:
+   - **Family A (native BMAD stock)** — party green-lights / workflow seats: use **Agent** mode; spawn independent subagents; optional stubs under `.cursor/agents/` (john/winston/amelia/murat/quinn) redirect into BMAD skills. Do **not** use `/multitask` as the party switch.
+   - **Family B (custom skill+sanctum)** — Marcus / Irene / Gary / …: activate via `skills/bmad-agent-{name}/SKILL.md` + `_bmad/memory/bmad-agent-{name}/`. Absence from `agent-manifest.csv` is intentional.
+   Details: [`AGENTS.md`](AGENTS.md) §Dual agent families + the Cursor rule above.
 
 > **Gitignore caveat:** `.env`, `state/runtime/*.db`, binary media under `course-content/`, and `next-session-start-here.md` are all gitignored. File-search tools (glob, find, ripgrep) that respect `.gitignore` will not see them. Always verify gitignored files by **reading the file directly**, never by pattern search.
 

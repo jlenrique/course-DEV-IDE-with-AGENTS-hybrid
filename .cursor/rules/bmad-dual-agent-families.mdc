@@ -1,0 +1,44 @@
+---
+description: Dual agent families in Cursor — native BMAD stock seats vs custom skill+sanctum agents; party independence; Multitask vs Agent
+alwaysApply: true
+---
+
+# Dual agent families (Cursor)
+
+This repo has **two agent families**. Do not conflate them. Do not treat `_bmad/_config/agent-manifest.csv` as the full roster.
+
+## Family A — Native BMAD stock seats
+
+**Who:** John (PM), Winston (Architect), Amelia (Dev), Murat (TEA), Mary, Quinn, and other BMAD installer / party-mode personas.
+
+**Where:** BMAD skills under `.claude/skills/bmad-agent-*` / `bmad-party-mode` / `bmad-code-review` / workflow skills; roster via `_bmad` config resolution. Optional Cursor discovery stubs: `.cursor/agents/*.md` (redirect into those skills — not a second persona store).
+
+**When:** Party-mode green-lights, done-bars, workflow gates, code-review ceremony, planning roundtables.
+
+**How in Cursor:**
+- Stay in **Agent** mode (not Ask).
+- Spawn **independent subagents** (parallel Task/Agent tool calls) — one seat per process. Never solo-roleplay a party round unless the operator explicitly allows `--solo`.
+- Load the seat’s BMAD skill (and roster description) into each subagent prompt.
+- **`/multitask` is not the party switch.** Use it only to parallelize unrelated long jobs (e.g. liveproof watch ||| docs). It does not make personas more independent.
+- Prefer `model: inherit` (or Max Mode when the plan requires it) so seats are not silently downgraded to a weaker fallback.
+
+## Family B — Custom skill + sanctum agents
+
+**Who:** Marcus (orchestrator persona), Irene, Gary, Vera, Texas, and the rest of the production specialist body.
+
+**Where:** `skills/bmad-agent-{name}/SKILL.md` + `_bmad/memory/bmad-agent-{name}/` (sanctum). Intentionally **absent** from the stock BMAD agent-manifest CSV.
+
+**When:** Course-content production, Marcus-SPOC / APP runtime orchestration, specialist embodiment.
+
+**How in Cursor:**
+- **Marcus first** for production/orchestration cold start: read `skills/bmad-agent-marcus/SKILL.md`, then load sanctum per that skill, before jumping to specialists.
+- Prefer parent-chat embodiment or a dedicated Agent tab — not party-mode stock seats wearing production names.
+- Subagents may isolate long specialist work only if the prompt explicitly loads the skill + sanctum paths; do not invent a parallel persona store under `.cursor/agents/` that duplicates sanctum.
+
+## Product guardrail (both families)
+
+Marcus-SPOC runtime is the product goal. BMAD-persona Marcus “concierge”/proofing runs are discovery vehicles — do not shape production code merely to make those runs pass. See `CLAUDE.md` §CRITICAL DESIGN GUARDRAIL.
+
+## Party consensus = approval (solo operator)
+
+When a fully-spawned BMAD party round reaches consensus (GO / GO-WITH-AMENDMENTS with MUST amendments folded) **and** the orchestrating agent agrees, treat that as approval — do not halt for a redundant Checkpoint-1 Approve/Edit on the same decision. Escalate true impasses via Quinn → John → human.

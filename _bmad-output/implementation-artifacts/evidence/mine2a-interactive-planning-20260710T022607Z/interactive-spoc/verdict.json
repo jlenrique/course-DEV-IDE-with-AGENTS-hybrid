@@ -1,0 +1,20 @@
+{
+  "item": "interactive-spoc",
+  "mine": "2A",
+  "pass": false,
+  "predicates": {
+    "cli_exit_0": false,
+    "companion_present": false,
+    "intent_present": false,
+    "ratified_los_present": false,
+    "transcript_present": false,
+    "transcript_turns_ge_2": false,
+    "planning_context_has_framing": false,
+    "planning_context_lo_count_ge_1": false,
+    "negative_malformed_fail_loud": true,
+    "run_id": "683c22e9-a270-456b-8605-84321b3a6234",
+    "turn_count": 0
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\683c22e9-a270-456b-8605-84321b3a6234",
+  "stamp": "20260710T022607Z"
+}

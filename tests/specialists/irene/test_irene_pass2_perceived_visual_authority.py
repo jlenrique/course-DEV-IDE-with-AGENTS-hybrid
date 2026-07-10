@@ -15,6 +15,7 @@ from app.specialists.irene.authoring.pass_2_template import (
 )
 from app.specialists.irene.graph import (
     EXPECTED_VISUAL_PLAN_HEADER,
+    PERCEIVED_SPEAKABLE_FIGURES_HEADER,
     UNVERIFIED_VISUAL_AUTHORITY,
     VISUAL_AUTHORITY_HEADER,
     Pass2GroundingError,
@@ -52,6 +53,7 @@ def test_authority_region_uses_perceived_visuals_and_demotes_stale_brief() -> No
     payload = _load("p2_3_contradiction_fixture.json")
     user, authority, expected = _prompt_regions(payload)
 
+    assert PERCEIVED_SPEAKABLE_FIGURES_HEADER in user
     assert "$4.5T" in authority
     assert "building photo" in authority
     assert "$5.2T" not in authority
@@ -63,6 +65,14 @@ def test_authority_region_uses_perceived_visuals_and_demotes_stale_brief() -> No
     assert "subordinate" in expected
     assert "may be stale" in expected
     assert "defer to perceived" in expected
+
+
+def test_speakable_figures_block_always_present_even_when_empty() -> None:
+    payload = _figure_free_payload_with_stale_brief()
+    user, _, _ = _prompt_regions(payload)
+    assert PERCEIVED_SPEAKABLE_FIGURES_HEADER in user
+    assert "slide-figure-free: <none" in user
+    assert "MUST be ⊆ that slide's perceived speakable set" in user
 
 
 def test_missing_or_low_confidence_perception_never_falls_back_to_brief() -> None:

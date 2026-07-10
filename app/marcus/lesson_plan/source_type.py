@@ -282,6 +282,26 @@ class TypedComponent(BaseModel):
             "this flag is set externally and is NOT recomputed by the validator."
         ),
     )
+    kind: (
+        Literal[
+            "reading",
+            "lecture",
+            "lab",
+            "assignment",
+            "assessment",
+            "discussion_prompt",
+            "syllabus",
+            "project_artifact",
+        ]
+        | None
+    ) = Field(
+        default=None,
+        description=(
+            "Mine 4A AssetKind discriminant on enrichment nodes (shape-pin for "
+            "Drill Mine 5). Optional for backward-compatible cards; canonical "
+            "run_dir validation requires it present and reconciled to source_type."
+        ),
+    )
 
     @field_validator("source_type", mode="before")
     @classmethod

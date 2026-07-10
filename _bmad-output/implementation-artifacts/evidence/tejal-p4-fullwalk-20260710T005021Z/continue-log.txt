@@ -1,0 +1,22 @@
+[2026-07-10T05:13:02.504401+00:00] === continue after in-situ VariantSelectionError patch ===
+[2026-07-10T05:13:02.508500+00:00] start status=paused-at-error err=irene.pass2.figure-contradiction
+[2026-07-10T05:13:02.508500+00:00] RECOVER reenter_at_node=07 (restore Gary path after drop)
+[2026-07-10T05:15:14.789685+00:00] recover07 -> paused-at-gate err=None
+[2026-07-10T05:15:14.804461+00:00] [loop 0] status=paused-at-gate gate=G2B err=None
+[2026-07-10T05:15:14.813753+00:00] resume select G2B
+[2026-07-10T05:16:27.099273+00:00]   -> paused-at-gate gate=G2C err=None
+[2026-07-10T05:16:27.118797+00:00] [loop 1] status=paused-at-gate gate=G2C err=None
+[2026-07-10T05:16:27.128789+00:00] resume approve G2C
+[2026-07-10T05:28:22.585591+00:00]   -> paused-at-error gate=None err=irene.pass2.figure-contradiction
+[2026-07-10T05:28:22.599862+00:00] [loop 2] status=paused-at-error gate=None err=irene.pass2.figure-contradiction
+[2026-07-10T05:28:22.599862+00:00] RECOVER reenter_at_node=08 for irene.pass2.figure-contradiction
+[2026-07-10T05:30:45.153567+00:00] recover -> paused-at-error err=irene.pass2.figure-contradiction
+[2026-07-10T05:30:45.173450+00:00] [loop 3] status=paused-at-error gate=None err=irene.pass2.figure-contradiction
+[2026-07-10T05:30:45.173450+00:00] RECOVER reenter_at_node=08 for irene.pass2.figure-contradiction
+[2026-07-10T05:32:40.951959+00:00] recover -> paused-at-error err=irene.pass2.figure-contradiction
+[2026-07-10T05:32:40.965808+00:00] [loop 4] status=paused-at-error gate=None err=irene.pass2.figure-contradiction
+[2026-07-10T05:32:40.965808+00:00] RECOVER reenter_at_node=08 for irene.pass2.figure-contradiction
+[2026-07-10T05:33:59.384054+00:00] recover -> paused-at-error err=irene.pass2.figure-contradiction
+[2026-07-10T05:33:59.402175+00:00] [loop 5] status=paused-at-error gate=None err=irene.pass2.figure-contradiction
+[2026-07-10T05:33:59.402175+00:00] max recovers exhausted
+[2026-07-10T05:33:59.407439+00:00] FINAL status=paused-at-error err=irene.pass2.figure-contradiction

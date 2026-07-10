@@ -75,7 +75,7 @@ class ResolvedCollateralSelection:
 
     bundle_id: str
     selection: ComponentSelection
-    source: Literal["absent", "unratified", "ratified"]
+    source: Literal["absent", "unratified", "ratified", "plan_collateral"]
 
 
 def _default_result(source: Literal["absent", "unratified"]) -> ResolvedCollateralSelection:
@@ -246,10 +246,84 @@ def load_lesson_plan_collateral_selection(path: Path) -> ResolvedCollateralSelec
     return resolve_lesson_plan_collateral_selection(payload)
 
 
+def derive_selection_from_lesson_plan(
+    plan: dict[str, Any] | None,
+    *,
+    source_ref: str | None = None,
+) -> ResolvedCollateralSelection:
+    """Derive ComponentSelection from Irene Pass-1 ``lesson_plan`` collateral.
+
+    Phase-2 Mine 1 (Winston Option A): the plan's ``collateral`` block is the
+    single truth. No separate ratification recorder is required for this path.
+    Missing/invalid collateral fails loud — never silent default.
+    """
+    if not isinstance(plan, dict) or not plan:
+        raise CollateralSelectionError(
+            "lesson_plan is required to derive component selection from collateral"
+        )
+    raw_collateral = plan.get("collateral")
+    if raw_collateral is None:
+        raise CollateralSelectionError(
+            "lesson_plan.collateral is required to derive component selection "
+            "(absent key is not a silent default)"
+        )
+    try:
+        collateral = (
+            raw_collateral
+            if isinstance(raw_collateral, CollateralSpec)
+            else CollateralSpec.model_validate(raw_collateral)
+        )
+    except ValidationError as exc:
+        raise CollateralSelectionError(
+            f"lesson_plan.collateral failed CollateralSpec validation: {exc}"
+        ) from exc
+
+    intent = RatifiedLessonPlanCollateralIntent(
+        ratification_status="ratified",
+        collateral=collateral,
+        source_ref=source_ref,
+    )
+    resolved = resolve_lesson_plan_collateral_selection(intent)
+    return ResolvedCollateralSelection(
+        bundle_id=resolved.bundle_id,
+        selection=resolved.selection,
+        source="plan_collateral",
+    )
+
+
+def load_selection_from_lesson_plan_json(path: Path) -> ResolvedCollateralSelection:
+    """Load ``irene-pass1.lesson-plan.json`` (or equivalent) and derive selection."""
+    if not path.is_file():
+        raise CollateralSelectionError(
+            f"lesson-plan JSON file does not exist: {path}"
+        )
+    try:
+        payload = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, yaml.YAMLError) as exc:
+        raise CollateralSelectionError(
+            f"lesson-plan JSON file is not valid JSON/YAML: {path}"
+        ) from exc
+    if not isinstance(payload, dict):
+        raise CollateralSelectionError(
+            f"lesson-plan JSON must decode to an object: {path}"
+        )
+    # Accept either bare plan or {lesson_plan: {...}} contribution wrapper.
+    plan = payload.get("lesson_plan") if "lesson_plan" in payload else payload
+    if not isinstance(plan, dict):
+        raise CollateralSelectionError(
+            f"lesson-plan JSON missing plan object: {path}"
+        )
+    return derive_selection_from_lesson_plan(
+        plan, source_ref=path.as_posix()
+    )
+
+
 __all__ = [
     "CollateralSelectionError",
     "RatifiedLessonPlanCollateralIntent",
     "ResolvedCollateralSelection",
+    "derive_selection_from_lesson_plan",
     "load_lesson_plan_collateral_selection",
+    "load_selection_from_lesson_plan_json",
     "resolve_lesson_plan_collateral_selection",
 ]

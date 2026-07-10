@@ -166,6 +166,113 @@ def read_references(references_dir: Path = REFERENCES_DIR) -> str:
     return "\n\n".join(parts)
 
 
+_PLANNING_CONTEXT_SECTION_MARKER = (
+    "## Operator planning context (FRAMING ONLY — not corpus)"
+)
+
+
+def _sha256_file(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    return "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _build_planning_provenance(
+    *,
+    context: Any,
+    receipt_lo_status: str,
+    run_dir: Path | None,
+) -> dict[str, Any] | None:
+    """Additive lesson_plan provenance pointers (Claim B SUCCESS definition).
+
+    Digests match companion files under ``run_dir`` when present. Omit entirely
+    when no planning context was consumed (caller gates that).
+    """
+    if run_dir is None:
+        # Still emit path names from context.sources_present without digests.
+        sources = list(getattr(context, "sources_present", ()) or ())
+        ratification_path = (
+            "planning-ratification.json"
+            if "planning-ratification.json" in sources
+            else None
+        )
+        los_path = (
+            "ratified-los.json" if "ratified-los.json" in sources else None
+        )
+        return {
+            "schema_version": "0.1",
+            "ratification_path": ratification_path,
+            "ratification_digest": None,
+            "ratified_los_path": los_path,
+            "ratified_los_digest": None,
+            "intent_path": (
+                "ratified-collateral-intent.yaml" if ratification_path else None
+            ),
+            "intent_digest": None,
+            "coverage_lo_status": receipt_lo_status,
+        }
+    rat_path = run_dir / "planning-ratification.json"
+    los_path = run_dir / "ratified-los.json"
+    intent_path = run_dir / "ratified-collateral-intent.yaml"
+    return {
+        "schema_version": "0.1",
+        "ratification_path": (
+            "planning-ratification.json" if rat_path.is_file() else None
+        ),
+        "ratification_digest": _sha256_file(rat_path),
+        "ratified_los_path": "ratified-los.json" if los_path.is_file() else None,
+        "ratified_los_digest": _sha256_file(los_path),
+        "intent_path": (
+            "ratified-collateral-intent.yaml" if intent_path.is_file() else None
+        ),
+        "intent_digest": _sha256_file(intent_path),
+        "coverage_lo_status": receipt_lo_status,
+    }
+
+
+def _planning_context_section(payload: dict[str, Any]) -> str:
+    """Labeled advisory framing section; empty string when context absent."""
+    raw = payload.get("planning_context")
+    if not isinstance(raw, dict) or not raw:
+        return ""
+    purpose = str(raw.get("purpose") or "").strip()
+    audience = str(raw.get("audience") or "").strip()
+    los = raw.get("learning_objectives")
+    lo_lines: list[str] = []
+    if isinstance(los, list):
+        for item in los:
+            if not isinstance(item, dict):
+                continue
+            statement = str(item.get("statement") or "").strip()
+            if not statement:
+                continue
+            oid = str(item.get("objective_id") or "").strip()
+            prefix = f"- [{oid}] " if oid else "- "
+            lo_lines.append(f"{prefix}{statement}")
+    assessment = raw.get("source_assessment")
+    assessment_line = ""
+    if isinstance(assessment, dict):
+        richness = assessment.get("richness", "")
+        tags = assessment.get("tags") or []
+        assessment_line = (
+            f"- Source assessment richness: {richness}; tags: {tags}\n"
+        )
+    return (
+        f"{_PLANNING_CONTEXT_SECTION_MARKER}\n\n"
+        "This block is operator/elicited FRAMING (purpose, audience, LOs, "
+        "source assessment). It must NOT replace or invent topic content. "
+        "The source corpus above remains the ONLY topic/source-of-truth. "
+        "Use this framing to emphasize, sequence, and align learning "
+        "objectives — never as a substitute corpus.\n\n"
+        f"- Purpose: {purpose or '(none)'}\n"
+        f"- Audience: {audience or '(none)'}\n"
+        f"{assessment_line}"
+        "- Learning objectives:\n"
+        + ("\n".join(lo_lines) if lo_lines else "- (none)\n")
+        + "\n"
+    )
+
+
 def assemble_pass1_prompt(
     payload: dict[str, Any], *, extracted_source: str | None
 ) -> tuple[str, str]:
@@ -194,6 +301,7 @@ def assemble_pass1_prompt(
         "the envelope payload below is the planning basis; stay on ITS "
         "topic.\n\n"
     )
+    planning_section = _planning_context_section(payload)
     # Leg-C R3 AC#15 (D-0 strip): scripted-derived keys never reach the model's
     # view of the payload; the caller's payload dict is untouched (post-hoc
     # consumers read the floor from the FULL payload). R3 remediation: the
@@ -201,12 +309,21 @@ def assemble_pass1_prompt(
     # (a prior floored plan riding upstream_output.lesson_plan.plan_units must
     # not fingerprint the honoring to the model; the plan's minted clusters
     # themselves stay visible — they ARE the plan).
+    #
+    # Planning-context handoff (BH-4): scrub planning_context from the envelope
+    # JSON dump — the labeled section above is the ONLY model-facing framing
+    # surface. Full payload still carries the key for receipt/audit consumers.
     model_visible_payload = _scrub_floor_annotations(
-        {k: v for k, v in payload.items() if k not in _LLM_HIDDEN_PAYLOAD_KEYS}
+        {
+            k: v
+            for k, v in payload.items()
+            if k not in _LLM_HIDDEN_PAYLOAD_KEYS and k != "planning_context"
+        }
     )
     return (
         PASS_1_SYSTEM_MESSAGE,
         f"{corpus_section}"
+        f"{planning_section}"
         "## Sanctum digest\n\n"
         f"{read_sanctum_digest()}\n\n"
         "## Irene Pass-1 references\n\n"
@@ -214,6 +331,7 @@ def assemble_pass1_prompt(
         "## Envelope payload\n\n"
         f"```json\n{_json_dumps(model_visible_payload)}\n```\n\n"
         f"{_cluster_emission_instructions()}\n\n"
+        f"{_fidelity_emission_instructions()}\n\n"
         f"{_collateral_emission_instructions()}",
     )
 
@@ -268,6 +386,45 @@ def _cluster_emission_instructions() -> str:
         "corpus section above), CARRY each unit's source_refs FORWARD "
         "UNCHANGED from the incoming plan's plan_units — do not re-derive, "
         "edit, or drop them."
+    )
+
+
+RECOGNIZED_FIDELITY = frozenset({"creative", "literal-text", "literal-visual"})
+_FIDELITY_ALIASES: dict[str, str] = {
+    "literal_text": "literal-text",
+    "literal-text": "literal-text",
+    "literal_visual": "literal-visual",
+    "literal-visual": "literal-visual",
+    "literal-image": "literal-visual",
+    "literal_image": "literal-visual",
+    "creative": "creative",
+}
+
+
+def _fidelity_emission_instructions() -> str:
+    """Restore per-plan-unit fidelity classification (pre-migration Pass-1 contract).
+
+    Sibling of :func:`_cluster_emission_instructions`. Requests ``fidelity`` on
+    each plan_unit so Gary's literal-cohort preserve path can fire. Classification
+    covers both literal-text and literal-visual; production streamlining for
+    literal-visual images is a separate follow-on.
+    """
+    return (
+        "## Per-unit fidelity classification (additive on each plan_unit)\n"
+        "ALSO emit \"fidelity\" on EVERY plan_unit — exactly one of:\n"
+        "  creative | literal-text | literal-visual\n"
+        "Default is creative. Do not over-tag — most units should be creative.\n"
+        "- literal-text: exact text/data must appear as written (assessment topic "
+        "lists, tested statistics, accreditation terminology, dosage tables).\n"
+        "- literal-visual: a specific SME-provided image/diagram must be faithfully "
+        "placed (labeled charts, clinical flowcharts, framework diagrams). Tag "
+        "classification only; do not invent image URLs.\n"
+        "- creative: content may be enhanced by Gamma (default).\n"
+        "If the envelope payload carries \"fidelity_guidance\", HONOR it for the "
+        "named items (user guidance supplements your judgment; it does not replace "
+        "independent literal needs you identify). At a refinement pass, CARRY "
+        "recognized fidelity tags FORWARD from the incoming plan_units unless you "
+        "deliberately reclassify."
     )
 
 
@@ -531,6 +688,52 @@ def normalize_collateral(plan: dict[str, Any]) -> dict[str, Any]:
     return {**plan, "collateral": spec.model_dump(mode="json")}
 
 
+def _canonicalize_fidelity(raw: Any) -> str | None:
+    """Return a recognized fidelity mode, or None to omit the key."""
+    if raw is None:
+        return None
+    if not isinstance(raw, str):
+        return None
+    stripped = raw.strip()
+    if not stripped:
+        return None
+    lowered = stripped.lower()
+    aliased = _FIDELITY_ALIASES.get(lowered)
+    if aliased is not None:
+        return aliased
+    # Hyphen/underscore-normalized lookup already covered; reject unknowns.
+    if lowered in RECOGNIZED_FIDELITY:
+        return lowered
+    return None
+
+
+def normalize_fidelity(plan: dict[str, Any]) -> dict[str, Any]:
+    """Pure soft-coerce for per-unit ``fidelity`` (emit-recovery backstop).
+
+    Recognized values (and known aliases such as ``literal-image`` →
+    ``literal-visual``) are kept. Missing / empty / unknown values omit the
+    key — never invent a tag from prose. PURE: returns a new plan dict.
+    """
+    if not isinstance(plan, dict):
+        return plan
+    raw_units = plan.get("plan_units")
+    if not isinstance(raw_units, list):
+        return plan
+    units: list[Any] = []
+    for unit in raw_units:
+        if not isinstance(unit, dict):
+            units.append(unit)
+            continue
+        next_unit = dict(unit)
+        canonical = _canonicalize_fidelity(next_unit.get("fidelity"))
+        if canonical is None:
+            next_unit.pop("fidelity", None)
+        else:
+            next_unit["fidelity"] = canonical
+        units.append(next_unit)
+    return {**plan, "plan_units": units}
+
+
 # R7 (Edge#4): internal marker set by parse_pass1_response when the model's
 # output was NOT usable structured JSON and the single synthetic fallback unit
 # was substituted. act() POPS it (never persisted / never model-visible) and
@@ -575,6 +778,8 @@ def parse_pass1_response(raw_text: str) -> dict[str, Any]:
     # Braid S1: guarantee a well-formed collateral block on BOTH the LLM-output
     # path and the fallback-unit path (additive; degenerate-empty -> "none").
     parsed = normalize_collateral(parsed)
+    # Fidelity emit recovery: soft-coerce recognized modes; never invent tags.
+    parsed = normalize_fidelity(parsed)
     return parsed
 
 
@@ -583,6 +788,17 @@ def write_lesson_plan(plan: dict[str, Any], *, run_id: str, runs_root: Path | No
     run_dir = root / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
     path = run_dir / "irene-pass1.md"
+    # Soft-canonicalize fidelity so alias callers (literal_text / literal-image)
+    # still surface a line even when they bypass parse_pass1_response.
+    plan = normalize_fidelity(plan)
+    # Mine 1: machine-readable companion for auto ComponentSelection derive.
+    # Markdown remains the human artifact; JSON is the selection-edge input.
+    json_path = run_dir / "irene-pass1.lesson-plan.json"
+    json_path.write_text(
+        json.dumps(plan, indent=2, ensure_ascii=True, default=str) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
     lines = ["# Irene Pass-1 Lesson Plan", ""]
     if plan.get("lesson_summary"):
         lines.extend([str(plan["lesson_summary"]), ""])
@@ -609,6 +825,9 @@ def write_lesson_plan(plan: dict[str, Any], *, run_id: str, runs_root: Path | No
             lines.append(
                 f"- Cluster interstitial count: {unit['cluster_interstitial_count']}"
             )
+        raw_fidelity = unit.get("fidelity")
+        if isinstance(raw_fidelity, str) and raw_fidelity in RECOGNIZED_FIDELITY:
+            lines.append(f"- Fidelity: {raw_fidelity}")
         lines.append("")
     # Braid S1: additive collateral content-model section. Appended AFTER all
     # plan-unit / cluster lines so the cluster-section lines stay byte-unchanged
@@ -770,6 +989,71 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
         raise
     assert_floor_consulted(payload, floor_receipt)
     plan = {**plan, "plan_units": floored_units}
+    # Planning-context handoff (2026-07-09): soft LO coverage receipt when
+    # context present; fail-loud on total LO ignore (party LO policy).
+    # ECH-06: skip lo_ignore heuristic when LLM format fallback substituted a
+    # synthetic unit — that mismatch is a format triage problem, not LO ignore.
+    planning_coverage_receipt: dict[str, Any] | None = None
+    planning_provenance: dict[str, Any] | None = None
+    raw_planning = payload.get("planning_context")
+    if isinstance(raw_planning, dict) and raw_planning:
+        from app.marcus.lesson_plan.planning_context import (
+            PlanningContext,
+            assess_lo_coverage,
+            assert_lo_coverage_or_fail,
+        )
+
+        context = PlanningContext.model_validate(raw_planning)
+        receipt = assess_lo_coverage(context, plan)
+        planning_coverage_receipt = receipt.model_dump(mode="json")
+        if llm_format_fallback:
+            planning_coverage_receipt = {
+                **planning_coverage_receipt,
+                "notes": (
+                    f"{receipt.notes}; skipped lo_ignore because "
+                    "llm_format_fallback=True"
+                ),
+            }
+        else:
+            try:
+                assert_lo_coverage_or_fail(context, receipt)
+            except SpecialistDispatchError:
+                # ECH-09: persist coverage receipt before fail-loud so the
+                # pause artifact always shows context was assessed.
+                run_id_early = str(payload.get("run_id") or state.run_id)
+                runs_root_early = payload.get("runs_root")
+                if runs_root_early:
+                    receipt_path = (
+                        Path(str(runs_root_early))
+                        / run_id_early
+                        / "planning-context-coverage.json"
+                    )
+                    receipt_path.parent.mkdir(parents=True, exist_ok=True)
+                    receipt_path.write_text(
+                        json.dumps(planning_coverage_receipt, indent=2),
+                        encoding="utf-8",
+                    )
+                raise
+        # Claim B SUCCESS: additive planning_provenance digests on the plan
+        # (Winston pipe). Pointers only — full bodies stay in companion files.
+        run_id_for_prov = str(payload.get("run_id") or state.run_id)
+        runs_root_for_prov = payload.get("runs_root")
+        run_dir_for_prov = (
+            Path(str(runs_root_for_prov)) / run_id_for_prov
+            if runs_root_for_prov
+            else None
+        )
+        planning_provenance = _build_planning_provenance(
+            context=context,
+            receipt_lo_status=(
+                "framing_only"
+                if not context.learning_objectives
+                else str(receipt.lo_coverage)
+            ),
+            run_dir=run_dir_for_prov,
+        )
+        if planning_provenance is not None:
+            plan = {**plan, "planning_provenance": planning_provenance}
     run_id = str(payload.get("run_id") or state.run_id)
     runs_root_value = payload.get("runs_root")
     runs_root = Path(str(runs_root_value)) if runs_root_value else None
@@ -785,6 +1069,10 @@ def act(state: RunState, *, handle: Any, model_id: str) -> dict[str, Any]:
         "learning_events": events,
         "usage": getattr(response, "usage_metadata", None),
     }
+    if planning_coverage_receipt is not None:
+        output["planning_context_coverage"] = planning_coverage_receipt
+    if planning_provenance is not None:
+        output["planning_provenance"] = planning_provenance
     entries_count = state.cache_state.entries_count if state.cache_state is not None else 0
     return {
         "cache_state": {
@@ -815,6 +1103,7 @@ __all__ = [
     "enforce_pass1_mode",
     "normalize_clusters",
     "normalize_collateral",
+    "normalize_fidelity",
     "parse_pass1_response",
     "read_sanctum_digest",
     "write_lesson_plan",

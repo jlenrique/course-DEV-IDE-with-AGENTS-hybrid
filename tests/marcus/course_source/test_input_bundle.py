@@ -92,8 +92,14 @@ def test_asset_records_and_styleguide_fallback_are_honest() -> None:
     assert all(record.derivation == "syllabus_requirement" for record in phs.asset_records)
     assert hai.styleguide_resolution.fallback is True
     assert phs.styleguide_resolution.fallback is True
-    assert "No SME-specific styleguide" in hai.styleguide_resolution.reason
-
+    assert hai.styleguide_resolution.styleguide_id is None
+    assert phs.styleguide_resolution.styleguide_id is None
+    assert hai.styleguide_resolution.sme_key == "hai-510"
+    assert phs.styleguide_resolution.sme_key == "phs-620"
+    assert hai.styleguide_resolution.attribution != phs.styleguide_resolution.attribution
+    assert hai.styleguide_resolution.styleguide_id is None
+    assert "Tejal" not in hai.styleguide_resolution.reason or "not reuse Tejal" in hai.styleguide_resolution.reason
+    assert "gap" in hai.styleguide_resolution.reason.lower() or "unbound" in hai.styleguide_resolution.reason.lower()
 
 def test_scoped_manifest_recomputes_summary_counts() -> None:
     bundle = _hai_bundle()

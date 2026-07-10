@@ -59,7 +59,12 @@ from app.models.perception import PerceptionArtifact as RichPerceptionArtifact
 from app.models.state import specialist_summary_artifacts as specialist_summary_writer
 from app.models.state.run_state import RunState
 from app.specialists._scaffold.contract import SCAFFOLD_NODE_IDS
-from app.specialists._shared.figure_tokens import _FIGURE_RE, _figures, _normalize_figure
+from app.specialists._shared.figure_tokens import (
+    _FIGURE_RE,
+    _figure_near_match,
+    _figures,
+    _normalize_figure,
+)
 from app.specialists._shared.voice_direction_map import voice_direction_active
 from app.specialists._shared.voice_provider_text import extract_tags
 from app.specialists.dispatch_errors import SpecialistDispatchError
@@ -157,7 +162,18 @@ FIGURE_FIDELITY_ACTIVE_ENV = "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE"
 
 SOURCE_FIGURE_AUTHORITY_HEADER = (
     "## Source figure authority - authoritative SOURCE numerals "
-    "(outrank perceived deck numerals on conflict)"
+    "(provenance only; speech still requires on-screen presence)"
+)
+
+PERCEIVED_SPEAKABLE_FIGURES_HEADER = (
+    "## Perceived speakable figures "
+    "(digit-form; SOLE on-screen authority for spoken numerals)"
+)
+
+# Prompt-only marker when a source digit-form figure is absent from the deck union.
+# Gates still receive the unredacted source_text; this only shapes generation input.
+UNRENDERED_SOURCE_FIGURE_TOKEN = (
+    "[SOURCE FIGURE NOT ON DECK — paraphrase without digit-form]"
 )
 
 
@@ -876,7 +892,9 @@ def _assert_narration_figures_sourced(
         perceived = perceived_by_slide.get(slide_id, set()) if slide_id else set()
         slide_label = slide_id or "<unkeyed>"
         for figure in sorted(_figures(text)):
-            if figure in source_figures:
+            # T4a precision: exact OR percent-tolerance near-match counts as sourced
+            # (source 18.4% → narration 18% must not false-halt).
+            if _figure_near_match(figure, source_figures):
                 continue  # sourced — clean
             # Source-vs-deck CONFLICT: the deck rendered this figure AND the source
             # carries a same-KIND numeral it contradicts (e.g. source 67%, deck
@@ -900,6 +918,54 @@ def _assert_narration_figures_sourced(
                 "introduction)",
                 tag="irene.pass2.figure-unsourced",
             )
+
+
+def _assert_source_figures_positively_carried(
+    parsed: dict[str, Any],
+    roster: list[dict[str, Any]],
+    *,
+    source_text: str,
+) -> None:
+    """Mine-next T4b: source∩deck figures must appear in narration (flag-gated).
+
+    Closes the positive-carry half of ``leg4-narration-figure-fidelity-enforcement``
+    without violating VO↔on-screen: only figures that are BOTH in the SOURCE and
+    on the perceived deck are required. Conflicting deck confabulations remain
+    the job of :func:`_assert_narration_figures_sourced` (block, never rewrite).
+
+    Vacuous when the flag is OFF, when source has no digit-form figures, or when
+    no source∩deck consistent set exists.
+    """
+    if not narration_figure_fidelity_active():
+        return
+    source_figures = _figures(source_text)
+    if not source_figures:
+        return
+    required: set[str] = set()
+    for entry in roster:
+        for fig in entry.get("perceived_figures") or []:
+            fig_s = str(fig)
+            if _figure_near_match(fig_s, source_figures):
+                required.add(fig_s)
+    if not required:
+        return
+    narrated: set[str] = set()
+    for segment in parsed.get("narration_script") or []:
+        if not isinstance(segment, dict):
+            continue
+        text = str(segment.get("text") or segment.get("narration_text") or "").strip()
+        if text:
+            narrated |= _figures(text)
+    missing = sorted(
+        fig for fig in required if not _figure_near_match(fig, narrated)
+    )
+    if missing:
+        raise Pass2GroundingError(
+            f"scope=narration; source∩deck figure(s) {missing} absent from "
+            "narration (positive-carry miss) — regenerate Pass-2 so source "
+            "figures that appear on-screen are spoken",
+            tag="irene.pass2.figure-positive-carry-miss",
+        )
 
 
 def _segment_slide_id_from_deltas(segment: dict[str, Any], parsed: dict[str, Any]) -> str:
@@ -1480,25 +1546,103 @@ def _source_figure_surfaces(source_text: str) -> list[str]:
     return sorted(surfaces)
 
 
-def _source_figure_authority_block(source_text: str) -> str:
+def _union_perceived_figures(slide_roster: list[dict[str, Any]]) -> set[str]:
+    """Union of per-slide perceived digit-form figures (normalized tokens)."""
+    union: set[str] = set()
+    for entry in slide_roster:
+        for fig in entry.get("perceived_figures") or []:
+            union.add(str(fig))
+    return union
+
+
+def _redact_unrendered_source_figures(
+    source_text: str, *, deck_figures: set[str]
+) -> str:
+    """Prompt-only: strip source digit-form figures that appear on no perceived slide.
+
+    Prevents Irene from copying source numerals (e.g. 10%/90%) onto a conceptual
+    slide that never rendered them. Does NOT mutate gate inputs — callers must
+    keep the raw ``source_text`` for ``_assert_narration_figures_sourced``.
+    """
+    if not source_text:
+        return source_text
+
+    def _replace(match: re.Match[str]) -> str:
+        surface = match.group(0)
+        if _figure_near_match(_normalize_figure(surface), deck_figures):
+            return surface
+        return UNRENDERED_SOURCE_FIGURE_TOKEN
+
+    return _FIGURE_RE.sub(_replace, source_text)
+
+
+def _perceived_speakable_figures_block(slide_roster: list[dict[str, Any]]) -> str:
+    """Always-on per-slide allowlist of digit-form figures Irene may speak."""
+    lines: list[str] = [
+        f"{PERCEIVED_SPEAKABLE_FIGURES_HEADER}\n",
+        "Digit-form spoken figures ($N / N% / Nx) MUST be ⊆ this slide's set. "
+        "If the set is empty, paraphrase any source teaching point WITHOUT "
+        "digit-form numerals — do not invent on-screen authority.\n",
+    ]
+    for entry in slide_roster:
+        slide_id = str(entry.get("slide_id") or "").strip() or "<unknown>"
+        figs = sorted(str(f) for f in (entry.get("perceived_figures") or []))
+        if figs:
+            lines.append(f"- {slide_id}: {', '.join(figs)}")
+        else:
+            lines.append(
+                f"- {slide_id}: <none — paraphrase; do not speak digit-form figures>"
+            )
+    return "\n".join(lines) + "\n\n"
+
+
+def _source_figure_authority_block(
+    source_text: str, *, slide_roster: list[dict[str, Any]] | None = None
+) -> str:
     """Leg-4 reground block: authoritative SOURCE numerals (flag ON only, else "").
 
-    When the flag is OFF this returns "" so the Pass-2 prompt is byte-identical.
+    When the flag is OFF this returns "" so the Pass-2 prompt is byte-identical
+    aside from the always-on perceived-speakable block (separate seam).
+
+    Speech rules align with VO↔on-screen protection: source provenance never
+    licenses speaking a numeral absent from the perceived slide. Conflict
+    between source and deck is fail-loud for Gamma — not \"narrate source over
+    the slide.\"
     """
     if not narration_figure_fidelity_active():
         return ""
     surfaces = _source_figure_surfaces(source_text)
     figures_line = ", ".join(surfaces) if surfaces else "<none present in source>"
+    deck_figures = _union_perceived_figures(slide_roster or [])
+    speakable_in_source = sorted(
+        s
+        for s in surfaces
+        if _figure_near_match(_normalize_figure(s), deck_figures)
+    )
+    speakable_line = (
+        ", ".join(speakable_in_source)
+        if speakable_in_source
+        else "<none — source∩deck empty; paraphrase source numerals>"
+    )
     return (
         f"{SOURCE_FIGURE_AUTHORITY_HEADER}\n\n"
-        "These are the ONLY numerals with SOURCE provenance. On ANY conflict "
-        "between a source numeral and a perceived deck numeral, the SOURCE "
-        "numeral WINS — narrate the source value, and NEVER narrate a deck "
-        "numeral that contradicts it. Do NOT introduce a numeral absent from "
-        "this source set (scope: digit-form $N / N% / Nx). A slide whose "
-        "rendered numeral disagrees with the source is an upstream deck defect "
-        "to be repaired at Gamma, not narrated.\n\n"
-        f"{figures_line}\n\n"
+        "These are the ONLY numerals with SOURCE provenance (digit-form "
+        "$N / N% / Nx). Provenance is necessary but NOT sufficient to speak:\n"
+        "1. Speak a digit-form figure only if it is in that slide's perceived "
+        "speakable set (on-screen binds speech).\n"
+        "2. Speak a digit-form figure only if it also appears in this source "
+        "set (no confabulation).\n"
+        "3. When a source figure IS on the perceived deck for the slide you "
+        "are narrating, you MUST speak it (positive carry).\n"
+        "4. When a source figure is NOT on the perceived deck for that slide, "
+        "paraphrase WITHOUT the digit-form numeral. Do not speak it. If the "
+        "teaching point requires the numeral on-screen, that is an upstream "
+        "Gamma/deck defect — not a license to invent VO figures.\n"
+        "5. When the deck shows a same-kind numeral that contradicts source, "
+        "do not resolve by narrating either value as a workaround; the run "
+        "fails loud for Gamma repair (VO must never desync from on-screen).\n\n"
+        f"Source-provenance surfaces: {figures_line}\n"
+        f"Source∩deck (speakable when on the narrated slide): {speakable_line}\n\n"
     )
 
 
@@ -1525,6 +1669,12 @@ def _assemble_pass_2_prompt(
     sanctum digest and L5 references — explicitly demoted to format-only —
     then the envelope payload as sorted-keys canonical JSON (NFR-I6
     byte-stability; pinned dumps signature per Murat MF3 T4 binding).
+
+    NFR-I6 carve-out (party 2026-07-10): Flag-OFF byte-stability means the
+    Flag-ON-only source-figure authority block is absent — NOT that the prompt
+    is eternally identical to pre-speakable-block baselines. The always-on
+    ``PERCEIVED_SPEAKABLE_FIGURES_HEADER`` block is baseline VO↔on-screen
+    contract and is present regardless of the fidelity flag.
     """
     sanctum_section = _read_sanctum_digest()
     references_section = _read_pass_2_references()
@@ -1535,14 +1685,23 @@ def _assemble_pass_2_prompt(
         for entry in slide_roster
     )
     reading_path_guidance = _reading_path_guidance(slide_roster)
-    # Leg-4 reground (flag ON only). Inject an authoritative SOURCE-figure block
-    # instructing that source numerals OUTRANK perceived deck numerals on conflict.
-    # Pure prompt construction; when the flag is OFF this is "" -> byte-identical.
-    source_figure_block = _source_figure_authority_block(extracted_source)
+    deck_figures = _union_perceived_figures(slide_roster)
+    # Prompt-only redaction: source numerals absent from the entire perceived
+    # deck cannot be copied into VO. Gates still use raw extracted_source.
+    prompt_source = _redact_unrendered_source_figures(
+        extracted_source, deck_figures=deck_figures
+    )
+    speakable_figures_block = _perceived_speakable_figures_block(slide_roster)
+    # Leg-4 reground (flag ON only). Provenance list + speech rules that keep
+    # VO⊆on-screen; when the flag is OFF this is "" (speakable block remains).
+    source_figure_block = _source_figure_authority_block(
+        extracted_source, slide_roster=slide_roster
+    )
     user_message = (
         "## Source corpus (the ONLY content basis for narration)\n\n"
-        f"{extracted_source}\n\n"
+        f"{prompt_source}\n\n"
         f"{source_figure_block}"
+        f"{speakable_figures_block}"
         f"{VISUAL_AUTHORITY_HEADER}\n\n"
         f"{authority_lines}\n\n"
         f"{EXPECTED_VISUAL_PLAN_HEADER}\n\n"
@@ -1567,7 +1726,10 @@ def _assemble_pass_2_prompt(
         "Author Pass 2 narration + segment manifest deltas per the procedure "
         "above, grounded EXCLUSIVELY in the source corpus and the perceived "
         "visual authority block. Treat the expected visual plan as demoted, "
-        "possibly stale context; never use it as visual authority. If a slide "
+        "possibly stale context; never use it as visual authority. Digit-form "
+        "spoken figures ($N / N% / Nx) MUST be ⊆ that slide's perceived "
+        "speakable set; if the set is empty, paraphrase without digit-form "
+        "numerals. If a slide "
         f"is marked `{UNVERIFIED_VISUAL_AUTHORITY}`, say that exact token or "
         "avoid visual claims for that slide. Every visual_reference's "
         "`perception_source` MUST be one of "
@@ -2186,6 +2348,11 @@ def _act_pass_2(
     _assert_narration_figures_sourced(
         parsed, slide_roster, source_text=extracted_source
     )
+    # Mine-next T4b positive-carry (flag-gated; ADDITIVE): source∩deck figures
+    # must appear in narration. Self-guards on the same fidelity flag.
+    _assert_source_figures_positively_carried(
+        parsed, slide_roster, source_text=extracted_source
+    )
     # AC1 (finding-d): the emitted Pass-2 package is directly validatable in-band
     # (retires the out-of-band concierge normalization step).
     assert_pass2_surfaces_validatable(parsed)
@@ -2375,10 +2542,12 @@ __all__ = [
     "FIGURE_FIDELITY_ACTIVE_ENV",
     "PASS_2_PROMPT_REFERENCES",
     "PASS_2_SYSTEM_MESSAGE",
+    "PERCEIVED_SPEAKABLE_FIGURES_HEADER",
     "Pass2GroundingError",
     "Pass2ReadingPathError",
     "SOURCE_FIGURE_AUTHORITY_HEADER",
     "TRANSITIONS",
+    "UNRENDERED_SOURCE_FIGURE_TOKEN",
     "UNVERIFIED_VISUAL_AUTHORITY",
     "_act",
     "_assert_reading_path_conformance",
@@ -2388,6 +2557,11 @@ __all__ = [
     "_act_pass_2",
     "_assert_figure_citations_within_perceived",
     "_assert_narration_figures_sourced",
+    "_assert_source_figures_positively_carried",
+    "_perceived_speakable_figures_block",
+    "_redact_unrendered_source_figures",
+    "_source_figure_authority_block",
+    "_union_perceived_figures",
     "narration_figure_fidelity_active",
     "_parse_pass_2_response",
     "_parse_pass_1_response",

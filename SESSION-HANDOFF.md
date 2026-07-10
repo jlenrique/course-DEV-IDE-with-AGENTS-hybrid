@@ -1,13 +1,118 @@
+# Session Handoff — 2026-07-10 (WRAPUP: **Mine-next trust + Tejal P4 fullwalk COMPLETE-with-fences; next = Batch switch** — Class S)
+
+**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` (WRAPUP commit + push). **Opened as:** S (substrate + live production walk). **Class drift:** none.
+
+**What was completed:**
+1. **Mine-next Track A** (N6 corrupt-envelope fail-loud, N3 quiz projector, N2 SPOC `--plan-dialogue`) + closes/evidence.
+2. **Trust Waves 1–2** (T1 UDAC map, T2 reenter_at_node, T3 join-collapse, T4a–T4c fidelity precision/positive-carry/flag-ON activation) — CLOSE-WITH-CONDITIONS; flag default stays OFF.
+3. **Pass-2 speakable dual-view** (party APPROVE-WITH-AMENDMENTS): always-on per-slide speakable figures; prompt-only redact unrendered source figures; source-authority rewrite (no SOURCE WINS); gate stays fail-loud. Liveproof reenter@08 on `22b27500…` cleared `figure-contradiction`.
+4. **Desmond substrate:** `HandoffParseError` → `SpecialistDispatchError`; `handoff.parsed.advisory-missing` retryable; trailing-colon heading accept. Taxonomy EXCLUSIONS row retired.
+5. **Variant-selection recover:** absent Gary + picks set → noop defer; re-apply after Gary dispatch.
+6. **Tejal P4 fullwalk** trial `22b27500-6e67-4dd7-8308-fd89defe3d99` → **`completed`** (deck PNGs, 9 audio+vtt, workbook `u01@1`, Desmond advisory, compositor). Grade **PASS-WITH-FENCES** (motion slide-01 only; node-15 / Desmond brief-file residuals filed). No Descript publish.
+7. Operator chose **next = Batch LLM switch, then workbook customization** — not another fullwalk.
+
+**What is next:** BMAD green-light / implement Batch LLM `realtime|batch` run-start switch (spec already filed; transport-only; Tranche A first). Then workbook artifact customization. Do not reopen S8.
+
+**Unresolved / risks:** Tejal residuals (full-deck motion, node-15 contribution, Desmond brief-on-disk); classic-condense HELR not fully retired (speakable down-payment only); fidelity default-OFF; Mine-next N1/N4/N5 HOLD; Cora Step 0 skipped (consecutive-skip tripwire).
+
+**Key lessons:** (a) Blind Pass-2 re-roll is not a fix when source figures aren't on-deck — dual-view contract is. (b) Bare RuntimeError on Desmond killed the walk — dispatch-family rebase is load-bearing. (c) Completed ≠ every SUCCESS-METRICS checkbox; score honestly PASS-WITH-FENCES.
+
+**Validation summary:**
+- Step 0a/0b/0c: SKIPPED — Cora/`/harmonize` unregistered (same as session 28); substitute = party 4/4 speakable green-light + Murat validation plan + focused pytest (75 passed speakable/Desmond/taxonomy/retry/variant) + live Tejal completion. Tripwire noted (force full sweep when Cora available).
+- Step 1: ruff clean on touched Irene/Desmond/retry paths after unused-import fix; 75 focused tests green.
+- Step 4a: SKIPPED — no formal epic/story Kanban flip this session (quick-dev / liveproof; no sprint-status story rows advanced).
+- Step 3: SKIPPED — no bmm-workflow-status phase transition.
+- Live: Tejal completed; Pass-2 contradiction cleared; Desmond+workbook landed.
+- Step 11: class S matches diff (app/specialists + production_runner + tests + evidence + docs). Single worktree. Master merge SKIPPED (scoped branch).
+
+**Content creation summary:** Tejal Part-4 production artifacts (deck/audio/workbook) for trial `22b27500…`; workbook at `_bmad-output/artifacts/workbooks/u01@1.{docx,md}`.
+
+**Artifact update checklist:** evidence packs ✅; deferred-inventory residuals + Batch pull-forward ✅; STATE-OF-THE-APP / project-context ✅; next-session-start-here ✅; SESSION-HANDOFF (this) ✅; sprint-status no Kanban change (skip); bmm-workflow-status skip; KG/ONBOARDING regen recommended later (≥10 app files) not blocking; master merge SKIPPED; no `reports/dev-coherence/`.
+
+**Ambient left untouched:** `runs/*` trial dirs; `runs/compositor/`; `_tmp-regression*`; `workbooks-test/`; Meeting Recording deconstruct; shadow-monitor dirty ledgers unless staged intentionally.
+
+**Push:** working-branch push MANDATORY at WRAPUP — done: `0f3c6d5c` on `origin/dev/lesson-planning-2026-07-09` (trigger: WRAPUP Step 12 / safety-checkpoint).
+
+---
+
+# Session Handoff — 2026-07-09 (session 28 WRAPUP: **Marcus plan-ratify Claims A+B COMPLETE (Claim B live bespoke)** — Class S)
+
+**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` @ `4a1879b3` (+ this WRAPUP docs commit). **Opened as:** S (substrate + live OpenAI Pass-1). **Class drift:** none.
+
+**What was completed (full session-28 arc through WRAPUP):**
+1. **Phase-2 evolutionary bridge** `phase2-evolutionary-planning-to-selection-bridge` → done @`20246475` (assess→ratify→S8 intent; W1–W4).
+2. **Irene planning-context handoff** `planning-context-to-irene-pass1-handoff` → done @`b69aa2de` (Pass-1-only context + coverage/fail-loud).
+3. **Marcus plan-ratify surface** `marcus-planning-ratification-surface` → done:
+   - **Claim A** @`318b6b0f` — CLI `plan-ratify` + W5 local compose + selection delta + trial thread (no Gamma).
+   - **Claim B LIVE bespoke** @`4a1879b3` — real OpenAI Irene Pass-1 on Tejal `runs/<uuid>/` treatment vs control; `lo_coverage=present`; digests match companions; party 4/4 CLOSE-with-named-fenced-residuals. Evidence `marcus-claim-b-live-20260709T234801Z/`; close `marcus-claim-b-live-close-2026-07-09.md`. Mock `_RecordingHandle` fence lifted.
+4. **Kanban honesty (WRAPUP Step 4a):** sprint-status rows under `epic-lesson-planning-phase2-bridge` for the three stories + epic marker.
+5. Docs: STATE-OF-THE-APP / project-context / deferred-inventory / goal file updated for Claim B unfence.
+
+**What is next:** Bigger gains on Phase-2 spine residual — green-light automatic `lesson_plan["collateral"] → ComponentSelection`, **or** interactive SPOC planning REPL, **or** operator-picked real HAI/PHS ingestion / SME routing. Secondary only: `langsmith-start-receipt-offline-stamp`. Do **not** reopen S8. Pass-2 figure/numeral stays parked HELR.
+
+**Unresolved / named fenced residuals:** interactive SPOC REPL; Gamma full walk; SME/projector/LO UX; full lecture ingestion; happy-path `act()` coverage JSON write; on-read digest verify; automatic Irene→selection without ratification recorder.
+
+**Key lessons:** (a) Claim A ≠ “bespoke lesson planning” — Claim B needs live Pass-1 + LO touch for bespoke. (b) FG-6 requires consumer `runs/<uuid>/`, not evidence-only mirrors. (c) Party SUCCESS definition file is the binding live-test bar.
+
+**Validation summary:**
+- Step 0a/0b/0c: SKIPPED — Cora/`/harmonize` unregistered; substitute = party 4/4 Claim B close + live OpenAI bank + focused prior suites. Tripwire noted.
+- Step 1: `tests/test_sprint_status_yaml.py` 2 passed after Kanban append. Ruff on plan-ratify/Irene paths shows pre-existing style nits (UP035/SIM108/I001) — recorded, not blocking wrapup. `git diff --check` trailing-whitespace on some docs — non-blocking.
+- Live: Claim B driver ~52s wall; PASS-bespoke; digest-verify all match.
+- Step 4a: sprint-status updated + test green.
+- Step 11: class S matches diff (app/scripts + evidence + docs). Single worktree. Master merge SKIPPED (scoped branch).
+
+**Content creation summary:** none new learner-facing; Tejal assessments-bridge reused for live Pass-1.
+
+**Artifact update checklist:** Claim B evidence + close letter ✅; STATE/project-context/deferred-inventory/goal ✅; sprint-status Kanban ✅; next-session-start-here ✅ (gitignored); SESSION-HANDOFF (this) ✅; bmm-workflow-status no phase transition (skip); KG/ONBOARDING regen recommended later (≥10 app files across arc) but not blocking; master merge SKIPPED; no `reports/dev-coherence/`.
+
+**Ambient left untouched:** shadow-monitor dirty files; `evidence/irene-literal-liveproof-20260709T143510/`; `runs/235f2b82-…`; workbooks-test artifacts.
+
+**Push:** working-branch push MANDATORY — Claim B already at origin `4a1879b3`; WRAPUP commit pushed at close.
+
+---
+
+# Session Handoff — 2026-07-09 (session 28 mid: **Phase-2 planning-to-selection bridge COMPLETE-with-named-fenced-residuals** — Class S) [superseded by WRAPUP section above]
+
+**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` @ `20246475` (pushed). **Next (queued, not started at that checkpoint):** `planning-context-to-irene-pass1-handoff` (`backlog-next`).
+
+**What was completed (step 1 — bridge only):**
+1. Party claim envelope + dual-gate story `phase2-evolutionary-planning-to-selection-bridge` → **done**.
+2. Code: `source_assessment.py` + `planning_ratification.py`; emits canonical S8 intent; resolver frozen.
+3. Tests: 16 bridge + S8 collateral regression green; ruff clean; raw transcripts banked in evidence.
+4. Evidence W1–W4: `…/evidence/phase2-evolutionary-bridge-20260709T204500/`.
+5. Canonical evolution rule §4.1 in positioning SSOT (durable contract → bespoke conversational growth on top).
+6. Party close COMPLETE-with-named-fenced-residuals; spine inventory PARTIAL-MET.
+
+**What is next (historical):** open **`planning-context-to-irene-pass1-handoff`**. Do not reopen S8. Do not pull Pass-2 HELR.
+
+**Unresolved / residuals (named, fenced at that checkpoint):** interactive SPOC planning REPL; W5 compose; auto Irene→selection without recorder; SME/projector/LO UX; full lecture ingestion.
+
+---
+
+# Session Handoff — 2026-07-09 (session 27: **Irene-literal MET + S8 stay-closed + bigger-gains frontier** — Class S product closeout)
+
+**Final class:** S (Irene Pass-1 fidelity emit recovery + authentic classic-condense liveproof; Cursor dual-agent-family surfaces; S8 books stay closed; Pass-2 HELR parked). **Branch:** `dev/lesson-planning-2026-07-09` @ `6783b54b`+ (emit recovery pushed; docs/bookkeeping may still be dirty). **Next:** Class S — green-light Phase-2 spine `lesson-plan-directs-production-collateral-to-selection-edge` (or operator-picked ingestion / LO / SME).
+
+**What was completed:**
+1. **Irene-literal→Gary-preserve product claim MET** — Gary path (`0fb2b2cf`) + Pass-1 fidelity emit recovery (`6783b54b`) + authentic witness trial `235f2b82…` (classic-condense, no stamp; `calls_made=2`; creative/literal exports). Assessment: `…/irene-literal-authentic-liveproof-20260709T151200/CLAIM-ASSESSMENT.md`.
+2. **S8 stay-closed ratified** — letter + inventory + STATE/project-context: do not reopen; Pass-2 figure/numeral = parked HELR (`irene-pass2-figure-contradiction-classic-condense`).
+3. **Cursor dual-agent-family reliability** — `.cursor/rules/bmad-dual-agent-families.mdc` + `.cursor/agents/` stubs + START/WRAPUP/AGENTS/CLAUDE patches.
+4. **Spine trigger fired** — `lesson-plan-directs-production-collateral-to-selection-edge` selected as next bigger-gain frontier.
+
+**What is next:** Bigger gains — BMAD green-light/plan the Phase-2 spine (primary), or operator picks real HAI/PHS ingestion / LO ratification / course-SME routing. Secondary only: `langsmith-start-receipt-offline-stamp`. Do **not** pull Pass-2 numeral polish ahead. Do not reopen S8.
+
+---
+
 # Session Handoff — 2026-07-09 (session 26: **shadow-monitor close + WRAPUP Step 4a sprint-status hardening** — Class D protocol/docs; product next-gate unchanged from session 25)
 
-**Final class:** D (docs/tooling: session-protocol START/WRAPUP amendment for canonical `sprint-status.yaml` Kanban honesty; this chat's S7 Phase-2 shadow-monitor lane closed). **Branch:** `dev/workbook-2026-07-06` @ `c2a0c116` (pushed). **Next:** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation` (unchanged from session 25; S8 remains FULLY COMPLETE).
+**Final class:** D (docs/tooling: session-protocol START/WRAPUP amendment for canonical `sprint-status.yaml` Kanban honesty; this chat's S7 Phase-2 shadow-monitor lane closed). **Branch:** `dev/workbook-2026-07-06` @ `c2a0c116` (pushed). **Next (historical):** Class S — green-light `irene-text-literal-supersedes-styleguide-truncation` (superseded by session 27 MET + bigger-gains frontier; S8 remains FULLY COMPLETE).
 
 **What was completed:**
 1. **Claude shadow-monitor lane** for Codex-led S7 Phase-2 A-D (`claude-shadow-monitor-s7-phase2-2026-07-08.md`) — POLL-001..011; independent verification of Stories A–D; F-103 Story A gate-trail escalated then closed when backfill `5687c41a` landed; A-D close checkpoint `CONCUR`. Monitor heartbeat loop stopped at this WRAPUP.
 2. **Session WRAPUP protocol hardened (Step 4a):** `_bmad-output/implementation-artifacts/sprint-status.yaml` named as the **canonical Kanban ledger**; skip only when no epic/story status actually changed (not merely because the file was untouched mid-session); prefer update before `next-session-start-here.md` on Class S story closes; Step 11 completeness check re-asserts the ledger. START Step 4 + WRAPUP transfer-contract table aligned.
-3. **Product posture unchanged:** S8 FULLY COMPLETE (session 25 / Quinn R6); next product gate remains Irene text-literal superseding styleguide truncation.
+3. **Product posture (at time):** S8 FULLY COMPLETE (session 25 / Quinn R6); next product gate was Irene text-literal (now MET in session 27).
 
-**What is next:** Same as session 25 — design/green-light `irene-text-literal-supersedes-styleguide-truncation`. Secondary Langsmith start-receipt. Do not reopen S8. Selection-edge spine remains filed post Phase-2 A-D. Master merge still optional (scoped branch).
+**What is next (historical):** Same as session 25 — design/green-light `irene-text-literal-supersedes-styleguide-truncation`. Secondary Langsmith start-receipt. Do not reopen S8. Selection-edge spine remains filed post Phase-2 A-D. Master merge still optional (scoped branch).
 
 **Unresolved / risks:** (1) text-literal product gap still real under classic-condense decks; (2) Langsmith offline stamp; (3) **sprint-status.yaml still not carrying arc story rows** for S7 Phase-2 A-D / S8 (standing arc convention — tracked via close letters, inventory, evidence, story close records); session-26 protocol change makes future BMAD story closes obligated to update the ledger when Kanban state changes — apply on the next formal story close; (4) Cora/`/harmonize` unregistered — Step-0 skipped (Class D); (5) shadow-monitor ledgers left untracked ambient (same stray fence as prior sessions).
 

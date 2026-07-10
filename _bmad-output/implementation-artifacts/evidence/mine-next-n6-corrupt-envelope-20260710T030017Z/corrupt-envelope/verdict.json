@@ -1,0 +1,13 @@
+{
+  "lane": "N6",
+  "name": "run-envelope-corrupt-vs-absent-fail-loud",
+  "passed": true,
+  "predicates": {
+    "absent_returns_none": true,
+    "corrupt_not_silent_none": true,
+    "corrupt_raises": true,
+    "invalid_schema_raises": true,
+    "run_id": "aafed561-f7a1-4fa3-bf59-4d3ebe393ef2"
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\aafed561-f7a1-4fa3-bf59-4d3ebe393ef2"
+}

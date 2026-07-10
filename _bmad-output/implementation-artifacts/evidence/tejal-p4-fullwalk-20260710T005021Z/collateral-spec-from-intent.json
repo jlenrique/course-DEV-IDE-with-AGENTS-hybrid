@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.1",
+  "declaration": "present",
+  "workbook": {
+    "kind": "deck-companion-workbook",
+    "sections": [
+      {
+        "section_id": "c1m1-p4-discussion-peer-differential",
+        "learning_objective_id": "mo-1.5",
+        "title": "Operational Failure M&M: Reframed Opportunity and Peer Differential",
+        "depth_delta": {
+          "deferred_from_slide": "c1m1-p4-summary-bridge",
+          "retained_on_slide": "Module 1 closes by moving from mindset to leadership identity.",
+          "deferred_depth": "The workbook should carry the detailed applied practice: chief complaint framing, 5 Whys root-cause analysis, reframed opportunity, peer blind-spot review, and organizational-resistance differential diagnosis."
+        },
+        "exercises": [
+          {
+            "exercise_id": "c1m1-p4-discussion-initial-presentation",
+            "bloom_level": "analyze",
+            "prompt_intent": "Learner selects a recurring operational, clinical, or administrative failure, writes a one-sentence chief complaint, performs a brief 5 Whys analysis, and reframes the complaint as an actionable opportunity.",
+            "answer_key_source_ref": "course-content/courses/tejal-c1m1-p4-assessments-bridge/assessments/discussion-post-3-graded-peer-evaluation.md"
+          },
+          {
+            "exercise_id": "c1m1-p4-peer-differential",
+            "bloom_level": "evaluate",
+            "prompt_intent": "Learner reviews two peers' analyses, identifies one blind spot, and offers a constructive differential diagnosis for organizational resistance using Sandra Lam's Intrapreneurship Formula or psychological-safety concepts.",
+            "answer_key_source_ref": "course-content/courses/tejal-c1m1-p4-assessments-bridge/assessments/discussion-post-3-graded-peer-evaluation.md"
+          }
+        ],
+        "narrative_intent": "Convert the Canvas discussion prompt into workbook guidance that helps learners diagnose operational failure without blaming individuals or jumping to solutions."
+      },
+      {
+        "section_id": "c1m1-p4-knowledge-check-review",
+        "learning_objective_id": "mo-1.1",
+        "title": "Comprehensive Module Knowledge Check Review",
+        "depth_delta": {
+          "deferred_from_slide": "c1m1-p4-summary-bridge",
+          "retained_on_slide": "The bridge slide summarizes Module 1 and points to Module 2.",
+          "deferred_depth": "The workbook should carry answer rationales and remediation notes for the comprehensive Module 1 knowledge check."
+        },
+        "exercises": [
+          {
+            "exercise_id": "c1m1-p4-innovation-definition",
+            "bloom_level": "remember",
+            "prompt_intent": "Reinforce the distinction between invention and innovation as adopted systemic value.",
+            "answer_key_source_ref": "course-content/courses/tejal-c1m1-p4-assessments-bridge/assessments/comprehensive-module-knowledge-check.md"
+          },
+          {
+            "exercise_id": "c1m1-p4-design-thinking-map",
+            "bloom_level": "understand",
+            "prompt_intent": "Reinforce how clinical diagnosis maps to design thinking: history-taking to Empathize, synthesis to Define, differential diagnosis to Ideate, and treatment planning to Prototype.",
+            "answer_key_source_ref": "course-content/courses/tejal-c1m1-p4-assessments-bridge/assessments/comprehensive-module-knowledge-check.md"
+          }
+        ],
+        "narrative_intent": "Build a compact workbook review section from the knowledge-check answer explanations, emphasizing misconceptions that would weaken innovation framing."
+      },
+      {
+        "section_id": "c1m1-p4-opportunity-radar-playbook",
+        "learning_objective_id": "mo-1.4",
+        "title": "Innovation Leader Playbook: Opportunity Radar",
+        "depth_delta": {
+          "deferred_from_slide": "c1m1-p4-summary-bridge",
+          "retained_on_slide": "The deck can introduce the bridge from mindset to identity.",
+          "deferred_depth": "The workbook should carry the detailed playbook work: personal SWOT, goals and fears, initial idea portfolio, and five opportunity-radar problem statements."
+        },
+        "exercises": [
+          {
+            "exercise_id": "c1m1-p4-personal-swot",
+            "bloom_level": "evaluate",
+            "prompt_intent": "Learner evaluates mindset, motivations, work environment, fixed-mindset traits, and psychological safety on their primary team.",
+            "answer_key_source_ref": "course-content/courses/tejal-c1m1-p4-assessments-bridge/assessments/innovation-leader-playbook-entry-1.md"
+          },
+          {
+            "exercise_id": "c1m1-p4-opportunity-radar",
+            "bloom_level": "create",
+            "prompt_intent": "Learner creates an Opportunity Radar by identifying five specific problems, frictions, or opportunities for improvement in their physician work environment.",
+            "answer_key_source_ref": "course-content/courses/tejal-c1m1-p4-assessments-bridge/assessments/innovation-leader-playbook-entry-1.md"
+          }
+        ],
+        "narrative_intent": "Turn the playbook prompt and rubric into a learner-ready workbook section that makes the assessment actionable and scannable."
+      }
+    ]
+  },
+  "research_goals": [
+    {
+      "goal_id": "c1m1-p4-gap-aware-workbook-grounding",
+      "pedagogical_intent": "The workbook should remain source-grounded to the Part 4 assessment, playbook, rubric, and bridge files, and should explicitly avoid presenting missing PDF, deck, image, DOI, or rendered-motion material as if it were present.",
+      "binds_to_objective_id": "mo-1.5"
+    }
+  ]
+}

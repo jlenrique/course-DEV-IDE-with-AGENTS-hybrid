@@ -177,6 +177,26 @@ class ProductionEnvelope(BaseModel):
                 return
         self.contributions = (*self.contributions, contribution)
 
+    def drop_contributions_from_nodes(self, node_ids: set[str]) -> int:
+        """Remove contributions whose ``node_id`` is in ``node_ids``.
+
+        Used by ``recover_production_trial(..., reenter_at_node=…)`` to rewind
+        past good downstream nodes when the fix is UPSTREAM of the failed
+        index. Returns the number of contributions dropped.
+        """
+        if not node_ids:
+            return 0
+        kept: list[SpecialistContribution] = []
+        dropped = 0
+        for contribution in self.contributions:
+            if contribution.node_id is not None and contribution.node_id in node_ids:
+                dropped += 1
+                continue
+            kept.append(contribution)
+        if dropped:
+            self.contributions = tuple(kept)
+        return dropped
+
 
 __all__ = [
     "ProductionEnvelope",

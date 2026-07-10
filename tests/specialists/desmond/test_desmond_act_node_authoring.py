@@ -79,8 +79,24 @@ def test_parse_handoff_accepts_exact_heading_with_trailing_spaces() -> None:
     parsed = _parse_handoff(
         "## Assembly Handoff\nx\n\n## Automation Advisory   \nUse caution."
     )
-    assert parsed["tag"] == "handoff.parsed.ok"
     assert parsed["automation_advisory"] == "Use caution."
+
+
+def test_parse_handoff_accepts_heading_with_trailing_colon() -> None:
+    """Common LLM slip: ``## Automation Advisory:`` still counts as the section."""
+    parsed = _parse_handoff(
+        "## Assembly Handoff\nx\n\n## Automation Advisory:\nValidate timings."
+    )
+    assert parsed["tag"] == "handoff.parsed.ok"
+    assert parsed["automation_advisory"] == "Validate timings."
+
+
+def test_handoff_parse_error_is_dispatch_family() -> None:
+    from app.specialists.dispatch_errors import SpecialistDispatchError
+
+    err = HandoffParseError("missing", tag="handoff.parsed.advisory-missing")
+    assert isinstance(err, SpecialistDispatchError)
+    assert err.tag == "handoff.parsed.advisory-missing"
 
 
 def test_parse_handoff_dict_missing_key() -> None:

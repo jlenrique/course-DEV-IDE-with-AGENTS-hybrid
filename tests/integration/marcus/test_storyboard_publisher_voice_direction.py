@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 import yaml
 
 from app.marcus.orchestrator import storyboard_publisher
@@ -177,8 +178,8 @@ def test_empty_id_deltas_do_not_misroute_voice_direction(tmp_path: Path) -> None
 
 
 def test_duplicate_id_deltas_do_not_misroute_voice_direction(tmp_path: Path) -> None:
-    """Edge #4: a DUPLICATE non-empty id is equally ambiguous (last-write-wins
-    index) — withhold the re-attach rather than mis-attribute it."""
+    """Edge #4 / T3: duplicate non-empty ids collapse the join — refuse publish
+    fail-loud rather than last-write-wins mis-attribute voice_direction."""
     irene_output = {
         "narration_script": [
             {"id": "dup", "narration_text": "A."},
@@ -201,8 +202,9 @@ def test_duplicate_id_deltas_do_not_misroute_voice_direction(tmp_path: Path) -> 
             },
         ],
     }
-    manifest_path = storyboard_publisher._write_segment_manifest_for_b(
-        run_dir=tmp_path, irene_output=irene_output
-    )
-    for seg in _read_segments(manifest_path).values():
-        assert "voice_direction" not in seg
+    with pytest.raises(storyboard_publisher.StoryboardPublishError) as exc:
+        storyboard_publisher._write_segment_manifest_for_b(
+            run_dir=tmp_path, irene_output=irene_output
+        )
+    assert exc.value.tag == "storyboard.join.collapsed-segment-ids"
+    assert "dup" in str(exc.value)

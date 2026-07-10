@@ -1,0 +1,14 @@
+{
+  "lane": "T3",
+  "name": "join-collapse-detector",
+  "passed": true,
+  "predicates": {
+    "clean_empty": true,
+    "detects_collapse": true,
+    "enrique_imports": true,
+    "negative_phantom_not_collapse": true,
+    "publisher_imports": true,
+    "run_id": "48e21756-fd95-462c-9d9b-15370045d1cf"
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\48e21756-fd95-462c-9d9b-15370045d1cf"
+}

@@ -1,0 +1,13 @@
+{
+  "lane": "T2",
+  "name": "reenter-at-node",
+  "passed": true,
+  "predicates": {
+    "api_has_reenter_at_node": true,
+    "drop_count_2": true,
+    "kept_n1_only": true,
+    "negative_empty_drop_noop": true,
+    "run_id": "27db9f6f-3f20-41a3-95f4-b703640ad4ea"
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\27db9f6f-3f20-41a3-95f4-b703640ad4ea"
+}

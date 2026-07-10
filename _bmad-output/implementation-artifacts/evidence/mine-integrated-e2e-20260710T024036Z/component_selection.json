@@ -1,0 +1,10 @@
+{
+  "source": "plan_collateral",
+  "bundle_id": "narrated-deck-with-workbook",
+  "selection": {
+    "deck": true,
+    "motion": true,
+    "workbook": true
+  },
+  "compose_digest": "c53873edfaa9d570b4fba2945a6808674260f90ea8ed23602237cbccbfb24a44"
+}

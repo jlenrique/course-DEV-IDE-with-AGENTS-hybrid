@@ -1,0 +1,221 @@
+{
+  "allow_offline_cost_report": false,
+  "auto_confirm_directive": false,
+  "bundle_expected": "narrated-deck-with-workbook",
+  "claim_envelope": "Authentic Irene Pass-1 fidelity emit + Gary preserve-over-condense under hil-2026-apc-crossroads-classic. No G1 stamp. Does NOT close L1-per-slide broadly or literal-visual production streamline.",
+  "cleared_gary_brief_unmatched": true,
+  "cohort_split_live_ok": true,
+  "copied_artifacts": [
+    "model_resolution_trail.json",
+    "directive.yaml",
+    "trial-start.json",
+    "run.json",
+    "run_summary.yaml",
+    "ratified-los.json",
+    "decision-card-G0E.json",
+    "decision-card-G0R.json",
+    "decision-card-G1.json",
+    "decision-card-G2B.json",
+    "decision-card-G2C.json"
+  ],
+  "corpus": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-c1m1-p4-assessments-bridge",
+  "creative_or_untagged_slide_count": 6,
+  "envelope_status": "paused-at-error",
+  "final_error_tag": "irene.pass2.figure-contradiction",
+  "final_paused_gate": null,
+  "final_status": "paused-at-error",
+  "finished_at": "2026-07-09T20:00:01.329650+00:00",
+  "g0_confirm_path": [
+    "e",
+    "c"
+  ],
+  "g0_edit_applied": true,
+  "g0_edit_directive_bytes": 3970,
+  "gary_proof": {
+    "export_names": [],
+    "gary_calls_made": 2,
+    "gary_generation_id": "j3kuMip6KOXx16Zoo2viH",
+    "gary_generation_mode": "single-dispatch",
+    "gary_row_count": 9,
+    "gary_variant_text_modes": [
+      {
+        "amount": "brief",
+        "text_mode": "condense",
+        "variant_id": "A"
+      }
+    ],
+    "package_fidelity_counts": {
+      "creative": 6,
+      "literal-text": 2,
+      "literal-visual": 1
+    },
+    "package_slide_count": 9,
+    "package_slides": [
+      {
+        "fidelity": "literal-text",
+        "slide_id": "slide-01",
+        "source_ref": "u01",
+        "title": "Module 1 Complete: The Mindset Is Set"
+      },
+      {
+        "fidelity": "creative",
+        "slide_id": "slide-02",
+        "source_ref": "u02",
+        "title": "What Changes After the Mindset: From Seeing Systems to Starting the Journey"
+      },
+      {
+        "fidelity": "creative",
+        "slide_id": "slide-03",
+        "source_ref": "u03",
+        "title": "The Opportunity Is Mapped, But the Leader Must Be Built"
+      },
+      {
+        "fidelity": "creative",
+        "slide_id": "slide-04",
+        "source_ref": "u04",
+        "title": "Mindset Alone Is Not Enough in a Matrixed Health System"
+      },
+      {
+        "fidelity": "literal-visual",
+        "slide_id": "slide-05",
+        "source_ref": "u05",
+        "title": "Bridge Graphic: From Mindset to Identity"
+      },
+      {
+        "fidelity": "creative",
+        "slide_id": "slide-06",
+        "source_ref": "u06",
+        "title": "Preview of Module 2 Leadership Identity Work"
+      },
+      {
+        "fidelity": "creative",
+        "slide_id": "slide-07",
+        "source_ref": "u07",
+        "title": "Leader Identity: Define and Communicate the Vision"
+      },
+      {
+        "fidelity": "creative",
+        "slide_id": "slide-08",
+        "source_ref": "u08",
+        "title": "Inspire Others to Join the Cause"
+      },
+      {
+        "fidelity": "literal-text",
+        "slide_id": "slide-09",
+        "source_ref": "u09",
+        "title": "Source-Constrained Production Note: Motion Must Not Be Assumed"
+      }
+    ],
+    "settings_still_condense": true
+  },
+  "guide": "hil-2026-apc-crossroads-classic",
+  "guide_text_mode_expected": "condense",
+  "head_commit_at_launch": "6783b54b",
+  "hil_variety_exercised": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:9",
+    "G2C:approve"
+  ],
+  "hil_variety_unique": [
+    "g0-confirm:edit",
+    "g0-confirm:confirm",
+    "G0E:approve",
+    "G0R:approve",
+    "g1:edit-inspect",
+    "G2B:select-all-A:9",
+    "G2C:approve"
+  ],
+  "intent": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\s8-tejal-p4-ratified-collateral-intent.yaml",
+  "irene_emitted_literal_text": false,
+  "irene_fidelity_emit": "authentic-pass1-only-no-stamp",
+  "irene_fidelity_observation": {
+    "error": "no irene_pass1 contribution",
+    "observed_at": "2026-07-09T19:27:10.197266+00:00"
+  },
+  "irene_literal_authentic_claim_ok": false,
+  "literal_export_witness": false,
+  "literal_slide_count": 3,
+  "minted_at": "2026-07-09T19:12:51.354282+00:00",
+  "mixed_fidelity_deck": true,
+  "note": "claim_ok requires authentic G0 HIL, classic-condense still bound, Irene-emitted literal-text (no stamp), package carry-through, and Gary cohort split (calls_made==2 when mixed) or completed walk with literal carry. Does NOT close L1-per-slide broadly.",
+  "operator_id": "juanl",
+  "pause_sequence": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C"
+  ],
+  "pause_sequence_unique": [
+    "G0E",
+    "G0R",
+    "G1",
+    "G2B",
+    "G2C"
+  ],
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\235f2b82-5989-4a6f-9e6b-22e9697f58d2",
+  "runs_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs",
+  "selection_code": "SGP-235f2b8259894a6f9e6b22e9697f58d2-A:hil-2026-apc-crossroads-classic",
+  "start_elapsed_s": 591.7,
+  "start_trial_result": {
+    "cost_report_json": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/cost-report.json",
+    "cost_report_markdown": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/cost-report.md",
+    "directive_digest": "00396adb3a07a36ffbd29d6c048b7276f7874fcf75da5e20d1ca10514afe1eb7",
+    "directive_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/directive.yaml",
+    "input": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge",
+    "langsmith_trace_status": "skipped-no-langsmith-env",
+    "lesson_plan_collateral_bundle_id": "narrated-deck-with-workbook",
+    "lesson_plan_collateral_intent_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml",
+    "operator_id": "juanl",
+    "preset": "production",
+    "production_clone_launch_evidence": false,
+    "run_registry_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/run.json",
+    "status": "registered-offline",
+    "transport_kind": "cli",
+    "trial_id": "235f2b82-5989-4a6f-9e6b-22e9697f58d2"
+  },
+  "story": "irene-literal-authentic-liveproof-classic-condense",
+  "trial_id": "235f2b82-5989-4a6f-9e6b-22e9697f58d2",
+  "trial_start_bundle_id": "narrated-deck-with-workbook",
+  "verdict_sequence": [
+    {
+      "err": null,
+      "gate": "G0E",
+      "next_gate": "G0R",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G0R",
+      "next_gate": "G1",
+      "next_status": "paused-at-gate",
+      "verb": "approve"
+    },
+    {
+      "err": null,
+      "gate": "G1",
+      "next_gate": "G2B",
+      "next_status": "paused-at-gate",
+      "verb": "edit"
+    },
+    {
+      "err": null,
+      "gate": "G2B",
+      "next_gate": "G2C",
+      "next_status": "paused-at-gate",
+      "verb": "select"
+    },
+    {
+      "err": "irene.pass2.figure-contradiction",
+      "gate": "G2C",
+      "next_gate": null,
+      "next_status": "paused-at-error",
+      "verb": "approve"
+    }
+  ]
+}

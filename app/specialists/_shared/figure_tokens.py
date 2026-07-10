@@ -4,9 +4,14 @@ from __future__ import annotations
 
 import re
 
+# Digit groups may include thousands-separators (surface-form precision,
+# Mine-next trust T4a / leg4-narration-fidelity-gate-precision-before-flag-on).
+# Comma form REQUIRES ≥1 `,xxx` group so `$1200` is not truncated to `$120`.
+_NUM = r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?"
+
 _FIGURE_RE = re.compile(
-    r"\$\s*\d+(?:\.\d+)?(?:\s*(?:trillion|billion)\b|\s*[tb]\b)?"
-    r"|\b\d+(?:\.\d+)?\s*%|\b\d+(?:\.\d+)?x\b",
+    rf"\$\s*(?:{_NUM})(?:\s*(?:trillion|billion)\b|\s*[tb]\b)?"
+    rf"|\b(?:{_NUM})\s*%|\b(?:{_NUM})x\b",
     re.IGNORECASE,
 )
 
@@ -18,11 +23,19 @@ _FIGURE_RE = re.compile(
 # class. Inheritance changes the UNIT only, never the NUMBER, so the
 # figure-citation guard remains intact for numbers absent from the slide.
 _RANGE_RE = re.compile(
-    r"\$\s*(\d+(?:\.\d+)?)\s*"
+    rf"\$\s*({_NUM})\s*"
     r"(?:to|through|and|[-–—])\s*"
-    r"\$\s*(\d+(?:\.\d+)?)\s*(trillion|billion|[tb])\b",
+    rf"\$\s*({_NUM})\s*(trillion|billion|[tb])\b",
     re.IGNORECASE,
 )
+
+# Percent rounding band: source 18.4% vs deck/narration 18% must not false-halt
+# (T4a precision). Absolute percentage-points; digit-form only.
+PERCENT_TOLERANCE_PP = 0.6
+
+
+def _parse_numeric(raw: str) -> float:
+    return float(raw.replace(",", ""))
 
 
 def _figures(text: str) -> set[str]:
@@ -30,8 +43,8 @@ def _figures(text: str) -> set[str]:
     consumed: list[tuple[int, int]] = []
     for match in _RANGE_RE.finditer(text):
         unit = match.group(3).lower()
-        tokens.add(_normalize_money(float(match.group(1)), unit))
-        tokens.add(_normalize_money(float(match.group(2)), unit))
+        tokens.add(_normalize_money(_parse_numeric(match.group(1)), unit))
+        tokens.add(_normalize_money(_parse_numeric(match.group(2)), unit))
         consumed.append((match.start(), match.end()))
     for match in _FIGURE_RE.finditer(text):
         if any(start <= match.start() < end for start, end in consumed):
@@ -49,7 +62,7 @@ def _normalize_money(number: float, unit: str | None) -> str:
 
 
 def _normalize_figure(value: str) -> str:
-    token = value.lower().replace(" ", "")
+    token = value.lower().replace(" ", "").replace(",", "")
     if token.startswith("$"):
         number = float(re.search(r"\d+(?:\.\d+)?", token).group(0))  # type: ignore[union-attr]
         if "trillion" in token or token.endswith("t"):
@@ -66,4 +79,36 @@ def _normalize_figure(value: str) -> str:
     return token
 
 
-__all__ = ["_FIGURE_RE", "_figures", "_normalize_figure"]
+def _figure_near_match(figure: str, source_figures: set[str]) -> bool:
+    """True when ``figure`` is an exact or precision-tolerant match to source.
+
+    T4a: percent tokens within ``PERCENT_TOLERANCE_PP`` of a same-kind source
+    token count as sourced (18.4% → 18%). Exact membership still preferred.
+    """
+    if figure in source_figures:
+        return True
+    if not figure.startswith("percent:"):
+        return False
+    try:
+        narrated = float(figure.split(":", 1)[1])
+    except ValueError:
+        return False
+    for source in source_figures:
+        if not source.startswith("percent:"):
+            continue
+        try:
+            src = float(source.split(":", 1)[1])
+        except ValueError:
+            continue
+        if abs(narrated - src) <= PERCENT_TOLERANCE_PP:
+            return True
+    return False
+
+
+__all__ = [
+    "PERCENT_TOLERANCE_PP",
+    "_FIGURE_RE",
+    "_figure_near_match",
+    "_figures",
+    "_normalize_figure",
+]

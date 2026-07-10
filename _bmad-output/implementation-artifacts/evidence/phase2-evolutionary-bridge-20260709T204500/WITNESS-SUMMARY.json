@@ -1,0 +1,46 @@
+{
+  "claim": "phase2-evolutionary-planning-to-selection-bridge",
+  "claim_fence": "Does not claim full lecture ingestion or lecture-complete selection.",
+  "witnesses": {
+    "W1_thin_hai_phs": true,
+    "W2_rich_tejal": true,
+    "W3_gap_fill_tradeoff": {
+      "disposition_a": {
+        "chosen": "wait",
+        "considered": [
+          "wait",
+          "lighter_collateral",
+          "synthesize"
+        ],
+        "rationale": "Wait on lecture assets; ship deck-only now."
+      },
+      "disposition_b": {
+        "chosen": "lighter_collateral",
+        "considered": [
+          "lighter_collateral",
+          "wait",
+          "synthesize"
+        ],
+        "rationale": "Thin source: ship deck+motion; defer workbook."
+      }
+    },
+    "W4_selection_delta": {
+      "before_bundle_id": "narrated-deck",
+      "after_bundle_id": "narrated-deck-with-motion",
+      "before_selection": {
+        "deck": true,
+        "motion": false,
+        "workbook": false
+      },
+      "after_selection": {
+        "deck": true,
+        "motion": true,
+        "workbook": false
+      }
+    },
+    "W5_compose": "stretch-not-claimed"
+  },
+  "thin_ne_rich": true,
+  "ac_p2_5": "same thin fixture, two ratified dispositions",
+  "pytest": "tests/marcus/lesson_plan/test_source_assessment.py + test_planning_ratification.py"
+}

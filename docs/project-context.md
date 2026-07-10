@@ -1,3 +1,135 @@
+# Current Context Addendum - 2026-07-10 (session WRAPUP: Tejal P4 + trust + next = Batch)
+
+**Session class:** S. Branch `dev/lesson-planning-2026-07-09`.
+
+**Landed this session (durable at WRAPUP commit):**
+- Mine-next Track A (N6/N3/N2) + trust Waves 1–2 (T1–T4c) local substrate
+- Pass-2 speakable dual-view (narration ⊆ perceived; source provenance ≠ speech license)
+- Desmond `HandoffParseError` → `SpecialistDispatchError` + `handoff.parsed.advisory-missing` retryable
+- Variant-selection recover noop when Gary dropped (reenter-at-07)
+- Tejal P4 fullwalk trial `22b27500-6e67-4dd7-8308-fd89defe3d99` **completed**
+  (PASS-WITH-FENCES: motion slide-01 only; node-15 / Desmond brief-file residuals filed)
+
+**Fidelity:** `MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE` exercised ON for the walk;
+**product default remains OFF.**
+
+**Next (operator-chosen):** Batch LLM run-start `realtime|batch` switch
+(spec `epic-batch-llm-execution-mode-spec-2026-07-01.md`), then workbook
+customization. Do not reopen S8. Do not re-run Tejal fullwalk for fence polish.
+
+**Evidence anchors:**
+- `…/evidence/tejal-p4-fullwalk-20260710T005021Z/`
+- `…/evidence/irene-figure-contradiction-reenter08-20260710T054100Z/`
+- `…/evidence/tejal-p4-continue-desmond-20260710T060700Z/`
+- `…/evidence/mine-next-trust-e2e-20260710T043111Z/`
+- Close: `mine-next-trust-wave2-e2e-close-2026-07-10.md`
+
+---
+
+# Current Context Addendum - 2026-07-10 (Phase-2 Six Mine-Now + integrated E2E)
+
+**Six Mine-Now program:** CLOSED-all-6 + integrated E2E amendment (party 4/4).
+Letters: `phase2-six-mine-now-final-close-2026-07-10.md` +
+`phase2-six-mine-integrated-e2e-amendment-2026-07-10.md`.
+Greenlight: `phase2-six-mine-now-greenlight-2026-07-09.md`.
+
+**Integrated E2E (durable bar):** `runs/8099669e-e677-4578-9889-a62250c38fb0/`
+evidence `mine-integrated-e2e-20260710T024036Z/` — plan-dialogue → live Irene
+Pass-1 → auto selection → trial start consumption; SME fail-loud; canonical/
+drill/prose as named non-E2E adjuncts. No Gamma. Seam fix: `start_trial`
+honors plan-JSON companions.
+
+| # | Aspect | Evidence |
+|---|--------|----------|
+| 1 | Automatic Lesson_plan | `mine1-auto-selection-20260710T021943Z/` |
+| 2 | Interactive SPOC | `mine2a-interactive-planning-20260710T022630Z/` |
+| 3 | Per-SME voice | `mine3-per-sme-voice-20260710T023031Z/` |
+| 4 | Canonical processed-source | `mine4a-canonical-shape-pin-20260710T022613Z/` |
+| 5 | Drill | `mine5-drill-projector-20260710T023034Z/` |
+| 6 | Workbook prose uplift | `mine6-prose-uplift-20260710T023242Z/` |
+
+**Fenced residuals:** 2B memory OS; 4B normalize/writeback; HAI/PHS Gamma
+variants; drill JSON Schema; in-graph SME revoicer default wire; Gamma full
+walk; happy-path coverage JSON write; on-read digest verify.
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
+# Current Context Addendum - 2026-07-09 Session 28 (Claim B live bespoke)
+
+**Marcus plan-ratify Claims A+B:** COMPLETE-with-named-fenced-residuals.
+**Claim B:** UNFENCED COMPLETE (**bespoke**) — live OpenAI Irene Pass-1.
+
+Evidence: `marcus-claim-b-live-20260709T234801Z/`  
+Runs: `bc8359aa-fdd9-4551-a9a1-e6483941c962` (treatment) vs
+`b5cd2bc8-50e5-4d0f-9c60-0dbc79664bde` (control).  
+Close: `marcus-claim-b-live-close-2026-07-09.md`.  
+Driver: `scripts/utilities/bank_marcus_claim_b_live_irene.py`.
+
+**Holds:** plan-ratify → `runs/<uuid>/` → live Pass-1 → coverage+provenance+
+plan≠control; digests match companions; `lo_coverage=present` + LO touch.
+
+**Still fenced (superseded in part by Six Mine-Now 2026-07-10):** Gamma;
+lecture ingest; happy-path coverage JSON write in `act()`; on-read digest
+verify. (Interactive SPOC / SME / projector / auto-selection MET in Mines 1–5.)
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
+# Current Context Addendum - 2026-07-09 Session 28 (solicitation surface)
+
+**Marcus plan-ratify + Claims A/B (substrate + mocked Claim B):** earlier bank
+`marcus-solicitation-success-20260709T230000/` at `318b6b0f`. Live Claim B
+supersedes the mock-act fence — see addendum above.
+
+---
+
+# Current Context Addendum - 2026-07-09 Session 28 (continued)
+
+**Step 2→3 DONE:** `planning-context-to-irene-pass1-handoff` =
+COMPLETE-with-named-fenced-residuals (party 4/4 CLOSE). Evidence
+`irene-planning-context-handoff-20260709T180555/` with per-component live-tests.
+Named residuals: ECH-08 / ECH-10 / ECH-12. Claim fence holds.
+
+**Still fenced / next bigger gains:** interactive SPOC planning REPL; W5 compose;
+SME/projector/LO UX; full lecture ingestion. Secondary:
+`langsmith-start-receipt-offline-stamp`.
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
+# Current Context Addendum - 2026-07-09 Session 28
+
+**Step 1 DONE:** Phase-2 evolutionary bridge
+`phase2-evolutionary-planning-to-selection-bridge` =
+COMPLETE-with-named-fenced-residuals at `20246475` (pushed). W1–W4 banked;
+W5 compose not claimed; §4.1 evolution rule canonicalized.
+
+**Step 2→3:** see addendum above (handoff CLOSED same session).
+
+S8 stays closed. Branch `dev/lesson-planning-2026-07-09`.
+
+---
+
+# Current Context Addendum - 2026-07-09 Session 27
+
+**S8 stays FULLY COMPLETE — do not reopen** (operator). Post-S8 Irene-literal
+gate **MET**: Gary preserve-over-condense (`0fb2b2cf`) + Pass-1 fidelity emit
+recovery (`6783b54b`) + authentic classic-condense witness `235f2b82…` (no stamp;
+`calls_made=2`; creative/literal exports). Pass-2 figure/numeral under
+classic-condense = **parked HELR**. Cursor dual-agent-family surfaces landed
+(`.cursor/rules/bmad-dual-agent-families.mdc` + `.cursor/agents/` stubs).
+
+**Next frontier (bigger gains):** Phase-2 spine
+`lesson-plan-directs-production-collateral-to-selection-edge` (primary candidate),
+or operator-picked real HAI/PHS ingestion / LO ratification / course-SME routing.
+Secondary hygiene only: `langsmith-start-receipt-offline-stamp`.
+
+---
+
 # Current Context Addendum - 2026-07-09 Session 26
 
 **Class D wrapup** — shadow-monitor lane for S7 Phase-2 A-D closed; session

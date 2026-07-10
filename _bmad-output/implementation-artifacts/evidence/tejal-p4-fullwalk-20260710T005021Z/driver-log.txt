@@ -1,0 +1,52 @@
+[2026-07-10T04:52:37.945952+00:00] env OK; FIDELITY_FLAG=ON; OPENAI=sk-proj...oc0A; GAMMA+KLING+ELEVENLABS present
+[2026-07-10T04:52:40.660885+00:00] === plan-dialogue (fresh LOs into trial run dir) ===
+[2026-07-10T04:52:40.714739+00:00] plan-dialogue exit=0 companions={'planning_ratification': True, 'ratified_los': True, 'dialogue_md': True}
+[2026-07-10T04:52:40.714739+00:00] === start_trial (fullwalk; fidelity ON; preserve styleguide) ===
+[2026-07-10T04:53:46.189451+00:00] G0 confirm feeder: edit
+[2026-07-10T04:53:46.189451+00:00] G0 edit_fn applied; bytes=4073
+[2026-07-10T04:53:46.198491+00:00] G0 confirm feeder: confirm
+[2026-07-10T04:54:19.418937+00:00] start_trial returned after 98.7s: {'status': 'registered-offline', 'trial_id': '22b27500-6e67-4dd7-8308-fd89defe3d99', 'preset': 'production', 'input': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge', 'operator_id': 'juanl', 'run_registry_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/run.json', 'cost_report_json': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/cost-report.json', 'cost_report_markdown': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/cost-report.md', 'langsmith_trace_status': 'skipped-no-langsmith-env', 'production_clone_launch_evidence': False, 'directive_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/directive.yaml', 'directive_digest': 'e9d191c265b49b2800963d767443ddf9c303e72fbda977ef002099aa14d20600', 'lesson_plan_collateral_intent_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml', 'lesson_plan_collateral_bundle_id': 'narrated-deck-with-workbook', 'lesson_plan_selection_source': 'ratified', 'transport_kind': 'cli'}
+[2026-07-10T04:54:19.429814+00:00] [loop 0] status=paused-at-gate gate=G0E err=None
+[2026-07-10T04:54:19.439067+00:00] resume approve G0E (cap=50)
+[2026-07-10T04:54:32.513151+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-10T04:54:32.524435+00:00] [loop 1] status=paused-at-gate gate=G0R err=None
+[2026-07-10T04:54:32.532462+00:00] resume approve G0R (cap=50)
+[2026-07-10T04:54:51.750207+00:00]   -> status=paused-at-gate paused_gate=G1 err=None
+[2026-07-10T04:54:51.759447+00:00] [loop 2] status=paused-at-gate gate=G1 err=None
+[2026-07-10T04:54:51.769234+00:00] resume edit G1 (cap=50)
+[2026-07-10T04:58:12.632214+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-10T04:58:12.643607+00:00] [loop 3] status=paused-at-gate gate=G2B err=None
+[2026-07-10T04:58:12.653068+00:00] resume select G2B (cap=50)
+[2026-07-10T04:59:20.603250+00:00]   -> status=paused-at-gate paused_gate=G2C err=None
+[2026-07-10T04:59:20.618557+00:00] [loop 4] status=paused-at-gate gate=G2C err=None
+[2026-07-10T04:59:20.626675+00:00] resume approve G2C (cap=50)
+[2026-07-10T05:09:56.902514+00:00]   -> status=paused-at-error paused_gate=None err=irene.pass2.figure-contradiction
+[2026-07-10T05:09:56.903643+00:00] RECOVER reenter_at_node=07 for tag=irene.pass2.figure-contradiction
+[2026-07-10T05:09:57.121222+00:00] IN-SITU PATCH NEEDED: tag=irene.pass2.figure-contradiction detail=05021Z\tejal_p4_fullwalk_driver.py", line 421, in maybe_recover
+    payload = recover_trial(
+              ^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\
+[2026-07-10T05:09:57.122373+00:00] RECOVER RAISED:
+Traceback (most recent call last):
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\tejal-p4-fullwalk-20260710T005021Z\tejal_p4_fullwalk_driver.py", line 421, in maybe_recover
+    payload = recover_trial(
+              ^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\cli\trial.py", line 820, in recover_trial
+    envelope = recover_production_trial(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\orchestrator\production_runner.py", line 3119, in recover_production_trial
+    return _continue_production_walk(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\orchestrator\production_runner.py", line 3187, in _continue_production_walk
+    production_envelope = _apply_variant_selection(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\orchestrator\production_runner.py", line 1193, in _apply_variant_selection
+    return _apply_per_slide_variant_selection(production_envelope, run_state)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\orchestrator\production_runner.py", line 1139, in _apply_per_slide_variant_selection
+    raise VariantSelectionError(
+app.marcus.orchestrator.production_runner.VariantSelectionError: per-slide variant selection is set, but latest Gary output has no gary_slide_output
+
+[2026-07-10T05:09:57.123398+00:00] ERROR-PAUSE after G2C: irene.pass2.figure-contradiction
+[2026-07-10T05:09:57.189332+00:00] SCORE grade=PARTIAL status=paused-at-error
+[2026-07-10T05:09:57.189332+00:00] evidence=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\_bmad-output\implementation-artifacts\evidence\tejal-p4-fullwalk-20260710T005021Z

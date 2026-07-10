@@ -1,0 +1,15 @@
+{
+  "artifact_source": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\leg3-cu03-subslide-invariant-20260701T021037Z",
+  "lane": "T4b",
+  "name": "positive-carry",
+  "passed": true,
+  "predicates": {
+    "carry_miss_raises": true,
+    "default_flag_off": true,
+    "flag_off_inert": true,
+    "happy_path_no_raise": true,
+    "run_id": "3754aa63-23cb-4aa3-a917-1a618908bc0e",
+    "source_has_percent_66": true
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\3754aa63-23cb-4aa3-a917-1a618908bc0e"
+}

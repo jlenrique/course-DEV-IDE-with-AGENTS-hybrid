@@ -1,0 +1,10 @@
+[
+  {
+    "cache_prefix_hash": "1abb162e7b7c212c75596b0ff144da84877cb4be2c1f4b682eeef4e230073e8c",
+    "level": "registry_default",
+    "reason": "PipelineRegistry.default_model_id='gpt-5' available; per_call + per_specialist did not fire",
+    "requested": null,
+    "resolved": "gpt-5",
+    "timestamp": "2026-07-10T04:52:40.792428Z"
+  }
+]

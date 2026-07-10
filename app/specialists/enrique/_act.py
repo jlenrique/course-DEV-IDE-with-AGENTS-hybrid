@@ -39,7 +39,11 @@ from app.specialists._shared.voice_provider_text import (
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.enrique.elevenlabs_dispatch import dispatch_to_elevenlabs
 from app.specialists.irene.authoring.pass_2_template import VoiceDirection
-from app.specialists.narration_join import join_narration_segments, phantom_segment_ids
+from app.specialists.narration_join import (
+    collapsed_segment_ids,
+    join_narration_segments,
+    phantom_segment_ids,
+)
 from scripts.api_clients.elevenlabs_client import (
     DEFAULT_DIALOGUE_MODEL,
     DEFAULT_TTS_MODEL,
@@ -281,6 +285,15 @@ def _segments(payload: dict[str, Any]) -> list[dict[str, Any]]:
                 "refusing pre-spend (a phantom delta would skip TTS silently "
                 "yet count toward G5 coverage)",
                 tag="elevenlabs.join.empty-narration-text",
+            )
+        # Mine-next trust T3: duplicate delta ids flood distinct slides with one
+        # narration — phantoms miss it (text non-empty). Refuse before spend.
+        collapsed = collapsed_segment_ids(raw)
+        if collapsed:
+            raise EnriqueActError(
+                f"narration join collapsed segment id(s) {collapsed} onto "
+                "multiple slides; refusing pre-spend (non-bijective join)",
+                tag="elevenlabs.join.collapsed-segment-ids",
             )
     else:
         raw = []

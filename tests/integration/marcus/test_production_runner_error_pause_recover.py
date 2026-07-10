@@ -264,6 +264,99 @@ def test_recover_refuses_gate_paused_run(tmp_path: Path, monkeypatch) -> None:
         )
 
 
+def test_recover_reenter_at_node_same_failed_node_retries(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """reenter_at_node equal to the failed node drops that contribution and retries."""
+    _install_adapter(monkeypatch, fail_specialist="texas", fail_times=1)
+    errored = _start(tmp_path, monkeypatch)
+    assert errored.status == "paused-at-error"
+    error_pause = json.loads(
+        (tmp_path / str(TRIAL_ID) / "error-pause.json").read_text(encoding="utf-8")
+    )
+    failed_node_id = error_pause["node_id"]
+    assert (
+        errored.production_envelope.get_contribution("texas", node_id=failed_node_id)
+        is None
+    )
+    recovered = production_runner.recover_production_trial(
+        trial_id=TRIAL_ID,
+        runs_root=tmp_path,
+        reenter_at_node=failed_node_id,
+    )
+    assert recovered.status == "paused-at-gate"
+    assert recovered.paused_gate == "G1"
+    assert (
+        recovered.production_envelope.get_contribution("texas", node_id=failed_node_id)
+        is not None
+    )
+
+
+def test_recover_reenter_at_node_rejects_unknown_and_downstream(
+    tmp_path: Path, monkeypatch
+) -> None:
+    _install_adapter(monkeypatch, fail_specialist="texas", fail_times=1)
+    _start(tmp_path, monkeypatch)
+    with pytest.raises(RuntimeError, match="not a node"):
+        production_runner.recover_production_trial(
+            trial_id=TRIAL_ID,
+            runs_root=tmp_path,
+            reenter_at_node="not-a-real-node-id",
+        )
+    error_pause = json.loads(
+        (tmp_path / str(TRIAL_ID) / "error-pause.json").read_text(encoding="utf-8")
+    )
+    failed_index = int(error_pause["node_index"])
+    from app.manifest.loader import load as load_manifest
+    from app.marcus.lesson_plan.composition import compose_manifest
+    from app.models.state.component_selection import ComponentSelection
+    from app.models.state.run_state import RunState
+
+    run_state = RunState.model_validate_json(json.dumps(error_pause["run_state"]))
+    manifest = compose_manifest(
+        load_manifest(production_runner.DEFAULT_MANIFEST_PATH),
+        run_state.component_selection or ComponentSelection.production_default(),
+    )
+    if failed_index + 1 < len(manifest.nodes):
+        downstream = manifest.nodes[failed_index + 1].id
+        with pytest.raises(RuntimeError, match="DOWNSTREAM"):
+            production_runner.recover_production_trial(
+                trial_id=TRIAL_ID,
+                runs_root=tmp_path,
+                reenter_at_node=downstream,
+            )
+
+
+def test_drop_contributions_from_nodes_rewinds_envelope() -> None:
+    from datetime import UTC, datetime
+
+    from app.models.runtime.production_envelope import (
+        ProductionEnvelope,
+        SpecialistContribution,
+        compute_output_digest,
+    )
+
+    trial_id = UUID("12345678-1234-4234-8234-123456789abc")
+    env = ProductionEnvelope(trial_id=trial_id, fixture_run=True)
+    for node_id, specialist in (("n1", "a"), ("n2", "b"), ("n3", "c")):
+        output = {"node": node_id}
+        env.add_contribution(
+            SpecialistContribution(
+                specialist_id=specialist,
+                contributed_at=datetime.now(UTC),
+                output=output,
+                cost_usd=0.0,
+                model_used="fixture",
+                output_digest=compute_output_digest(output),
+                node_id=node_id,
+                provenance="fixture",
+            )
+        )
+    dropped = env.drop_contributions_from_nodes({"n2", "n3"})
+    assert dropped == 2
+    assert [c.node_id for c in env.contributions] == ["n1"]
+
+
 def test_resume_refuses_error_paused_run(tmp_path: Path, monkeypatch) -> None:
     _install_adapter(monkeypatch, fail_specialist="texas", fail_times=1)
     errored = _start(tmp_path, monkeypatch)

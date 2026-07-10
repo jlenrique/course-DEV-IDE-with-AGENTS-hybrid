@@ -1,0 +1,25 @@
+{
+  "at": "2026-07-10T06:11:44.708865+00:00",
+  "trial_id": "22b27500-6e67-4dd7-8308-fd89defe3d99",
+  "terminal_status": "completed",
+  "c1_terminal_completed": true,
+  "c2_deck_pngs": true,
+  "c3_motion_partial": true,
+  "c4_fidelity_exercised": true,
+  "c5_pass2_cleared": true,
+  "c6_audio_enrique": true,
+  "c7_compositor": true,
+  "c8_desmond": true,
+  "c9_workbook": true,
+  "c10_no_descript_publish_as_success": true,
+  "artifacts": {
+    "workbook_docx": "_bmad-output/artifacts/workbooks/u01@1.docx",
+    "workbook_md": "_bmad-output/artifacts/workbooks/u01@1.md",
+    "audio_dir": "state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/enrique-narration/assembly-bundle/audio",
+    "motion": "state/config/runs/22b27500-6e67-4dd7-8308-fd89defe3d99/motion/slide-01.mp4"
+  },
+  "overall": "PASS-WITH-FENCES",
+  "fences": [
+    "motion coverage slide-01 only (not full deck)"
+  ]
+}

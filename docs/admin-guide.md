@@ -1,5 +1,43 @@
 # Admin Guide — System Configuration and Operations
 
+## Current Status - Marcus-SPOC Lesson Planning (2026-07-09)
+
+Operate this repository as the Marcus-SPOC local runtime. Marcus is the single operator-facing orchestrator for real APP production runs; proofing sessions are useful diagnostics, not a deployment target.
+
+### Current Operating Branch And Evidence
+
+- Active branch: `dev/lesson-planning-2026-07-09`.
+- Durable baseline: live bespoke Irene Pass-1 Claim B is closed through `fa48fb5b`; preceding durable closes include the Phase-2 bridge (`20246475`), Irene planning-context handoff (`b69aa2de`), and plan-ratify surface (`318b6b0f`).
+- Evidence and run artifacts are banked under `_bmad-output/implementation-artifacts/evidence/` and `runs/<uuid>/`. Treat active product-gap evidence as provisional until it is committed and pushed.
+
+### Operational Readiness
+
+- `.env` must contain the keys needed for the claimed path. Live Irene/OpenAI proof requires OpenAI access; Gamma or published-deck access is required only when explicitly claimed.
+- Use the repo virtual environment and local scripts for validation. Do not stage ambient run/evidence strays as durable evidence without a matching story, verdict, and close note.
+- For current status, consult [`docs/STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md), [`SESSION-HANDOFF.md`](../SESSION-HANDOFF.md), and [`next-session-start-here.md`](../next-session-start-here.md).
+
+### Marcus-SPOC Lesson-Planning Pre-Start
+
+1. Prepare a curated lesson leaf or course-source input bundle. Real HAI/PHS ingestion remains story/operator gated.
+2. Run the durable `plan-ratify` path, or the branch-visible `plan-dialogue` path only when that product-gap work is accepted on the branch.
+3. Confirm run-dir artifacts before starting production: `planning-ratification.json`, `ratified-collateral-intent.yaml`, optional `ratified-los.json`, and optional `marcus-planning-dialogue.md`.
+4. Start the trial through `python -m app.marcus.cli trial start`, using `--lesson-plan-collateral-intent` for the durable ratified path. Use `--lesson-plan-json` only after the automatic lesson-plan-collateral product-gap close is durable.
+5. Treat `--allow-offline-cost-report` and `scripts/utilities/bank_mine*.py` as harness/evidence utilities, not normal production proof.
+
+Operational state to watch:
+
+- `runs/<uuid>/`: planning companions, transcripts, Irene lesson-plan artifacts, trial receipts.
+- `_bmad-output/implementation-artifacts/evidence/`: proof packs and verdict JSON for claimed slices.
+- `state/config/sme-registry.yaml`: branch-visible SME voice/styleguide/attribution/approval routing; unknown or unbound SMEs must fail or surface an explicit gap rather than silently borrowing Tejal.
+
+### Do Not Operate As If
+
+- Do not treat the legacy Trial-3 or prompt-pack migration banners below as the current operating plan.
+- Do not ingest real HAI/PHS content remotely or into production paths without explicit story/operator authorization.
+- Do not ad-hoc-edit approved styleguide registry guides; route SME/styleguide changes through the registry and approval contracts.
+
+## Legacy Context
+
 > **Migration Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration unconditionally SHIPPED 2026-04-27. Slab 7 orchestrational arc COMPLETE (7a+7b+7c closed 2026-05-01 / 2026-05-01 / 2026-05-07). Pre-Trial-3 cleanup arc S1-S6 currently in progress (S1+S2+S3+S4 closed; S5+S6 in flight). **First tracked trial (Trial-3) launches post-cleanup-close** against v5 canonical pack + post-Slab-7c substrate. v5 canonical pack: `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`. Trial methodology: `docs/trials/methodology.md`. Legacy v4.2 retained as mapping-checklist legacy-axis frozen authority.
 
 

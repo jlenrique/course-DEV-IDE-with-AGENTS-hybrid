@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import json
 import pytest
 
 from app.marcus.course_source.input_bundle import (
@@ -259,3 +260,64 @@ def test_load_lesson_plan_collateral_selection_rejects_invalid_utf8(
 
     with pytest.raises(CollateralSelectionError, match="not valid YAML/JSON"):
         load_lesson_plan_collateral_selection(path)
+
+
+def test_derive_selection_from_lesson_plan_workbook_present() -> None:
+    from app.marcus.lesson_plan.collateral_selection import (
+        derive_selection_from_lesson_plan,
+    )
+
+    plan = {
+        "lesson_summary": "Bridge lesson",
+        "plan_units": [{"unit_id": "u1", "title": "T"}],
+        "collateral": _workbook_collateral().model_dump(mode="json"),
+    }
+    result = derive_selection_from_lesson_plan(plan, source_ref="test")
+    assert result.bundle_id == "narrated-deck-with-workbook"
+    assert result.selection == ComponentSelection(deck=True, motion=True, workbook=True)
+    assert result.source == "plan_collateral"
+
+
+def test_derive_selection_from_lesson_plan_declaration_none() -> None:
+    from app.marcus.lesson_plan.collateral_selection import (
+        derive_selection_from_lesson_plan,
+    )
+
+    plan = {
+        "plan_units": [],
+        "collateral": {"declaration": "none", "workbook": None, "research_goals": []},
+    }
+    result = derive_selection_from_lesson_plan(plan)
+    assert result.bundle_id == "narrated-deck-with-motion"
+    assert result.selection == ComponentSelection.production_default()
+    assert result.source == "plan_collateral"
+
+
+def test_derive_selection_fails_loud_when_collateral_absent() -> None:
+    from app.marcus.lesson_plan.collateral_selection import (
+        derive_selection_from_lesson_plan,
+    )
+
+    with pytest.raises(CollateralSelectionError, match="collateral is required"):
+        derive_selection_from_lesson_plan({"plan_units": []})
+
+
+def test_load_selection_from_lesson_plan_json_round_trip(tmp_path: Path) -> None:
+    from app.marcus.lesson_plan.collateral_selection import (
+        load_selection_from_lesson_plan_json,
+    )
+
+    path = tmp_path / "irene-pass1.lesson-plan.json"
+    path.write_text(
+        json.dumps(
+            {
+                "lesson_summary": "x",
+                "plan_units": [],
+                "collateral": _workbook_collateral().model_dump(mode="json"),
+            }
+        ),
+        encoding="utf-8",
+    )
+    result = load_selection_from_lesson_plan_json(path)
+    assert result.source == "plan_collateral"
+    assert result.bundle_id == "narrated-deck-with-workbook"

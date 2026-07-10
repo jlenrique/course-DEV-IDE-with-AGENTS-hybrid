@@ -1,5 +1,64 @@
 # Developer Guide — Architecture, Execution Flow, and Extension Points
 
+## Current Status - Marcus-SPOC Lesson Planning (2026-07-09)
+
+This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only.
+
+### Current Implementation Boundary
+
+- Durable baseline: S7 Phase-2 course-source substrate, S8 selection/planning-input bridge, Irene Pass-1 planning-context handoff, Marcus `plan-ratify` Claim A, and live bespoke Claim B are closed on `dev/lesson-planning-2026-07-09` through `fa48fb5b`.
+- Current committed seams include `app/marcus/lesson_plan/source_assessment.py`, `planning_ratification.py`, `planning_context.py`, `collateral_selection.py`, `app/marcus/cli/plan_ratify_cli.py`, and `app/specialists/irene_pass1/_act.py`.
+- Active product-gap work visible on this branch should be treated as in-flight until committed close evidence lands. That includes automatic Irene collateral to `ComponentSelection`, interactive planning dialogue/LO UX, per-SME routing, canonical processed-source hardening, projector family expansion, and workbook prose uplift.
+
+### Current Lesson-Planning Data Path
+
+The intended path is source assessment and planning ratification -> run companions under `runs/<uuid>/` -> Irene Pass-1 planning context as framing, not corpus replacement -> lesson-plan coverage/provenance/LO receipt -> existing `ComponentSelection` and local package composition. Do not introduce a parallel selection engine.
+
+### Phase-2 Marcus-SPOC Seams
+
+- Source assessment: `app/marcus/lesson_plan/source_assessment.py`; no remote ingestion or full-lecture claim follows from a curated fixture.
+- Planning ratification: `app/marcus/lesson_plan/planning_ratification.py` writes `planning-ratification.json` and `ratified-collateral-intent.yaml`.
+- LO/context handoff: `app/marcus/lesson_plan/planning_context.py` loads planning companions plus optional `ratified-los.json`; these are advisory framing, not corpus replacement.
+- Selection edge: `app/marcus/lesson_plan/collateral_selection.py` resolves through the existing bundle catalog and `ComponentSelection`; automatic `lesson_plan["collateral"]` derivation is branch-visible product-gap work until committed.
+- Irene consumer: `app/specialists/irene_pass1/_act.py` consumes optional `planning_context` and writes lesson-plan artifacts.
+- Canonical processed source: see [`docs/dev-guide/canonical-processed-source-structure.md`](dev-guide/canonical-processed-source-structure.md) for the branch-visible shape pin and validators.
+
+Durable command surface:
+
+```bash
+python -m app.marcus.cli plan-ratify --corpus-dir <lesson-leaf> --purpose "<purpose>" --audience "<audience>" --workflow narrated-deck --gap-fill-chosen synthesize --gap-fill-considered synthesize,wait --output-dir <run-dir>
+python -m app.marcus.cli trial start --input <corpus-dir> --lesson-plan-collateral-intent <run-dir>/ratified-collateral-intent.yaml --auto-confirm-directive
+```
+
+Branch-visible product-gap commands should not be treated as pushed baseline until their close commits land:
+
+```bash
+python -m app.marcus.cli plan-dialogue --corpus-dir <lesson-leaf> --output-dir <run-dir>
+python -m app.marcus.cli plan-dialogue --corpus-dir <lesson-leaf> --output-dir <run-dir> --script <answers.yaml>
+python -m app.marcus.cli trial start --input <corpus-dir> --lesson-plan-json <run-dir>/irene-pass1.lesson-plan.json --auto-confirm-directive
+```
+
+Focused verification targets for the active lesson-planning seams:
+
+```bash
+python -m pytest tests/marcus/lesson_plan/test_collateral_selection.py -q
+python -m pytest tests/marcus/cli/test_plan_dialogue_cli.py -q
+python -m pytest tests/marcus/course_source/test_canonical_processed_source.py -q
+python -m pytest tests/marcus/course_source/test_sme_styleguide_resolution.py -q
+python -m pytest tests/marcus/lesson_plan/test_drill_projector.py -q
+```
+
+### Development Guardrails
+
+- Do not reopen S8 or replace the selection bridge to make a later convenience path work.
+- Do not design production code around proofing-run convenience unless the change improves Marcus-SPOC.
+- Do not ad-hoc-edit approved styleguide registry guides; non-Tejal SME paths require explicit voice/styleguide/attribution/approval routing or an honest gap.
+- Real HAI/PHS ingestion remains operator/story gated; hand-curated fixtures do not prove full ingestion robustness.
+
+Current project status lives in [`docs/STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md), [`SESSION-HANDOFF.md`](../SESSION-HANDOFF.md), and [`next-session-start-here.md`](../next-session-start-here.md).
+
+## Legacy Context
+
 > **Migration Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration unconditionally SHIPPED 2026-04-27. Slab 7 orchestrational arc COMPLETE (7a+7b+7c closed 2026-05-01 / 2026-05-01 / 2026-05-07). Pre-Trial-3 cleanup arc S1-S6 currently in progress (S1+S2+S3+S4 closed; S5+S6 in flight). **First tracked trial (Trial-3) launches post-cleanup-close** against v5 canonical pack + post-Slab-7c substrate. v5 canonical pack: `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`. Trial methodology: `docs/trials/methodology.md`. Legacy v4.2 retained as mapping-checklist legacy-axis frozen authority.
 
 

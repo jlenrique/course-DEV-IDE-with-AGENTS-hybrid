@@ -24,7 +24,7 @@ This preference does **not** override **migration sandbox-AC** rules later in th
 
 **Local commits alone are NOT durable storage.** A single-disk failure or accidental data loss between commits and a push wipes out unpushed work. The operator also needs to access this repo from remote locations and machines, which is impossible while commits live only on one disk. **Mitigation: push to `origin` at least once every 2 hours of active session work**, and ALWAYS push at session-WRAPUP Step 12 (no longer deferred by default).
 
-**Solo / no formal PR framework (2026-07-09):** the operator is the sole committer and does not use GitHub Pull Requests as the delivery path. Prefer branch push + local verification; do not open PRs or rely on PR-gated Actions unless explicitly asked. GitHub Actions auto-triggers were muted to stop failure-notification email noise — see [`AGENTS.md`](AGENTS.md) §Solo operator.
+**Solo / no formal PR framework (2026-07-09):** the operator is the sole committer and does not use GitHub Pull Requests as the delivery path. Prefer branch push + local verification; do not open PRs or rely on PR-gated Actions unless explicitly asked. GitHub Actions auto-triggers were muted to stop failure-notification email noise — see [`AGENTS.md`](AGENTS.md) §Solo operator. **Party consensus = approval:** when fully-spawned BMAD party mode reaches consensus and the orchestrating agent agrees, proceed without a redundant human Checkpoint-1 hold on the same decision (operator may still override asynchronously).
 
 Operating rules:
 
@@ -52,6 +52,8 @@ Ratified 2026-05-05 post-session-close after observing that 40 commits sat unpus
 - **Sanctum tree (BMAD Method Builder / BMB):** Migrated agents keep persistent persona and continuity artifacts under `_bmad/memory/bmad-agent-{name}/`. For Marcus, that directory is `_bmad/memory/bmad-agent-marcus/`. Activation order is defined in [`skills/bmad-agent-marcus/SKILL.md`](skills/bmad-agent-marcus/SKILL.md) (read the skill first; then load sanctum files such as `INDEX.md`, `PERSONA.md`, per that skill).
 
 On a cold session, **read the relevant `skills/bmad-agent-<name>/SKILL.md` (and sanctum per that skill)** to embody the agent — do not require a manifest row.
+
+**Cursor dual-path (2026-07-09):** Family A (stock party seats) vs Family B (skill+sanctum) is also encoded for Cursor in [`.cursor/rules/bmad-dual-agent-families.mdc`](.cursor/rules/bmad-dual-agent-families.mdc) and optional stubs under [`.cursor/agents/`](.cursor/agents/). See [`AGENTS.md`](AGENTS.md) §Dual agent families.
 
 ## Marcus first (APP production cold start)
 

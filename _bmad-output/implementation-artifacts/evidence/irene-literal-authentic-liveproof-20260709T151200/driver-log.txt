@@ -1,0 +1,31 @@
+[2026-07-09T19:12:48.941227+00:00] env OK; GUIDE=hil-2026-apc-crossroads-classic; emit-recovery HEAD expected; NO fidelity stamp on this driver
+[2026-07-09T19:12:51.354282+00:00] styleguide hil-2026-apc-crossroads-classic: text_mode=condense amount=minimal
+[2026-07-09T19:12:51.354282+00:00] === start_trial (AUTHENTIC Irene-literal; classic-condense; NO stamp) ===
+[2026-07-09T19:19:46.266793+00:00] G0 confirm feeder: edit
+[2026-07-09T19:19:46.267794+00:00] G0 edit_fn applied marker; bytes=3970
+[2026-07-09T19:19:46.276047+00:00] G0 confirm feeder: confirm
+[2026-07-09T19:22:43.101786+00:00] start_trial returned after 591.7s: {'status': 'registered-offline', 'trial_id': '235f2b82-5989-4a6f-9e6b-22e9697f58d2', 'preset': 'production', 'input': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge', 'operator_id': 'juanl', 'run_registry_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/run.json', 'cost_report_json': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/cost-report.json', 'cost_report_markdown': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/cost-report.md', 'langsmith_trace_status': 'skipped-no-langsmith-env', 'production_clone_launch_evidence': False, 'directive_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/directive.yaml', 'directive_digest': '00396adb3a07a36ffbd29d6c048b7276f7874fcf75da5e20d1ca10514afe1eb7', 'lesson_plan_collateral_intent_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml', 'lesson_plan_collateral_bundle_id': 'narrated-deck-with-workbook', 'transport_kind': 'cli'}
+[2026-07-09T19:22:43.113200+00:00] [loop 0] status=paused-at-gate gate=G0E err=None
+[2026-07-09T19:22:43.121649+00:00] resume approve G0E (cap=40)
+[2026-07-09T19:24:49.888991+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-09T19:24:49.900127+00:00] [loop 1] status=paused-at-gate gate=G0R err=None
+[2026-07-09T19:24:49.909782+00:00] resume approve G0R (cap=40)
+[2026-07-09T19:27:10.185616+00:00]   -> status=paused-at-gate paused_gate=G1 err=None
+[2026-07-09T19:27:10.197266+00:00] [loop 2] status=paused-at-gate gate=G1 err=None
+[2026-07-09T19:27:10.199287+00:00] Irene fidelity observation: null
+[2026-07-09T19:27:10.199287+00:00] WARNING: Irene emitted zero literal-text units — Gary honor path may not fire; continuing without stamp
+[2026-07-09T19:27:10.208483+00:00] resume edit G1 (cap=40)
+[2026-07-09T19:32:40.415738+00:00]   -> status=paused-at-gate paused_gate=G2B err=None
+[2026-07-09T19:32:40.431602+00:00] gary_proof captured: {"package_slide_count": 9, "package_fidelity_counts": {"literal-text": 2, "creative": 6, "literal-visual": 1}, "package_slides": [{"slide_id": "slide-01", "title": "Module 1 Complete: The Mindset Is Set", "fidelity": "literal-text", "source_ref": "u01"}, {"slide_id": "slide-02", "title": "What Changes After the Mindset: From Seeing Systems to Starting the Journey", "fidelity": "creative", "source_ref": "u02"}, {"slide_id": "slide-03", "title": "The Opportunity Is Mapped, But the Leader Must Be Built", "fidelity": "creative", "source_ref": "u03"}, {"slide_id": "slide-04", "title": "Mindset Alone Is Not Enough in a Matrixed Health System", "fidelity": "creative", "source_ref": "u04"}, {"slide_id": "slide-05", "title": "Bridge Graphic: From Mindset to Identity", "fidelity": "literal-visual", "source_ref": "u05"}, {"slide_id": "slide-06", "title": "Preview of Module 2 Leadership Identity Wor
+[2026-07-09T19:32:40.436602+00:00] [loop 3] status=paused-at-gate gate=G2B err=None
+[2026-07-09T19:32:40.446225+00:00] resume select G2B (cap=40)
+[2026-07-09T19:35:21.339526+00:00]   -> status=paused-at-gate paused_gate=G2C err=None
+[2026-07-09T19:35:21.354267+00:00] [loop 4] status=paused-at-gate gate=G2C err=None
+[2026-07-09T19:35:21.362444+00:00] resume approve G2C (cap=40)
+[2026-07-09T20:00:01.312832+00:00]   -> status=paused-at-error paused_gate=None err=irene.pass2.figure-contradiction
+[2026-07-09T20:00:01.313833+00:00] ERROR-PAUSE after G2C: irene.pass2.figure-contradiction
+[2026-07-09T20:00:01.352091+00:00] facts written; claim_ok=False; final_status=paused-at-error
+[2026-07-09T20:00:01.352091+00:00] irene_obs=null
+[2026-07-09T20:00:01.352091+00:00] gary_proof={"package_slide_count": 9, "package_fidelity_counts": {"literal-text": 2, "creative": 6, "literal-visual": 1}, "package_slides": [{"slide_id": "slide-01", "title": "Module 1 Complete: The Mindset Is Set", "fidelity": "literal-text", "source_ref": "u01"}, {"slide_id": "slide-02", "title": "What Changes After the Mindset: From Seeing Systems to Starting the Journey", "fidelity": "creative", "source_ref": "u02"}, {"slide_id": "slide-03", "title": "The Opportunity Is Mapped, But the Leader Must Be Built", "fidelity": "creative", "source_ref": "u03"}, {"slide_id": "slide-04", "title": "Mindset Alone Is Not Enough in a Matrixed Health System", "fidelity": "creative", "source_ref": "u04"}, {"slide_id": "slide-05", "title": "Bridge Graphic: From Mindset to Identity", "fidelity": "literal-visual", "source_ref": "u05"}, {"slide_id": "slide-06", "title": "Preview of Module 2 Leadership Identity Work", "fidelity": "creative", "source_ref": "u06"}, {"slide_id": "slide-07", "title": "Leader Identity
+[2026-07-09T20:00:01.352091+00:00] hil_variety=['g0-confirm:edit', 'g0-confirm:confirm', 'G0E:approve', 'G0R:approve', 'g1:edit-inspect', 'G2B:select-all-A:9', 'G2C:approve']
+[2026-07-09T20:00:01.352091+00:00] pause_sequence=['G0E', 'G0R', 'G1', 'G2B', 'G2C']

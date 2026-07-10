@@ -1,0 +1,20 @@
+ratification_status: ratified
+bundle_id: narrated-deck-with-workbook
+collateral:
+  schema_version: '1.1'
+  declaration: present
+  workbook:
+    kind: deck-companion-workbook
+    sections:
+    - section_id: sec-bridge-001
+      learning_objective_id: lo-bridge-001
+      title: Assessment bridge depth
+      depth_delta:
+        deferred_from_slide: slide-1
+        deferred_depth: Full assessment-bridge method kept off slide
+        retained_on_slide: null
+      exercises: []
+      narrative_intent: ''
+  research_goals: []
+input_bundle: null
+source_ref: null

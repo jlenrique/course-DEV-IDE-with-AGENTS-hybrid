@@ -138,6 +138,14 @@ def test_validate_missing_is_loud() -> None:
         validate_selections({"slide-01": "A"}, {"slide-01": {"A"}, "slide-02": {"A", "B"}})
 
 
+def test_per_slide_absent_gary_defers_noop_for_reenter() -> None:
+    """reenter_at_node=07 drops Gary; selections must not crash — apply later."""
+    empty = ProductionEnvelope(trial_id=uuid4())
+    out = _apply_per_slide_variant_selection(empty, _state(_MIX))
+    assert out.latest_for_specialist("gary") is None
+    assert out.contributions == ()
+
+
 def test_run_tag_is_short_and_stable() -> None:
     tid = "464c5b77-292c-462b-8253-706f0b07f981"
     assert run_tag_for_trial(tid) == "464c5b77"

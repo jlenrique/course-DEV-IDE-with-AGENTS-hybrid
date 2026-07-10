@@ -8,6 +8,19 @@ This repo has **one human committer**. Delivery is **branch → local verify →
 
 GitHub Actions under `.github/workflows/` are retained as **manual** (`workflow_dispatch`) tools only — automatic `pull_request` / `push` / `schedule` triggers were muted so abandoned PR-era experiments stop generating failure-notification emails. Prefer local `pytest` / `ruff` / story verification commands over remote Actions unless the operator requests a manual workflow run.
 
+**BMAD party consensus = operator approval (2026-07-09):** When a fully-spawned BMAD party-mode round reaches consensus (GO / GO-WITH-AMENDMENTS with MUST amendments folded) **and** the orchestrating agent agrees with that recommendation, treat that as approval to proceed — do **not** halt production for a redundant human Checkpoint-1 Approve/Edit hold on the same decision. The operator may still review specs asynchronously and override; do not block the run waiting for that review when party+agent consensus already holds. Still escalate true impasses via the Quinn→John→human chain.
+
+## Dual agent families (Cursor + BMAD) — 2026-07-09
+
+Two families coexist; do not conflate them. Cursor alwaysApply rule: [`.cursor/rules/bmad-dual-agent-families.mdc`](.cursor/rules/bmad-dual-agent-families.mdc).
+
+| Family | Examples | Source of truth | Cursor habit |
+| --- | --- | --- | --- |
+| **A — Native BMAD stock** | John, Winston, Amelia, Murat, Quinn, Mary | BMAD skills (`bmad-agent-pm`, `bmad-party-mode`, …) + `_bmad` roster | **Agent** mode; spawn independent subagents for party. Optional discovery stubs: [`.cursor/agents/`](.cursor/agents/) (redirect into skills). `/multitask` ≠ party independence. |
+| **B — Custom skill+sanctum** | Marcus, Irene, Gary, Vera, Texas, … | `skills/bmad-agent-{name}/SKILL.md` + `_bmad/memory/bmad-agent-{name}/` | Marcus-first for production; load skill+sanctum. Intentionally **absent** from `agent-manifest.csv`. |
+
+Session protocols: cold-start step in [`bmad-session-protocol-session-START.md`](bmad-session-protocol-session-START.md); WRAPUP hygiene if Cursor dual-path surfaces changed.
+
 **Sprint governance:** Multi-story BMAD work in this repo follows the same BMAD sprint run charter everywhere it applies:
 
 | Environment | Mechanism |

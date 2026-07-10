@@ -1,0 +1,21 @@
+{
+  "artifact": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\7f61de61-e53b-455b-b6a2-175737c08708\\artifacts\\quizzes\\practice-quiz.md",
+  "lane": "N3",
+  "name": "quiz-projector",
+  "passed": true,
+  "predicates": {
+    "artifact_nonempty": true,
+    "empty_render_refused": true,
+    "empty_source_warned": true,
+    "item_count": 2,
+    "kind_is_quiz": true,
+    "markdown_has_focus": true,
+    "markdown_has_lo": true,
+    "markdown_has_prompt": true,
+    "not_drill_kind": true,
+    "projection_nonempty": true,
+    "run_id": "7f61de61-e53b-455b-b6a2-175737c08708",
+    "schema_roundtrip": true
+  },
+  "run_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\7f61de61-e53b-455b-b6a2-175737c08708"
+}

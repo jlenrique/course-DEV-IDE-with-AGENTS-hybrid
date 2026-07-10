@@ -1,0 +1,49 @@
+# SME registry — Mine 3 per-SME voice / styleguide / attribution / approval
+#
+# Closed map of sme_key → bindings. Unknown keys hard-fail at resolve time.
+# Named variants only: Tejal binds to an existing Gamma guide id; HAI/PHS are
+# explicit unbound gaps (never silent Tejal fallthrough).
+#
+# Do NOT mutate approved records in gamma-style-guides.yaml from this file —
+# only reference existing guide keys.
+
+schema_version: "0.1"
+
+# Display-name aliases → sme_key (course.yaml sme.name values)
+name_aliases:
+  "Tejal": tejal
+  "Tejal Patel": tejal
+  "Aziz Nazha": hai-510
+  "Juan Leon": phs-620
+
+smes:
+  tejal:
+    display_name: Tejal
+    styleguide_id: hil-2026-apc-crossroads-classic
+    attribution: "Faculty voice: Tejal (APC Crossroads / HIL 2026)"
+    approval_route: "sme-tejal-workbook-signoff"
+    voice_profile_ref: "voice/tejal-apc-crossroads"
+    unbound: false
+    reason: "Bound to named Gamma variant hil-2026-apc-crossroads-classic (Tejal theme)."
+
+  hai-510:
+    display_name: Aziz Nazha
+    styleguide_id: null
+    attribution: "Faculty voice: Aziz Nazha (HAI 510) — styleguide unbound"
+    approval_route: "sme-hai-510-needs-named-variant"
+    voice_profile_ref: "voice/hai-510-unbound"
+    unbound: true
+    reason: >
+      Marked gap: no HAI-510 named Gamma variant yet. Must not reuse Tejal
+      styleguide_id. Downstream treats style as unresolved (fallback=true).
+
+  phs-620:
+    display_name: Juan Leon
+    styleguide_id: null
+    attribution: "Faculty voice: Juan Leon (PHS 620) — styleguide unbound"
+    approval_route: "sme-phs-620-needs-named-variant"
+    voice_profile_ref: "voice/phs-620-unbound"
+    unbound: true
+    reason: >
+      Marked gap: no PHS-620 named Gamma variant yet. Must not reuse Tejal
+      styleguide_id. Downstream treats style as unresolved (fallback=true).
