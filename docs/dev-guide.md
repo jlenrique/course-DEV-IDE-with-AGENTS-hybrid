@@ -1,14 +1,15 @@
 # Developer Guide — Architecture, Execution Flow, and Extension Points
 
-## Current Status - Marcus-SPOC Lesson Planning (2026-07-09)
+## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
 
-This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only.
+This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10).
 
 ### Current Implementation Boundary
 
 - Durable baseline: S7 Phase-2 course-source substrate, S8 selection/planning-input bridge, Irene Pass-1 planning-context handoff, Marcus `plan-ratify` Claim A, and live bespoke Claim B are closed on `dev/lesson-planning-2026-07-09` through `fa48fb5b`.
 - Current committed seams include `app/marcus/lesson_plan/source_assessment.py`, `planning_ratification.py`, `planning_context.py`, `collateral_selection.py`, `app/marcus/cli/plan_ratify_cli.py`, and `app/specialists/irene_pass1/_act.py`.
 - Active product-gap work visible on this branch should be treated as in-flight until committed close evidence lands. That includes automatic Irene collateral to `ComponentSelection`, interactive planning dialogue/LO UX, per-SME routing, canonical processed-source hardening, projector family expansion, and workbook prose uplift.
+- Batch LLM Execution Mode v1 is closed on `dev/batch-mode-2026-07-10` (epic party-CLOSED 4/4, 2026-07-10): opt-in batch transport for vision/07G perception only. The default execution mode remains realtime, and the done-bar is hermetic-only. Seam map in the batch section below.
 
 ### Current Lesson-Planning Data Path
 
@@ -47,6 +48,44 @@ python -m pytest tests/marcus/course_source/test_canonical_processed_source.py -
 python -m pytest tests/marcus/course_source/test_sme_styleguide_resolution.py -q
 python -m pytest tests/marcus/lesson_plan/test_drill_projector.py -q
 ```
+
+### Batch LLM Execution Mode v1 Seams
+
+Batch LLM execution (epic party-CLOSED 4/4, 2026-07-10, on `dev/batch-mode-2026-07-10`) is an opt-in transport, not the default: `python -m app.marcus.cli trial start ... --llm-execution-mode batch` (the flag lives on `trial start`; default `realtime`; operator-invoked per trial), resumed via `python -m app.marcus.cli trial resume-batch --trial-id <uuid>`. Scope is vision/07G perception only — all other nodes stay realtime even with the flag on.
+
+- Batch adapter: `app/runtime/llm_batch/adapter.py` — `LiteLlmBatchAdapter` over the LiteLLM Files+Batches SDK.
+- Request rows: `app/runtime/llm_batch/jsonl.py` — JSONL row building and size budget.
+- Result join: `app/runtime/llm_batch/join.py` — `custom_id` join of provider output back to run state.
+- Receipts: `app/runtime/llm_batch/receipts.py` — `BatchReceipt` persistence.
+- Cost report: `app/runtime/llm_batch/cost_report.py` — emits `runs/<id>/llm_batch/cost-report.json` after the vision join and after `resume-batch` completes; an accounting/estimate artifact, not the provider invoice (hermetic tests only; no live-invoice-accuracy claim).
+- Prompt cache: `app/runtime/llm_batch/prompt_cache.py` — `prompt_cache_key` derivation via shared `stable_perception_v1`.
+- Pause error: `app/runtime/llm_batch/errors.py` — `WaitingForProviderBatchError`.
+- Transport profiles: `app/runtime/llm_execution_config.py` — per-node realtime/batch execution profiles.
+- Eligibility: `app/runtime/llm_batch_eligibility.py` — the A3 eligibility matrix and the SSOT for what may run in batch. Do not hand-copy the allowlist into docs or config; point here.
+- Vision route: `app/specialists/vision/batch_route.py` — B2 end-to-end submit/resume/poll/join/parse orchestration.
+- CLI: `app/marcus/cli/trial.py` — `--llm-execution-mode` on `trial start`; `trial resume-batch` subcommand.
+
+Invariants (hold these under any refactor):
+
+- **Transport boundary.** Batch uses the LiteLLM Files+Batches SDK only — explicitly NOT `litellm.batch_completion`, and with NO edits to `app/models/adapter.py`. Batch is additive infrastructure beside the shared realtime adapter, not a fork of it; the threat model is a well-meaning refactor that "unifies" the two paths through the shared adapter.
+- **Single shared pause/resume catch site, covering both walks.** An eligible node in batch mode raises `WaitingForProviderBatchError`; the production runner catches it at one shared catch site in the specialist-dispatch seam (`app/marcus/orchestrator/production_runner.py`, `except WaitingForProviderBatchError` -> `_pause_at_provider_batch`) and sets envelope status `waiting_for_provider_batch`. The production runner has TWO node walks (the start walk, which stops at G1, and the continuation walk) — the same standing gotcha as gate-pause side-effects, which must land in both walks. Today both walks flow through the shared dispatch-seam catch; any future change that moves the catch must preserve both-walk coverage.
+- **Resume discipline.** `trial resume-batch` never re-uploads; it acts only on runs whose envelope status is `waiting_for_provider_batch`; if the provider job is still non-terminal the run simply remains `waiting_for_provider_batch` (safe to re-run; idempotent polling).
+- **Prompt-cache key discipline.** Realtime and batch derive `prompt_cache_key` through the same shared `stable_perception_v1` by design. If the two paths ever diverge on key derivation, the result is cache incoherence plus cost-report skew; cache-hit variance already moves run-to-run cost deltas, so divergence would also make deltas unreadable.
+
+Testing discipline:
+
+- The done-bar is hermetic: pytest green without API keys. The A2 perception harness is `app/runtime/llm_batch/perception_harness.py` + `scripts/utilities/run_perception_batch_harness.py`.
+- The optional live arm runs behind `--run-live` (LiteLLM Files+Batches vs realtime on `gpt-5.5`) — the same opt-in convention as the `live_api` marker in [Testing](#testing): default pytest never spends provider money, and the live arm NEVER gates CI or story-done.
+- Live comparison is semantic/score deltas only; byte-identical parity claims are forbidden.
+- Hermetic green does not prove live quality. As of the epic close, the batch done-bar is hermetic-only.
+
+Scope boundaries (declared, not silently absent):
+
+- Batch is NOT the production default; the default stays realtime.
+- A1-EXT all-node tiering is DEFERRED (TRAIL) — vision/07G perception is the only eligible family in v1.
+- The workbook is not batch-eligible.
+- Live provider batch turnaround, and `resume-batch` behavior under provider-job failure/expiry, are not yet characterized live.
+- Product batch model is realtime `gpt-5.5`, with nearest GPT-5-family fallback if the provider Batch API rejects the model. No cost-savings outcome is asserted or measured (any discount is the provider's advertised batch pricing), and no batch-turnaround SLA exists.
 
 ### Development Guardrails
 

@@ -1,12 +1,12 @@
 # Admin Guide — System Configuration and Operations
 
-## Current Status - Marcus-SPOC Lesson Planning (2026-07-09)
+## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
 
-Operate this repository as the Marcus-SPOC local runtime. Marcus is the single operator-facing orchestrator for real APP production runs; proofing sessions are useful diagnostics, not a deployment target.
+Operate this repository as the Marcus-SPOC local runtime. Marcus is the single operator-facing orchestrator for real APP production runs; proofing sessions are useful diagnostics, not a deployment target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10).
 
 ### Current Operating Branch And Evidence
 
-- Active branch: `dev/lesson-planning-2026-07-09`.
+- Active branch: `dev/batch-mode-2026-07-10` (successor to `dev/lesson-planning-2026-07-09`). Batch LLM Execution Mode v1 epic party-CLOSED 4/4 on 2026-07-10 on this branch: opt-in vision batch transport; the default execution mode remains realtime.
 - Durable baseline: live bespoke Irene Pass-1 Claim B is closed through `fa48fb5b`; preceding durable closes include the Phase-2 bridge (`20246475`), Irene planning-context handoff (`b69aa2de`), and plan-ratify surface (`318b6b0f`).
 - Evidence and run artifacts are banked under `_bmad-output/implementation-artifacts/evidence/` and `runs/<uuid>/`. Treat active product-gap evidence as provisional until it is committed and pushed.
 
@@ -29,6 +29,24 @@ Operational state to watch:
 - `runs/<uuid>/`: planning companions, transcripts, Irene lesson-plan artifacts, trial receipts.
 - `_bmad-output/implementation-artifacts/evidence/`: proof packs and verdict JSON for claimed slices.
 - `state/config/sme-registry.yaml`: branch-visible SME voice/styleguide/attribution/approval routing; unknown or unbound SMEs must fail or surface an explicit gap rather than silently borrowing Tejal.
+
+### Batch Execution Mode — Operational Checklist
+
+Batch LLM execution is opt-in; the default execution mode is realtime. Scope is vision/07G perception only — all other nodes stay realtime even with the flag on, and the workbook is not batch-eligible. The eligibility authority is `app/runtime/llm_batch_eligibility.py` (A3 matrix); consult it and the dev guide's batch seams section rather than re-deriving eligibility here.
+
+1. Invoke with `python -m app.marcus.cli trial start ... --llm-execution-mode batch`. The flag lives on `trial start` and defaults to `realtime`; batch is operator-invoked per trial.
+2. Expect the run to pause with envelope status `waiting_for_provider_batch` when an eligible perception node submits to the provider's batch service. This is a documented pause state — not a hang and not a failure. No provider turnaround time is promised.
+3. Resume with `python -m app.marcus.cli trial resume-batch --trial-id <uuid>`. Resume discipline: resume-batch never re-uploads; it acts only on runs whose envelope status is `waiting_for_provider_batch`; if the provider job is still non-terminal, the run simply remains `waiting_for_provider_batch` — safe to re-run as idempotent polling.
+4. After the vision join (and after resume-batch completes), check `runs/<uuid>/llm_batch/cost-report.json`. It is an accounting/estimate artifact — not the provider invoice; live invoice accuracy is not claimed. Prompt-cache-hit variance also moves run-to-run cost deltas, so do not misread deltas as pricing or model drift.
+5. Model expectation: batch submits the realtime product model `gpt-5.5`; if the provider Batch API rejects that model, the route falls back to the nearest GPT-5-family model.
+6. Keys: hermetic batch tests require no API keys; any live batch leg requires live OpenAI access in `.env` per the Operational Readiness rules above.
+
+Non-claims (hold these lines when reporting status):
+
+- Batch is NOT the production default and is not a "recommended for production" path; realtime remains the default.
+- The batch done-bar is hermetic-only as of the 2026-07-10 epic close: hermetic test green does not prove live quality, and live provider batch turnaround plus resume-batch behavior under provider-job failure/expiry are not yet characterized live.
+- No batch-turnaround SLA numbers exist, and no cost-savings outcome is asserted or measured; any discount is the provider's advertised batch pricing, not a proven outcome.
+- The workbook is not batch-eligible.
 
 ### Do Not Operate As If
 

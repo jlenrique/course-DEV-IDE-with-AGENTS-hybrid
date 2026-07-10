@@ -1,20 +1,35 @@
 # User Guide — Course Content Production System
 
-## Current Status - Marcus-SPOC Lesson Planning (2026-07-09)
+## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
 
-This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target.
+This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10).
 
 ### What Works Now
 
 - The durable Phase-2 baseline includes S7 course-source assessment/bundles, the S8 planning-to-selection bridge, the Irene planning-context handoff, and Marcus `plan-ratify` Claim A/B through the live bespoke Irene Pass-1 close at `fa48fb5b`.
 - Operators can ratify planning context for purpose, audience, learning objectives, source assessment, and collateral intent. Irene Pass-1 can receive that context as framing while the source corpus remains the topic authority.
 - The ratified collateral-intent path can drive local W5 composition on the Marcus-SPOC runtime. The active product-gap frontier is automatic `lesson_plan["collateral"]` to `ComponentSelection`, interactive planning dialogue, SME routing, ingestion hardening, and additional collateral projectors.
+- Batch LLM Execution Mode v1 closed 2026-07-10: an opt-in execution mode for the slide-perception (vision) steps of a trial. The default execution mode remains realtime; nothing changes unless you ask for batch when starting the trial. See the Batch Execution Mode section below.
 
 ### What Is Still Fenced
 
 - Do not treat S8 as open work. New work should build on the bridge rather than replacing the selection contract.
 - Full free-form SPOC planning, Gamma/published-walk claims, HAI/PHS real ingestion, per-SME voice/styleguide routing, projector-family expansion, and workbook prose uplift remain residual or in-flight until committed close evidence says otherwise.
 - Never ad-hoc-edit approved styleguide registry guides. Non-Tejal production must not silently borrow Tejal voice or approval routing.
+
+### Batch Execution Mode (optional)
+
+Batch execution is an opt-in way to run the slide-perception (vision) steps of a trial through the provider's batch service instead of live calls. It is not the production default — the default execution mode remains realtime, and only the vision/perception steps are affected. Every other step runs realtime even with batch on, and the workbook is not batch-eligible.
+
+- **Turn it on:** start the trial with `python -m app.marcus.cli trial start ... --llm-execution-mode batch`. If you don't pass the flag, the run is realtime as before.
+- **What you will see:** when a perception step hands its work to the provider's batch service, the run pauses with status `waiting_for_provider_batch`. This is an expected, documented pause — not a hang and not a failure. The provider works on the batch on its own schedule; no turnaround time is promised.
+- **How to continue:** run `python -m app.marcus.cli trial resume-batch --trial-id <id>`. It is safe to re-run this command as often as you like: while the provider is still working, it does nothing and the run simply stays paused; once the provider finishes, it collects the results and the run proceeds.
+- **Where cost info lands:** a cost report is written to `runs/<id>/llm_batch/cost-report.json` after the perception results are joined back in. Treat it as an accounting estimate, not the provider invoice.
+
+Fences to keep in mind:
+
+- Batch is not a recommended-for-production path; it is an optional mode. The default stays realtime.
+- Batch evidence so far is hermetic-test-only — live provider turnaround has not been characterized, and no cost-savings outcome is claimed.
 
 ### How To Read The Rest Of This Guide
 
