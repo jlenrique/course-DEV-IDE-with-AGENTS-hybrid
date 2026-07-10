@@ -1,0 +1,20 @@
+{
+  "ratified_los": [
+    {
+      "objective_id": "plan-lo-001",
+      "statement": "Map Module-1 Opportunity-Radar targets onto Module-2 leadership-identity competencies using assessment-bridge language",
+      "bloom_level": "",
+      "status": "ratified",
+      "actor": "operator",
+      "source": "plan-dialogue"
+    },
+    {
+      "objective_id": "plan-lo-002",
+      "statement": "Apply assessment-bridge framing to Module-2 handoff decisions",
+      "bloom_level": "",
+      "status": "ratified",
+      "actor": "operator",
+      "source": "plan-dialogue"
+    }
+  ]
+}

@@ -33,6 +33,7 @@ from app.marcus.cli.marcus_spoc import (
 from app.marcus.lesson_plan.bundle_catalog import get_bundle
 from app.marcus.lesson_plan.collateral_selection import (
     CollateralSelectionError,
+    ResolvedCollateralSelection,
     load_lesson_plan_collateral_selection,
     load_selection_from_lesson_plan_json,
 )
@@ -384,17 +385,39 @@ def start_trial(
     run_dir = runs_root / str(effective_trial_id)
     gamma_settings = _load_gamma_settings_file(gamma_settings_file)
     lesson_plan_bundle_id = lesson_plan_collateral_bundle_id
+    selection_source_receipt: str | None = None
     if lesson_plan_collateral_intent_path is not None:
-        resolved_collateral_selection = load_lesson_plan_collateral_selection(
-            lesson_plan_collateral_intent_path
-        )
-        if resolved_collateral_selection.source == "ratified":
+        # Prefer plan-collateral JSON (Mine 1 auto path) when the file is an
+        # Irene lesson-plan companion; otherwise load ratified intent YAML.
+        path = Path(lesson_plan_collateral_intent_path)
+        resolved_collateral_selection: ResolvedCollateralSelection | None = None
+        try:
+            # Detect lesson-plan JSON: has collateral / plan_units, no ratification.
+            raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeDecodeError, yaml.YAMLError):
+            raw = None
+        if isinstance(raw, dict) and (
+            "collateral" in raw
+            or "plan_units" in raw
+            or isinstance(raw.get("lesson_plan"), dict)
+        ) and raw.get("ratification_status") != "ratified":
+            resolved_collateral_selection = load_selection_from_lesson_plan_json(path)
+            selection_source_receipt = "plan_collateral"
+        else:
+            resolved_collateral_selection = load_lesson_plan_collateral_selection(path)
+            if resolved_collateral_selection.source == "ratified":
+                selection_source_receipt = "ratified"
+        if (
+            resolved_collateral_selection is not None
+            and resolved_collateral_selection.source
+            in {"ratified", "plan_collateral"}
+        ):
             if (
                 component_selection is not None
                 and component_selection != resolved_collateral_selection.selection
             ):
                 raise CollateralSelectionError(
-                    "lesson-plan collateral intent selection conflicts with the "
+                    "lesson-plan collateral selection conflicts with the "
                     "explicit component_selection argument"
                 )
             component_selection = resolved_collateral_selection.selection
@@ -575,6 +598,7 @@ def start_trial(
             else None
         ),
         "lesson_plan_collateral_bundle_id": lesson_plan_bundle_id,
+        "lesson_plan_selection_source": selection_source_receipt,
         "transport_kind": "cli",
     }
     (run_dir / "trial-start.json").write_text(

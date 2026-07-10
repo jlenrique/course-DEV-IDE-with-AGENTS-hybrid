@@ -1,8 +1,15 @@
-# Current Context Addendum - 2026-07-10 (Phase-2 Six Mine-Now COMPLETE)
+# Current Context Addendum - 2026-07-10 (Phase-2 Six Mine-Now + integrated E2E)
 
-**Six Mine-Now program:** CLOSED-all-6-with-named-fenced-residuals (party 4/4).
-Letter: `phase2-six-mine-now-final-close-2026-07-10.md`.
+**Six Mine-Now program:** CLOSED-all-6 + integrated E2E amendment (party 4/4).
+Letters: `phase2-six-mine-now-final-close-2026-07-10.md` +
+`phase2-six-mine-integrated-e2e-amendment-2026-07-10.md`.
 Greenlight: `phase2-six-mine-now-greenlight-2026-07-09.md`.
+
+**Integrated E2E (durable bar):** `runs/8099669e-e677-4578-9889-a62250c38fb0/`
+evidence `mine-integrated-e2e-20260710T024036Z/` — plan-dialogue → live Irene
+Pass-1 → auto selection → trial start consumption; SME fail-loud; canonical/
+drill/prose as named non-E2E adjuncts. No Gamma. Seam fix: `start_trial`
+honors plan-JSON companions.
 
 | # | Aspect | Evidence |
 |---|--------|----------|

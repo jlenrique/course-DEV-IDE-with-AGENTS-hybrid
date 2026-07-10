@@ -1,0 +1,410 @@
+{
+  "plan_units": [
+    {
+      "unit_id": "pu-01",
+      "title": "Module 1 Completion and Forward Bridge",
+      "learning_objective": "Recognize Module 1 completion and articulate the transition from innovator mindset work into Module 2 leadership-identity work using the bridge language in the source narration.",
+      "scope_decision": "in-scope",
+      "rationale": "This is the core function of the bridge slide and directly establishes the handoff to Module 2.",
+      "cluster_id": "c-u01",
+      "cluster_role": "head",
+      "cluster_position": "establish",
+      "narrative_arc": "From Module 1 closure to Module 2 readiness through a concise leadership-focused bridge.",
+      "master_behavioral_intent": "clear-guidance",
+      "develop_type": null,
+      "parent_slide_id": null,
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "Module 1 Complete: The Mindset is Set.",
+        "Congratulations on completing Module 1.",
+        "Bridge to Module 2",
+        "In Module 2, we will move from Mindset to Identity.",
+        "See you in Module 2."
+      ],
+      "fidelity": "literal-text"
+    },
+    {
+      "unit_id": "pu-02",
+      "title": "What Module 1 Has Equipped the Learner to See",
+      "learning_objective": "Summarize the Module 1 conceptual carry-forwards that the learner should bring into the Module 2 handoff, especially system change, opportunity identification, and diagnostic innovation thinking.",
+      "scope_decision": "in-scope",
+      "rationale": "The bridge explicitly references prior learning and the supporting source pillar document clarifies which Module 1 ideas are valid carry-forwards.",
+      "cluster_id": "c-u02",
+      "cluster_role": "head",
+      "cluster_position": "establish",
+      "narrative_arc": "From recalled Module 1 concepts to a disciplined handoff inventory through selective synthesis of the module's core pillars.",
+      "master_behavioral_intent": "reflective",
+      "develop_type": null,
+      "parent_slide_id": null,
+      "cluster_interstitial_count": 2,
+      "source_refs": [
+        "You have mapped out the macro forces changing medicine,",
+        "you have filled your Opportunity Radar",
+        "You are no longer just reacting to the system;",
+        "The Intrapreneurial Mandate",
+        "The Opportunity Radar",
+        "Clinical Diagnosis vs. Systemic Diagnosis"
+      ],
+      "fidelity": "creative"
+    },
+    {
+      "unit_id": "pu-03",
+      "title": "Opportunity Identification Depends on Root-Cause Discipline",
+      "learning_objective": "Explain that Opportunity Radar targets are only meaningful when grounded in systemic diagnosis, root-cause analysis, and problem-first thinking from Module 1.",
+      "scope_decision": "in-scope",
+      "rationale": "This deepens the Module 1 recap with the most operational concepts that support an assessment-driven bridge without introducing new topic matter.",
+      "cluster_id": "c-u02",
+      "cluster_role": "interstitial",
+      "cluster_position": "develop",
+      "narrative_arc": "From recalled Module 1 concepts to a disciplined handoff inventory through selective synthesis of the module's core pillars.",
+      "master_behavioral_intent": "reflective",
+      "develop_type": "deepen",
+      "parent_slide_id": "pu-02",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "a leader should not buy or build a solution",
+        "Falling in Love with the Problem",
+        "Symptom vs. Root Cause",
+        "The Lead Domino",
+        "The 5 Whys Framework"
+      ],
+      "fidelity": "creative"
+    },
+    {
+      "unit_id": "pu-04",
+      "title": "Psychological Safety as a Condition for Honest System Diagnosis",
+      "learning_objective": "Connect Module 1's emphasis on psychological safety to the learner's readiness to continue into leadership identity work.",
+      "scope_decision": "in-scope",
+      "rationale": "This is a high-value conceptual bridge because it links diagnosis of broken systems with the interpersonal conditions leadership must later sustain.",
+      "cluster_id": "c-u02",
+      "cluster_role": "interstitial",
+      "cluster_position": "resolve",
+      "narrative_arc": "From recalled Module 1 concepts to a disciplined handoff inventory through selective synthesis of the module's core pillars.",
+      "master_behavioral_intent": "reflective",
+      "develop_type": null,
+      "parent_slide_id": "pu-02",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "Psychological Safety as a Prerequisite",
+        "Teams cannot diagnose broken systems",
+        "too afraid to report what is actually broken",
+        "Without a shared belief that it is safe"
+      ],
+      "fidelity": "creative"
+    },
+    {
+      "unit_id": "pu-05",
+      "title": "The Central Tension: A Good Idea Is Not Enough",
+      "learning_objective": "Explain the bridge claim that opportunity viability depends not only on the idea but on the leader who can champion it inside a complex health system.",
+      "scope_decision": "in-scope",
+      "rationale": "This is the central transition claim in the narration and deserves clustering because it carries multiple explanatory beats and high pedagogical weight.",
+      "cluster_id": "c-u05",
+      "cluster_role": "head",
+      "cluster_position": "establish",
+      "narrative_arc": "From confidence in ideas to recognition of leadership dependence through an explicit contrast between opportunity and champion.",
+      "master_behavioral_intent": "provocative",
+      "develop_type": null,
+      "parent_slide_id": null,
+      "cluster_interstitial_count": 2,
+      "source_refs": [
+        "But an idea is only as good as the leader who champions it.",
+        "What are the core characteristics you need to cultivate",
+        "complex matrixed health system",
+        "an opportunity is only as viable as the leader championing it"
+      ],
+      "fidelity": "literal-text"
+    },
+    {
+      "unit_id": "pu-06",
+      "title": "Why the Other 90% Is Leadership Execution",
+      "learning_objective": "Identify the leadership capabilities named in the bridge as essential for moving ideas through a matrixed health system.",
+      "scope_decision": "in-scope",
+      "rationale": "The narration lists the exact capability categories that define the Module 2 handoff, and those phrases should be preserved.",
+      "cluster_id": "c-u05",
+      "cluster_role": "interstitial",
+      "cluster_position": "tension",
+      "narrative_arc": "From confidence in ideas to recognition of leadership dependence through an explicit contrast between opportunity and champion.",
+      "master_behavioral_intent": "provocative",
+      "develop_type": null,
+      "parent_slide_id": "pu-05",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "Having the right idea is only 10% of the battle;",
+        "the other 90% is having the political savvy,",
+        "the communication skills,",
+        "the leadership identity",
+        "to get others to follow you"
+      ],
+      "fidelity": "literal-text"
+    },
+    {
+      "unit_id": "pu-07",
+      "title": "From System Reaction to System Redesign",
+      "learning_objective": "Reframe the learner's role from reacting within the system to preparing to redesign it, using the bridge's motivational identity shift.",
+      "scope_decision": "in-scope",
+      "rationale": "This is the motivational resolution of the central tension and directly supports the forward-looking transition into Module 2.",
+      "cluster_id": "c-u05",
+      "cluster_role": "interstitial",
+      "cluster_position": "resolve",
+      "narrative_arc": "From confidence in ideas to recognition of leadership dependence through an explicit contrast between opportunity and champion.",
+      "master_behavioral_intent": "provocative",
+      "develop_type": null,
+      "parent_slide_id": "pu-05",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "You are no longer just reacting to the system;",
+        "you are preparing to redesign it.",
+        "to get others to follow you"
+      ],
+      "fidelity": "creative"
+    },
+    {
+      "unit_id": "pu-08",
+      "title": "Module 2 Preview: Identity, Communication, and Inspiration",
+      "learning_objective": "Preview the specific Module 2 focus areas named in the bridge narration: defining oneself as a leader, communicating vision, and inspiring others to join.",
+      "scope_decision": "in-scope",
+      "rationale": "These are the explicit incoming competencies for Module 2 and therefore necessary for assessment-aligned handoff planning.",
+      "cluster_id": "c-u08",
+      "cluster_role": "head",
+      "cluster_position": "establish",
+      "narrative_arc": "From abstract leadership need to concrete Module 2 expectations through explicit preview of the next module's focus areas.",
+      "master_behavioral_intent": "clear-guidance",
+      "develop_type": null,
+      "parent_slide_id": null,
+      "cluster_interstitial_count": 1,
+      "source_refs": [
+        "You will begin to define who you are as a leader,",
+        "how you communicate your vision,",
+        "how you can inspire others to join your cause.",
+        "move from Mindset to Identity"
+      ],
+      "fidelity": "literal-text"
+    },
+    {
+      "unit_id": "pu-09",
+      "title": "The Final Call Forward",
+      "learning_objective": "Close the bridge by framing Module 2 as preparation to build the leader who will solve the waiting clinical problem.",
+      "scope_decision": "in-scope",
+      "rationale": "This is the bridge's closing takeaway and should land as the final resolve beat for the lesson plan.",
+      "cluster_id": "c-u08",
+      "cluster_role": "interstitial",
+      "cluster_position": "resolve",
+      "narrative_arc": "From abstract leadership need to concrete Module 2 expectations through explicit preview of the next module's focus areas.",
+      "master_behavioral_intent": "clear-guidance",
+      "develop_type": null,
+      "parent_slide_id": "pu-08",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "The clinical problem is waiting;",
+        "it is time to build the leader who will solve it.",
+        "See you in Module 2."
+      ],
+      "fidelity": "literal-text"
+    },
+    {
+      "unit_id": "pu-10",
+      "title": "Assessment Bridge Reflection Checkpoint",
+      "learning_objective": "Use the module knowledge-check concepts to frame a brief reflection on which Module 1 assessment ideas the learner should carry into Module 2 leadership-identity work.",
+      "scope_decision": "in-scope",
+      "rationale": "The operator framing requests an assessment-driven bridge, and the assessment corpus provides valid source-grounded recall targets for this checkpoint.",
+      "cluster_id": "c-u10",
+      "cluster_role": "head",
+      "cluster_position": "establish",
+      "narrative_arc": "From assessed recall of Module 1 to intentional Module 2 preparation through a compact reflection checkpoint.",
+      "master_behavioral_intent": "reflective",
+      "develop_type": null,
+      "parent_slide_id": null,
+      "cluster_interstitial_count": 3,
+      "source_refs": [
+        "Comprehensive Module Knowledge Check",
+        "Psychological Safety",
+        "Growth Mindset",
+        "5 Whys",
+        "Opportunity Radar",
+        "Comfort with ambiguity"
+      ],
+      "fidelity": "literal-text"
+    },
+    {
+      "unit_id": "pu-11",
+      "title": "Reflection Prompt: Which Concepts Shape Your Leadership Readiness?",
+      "learning_objective": "Prompt learners to identify which Module 1 concepts most shape their readiness for leadership identity formation in Module 2.",
+      "scope_decision": "in-scope",
+      "rationale": "This uses only source-grounded concepts and serves as the first reflective elaboration of the assessment bridge.",
+      "cluster_id": "c-u10",
+      "cluster_role": "interstitial",
+      "cluster_position": "tension",
+      "narrative_arc": "From assessed recall of Module 1 to intentional Module 2 preparation through a compact reflection checkpoint.",
+      "master_behavioral_intent": "reflective",
+      "develop_type": null,
+      "parent_slide_id": "pu-10",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "What data did this failure give us",
+        "Comfort with ambiguity",
+        "Psychological Safety",
+        "Opportunity Radar"
+      ],
+      "fidelity": "creative"
+    },
+    {
+      "unit_id": "pu-12",
+      "title": "Reflection Prompt: From Problem Diagnosis to Leadership Identity",
+      "learning_objective": "Help learners connect diagnostic tools and problem-first innovation habits from Module 1 to the kind of leader they must become in Module 2.",
+      "scope_decision": "in-scope",
+      "rationale": "This is the core transfer move between modules and remains fully grounded in the source corpus.",
+      "cluster_id": "c-u10",
+      "cluster_role": "interstitial",
+      "cluster_position": "develop",
+      "narrative_arc": "From assessed recall of Module 1 to intentional Module 2 preparation through a compact reflection checkpoint.",
+      "master_behavioral_intent": "reflective",
+      "develop_type": "reframe",
+      "parent_slide_id": "pu-10",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "the true underlying root cause, or Lead Domino",
+        "The 5 Whys Framework",
+        "Falling in Love with the Problem",
+        "leader who champions it"
+      ],
+      "fidelity": "creative"
+    },
+    {
+      "unit_id": "pu-13",
+      "title": "Reflection Prompt: Readiness for the Module 2 Handoff",
+      "learning_objective": "Conclude the assessment bridge by having learners name the leadership capabilities they now need to cultivate next.",
+      "scope_decision": "in-scope",
+      "rationale": "This resolve beat closes the reflection sequence and cleanly hands off to Module 2's identity work.",
+      "cluster_id": "c-u10",
+      "cluster_role": "interstitial",
+      "cluster_position": "resolve",
+      "narrative_arc": "From assessed recall of Module 1 to intentional Module 2 preparation through a compact reflection checkpoint.",
+      "master_behavioral_intent": "reflective",
+      "develop_type": null,
+      "parent_slide_id": "pu-10",
+      "cluster_interstitial_count": 0,
+      "source_refs": [
+        "the political savvy,",
+        "the communication skills,",
+        "the leadership identity",
+        "how you communicate your vision",
+        "inspire others to join your cause"
+      ],
+      "fidelity": "literal-text"
+    }
+  ],
+  "lesson_summary": "A concise assessment-bridge lesson that closes Module 1, selectively recaps the module's most transferable innovation concepts, introduces the key tension that ideas require leadership to succeed, previews Module 2's identity/communication/inspiration focus, and ends with assessment-grounded reflection prompts that support the handoff into leadership-identity work.",
+  "collateral": {
+    "schema_version": "1.1",
+    "declaration": "present",
+    "workbook": {
+      "kind": "deck-companion-workbook",
+      "sections": [
+        {
+          "section_id": "sec-01",
+          "learning_objective_id": "pu-02",
+          "title": "Module 1 Carry-Forwards to Bring Into Module 2",
+          "depth_delta": {
+            "deferred_from_slide": "pu-02",
+            "deferred_depth": "Expanded prose summary of the major Module 1 pillars referenced in the bridge, including intrapreneurship inside hospitals, systemic diagnosis, root cause thinking, Opportunity Radar, and psychological safety.",
+            "retained_on_slide": "Short synthesis of what the learner has already mapped and identified."
+          },
+          "exercises": [
+            {
+              "exercise_id": "ex-01",
+              "bloom_level": "understand",
+              "prompt_intent": "Summarize which Module 1 concepts feel most essential to carry forward into leadership-identity work.",
+              "answer_key_source_ref": "The Opportunity Radar"
+            }
+          ],
+          "narrative_intent": "Provide the richer explanatory bridge that would overcrowd slides, helping learners revisit the module's key concepts before the leadership turn."
+        },
+        {
+          "section_id": "sec-02",
+          "learning_objective_id": "pu-05",
+          "title": "Why Leadership Determines Whether Opportunity Becomes Change",
+          "depth_delta": {
+            "deferred_from_slide": "pu-05",
+            "deferred_depth": "Expanded explanation of the contrast between having an idea and successfully championing it in a complex matrixed health system, including the named capabilities from the narration.",
+            "retained_on_slide": "The core bridge claim that a good idea is not enough."
+          },
+          "exercises": [
+            {
+              "exercise_id": "ex-02",
+              "bloom_level": "analyze",
+              "prompt_intent": "Analyze which named leadership capability may be most limiting for a clinician-innovator trying to move an idea through a hospital system.",
+              "answer_key_source_ref": "Having the right idea is only 10% of the battle;"
+            }
+          ],
+          "narrative_intent": "Deepen the central bridge argument without overloading the close/preview slide sequence."
+        },
+        {
+          "section_id": "sec-03",
+          "learning_objective_id": "pu-08",
+          "title": "Previewing the Work of Module 2",
+          "depth_delta": {
+            "deferred_from_slide": "pu-08",
+            "deferred_depth": "A fuller learner-facing preview of defining leadership identity, communicating vision, and inspiring others, framed as upcoming work rather than already-taught content.",
+            "retained_on_slide": "The short list of Module 2 focus areas."
+          },
+          "exercises": [
+            {
+              "exercise_id": "ex-03",
+              "bloom_level": "apply",
+              "prompt_intent": "Draft a personal handoff note naming one opportunity from Module 1 and one leadership competency to develop in Module 2.",
+              "answer_key_source_ref": "how you communicate your vision,"
+            }
+          ],
+          "narrative_intent": "Convert the Module 2 preview into a more deliberate transition artifact learners can use between modules."
+        },
+        {
+          "section_id": "sec-04",
+          "learning_objective_id": "pu-10",
+          "title": "Assessment Reflection Bridge",
+          "depth_delta": {
+            "deferred_from_slide": "pu-10",
+            "deferred_depth": "Workbook reflection space tying selected knowledge-check concepts to learner self-assessment and module handoff decisions.",
+            "retained_on_slide": "Compact reflection prompts and handoff cues."
+          },
+          "exercises": [
+            {
+              "exercise_id": "ex-04",
+              "bloom_level": "understand",
+              "prompt_intent": "Explain how one assessed Module 1 concept changes what kind of leader the learner now needs to become.",
+              "answer_key_source_ref": "Psychological Safety"
+            },
+            {
+              "exercise_id": "ex-05",
+              "bloom_level": "apply",
+              "prompt_intent": "Apply one assessed Module 1 framework to a future leadership challenge anticipated in Module 2.",
+              "answer_key_source_ref": "5 Whys"
+            }
+          ],
+          "narrative_intent": "Make the assessment bridge tangible by turning recall into intentional readiness planning."
+        }
+      ]
+    },
+    "research_goals": [
+      {
+        "goal_id": "rg-01",
+        "pedagogical_intent": "Learner may benefit from a future primary-source grounding pack for the macro-force claims referenced in the bridge, but this bridge plan does not add new topic content.",
+        "binds_to_objective_id": "pu-02"
+      },
+      {
+        "goal_id": "rg-02",
+        "pedagogical_intent": "Learner may benefit from future examples of leadership behaviors inside matrixed health systems to enrich Module 2, while keeping this bridge source-locked to the current corpus.",
+        "binds_to_objective_id": "pu-05"
+      }
+    ]
+  },
+  "planning_provenance": {
+    "schema_version": "0.1",
+    "ratification_path": "planning-ratification.json",
+    "ratification_digest": "sha256:9761666e91b311fd1bde67e196db581126d7d6ab2c8f877e34c346fd9634ae48",
+    "ratified_los_path": "ratified-los.json",
+    "ratified_los_digest": "sha256:203323d70b509e89d8e0add48c36bbc92172a8aa030905a18c5bf897f88475f6",
+    "intent_path": "ratified-collateral-intent.yaml",
+    "intent_digest": "sha256:01a691c173a24a92d0c373728539645dc4d2a66ef98f2d4465893b1bee3056e9",
+    "coverage_lo_status": "present"
+  }
+}

@@ -9,6 +9,8 @@
 
 All six operator-named aspects are **fully developed and live-validated**. Session close gate MET.
 
+**Durable amendment (2026-07-10):** per-slice evidence alone is insufficient. Binding integrated local E2E also MET — see `phase2-six-mine-integrated-e2e-amendment-2026-07-10.md` (`runs/8099669e…`, evidence `mine-integrated-e2e-20260710T024036Z/`).
+
 | # | Aspect | Close letter | Live run | Evidence stamp |
 |---|--------|--------------|----------|----------------|
 | 1 | Automatic Lesson_plan | `mine1-automatic-lesson-plan-close-2026-07-09.md` | `799db384-9b04-4436-9f34-e11608bf6385` | `mine1-auto-selection-20260710T021943Z` |

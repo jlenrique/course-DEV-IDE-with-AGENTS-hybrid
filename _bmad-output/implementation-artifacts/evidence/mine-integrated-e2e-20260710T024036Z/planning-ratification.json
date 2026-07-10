@@ -1,0 +1,61 @@
+{
+  "schema_version": "0.1",
+  "purpose": "Bridge Module-1 innovator-mindset into Module-2 leadership-identity with assessment-driven reflection checkpoints",
+  "audience": "APC Cohort-C1 clinician-innovators preparing for Module-2 leadership-identity work",
+  "source_assessment": {
+    "course_or_corpus_id": "tejal-c1m1-p4-assessments-bridge",
+    "richness": "rich",
+    "tags": [
+      "curated-corpus-leaf",
+      "bucket:slides",
+      "bucket:references",
+      "bucket:assessments",
+      "top_level_source_files"
+    ],
+    "gap_summaries": [],
+    "gap_count": 0,
+    "asset_record_count": 10,
+    "detected_file_count": 10,
+    "notes": "Assessed from curated corpus leaf layout; does not claim full lecture ingestion or remote LMS sync."
+  },
+  "assets_to_create": [],
+  "workflow": "narrated-deck-with-workbook",
+  "gap_fill": {
+    "chosen": "synthesize",
+    "considered": [
+      "synthesize",
+      "wait",
+      "ask_operator"
+    ],
+    "rationale": "Integrated E2E: rich Tejal leaf; synthesize"
+  },
+  "claim_fence": "Does not claim full lecture ingestion or lecture-complete selection.",
+  "s8_intent": {
+    "ratification_status": "ratified",
+    "bundle_id": "narrated-deck-with-workbook",
+    "collateral": {
+      "schema_version": "1.1",
+      "declaration": "present",
+      "workbook": {
+        "kind": "deck-companion-workbook",
+        "sections": [
+          {
+            "section_id": "sec-bridge-001",
+            "learning_objective_id": "lo-bridge-001",
+            "title": "Assessment bridge depth",
+            "depth_delta": {
+              "deferred_from_slide": "slide-1",
+              "deferred_depth": "Full assessment-bridge method kept off slide",
+              "retained_on_slide": null
+            },
+            "exercises": [],
+            "narrative_intent": ""
+          }
+        ]
+      },
+      "research_goals": []
+    },
+    "input_bundle": null,
+    "source_ref": null
+  }
+}
