@@ -1729,3 +1729,21 @@ development_status:
   batch-llm-b6-land-switch: done  # 2026-07-10 party 4/4 + code-review MUST folded; T7 spies; opt-in only
   batch-llm-b6-promote: done  # 2026-07-10 party 4/4; docs/help opt-in promote; default realtime
   batch-llm-a1-ext-all-node-tiering: deferred  # TRAIL — not v1; must not gate B2–B6; remains deferred-inventory
+
+  # === ARC agentic-research-foundations-2026-07-10: Tracy detective research service (party GO-WITH-AMENDMENTS + Quinn R7) ===
+  # Branch: dev/agentic-research-foundations-2026-07-10. SSOT: epic-agentic-research-foundations-2026-07-10.md + agentic-research-foundations-stories-2026-07-10.md
+  # Party: agentic-research-foundations-party-greenlight-2026-07-10.md. LIVE-TEST every component (operator). Borrow Epic 17/28/braid.
+  # Sequence: R0 → R1 → R2 → R3 → R4 → R5 → R6 → R7 → promote. TRAIL: 17-2/3/4, semantic audit, PubMed v2, tracy-gate-resume-recover.
+  epic-agentic-research-foundations: in-progress  # 2026-07-10 party 4/4 GO-WITH-AMENDMENTS; Quinn Teeth-Thin R7
+  research-r0-charter-taxonomy-live-matrix: done  # 2026-07-10 claim envelope + hierarchy taxonomy + live-test matrix
+  research-r1-posture-runtime: ready-for-dev  # next — single production seam; live Scite postures
+  research-r2-consensus-evidence-bolster: backlog  # borrow 27-2.5; live Scite∩Consensus
+  research-r3-triangulator: backlog  # thin 17-1 atop Texas rows; live composite
+  research-r4-credibility-surfacing: backlog  # hierarchy + peer-review + provenance on every row
+  research-r5-jefferson-library-provider: backlog  # Texas adapter; live when creds
+  research-r6-irene-retrieval-intake: backlog  # thin borrow; no fabricate-cite; live consume
+  research-r7-hard-pause-teeth: backlog  # Quinn; live disposition; resume/recover TRAIL
+  research-foundations-promote: backlog  # close letter after R0–R7
+  research-trail-tracy-gate-resume-recover: deferred  # TRAIL — pause resilience outside foundations R7
+  research-trail-semantic-claim-audit: deferred  # TRAIL — claim↔source faithfulness
+  research-trail-llm-tracy-refine: deferred  # TRAIL — optional LLM intent refine
