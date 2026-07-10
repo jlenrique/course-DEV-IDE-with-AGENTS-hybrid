@@ -1,8 +1,44 @@
-# Session Handoff — 2026-07-09 (session 28: **Phase-2 planning-to-selection bridge COMPLETE-with-named-fenced-residuals** — Class S)
+# Session Handoff — 2026-07-09 (session 28 WRAPUP: **Marcus plan-ratify Claims A+B COMPLETE (Claim B live bespoke)** — Class S)
 
-**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` @ `20246475` (pushed). **Next (queued, not started):** `planning-context-to-irene-pass1-handoff` (`backlog-next`).
+**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` @ `4a1879b3` (+ this WRAPUP docs commit). **Opened as:** S (substrate + live OpenAI Pass-1). **Class drift:** none.
 
-**What was completed (step 1 — this session’s approved bridge):**
+**What was completed (full session-28 arc through WRAPUP):**
+1. **Phase-2 evolutionary bridge** `phase2-evolutionary-planning-to-selection-bridge` → done @`20246475` (assess→ratify→S8 intent; W1–W4).
+2. **Irene planning-context handoff** `planning-context-to-irene-pass1-handoff` → done @`b69aa2de` (Pass-1-only context + coverage/fail-loud).
+3. **Marcus plan-ratify surface** `marcus-planning-ratification-surface` → done:
+   - **Claim A** @`318b6b0f` — CLI `plan-ratify` + W5 local compose + selection delta + trial thread (no Gamma).
+   - **Claim B LIVE bespoke** @`4a1879b3` — real OpenAI Irene Pass-1 on Tejal `runs/<uuid>/` treatment vs control; `lo_coverage=present`; digests match companions; party 4/4 CLOSE-with-named-fenced-residuals. Evidence `marcus-claim-b-live-20260709T234801Z/`; close `marcus-claim-b-live-close-2026-07-09.md`. Mock `_RecordingHandle` fence lifted.
+4. **Kanban honesty (WRAPUP Step 4a):** sprint-status rows under `epic-lesson-planning-phase2-bridge` for the three stories + epic marker.
+5. Docs: STATE-OF-THE-APP / project-context / deferred-inventory / goal file updated for Claim B unfence.
+
+**What is next:** Bigger gains on Phase-2 spine residual — green-light automatic `lesson_plan["collateral"] → ComponentSelection`, **or** interactive SPOC planning REPL, **or** operator-picked real HAI/PHS ingestion / SME routing. Secondary only: `langsmith-start-receipt-offline-stamp`. Do **not** reopen S8. Pass-2 figure/numeral stays parked HELR.
+
+**Unresolved / named fenced residuals:** interactive SPOC REPL; Gamma full walk; SME/projector/LO UX; full lecture ingestion; happy-path `act()` coverage JSON write; on-read digest verify; automatic Irene→selection without ratification recorder.
+
+**Key lessons:** (a) Claim A ≠ “bespoke lesson planning” — Claim B needs live Pass-1 + LO touch for bespoke. (b) FG-6 requires consumer `runs/<uuid>/`, not evidence-only mirrors. (c) Party SUCCESS definition file is the binding live-test bar.
+
+**Validation summary:**
+- Step 0a/0b/0c: SKIPPED — Cora/`/harmonize` unregistered; substitute = party 4/4 Claim B close + live OpenAI bank + focused prior suites. Tripwire noted.
+- Step 1: `tests/test_sprint_status_yaml.py` 2 passed after Kanban append. Ruff on plan-ratify/Irene paths shows pre-existing style nits (UP035/SIM108/I001) — recorded, not blocking wrapup. `git diff --check` trailing-whitespace on some docs — non-blocking.
+- Live: Claim B driver ~52s wall; PASS-bespoke; digest-verify all match.
+- Step 4a: sprint-status updated + test green.
+- Step 11: class S matches diff (app/scripts + evidence + docs). Single worktree. Master merge SKIPPED (scoped branch).
+
+**Content creation summary:** none new learner-facing; Tejal assessments-bridge reused for live Pass-1.
+
+**Artifact update checklist:** Claim B evidence + close letter ✅; STATE/project-context/deferred-inventory/goal ✅; sprint-status Kanban ✅; next-session-start-here ✅ (gitignored); SESSION-HANDOFF (this) ✅; bmm-workflow-status no phase transition (skip); KG/ONBOARDING regen recommended later (≥10 app files across arc) but not blocking; master merge SKIPPED; no `reports/dev-coherence/`.
+
+**Ambient left untouched:** shadow-monitor dirty files; `evidence/irene-literal-liveproof-20260709T143510/`; `runs/235f2b82-…`; workbooks-test artifacts.
+
+**Push:** working-branch push MANDATORY — Claim B already at origin `4a1879b3`; WRAPUP commit pushed at close.
+
+---
+
+# Session Handoff — 2026-07-09 (session 28 mid: **Phase-2 planning-to-selection bridge COMPLETE-with-named-fenced-residuals** — Class S) [superseded by WRAPUP section above]
+
+**Final class:** S. **Branch:** `dev/lesson-planning-2026-07-09` @ `20246475` (pushed). **Next (queued, not started at that checkpoint):** `planning-context-to-irene-pass1-handoff` (`backlog-next`).
+
+**What was completed (step 1 — bridge only):**
 1. Party claim envelope + dual-gate story `phase2-evolutionary-planning-to-selection-bridge` → **done**.
 2. Code: `source_assessment.py` + `planning_ratification.py`; emits canonical S8 intent; resolver frozen.
 3. Tests: 16 bridge + S8 collateral regression green; ruff clean; raw transcripts banked in evidence.
@@ -10,9 +46,9 @@
 5. Canonical evolution rule §4.1 in positioning SSOT (durable contract → bespoke conversational growth on top).
 6. Party close COMPLETE-with-named-fenced-residuals; spine inventory PARTIAL-MET.
 
-**What is next:** After this closeout is clean, open **`planning-context-to-irene-pass1-handoff`** (purpose/audience/LOs/source assessment → Irene Pass-1). Do not reopen S8. Do not pull Pass-2 HELR.
+**What is next (historical):** open **`planning-context-to-irene-pass1-handoff`**. Do not reopen S8. Do not pull Pass-2 HELR.
 
-**Unresolved / residuals (named, fenced):** interactive SPOC planning REPL; W5 compose; auto Irene→selection without recorder; SME/projector/LO UX; full lecture ingestion.
+**Unresolved / residuals (named, fenced at that checkpoint):** interactive SPOC planning REPL; W5 compose; auto Irene→selection without recorder; SME/projector/LO UX; full lecture ingestion.
 
 ---
 
