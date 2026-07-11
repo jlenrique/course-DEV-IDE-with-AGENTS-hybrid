@@ -14,13 +14,15 @@ Routes:
   full render into ``app/hud/render/``; this shell exists so the poll
   transport is exercised end-to-end from 35.4.
 * ``GET /projection`` — a read-then-respond byte snapshot of the projection
-  file with an ``ETag`` of ``<schema_version>:<seq>``; the route implements
-  the ``If-None-Match`` -> ``304`` comparison itself (Starlette's
+  file with a quoted ``ETag`` of ``"<schema_version>:<seq>"``; the route
+  implements the ``If-None-Match`` -> ``304`` comparison itself (Starlette's
   ``FileResponse`` sets an ETag but never returns 304, and we never stream the
   live file — AD-2/6). It serves the RAW file bytes always (zero-lie: the
   operator sees exactly what the runtime wrote), gated only by the identity
   guard, which returns ``409`` with a typed REFUSE-TO-RENDER payload on a
-  bound/found ``trial_id`` mismatch (AD-8).
+  bound/found ``trial_id`` mismatch (AD-8) — including a best-effort raw
+  extraction on Unrecognized snapshots so a readable foreign identity can
+  never ride a lenient-parse failure past the guard.
 * ``GET /healthz``   — ``{trial_id, launch_nonce, mode}`` for the pre-flight
   identity item (AD-7): the item passes only on trial_id + nonce match, never
   a fall-through to whatever else answers the port.
@@ -33,6 +35,7 @@ producer model (AD-4).
 
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 from uuid import UUID
@@ -60,6 +63,64 @@ def _canonical_trial_id(value: str) -> str:
         return str(UUID(str(value)))
     except (ValueError, AttributeError, TypeError):
         return str(value)
+
+
+def _raw_identity_trial_id(raw: bytes) -> str | None:
+    """Best-effort trial_id extraction from an *Unrecognized* snapshot (AD-8).
+
+    A snapshot the lenient reader rejects (unknown schema_version, malformed
+    field, unknown status) may still be a readable JSON dict carrying another
+    run's identity — serving it raw would let the placeholder shell render the
+    WRONG run's envelope.status (probe-proven identity-guard bypass). So the
+    guard does its own best-effort read: ``identity.trial_id`` first, then a
+    top-level ``trial_id``. Returns ``None`` only when no identity is truly
+    extractable (non-JSON bytes, non-dict document, absent/blank/non-string
+    ids) — only then may the snapshot pass the guard and be served raw.
+    """
+    try:
+        data = json.loads(raw)
+    except ValueError:  # includes JSONDecodeError + UnicodeDecodeError
+        return None
+    if not isinstance(data, dict):
+        return None
+    identity = data.get("identity")
+    if isinstance(identity, dict):
+        candidate = identity.get("trial_id")
+        if isinstance(candidate, str) and candidate.strip():
+            return candidate
+    candidate = data.get("trial_id")
+    if isinstance(candidate, str) and candidate.strip():
+        return candidate
+    return None
+
+
+def _quote_etag(core: str) -> str:
+    """Wrap the content-derived ETag core in RFC 9110 quotes (``"v1:1"``)."""
+    return f'"{core}"'
+
+
+def _if_none_match_matches(header_value: str | None, etag: str) -> bool:
+    """RFC 9110 ``If-None-Match`` comparison against our quoted strong ETag.
+
+    Handles the forms real clients send: weak validators (``W/"v1:1"`` —
+    weak comparison is the correct semantic for If-None-Match), comma-separated
+    candidate lists, and the ``*`` wildcard. Quotes are stripped from both
+    sides so a bare legacy value still compares.
+    """
+    if not header_value:
+        return False
+    current = etag.strip('"')
+    for candidate in header_value.split(","):
+        candidate = candidate.strip()
+        if not candidate:
+            continue
+        if candidate == "*":
+            return True
+        if candidate.startswith(("W/", "w/")):
+            candidate = candidate[2:]
+        if candidate.strip('"') == current:
+            return True
+    return False
 
 
 def _flight_deck_html(trial_id: str, mode: str) -> str:
@@ -106,35 +167,57 @@ def _flight_deck_html(trial_id: str, mode: str) -> str:
   async function poll() {{
     const headers = {{}};
     if (etag) headers["If-None-Match"] = etag;
+    let resp;
     try {{
-      const resp = await fetch("/projection", {{ headers, cache: "no-store" }});
-      const now = new Date().toLocaleTimeString();
-      if (resp.status === 304) {{ statusEl.textContent = "up to date · " + now; return; }}
-      const newEtag = resp.headers.get("ETag");
-      if (newEtag) etag = newEtag;
-      if (resp.status === 409) {{
-        const body = await resp.json();
-        set("REFUSE TO RENDER", "identity mismatch",
-            "bound: " + body.bound + "\\nfound: " + body.found, "refuse");
-        return;
-      }}
-      if (resp.status === 404) {{
-        set("NO PROJECTION", "waiting for runtime…", "", "stale");
-        return;
-      }}
-      if (!resp.ok) {{ set("ERROR", "HTTP " + resp.status, "", "stale"); return; }}
-      const data = await resp.json();
-      const status = (data && data.envelope && data.envelope.status) || null;
-      if (!status) {{
-        set("UNRECOGNIZED", "schema_version " + (data && data.schema_version),
-            JSON.stringify(data).slice(0, 400), "stale");
-        return;
-      }}
-      set(status.toUpperCase(), "seq " + data.seq + " · " + now,
-          "lesson: " + (data.identity && data.identity.lesson));
+      // Header echoed verbatim; the server strips W/ + quotes when comparing.
+      resp = await fetch("/projection", {{ headers, cache: "no-store" }});
     }} catch (err) {{
+      // DISCONNECTED means the transport failed — never a render/parse fault.
       set("DISCONNECTED", String(err), "", "stale");
+      return;
     }}
+    const now = new Date().toLocaleTimeString();
+    if (resp.status === 304) {{ statusEl.textContent = "up to date · " + now; return; }}
+    const newEtag = resp.headers.get("ETag");
+    if (resp.status === 409) {{
+      etag = newEtag;
+      const body = await resp.json();
+      set("REFUSE TO RENDER", "identity mismatch",
+          "bound: " + body.bound + "\\nfound: " + body.found, "refuse");
+      return;
+    }}
+    if (resp.status === 404) {{
+      set("NO PROJECTION", "waiting for runtime…", "", "stale");
+      return;
+    }}
+    if (!resp.ok) {{ set("ERROR", "HTTP " + resp.status, "", "stale"); return; }}
+    const bare = (newEtag || "").replace(/^[Ww]\\//, "").replace(/"/g, "");
+    if (bare.startsWith("unrecognized:")) {{
+      // Honest state keyed off the ETag itself: non-JSON / unknown-schema 200s
+      // render UNRECOGNIZED literally — never a parse-throw into DISCONNECTED.
+      const text = await resp.text();
+      etag = newEtag;
+      set("UNRECOGNIZED", "unparseable projection · " + now,
+          text.slice(0, 400), "stale");
+      return;
+    }}
+    let data;
+    try {{
+      data = await resp.json();
+    }} catch (err) {{
+      // Render failed: do NOT cache the etag, so the next poll retries fresh.
+      set("UNRECOGNIZED", "body did not parse · " + now, String(err), "stale");
+      return;
+    }}
+    etag = newEtag;
+    const status = (data && data.envelope && data.envelope.status) || null;
+    if (!status) {{
+      set("UNRECOGNIZED", "schema_version " + (data && data.schema_version),
+          JSON.stringify(data).slice(0, 400), "stale");
+      return;
+    }}
+    set(status.toUpperCase(), "seq " + data.seq + " · " + now,
+        "lesson: " + (data.identity && data.identity.lesson));
   }}
   poll();
   setInterval(poll, 3000);
@@ -185,23 +268,32 @@ def create_hud_app(
                 status_code=404,
                 headers={"Cache-Control": _NO_CACHE},
             )
-        etag = projection_etag(snapshot.parsed, mtime_ns=snapshot.mtime_ns)
-        # Identity guard (AD-8): only a *parsed* projection carries a trial_id
-        # to check. Unrecognized snapshots have no identity to compare, so they
-        # pass the guard and are served raw (zero-lie) for literal rendering.
+        etag = _quote_etag(
+            projection_etag(snapshot.parsed, mtime_ns=snapshot.mtime_ns)
+        )
+        # Identity guard (AD-8): a *parsed* projection carries its trial_id
+        # directly; an Unrecognized snapshot gets a best-effort raw extraction
+        # so a valid-looking dict with another run's identity can NEVER slip
+        # past the guard just because one sibling field failed lenient parse.
+        # Only a snapshot with no extractable identity is served raw unguarded.
+        found: str | None = None
         if isinstance(snapshot.parsed, OperatorSurfaceProjection):
             found = _canonical_trial_id(str(snapshot.parsed.identity.trial_id))
-            if found != bound_trial_id:
-                return JSONResponse(
-                    {
-                        "refuse_to_render": True,
-                        "bound": bound_trial_id,
-                        "found": found,
-                    },
-                    status_code=409,
-                    headers={"ETag": etag, "Cache-Control": _NO_CACHE},
-                )
-        if request.headers.get("if-none-match") == etag:
+        else:
+            raw_trial_id = _raw_identity_trial_id(snapshot.raw)
+            if raw_trial_id is not None:
+                found = _canonical_trial_id(raw_trial_id)
+        if found is not None and found != bound_trial_id:
+            return JSONResponse(
+                {
+                    "refuse_to_render": True,
+                    "bound": bound_trial_id,
+                    "found": found,
+                },
+                status_code=409,
+                headers={"ETag": etag, "Cache-Control": _NO_CACHE},
+            )
+        if _if_none_match_matches(request.headers.get("if-none-match"), etag):
             return Response(
                 status_code=304,
                 headers={"ETag": etag, "Cache-Control": _NO_CACHE},
@@ -226,6 +318,23 @@ def create_hud_app(
     return app
 
 
+def _required_env(name: str) -> str:
+    """Read a required env var; exit with a clear message when absent (S3).
+
+    The HUD launches as a subprocess of the runtime start path — a missing
+    env var there must surface as one legible line the operator can act on,
+    never a ``KeyError`` traceback.
+    """
+    value = os.environ.get(name)
+    if value is None or not value.strip():
+        raise SystemExit(
+            f"HUD server: required environment variable {name} is not set. "
+            "The runtime start path (Story 35.3) must launch this process "
+            "with HUD_TRIAL_ID, HUD_RUN_DIR and HUD_LAUNCH_NONCE."
+        )
+    return value
+
+
 def run_hud_server(
     trial_id: str | None = None,
     run_dir: Path | str | None = None,
@@ -243,13 +352,20 @@ def run_hud_server(
     """
     import uvicorn
 
-    trial_id = trial_id if trial_id is not None else os.environ["HUD_TRIAL_ID"]
-    run_dir = run_dir if run_dir is not None else os.environ["HUD_RUN_DIR"]
+    trial_id = trial_id if trial_id is not None else _required_env("HUD_TRIAL_ID")
+    run_dir = run_dir if run_dir is not None else _required_env("HUD_RUN_DIR")
     launch_nonce = (
-        launch_nonce if launch_nonce is not None else os.environ["HUD_LAUNCH_NONCE"]
+        launch_nonce if launch_nonce is not None else _required_env("HUD_LAUNCH_NONCE")
     )
     if port is None:
-        port = int(os.environ.get("HUD_PORT", DEFAULT_HUD_PORT))
+        raw_port = os.environ.get("HUD_PORT", str(DEFAULT_HUD_PORT))
+        try:
+            port = int(raw_port)
+        except ValueError:
+            raise SystemExit(
+                f"HUD server: HUD_PORT must be an integer port number, "
+                f"got {raw_port!r}."
+            ) from None
     if mode is None:
         mode = os.environ.get("HUD_MODE", "session")
 

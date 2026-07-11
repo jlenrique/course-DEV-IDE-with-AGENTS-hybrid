@@ -56,3 +56,27 @@ Exactly three routes, all GET-only, zero WebSocket/Mount/mutation routes. The Fa
 
 - 35.5 replaces the `/` placeholder shell with the retargeted render, fed by the same `/projection` byte snapshots.
 - 35.8 formalizes the full import-fence set (app.notify arrows + precise hud_data_sources rule) — coordinate with HUD1 (35.4 added only its own app.hud arrows per the epic's parallel-lane rule).
+
+## Review-fold addendum (2026-07-11 — code-review findings folded)
+
+Second dev pass folding the four accepted code-review findings. `.venv/Scripts/python.exe -m pytest tests/hud -q -p no:cacheprovider` → **33 passed** (was 22); `ruff check app/hud tests/hud` → clean.
+
+### MUST-1 — Identity-guard bypass on Unrecognized snapshots (AD-8 breach, probe-proven)
+
+A valid-shaped v1 document with a foreign `identity.trial_id` plus one malformed sibling field (e.g. `as_of`) lenient-parses to `Unrecognized` and previously sailed past the guard → served 200 raw → the placeholder shell rendered the WRONG run's `envelope.status`. Fix in `app/hud/server.py`: new `_raw_identity_trial_id(raw)` does a best-effort `json.loads` (try/except `ValueError`) and reads `identity.trial_id` then top-level `trial_id` (string, non-blank); the `/projection` guard now canonical-UUID-compares that extraction for Unrecognized snapshots and returns the SAME typed 409 refuse-to-render payload on mismatch. Serve-raw survives ONLY when no identity is truly extractable (non-JSON bytes, non-dict, absent/blank ids). Regression tests: probe case → 409 (`test_unrecognized_snapshot_with_foreign_identity_is_409`), top-level trial_id mismatch → 409, garbage bytes → 200 unrecognized ETag, matching raw identity → 200 (guard passes honestly). Probe replayed live post-fix: **409**.
+
+### S2 — RFC-9110-conformant ETag
+
+ETag now emitted in the quoted form (`"v1:1"`, `"unrecognized:<mtime_ns>"`) via `_quote_etag`; `projection_etag` in `data.py` still returns the unquoted core (test_data pins unchanged) — quoting happens once at the HTTP boundary. New `_if_none_match_matches` implements the comparison: strips `W/`/`w/` prefixes (weak comparison is correct for If-None-Match), strips quotes both sides, splits comma-lists, honors `*`. Placeholder JS echoes the header verbatim (verified — it stores `resp.headers.get("ETag")` and sends it back untouched; the server-side parse absorbs the quotes). Tests pin the QUOTED form exactly plus weak / comma-list / star / non-matching-list cases.
+
+### S3 — Env entry exits cleanly
+
+`run_hud_server` env path no longer KeyError-tracebacks: `_required_env` raises `SystemExit` with a one-line actionable message naming the missing var (`HUD_TRIAL_ID` / `HUD_RUN_DIR` / `HUD_LAUNCH_NONCE`), and a non-integer `HUD_PORT` raises `SystemExit` naming the var and the bad value (`from None`, no traceback chain). Three tests via monkeypatched env + `pytest.raises(SystemExit)`; the port test fails at parse time, before `create_hud_app`/uvicorn.
+
+### S4 — Placeholder honest states
+
+The shell now branches on the `unrecognized:` ETag prefix (after stripping `W/` + quotes in JS) BEFORE any `resp.json()`: a non-JSON 200 renders **UNRECOGNIZED** with a raw-text preview — never a parse-throw into DISCONNECTED. `DISCONNECTED` is now set only in the fetch catch (transport failure). The etag is cached only after a successful render: the honest UNRECOGNIZED render caches (so 304s flow), the defensive parse-failure branch does NOT cache (next poll retries fresh). Shell is 99 lines (<150). Pinned by `test_placeholder_shell_keys_unrecognized_off_etag_prefix` + a `<150 splitlines` assertion on `/`.
+
+### Naming deviation noted (review NIT-6)
+
+`app/hud/data.py::read_operator_surface` keeps its name (review NIT-6 suggested a rename). Deviation is deliberate: the name matches the spec's public-surface sketch and the contract-reader naming (`read_operator_surface_lenient`) it wraps; renaming would ripple into 35.5/35.8 references for zero behavioral value. Recorded here as the standing deviation of record.

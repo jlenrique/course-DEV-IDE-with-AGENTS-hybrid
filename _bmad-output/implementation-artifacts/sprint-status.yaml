@@ -1770,7 +1770,7 @@ development_status:
   hud-35-1-operator-surface-contract: done  # 2026-07-11 review APPROVE; S1/S2 folded (pause-identity refire, hud-block zero-lie); 108 passed; byte-pin debe6224
   hud-35-2-assembler-runner-emission: review  # 2026-07-11 dev DONE (28 tests green, both walks, reconcile-on-entry); code review INTERRUPTED by credit wall — re-run before close
   hud-35-3-start-path-preflight-heartbeats: backlog  # blocked-by 35.2 (serial, same runner region)
-  hud-35-4-get-only-hud-server: review  # 2026-07-11 dev done (22 tests); review found 1 MUST (identity-guard bypass on Unrecognized-with-readable-identity) + S2/S3/S4 — fix spec in handoff; fold before close
+  hud-35-4-get-only-hud-server: done  # 2026-07-11 review CHANGES-REQUESTED fully folded (MUST-1 raw-identity 409 probe-verified + S2 RFC ETag + S3 env exits + S4 honest placeholder); 33 tests
   hud-35-5-flight-deck-render: backlog  # blocked-by 35.2/35.4
   hud-35-6-notifier-watchdog-push: done  # 2026-07-11 review CHANGES-REQUIRED fully folded (M1 episode reset + S1/S2/S3 + N4); 34 tests; REAL ntfy L3 witness wmUW9CnmLm6S re-verified
   hud-35-7-e2e-witness-party-review: backlog  # last; scoped-verdict schema binds
