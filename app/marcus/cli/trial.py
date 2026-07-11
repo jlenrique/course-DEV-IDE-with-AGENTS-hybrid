@@ -389,8 +389,23 @@ def start_trial(
     lesson_plan_bundle_id = lesson_plan_collateral_bundle_id
     selection_source_receipt: str | None = None
     if lesson_plan_collateral_intent_path is not None:
-        # Prefer plan-collateral JSON (Mine 1 auto path) when the file is an
-        # Irene lesson-plan companion; otherwise load ratified intent YAML.
+        # Programmatic-callers-only seam: the CLI resolves selection itself in
+        # _resolve_start_component_selection and passes the winning file as
+        # lesson_plan_collateral_receipt_path (provenance only), so this block
+        # never fires on CLI invocations. The sniff keys on the ABSENCE of a
+        # top-level ratification_status field: a dict without it that carries
+        # collateral/plan_units/lesson_plan is treated as an Irene plan
+        # companion (Mine 1 auto path) and BINDS selection; anything else —
+        # including any file carrying ratification_status, even a
+        # companion-shaped one — routes to the intent-YAML loader, where an
+        # unratified intent resolves source="unratified" and binds nothing,
+        # and unreadable/invalid files fail loud (CollateralSelectionError).
+        # Only THIS file is read here: the run's own companions
+        # (planning-ratification.json / ratified-los.json) are re-resolved
+        # from the NEW run directory when the irene_pass1 node dispatches
+        # (production_runner -> load_planning_context) — siblings of the
+        # passed file are never read. A conflict with an explicit
+        # component_selection argument raises CollateralSelectionError.
         path = Path(lesson_plan_collateral_intent_path)
         resolved_collateral_selection: ResolvedCollateralSelection | None = None
         try:
@@ -651,6 +666,16 @@ def _resolve_start_component_selection(args: argparse.Namespace) -> _StartSelect
     1. ``--lesson-plan-collateral-intent`` (ratified intent file) when source=ratified
     2. ``--lesson-plan-json`` (Irene Pass-1 plan JSON) — auto-derive from collateral
     3. Manual ``--bundle`` / front-door default
+
+    An UNRATIFIED intent file is not an error: it falls through to step 2
+    (then 3). Steps 1 and 2 both raise CollateralSelectionError when an
+    explicit ``--bundle`` disagrees with the resolved selection (or names a
+    bundle outside the closed catalog).
+
+    The CLI is the resolving layer: the winning file travels to start_trial
+    as ``lesson_plan_collateral_receipt_path`` (provenance only), so
+    start_trial's own re-resolution seam (``lesson_plan_collateral_intent_path``)
+    never fires on CLI invocations — that seam serves programmatic callers.
 
     Auto-derive fails loud on missing/invalid collateral (Winston Option A).
     """
@@ -978,9 +1003,13 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         "--lesson-plan-collateral-intent",
         required=False,
         help=(
-            "Local YAML/JSON ratified lesson-plan collateral intent. When present, "
-            "it resolves through the curated bundle catalog and feeds the existing "
-            "ComponentSelection runtime seam."
+            "Local YAML/JSON ratified lesson-plan collateral intent. When present "
+            "and ratified, it resolves through the curated bundle catalog, feeds "
+            "the existing ComponentSelection runtime seam, and wins over "
+            "--lesson-plan-json. An UNRATIFIED intent file is not an error: it "
+            "falls through to --lesson-plan-json (then --bundle / front-door "
+            "default). Fails loud if the resolved selection conflicts with an "
+            "explicit --bundle."
         ),
     )
     start.add_argument(
@@ -989,8 +1018,14 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         help=(
             "Irene Pass-1 lesson-plan JSON (irene-pass1.lesson-plan.json). "
             "Derives ComponentSelection from lesson_plan.collateral automatically "
-            "(fail-loud on missing/invalid collateral). Precedence below "
-            "--lesson-plan-collateral-intent when that file is ratified."
+            "(fail-loud on missing/invalid collateral). Yields to a RATIFIED "
+            "--lesson-plan-collateral-intent but wins over an unratified one "
+            "(unratified intent falls through to this flag). Only the passed "
+            "file is read for selection; the new run's own companions "
+            "(planning-ratification.json, ratified-los.json) are resolved later "
+            "at irene_pass1 dispatch — siblings of this file are never read. "
+            "Fails loud if the derived selection conflicts with an explicit "
+            "--bundle."
         ),
     )
     start.add_argument(
