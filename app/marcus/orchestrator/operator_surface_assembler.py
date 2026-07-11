@@ -366,7 +366,10 @@ class OperatorSurfaceAssembler:
                     reentered_from = prev.steps.reentered_from
                     if walk_index < prev.steps.walk_index:
                         walk_generation = prev.steps.walk_generation + 1
-                        reentered_from = walk_index
+                        # The index the run re-entered FROM is the previous
+                        # (higher) walk position, per the contract field
+                        # description (review S2).
+                        reentered_from = prev.steps.walk_index
                 entries: list[dict[str, Any]] = []
                 for idx, node in enumerate(nodes):
                     if idx < walk_index:
@@ -557,13 +560,26 @@ class OperatorSurfaceAssembler:
         thread = threading.Thread(
             target=_loop, name=f"operator-surface-tick-{self.trial_id}", daemon=True
         )
+        started = False
         try:
-            thread.start()
+            # A thread that cannot start (resource pressure) degrades to
+            # no-tick — it must never raise into the paid walk (review MUST-1;
+            # amendment 8).
+            try:
+                thread.start()
+                started = True
+            except Exception:
+                LOGGER.exception(
+                    "operator-surface freshness tick failed to start; "
+                    "continuing without ticks (trial=%s)",
+                    self.trial_id,
+                )
             yield
         finally:
             stop.set()
-            with suppress(Exception):
-                thread.join(timeout=interval + 1.0)
+            if started:
+                with suppress(Exception):
+                    thread.join(timeout=interval + 1.0)
 
 
 __all__ = [

@@ -41,6 +41,10 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+### epic-35-hud-walk-loop-emission-assertions (filed 2026-07-11, story 35.2 close, review S4)
+Both-walk projection goldens use the spec-sanctioned fallback (direct _persist_envelope + entry-point drives); no test executes the walk loops asserting per-node update_steps/tick emission. Covering evidence: 35.3's L3 live start witness will observe the real loop wiring. Reactivate: 35.3 close (verify the witness actually covers it) or first post-E2E hardening story. Direction may flip if substrate evolves.
+
+
 ### epic-35-hud-ambient-manifest-suite-reds (filed 2026-07-11, story 35.0 close)
 10 pre-existing failures in manifest-adjacent suites (tests/unit/manifest/, test_pipeline_manifest_loader.py, etc. — e.g. stale `schema_version == "v4.2-migration-stub"` pin), verified identical with and without the 35.0 diff (git-stash witness in evidence/hud-35-0-completion-notes.md). Not Epic-35 scope. Reactivate: next manifest-regime maintenance story. Direction may flip if substrate evolves.
 

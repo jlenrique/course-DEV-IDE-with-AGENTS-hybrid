@@ -293,12 +293,52 @@ def test_update_steps_walk_index_regression_marks_reentry(tmp_path: Path) -> Non
     assert p3.steps.walk_index == 3
     assert p3.steps.walk_generation == 0
     assert p3.steps.reentered_from is None
-    # regression to an earlier index == recover-reenter
+    # regression to an earlier index == recover-reenter; the run re-entered
+    # FROM the previous (higher) walk position (review S2)
     asm.update_steps(manifest, 1)
     p1 = _read(asm)
     assert p1.steps.walk_index == 1
     assert p1.steps.walk_generation == 1
-    assert p1.steps.reentered_from == 1
+    assert p1.steps.reentered_from == 3
+
+
+def test_freshness_tick_start_failure_degrades_without_raising(
+    tmp_path: Path, monkeypatch
+) -> None:
+    """Review MUST-1: a tick thread that cannot start never raises into the walk."""
+    import threading as _threading
+
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+
+    def _boom(self) -> None:
+        raise RuntimeError("can't start new thread")
+
+    monkeypatch.setattr(_threading.Thread, "start", _boom)
+    with asm.freshness_tick(interval=0.01):
+        pass  # walk body proceeds tick-less; no exception escapes
+
+
+def test_atomic_write_retries_with_real_held_reader(tmp_path: Path) -> None:
+    """Review S3: deterministic held-open-reader smoke — a reader holding the
+    destination open while the writer replaces must end with a consistent
+    winning write (bounded retry covers the transient PermissionError)."""
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    path = asm.projection_path
+    with open(path, "rb") as held:
+        held.read(1)  # hold an open handle across the writer's os.replace
+        asm.emit(_StubEnvelope(tid, "paused-at-gate"))
+    final = _read(asm)
+    # Either the retry won during the hold or the next emit self-heals; the
+    # file must be a coherent projection either way.
+    assert final is not None and final.envelope.status in (
+        "in-flight",
+        "paused-at-gate",
+    )
+    asm.emit(_StubEnvelope(tid, "paused-at-gate"))
+    assert _read(asm).envelope.status == "paused-at-gate"
 
 
 # --------------------------------------------------------------------------

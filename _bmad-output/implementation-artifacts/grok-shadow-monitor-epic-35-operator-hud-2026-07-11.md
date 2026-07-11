@@ -259,3 +259,73 @@ Independent shadow ledger for **Epic 35 (Operator HUD v1 — Flight Deck)** on b
 **Next poll:** ~15m.
 
 ---
+
+### SOP-E35-008 — 15m poll — 2026-07-11T18:45:13-04:00
+
+**Scope reviewed:** new HEAD `f63a8e78` (= origin); Kanban review-state rows; `epic-35-credit-wall-handoff-2026-07-11.md`; residual dirty `app/notify/*`; Claude terminal (credits resumed). Ledger-only write.
+
+**Delta — STALL BROKEN:**
+- Commit `f63a8e78` — `wip(hud-35.2/35.4/35.6): dev-complete lanes banked at credit wall — reviews open, NOT closed` (+4439 lines). Explicitly **not** a close.
+- Handoff artifact banked; cites Grok **F-E35-0017** as the reason to bank before reviews finished — correct response to the monitor.
+- Kanban: 35.2/35.4/35.6 → **`review`** (not done). Comments record interrupted/open MUST findings.
+- Claude past the Fable modal (“Now using usage credits”); background 35.6 agent still listed; dirty diffs on `app/notify/service.py` + `__main__.py` suggest mid-fold or died-mid-edit (handoff warned of this).
+
+**Finding resolutions:**
+- **F-E35-0010 [P1] CLOSED** — usage modal cleared; credits path active.
+- **F-E35-0012 / F-E35-0017 [P1] CLOSED for durability** — lanes are on origin (WIP). Residual: they are **not** DoD-closed.
+- **F-E35-0015 [P1] SUPERSEDED** — closeout unblocked; next gate is review-fold, not “clear modal.”
+
+**Open review debt (binding — do not claim done):**
+| Story | Review state |
+|-------|----------------|
+| 35.2 | Review **interrupted**; re-run before close (incl. digest-source hunt on paste command per handoff) |
+| 35.4 | **MUST:** identity-guard bypass when `Unrecognized` raw dict still has readable mismatched `trial_id` → must 409 |
+| 35.6 | **MUST:** ack keys never cleared on resume; plus S1/S2/S3; verify notify tree matches committed tests after possible mid-edit death |
+
+**New findings:**
+**F-E35-0018 [P2] Ambient pollution in bank commit.** `f63a8e78` swept six `_tmp-regression-*.txt` into `evidence/` (driver already noted prune). Should be removed in a hygiene commit so evidence/ stays claim-clean.
+**F-E35-0019 [P2] 35.6 working tree dirty vs banked SHA.** `app/notify/service.py` and `__main__.py` modified after `f63a8e78`. Either finish the MUST-fold and amend via new commit, or revert to HEAD before re-review — do not leave ambiguous mid-fix state.
+**F-E35-0020 [P1] Do not open 35.3 until 35.2 closes.** Handoff checklist agrees (serial runner region). Kanban still correctly blocks 35.3.
+
+**Watchpoints:** Claim hygiene good — commit message and Kanban refuse false “done.” Zero-button/35.4 MUST must land before 35.4 close. `app/hud/render` still absent (35.5 backlog OK).
+
+**Verdict: DURABILITY RECOVERED — THREE LANES IN REVIEW WITH OPEN MUSTS; FOLD BEFORE 35.3.**
+
+**Next poll:** ~15m. Expect: MUST folds + re-review, or continued review work on dirty notify.
+
+---
+
+### SOP-E35-009 — 15m poll — 2026-07-11T19:00:12-04:00
+
+**Scope reviewed:** HEAD `9d8eb339` = origin (0/0); three new commits since SOP-E35-008; Kanban; dirty assembler; Claude terminal mid-35.2 fold. Ledger-only write.
+
+**Commits since last poll:**
+1. `c556508d` — **35.6 CLOSED** (M1 pause-episode reset + S1/S2/S3 + N4 folded; ntfy witness retained)
+2. `4873b74c` — chore: untrack ambient `_tmp-regression*` (**F-E35-0018 addressed**; files may remain on disk untracked — OK)
+3. `9d8eb339` — **35.4 CLOSED** (MUST-1 raw-identity 409 + RFC ETag + env exits + honest placeholder)
+
+**Finding resolutions:**
+- **F-E35-0018 [P2] CLOSED** — ambient regression files untracked from evidence/.
+- **F-E35-0019 [P2] CLOSED** — notify dirty state resolved via 35.6 close commit (no residual notify M in status).
+- Prior 35.4/35.6 MUST debt from handoff — **folded and stories marked done**.
+
+**Story board now:**
+| Story | Kanban | Notes |
+|-------|--------|-------|
+| 35.0 / 35.1 / **35.4** / **35.6** | **done** | |
+| **35.2** | **review** | Still open; assembler file dirty; Claude actively editing assembler + tests (“Driving Epic 35 dev chain”) |
+| 35.3 | backlog | Correctly blocked until 35.2 closes (**F-E35-0020** still binds) |
+| 35.5 | backlog | Unblocked on 35.4 side; still needs 35.2 |
+| 35.7 / 35.8 | backlog | |
+
+**New findings:**
+**F-E35-0021 [P2] 35.2 is the sole remaining parallel-lane gate.** With 35.4/35.6 closed, critical path is: finish 35.2 re-review folds → close → then 35.3 (serial) and 35.5 (needs 35.2+35.4). Dirty `operator_surface_assembler.py` indicates fold-in-progress — expect close commit next.
+**F-E35-0022 [P3] Goal clock.** ~1h30m left in cited 16:30–20:30 window. De-scope ladder (handoff) may engage for 35.5 depth; DoD-over-clock still forbids thinning 35.7 evidence.
+
+**Watchpoints:** Claim hygiene good on 35.4/35.6 close messages. Zero-button MUST on 35.4 folded. No premature 35.3/render tree (`app/hud/render` still false).
+
+**Verdict: 35.4 + 35.6 CLOSED CLEAN — 35.2 RE-REVIEW/FOLD IN FLIGHT; THEN 35.3/35.5.**
+
+**Next poll:** ~15m. Expect: 35.2 → done on origin, or continued assembler fold.
+
+---

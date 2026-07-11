@@ -1768,7 +1768,7 @@ development_status:
   epic-35-operator-hud-v1: in-progress  # 2026-07-11 party-greenlit; goal-directed 4h window 16:30-20:30
   hud-35-0-tier2-manifest-bump-test-disposition: done  # 2026-07-11 review APPROVE; no-bump per regime determination 2026-06-12; checker exit 0; 100/2/0
   hud-35-1-operator-surface-contract: done  # 2026-07-11 review APPROVE; S1/S2 folded (pause-identity refire, hud-block zero-lie); 108 passed; byte-pin debe6224
-  hud-35-2-assembler-runner-emission: review  # 2026-07-11 dev DONE (28 tests green, both walks, reconcile-on-entry); code review INTERRUPTED by credit wall — re-run before close
+  hud-35-2-assembler-runner-emission: done  # 2026-07-11 review CHANGES-REQUIRED folded (MUST tick-start guard + S2 reentered_from semantics + S3 real held-reader smoke); digest paste-chain verified vs live fixture; 585 green
   hud-35-3-start-path-preflight-heartbeats: backlog  # blocked-by 35.2 (serial, same runner region)
   hud-35-4-get-only-hud-server: done  # 2026-07-11 review CHANGES-REQUESTED fully folded (MUST-1 raw-identity 409 probe-verified + S2 RFC ETag + S3 env exits + S4 honest placeholder); 33 tests
   hud-35-5-flight-deck-render: backlog  # blocked-by 35.2/35.4
