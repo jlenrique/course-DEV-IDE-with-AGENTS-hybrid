@@ -1,0 +1,22 @@
+# Project override for bmad-dev-auto — course-DEV-IDE-with-AGENTS-hybrid.
+# Authored 2026-07-11 at first dev-auto adoption (post v6.10.0 upgrade gate).
+# Merge rules: strings replace, lists append, tables merge key-by-key.
+
+[workflow]
+
+# Guardrails held in context for every unattended iteration.
+persistent_facts = [
+  # The binding product framing: fix things only when they improve the
+  # Marcus-SPOC runtime; never design for proofing-run convenience.
+  "The product goal is the Marcus-SPOC runtime (app/marcus/cli/marcus_spoc.py + production runner). Never add to production code merely to make a concierge/proofing run pass. See CLAUDE.md CRITICAL DESIGN GUARDRAIL.",
+  # Scope fence for unattended runs (dev-auto = cleanup-arc authority class).
+  "Unattended dev-auto iterations are restricted to small hermetic residuals. HALT blocked if the spec would touch: state/config/pipeline-manifest.yaml block_mode_trigger_paths, protected invariants (VO-onscreen alignment, source-detail-to-Gamma conveyance, ProductionEnvelope carrier), live-API legs (no-mocks policy: live legs are operator-armed, never unattended), or anything requiring a party green-light per CLAUDE.md sprint governance.",
+  # Verification discipline.
+  "Done-bar for unattended work is hermetic: default pytest must stay green without API keys and must never spend provider money (llm_live requires --run-live; leave it alone). Run the venv interpreter as .venv/Scripts/python.exe.",
+  # Harness gotchas that bite scripts spawned mid-run (full detail:
+  # docs/dev-guide.md, BMAD Harness v6.10.0 notes section).
+  "Windows harness gotchas: keep PYTHONUTF8=1 for any subprocess that reads script output (cp1252 crashes otherwise); pyproject [tool.uv] managed=false is load-bearing (uv run must not build the repo or sync the live .venv) — never remove it.",
+]
+
+# Terminal ritual: make the result durable per the push-cadence policy.
+on_complete = "Commit the spec file, implementation, and any result artifact on the current working branch with a conventional message (Co-Authored-By trailer per project convention), then push the branch to origin. Do not merge to master; master crossings require the operator-facing gate. Finally, print a one-line summary: spec status, files touched, review findings count."

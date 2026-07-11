@@ -85,3 +85,12 @@
 ## Deferred from: adversarial review of spec-fix-llm-execution-config-docstring (2026-07-10)
 
 - [hardening] The 2026-07-10 operator binding (vision batch model MUST equal realtime; never `gpt-4.1-*` as product default) is prose-only — no validator enforces it. `_require_vision` in `app/runtime/llm_execution_config.py` only checks a batch profile exists; a config setting `batch.model: gpt-4.1-mini` loads cleanly (only guard is a value-pin test). Natural home: model validator asserting `vision.batch.model == vision.realtime.model` or rejecting `gpt-4.1-*`. Also note `batch_model_fallback_family` is declared+tested but consumed by zero production code (`batch_route.py` submits `profile.model` verbatim; no rejection detection / auto-substitute) — implement or document-as-policy decision rides with this hardening.
+- source_spec: `_bmad-output/implementation-artifacts/spec-lesson-plan-json-cli-flag-docstring.md`
+  summary: CLI-started trials always record `lesson_plan_selection_source: null` — `_StartSelection.selection_source` is computed (trial.py ~699/721/726) but never threaded into `start_trial`; only the programmatic seam writes the receipt field.
+  evidence: Review pass 2026-07-11; `selection_source_receipt` written only at trial.py ~417/421; `start_trial_cli` passes no selection_source; consumed by bank_mine_integrated_e2e_liveproof.py:402.
+- source_spec: `_bmad-output/implementation-artifacts/spec-lesson-plan-json-cli-flag-docstring.md`
+  summary: When a programmatic caller passes BOTH `lesson_plan_collateral_intent_path` and `lesson_plan_collateral_receipt_path`, the receipt path is recorded as provenance even though the intent path resolved selection (trial.py ~437-438 → ~608-612).
+  evidence: Review pass 2026-07-11; `lesson_plan_receipt_path = intent_path or receipt_path` ordering vs record key semantics.
+- source_spec: `_bmad-output/implementation-artifacts/spec-lesson-plan-json-cli-flag-docstring.md`
+  summary: The documented "start_trial re-read seam never fires on CLI invocations" property is pinned by no test or assertion — drift-bait if a future CLI change passes `lesson_plan_collateral_intent_path`.
+  evidence: Review pass 2026-07-11; integration tests exercise the seam directly, none pin the CLI-bypass property.
