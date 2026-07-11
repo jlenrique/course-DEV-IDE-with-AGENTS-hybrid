@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operator HUD — Flight Deck — paused at gate G4A</title>
+<style>
+/* ============================================================
+   KEY-SCREEN MOCK · flight-deck-paused-at-gate
+   Spine sections governed:
+   - EXPERIENCE.md §State Patterns row: `paused-at-gate`
+     (amber master caution; gate briefing; `gate decide …`)
+   - EXPERIENCE.md §Component Patterns: annunciator strip,
+     status badge (verbatim `paused-at-gate`), gate briefing
+     card (fixed order: gate id/focus/prompt → decision data →
+     artifacts inline (G4A voice rows) → command block),
+     command block (exact projection string, selectable,
+     zero buttons), map node (gate glow), state-trace well
+   - EXPERIENCE.md §Key Flows: Flow 3 — gate verdict (G4A)
+   - DESIGN.md components: annunciator-strip (caution fill),
+     gate-briefing-card (3px amber left border), command-block
+     (cyan hairline, mono)
+   Five-second band: annunciator, header, health strip, amber
+   gate node, command block all above the fold at 1440×900.
+   ============================================================ */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { background:#0F172A; }
+body {
+  color:#E2E8F0;
+  font-family:'Segoe UI', system-ui, sans-serif;
+  font-size:14px; font-weight:400; line-height:1.5;
+  min-width:1100px;
+}
+a { color:#94A3B8; text-decoration:underline; text-underline-offset:2px; }
+.mono { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; line-height:1.5; }
+.num  { font-size:16px; font-weight:600; line-height:1.2; letter-spacing:0.01em; font-variant-numeric:tabular-nums; }
+.meta { font-size:12px; font-weight:400; line-height:1.4; color:#64748B; }
+
+/* ---- Zone 1 · annunciator strip — MASTER CAUTION ---- */
+.annunciator {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  font-size:20px; font-weight:700; line-height:1.2; letter-spacing:0.06em;
+  background:#FBBF24; color:#1C1403;
+}
+.annunciator .sym { font-size:18px; }
+
+/* ---- Zone 2 · identity header ---- */
+.id-header {
+  display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px;
+  padding:10px 16px;
+  border-bottom:1px solid #293548;
+}
+.id-header .trial { color:#94A3B8; }
+.id-header .kv { color:#94A3B8; }
+.id-header .kv b { color:#E2E8F0; font-weight:600; }
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 10px; border-radius:4px;
+  font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+  background:#FBBF24; color:#1C1403;
+}
+.chip {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:3px 12px; border-radius:9999px;
+  background:#1E293B; border:1px solid #293548;
+  font-size:12px; line-height:1.4; color:#64748B;
+}
+.chip .dot { width:8px; height:8px; border-radius:9999px; border:1px solid #64748B; background:transparent; }
+.chip.on { color:#E2E8F0; border-color:#166534; }
+.chip.on .dot { background:#22C55E; border-color:#22C55E; }
+.id-right { margin-left:auto; display:flex; gap:16px; align-items:baseline; }
+
+/* ---- Zone 3 · health strip ---- */
+.health { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; padding:12px 16px; }
+.tile { background:#1E293B; border:1px solid #293548; border-radius:6px; padding:8px 12px; }
+.tile .lbl { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.tile .val { font-size:16px; font-weight:600; letter-spacing:0.01em; font-variant-numeric:tabular-nums; color:#94A3B8; margin-top:2px; }
+.tile .sub { font-size:12px; color:#64748B; }
+.tile .age { font-size:12px; color:#64748B; margin-top:2px; }
+.conf { font-family:'Cascadia Mono', Consolas, monospace; font-size:11px; color:#64748B; border:1px solid #293548; border-radius:4px; padding:0 4px; }
+
+/* ---- Zone 4 · main deck ---- */
+.deck { display:grid; grid-template-columns:3fr 2fr; gap:16px; padding:4px 16px 12px; align-items:start; }
+@media (max-width:1100px) { .deck { grid-template-columns:1fr; } }
+
+.map-group { margin-bottom:12px; }
+.map-title { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; padding:6px 2px; border-bottom:1px solid #293548; margin-bottom:4px; }
+.node { display:flex; align-items:center; gap:10px; padding:4px 8px; border-radius:6px; color:#64748B; }
+.node .mark { width:18px; text-align:center; color:#166534; flex:none; }
+.node .nid { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; min-width:118px; flex:none; }
+.node .lab { flex:1; }
+.node.idle .mark { color:#64748B; }
+.gatebadge {
+  display:inline-block; padding:0 6px; border-radius:4px;
+  font-family:'Cascadia Mono', Consolas, monospace; font-size:11px;
+  border:1px solid #293548; color:#64748B;
+}
+/* paused gate node — active treatment + amber glow */
+.node.gate-paused {
+  background:#FBBF24; color:#1C1403;
+  outline:1px solid #FBBF24; outline-offset:2px;
+}
+.node.gate-paused .mark { color:#1C1403; }
+.node.gate-paused .nid { color:#1C1403; font-weight:600; }
+.node.gate-paused .gatebadge { border-color:#1C1403; color:#1C1403; }
+.node.gate-paused .dur { font-variant-numeric:tabular-nums; font-weight:600; }
+
+/* specialist chip row */
+.spec-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; padding-top:10px; border-top:1px solid #293548; }
+.spec {
+  position:relative; width:52px; height:44px; border-radius:6px;
+  background:#1E293B; border:1px solid #293548;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600; letter-spacing:0.08em; color:#64748B;
+}
+.spec .g { position:absolute; top:2px; right:4px; font-size:10px; }
+.spec.done { border-color:#166534; } .spec.done .g { color:#166534; }
+.spec.idle .g { color:#64748B; }
+
+/* ---- right column · gate briefing card ---- */
+.gate-brief {
+  background:#1E293B; border:1px solid #293548; border-left:3px solid #FBBF24;
+  border-radius:8px; padding:12px 14px;
+}
+.gate-brief .bt { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#FBBF24; }
+.gate-brief .bm { font-size:12px; color:#94A3B8; margin-top:2px; font-variant-numeric:tabular-nums; }
+.frow { display:flex; gap:10px; padding:2px 0; font-size:13px; }
+.frow .k { color:#64748B; min-width:110px; flex:none; }
+.frow .v { color:#94A3B8; }
+.frow .v.mono { font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; }
+.prompt { margin-top:8px; padding-top:8px; border-top:1px solid #293548; color:#E2E8F0; }
+.proposal { margin-top:8px; color:#94A3B8; }
+.proposal b { color:#E2E8F0; font-weight:600; }
+
+/* voice option rows — artifacts under judgment, inline */
+.voices { margin-top:10px; border-top:1px solid #293548; }
+.voice { display:flex; align-items:baseline; gap:10px; padding:7px 0; border-bottom:1px solid #293548; }
+.voice .vn { color:#E2E8F0; font-weight:600; min-width:88px; flex:none; }
+.voice .vc { color:#94A3B8; font-size:13px; flex:1; }
+.voice .vs { font-size:12px; white-space:nowrap; }
+.voice .proposed {
+  font-family:'Cascadia Mono', Consolas, monospace; font-size:11px;
+  color:#FBBF24; border:1px solid #FBBF24; border-radius:4px; padding:0 5px;
+}
+
+/* command block — the next action; no buttons anywhere */
+.cmd {
+  margin-top:12px;
+  background:#0B1120; border:1px solid #38BDF8; border-radius:6px;
+  padding:10px 12px;
+  font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; line-height:1.5;
+  color:#E2E8F0;
+  user-select:all;
+  overflow-wrap:anywhere;
+}
+.cmd-cap { font-size:12px; color:#64748B; margin-top:10px; }
+
+/* ---- Zone 5 · state-trace well ---- */
+.trace { margin:4px 16px 16px; background:#0B1120; border:1px solid #293548; border-radius:6px; color:#94A3B8; }
+.trace summary { padding:8px 12px; cursor:pointer; list-style:none; font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.trace summary::-webkit-details-marker { display:none; }
+.trace pre { font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; line-height:1.5; padding:4px 12px 12px; overflow-x:auto; color:#94A3B8; }
+</style>
+</head>
+<body>
+
+<!-- Zone 1 · annunciator — amber master caution -->
+<div class="annunciator" role="alert" aria-live="assertive">
+  <span class="sym">⏸</span>
+  <span>PAUSED AT GATE G4A — VOICE SELECTION AWAITS YOUR VERDICT · PARKED 0:12</span>
+</div>
+
+<!-- Zone 2 · identity header -->
+<header class="id-header">
+  <span class="mono trial">22b27500-6e67-4dd7-8308-fd89defe3d99</span>
+  <span class="kv">lesson <b>tejal-part-4</b></span>
+  <span class="kv">preset <b>production</b></span>
+  <span class="badge"><span>⏸</span> paused-at-gate</span>
+  <span class="chip"><span class="dot"></span> BATCH</span>
+  <span class="chip"><span class="dot"></span> DETECTIVE</span>
+  <span class="chip on"><span class="dot"></span> hil-2026-apc-crossroads-classic-preserve</span>
+  <span class="id-right">
+    <span class="kv">elapsed <b class="num">2:31:07</b></span>
+    <span class="meta">snapshot 1s ago</span>
+  </span>
+</header>
+
+<!-- Zone 3 · health strip -->
+<section class="health" aria-label="health strip">
+  <div class="tile">
+    <div class="lbl">Tokens</div>
+    <div class="val">2.04M</div>
+    <div class="sub">in 1.51M · out 530K</div>
+    <div class="age">as of 12:41:02 · 5s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Cost</div>
+    <div class="val">$0.57</div>
+    <div class="sub">no cap</div>
+    <div class="age">as of 12:41:02 · 5s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">OpenAI</div>
+    <div class="val">quota: ok</div>
+    <div class="sub"><span class="conf">proxy</span> rate-limit headers</div>
+    <div class="age">9s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Gamma</div>
+    <div class="val">379</div>
+    <div class="sub">credits remaining · <span class="conf">direct</span></div>
+    <div class="age">28s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">ElevenLabs</div>
+    <div class="val">187,440</div>
+    <div class="sub">chars remaining · <span class="conf">direct</span></div>
+    <div class="age">41s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">LangSmith</div>
+    <div class="val">31 runs</div>
+    <div class="sub"><a href="#trace-out">trace ↗</a> · project marcus-spoc</div>
+    <div class="age">7s ago</div>
+  </div>
+</section>
+
+<!-- Zone 4 · main deck -->
+<main class="deck">
+
+  <!-- left · two-stage map; node 11 gate glowing amber -->
+  <section aria-label="you-are-here map">
+    <div class="map-group">
+      <div class="map-title">Planning — intake &amp; ratification</div>
+      <div class="node"><span class="mark">✓</span><span class="nid">directive-composer</span><span class="lab">Directive Composer</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">corpus-mount</span><span class="lab">Corpus Mount + Verify</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">material-partition</span><span class="lab">Material Partition</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">lo-refinement</span><span class="lab">LO Refinement — Irene</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">lesson-plan</span><span class="lab">Lesson Plan Draft</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">workflow-compose</span><span class="lab">Workflow Composer</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">g0-evidence-gate</span><span class="lab">Evidence Review</span><span class="gatebadge">⏸ G0E</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">g0-ratify-gate</span><span class="lab">Lesson-Plan + Workflow Ratify</span><span class="gatebadge">⏸ G0R</span></div>
+    </div>
+
+    <div class="map-group">
+      <div class="map-title">Ratified workflow — 15 nodes · Step 35/47</div>
+      <div class="node"><span class="mark">✓</span><span class="nid">01</span><span class="lab">Activation + Preflight</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">02</span><span class="lab">Texas Corpus Retrieval</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">03</span><span class="lab">Irene Pass 1 — LO Refinement</span><span class="gatebadge">⏸ G1</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">04</span><span class="lab">Cora Styleguide Bind</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">05</span><span class="lab">Gamma Variant Generation</span><span class="gatebadge">⏸ G2B</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">06</span><span class="lab">Variant Ratify + Layout Lock</span><span class="gatebadge">⏸ G2C</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">07</span><span class="lab">Gary Dispatch + Export</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">07W</span><span class="lab">Workbook Export</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">08</span><span class="lab">Irene Pass 2 — Narration</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">09</span><span class="lab">Vera Read-Path Match</span><span class="gatebadge">⏸ G3</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">10</span><span class="lab">Enrique A/B Deltas</span><span class="gatebadge">⏸ G4</span></div>
+      <div class="node gate-paused"><span class="mark">⏸</span><span class="nid">11</span><span class="lab">Voice Selection</span><span class="gatebadge">⏸ G4A</span><span class="dur">parked 0:12</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">12</span><span class="lab">ElevenLabs Audio Generation</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">13</span><span class="lab">Kling Motion Segments</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">14</span><span class="lab">Descript Assembly</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">15</span><span class="lab">Package + Land</span></div>
+    </div>
+
+    <!-- specialist chip row -->
+    <div class="spec-row" aria-label="specialist roster">
+      <div class="spec done">TX<span class="g">✓</span></div>
+      <div class="spec done">IR<span class="g">✓</span></div>
+      <div class="spec done">GA<span class="g">✓</span></div>
+      <div class="spec done">VE<span class="g">✓</span></div>
+      <div class="spec idle">QR<span class="g">○</span></div>
+      <div class="spec done">EN<span class="g">✓</span></div>
+      <div class="spec idle">KI<span class="g">○</span></div>
+      <div class="spec done">CD<span class="g">✓</span></div>
+    </div>
+  </section>
+
+  <!-- right · gate briefing card (fixed order: id/focus/prompt → decision data → artifacts → command) -->
+  <aside aria-label="context panel">
+    <div class="gate-brief">
+      <div class="bt">⏸ Gate G4A · voice selection</div>
+      <div class="bm">node 11 · walk index 35 · parked 0:12 · card 131e70a2</div>
+
+      <div class="frow" style="margin-top:8px;"><span class="k">gate_focus</span><span class="v mono">voice_selection</span></div>
+
+      <div class="prompt">Select the narration voice for tejal-part-4. One sample per candidate, rendered from slide-03 narration. Approve the drafted pick or substitute via card verb.</div>
+
+      <div class="proposal">proposal: <b>approve · confidence 0.72</b> — Marin matches Tejal Part 3's delivered register; pacing fits the 07G read path.</div>
+
+      <div class="voices">
+        <div class="voice">
+          <span class="vn">Marin</span>
+          <span class="vc">warm alto · measured · US-EN</span>
+          <span class="vs"><a href="#marin-sample">sample ▸ marin-tejal-p4-s03.mp3</a></span>
+          <span class="proposed">proposed</span>
+        </div>
+        <div class="voice">
+          <span class="vn">Calloway</span>
+          <span class="vc">bright tenor · brisk · US-EN</span>
+          <span class="vs"><a href="#calloway-sample">sample ▸ calloway-tejal-p4-s03.mp3</a></span>
+        </div>
+        <div class="voice">
+          <span class="vn">Ondine</span>
+          <span class="vc">low mezzo · deliberate · UK-EN</span>
+          <span class="vs"><a href="#ondine-sample">sample ▸ ondine-tejal-p4-s03.mp3</a></span>
+        </div>
+      </div>
+
+      <div class="cmd-cap">paste into the Marcus-SPOC surface — digest pre-filled:</div>
+      <div class="cmd">gate decide --trial-id 22b27500-6e67-4dd7-8308-fd89defe3d99 --gate-id G4A --verb approve --card-id 131e70a2-b1ac-4798-88a1-05630c0e258c --decision-card-digest 3f8a…c21 --operator-id juanl</div>
+    </div>
+  </aside>
+</main>
+
+<!-- Zone 5 · state-trace well (collapsed by default) -->
+<details class="trace">
+  <summary>State trace — 341 events · newest last</summary>
+  <pre>12:39:58  node 10 exit · G4 approved · walk 34
+12:40:02  node 11 enter · walk 35 · voice-selection
+12:40:50  decision card drafted · 131e70a2 · digest 3f8a…c21
+12:40:50  envelope → paused-at-gate · G4A
+12:40:51  notification fired · paused_at_gate · sound + push</pre>
+</details>
+
+</body>
+</html>

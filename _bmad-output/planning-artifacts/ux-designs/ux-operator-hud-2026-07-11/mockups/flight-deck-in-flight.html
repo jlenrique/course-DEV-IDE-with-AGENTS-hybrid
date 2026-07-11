@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operator HUD — Flight Deck — in flight (nominal)</title>
+<style>
+/* ============================================================
+   KEY-SCREEN MOCK · flight-deck-in-flight
+   Spine sections governed:
+   - EXPERIENCE.md §Information Architecture (five zones)
+   - EXPERIENCE.md §The Two-Stage You-Are-Here Map
+   - EXPERIENCE.md §Component Patterns: annunciator strip,
+     status badge, modality chip, health tile, map node,
+     specialist chip row, command block (absent — nominal),
+     state-trace well
+   - EXPERIENCE.md §State Patterns row: `in-flight (walking)`
+   - EXPERIENCE.md §Key Flows: Flow 2 — the five-second glance
+   - DESIGN.md tokens: colors / typography / components verbatim
+   Zero-lie: every value carries an age. Nominal is dim; the only
+   bright object is the active map node (07).
+   ============================================================ */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { background:#0F172A; }
+body {
+  color:#E2E8F0;
+  font-family:'Segoe UI', system-ui, sans-serif;
+  font-size:14px; font-weight:400; line-height:1.5;
+  min-width:1100px;
+}
+a { color:#94A3B8; text-decoration:underline; text-underline-offset:2px; }
+.mono { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; line-height:1.5; }
+.num  { font-size:16px; font-weight:600; line-height:1.2; letter-spacing:0.01em; font-variant-numeric:tabular-nums; }
+.meta { font-size:12px; font-weight:400; line-height:1.4; color:#64748B; }
+.ztitle { font-size:13px; font-weight:600; line-height:1.3; letter-spacing:0.08em; text-transform:uppercase; }
+
+/* ---- Zone 1 · annunciator strip (nominal = quiet inset) ---- */
+.annunciator {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  font-size:20px; font-weight:700; line-height:1.2; letter-spacing:0.06em;
+  background:#0B1120; color:#64748B;
+}
+.annunciator .sym { font-size:18px; }
+
+/* ---- Zone 2 · identity header ---- */
+.id-header {
+  display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px;
+  padding:10px 16px;
+  border-bottom:1px solid #293548;
+}
+.id-header .trial { color:#94A3B8; }
+.id-header .kv { color:#94A3B8; }
+.id-header .kv b { color:#E2E8F0; font-weight:600; }
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 10px; border-radius:4px;
+  font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+  background:#166534; color:#BBF7D0;
+}
+.chip {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:3px 12px; border-radius:9999px;
+  background:#1E293B; border:1px solid #293548;
+  font-size:12px; line-height:1.4; color:#64748B;
+}
+.chip .dot { width:8px; height:8px; border-radius:9999px; border:1px solid #64748B; background:transparent; }
+.chip.on { color:#E2E8F0; border-color:#166534; }
+.chip.on .dot { background:#22C55E; border-color:#22C55E; }
+.id-right { margin-left:auto; display:flex; gap:16px; align-items:baseline; }
+
+/* ---- Zone 3 · health strip ---- */
+.health { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; padding:12px 16px; }
+.tile {
+  background:#1E293B; border:1px solid #293548; border-radius:6px;
+  padding:8px 12px;
+}
+.tile .lbl { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.tile .val { font-size:16px; font-weight:600; letter-spacing:0.01em; font-variant-numeric:tabular-nums; color:#94A3B8; margin-top:2px; }
+.tile .sub { font-size:12px; color:#64748B; }
+.tile .age { font-size:12px; color:#64748B; margin-top:2px; }
+.conf { font-family:'Cascadia Mono', Consolas, monospace; font-size:11px; color:#64748B; border:1px solid #293548; border-radius:4px; padding:0 4px; }
+
+/* ---- Zone 4 · main deck ---- */
+.deck { display:grid; grid-template-columns:3fr 2fr; gap:16px; padding:4px 16px 12px; align-items:start; }
+@media (max-width:1100px) { .deck { grid-template-columns:1fr; } }
+
+.map-group { margin-bottom:12px; }
+.map-title { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; padding:6px 2px; border-bottom:1px solid #293548; margin-bottom:4px; }
+.node {
+  display:flex; align-items:center; gap:10px;
+  padding:4px 8px; border-radius:6px;
+  color:#64748B;
+}
+.node .mark { width:18px; text-align:center; color:#166534; flex:none; }
+.node .nid { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; min-width:118px; flex:none; }
+.node .lab { flex:1; }
+.node.idle .mark { color:#64748B; }
+.gatebadge {
+  display:inline-block; padding:0 6px; border-radius:4px;
+  font-family:'Cascadia Mono', Consolas, monospace; font-size:11px;
+  border:1px solid #293548; color:#64748B;
+}
+.node.active {
+  background:#38BDF8; color:#06263A;
+}
+.node.active .mark { color:#06263A; }
+.node.active .nid { color:#06263A; font-weight:600; }
+.node.active .gatebadge { border-color:#06263A; color:#06263A; }
+.node.active .dur { font-variant-numeric:tabular-nums; font-weight:600; }
+
+/* specialist chip row */
+.spec-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; padding-top:10px; border-top:1px solid #293548; }
+.spec {
+  position:relative; width:52px; height:44px; border-radius:6px;
+  background:#1E293B; border:1px solid #293548;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600; letter-spacing:0.08em; color:#64748B;
+}
+.spec .g { position:absolute; top:2px; right:4px; font-size:10px; }
+.spec.done { border-color:#166534; } .spec.done .g { color:#166534; }
+.spec.run  { border-color:#38BDF8; color:#E2E8F0; } .spec.run .g { color:#38BDF8; }
+.spec.idle .g { color:#64748B; }
+
+/* right column · current-step briefing */
+.brief {
+  background:#1E293B; border:1px solid #293548; border-left:3px solid #38BDF8;
+  border-radius:8px; padding:12px 14px;
+}
+.brief summary { list-style:none; cursor:default; }
+.brief summary::-webkit-details-marker { display:none; }
+.brief .bt { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#E2E8F0; }
+.brief .bm { font-size:12px; color:#94A3B8; margin-top:2px; font-variant-numeric:tabular-nums; }
+.fields { margin-top:10px; border-top:1px solid #293548; padding-top:8px; }
+.frow { display:flex; gap:10px; padding:2px 0; font-size:13px; }
+.frow .k { color:#64748B; min-width:132px; flex:none; }
+.frow .v { color:#94A3B8; }
+.frow .v.mono, .frow .v .mono { font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; }
+
+/* ---- Zone 5 · state-trace well ---- */
+.trace {
+  margin:4px 16px 16px;
+  background:#0B1120; border:1px solid #293548; border-radius:6px;
+  color:#94A3B8;
+}
+.trace summary {
+  padding:8px 12px; cursor:pointer; list-style:none;
+  font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B;
+}
+.trace summary::-webkit-details-marker { display:none; }
+.trace pre {
+  font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; line-height:1.5;
+  padding:4px 12px 12px; overflow-x:auto; color:#94A3B8;
+}
+</style>
+</head>
+<body>
+
+<!-- Zone 1 · annunciator — nominal, quiet, dim -->
+<div class="annunciator" role="status" aria-live="polite">
+  <span class="sym">▶</span>
+  <span>IN FLIGHT — 07 · Gary Dispatch + Export</span>
+</div>
+
+<!-- Zone 2 · identity header -->
+<header class="id-header">
+  <span class="mono trial">22b27500-6e67-4dd7-8308-fd89defe3d99</span>
+  <span class="kv">lesson <b>tejal-part-4</b></span>
+  <span class="kv">preset <b>production</b></span>
+  <span class="badge"><span>▶</span> in-flight</span>
+  <span class="chip"><span class="dot"></span> BATCH</span>
+  <span class="chip"><span class="dot"></span> DETECTIVE</span>
+  <span class="chip on"><span class="dot"></span> hil-2026-apc-crossroads-classic-preserve</span>
+  <span class="id-right">
+    <span class="kv">elapsed <b class="num">1:04:22</b></span>
+    <span class="meta">snapshot 2s ago</span>
+  </span>
+</header>
+
+<!-- Zone 3 · health strip -->
+<section class="health" aria-label="health strip">
+  <div class="tile">
+    <div class="lbl">Tokens</div>
+    <div class="val">1.28M</div>
+    <div class="sub">in 984K · out 296K</div>
+    <div class="age">as of 11:14:31 · 8s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Cost</div>
+    <div class="val">$0.31</div>
+    <div class="sub">no cap</div>
+    <div class="age">as of 11:14:31 · 8s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">OpenAI</div>
+    <div class="val">quota: ok</div>
+    <div class="sub"><span class="conf">proxy</span> rate-limit headers</div>
+    <div class="age">12s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Gamma</div>
+    <div class="val">412</div>
+    <div class="sub">credits remaining · <span class="conf">direct</span></div>
+    <div class="age">31s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">ElevenLabs</div>
+    <div class="val">187,440</div>
+    <div class="sub">chars remaining · <span class="conf">direct</span></div>
+    <div class="age">44s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">LangSmith</div>
+    <div class="val">9 runs</div>
+    <div class="sub"><a href="#trace-out">trace ↗</a> · project marcus-spoc</div>
+    <div class="age">6s ago</div>
+  </div>
+</section>
+
+<!-- Zone 4 · main deck -->
+<main class="deck">
+
+  <!-- left · two-stage you-are-here map -->
+  <section aria-label="you-are-here map">
+    <div class="map-group">
+      <div class="map-title">Planning — intake &amp; ratification</div>
+      <div class="node"><span class="mark">✓</span><span class="nid">directive-composer</span><span class="lab">Directive Composer</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">corpus-mount</span><span class="lab">Corpus Mount + Verify</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">material-partition</span><span class="lab">Material Partition</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">lo-refinement</span><span class="lab">LO Refinement — Irene</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">lesson-plan</span><span class="lab">Lesson Plan Draft</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">workflow-compose</span><span class="lab">Workflow Composer</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">g0-evidence-gate</span><span class="lab">Evidence Review</span><span class="gatebadge">⏸ G0E</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">g0-ratify-gate</span><span class="lab">Lesson-Plan + Workflow Ratify</span><span class="gatebadge">⏸ G0R</span></div>
+    </div>
+
+    <div class="map-group">
+      <div class="map-title">Ratified workflow — 15 nodes · Step 21/47</div>
+      <div class="node"><span class="mark">✓</span><span class="nid">01</span><span class="lab">Activation + Preflight</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">02</span><span class="lab">Texas Corpus Retrieval</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">03</span><span class="lab">Irene Pass 1 — LO Refinement</span><span class="gatebadge">⏸ G1</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">04</span><span class="lab">Cora Styleguide Bind</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">05</span><span class="lab">Gamma Variant Generation</span><span class="gatebadge">⏸ G2B</span></div>
+      <div class="node"><span class="mark">✓</span><span class="nid">06</span><span class="lab">Variant Ratify + Layout Lock</span><span class="gatebadge">⏸ G2C</span></div>
+      <div class="node active"><span class="mark">▶</span><span class="nid">07</span><span class="lab">Gary Dispatch + Export</span><span class="dur">04:12 · Step 21/47</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">07W</span><span class="lab">Workbook Export</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">08</span><span class="lab">Irene Pass 2 — Narration</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">09</span><span class="lab">Vera Read-Path Match</span><span class="gatebadge">⏸ G3</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">10</span><span class="lab">Enrique A/B Deltas</span><span class="gatebadge">⏸ G4</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">11</span><span class="lab">Voice Selection</span><span class="gatebadge">⏸ G4A</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">12</span><span class="lab">ElevenLabs Audio Generation</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">13</span><span class="lab">Kling Motion Segments</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">14</span><span class="lab">Descript Assembly</span></div>
+      <div class="node idle"><span class="mark">○</span><span class="nid">15</span><span class="lab">Package + Land</span></div>
+    </div>
+
+    <!-- specialist chip row -->
+    <div class="spec-row" aria-label="specialist roster">
+      <div class="spec done">TX<span class="g">✓</span></div>
+      <div class="spec done">IR<span class="g">✓</span></div>
+      <div class="spec run">GA<span class="g">▶</span></div>
+      <div class="spec idle">VE<span class="g">○</span></div>
+      <div class="spec idle">QR<span class="g">○</span></div>
+      <div class="spec idle">EN<span class="g">○</span></div>
+      <div class="spec idle">KI<span class="g">○</span></div>
+      <div class="spec done">CD<span class="g">✓</span></div>
+    </div>
+  </section>
+
+  <!-- right · current-step briefing (auto-expanded per urgency contract: is_current) -->
+  <aside aria-label="context panel">
+    <details class="brief" open>
+      <summary>
+        <div class="bt">07 · Gary Dispatch + Export</div>
+        <div class="bm">Step 21/47 · running 04:12 · started 11:10:19 · walk index 21</div>
+      </summary>
+      <div class="fields">
+        <div class="frow"><span class="k">locked artifact</span><span class="v mono">07-gary-dispatch/locked-summary.json</span></div>
+        <div class="frow"><span class="k">gamma_deck_id</span><span class="v mono">gam_9f3k2p</span></div>
+        <div class="frow"><span class="k">cards</span><span class="v">18 · export pptx + png archive</span></div>
+        <div class="frow"><span class="k">styleguide</span><span class="v mono">hil-2026-apc-crossroads-classic-preserve</span></div>
+        <div class="frow"><span class="k">conditions</span><span class="v">none</span></div>
+        <div class="frow"><span class="k">blockers</span><span class="v">none</span></div>
+        <div class="frow"><span class="k">pack_version</span><span class="v">v4.2 · no mismatch</span></div>
+        <div class="frow"><span class="k">model</span><span class="v mono">gpt-5 via litellm</span></div>
+      </div>
+    </details>
+  </aside>
+</main>
+
+<!-- Zone 5 · state-trace well (collapsed by default) -->
+<details class="trace">
+  <summary>State trace — 214 events · newest last</summary>
+  <pre>11:10:19  node 07 enter · walk 21 · gary-dispatch
+11:10:21  dispatch → GA gary.export(deck gam_9f3k2p, fmt pptx+png)
+11:12:47  artifact write runs/22b27500…/07-gary-dispatch/deck-export.pptx
+11:13:58  cost tick +$0.04 · openai gpt-5 · irene cache warm
+11:14:31  health snapshot · tokens 1.28M · cost $0.31</pre>
+</details>
+
+</body>
+</html>
