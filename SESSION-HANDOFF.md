@@ -35,7 +35,7 @@
 
 **Ambient left untouched:** `runs/*` trial dirs; `runs/compositor/`; `_tmp-regression*`; `workbooks-test/`; Meeting Recording deconstruct; `.cursor/mcp.json` / `.mcp.json` local edits; unrelated shadow-monitor leftovers; jefferson probe packs optional (session-owned evidence staged if present under evidence/).
 
-**Push:** working-branch push MANDATORY at WRAPUP — see Step 12 note below (SHA filled after push). Master merge SKIPPED (scoped research branch).
+**Push:** working-branch push MANDATORY at WRAPUP — done: `3231dd43` on `origin/dev/agentic-research-foundations-2026-07-10` (trigger: WRAPUP Step 12 / safety-checkpoint). Master merge SKIPPED (scoped research branch).
 
 ---
 
