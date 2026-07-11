@@ -1761,7 +1761,7 @@ development_status:
   trail-trio-2026-07-10: done  # party CLOSE-WITH-AMENDMENTS 4/4; letter trail-trio-close-2026-07-10.md
 
   # === ARC hud-revival-2026-07-11: Operator HUD v1 flight deck (Epic 35; party GO-WITH-AMENDMENTS 2026-07-11) ===
-  # Branch: dev/hud-revival-2026-07-11. SSOT: epics-operator-hud-2026-07-11.md (amended per epic-35-party-greenlight-2026-07-11.md)
+  # Branch: dev/hud-revival-2026-07-11. SSOT: epics-operator-hud-2026-07-11.md (amended per epic-35-party-greenlight-2026-07-11.md) + epic-35-stories-2026-07-11.md
   # Chain: brief (final) -> UX spines (operator-approved) -> architecture spine (final, 19 ADs) -> this epic.
   # Sequence: 35.0 -> 35.1 -> 35.2 -> 35.3 (serial after 35.2) -> 35.5 -> 35.8 (after 35.5) -> 35.7. Lanes: 35.4 || 35.3; 35.6 || 35.5.
   # DoD-over-clock: witness sets non-compressible; stop at last DoD-complete story at the wall.

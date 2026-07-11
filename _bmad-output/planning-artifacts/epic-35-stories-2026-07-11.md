@@ -1,0 +1,50 @@
+# Epic 35 — Story Specs of Record (2026-07-11)
+
+Formal `bmad-dev-story` spec file per greenlight amendment 6. Each story below is the dev contract: ACs live in the amended epic (`epics-operator-hud-2026-07-11.md`) and bind together with greenlight amendments 1–14 (`epic-35-party-greenlight-2026-07-11.md`). This file adds per-story T1 readings, task decomposition, file ownership, design guidance (party-adopted), and the DoD witness set. Sequencing pins (amendment 4) are law. Addressed monitor findings: filed per Grok SOP-E35-000 F-E35-0003.
+
+**Universal T1 readings (every story):** `docs/dev-guide/pipeline-manifest-regime.md`; the story's AD set in `ARCHITECTURE-SPINE.md`; this spec section; the epic AC section. **Universal rules:** no mocks in live legs (NFR5); tests touching network/db marked `serial`/`live`; Windows venv `.venv/Scripts/python.exe`; no commits by dev agents (orchestrator commits post-review); `bmad-code-review` before close.
+
+---
+
+## 35.0 — Tier-2 manifest bump + 4-failure disposition
+**Owns:** `state/config/pipeline-manifest.yaml`, `scripts/utilities/progress_map.py` (stale pin), `tests/test_run_hud.py` + `tests/test_progress_map.py` (dispositions only). **ADs:** 5, 14. **Spec:** dispatched 2026-07-11 ~17:20 with the amendment-5 path list embedded; completion notes to `evidence/hud-35-0-completion-notes.md`. **DoD witness:** lockstep checker exit-0 trace + pytest 0-failed tail + disposition table.
+
+## 35.1 — Operator-surface contract package
+**Owns (all new):** `app/models/runtime/operator_surface.py`, `app/models/schemas/operator-surface.v1.schema.json`, `tests/unit/models/test_operator_surface_shape_pin.py`, `tests/contracts/test_operator_surface_parity.py`, contract-local fixtures. **ADs:** 1, 3(shape), 4, 5, 16, 18, 19.
+**Tasks:** (1) `OperatorSurfaceProjection` v1 strict model — sections: identity (trial_id, lesson, preset, operator_id, schema_version, seq, progress_seq, last_progress_at, envelope_digest, as_of), envelope (status verbatim 7-literal + paused_gate/paused_error_tag/waiting_batch_id/completed_at), next_action (exact command string + pause class), steps (two-stage list, composed-manifest digest + node count, walk_generation/reentered_from, per-step status/conditions/blockers/locked-artifact summary), preflight (items: name/state incl. `missed`≠`fail`/output/latency/quota+confidence), health (tiles: label/value/unit/age/confidence/threshold state; capped history ≤50), specialists (roster activity), modalities (batch/detective/styleguide + provenance), trace (ring ≤200), notifications_echo (parsed HudConfig + parse status). Mirror pydantic-v2 checklist idioms (`validate_assignment`, `extra="forbid"`, timezone-aware datetimes). (2) `read_operator_surface_lenient(raw)` → `Projection | Unrecognized(reason, raw_value, schema_version)`. (3) `derive_event_transitions(prev, cur)` pure function, five classes. (4) `HudConfig` model + loader + single defaults constant. (5) Emit + commit the byte-pin schema; write both pin tests per the decision-card + lesson-plan-parity exemplar patterns. (6) Size tripwire test (>256KB fails; 128KB target warning).
+**DoD witness:** L1 set from epic AC all green (pin, parity, enum set-equality, lenient fixtures, event goldens, caps/tripwire).
+
+## 35.2 — Assembler + runner emission (both walks)
+**Owns:** `app/marcus/orchestrator/operator_surface_assembler.py` (new), `production_runner.py` (emit integration + 3501 reroute ONLY), `tests/` for assembler + walk goldens. **ADs:** 2, 10(producer), 15, 17. **Serial: nothing else touches the runner while open.**
+**Design guidance (party-adopted, Amelia trap 1-2):** stateless construct-on-demand assembler keyed `(trial_id, runs_root)` doing read-merge-write of the existing projection — no singleton, no per-trial global; dissolves the two-walk problem. Freshness tick = context-managed daemon thread (try/finally in BOTH walks, stopped on every pause/terminal/raise path, under the assembler's in-process lock). `run.json` semantics untouched (its plain write_text stays; the 3501 reroute preserves exact envelope content mid-mutation).
+**Tasks:** (1) assembler with section APIs (steps/preflight/health/trace/notifications-echo) + `emit(envelope)` + atomic temp+os.replace with ~5×20ms bounded retry, exhaustion logs-and-skips; ANY emit exception caught/logged/never raises (amendment 8, fault-injection test). (2) `_persist_envelope` calls `assembler.emit`; route the ~3501 bypass through `_persist_envelope`. (3) seq bumps every write; progress_seq only on walk-index change/node lifecycle/preflight item/gate transitions (L1). (4) reconcile-on-entry at start/resume/recover/resume-batch (AD-17, skew fixture). (5) next-action builder co-located with the CLI + parser round-trip test per pause class. (6) both-walk transition goldens; replace-under-open-reader deterministic smoke (party-downgraded).
+**DoD witness:** epic AC test set incl. skew + smoke + fault-injection; both-walk goldens.
+
+## 35.3 — Start-path integration (pinned sequence + pre-flight/heartbeats)
+**Owns:** `app/marcus/cli/trial.py` start path, `production_runner.py` start region (AFTER 35.2 merges), pre-flight executor module (new, e.g. `app/marcus/orchestrator/preflight.py`), launch plumbing. **Does NOT own `app/hud/server.py`** (35.4's; identity passed via launch args/env). **ADs:** 7, 8(launch side), 11.
+**Topology decision of record (amendment 12):** pinned sequence maps onto `start_trial` + `run_production_trial`; pre-envelope exits `cancelled-at-g0`/`saved-only` leave projection at `registered` + terminal trace event.
+**Tasks:** (1) mint→dir→registered-projection→launch server child (`subprocess.Popen` uvicorn, env carries trial_id/run_dir/nonce/port; atexit+terminate; launch fail → pre-flight FAIL never a raise)→pre-flight→SPOC. (2) phase-01 items from ready_for_trial set in-runtime. (3) phase-02 LIVE heartbeats v1 = OpenAI + Gamma + LangSmith-env (amendment 10), latency+quota+confidence into projection per item; `missed`≠`fail`. (4) healthz identity pre-flight item (trial_id+nonce match; wrong-server-on-port fixture). (5) L3 live witness: one real start-path run banked.
+**DoD witness:** wrong-server fixture + identity item tests + L3 start witness evidence dir.
+
+## 35.4 — GET-only HUD server + reader (∥ 35.3)
+**Owns (all new):** `app/hud/server.py`, `app/hud/data.py`, `tests/hud/test_server*.py`. **ADs:** 6, 8(consumer).
+**Tasks:** (1) FastAPI GET-only `/`, `/projection`, `/healthz {trial_id, launch_nonce, mode}`; route-inventory test proves no non-GET. (2) ETag `<schema_version>:<seq>`, route-implemented If-None-Match→304, read-then-respond bytes (no streaming FileResponse). (3) `read_operator_surface_lenient(run_dir)` explicit-path reader. (4) REFUSE-TO-RENDER payload on identity mismatch. (5) import-linter contracts (no orchestrator, no hud_data_sources, no strict parse) — coordinate additions with 35.8's fence set (35.4 adds only its own).
+**DoD witness:** route inventory + ETag/304 + refuse-to-render + lint-imports green.
+
+## 35.5 — Flight-deck render retarget (after 35.2 + 35.4)
+**Owns:** `app/hud/render/**` (new; shell extracted FROM `scripts/utilities/run_hud.py` — read-only source until 35.8 stubs it), `tests/hud/test_render*.py`, golden fixtures. **ADs:** 12 + UX spines binding.
+**Tasks:** (1) extract/retarget render shell to pure `render(data)->html` fed by projection dicts; DESIGN.md tokens verbatim; urgency auto-expand carried. (2) v1 golden matrix (amendment 10): 7 statuses + no-active-run/unrecognized/refuse-to-render/stale-veil; three briefing cards with inline artifacts + command block; two-stage map; health strip; modality chips; trace well; narrowed-component-selection fixture (amendment 11); legacy-shaped dir → UNRECOGNIZED. (3) poll JS: zone-scoped innerHTML replacement preserving disclosure/scroll/selection, tested as render unit. (4) re-point kept render pins at projection fixtures; Dev-Cycle/M5 panels absent.
+**DoD witness:** golden matrix green + render-unit preservation test + pin re-point diff.
+
+## 35.6 — Notifier + watchdog + push (∥ 35.5)
+**Owns (all new):** `app/notify/**`, `tests/notify/**`, `state/config/hud-config.yaml` (schema from 35.1's HudConfig), notifier state dir. **ADs:** 9, 10(consumer), 18, 19.
+**Design guidance (Amelia trap 3):** own process via `DETACHED_PROCESS`/`CREATE_NEW_PROCESS_GROUP` creation flags (survives session death — budget the Windows work here); launched by start path; exits on terminal status + grace.
+**Tasks:** (1) projection watcher using contract `derive_event_transitions` ONLY; five classes; config opt-in. (2) watchdog on frozen progress_seq (600s default) + producer-dead reading; batch status exempt. (3) restart semantics: own state file `{last_processed_progress_seq, last_status}`; paused_* fire iff active+unacknowledged; batch_pause_resumed transition-only (restart-mid-pause fixture). (4) Apprise push: ntfy accountless live witness (amendment 10); Pushover config-swap ready; env creds only; add `apprise>=1.9.8,<2` dep. (5) fault-injection: notifier failure never propagates.
+**DoD witness:** event goldens + watchdog unit + restart fixture + fault injection + banked ntfy delivery receipt.
+
+## 35.7 — E2E witness run + party performance review (last)
+**Owns:** evidence only (no production code). **Scoped-verdict schema (amendment 2) + Murat 10-item checklist (amendment 14) + abort/continuity criterion (amendment 9) bind verbatim.** Small run per amendment 3 (component_selection all-true; slide count minimized via corpus/LO curation; emergent count recorded). L3s promoted to L2 goldens; SC5 stays open as L4.
+
+## 35.8 — Legacy retirement + import fences (after 35.5)
+**Owns:** `scripts/utilities/run_hud.py` (→ deprecation stub), `scripts/utilities/hud_data_sources.py` (retire from HUD path), `tests/test_run_hud.py` (retire incl. the two 35.0 skips), pyproject import-linter contracts (full fence set), manifest trigger-row updates (Tier-1 inside the v4.3 envelope). **ADs:** 8, 12, paradigm arrows.
+**DoD witness:** lint-imports green + full suite green (minus quarantined/live) + manifest checker exit 0.
