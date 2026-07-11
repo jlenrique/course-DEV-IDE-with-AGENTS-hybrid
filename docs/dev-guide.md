@@ -2,7 +2,7 @@
 
 ## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
 
-This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10).
+This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), and the TRAIL-trio close (OpenAlex adapter, glossary polish, semantic WARN tripwire, 2026-07-10).
 
 ### Current Implementation Boundary
 
@@ -10,6 +10,8 @@ This guide is currently anchored on the Marcus-SPOC local runtime. The product i
 - Current committed seams include `app/marcus/lesson_plan/source_assessment.py`, `planning_ratification.py`, `planning_context.py`, `collateral_selection.py`, `app/marcus/cli/plan_ratify_cli.py`, and `app/specialists/irene_pass1/_act.py`.
 - Active product-gap work visible on this branch should be treated as in-flight until committed close evidence lands. That includes automatic Irene collateral to `ComponentSelection`, interactive planning dialogue/LO UX, per-SME routing, canonical processed-source hardening, projector family expansion, and workbook prose uplift.
 - Batch LLM Execution Mode v1 is closed on `dev/batch-mode-2026-07-10` (epic party-CLOSED 4/4, 2026-07-10): opt-in batch transport for vision/07G perception only. The default execution mode remains realtime, and the done-bar is hermetic-only. Seam map in the batch section below.
+- Agentic Research Foundations is promoted/closed on `dev/agentic-research-foundations-2026-07-10` (R0–R7, live evidence packs under `_bmad-output/implementation-artifacts/evidence/research-r*/`): posture-aware detective intents, Scite∩Consensus triangulation, evidence-hierarchy credibility on every research row, Irene anti-fabrication intake, and the R7 hard-pause gate before Pass-2. `MARCUS_RESEARCH_DETECTIVE_LIVE` is **default OFF**; flag-OFF stays bit-identical. Seam map in the research section below.
+- Workbook Research Products is closed (W0–W4, evidence packs `evidence/workbook-w*/`): shared M3-safe research-packet reader, glossary + trends projections, Tejal live arm with MD/DOCX parity. The TRAIL trio (OpenAlex Texas adapter, glossary SME polish with capability note, WARN-only semantic tripwire) is closed under claim fences the same day.
 
 ### Current Lesson-Planning Data Path
 
@@ -86,6 +88,32 @@ Scope boundaries (declared, not silently absent):
 - The workbook is not batch-eligible.
 - Live provider batch turnaround, and `resume-batch` behavior under provider-job failure/expiry, are not yet characterized live.
 - Product batch model is realtime `gpt-5.5`, with nearest GPT-5-family fallback if the provider Batch API rejects the model. No cost-savings outcome is asserted or measured (any discount is the provider's advertised batch pricing), and no batch-turnaround SLA exists.
+
+### Agentic Research Foundations Seams (R0–R7) + Workbook Research Products (W0–W4)
+
+The research leg runs at manifest node **04.55** and its consumers read one shared packet. Seam map:
+
+- Runner wiring + detective flag: `app/marcus/orchestrator/research_wiring.py` — runs the Irene→Tracy→Texas bridge at node 04.55 and lands the research contribution on the envelope. `MARCUS_RESEARCH_DETECTIVE_LIVE` is **default OFF**; the flag-OFF path is bit-identical to pre-R0 behavior.
+- Posture runtime: `app/specialists/tracy/posture_dispatch.py` (+ `skills/bmad_agent_tracy/scripts/posture_dispatcher.py`, `irene_bridge.py`) — dispatches retrieval under a closed posture-intent set (a `corroborate`, b `gap_fill`, c `embellish`). The LLM Tracy graph as production default is TRAIL, not shipped.
+- Credibility: `app/marcus/orchestrator/research_credibility.py` — classifies every retrieval row onto the closed evidence-hierarchy tier set (T1 systematic review → unclassified; taxonomy SSOT at [`docs/dev-guide/research-evidence-hierarchy.md`](dev-guide/research-evidence-hierarchy.md)) plus peer-review and provenance fields. Do not invent tiers; the set is closed.
+- Citation: `app/marcus/orchestrator/research_citation.py` — mints cited entries with deterministic `source_ref`/`source_digest` provenance.
+- Triangulation: `skills/bmad-agent-texas/scripts/retrieval/triangulator.py` — Scite∩Consensus title-bridge clustering for corroborate intents (`dual_provider` clusters).
+- Hard-pause gate: `app/marcus/orchestrator/research_detective_gate.py` — with the detective flag ON, blocks Irene Pass-2 dispatch (node 08) until an operator disposition receipt (approve | reject | defer) lands. R7 is "Teeth-Thin": the pause teeth are shipped; resume/recover atomicity across the pause is explicitly NOT claimed (TRAIL `tracy-gate-resume-recover`).
+- Specialist intake: `app/specialists/_shared/research_intake.py` — converts wrangled research entries into specialist-safe intake with an anti-fabrication guard (fabricate-cite is RED). Specialists consume via the `app/specialists/irene/retrieval_intake.py` barrel — the **M3 boundary**: specialists never import `app.marcus.orchestrator`.
+- Packet reader (W1): `app/marcus/lesson_plan/research_packet.py` — thin shared shape-pinned reader over the node-04.55 contribution; ≥2 consumers must read the same digest. **Standing invariant (binding): wrangled research remains available to appropriate run consumers — it is not workbook-only.**
+- Glossary projection (W2): `app/marcus/lesson_plan/glossary_projection.py` — encyclopedia glossary from credibility-labeled rows; emits `GLOSSARY_CAPABILITY_NOTE` (research-informed stub, not human SME-reviewed); writer is injectable (SME writer replacement is a pinned seam).
+- Trends projection (W3): `app/marcus/lesson_plan/trends_projection.py` — grounded `ResearchTrendsBrief` (trend claims + bounded hot-topics); model-prior content is treated as unusable.
+- Compose blocks (W4): `## Research Glossary` lands pre-References, `## Research Trends` post-References, wired in `app/specialists/workbook_producer/_act.py` with **empty-honesty** — an empty packet omits the sections, never pads them.
+- Semantic tripwire (TRAIL-trio thin slice): `app/specialists/_shared/source_fidelity_audit.py` — `SEMANTIC_TRIPWIRE` + `audit_semantic_framing`, **WARN-only** (`gates_production=False`). It is a heuristic pipeline+disposition substrate; it does not catch all weak claims and must not be described as semantic validation. Full claim↔source audit remains open TRAIL (`braid-workbook-semantic-claim-citation-audit`).
+
+Retrieval providers (Texas Shape-3, roster authoritative via `run_wrangler.py --list-providers` / `retrieval.list_providers()`):
+
+- `scite_provider.py`, `consensus_provider.py` — triangulation pair (Consensus MCP needs OAuth; Scite via refresh-token flow).
+- `openalex_provider.py` — public-API DOI metadata + OA link discovery only; `authority_tier` deliberately `None` (OA ≠ peer-reviewed); no PDF byte download, no SSO, no credibility scoring.
+- `jefferson_library_provider.py` — institutional-library seam; hermetic-proven, live fenced on `chrome_running_quit_required` (needs an available Chrome SSO session).
+- Default-ON policy for detective / Consensus / Jefferson is a party decision that has NOT been taken.
+
+Live evidence discipline: each story has a `scripts/utilities/run_research_r{1–7}_live_evidence.py` / `run_workbook_w{1–4}_live_evidence.py` / `run_openalex_live_evidence.py` driver writing a timestamped pack under `_bmad-output/implementation-artifacts/evidence/` with `verdict.json` + `PROOF.md`; first-run-stands, no retry-to-green.
 
 ### Development Guardrails
 
@@ -729,7 +757,7 @@ This is where you come in. The three-layer architecture means there are three di
 
 **Scope summary:** Subclass `RetrievalAdapter` under `skills/bmad-agent-texas/scripts/retrieval/`, declare a `PROVIDER_INFO: ClassVar[ProviderInfo]` so the directory auto-registers, implement the seven abstract methods (formulate_query, execute, apply_mechanical, apply_provider_scored, normalize, refine, identity_key), and parametrize `tests/contracts/test_retrieval_adapter_base.py` against your new adapter instead of copying test bodies.
 
-**Full recipe:** [docs/dev-guide/how-to-add-a-retrieval-provider.md](dev-guide/how-to-add-a-retrieval-provider.md) — SciteProvider is the living worked example.
+**Full recipe:** [docs/dev-guide/how-to-add-a-retrieval-provider.md](dev-guide/how-to-add-a-retrieval-provider.md) — SciteProvider is the living worked example. Shipped adapters as of 2026-07-10: Scite, Consensus, OpenAlex (public DOI metadata + OA links; `authority_tier=None` by design), and the Jefferson library seam (live fenced on Chrome SSO session availability). The provider directory (`run_wrangler.py --list-providers`) stays authoritative for the roster.
 
 ### Evaluator Design Requirements (Lessons from Story 3.1)
 

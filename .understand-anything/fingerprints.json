@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "bfe5a02afb6c272bac00f2ccf506e008fdee2975",
-  "generatedAt": "2026-07-10T14:25:31.280Z",
+  "gitCommitHash": "3b88dd1e35bde1e90be7ab176d907f92ef191e0e",
+  "generatedAt": "2026-07-11T03:26:21.395Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -15440,6 +15440,137 @@
       "totalLines": 337,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/glossary_projection.py": {
+      "filePath": "app/marcus/lesson_plan/glossary_projection.py",
+      "contentHash": "05256b6aaa8f9bc8597dbedbba15f5c40670f1f642a80dfead2fc5d3a30fa276",
+      "functions": [
+        {
+          "name": "_term_from_title",
+          "params": [
+            "title",
+            "fallback"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "default_glossary_writer",
+          "params": [
+            "entry"
+          ],
+          "returnType": "GlossaryArticleBrief",
+          "exported": true,
+          "lineCount": 81
+        },
+        {
+          "name": "project_glossary_articles",
+          "params": [
+            "packet",
+            "writer",
+            "max_articles"
+          ],
+          "returnType": "tuple[tuple[GlossaryArticleBrief, ...], str | None, tuple[str, ...]]",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "glossary_inputs_from_run",
+          "params": [
+            "run_dir",
+            "writer",
+            "max_articles"
+          ],
+          "returnType": "tuple[tuple[GlossaryArticleBrief, ...], str | None, tuple[str, ...]]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "render_glossary_markdown",
+          "params": [
+            "articles",
+            "empty_reason"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 48
+        }
+      ],
+      "classes": [
+        {
+          "name": "GlossaryArticleBrief",
+          "methods": [],
+          "properties": [
+            "term",
+            "headline",
+            "body",
+            "citation_id",
+            "source_ref",
+            "source_id",
+            "provider",
+            "evidence_hierarchy_tier",
+            "peer_reviewed",
+            "provider_provenance",
+            "triangulation_status",
+            "reliability_score",
+            "title"
+          ],
+          "exported": true,
+          "lineCount": 16
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable",
+            "Sequence"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.research_packet",
+          "specifiers": [
+            "ResearchPacket",
+            "load_research_packet",
+            "resolve_for_glossary_writer"
+          ]
+        }
+      ],
+      "exports": [
+        "GlossaryArticleBrief",
+        "_term_from_title",
+        "default_glossary_writer",
+        "project_glossary_articles",
+        "glossary_inputs_from_run",
+        "render_glossary_markdown"
+      ],
+      "totalLines": 299,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/irene_refinement.py": {
       "filePath": "app/marcus/lesson_plan/irene_refinement.py",
       "contentHash": "36d083643a07d37baeaee8c7d60875ae64d4a45dd16184fa84d5a11a307be124",
@@ -17649,6 +17780,162 @@
       "totalLines": 74,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/research_packet.py": {
+      "filePath": "app/marcus/lesson_plan/research_packet.py",
+      "contentHash": "99be724104003c510fb543af4e01e637df62c11fa15d724a4af50a8e803f07de",
+      "functions": [
+        {
+          "name": "_digest_payload",
+          "params": [
+            "payload"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_entry_shape_ok",
+          "params": [
+            "entry"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_empty_packet",
+          "params": [
+            "status",
+            "known_losses"
+          ],
+          "returnType": "ResearchPacket",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "load_research_packet",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "ResearchPacket",
+          "exported": true,
+          "lineCount": 80
+        },
+        {
+          "name": "resolve_for_consumer",
+          "params": [
+            "run_dir",
+            "consumer_id",
+            "require_usable"
+          ],
+          "returnType": "ResearchPacket",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "resolve_for_glossary_writer",
+          "params": [
+            "run_dir",
+            "require_usable"
+          ],
+          "returnType": "ResearchPacket",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "resolve_for_trends_projector",
+          "params": [
+            "run_dir",
+            "require_usable"
+          ],
+          "returnType": "ResearchPacket",
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [
+        {
+          "name": "ResearchPacketShapeError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ResearchPacket",
+          "methods": [
+            "usable"
+          ],
+          "properties": [
+            "schema_version",
+            "status",
+            "entries",
+            "known_losses",
+            "research_intake",
+            "triangulation_receipt",
+            "packet_digest",
+            "node_id",
+            "specialist_id"
+          ],
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.workbook_enrichment",
+          "specifiers": [
+            "RunEnvelopeCorruptError",
+            "load_run_envelope"
+          ]
+        }
+      ],
+      "exports": [
+        "ResearchPacketShapeError",
+        "ResearchPacket",
+        "_digest_payload",
+        "_entry_shape_ok",
+        "_empty_packet",
+        "load_research_packet",
+        "resolve_for_consumer",
+        "resolve_for_glossary_writer",
+        "resolve_for_trends_projector"
+      ],
+      "totalLines": 273,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/retrieval_narration_grammar.py": {
       "filePath": "app/marcus/lesson_plan/retrieval_narration_grammar.py",
       "contentHash": "537f866fb84af0225c7be52509d9c95bdcbe4891178a9533bb161255f8f1430b",
@@ -18867,6 +19154,195 @@
       "totalLines": 39,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/trends_projection.py": {
+      "filePath": "app/marcus/lesson_plan/trends_projection.py",
+      "contentHash": "f694912ba7f68fa229ec738582e8f1fab62562ec5057902a3724d32dcd2be519",
+      "functions": [
+        {
+          "name": "_topic_phrase",
+          "params": [
+            "title",
+            "fallback"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_confidence_for_entry",
+          "params": [
+            "entry"
+          ],
+          "returnType": "Confidence",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_provenance",
+          "params": [
+            "entry"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_trend_from_entry",
+          "params": [
+            "entry"
+          ],
+          "returnType": "ResearchTrendClaim | None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "reject_model_prior_topic",
+          "params": [
+            "topic",
+            "packet"
+          ],
+          "returnType": "HotTopicCallout",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "project_trends_from_packet",
+          "params": [
+            "packet",
+            "max_trends",
+            "max_hot_topics",
+            "injected_topics"
+          ],
+          "returnType": "ResearchTrendsBrief",
+          "exported": true,
+          "lineCount": 88
+        },
+        {
+          "name": "trends_inputs_from_run",
+          "params": [
+            "run_dir",
+            "max_trends",
+            "max_hot_topics",
+            "injected_topics"
+          ],
+          "returnType": "ResearchTrendsBrief",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "render_trends_markdown",
+          "params": [
+            "brief"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 65
+        }
+      ],
+      "classes": [
+        {
+          "name": "ResearchTrendClaim",
+          "methods": [],
+          "properties": [
+            "claim_text",
+            "citation_id",
+            "source_ref",
+            "source_id",
+            "title",
+            "confidence",
+            "evidence_hierarchy_tier",
+            "peer_reviewed",
+            "provider_provenance",
+            "triangulation_status",
+            "reliability_score"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "HotTopicCallout",
+          "methods": [],
+          "properties": [
+            "topic",
+            "rationale",
+            "supporting_citation_ids",
+            "source_refs",
+            "confidence"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "ResearchTrendsBrief",
+          "methods": [
+            "usable"
+          ],
+          "properties": [
+            "trends",
+            "hot_topics",
+            "known_losses",
+            "empty_reason"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Sequence"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.research_packet",
+          "specifiers": [
+            "ResearchPacket",
+            "resolve_for_trends_projector"
+          ]
+        }
+      ],
+      "exports": [
+        "ResearchTrendClaim",
+        "HotTopicCallout",
+        "ResearchTrendsBrief",
+        "_topic_phrase",
+        "_confidence_for_entry",
+        "_provenance",
+        "_trend_from_entry",
+        "reject_model_prior_topic",
+        "project_trends_from_packet",
+        "trends_inputs_from_run",
+        "render_trends_markdown"
+      ],
+      "totalLines": 400,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/workbook_enrichment.py": {
       "filePath": "app/marcus/lesson_plan/workbook_enrichment.py",
       "contentHash": "7c3770ce4eebd0d1fdbdabcd7fa3ebc932a7a2da1a56ffa744ff40d03664b677",
@@ -19106,7 +19582,7 @@
     },
     "app/marcus/lesson_plan/workbook_producer.py": {
       "filePath": "app/marcus/lesson_plan/workbook_producer.py",
-      "contentHash": "d242d15ae70126cb3a37e40a40a14bf53dbb8ade2811406126e03f793457ce41",
+      "contentHash": "03585d1a4dae41c2113f99481efa869854ccbca08f72fb27ded489d70e3a60de",
       "functions": [
         {
           "name": "load_transcript_segments",
@@ -19208,11 +19684,14 @@
             "further_reading",
             "research_entries",
             "research_empty_reason",
-            "research_omitted_note"
+            "research_omitted_note",
+            "glossary_articles",
+            "glossary_empty_reason",
+            "research_trends"
           ],
           "returnType": "_ComposedDoc",
           "exported": true,
-          "lineCount": 246
+          "lineCount": 313
         },
         {
           "name": "render_markdown",
@@ -19340,10 +19819,15 @@
             "provider",
             "source_id",
             "source_hash",
-            "supports_segment_id"
+            "supports_segment_id",
+            "evidence_hierarchy_tier",
+            "peer_reviewed",
+            "provider_provenance",
+            "triangulation_status",
+            "reliability_score"
           ],
           "exported": true,
-          "lineCount": 15
+          "lineCount": 23
         },
         {
           "name": "_ComposedDoc",
@@ -19382,7 +19866,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 187
+          "lineCount": 207
         }
       ],
       "imports": [
@@ -19417,6 +19901,7 @@
         {
           "source": "typing",
           "specifiers": [
+            "TYPE_CHECKING",
             "Any",
             "Final"
           ]
@@ -19500,7 +19985,7 @@
         "_narrative_body_text",
         "_tokenize"
       ],
-      "totalLines": 1095,
+      "totalLines": 1194,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/__init__.py": {
@@ -24147,7 +24632,7 @@
     },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "2f9baf7f315b54db39a8c4a2cc3271ec6f4cc6339b33e7e2085ae6c971c950df",
+      "contentHash": "c2079e33b1d457d04340a13a013360bc5021b02d5124dbf7f6878eab0591c406",
       "functions": [
         {
           "name": "_research_dispatch_live",
@@ -24848,7 +25333,7 @@
           ],
           "returnType": "tuple[ProductionEnvelope, RunState]",
           "exported": true,
-          "lineCount": 108
+          "lineCount": 117
         },
         {
           "name": "_pause_at_error",
@@ -25191,6 +25676,7 @@
             "irene_refinement_wiring",
             "package_builders",
             "pre_gate_marcus",
+            "research_detective_gate",
             "research_wiring",
             "specialist_summary_writer",
             "storyboard_publisher",
@@ -25426,12 +25912,12 @@
         "recover_production_trial",
         "_continue_production_walk"
       ],
-      "totalLines": 4046,
+      "totalLines": 4056,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_citation.py": {
       "filePath": "app/marcus/orchestrator/research_citation.py",
-      "contentHash": "a35004ec251e58c223ca0197ec768aa95abc76042765ebd98726be4a2082631b",
+      "contentHash": "57eb74a2c9b0a1085e70df5c0c8d5ce9c208aa61a601af1b7289f077215e990a",
       "functions": [
         {
           "name": "derive_source_ref",
@@ -25456,11 +25942,33 @@
           "name": "mint_cited_entry",
           "params": [
             "row",
-            "citation_index"
+            "citation_index",
+            "triangulation_status",
+            "reliability_score",
+            "provider_provenance"
           ],
           "returnType": "CitedResearchEntry",
           "exported": true,
-          "lineCount": 12
+          "lineCount": 30
+        },
+        {
+          "name": "assert_credibility_fields",
+          "params": [
+            "entry"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "apply_triangulation_to_entries",
+          "params": [
+            "entries",
+            "receipt"
+          ],
+          "returnType": "list[CitedResearchEntry]",
+          "exported": true,
+          "lineCount": 46
         },
         {
           "name": "build_retrieval_source_refs",
@@ -25553,17 +26061,25 @@
         },
         {
           "name": "CitedResearchEntry",
-          "methods": [],
+          "methods": [
+            "_tier_closed_set",
+            "_provenance_nonempty_when_present"
+          ],
           "properties": [
             "citation_id",
             "source_ref",
             "provider",
             "source_id",
             "title",
-            "source_hash"
+            "source_hash",
+            "evidence_hierarchy_tier",
+            "peer_reviewed",
+            "provider_provenance",
+            "triangulation_status",
+            "reliability_score"
           ],
           "exported": true,
-          "lineCount": 11
+          "lineCount": 34
         }
       ],
       "imports": [
@@ -25590,7 +26106,16 @@
           "specifiers": [
             "BaseModel",
             "ConfigDict",
-            "Field"
+            "Field",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.research_credibility",
+          "specifiers": [
+            "EVIDENCE_HIERARCHY_TIERS",
+            "classify_evidence_hierarchy",
+            "provider_provenance_for_row"
           ]
         },
         {
@@ -25606,6 +26131,8 @@
         "derive_source_ref",
         "compute_source_hash",
         "mint_cited_entry",
+        "assert_credibility_fields",
+        "apply_triangulation_to_entries",
         "build_retrieval_source_refs",
         "count_unsourced_citations",
         "gate_citation_fidelity",
@@ -25615,13 +26142,281 @@
         "find_duplicate_citations",
         "dedupe_cited_entries"
       ],
-      "totalLines": 283,
+      "totalLines": 398,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/research_credibility.py": {
+      "filePath": "app/marcus/orchestrator/research_credibility.py",
+      "contentHash": "dc212d696164c012a8d84ee9e11f3e39ed88b3f3ae5877663e8235cd41b91b5e",
+      "functions": [
+        {
+          "name": "_nested_meta",
+          "params": [
+            "row"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "classify_evidence_hierarchy",
+          "params": [
+            "row"
+          ],
+          "returnType": "tuple[EvidenceHierarchyTier, bool]",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "provider_provenance_for_row",
+          "params": [
+            "row"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        }
+      ],
+      "exports": [
+        "_nested_meta",
+        "classify_evidence_hierarchy",
+        "provider_provenance_for_row"
+      ],
+      "totalLines": 106,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/research_detective_gate.py": {
+      "filePath": "app/marcus/orchestrator/research_detective_gate.py",
+      "contentHash": "f735bc44314ff32565f877cb27d92870a522895417d4d008ce4c869ac584fceb",
+      "functions": [
+        {
+          "name": "disposition_path",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "landing_path",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "is_pass2_dispatch",
+          "params": [
+            "specialist_id",
+            "node_id"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "write_landing_point",
+          "params": [
+            "run_dir",
+            "trial_id",
+            "node_id"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "write_disposition",
+          "params": [
+            "run_dir",
+            "disposition",
+            "operator_id",
+            "rationale",
+            "trial_id"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "load_disposition",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "disposition_unlocks_pass2",
+          "params": [
+            "receipt"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "enforce_before_pass2",
+          "params": [
+            "specialist_id",
+            "node_id",
+            "run_dir"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 42
+        }
+      ],
+      "classes": [
+        {
+          "name": "ResearchDetectiveGateError",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.research_wiring",
+          "specifiers": [
+            "research_detective_live"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        }
+      ],
+      "exports": [
+        "ResearchDetectiveGateError",
+        "disposition_path",
+        "landing_path",
+        "is_pass2_dispatch",
+        "write_landing_point",
+        "write_disposition",
+        "load_disposition",
+        "disposition_unlocks_pass2",
+        "enforce_before_pass2"
+      ],
+      "totalLines": 196,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_wiring.py": {
       "filePath": "app/marcus/orchestrator/research_wiring.py",
-      "contentHash": "106f780d12bc7fd1f202d8a2520b6d8fb8d1302c431f72b92221be0eff7e2d66",
+      "contentHash": "bcec44afcb2e65df454a80d826dd7ac0a189ba811e694b06cf6f47f443f7b3f8",
       "functions": [
+        {
+          "name": "research_detective_live",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_truthy_flag",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "evidence_bolster_active",
+          "params": [
+            "brief"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "consensus_creds_present",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "resolve_research_posture",
+          "params": [
+            "brief"
+          ],
+          "returnType": "ResearchPosture",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_legacy_intent_text",
+          "params": [
+            "brief"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_detective_intent_text",
+          "params": [
+            "brief",
+            "posture"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
+        },
         {
           "name": "_import_retrieval",
           "params": [],
@@ -25709,7 +26504,7 @@
           ],
           "returnType": "ProductionEnvelope",
           "exported": true,
-          "lineCount": 170
+          "lineCount": 241
         },
         {
           "name": "build_retrieval_source_refs_for_entries",
@@ -25756,7 +26551,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 76
+          "lineCount": 105
         },
         {
           "name": "RetrievalProviderUnavailableError",
@@ -25774,6 +26569,12 @@
           ]
         },
         {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
           "source": "sys",
           "specifiers": [
             "sys"
@@ -25788,13 +26589,16 @@
         {
           "source": "typing",
           "specifiers": [
-            "Any"
+            "Any",
+            "Literal"
           ]
         },
         {
           "source": "app.marcus.orchestrator.research_citation",
           "specifiers": [
             "CitedResearchEntry",
+            "apply_triangulation_to_entries",
+            "assert_credibility_fields",
             "assemble_l2_citation_report",
             "audit_research_supplements",
             "build_citation_manifest",
@@ -25812,6 +26616,13 @@
         }
       ],
       "exports": [
+        "research_detective_live",
+        "_truthy_flag",
+        "evidence_bolster_active",
+        "consensus_creds_present",
+        "resolve_research_posture",
+        "_legacy_intent_text",
+        "_detective_intent_text",
         "DeterministicPostureSelector",
         "RetrievalProviderUnavailableError",
         "_import_retrieval",
@@ -25829,7 +26640,7 @@
         "_is_retrieval_intent",
         "research_entries_from_envelope"
       ],
-      "totalLines": 665,
+      "totalLines": 909,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/routing.py": {
@@ -40139,7 +40950,7 @@
     },
     "app/runtime/llm_execution_config.py": {
       "filePath": "app/runtime/llm_execution_config.py",
-      "contentHash": "dee116178ce833cb6fff9e90b495073295f22ca237dc747fc0e092e02153f158",
+      "contentHash": "11c095abbf6cfb6782042c7128e2d5c5a27212982de096e675a2836e670f37ea",
       "functions": [
         {
           "name": "load_llm_execution",
@@ -40180,7 +40991,7 @@
             "batch"
           ],
           "exported": true,
-          "lineCount": 17
+          "lineCount": 21
         },
         {
           "name": "LlmExecutionConfig",
@@ -40233,7 +41044,7 @@
         "LlmExecutionConfig",
         "load_llm_execution"
       ],
-      "totalLines": 109,
+      "totalLines": 116,
       "hasStructuralAnalysis": true
     },
     "app/runtime/minimal_node.py": {
@@ -41715,10 +42526,155 @@
       "totalLines": 115,
       "hasStructuralAnalysis": true
     },
+    "app/specialists/_shared/research_intake.py": {
+      "filePath": "app/specialists/_shared/research_intake.py",
+      "contentHash": "c58e9ab51d4f13da4d91b68f98fcfb18505fe33445fb3118f07ed866c1b9ff08",
+      "functions": [
+        {
+          "name": "_providers_for_entry",
+          "params": [
+            "entry"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "attribution_phrase_for_entry",
+          "params": [
+            "entry"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "build_retrieval_provenance",
+          "params": [
+            "entries"
+          ],
+          "returnType": "list[RetrievalProvenanceItem]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "resolvable_source_ids",
+          "params": [
+            "entries"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "assert_no_fabricated_citations",
+          "params": [
+            "cited_source_ids",
+            "entries"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "consume_research_entries",
+          "params": [
+            "entries",
+            "cluster_id",
+            "intake_mode",
+            "evidence_bolster_active"
+          ],
+          "returnType": "ResearchIntakePacket",
+          "exported": true,
+          "lineCount": 30
+        }
+      ],
+      "classes": [
+        {
+          "name": "FabricatedCitationError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "RetrievalProvenanceItem",
+          "methods": [],
+          "properties": [
+            "source_id",
+            "providers",
+            "citation_id",
+            "source_ref",
+            "evidence_hierarchy_tier",
+            "peer_reviewed",
+            "triangulation_status",
+            "reliability_score",
+            "attribution_phrase"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "ResearchIntakePacket",
+          "methods": [],
+          "properties": [
+            "cluster_id",
+            "intake_mode",
+            "evidence_bolster_active",
+            "entries_consumed",
+            "retrieval_provenance",
+            "known_losses",
+            "attribution_phrases"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field"
+          ]
+        }
+      ],
+      "exports": [
+        "FabricatedCitationError",
+        "RetrievalProvenanceItem",
+        "ResearchIntakePacket",
+        "_providers_for_entry",
+        "attribution_phrase_for_entry",
+        "build_retrieval_provenance",
+        "resolvable_source_ids",
+        "assert_no_fabricated_citations",
+        "consume_research_entries"
+      ],
+      "totalLines": 199,
+      "hasStructuralAnalysis": true
+    },
     "app/specialists/_shared/source_fidelity_audit.py": {
       "filePath": "app/specialists/_shared/source_fidelity_audit.py",
-      "contentHash": "3ef0a5d296fe21ff0ff9eafe543a2cffb222214d653fcf4793242ae839ff6078",
+      "contentHash": "01a4a463042b6de7feca4036d48ca3752c12673289e6476aa93ca46729c6bb78",
       "functions": [
+        {
+          "name": "audit_semantic_framing",
+          "params": [
+            "narration_text",
+            "source_text"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 68
+        },
         {
           "name": "_normalized_token_map",
           "params": [
@@ -41746,7 +42702,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 165
+          "lineCount": 150
         },
         {
           "name": "_nearest_source_token",
@@ -41794,6 +42750,7 @@
         }
       ],
       "exports": [
+        "audit_semantic_framing",
         "_normalized_token_map",
         "_normalize_supplements",
         "audit_numeric_provenance",
@@ -41801,7 +42758,7 @@
         "_kind_of",
         "_value_of"
       ],
-      "totalLines": 303,
+      "totalLines": 454,
       "hasStructuralAnalysis": true
     },
     "app/specialists/_shared/voice_direction_map.py": {
@@ -49051,6 +50008,31 @@
       "imports": [],
       "exports": [],
       "totalLines": 43,
+      "hasStructuralAnalysis": true
+    },
+    "app/specialists/irene/retrieval_intake.py": {
+      "filePath": "app/specialists/irene/retrieval_intake.py",
+      "contentHash": "4a48953f77a7cd1f163f5a01766e0cb1b34be9e7e540105cc41d331eaba2fe88",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.specialists._shared.research_intake",
+          "specifiers": [
+            "CONVERGENCE_NARRATION_PATTERNS",
+            "FabricatedCitationError",
+            "ResearchIntakePacket",
+            "RetrievalProvenanceItem",
+            "assert_no_fabricated_citations",
+            "attribution_phrase_for_entry",
+            "build_retrieval_provenance",
+            "consume_research_entries",
+            "resolvable_source_ids"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 30,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene/state.py": {
@@ -56602,7 +57584,7 @@
     },
     "app/specialists/workbook_producer/_act.py": {
       "filePath": "app/specialists/workbook_producer/_act.py",
-      "contentHash": "bfabc7d5b88ce3a772ef4dc4337f858f874977d6b066033f4b086fa58d5455cc",
+      "contentHash": "ae35448ebc0f128a61363adc6f2c5948d5b6b700403a1f70ab9e99bdf729aae3",
       "functions": [
         {
           "name": "_trail_entry",
@@ -56721,7 +57703,7 @@
           ],
           "returnType": "tuple[tuple[ResearchEntry, ...], dict[str, str], str | None, str | None]",
           "exported": true,
-          "lineCount": 54
+          "lineCount": 64
         },
         {
           "name": "build_workbook_inputs",
@@ -56732,7 +57714,7 @@
           ],
           "returnType": "WorkbookInputs | None",
           "exported": true,
-          "lineCount": 160
+          "lineCount": 182
         },
         {
           "name": "_skip_output",
@@ -56749,7 +57731,7 @@
           ],
           "returnType": "WorkbookSidecar | None",
           "exported": true,
-          "lineCount": 54
+          "lineCount": 57
         },
         {
           "name": "_sidecar_refs",
@@ -56795,10 +57777,13 @@
             "source_ref_manifest",
             "vo_script_text",
             "research_empty_reason",
-            "research_omitted_note"
+            "research_omitted_note",
+            "glossary_articles",
+            "glossary_empty_reason",
+            "research_trends"
           ],
           "exported": true,
-          "lineCount": 17
+          "lineCount": 20
         }
       ],
       "imports": [
@@ -56861,6 +57846,20 @@
           "specifiers": [
             "CollateralSpec",
             "WorkbookSpec"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.glossary_projection",
+          "specifiers": [
+            "GlossaryArticleBrief",
+            "glossary_inputs_from_run"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.trends_projection",
+          "specifiers": [
+            "ResearchTrendsBrief",
+            "trends_inputs_from_run"
           ]
         },
         {
@@ -56956,7 +57955,7 @@
         "_sidecar_refs",
         "act"
       ],
-      "totalLines": 754,
+      "totalLines": 802,
       "hasStructuralAnalysis": true
     },
     "app/specialists/workbook_producer/config.yaml": {

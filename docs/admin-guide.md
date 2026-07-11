@@ -2,11 +2,11 @@
 
 ## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
 
-Operate this repository as the Marcus-SPOC local runtime. Marcus is the single operator-facing orchestrator for real APP production runs; proofing sessions are useful diagnostics, not a deployment target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10).
+Operate this repository as the Marcus-SPOC local runtime. Marcus is the single operator-facing orchestrator for real APP production runs; proofing sessions are useful diagnostics, not a deployment target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), and the Workbook Research Products close (W0–W4, 2026-07-10).
 
 ### Current Operating Branch And Evidence
 
-- Active branch: `dev/batch-mode-2026-07-10` (successor to `dev/lesson-planning-2026-07-09`). Batch LLM Execution Mode v1 epic party-CLOSED 4/4 on 2026-07-10 on this branch: opt-in vision batch transport; the default execution mode remains realtime.
+- Active branch: `dev/agentic-research-foundations-2026-07-10` (successor to `dev/batch-mode-2026-07-10` → `dev/lesson-planning-2026-07-09`). On this branch: Agentic Research Foundations R0–R7 promoted (posture-aware research + credibility + R7 hard-pause gate; `MARCUS_RESEARCH_DETECTIVE_LIVE` default OFF), Workbook Research Products W0–W4 closed (Research Glossary + Research Trends workbook sections), and the TRAIL trio closed (OpenAlex adapter live-proven, glossary capability note, WARN-only semantic tripwire). Batch LLM Execution Mode v1 remains closed from `dev/batch-mode-2026-07-10` (opt-in vision batch transport; default realtime).
 - Durable baseline: live bespoke Irene Pass-1 Claim B is closed through `fa48fb5b`; preceding durable closes include the Phase-2 bridge (`20246475`), Irene planning-context handoff (`b69aa2de`), and plan-ratify surface (`318b6b0f`).
 - Evidence and run artifacts are banked under `_bmad-output/implementation-artifacts/evidence/` and `runs/<uuid>/`. Treat active product-gap evidence as provisional until it is committed and pushed.
 
@@ -47,6 +47,28 @@ Non-claims (hold these lines when reporting status):
 - The batch done-bar is hermetic-only as of the 2026-07-10 epic close: hermetic test green does not prove live quality, and live provider batch turnaround plus resume-batch behavior under provider-job failure/expiry are not yet characterized live.
 - No batch-turnaround SLA numbers exist, and no cost-savings outcome is asserted or measured; any discount is the provider's advertised batch pricing, not a proven outcome.
 - The workbook is not batch-eligible.
+
+### Research Foundations — Operational Checklist
+
+The research leg (node 04.55 Irene→Tracy→Texas bridge) runs inside a normal trial; the operational surface is the detective flag and the retrieval-provider credentials.
+
+1. `MARCUS_RESEARCH_DETECTIVE_LIVE` is **default OFF** and stays OFF unless you set it per run. Flag-OFF runs are bit-identical to pre-research-foundations behavior. Default-ON is a party policy decision that has not been taken — do not flip it as routine ops.
+2. With the flag ON, expect a hard pause before Irene Pass-2 (node 08): the run blocks until an operator disposition receipt (approve | reject | defer per finding) lands via the research-detective gate. Approval unlocks the walk. Resume/recover atomicity across this pause is NOT yet claimed (TRAIL) — prefer disposing in-session rather than parking a paused run.
+3. Provider credentials:
+   - **Scite** — OAuth (not Basic); headed Playwright login via `scripts/operator/scite_oauth_login_auto.py`, refresh token reused headlessly afterward.
+   - **Consensus** — MCP OAuth smoke evidence at `evidence/consensus-mcp-oauth-smoke-20260710/`.
+   - **OpenAlex** — public API, no key required; DOI metadata + OA link discovery only.
+   - **Jefferson library** — live retrieval fenced on `chrome_running_quit_required`: it needs an available Chrome SSO session (probe scripts `scripts/utilities/run_jefferson_*_probe*.py`). Hermetic path works without it.
+   - Provider roster authority: `run_wrangler.py --list-providers`.
+4. Workbook research sections operate themselves: glossary and trends appear only when the research packet has rows (empty-honesty). If a workbook lacks the sections, first check whether the run's research packet was empty before suspecting a defect.
+5. Live evidence drivers (`scripts/utilities/run_research_r{1–7}_live_evidence.py`, `run_workbook_w{1–4}_live_evidence.py`, `run_openalex_live_evidence.py`) write timestamped packs under `_bmad-output/implementation-artifacts/evidence/` — first-run-stands; do not retry-to-green.
+
+Non-claims (hold these lines when reporting status):
+
+- The detective gate, Consensus, and Jefferson are NOT default-ON.
+- The Research Glossary is not human SME-reviewed (visible capability note by design); the semantic tripwire is WARN-only and does not gate production or catch all weak claims.
+- OpenAlex does not download PDF bytes, perform institutional SSO, or score credibility (`authority_tier` is deliberately `None`).
+- Jefferson live retrieval beyond the fenced probe evidence is not claimed.
 
 ### Do Not Operate As If
 

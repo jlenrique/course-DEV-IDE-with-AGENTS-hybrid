@@ -2,7 +2,7 @@
 
 ## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
 
-This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10).
+This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), and the Workbook Research Products close (W0–W4, 2026-07-10).
 
 ### What Works Now
 
@@ -10,11 +10,15 @@ This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator
 - Operators can ratify planning context for purpose, audience, learning objectives, source assessment, and collateral intent. Irene Pass-1 can receive that context as framing while the source corpus remains the topic authority.
 - The ratified collateral-intent path can drive local W5 composition on the Marcus-SPOC runtime. The active product-gap frontier is automatic `lesson_plan["collateral"]` to `ComponentSelection`, interactive planning dialogue, SME routing, ingestion hardening, and additional collateral projectors.
 - Batch LLM Execution Mode v1 closed 2026-07-10: an opt-in execution mode for the slide-perception (vision) steps of a trial. The default execution mode remains realtime; nothing changes unless you ask for batch when starting the trial. See the Batch Execution Mode section below.
+- Agentic Research Foundations promoted 2026-07-10 (R0–R7): the research leg of a run is now posture-aware and governed. Research retrieval dispatches under a declared intent (corroborate / gap-fill / embellish), every retrieved row carries an evidence-hierarchy credibility tier plus peer-review and provenance fields, Scite∩Consensus triangulation backs corroboration, and Irene's intake refuses to fabricate citations. With the research-detective flag ON, the run hard-pauses before Irene Pass-2 until you file a disposition (approve / reject / defer) per finding. The flag is **default OFF** — a flag-OFF run is bit-identical to before. See the Research section below.
+- Workbook Research Products closed 2026-07-10 (W0–W4): learner workbooks can now include an encyclopedia-style **Research Glossary** (before References) and a **Research Trends / hot-topics** backmatter section (after References), both fed by the shared research packet with provenance retained. Sections are honest-by-construction: an empty research packet means the sections are omitted, never padded with model-prior content.
 
 ### What Is Still Fenced
 
 - Do not treat S8 as open work. New work should build on the bridge rather than replacing the selection contract.
 - Full free-form SPOC planning, Gamma/published-walk claims, HAI/PHS real ingestion, per-SME voice/styleguide routing, projector-family expansion, and workbook prose uplift remain residual or in-flight until committed close evidence says otherwise.
+- The research-detective flag (`MARCUS_RESEARCH_DETECTIVE_LIVE`) stays **default OFF**; promoting it (or the Consensus / Jefferson providers) to default-ON is a party policy decision that has not been taken. Jefferson library live retrieval is fenced behind an available Chrome SSO session (`chrome_running_quit_required`).
+- The workbook Research Glossary is a research-informed encyclopedia **stub with a visible capability note** — it is not human SME-reviewed and must not be presented as oracle quality. The semantic claim↔source tripwire is WARN-only (it does not gate production and does not catch all weak claims); the full semantic audit remains open TRAIL.
 - Never ad-hoc-edit approved styleguide registry guides. Non-Tejal production must not silently borrow Tejal voice or approval routing.
 
 ### Batch Execution Mode (optional)
@@ -30,6 +34,17 @@ Fences to keep in mind:
 
 - Batch is not a recommended-for-production path; it is an optional mode. The default stays realtime.
 - Batch evidence so far is hermetic-test-only — live provider turnaround has not been characterized, and no cost-savings outcome is claimed.
+
+### Research-Grounded Runs and the Detective Gate (optional)
+
+A normal run already carries the research leg: at the research step Marcus runs the Irene→Tracy→Texas bridge, retrieves literature under a declared **posture intent** (corroborate a claim, fill a gap, or embellish context), and lands the results as a shared research packet on the run. Each row is labeled with an evidence-hierarchy credibility tier (systematic review at the top, down to unclassified), peer-review status, and provenance. Nothing here requires action from you.
+
+Two optional surfaces sit on top:
+
+- **Research-detective hard pause:** with `MARCUS_RESEARCH_DETECTIVE_LIVE` ON, the run pauses before Irene Pass-2 authoring and shows you the research findings for disposition. You approve, reject, or defer each finding; approval unlocks the walk. With the flag OFF (the default), the run behaves exactly as before — no pause, no behavior change.
+- **Workbook research sections:** when the research packet has content, the learner workbook gains a **Research Glossary** (encyclopedia-style entries from credibility-labeled rows, placed before References) and a **Research Trends** backmatter section (grounded trend claims + bounded hot-topics, after References). Both carry provenance; both are omitted entirely when the packet is empty. The glossary carries a visible capability note — it is research-informed, not human SME-reviewed.
+
+Retrieval providers behind Texas: Scite and Consensus (triangulation-capable), OpenAlex (public DOI metadata + open-access link discovery — not PDF download, not credibility scoring), and a Jefferson library seam (live only when a Chrome SSO session is available). Provider availability is listed by `run_wrangler.py --list-providers`.
 
 ### How To Read The Rest Of This Guide
 
