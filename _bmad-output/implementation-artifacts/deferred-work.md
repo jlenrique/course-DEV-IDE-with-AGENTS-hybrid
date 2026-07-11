@@ -97,3 +97,15 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-malformed-plan-json-selection-negative.md`
   summary: The sniff's exception-swallow arm (trial.py ~413-415, OSError/UnicodeDecodeError/YAMLError → raw=None → intent-loader route → loader raises) has no routing-observed test; a regression re-raising from the sniff would change error type/message unpinned.
   evidence: Review pass 2 (2026-07-11); loader-level error arms are pinned but the sniff-level swallow-then-reroute is not.
+- source_spec: `_bmad-output/implementation-artifacts/spec-empty-companions-smoke.md`
+  summary: Design question — should empty-but-present planning companions ({} / no-usable-framing) WARN or fail instead of the current silent treat-as-absent (planning_context.py:383-385)? An operator who authored placeholder JSON gets no signal that their companions bound nothing.
+  evidence: Investigation + pins 2026-07-11; current behavior is explicit design (comment at the return site) and now test-pinned as no-phantom-framing; changing it is an operator/party disposition, not a dev-auto call.
+- source_spec: `_bmad-output/implementation-artifacts/spec-empty-companions-smoke.md`
+  summary: Companion JSON saved with a UTF-8 BOM (utf-8-sig, common Windows editor default) is rejected as "malformed JSON" — a healthy operator-ratified file pauses the run. Candidate fix: read with encoding="utf-8-sig".
+  evidence: Review pass 2026-07-11, empirically probed; planning_context.py _read_json reads strict utf-8.
+- source_spec: `_bmad-output/implementation-artifacts/spec-empty-companions-smoke.md`
+  summary: Non-string truthy purpose/audience values ({"purpose": 42}) are str()-coerced into phantom framing ("42") threaded to Irene — the exact fabrication class this residual guards against. Candidate fix: isinstance type-guard like source_assessment has.
+  evidence: Review pass 2026-07-11; planning_context.py ~123-124 coerces without a type check.
+- source_spec: `_bmad-output/implementation-artifacts/spec-empty-companions-smoke.md`
+  summary: A nonexistent run_dir (typo'd runs_root/trial_id) at the runner seam returns None silently — ratified framing dropped with no signal, indistinguishable from legitimately-absent companions.
+  evidence: Review pass 2026-07-11; planning_context.py ~333-336 treats missing dir as absent-files.
