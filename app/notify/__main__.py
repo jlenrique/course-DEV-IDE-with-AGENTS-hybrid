@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import subprocess
 import sys
 import time
@@ -33,6 +34,7 @@ from pathlib import Path
 from app.notify.service import (
     DEFAULT_POLL_INTERVAL_SECONDS,
     DEFAULT_STATE_ROOT,
+    PRODUCER_PID_ENV,
     NotifierService,
 )
 
@@ -112,6 +114,7 @@ def launch_notifier(
     state_dir: str | Path | None = None,
     poll_interval: float = DEFAULT_POLL_INTERVAL_SECONDS,
     python_executable: str | None = None,
+    producer_pid: int | None = None,
 ) -> subprocess.Popen:
     """Launch the notifier as a detached, session-surviving child process.
 
@@ -119,6 +122,10 @@ def launch_notifier(
     ``python -m app.notify`` with the given args and is detached (AD-9) so it
     survives the launching shell/session. The start path calls this; the child
     exits itself on terminal-status + grace.
+
+    ``producer_pid`` (review S1) is handed to the child via the
+    ``HUD_PRODUCER_PID`` environment variable so its producer-dead watchdog
+    reading has a PID to probe without the launcher exporting anything itself.
     """
     state_root = Path(state_dir) if state_dir is not None else DEFAULT_STATE_ROOT
     logfile = state_root / f"{trial_id}.log"
@@ -139,6 +146,8 @@ def launch_notifier(
     if state_dir is not None:
         argv += ["--state-dir", str(state_dir)]
     kwargs = _detached_popen_kwargs(logfile)
+    if producer_pid is not None:
+        kwargs["env"] = {**os.environ, PRODUCER_PID_ENV: str(producer_pid)}
     LOGGER.info("launching detached notifier for trial %s (log: %s)", trial_id, logfile)
     return subprocess.Popen(argv, **kwargs)  # noqa: S603 — argv is fully controlled
 

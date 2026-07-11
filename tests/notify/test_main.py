@@ -12,7 +12,7 @@ from app.notify.__main__ import (
     launch_notifier,
     run_forever,
 )
-from app.notify.service import NotifierService
+from app.notify.service import PRODUCER_PID_ENV, NotifierService
 from tests.notify._helpers import FakeApprise, make_projection
 
 
@@ -71,8 +71,9 @@ def test_run_forever_exits_after_terminal_plus_grace(run_dir, state_dir, writer)
         monotonic_fn=clk.monotonic,
     )
     assert svc.is_terminal()
-    # After terminal it must poll at least until grace (60s / 2s = 30 more polls).
-    assert iterations >= 3
+    # Exact grace accounting (review N4): terminal lands on poll 3, then the
+    # loop polls once per interval until grace elapses (60s / 2s = 30 more).
+    assert iterations == 3 + int(60.0 / 2.0)
 
 
 def test_run_forever_respects_max_iterations(run_dir, state_dir, writer):
@@ -143,3 +144,30 @@ def test_launch_notifier_builds_detached_child(run_dir, tmp_path, monkeypatch):
         assert "creationflags" in captured["kwargs"]
     else:
         assert captured["kwargs"].get("start_new_session") is True
+    # No producer_pid -> the child simply inherits the parent env untouched.
+    assert "env" not in captured["kwargs"]
+
+
+def test_launch_notifier_injects_producer_pid_env(run_dir, tmp_path, monkeypatch):
+    """producer_pid rides to the child as HUD_PRODUCER_PID on top of os.environ (S1)."""
+    captured = {}
+
+    class _FakePopen:
+        def __init__(self, argv, **kwargs):
+            captured["argv"] = argv
+            captured["kwargs"] = kwargs
+            if "stdout" in kwargs and hasattr(kwargs["stdout"], "close"):
+                kwargs["stdout"].close()
+
+    monkeypatch.setattr(subprocess, "Popen", _FakePopen)
+    monkeypatch.setenv("HUD_TEST_CANARY", "inherited")
+    launch_notifier(
+        "trial-pid",
+        run_dir,
+        state_dir=tmp_path / "notify-state",
+        python_executable="python",
+        producer_pid=31337,
+    )
+    env = captured["kwargs"]["env"]
+    assert env[PRODUCER_PID_ENV] == "31337"
+    assert env["HUD_TEST_CANARY"] == "inherited"  # os.environ carried over

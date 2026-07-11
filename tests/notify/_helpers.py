@@ -56,6 +56,35 @@ class FakeApprise:
         return True
 
 
+class FlakyApprise:
+    """Scripted transport for push-retry tests (review S3).
+
+    Each ``notify()`` consumes one script entry: ``True`` delivers, ``False``
+    reports a delivery failure, ``"raise"`` blows up in-flight. An exhausted
+    script delivers. Only DELIVERED notifies are recorded (unlike FakeApprise,
+    which records the attempt) so tests can assert exactly-once delivery.
+    """
+
+    def __init__(self, script: tuple | list = ()) -> None:
+        self.added: list[str] = []
+        self.script: list = list(script)
+        self.delivered: list[tuple[str, str]] = []
+        self.attempts = 0
+
+    def add(self, url: str) -> bool:
+        self.added.append(url)
+        return True
+
+    def notify(self, *, title: str, body: str) -> bool:
+        self.attempts += 1
+        outcome = self.script.pop(0) if self.script else True
+        if outcome == "raise":
+            raise RuntimeError("injected transport failure")
+        if outcome:
+            self.delivered.append((title, body))
+        return bool(outcome)
+
+
 def make_projection(
     *,
     status: str = "in-flight",

@@ -1772,6 +1772,6 @@ development_status:
   hud-35-3-start-path-preflight-heartbeats: backlog  # blocked-by 35.2 (serial, same runner region)
   hud-35-4-get-only-hud-server: review  # 2026-07-11 dev done (22 tests); review found 1 MUST (identity-guard bypass on Unrecognized-with-readable-identity) + S2/S3/S4 — fix spec in handoff; fold before close
   hud-35-5-flight-deck-render: backlog  # blocked-by 35.2/35.4
-  hud-35-6-notifier-watchdog-push: review  # 2026-07-11 dev done (26 tests + REAL ntfy L3 witness wmUW9CnmLm6S); review found 1 MUST (ack keys never cleared on resume) + S1/S2/S3 — fix spec in handoff; fold before close
+  hud-35-6-notifier-watchdog-push: done  # 2026-07-11 review CHANGES-REQUIRED fully folded (M1 episode reset + S1/S2/S3 + N4); 34 tests; REAL ntfy L3 witness wmUW9CnmLm6S re-verified
   hud-35-7-e2e-witness-party-review: backlog  # last; scoped-verdict schema binds
   hud-35-8-legacy-retirement-import-fences: backlog  # strictly after 35.5

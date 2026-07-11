@@ -16,7 +16,7 @@ from app.notify.service import (
     NotifierService,
     validate_push_urls,
 )
-from tests.notify._helpers import make_projection
+from tests.notify._helpers import FlakyApprise, make_projection
 
 NTFY_URL = "ntfy://hud-test-topic"
 
@@ -104,6 +104,106 @@ def test_new_gate_identity_refires_within_session(run_dir, state_dir, writer, fa
     writer.write(make_projection(status="paused-at-gate", paused_gate="G2", seq=2, progress_seq=1))
     assert [e.event_class for e in svc.poll_once()] == ["paused_at_gate"]
     assert len(fake_apprise.notifications) == 2
+
+
+# --------------------------------------------------------------------------
+# Pause-episode reset (review M1): resume clears acks so re-pause re-alerts
+# --------------------------------------------------------------------------
+
+
+def test_repause_same_gate_after_resume_refires(run_dir, state_dir, writer, fake_apprise, clock):
+    """The M1 repro: pause G1 -> resume -> re-pause G1 must fire AGAIN.
+
+    Without the episode reset the acked ``paused_at_gate:G1`` key survived the
+    resume and the second pause was a silent AFK miss.
+    """
+    svc = _service(run_dir, state_dir, fake_apprise, clock=clock)
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G1", seq=1, progress_seq=1))
+    assert [e.event_class for e in svc.poll_once()] == ["paused_at_gate"]
+    writer.write(make_projection(status="in-flight", seq=2, progress_seq=2))
+    assert svc.poll_once() == []  # resume observed -> episode closed
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G1", seq=3, progress_seq=3))
+    assert [e.event_class for e in svc.poll_once()] == ["paused_at_gate"]
+    assert len(fake_apprise.notifications) == 2
+
+
+def test_repause_different_gate_after_resume_fires(run_dir, state_dir, writer, fake_apprise, clock):
+    """M1(c): pause G1 -> resume -> pause G2B fires end-to-end through the service."""
+    svc = _service(run_dir, state_dir, fake_apprise, clock=clock)
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G1", seq=1, progress_seq=1))
+    assert [e.event_class for e in svc.poll_once()] == ["paused_at_gate"]
+    writer.write(make_projection(status="in-flight", seq=2, progress_seq=2))
+    assert svc.poll_once() == []
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G2B", seq=3, progress_seq=3))
+    assert [e.event_class for e in svc.poll_once()] == ["paused_at_gate"]
+    assert len(fake_apprise.notifications) == 2
+    assert "G2B" in fake_apprise.notifications[-1][0]
+
+
+def test_restart_acked_pause_no_resume_stays_silent(  # noqa: E501
+    run_dir, state_dir, writer, fake_apprise, clock
+):
+    """M1(b): restart mid-pause with the acked key and NO intervening resume
+    must NOT refire — the episode reset only triggers on a non-paused status,
+    which never appears here (restart dedup preserved)."""
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G1", seq=5, progress_seq=5))
+    state_dir.mkdir(parents=True, exist_ok=True)
+    (state_dir / "11111111-1111-4111-8111-111111111111.json").write_text(
+        json.dumps(
+            {
+                "last_processed_progress_seq": 5,
+                "last_status": "paused-at-gate",
+                "acked": {"paused_at_gate:G1": "2026-07-11T11:59:00+00:00"},
+            }
+        ),
+        encoding="utf-8",
+    )
+    svc = _service(run_dir, state_dir, fake_apprise, clock=clock)
+    assert svc.poll_once() == []
+    # Producer refreshes the SAME pause (new write, same identity) -> still quiet.
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G1", seq=6, progress_seq=5))
+    assert svc.poll_once() == []
+    assert fake_apprise.notifications == []
+
+
+# --------------------------------------------------------------------------
+# Failed-push retry (review S3): no ack until delivered, capped at 3 attempts
+# --------------------------------------------------------------------------
+
+
+def test_failed_push_retries_then_acks_on_success(run_dir, state_dir, writer, clock):
+    """Transient transport failure -> exactly one DELIVERED push, ack on success."""
+    flaky = FlakyApprise([False, True])
+    svc = _service(run_dir, state_dir, flaky, clock=clock)
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G1", seq=1, progress_seq=1))
+    events = svc.poll_once()
+    assert [e.event_class for e in events] == ["paused_at_gate"]
+    assert events[0].pushed is False
+    assert "paused_at_gate:G1" not in svc.state.acked  # failed push holds ack open
+    # Next poll (frozen projection) retries and delivers.
+    events = svc.poll_once()
+    assert [e.event_class for e in events] == ["paused_at_gate"]
+    assert events[0].pushed is True
+    assert flaky.attempts == 2
+    assert len(flaky.delivered) == 1
+    assert "paused_at_gate:G1" in svc.state.acked
+    assert svc.state.push_attempts == {}
+    # Delivered + acked -> quiet from here.
+    assert svc.poll_once() == []
+
+
+def test_push_failing_max_attempts_acks_with_note(run_dir, state_dir, writer, clock):
+    """Three consecutive failures -> acked with a push-failed note, no infinite retry."""
+    flaky = FlakyApprise([False, "raise", False])
+    svc = _service(run_dir, state_dir, flaky, clock=clock)
+    writer.write(make_projection(status="paused-at-gate", paused_gate="G1", seq=1, progress_seq=1))
+    for _ in range(3):  # attempt 1 (transition) + retries 2 and 3
+        assert [e.event_class for e in svc.poll_once()] == ["paused_at_gate"]
+    assert flaky.attempts == 3
+    assert flaky.delivered == []
+    assert svc.state.acked["paused_at_gate:G1"].endswith("push-failed")
+    assert svc.state.push_attempts == {}
+    assert svc.poll_once() == []  # capped: no fourth attempt
 
 
 # --------------------------------------------------------------------------

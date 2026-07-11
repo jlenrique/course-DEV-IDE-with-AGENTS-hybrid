@@ -105,3 +105,61 @@ flags + launch argv.
 5. **Two lint noqas** on over-long test *function signatures* (5-fixture params);
    all other E501s were wrapped. No `pyproject` per-file-ignore added (kept the
    pyproject touch to the single apprise line as scoped).
+
+## Review-fold addendum (2026-07-11)
+
+Four code-review findings folded (M1, S1, S2, S3) plus the N4 nit. Suite went
+26 -> 34 tests, all green; `ruff check app/notify tests/notify` clean.
+
+1. **M1 (MUST) — pause-episode reset.** Repro confirmed: pause G1 -> resume ->
+   re-pause G1 fired nothing (the acked `paused_at_gate:G1` key survived the
+   resume — silent AFK miss). Fix: `NotifierService._reset_pause_episode` runs
+   on every processed projection; observing any NON-paused status (in-flight /
+   completed / failed / waiting_for_provider_batch / registered) clears all
+   `paused_at_gate:*` / `paused_at_error:*` acked keys AND their pending
+   push-retry counters. Restart dedup is untouched — a restart observing a
+   still-paused run never passes through a non-paused status, so its acks
+   survive. Regression tests: `test_repause_same_gate_after_resume_refires`
+   (the repro), `test_restart_acked_pause_no_resume_stays_silent` (restart +
+   acked key + same-pause rewrite stays quiet), and
+   `test_repause_different_gate_after_resume_fires` (G1 -> resume -> G2B
+   end-to-end through the service).
+2. **S1 (SHOULD) — `launch_notifier(producer_pid=...)`.** New optional param;
+   when given, the detached child gets `env={**os.environ,
+   HUD_PRODUCER_PID: str(producer_pid)}` so its producer-dead watchdog reading
+   has a PID to probe. When omitted, no `env` kwarg (child inherits parent env
+   untouched). Tests spy on `subprocess.Popen`:
+   `test_launch_notifier_injects_producer_pid_env` (+ an inherited-env canary),
+   and the existing detached-launch test now asserts `env` absent by default.
+3. **S2 (SHOULD) — canonical default config path.** New
+   `DEFAULT_CONFIG_PATH = <repo_root>/state/config/hud-config.yaml` (resolved
+   from the module location, cwd-independent). `NotifierService(config_path=
+   None)` — and therefore `python -m app.notify` without `--config` — now loads
+   the canonical file instead of silently using baked-in defaults; the single
+   loader still degrades to defaults with the parse-status reason when the file
+   is absent. Tests monkeypatch the constant:
+   `test_no_config_path_defaults_to_repo_canonical` (a canonical edit is
+   actually read) and `test_no_config_path_with_absent_canonical_uses_defaults`.
+4. **S3 (SHOULD) — failed push must not ack.** `_record_outcome` now owns the
+   ack decision for deduped classes: if the class is push-enabled AND targets
+   are configured AND delivery failed (transport raise or `notify() -> False`),
+   the ack key is HELD OPEN and a per-key attempt counter (`push_attempts`,
+   persisted in the state file) increments; the next poll retries via
+   `_retry_failed_pushes` (pause classes; `run_stalled` retries for free via
+   the watchdog's unacked-key refire). At 3 attempts (`MAX_PUSH_ATTEMPTS`) the
+   key is acked anyway with a `push-failed` note in the stored value and a
+   warning logged — no infinite retry. Tests (scripted `FlakyApprise` that
+   records only DELIVERED notifies):
+   `test_failed_push_retries_then_acks_on_success` (fail -> succeed = exactly
+   one delivered push, ack after success, counter cleared) and
+   `test_push_failing_max_attempts_acks_with_note` (3 failures -> acked with
+   note, fourth poll silent).
+5. **N4 (nit) — exact grace poll count.**
+   `test_run_forever_exits_after_terminal_plus_grace` now asserts
+   `iterations == 3 + int(60.0 / 2.0)` (terminal on poll 3 + 30 grace polls)
+   instead of `iterations >= 3`.
+
+Verification: `.venv/Scripts/python.exe -m pytest tests/notify -q
+-p no:cacheprovider` -> **34 passed**; `ruff check app/notify tests/notify` ->
+clean. (Repo-wide `ruff format --check` nonconformance predates this fold and
+is not the project gate.)

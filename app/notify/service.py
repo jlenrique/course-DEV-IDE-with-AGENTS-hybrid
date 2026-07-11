@@ -506,7 +506,7 @@ class NotifierService:
         event = self._act("run_stalled", cur, now, reason=reason)
         if event is None:
             return []
-        self.state.acked[key] = now.isoformat()
+        self._record_outcome(event, key, now)
         self._persist_state()
         return [event]
 
@@ -646,8 +646,10 @@ def _redact(url: str) -> str:
 
 __all__ = [
     "ALLOWED_PUSH_SCHEMES",
+    "DEFAULT_CONFIG_PATH",
     "DEFAULT_POLL_INTERVAL_SECONDS",
     "DEFAULT_STATE_ROOT",
+    "MAX_PUSH_ATTEMPTS",
     "PROJECTION_FILENAME",
     "PRODUCER_PID_ENV",
     "PUSH_URLS_ENV",

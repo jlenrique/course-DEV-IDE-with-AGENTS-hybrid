@@ -60,3 +60,51 @@ def test_unreadable_config_falls_back_to_defaults(run_dir, state_dir, fake_appri
     )
     assert "defaults active" in svc.config_parse_status
     assert isinstance(svc.config, HudConfig)
+
+
+def test_no_config_path_defaults_to_repo_canonical(
+    run_dir, state_dir, fake_apprise, tmp_path, monkeypatch
+):
+    """config_path=None resolves to the canonical repo config (review S2).
+
+    Monkeypatches the module's DEFAULT_CONFIG_PATH constant (cwd-independent
+    resolution) so the test proves the service actually READS an edit at the
+    canonical location rather than silently using baked-in defaults.
+    """
+    import app.notify.service as service_mod
+
+    canonical = tmp_path / "hud-config.yaml"
+    canonical.write_text(
+        "notifications:\n  paused_at_gate:\n    enabled: false\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(service_mod, "DEFAULT_CONFIG_PATH", canonical)
+    svc = NotifierService(
+        trial_id="55555555-5555-4555-8555-555555555555",
+        run_dir=run_dir,
+        state_dir=state_dir,
+        push_urls=[],
+        apprise_factory=lambda: fake_apprise,
+    )
+    assert svc.config_path == canonical
+    assert svc.config_parse_status == "ok"
+    assert svc.config.notifications["paused_at_gate"].enabled is False  # the edit landed
+    assert svc.config.notifications["paused_at_error"].enabled is True  # merged over defaults
+
+
+def test_no_config_path_with_absent_canonical_uses_defaults(
+    run_dir, state_dir, fake_apprise, tmp_path, monkeypatch
+):
+    """Absent canonical config -> defaults, with the parse-status reason (S2)."""
+    import app.notify.service as service_mod
+
+    monkeypatch.setattr(service_mod, "DEFAULT_CONFIG_PATH", tmp_path / "missing.yaml")
+    svc = NotifierService(
+        trial_id="66666666-6666-4666-8666-666666666666",
+        run_dir=run_dir,
+        state_dir=state_dir,
+        push_urls=[],
+        apprise_factory=lambda: fake_apprise,
+    )
+    assert "defaults active" in svc.config_parse_status
+    assert isinstance(svc.config, HudConfig)
