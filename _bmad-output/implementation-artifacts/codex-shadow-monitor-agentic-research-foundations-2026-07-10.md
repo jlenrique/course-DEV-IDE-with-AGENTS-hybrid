@@ -742,3 +742,32 @@ This monitor did not rerun hermetic tests and relies on the visible proof packs/
 **Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
 
 **Verdict:** No research-claim movement since SOP-R021. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. Active work has moved to a separate dev-auto / lesson-plan CLI docstring residual; no new research evidence or dedicated research review artifact appeared.
+
+---
+### SOP-R023 - Dev-auto residual merged to master; research evidence unchanged - 2026-07-11T01:19:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R022, current `git status --short --branch --untracked-files=all`, local git log, commit stats for `1c547ab3`, `31caec22`, and `5d0042f4`, latest research/workbook/OpenAlex evidence directory names/timestamps, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace is back on `master`, tracking `origin/master`, at `6d265d2c` (`Merge branch 'chore/dev-auto-residuals-2026-07-11'`). Since SOP-R022, the dev-auto residual branch landed `1c547ab3` (`docs(cli): clarify --lesson-plan-json / --lesson-plan-collateral-intent precedence + companion re-resolution boundary`), `31caec22` (`chore(spec): stamp final_revision on dev-auto spec`), and `5d0042f4` (`chore(monitor): bank shadow-monitor ledger append`), then merged to master. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, no tracked dirty files were visible. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. The previously dirty `app/marcus/cli/trial.py` and lesson-plan JSON CLI residual spec are now committed/merged. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. The merged dev-auto / lesson-plan CLI docstring residual is a separate maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. The dev-auto residual spec is now committed but remains non-research. Review artifact searches again found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R022. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, and later non-research dev-auto residual merge in `6d265d2c`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0103 [P1] Non-research residual merged to master.** `6d265d2c` advances master through lesson-plan CLI docstring residual work; it does not add research evidence or broaden the research claim.
+**F-R-0104 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability.
+**F-R-0105 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+**F-R-0106 [P2] Worktree has no tracked research dirt.** Pre-append tracked status was clean; remaining visible dirt is untracked ambient output outside the research score.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R022. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. The dev-auto / lesson-plan CLI docstring residual has been merged to master, but no new research evidence or dedicated research review artifact appeared.
