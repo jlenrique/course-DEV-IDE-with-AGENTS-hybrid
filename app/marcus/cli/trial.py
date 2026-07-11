@@ -392,14 +392,15 @@ def start_trial(
         # Programmatic-callers-only seam: the CLI resolves selection itself in
         # _resolve_start_component_selection and passes the winning file as
         # lesson_plan_collateral_receipt_path (provenance only), so this block
-        # never fires on CLI invocations. The sniff keys on the ABSENCE of a
-        # top-level ratification_status field: a dict without it that carries
-        # collateral/plan_units/lesson_plan is treated as an Irene plan
-        # companion (Mine 1 auto path) and BINDS selection; anything else —
-        # including any file carrying ratification_status, even a
-        # companion-shaped one — routes to the intent-YAML loader, where an
-        # unratified intent resolves source="unratified" and binds nothing,
-        # and unreadable/invalid files fail loud (CollateralSelectionError).
+        # never fires on CLI invocations. Sniff predicate (pinned by
+        # tests/integration/marcus/test_trial_plan_json_selection.py): a dict
+        # carrying collateral/plan_units/lesson_plan whose ratification_status
+        # is anything but "ratified" (absent OR draft-stamped) is treated as
+        # an Irene plan companion (Mine 1 auto path) and BINDS selection;
+        # everything else — no companion keys, or ratification_status ==
+        # "ratified" — routes to the intent-YAML loader, where an unratified
+        # intent resolves source="unratified" and binds nothing, and
+        # unreadable/invalid files fail loud (CollateralSelectionError).
         # Only THIS file is read here: the run's own companions
         # (planning-ratification.json / ratified-los.json) are re-resolved
         # from the NEW run directory when the irene_pass1 node dispatches

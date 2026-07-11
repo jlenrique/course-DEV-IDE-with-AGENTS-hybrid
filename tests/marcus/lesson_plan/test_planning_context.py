@@ -155,6 +155,76 @@ def test_malformed_ratified_los_fails_loud(tmp_path: Path) -> None:
         load_planning_context(tmp_path)
 
 
+def test_zero_byte_ratification_fails_loud(tmp_path: Path) -> None:
+    """0-byte companion is malformed JSON, not absent — must raise, never None."""
+    (tmp_path / "planning-ratification.json").write_bytes(b"")
+    with pytest.raises(PlanningContextError, match="planning-ratification.*malformed JSON"):
+        load_planning_context(tmp_path)
+
+
+def test_zero_byte_ratified_los_fails_loud_despite_valid_ratification(
+    tmp_path: Path,
+) -> None:
+    """A 0-byte ratified-los.json fails loud even when ratification is valid."""
+    _write_ratification(tmp_path)
+    (tmp_path / "ratified-los.json").write_bytes(b"")
+    with pytest.raises(PlanningContextError, match="ratified-los.*malformed JSON"):
+        load_planning_context(tmp_path)
+
+
+@pytest.mark.parametrize("content", ["[]", "null"], ids=["json-array", "json-null"])
+def test_non_object_ratification_fails_loud(tmp_path: Path, content: str) -> None:
+    """Valid JSON that is NOT an object (``[]`` / ``null``) fails loud, never None.
+
+    Guards the non-object neighbor arm of the malformed pins: parseable JSON
+    with the wrong top-level type must raise "must be a JSON object", not be
+    treated as absent or as empty framing.
+    """
+    (tmp_path / "planning-ratification.json").write_text(content, encoding="utf-8")
+    with pytest.raises(PlanningContextError, match="must be a JSON object"):
+        load_planning_context(tmp_path)
+
+
+def test_empty_object_both_companions_treated_as_absent(tmp_path: Path) -> None:
+    """Both companions ``{}`` → None — the DESIGNED treat-as-absent behavior.
+
+    Valid JSON with no usable framing is explicitly treated as absent (the
+    has_framing() treat-as-absent return in load_planning_context) rather
+    than fabricating partial/phantom framing. Whether empty-but-present
+    should WARN instead of silently treating as absent is filed in
+    _bmad-output/implementation-artifacts/deferred-work.md (warn-on-empty
+    design question), not decided by this pin.
+    """
+    (tmp_path / "planning-ratification.json").write_text("{}", encoding="utf-8")
+    (tmp_path / "ratified-los.json").write_text("{}", encoding="utf-8")
+    assert load_planning_context(tmp_path) is None
+
+
+def test_empty_object_single_companion_treated_as_absent(tmp_path: Path) -> None:
+    """Single ``{}`` companion → None — the DESIGNED treat-as-absent behavior.
+
+    Only planning-ratification.json exists and carries ``{}``: parses fine,
+    yields no framing signal, so the loader returns None by explicit design
+    (the has_framing() treat-as-absent return in load_planning_context).
+    The warn-on-empty design question is filed in
+    _bmad-output/implementation-artifacts/deferred-work.md, not decided here.
+    """
+    (tmp_path / "planning-ratification.json").write_text("{}", encoding="utf-8")
+    assert load_planning_context(tmp_path) is None
+
+
+def test_empty_object_ratified_los_alone_treated_as_absent(tmp_path: Path) -> None:
+    """Only ratified-los.json exists and carries ``{}`` → None.
+
+    The third treat-as-absent combination (no ratification file at all):
+    parses fine, yields no objectives and no framing signal, so the loader
+    returns None (the has_framing() treat-as-absent return in
+    load_planning_context).
+    """
+    (tmp_path / "ratified-los.json").write_text("{}", encoding="utf-8")
+    assert load_planning_context(tmp_path) is None
+
+
 def test_conflicting_purpose_across_files_fails_loud(tmp_path: Path) -> None:
     _write_ratification(tmp_path, purpose="Purpose A")
     payload = {

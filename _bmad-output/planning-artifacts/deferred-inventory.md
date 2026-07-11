@@ -54,9 +54,9 @@ Follow-on stories named in existing specs or retrospectives but not yet filed as
 
 ### Phase-2 six-mine integrated E2E fenced residuals (filed 2026-07-10 party CLOSE-amendment)
 
-- **`lesson-plan-json-cli-flag-docstring`**: inline docstring on `--lesson-plan-json` clarifying precedence vs ratified intent and that `start_trial` re-resolves plan-JSON companions.
-- **`malformed-plan-json-selection-negative`**: unit/integration negative for partial/malformed `irene-pass1.lesson-plan.json` (missing collateral key, bad shape) fail-loud at trial start.
-- **`empty-companions-smoke`**: smoke that empty/missing planning companions under a run dir do not silently succeed the integrated path.
+- ~~**`lesson-plan-json-cli-flag-docstring`**~~ ✅ **DONE 2026-07-11** (bmad-dev-auto; spec `spec-lesson-plan-json-cli-flag-docstring.md`): inline docstring on `--lesson-plan-json` clarifying precedence vs ratified intent and that `start_trial` re-resolves plan-JSON companions.
+- ~~**`malformed-plan-json-selection-negative`**~~ ✅ **DONE 2026-07-11** (bmad-dev-auto; spec `spec-malformed-plan-json-selection-negative.md`): unit/integration negative for partial/malformed `irene-pass1.lesson-plan.json` (missing collateral key, bad shape) fail-loud at trial start.
+- ~~**`empty-companions-smoke`**~~ ✅ **DONE 2026-07-11** (bmad-dev-auto; spec `spec-empty-companions-smoke.md`): smoke that empty/missing planning companions under a run dir do not silently succeed the integrated path.
 
 ### Lesson-Plan-as-Rationale Platform (Phase-2) — filed 2026-07-07 at the S7 workbook §9 operator gate (SSOT = lesson-plan-rationale-platform-positioning-2026-07-07.md)
 

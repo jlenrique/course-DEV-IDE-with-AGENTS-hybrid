@@ -509,6 +509,51 @@ def test_trial_start_cli_rejects_invalid_ratified_collateral_intent(
     assert not (tmp_path / TRIAL_ID / "run.json").exists()
 
 
+def test_trial_start_cli_rejects_plan_json_missing_collateral(
+    tmp_path: Path,
+    monkeypatch,
+    capsys,
+) -> None:
+    """A well-formed lesson-plan JSON that is missing the `collateral` block
+    fails loud at the CLI (exit 1, no run.json) — absent collateral is not a
+    silent default."""
+    monkeypatch.delenv("LANGSMITH_API_KEY", raising=False)
+    monkeypatch.delenv("LANGSMITH_PROJECT", raising=False)
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setattr("app.marcus.cli.trial._load_env_if_available", lambda: None)
+    plan_json_path = tmp_path / "malformed.lesson-plan.json"
+    plan_json_path.write_text(
+        json.dumps({"lesson_summary": "x", "plan_units": []}),
+        encoding="utf-8",
+    )
+
+    exit_code = main(
+        [
+            "trial",
+            "start",
+            "--preset",
+            "production",
+            "--input",
+            "tests/fixtures/trial_corpus/README.md",
+            "--operator-id",
+            "operator_test",
+            "--trial-id",
+            TRIAL_ID,
+            "--allow-offline-cost-report",
+            "--runs-root",
+            str(tmp_path),
+            "--lesson-plan-json",
+            str(plan_json_path),
+        ]
+    )
+
+    assert exit_code == 1
+    stderr = capsys.readouterr().err
+    assert "ERROR: " in stderr
+    assert "lesson_plan.collateral is required" in stderr
+    assert not (tmp_path / TRIAL_ID / "run.json").exists()
+
+
 def test_trial_start_cli_accepts_production_input(
     tmp_path: Path,
     monkeypatch,

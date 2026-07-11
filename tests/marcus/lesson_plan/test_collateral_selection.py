@@ -13,7 +13,9 @@ from app.marcus.lesson_plan import collateral_selection
 from app.marcus.lesson_plan.bundle_catalog import get_bundle
 from app.marcus.lesson_plan.collateral_selection import (
     CollateralSelectionError,
+    derive_selection_from_lesson_plan,
     load_lesson_plan_collateral_selection,
+    load_selection_from_lesson_plan_json,
     resolve_lesson_plan_collateral_selection,
 )
 from app.marcus.lesson_plan.collateral_spec import (
@@ -321,3 +323,94 @@ def test_load_selection_from_lesson_plan_json_round_trip(tmp_path: Path) -> None
     result = load_selection_from_lesson_plan_json(path)
     assert result.source == "plan_collateral"
     assert result.bundle_id == "narrated-deck-with-workbook"
+
+
+def test_load_selection_from_lesson_plan_json_missing_file(tmp_path: Path) -> None:
+    path = tmp_path / "does-not-exist.lesson-plan.json"
+
+    with pytest.raises(
+        CollateralSelectionError, match="lesson-plan JSON file does not exist"
+    ):
+        load_selection_from_lesson_plan_json(path)
+
+
+def test_load_selection_from_lesson_plan_json_rejects_invalid_utf8(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "invalid-utf8.lesson-plan.json"
+    path.write_bytes(b"\xff\xfe\x00")
+
+    with pytest.raises(CollateralSelectionError, match="not valid JSON/YAML"):
+        load_selection_from_lesson_plan_json(path)
+
+
+def test_load_selection_from_lesson_plan_json_rejects_unparseable_yaml(
+    tmp_path: Path,
+) -> None:
+    # `{unclosed: [` fires the yaml.YAMLError arm (ParserError), not a
+    # parse-as-scalar fallback.
+    path = tmp_path / "unparseable.lesson-plan.json"
+    path.write_text("{unclosed: [", encoding="utf-8")
+
+    with pytest.raises(CollateralSelectionError, match="not valid JSON/YAML"):
+        load_selection_from_lesson_plan_json(path)
+
+
+def test_load_selection_from_lesson_plan_json_rejects_non_object_top_level(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "list-top-level.lesson-plan.json"
+    path.write_text(json.dumps(["plan_units", "collateral"]), encoding="utf-8")
+
+    with pytest.raises(CollateralSelectionError, match="must decode to an object"):
+        load_selection_from_lesson_plan_json(path)
+
+
+def test_load_selection_from_lesson_plan_json_rejects_zero_byte_file(
+    tmp_path: Path,
+) -> None:
+    # yaml.safe_load("") -> None, so an empty file fires the non-object arm.
+    path = tmp_path / "empty.lesson-plan.json"
+    path.write_text("", encoding="utf-8")
+
+    with pytest.raises(CollateralSelectionError, match="must decode to an object"):
+        load_selection_from_lesson_plan_json(path)
+
+
+def test_load_selection_from_lesson_plan_json_rejects_non_dict_wrapper_plan(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "wrapper-scalar-plan.lesson-plan.json"
+    path.write_text(json.dumps({"lesson_plan": 42}), encoding="utf-8")
+
+    with pytest.raises(CollateralSelectionError, match="missing plan object"):
+        load_selection_from_lesson_plan_json(path)
+
+
+def test_load_selection_from_lesson_plan_json_requires_collateral_key(
+    tmp_path: Path,
+) -> None:
+    path = tmp_path / "no-collateral.lesson-plan.json"
+    path.write_text(
+        json.dumps({"lesson_summary": "x", "plan_units": []}), encoding="utf-8"
+    )
+
+    with pytest.raises(
+        CollateralSelectionError, match="lesson_plan.collateral is required"
+    ):
+        load_selection_from_lesson_plan_json(path)
+
+
+def test_derive_selection_rejects_collateral_failing_spec_validation() -> None:
+    plan = {
+        "plan_units": [],
+        "collateral": {"declaration": "maybe"},
+    }
+
+    with pytest.raises(CollateralSelectionError) as excinfo:
+        derive_selection_from_lesson_plan(plan)
+
+    message = str(excinfo.value)
+    assert "failed CollateralSpec validation" in message
+    assert "declaration" in message
+    assert "Input should be" in message
