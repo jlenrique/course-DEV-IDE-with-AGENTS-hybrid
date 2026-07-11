@@ -94,3 +94,6 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-lesson-plan-json-cli-flag-docstring.md`
   summary: The documented "start_trial re-read seam never fires on CLI invocations" property is pinned by no test or assertion — drift-bait if a future CLI change passes `lesson_plan_collateral_intent_path`.
   evidence: Review pass 2026-07-11; integration tests exercise the seam directly, none pin the CLI-bypass property.
+- source_spec: `_bmad-output/implementation-artifacts/spec-malformed-plan-json-selection-negative.md`
+  summary: The sniff's exception-swallow arm (trial.py ~413-415, OSError/UnicodeDecodeError/YAMLError → raw=None → intent-loader route → loader raises) has no routing-observed test; a regression re-raising from the sniff would change error type/message unpinned.
+  evidence: Review pass 2 (2026-07-11); loader-level error arms are pinned but the sniff-level swallow-then-reroute is not.
