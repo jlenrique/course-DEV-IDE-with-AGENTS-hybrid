@@ -52,4 +52,10 @@ First real party gate on production work under v6.10: **the machinery behaved �
 
 ## 7. Next session opens with
 
-`bmad-product-brief` (fresh context window per bmad-help convention), input = §3 of this artifact. Branch: cut `dev/hud-revival-2026-07-11` from master after merging the outstanding residuals branch.
+`bmad-product-brief` (fresh context window per bmad-help convention), input = §3 of this artifact. Branch: cut `dev/hud-revival-2026-07-11` from master (residuals branch merged at `df7a29c2`).
+
+### ⛔ BINDING OPERATOR GATE — fresh-requirements interview (operator-stated 2026-07-11)
+
+At the appropriate moment in PRD-type creation (the `bmad-product-brief` phase, BEFORE the brief's requirements are pinned), the facilitating agent **MUST elicit a fresh set of HUD requirements from the operator** — a live user interview. The fresh requirements build on or start from the previous ones (§3 product definition, Sally's EXPERIENCE.md non-negotiables, John's JTBD ranking) **but may take new directions that override them**. §3 is the *starting hypothesis* for that interview, not the settled answer.
+
+**If the operator is AFK at this juncture: WAIT.** Do not proceed past the interview autonomously, do not substitute party consensus, prior artifacts, or inferred preferences for the operator's fresh input, and do not draft-and-ask-forgiveness. Park the session cleanly (note in SESSION-HANDOFF / next-session-start-here) and resume when the operator is present.
