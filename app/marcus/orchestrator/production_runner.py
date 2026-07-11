@@ -49,6 +49,7 @@ from app.marcus.orchestrator import (
     udac_wiring,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
+from app.marcus.orchestrator.operator_surface_assembler import OperatorSurfaceAssembler
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
 from app.marcus.orchestrator.research_citation import CitationFidelityError
 from app.marcus.orchestrator.slide_variant_selection import (
@@ -218,10 +219,37 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     )
 
 
+def _emit_operator_surface(envelope: ProductionTrialEnvelope, runs_root: Path) -> None:
+    """Project the envelope transition through the sole-writer assembler (AD-2).
+
+    Wrapper double-guard: the assembler already swallows every exception
+    (amendment 8), but the runner walk must NEVER be perturbed by projection
+    emission, so we belt-and-suspenders here too. ``run.json`` is already
+    written by the time we reach this call, so it remains truth (AD-17).
+    """
+    try:
+        OperatorSurfaceAssembler(envelope.trial_id, runs_root).emit(envelope)
+    except Exception:  # noqa: BLE001 — emission must never break the walk
+        LOGGER.exception("operator-surface emit wrapper failed — swallowed")
+
+
+def _emit_operator_surface_steps(
+    trial_id: UUID, runs_root: Path, manifest: Any, walk_index: int
+) -> None:
+    """Project the two-stage steps map + walk index (AD-15). Never raises."""
+    try:
+        OperatorSurfaceAssembler(trial_id, runs_root).update_steps(manifest, walk_index)
+    except Exception:  # noqa: BLE001 — emission must never break the walk
+        LOGGER.exception("operator-surface steps wrapper failed — swallowed")
+
+
 def _persist_envelope(envelope: ProductionTrialEnvelope, runs_root: Path) -> Path:
     path = _run_dir(envelope.trial_id, runs_root) / "run.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(envelope.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    # AD-2: emit the projection AFTER the run.json write (never before; run.json
+    # write semantics are unchanged — same plain write_text, same bytes).
+    _emit_operator_surface(envelope, runs_root)
     return path
 
 
@@ -2658,6 +2686,9 @@ def run_production_trial(
     # rehydrates it and never re-defaults (two-walk trap).
     selection = component_selection or ComponentSelection.production_default()
     manifest = compose_manifest(load_manifest(manifest_path), selection)
+    # AD-15: project the composed-manifest identity + two-stage steps map at
+    # composition (walk index 0), so the in-flight emit below already carries steps.
+    _emit_operator_surface_steps(effective_trial_id, runs_root, manifest, 0)
     active_gate_ids = production_gate_ids(manifest)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
@@ -2688,12 +2719,16 @@ def run_production_trial(
     last_gate_crossed: str | None = None
     trace_metadata: dict[str, str]
 
-    with _trial_trace_context(
+    _start_assembler = OperatorSurfaceAssembler(effective_trial_id, runs_root)
+    with _start_assembler.freshness_tick(), _trial_trace_context(
         trial_id=effective_trial_id,
         preset=preset,
         operator_id=operator_id,
     ) as trace_metadata:
         for index, node in enumerate(manifest.nodes):
+            # AD-15: advance the projected walk index as the loop progresses
+            # (a node-lifecycle progress event; bumps progress_seq, AD-10).
+            _emit_operator_surface_steps(effective_trial_id, runs_root, manifest, index)
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
@@ -3145,6 +3180,11 @@ def resume_production_trial(
         # witness->strict flip is a post-S5 ceremony).
         context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
+    # AD-17: reconcile-on-entry — re-emit the projection from the current
+    # (run.json-derived) envelope FIRST, before doing anything else, so a stale
+    # projection (crash between run.json persist and projection write) renders
+    # run.json truth after any runner touch. Idempotent + cheap.
+    _emit_operator_surface(envelope, runs_root)
     if envelope.status != "paused-at-gate":
         raise RuntimeError(
             f"trial {trial_id} is not paused at a gate; status={envelope.status!r}"
@@ -3276,6 +3316,8 @@ def resume_batch_production_trial(
         (run_dir / "run.json").read_text(encoding="utf-8"),
         context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
+    # AD-17: reconcile-on-entry (re-emit run.json truth before anything else).
+    _emit_operator_surface(envelope, runs_root)
     if envelope.status != "waiting_for_provider_batch":
         raise RuntimeError(
             f"trial {trial_id} is not waiting for a provider batch; "
@@ -3434,6 +3476,8 @@ def recover_production_trial(
         # witness->strict flip is a post-S5 ceremony).
         context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
+    # AD-17: reconcile-on-entry (re-emit run.json truth before anything else).
+    _emit_operator_surface(envelope, runs_root)
     if envelope.status != "paused-at-error":
         raise RuntimeError(
             f"trial {trial_id} is not paused at a dispatch error; "
@@ -3498,10 +3542,11 @@ def recover_production_trial(
         run_state = run_state.model_copy(
             update={"production_envelope": envelope.production_envelope}
         )
-        (run_dir / "run.json").write_text(
-            envelope.model_dump_json(indent=2) + "\n",
-            encoding="utf-8",
-        )
+        # AD-2: the lone direct run.json bypass is routed through
+        # _persist_envelope so the projection stays reconciled (byte-identical
+        # envelope content — _persist_envelope writes the same
+        # model_dump_json(indent=2) + "\n" this bypass used to write directly).
+        _persist_envelope(envelope, runs_root)
         start_index = reenter_index
         non_evidence_reason = (
             f"recovered-reenter-at-node:{reenter_at_node}:dropped={dropped}"
@@ -3559,6 +3604,10 @@ def _continue_production_walk(
     # is the selection the start walk froze.
     selection = run_state.component_selection or ComponentSelection.production_default()
     manifest = compose_manifest(load_manifest(manifest_path), selection)
+    # AD-15: project the recomposed steps map at the continuation entry index.
+    # An index REGRESSION vs the last-seen walk index (recover-reenter) is
+    # inferred inside the assembler as a labeled re-entry (walk_generation++).
+    _emit_operator_surface_steps(trial_id, runs_root, manifest, start_index)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
     production_envelope = envelope.production_envelope
@@ -3589,12 +3638,16 @@ def _continue_production_walk(
     # (M-5); a no-op when UDAC is OFF. Idempotent re-cross preserves ratified_at.
     _udac_ratify_gate(last_gate_crossed, trial_id, runs_root)
 
-    with _trial_trace_context(
+    _continue_assembler = OperatorSurfaceAssembler(trial_id, runs_root)
+    with _continue_assembler.freshness_tick(), _trial_trace_context(
         trial_id=trial_id,
         preset=runner.get("preset") or envelope.preset,
         operator_id=runner.get("operator_id") or envelope.operator_id,
     ) as trace_metadata:
         for index, node in enumerate(manifest.nodes[start_index:], start=start_index):
+            # AD-15: advance the projected walk index as the continuation walk
+            # progresses (node-lifecycle progress event; bumps progress_seq).
+            _emit_operator_surface_steps(trial_id, runs_root, manifest, index)
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":

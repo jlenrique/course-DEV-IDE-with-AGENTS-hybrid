@@ -126,3 +126,136 @@ Independent shadow ledger for **Epic 35 (Operator HUD v1 — Flight Deck)** on b
 **Next poll:** ~15m. Expect: 35.1 pin-green + review/close commit, or mid-flight RED/green evidence.
 
 ---
+
+### SOP-E35-003 — 15m poll — 2026-07-11T17:30:12-04:00
+
+**Scope reviewed:** HEAD/`origin`; Kanban Epic 35 block; commit `cd7e3e12`; presence of `app/hud`/`app/notify`/assembler; Claude terminal (parallel agents + usage-limit prompt). Ledger-only write.
+
+**HEAD / sync:** `cd7e3e12` = `origin` (0/0). `feat(hud-35.1): operator-surface contract package — review APPROVE, S1/S2 folded` — contract + schema + dual pins + completion notes + **this Grok ledger banked**.
+
+**Finding resolutions:**
+- **F-E35-0009 [P2] CLOSED** — 35.1 durable on origin before parallel lanes flipped in-progress.
+- **F-E35-0008 [P3] CLOSED** — shadow ledger included in `cd7e3e12` (local appends continue here).
+
+**Story state:**
+| Story | Kanban | Disk evidence |
+|-------|--------|---------------|
+| 35.0 | done | prior |
+| 35.1 | **done** | committed; 108 passed; byte-pin `debe6224` noted |
+| 35.2 | **in-progress** | assembler path **absent** (agents just launched) |
+| 35.4 | **in-progress** | `app/hud` **absent** |
+| 35.6 | **in-progress** | `app/notify` **absent** |
+| 35.3/35.5/35.7/35.8 | backlog | — |
+
+**Sequencing check:** Post-35.1, opening **35.2 + 35.4 + 35.6** together matches green-light pins (35.4 blocked-by 35.1; 35.6 blocked-by 35.1; 35.2 after 35.1; runner-serial vs new-tree lanes). Claude UI shows background agents for 35.2 assembler and 35.4 GET-only server. **No file surface yet** — expect next poll to show first trees or a stall.
+
+**New findings:**
+**F-E35-0010 [P2] Operator-lane stall risk — Claude Fable-5 weekly limit prompt.** Terminal shows usage-limit interrupt (“Continue with Fable 5” vs “Switch to Opus 4.8”) while 35.2/35.4 agents were launching. If the orchestrator is blocked on that modal, parallel lanes may idle with Kanban already `in-progress`. **Recommendation:** operator clears the prompt promptly; next poll should show either first `operator_surface_assembler.py` / `app/hud/` / `app/notify/` files or confirm stall.
+**F-E35-0011 [P3] Kanban ahead of disk for 35.2/35.4/35.6.** Rows flipped `in-progress` at dispatch before any path exists — acceptable if agents are live; becomes a false-green smell if still empty next poll after the usage prompt clears.
+
+**Watchpoints:** WP5 sequencing OK so far. WP9 durability OK for closed stories. Watch 35.2 vs 35.4 ownership (`production_runner` vs `server.py` only).
+
+**Verdict: 35.1 CLOSED CLEAN — THREE PARALLEL LANES DISPATCHED; WATCH FOR USAGE-LIMIT STALL BEFORE FIRST SUBSTRATE LANDS.**
+
+**Next poll:** ~15m. Expect: assembler and/or `app/hud`/`app/notify` trees, or explicit Fable-limit stall confirmation.
+
+---
+
+### SOP-E35-004 — 15m poll — 2026-07-11T17:45:13-04:00
+
+**Scope reviewed:** dirty tree for 35.2/35.4/35.6; `app/hud/server.py` route inventory; `app/notify/*`; assembler + `production_runner.py` + `next_action.py`; 35.4 completion notes; `pyproject.toml` HUD1 import-linter; Claude terminal. Ledger-only write. HEAD still `cd7e3e12` = origin (0/0) — **no new commits since 35.1**.
+
+**Finding resolutions:**
+- **F-E35-0010 [P2] DOWNGRADED / PARTIAL** — Claude terminal still shows the Fable-5 usage modal, but substantial substrate landed anyway (agents may have finished before the interrupt, or work continued under credits). Not a hard stall at this poll.
+- **F-E35-0011 [P3] CLOSED** — disk now matches Kanban `in-progress` for 35.2/35.4/35.6.
+
+**Parallel-lane surface (all uncommitted):**
+| Lane | Paths present | Notes |
+|------|---------------|-------|
+| **35.2** | `operator_surface_assembler.py`, `production_runner.py` (M), `next_action.py`, assembler+emission tests | Runner-serial ownership looks correct |
+| **35.4** | `app/hud/{server,data,__init__}.py`, `tests/hud/**`, completion notes, HUD1 import-linter | Completion notes claim exactly 3 GET routes; spot-check confirms `@app.get` for `/`, `/projection`, `/healthz` only — **zero-button surface looks intact** |
+| **35.6** | `app/notify/{service,__main__,__init__}.py`, `tests/notify/**`, `state/config/hud-config.yaml` | New-tree lane present |
+
+**Ownership hygiene:** 35.4 notes explicitly deny touching `production_runner.py` / `app/notify` / contract module — matches green-light serial/parallel pins. No `app/hud/render/` yet (35.5 correctly still backlog).
+
+**New findings:**
+**F-E35-0012 [P1] Three in-progress lanes undurable — large uncommitted surface.** Assembler, HUD server, notifier, tests, pyproject HUD1, and 35.4 completion notes exist only in the working tree. Push-cadence / safety-checkpoint risk is high (exactly the F-HUD-0001/0007 / F-E35-0007 class). Prefer per-lane commit after each story’s code-review APPROVE rather than one mega-commit.
+**F-E35-0013 [P2] 35.4 claims completion while Kanban still `in-progress` and uncommitted.** Notes say “no commit — orchestrator commits post-review.” Fair if review is pending; next poll should show either review APPROVE + commit or an open review finding. Do not flip Kanban `done` without durable SHA.
+**F-E35-0014 [P3] Terminal modal may be stale vs disk progress.** UI still offers Fable/Opus continue; reconcile so the orchestrator is not blocked from folding reviews/commits.
+
+**Watchpoints:** WP2 zero-button — provisional PASS on 35.4 route inventory (tests claim mutation→405; not executed by this monitor). WP5 ownership — looking clean. WP9 — open until commits land.
+
+**Verdict: PARALLEL LANES PRODUCING REAL SUBSTRATE — DURABILITY IS NOW THE CRITICAL PATH.**
+
+**Next poll:** ~15m. Expect: first lane commit(s) (likely 35.4 if review-ready), or 35.2/35.6 review activity.
+
+---
+
+### SOP-E35-005 — 15m poll — 2026-07-11T18:00:13-04:00
+
+**Scope reviewed:** still HEAD `cd7e3e12` = origin (0/0); all three parallel-lane completion-note packs; ntfy L3 witness; Claude terminal modal; dirty-tree inventory. Ledger-only write. **No new commits since 35.1 (~45+ minutes of undurable substrate).**
+
+**Finding escalations:**
+- **F-E35-0012 [P1] ESCALATED** — 35.2, 35.4, and 35.6 each have completion notes claiming story-complete / post-review commit pending, plus a real **35.6 ntfy L3 witness** (`hud-35-6-ntfy-witness.md`, WITNESS CLOSED). Entire surface remains untracked/modified. This is now the dominant Epic-35 risk (single-disk / interrupted-orchestrator loss).
+- **F-E35-0010 [P2] RE-RAISED as blocking** — Claude terminal **still** shows the Fable-5 weekly-limit continue/switch modal with no visible progress past it. Disk work may have finished under agents, but **orchestrator cannot fold reviews/commits while blocked on that prompt**. Operator action required to clear the modal.
+
+**Lane status (disk vs Kanban):**
+| Story | Kanban | Completion notes | Durable? |
+|-------|--------|------------------|----------|
+| 35.2 | in-progress | yes — assembler + runner emit + next_action | **NO** |
+| 35.4 | in-progress | yes — GET-only server (prior poll) | **NO** |
+| 35.6 | in-progress | yes — notifier + **live ntfy witness** | **NO** |
+| 35.3/35.5 | backlog | — | blocked correctly |
+
+**Spot checks (non-executing):** 35.2 notes claim emit-never-raises wrappers on `_persist_envelope` and unchanged `run.json` write semantics — aligns with amendment 8. 35.6 notes claim derivation-only via contract (`derive_event_transitions` / `stall_condition`) — aligns with AD-18. `app/hud/render` still absent — 35.5 correctly not started.
+
+**New findings:**
+**F-E35-0015 [P1] Orchestrator commit gate is stalled with three “ready for review/commit” packs.** Recommend: clear Fable modal → run/finish code-reviews → commit+push **per lane** (or one carefully partitioned commit) **before** opening 35.3/35.5. Do not start 35.3 (same runner region as 35.2) until 35.2 is durable.
+**F-E35-0016 [P3] apprise dependency only in dirty `pyproject.toml`.** 35.6 adds `apprise` — until committed, fresh clones cannot reproduce the L3 witness.
+
+**Verdict: IMPLEMENTATION AHEAD OF GOVERNANCE CLOSEOUT — CLEAR USAGE MODAL AND BANK 35.2/35.4/35.6 IMMEDIATELY.**
+
+**Next poll:** ~15m. Expect: commits on origin past `cd7e3e12`, or continued stall with F-E35-0015 still open.
+
+---
+
+### SOP-E35-006 — 15m poll — 2026-07-11T18:15:11-04:00
+
+**Scope reviewed:** HEAD still `cd7e3e12` = origin (0/0); dirty tree unchanged in shape from SOP-E35-005 (35.2/35.4/35.6 packs + completion notes + ntfy witness); Kanban unchanged; Claude terminal still on Fable-5 continue/switch modal. Ledger-only write.
+
+**Delta since SOP-E35-005:** **None material.** No commits, no Kanban flips, no new story trees (`app/hud/render` still absent), terminal modal still blocking orchestrator closeout. Undurable window now **~60+ minutes** since 35.1.
+
+**Finding status:**
+- **F-E35-0010 / F-E35-0015 [P1] STILL OPEN — no progress.** Operator has not cleared the usage modal; reviews/commits cannot fold.
+- **F-E35-0012 [P1] STILL OPEN** — three completion-noted lanes remain local-only.
+- **F-E35-0016 [P3] STILL OPEN** — `apprise` only in dirty `pyproject.toml`.
+
+**Clock note:** Goal window was cited as 16:30–20:30. At this poll ~1h45m remains. With 35.3 (serial after 35.2), 35.5 (after 35.2/35.4), and 35.7 E2E still ahead, **every minute of commit stall compresses the DoD-over-clock path** (greenlight amendment 7: stop at last DoD-complete story — currently that would be **35.1** if the session dies dirty).
+
+**New finding:**
+**F-E35-0017 [P1] Session-failure mode: only 35.0+35.1 are recoverable from origin.** If the machine/process fails now, 35.2/35.4/35.6 implementation + L3 ntfy witness are at risk despite completion notes. This is no longer a hygiene nit — it is the binding Epic-35 failure mode.
+
+**Verdict: HARD STALL ON ORCHESTRATOR CLOSEOUT — OPERATOR MUST CLEAR FABLE MODAL AND BANK THE THREE LANES.**
+
+**Next poll:** ~15m. Same expectation: commits past `cd7e3e12` or continued P1 stall.
+
+---
+
+### SOP-E35-007 — 15m poll — 2026-07-11T18:30:13-04:00
+
+**Scope reviewed:** HEAD still `cd7e3e12` = origin (0/0); dirty tree still carries full 35.2/35.4/35.6 packs + completion notes + ntfy witness; Kanban unchanged (`35.2/35.4/35.6` in-progress); Claude terminal **unchanged** Fable-5 continue/switch modal. Ledger-only write.
+
+**Delta since SOP-E35-006:** **None.** Third consecutive no-op poll on closeout. Undurable window now **~75+ minutes** since 35.1. Goal window remaining ≈ **2 hours**.
+
+**Finding status (no change):**
+- **F-E35-0010 / 0015 / 0017 [P1] OPEN** — orchestrator blocked; only 35.0–35.1 recoverable from origin.
+- **F-E35-0012 [P1] OPEN** — three completion-noted lanes still local-only.
+- **F-E35-0016 [P3] OPEN** — apprise dirty-only.
+
+**Monitor note:** Repeating the same P1 without operator action does not create new technical debt, but it **does** burn the 16:30–20:30 clock against 35.3→35.5→35.7. Honest DoD-over-clock projection if stall continues: session stops with durable bar = **35.1**, and 35.2/35.4/35.6 risk becoming unpaid local loss.
+
+**Verdict: HARD STALL CONTINUES — NO REPO MOVEMENT; OPERATOR INTERVENTION STILL REQUIRED.**
+
+**Next poll:** ~15m.
+
+---

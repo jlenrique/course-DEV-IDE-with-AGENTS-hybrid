@@ -48,6 +48,10 @@ dependencies = [
 
     # File-watcher (Slab 4.6 sanctum_watcher per AC-A; FR59 invalidation hook)
     "watchdog>=4.0,<6",
+
+    # Operator-HUD phone push (Epic 35 / Story 35.6 notifier; ntfy + Pushover
+    # via Apprise URL strings — credentials env-only, never in config or repo)
+    "apprise>=1.9.8,<2",
 ]
 
 [project.optional-dependencies]
@@ -357,6 +361,29 @@ source_modules = [
 ]
 forbidden_modules = ["app.specialists.vision.provider"]
 include_external_packages = false
+
+# HUD dumb-terminal layer rule (Story 35.4 slice; ADs 6/8/12). The HUD view
+# consumes the operator-surface contract ONLY — it never reaches back into the
+# runner/orchestrator, never re-opens the retired April data readers
+# (hud_data_sources / coordination.db / bundle-gate pipeline, all under the
+# top-level `scripts` tree), and never imports the gate machinery. The legacy
+# reader `scripts.utilities.hud_data_sources` cannot be named directly:
+# import-linter rejects a subpackage of an external package (`scripts` is not a
+# root_package), so the fence forbids the whole external `scripts` top-level —
+# a strictly stronger guarantee (the HUD imports nothing from scripts/). Story
+# 35.8 owns the FULL fence set (adding the app.notify contracts + the
+# anything->hud_data_sources global rule once `scripts` joins root_packages);
+# 35.4 lands only its own app.hud arrows so the parallel lanes don't collide.
+[[tool.importlinter.contracts]]
+name = "HUD1 - app.hud imports the contract only (never orchestrator / legacy readers / gates)"
+type = "forbidden"
+source_modules = ["app.hud"]
+forbidden_modules = [
+    "app.marcus.orchestrator",
+    "app.gates",
+    "scripts",
+]
+include_external_packages = true
 
 [build-system]
 requires = ["setuptools>=77"]  # >=77 required for PEP 639 string `license = "MIT"`
