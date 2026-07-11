@@ -713,3 +713,32 @@ This monitor did not rerun hermetic tests and relies on the visible proof packs/
 **Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
 
 **Verdict:** No research-claim movement since SOP-R020. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R022 - Active checkout moved to dev-auto residual; research score unchanged - 2026-07-11T01:04:26-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R021, current `git status --short --branch --untracked-files=all`, local git log, commit stats for `aa336a8f` and `73eef7df`, latest research/workbook/OpenAlex evidence directory names/timestamps, the new residual spec artifact, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace is now on `chore/dev-auto-residuals-2026-07-11` at `73eef7df` (`chore(monitor): bank shadow-monitor ledger append`). This branch sits above `aa336a8f` (`chore(bmad): project override for bmad-dev-auto (guardrail facts + on_complete push ritual)`) and master `e88cd030` (`Merge branch 'chore/bmad-upgrade-v6.10.0-2026-07-11'`). The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** current tracked dirt is `app/marcus/cli/trial.py`, with a new untracked `_bmad-output/implementation-artifacts/spec-lesson-plan-json-cli-flag-docstring.md`. That spec declares a documentation-only residual for lesson-plan JSON CLI help/docstrings and explicitly says no behavior changes. This is outside the monitored research mini-epic claim. Ambient untracked workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts remain visible. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. The active `dev-auto` residual and lesson-plan CLI docstring work are separate maintenance/residual envelopes and do not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. `aa336a8f` adds a BMAD dev-auto project override; `spec-lesson-plan-json-cli-flag-docstring.md` is a non-research residual spec. Review artifact searches again found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R021. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, and later non-research dev-auto residual branch work in `aa336a8f` / `73eef7df`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0099 [P1] Active branch moved again, but not for research.** The workspace is on `chore/dev-auto-residuals-2026-07-11`; the new dirty/spec surfaces concern lesson-plan CLI docstrings, not the research mini-epic.
+**F-R-0100 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability.
+**F-R-0101 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+**F-R-0102 [P2] Current tracked dirt is outside research score.** `app/marcus/cli/trial.py` and the lesson-plan JSON CLI residual spec should not be counted as research implementation or validation.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R021. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. Active work has moved to a separate dev-auto / lesson-plan CLI docstring residual; no new research evidence or dedicated research review artifact appeared.
