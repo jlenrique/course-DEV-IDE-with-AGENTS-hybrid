@@ -29,3 +29,7 @@
 ## Readiness check (satisfied at this gate)
 
 Inputs complete and mutually consistent: brief (final, operator-amended) + UX spine pair (final, operator-approved 2026-07-11) + architecture spine (final, 4-lens reviewed, 19 ADs) + this epic (amended). Six independent seats verified artifact-to-code fidelity at this gate (Level: 8/9 claims confirmed against live repo; Winston/Amelia/Murat spot-checks). Story specs (next artifact) embed the amendments; sprint-status.yaml updated at dispatch. This record constitutes the `bmad-check-implementation-readiness` disposition for Epic 35 under the party-consensus-equals-approval rule.
+
+## Post-gate addendum — 35.0 close (2026-07-11, code-review S1 fold)
+
+Story 35.0 landed the Tier-2 trigger-path extension **without a pack_version/schema_version bump** — the regime's recorded determination 2026-06-12 forbids flipping pack_version on a render-identical edit (L1 filter would drop all 47 nodes), and both on-tree precedents (Braid S4, composition-catalog S2) landed additive rows the same way. The party-ratified Tier-2 GOVERNANCE happened at this gate; the marker is the manifest's ratification comment. Amendment 5's "v4.3" phrasing and Story 35.8's "v4.3 envelope" are hereby read as "the 35.0 party-ratified trigger-path envelope". Code review APPROVE (no MUSTs); independent re-verification of checker exit-0, 100/2/0 pytest, and AD-14 hook classification on all 11 rows.

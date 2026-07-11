@@ -217,5 +217,5 @@ As the codebase, I want the April HUD's data path retired and the layer arrows e
 **Given** AD-8/12 and the paradigm enforcement note
 **When** the coordination.db reader, `_find_latest_bundle`, and bundle-gate yaml pipeline are deleted from the HUD path; `run_hud.py` becomes a deprecation stub pointing at `trial hud`; `tests/test_run_hud.py` retires with it; import-linter contracts land (app.hud/app.notify ↛ orchestrator; anything ↛ hud_data_sources; consumers ↛ strict parse)
 **Then** `lint-imports` passes with the new contracts
-**And** the manifest trigger rows for the stubbed files are updated in the same change (Tier-1 within the 35.0 v4.3 envelope)
+**And** the manifest trigger rows for the stubbed files are updated in the same change (Tier-1 within the 35.0 party-ratified trigger-path envelope — see greenlight post-gate addendum)
 **And** full test suite green (minus quarantined/live) with the 35.0 disposition honored.

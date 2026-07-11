@@ -41,6 +41,16 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+### epic-35-hud-ambient-manifest-suite-reds (filed 2026-07-11, story 35.0 close)
+10 pre-existing failures in manifest-adjacent suites (tests/unit/manifest/, test_pipeline_manifest_loader.py, etc. — e.g. stale `schema_version == "v4.2-migration-stub"` pin), verified identical with and without the 35.0 diff (git-stash witness in evidence/hud-35-0-completion-notes.md). Not Epic-35 scope. Reactivate: next manifest-regime maintenance story. Direction may flip if substrate evolves.
+
+### epic-35-hud-replace-under-open-reader-hammer (filed 2026-07-11, greenlight amendment 10)
+True Windows multi-process os.replace contention stress for the operator-surface projection (party-downgraded to deterministic smoke in 35.2). Reactivate: post-arc hardening or first observed contention skip storm in a live run. Direction may flip if substrate evolves.
+
+### epic-35-hud-panel-state-fixture-fast-follow (filed 2026-07-11, greenlight amendment 10)
+35.5 v1 golden matrix trimmed to 7 statuses + 4 panel states; binding / feed-lost / config-unreadable golden fixtures are the named fast-follow. Reactivate: first post-E2E HUD hygiene story. Direction may flip if substrate evolves.
+
+
 Follow-on stories named in existing specs or retrospectives but not yet filed as sprint-status entries. Filed only when their parent story closes and/or the trigger fires.
 
 ### BMAD harness v6.10.0 upgrade follow-ons (filed 2026-07-11 at the 4/4 GO-WITH-AMENDMENTS upgrade gate; SSOT = bmad-harness-upgrade-v6.10.0-2026-07-11.md)

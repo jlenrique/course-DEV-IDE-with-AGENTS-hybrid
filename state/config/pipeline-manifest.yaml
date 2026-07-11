@@ -83,6 +83,27 @@ block_mode_trigger_paths:
   - app/marcus/lesson_plan/composition.py
   - app/runtime/compiled_graph_digest.py
   - app/models/state/component_selection.py
+  # Epic 35 Story 35.0 (Operator HUD v1 Flight Deck) — Tier-2 regime extension
+  # ("new block_mode_trigger_paths entry"), party-ratified per AD-14: see
+  # _bmad-output/planning-artifacts/epic-35-party-greenlight-2026-07-11.md
+  # (amendment 5 enumerates these exact rows; production_runner.py is an
+  # explicit party INCLUDE — it hosts the AD-2 emit seam). Registered ahead of
+  # file creation; unmatched trigger rows are inert (AD-14). No pack_version /
+  # schema_version bump: the rendered pack is byte-identical (generator does
+  # not read block_mode_trigger_paths) and the manifest field-shape is
+  # unchanged — same additive mechanics as the Braid-S4 and
+  # composition-catalog-S2 extensions above; lockstep checker is the arbiter.
+  - app/models/runtime/operator_surface.py
+  - app/models/schemas/operator-surface.v1.schema.json
+  - app/marcus/orchestrator/operator_surface_assembler.py
+  - app/hud/**
+  - app/notify/**
+  - tests/unit/models/test_operator_surface_shape_pin.py
+  - tests/contracts/test_operator_surface_parity.py
+  - tests/hud/**
+  - tests/notify/**
+  - app/models/runtime/production_trial_envelope.py
+  - app/marcus/orchestrator/production_runner.py
 
 nodes:
   - id: "directive-composer"

@@ -1766,8 +1766,8 @@ development_status:
   # Sequence: 35.0 -> 35.1 -> 35.2 -> 35.3 (serial after 35.2) -> 35.5 -> 35.8 (after 35.5) -> 35.7. Lanes: 35.4 || 35.3; 35.6 || 35.5.
   # DoD-over-clock: witness sets non-compressible; stop at last DoD-complete story at the wall.
   epic-35-operator-hud-v1: in-progress  # 2026-07-11 party-greenlit; goal-directed 4h window 16:30-20:30
-  hud-35-0-tier2-manifest-bump-test-disposition: ready-for-dev
-  hud-35-1-operator-surface-contract: ready-for-dev  # blocked-by 35.0
+  hud-35-0-tier2-manifest-bump-test-disposition: done  # 2026-07-11 review APPROVE; no-bump per regime determination 2026-06-12; checker exit 0; 100/2/0
+  hud-35-1-operator-surface-contract: in-progress  # 2026-07-11 dispatched post-35.0-close
   hud-35-2-assembler-runner-emission: backlog  # blocked-by 35.1
   hud-35-3-start-path-preflight-heartbeats: backlog  # blocked-by 35.2 (serial, same runner region)
   hud-35-4-get-only-hud-server: backlog  # blocked-by 35.1; parallel lane with 35.3
