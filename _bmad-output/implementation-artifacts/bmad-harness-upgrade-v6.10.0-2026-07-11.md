@@ -37,7 +37,7 @@ npx --yes bmad-method@latest install --directory . --action update --all-stable 
 
 ## Git-visibility note
 
-`_bmad/*` is gitignored except `_bmad/memory/`, and all IDE stub dirs are gitignored — so this upgrade intentionally produces **no tracked diff** beyond this record. The install is per-machine; this artifact + the manifest are the durable evidence.
+`_bmad/*` is gitignored except `_bmad/memory/`, and all IDE stub dirs are gitignored — so this upgrade intentionally produces **no tracked diff** beyond this record. The install is per-machine; this artifact + the manifest are the durable evidence. *(Superseded in part by the party amendments below: the amendments commit itself tracks `_bmad/custom/` and edits pyproject/.gitignore/dev-guide/deferred-inventory — the "no tracked diff" statement describes the installer run alone.)*
 
 ## Party-mode ceremony re-validation
 
@@ -51,10 +51,10 @@ v6.9/v6.10 changed party-mode (custom parties, persistent session memory, four r
 |---|---|---|
 | Winston | GO-WITH-AMENDMENTS | Branch tip == master; record artifact untracked → "merging nothing." Verification was presence-based, not behavior-based. Structural: repo has no tracked BMAD version pin — the record artifact is the only cross-machine signal. |
 | John | GO-WITH-AMENDMENTS | Same catch. Job-to-be-done is durability/reproducibility, not the merge. pyproject defect passes the CLAUDE.md guardrail test (genuine repo problem). Demanded the standing "did the new machinery behave" note on the first real party gate. |
-| Amelia | GO-WITH-AMENDMENTS | **Refuted the proposed one-line license fix by reproduction**: fatal error is setuptools flat-layout discovery (18 top-level dirs), license form is only a DeprecationWarning. Correct fix `[tool.uv] managed = false`; flagged `uv run` implicit-sync threat to the live-verified `.venv` (repro'd litellm download mid-build). Flagged `_bmad/custom` single-disk exposure. |
+| Amelia | GO-WITH-AMENDMENTS | Independently found the branch at zero commits ahead with the record untracked (third voice on that catch). **Refuted the proposed one-line license fix by reproduction**: fatal error is setuptools flat-layout discovery (18 top-level dirs), license form is only a DeprecationWarning. Correct fix `[tool.uv] managed = false`; flagged `uv run` implicit-sync threat to the live-verified `.venv` (repro'd litellm download mid-build). Flagged `_bmad/custom` single-disk exposure. |
 | Murat | GO-WITH-AMENDMENTS | Independent manifest + 72-skill-dir re-read. Witness matrix: install integrity/roster/removals/party-subagent-mode WITNESSED; code-review, dev-story/quick-dev, TEA GATE intent, bmb v2-vs-sanctums, memlog persistence UNWITNESSED → 5-receipt pre-gate witness set (filed in deferred inventory). "Signing the merge, not the harness." |
 
-**Amendments executed at close (this commit):** record artifact committed; `pyproject.toml` → `license = "MIT"` + `[tool.uv] managed = false` with acceptance test (plain `uv run` at repo root: resolve_customization + resolve_party both pass, `.venv` site-packages digest unchanged); `PYTHONUTF8=1` codified in `.claude/settings.json` env + dev-guide note; `.gitignore` negation `!_bmad/custom/` (tracks project overrides; inner `.gitignore` keeps `*.user.toml` out); deferred-inventory follow-ons filed (`bmad-6-10-pre-gate-witness-set`, `bmad-party-machinery-check`, `claude-md-v7-shim-reference-cleanup`, `bmad-cp1252-upstream-bug`).
+**Amendments executed at close (this commit):** record artifact committed; `pyproject.toml` → `license = "MIT"` + `[tool.uv] managed = false` with acceptance test (plain `uv run` at repo root: resolve_customization + resolve_party both pass, `.venv` site-packages digest unchanged; independently re-run live by the receipt-1 Acceptance Auditor on 2026-07-11 — both scripts launch cleanly, no build, no sync); `PYTHONUTF8=1` codified in `.claude/settings.json` env + dev-guide note; `.gitignore` negation `!_bmad/custom/` (tracks project overrides; inner `.gitignore` keeps `*.user.toml` out); deferred-inventory follow-ons filed (`bmad-6-10-pre-gate-witness-set`, `bmad-party-machinery-check`, `claude-md-v7-shim-reference-cleanup`, `bmad-cp1252-upstream-bug`).
 
 **Ceremony behavior differences observed vs pre-upgrade party pattern (v6.9/v6.10 machinery):**
 - New activation chain is script-resolved (`resolve_customization.py` → `resolve_party.py` via `uv run`) instead of prompt-only — this is what surfaced the two Windows defects, live.
@@ -63,3 +63,17 @@ v6.9/v6.10 changed party-mode (custom parties, persistent session memory, four r
 - Four run modes (session/auto/subagent/agent-team); this gate ran full-spawn `subagent`. `agent-team` mode remains unwitnessed.
 
 **Verdict:** consensus GO with amendments executed inline; merge to master proceeds under party-consensus-=-approval governance. The harness earns full trust only after the 5-receipt witness set lands on the next real story.
+
+## Pre-gate witness set — COMPLETE 2026-07-11 (all 5 receipts)
+
+| # | Receipt | Result |
+|---|---|---|
+| 1 | `bmad-code-review` on existing diff (`7b65b879`) | **WITNESSED — machinery sharp.** Full 3-layer run (Blind Hunter + Edge Case Hunter + Acceptance Auditor). Real findings: setuptools>=77 floor needed for PEP 639 license string; `managed=false` silently killed `uv sync` in 3 muted CI workflows + a troubleshooting remedy; record-integrity gaps in this artifact. All triaged and fixed same-day (this commit). Acceptance Auditor: commit matches record, no drift. |
+| 2 | `bmad-quick-dev`-class implement smoke | **WITNESSED** via the first supervised `bmad-dev-auto` iteration (spec → implement → dual adversarial review → done; merged at `6d265d2c`). |
+| 3 | TEA v1.19 `GATE` intent | **WITNESSED — resolves and executes.** Gate verdict on Workbook W4 close: **PASS** (claim envelope fully covered; residual risks all ≤4). Machinery frictions filed: `python3` hardcoded (Windows takes fallback path), "trace Phase 2" not directly addressable, no read-only advisory-gate mode. |
+| 4 | BMB v2.1 read-only analysis of one sanctum agent (Tracy) | **WITNESSED — analyzer runs clean on v1-era agent** (prepass classifies memory-agent correctly; scanners return findings, not crashes). ⚠️ **CRITICAL caveat:** v2's fix recommendations (add CREED/BOND/MEMORY/CAPABILITIES, rewrite bootloader) would BREAK test-pinned Class-C+ sidecar contracts (`test_tracy_sidecar_4_file_pattern`, `test_tracy_activation_contract`). Builders stay advisory-only on Class-C/C+ agents until `{agent.build_standards}` org injection encodes the sidecar classes. Also: builder could mis-resolve `skills/bmad_agent_tracy/` (underscore = production Python package). |
+| 5 | memlog cross-context persistence | **WITNESSED from fresh context** — read path resolves cold, prior gate context recoverable, file git-tracked, live append 1→2 entries. Minor convention drift only (`--type` tag optional/omitted). |
+
+**Standing rule from receipt 4:** do NOT point a BMB v2 builder (Create/Rebuild/Edit fix-pass) at any Class-C/C+ sidecar agent; Analyze is safe. Encode sidecar classes via builder `customize.toml` `{agent.build_standards}` before lifting this fence.
+
+The harness is now behavior-witnessed on every surface the next sprint gate leans on: dev loop, review layers, gate rubric, builder analyzer, party machinery + memory.

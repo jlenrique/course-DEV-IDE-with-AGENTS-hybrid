@@ -101,7 +101,7 @@ Re-run preflight to confirm: `_check_postgres()` should report `PASS: Postgres r
 .venv/Scripts/python.exe -m pip install -e ".[dev]"
 
 # OR via uv (if installed)
-uv sync
+python -m pip install -e ".[dev]"  # (uv sync is disabled: [tool.uv] managed=false)
 ```
 
 Verify via preflight: `_check_postgres` + `_check_mcp_servers` + dashboard import-linter check should all pass.

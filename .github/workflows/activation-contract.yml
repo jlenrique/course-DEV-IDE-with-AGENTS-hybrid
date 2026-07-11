@@ -24,7 +24,7 @@ jobs:
         run: pip install uv
 
       - name: Sync dependencies
-        run: uv sync --frozen
+        run: python -m pip install -e ".[dev]"  # uv sync disabled by [tool.uv] managed=false
 
       - name: SG-1 roster floor (FR88 + FR105; 11 specialists)
         run: uv run pytest tests/parity/test_eleven_specialists_addressable.py --tb=short -q

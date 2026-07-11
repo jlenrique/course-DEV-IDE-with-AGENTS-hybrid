@@ -24,7 +24,7 @@ jobs:
         run: pip install uv
 
       - name: Sync dependencies
-        run: uv sync --frozen
+        run: python -m pip install -e ".[dev]"  # uv sync disabled by [tool.uv] managed=false
 
       - name: SG-4 sanctum-alignment parity (FR101 + FR102; 11 specialists)
         run: uv run pytest tests/parity/test_skill_md_sanctum_alignment.py --tb=short -q
