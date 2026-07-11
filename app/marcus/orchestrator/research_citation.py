@@ -33,8 +33,13 @@ import hashlib
 import logging
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.marcus.orchestrator.research_credibility import (
+    EVIDENCE_HIERARCHY_TIERS,
+    classify_evidence_hierarchy,
+    provider_provenance_for_row,
+)
 from app.specialists._shared.source_fidelity_audit import audit_numeric_provenance
 
 logger = logging.getLogger(__name__)
@@ -59,6 +64,29 @@ class CitedResearchEntry(BaseModel):
     source_id: str = Field(min_length=1)
     title: str = ""
     source_hash: str = Field(min_length=1)
+    # R4 credibility surfacing (taxonomy: research-evidence-hierarchy.md)
+    evidence_hierarchy_tier: str = "T8_unknown"
+    peer_reviewed: bool = False
+    provider_provenance: list[str] = Field(default_factory=list)
+    triangulation_status: str = "none"
+    reliability_score: float | None = None
+
+    @field_validator("evidence_hierarchy_tier")
+    @classmethod
+    def _tier_closed_set(cls, value: str) -> str:
+        if value not in EVIDENCE_HIERARCHY_TIERS:
+            raise ValueError(
+                f"evidence_hierarchy_tier {value!r} not in closed set "
+                f"{sorted(EVIDENCE_HIERARCHY_TIERS)}"
+            )
+        return value
+
+    @field_validator("provider_provenance")
+    @classmethod
+    def _provenance_nonempty_when_present(cls, value: list[str]) -> list[str]:
+        # Empty list allowed only as pre-mint default; mint_cited_entry always
+        # fills at least the row provider. Fail-loud helper enforces post-mint.
+        return value
 
 
 def derive_source_ref(provider: str, source_id: str) -> str:
@@ -85,10 +113,23 @@ def compute_source_hash(row: Any) -> str:
     return f"sha256:{digest}"
 
 
-def mint_cited_entry(row: Any, *, citation_index: int) -> CitedResearchEntry:
+def mint_cited_entry(
+    row: Any,
+    *,
+    citation_index: int,
+    triangulation_status: str = "none",
+    reliability_score: float | None = None,
+    provider_provenance: list[str] | None = None,
+) -> CitedResearchEntry:
     """Mint a ``CitedResearchEntry`` from an accepted ``TexasRow``."""
     provider = str(getattr(row, "provider", ""))
     source_id = str(getattr(row, "source_id", ""))
+    tier, peer_reviewed = classify_evidence_hierarchy(row)
+    provenance = provider_provenance or provider_provenance_for_row(row)
+    if not provenance:
+        raise ValueError(
+            "mint_cited_entry: provider_provenance missing (fail-loud R4)"
+        )
     return CitedResearchEntry(
         citation_id=f"cite-{citation_index:03d}",
         source_ref=derive_source_ref(provider, source_id),
@@ -96,7 +137,79 @@ def mint_cited_entry(row: Any, *, citation_index: int) -> CitedResearchEntry:
         source_id=source_id,
         title=str(getattr(row, "title", "")),
         source_hash=compute_source_hash(row),
+        evidence_hierarchy_tier=tier,
+        peer_reviewed=peer_reviewed,
+        provider_provenance=list(provenance),
+        triangulation_status=triangulation_status,
+        reliability_score=reliability_score,
     )
+
+
+def assert_credibility_fields(entry: CitedResearchEntry) -> None:
+    """R4 fail-loud: required credibility fields must be present and non-vacuous."""
+    if entry.evidence_hierarchy_tier not in EVIDENCE_HIERARCHY_TIERS:
+        raise ValueError(
+            f"missing/invalid evidence_hierarchy_tier on {entry.citation_id}"
+        )
+    if not entry.provider_provenance:
+        raise ValueError(f"missing provider_provenance on {entry.citation_id}")
+    if entry.triangulation_status not in {
+        "dual_provider",
+        "single_provider",
+        "none",
+    }:
+        raise ValueError(
+            f"invalid triangulation_status on {entry.citation_id}: "
+            f"{entry.triangulation_status!r}"
+        )
+
+
+def apply_triangulation_to_entries(
+    entries: list[CitedResearchEntry],
+    receipt: Any,
+) -> list[CitedResearchEntry]:
+    """Overlay triangulation status/score (+ multi-provider provenance) onto entries."""
+    clusters = list(getattr(receipt, "triangulated_rows", None) or [])
+    if not clusters:
+        return list(entries)
+
+    def _title_key(title: str) -> str:
+        return " ".join("".join(c if c.isalnum() else " " for c in title.lower()).split())
+
+    by_source: dict[str, Any] = {}
+    by_title: dict[str, Any] = {}
+    for cluster in clusters:
+        for provider, row in (getattr(cluster, "rows_by_provider", None) or {}).items():
+            sid = str(getattr(row, "source_id", "") or "")
+            if sid:
+                by_source[f"{provider}:{sid}"] = cluster
+            tk = _title_key(str(getattr(row, "title", "") or ""))
+            if len(tk) >= 16:
+                by_title[tk] = cluster
+
+    out: list[CitedResearchEntry] = []
+    for entry in entries:
+        cluster = by_source.get(f"{entry.provider}:{entry.source_id}")
+        if cluster is None:
+            cluster = by_title.get(_title_key(entry.title))
+        if cluster is None:
+            out.append(entry)
+            continue
+        providers = sorted((getattr(cluster, "rows_by_provider", None) or {}).keys())
+        out.append(
+            entry.model_copy(
+                update={
+                    "triangulation_status": getattr(
+                        cluster, "triangulation_status", entry.triangulation_status
+                    ),
+                    "reliability_score": getattr(
+                        cluster, "reliability_score", entry.reliability_score
+                    ),
+                    "provider_provenance": providers or list(entry.provider_provenance),
+                }
+            )
+        )
+    return out
 
 
 def build_retrieval_source_refs(rows: list[Any]) -> set[str]:
@@ -268,6 +381,8 @@ def dedupe_cited_entries(
 __all__ = [
     "CitationFidelityError",
     "CitedResearchEntry",
+    "apply_triangulation_to_entries",
+    "assert_credibility_fields",
     "assemble_l2_citation_report",
     "audit_research_supplements",
     "build_citation_manifest",

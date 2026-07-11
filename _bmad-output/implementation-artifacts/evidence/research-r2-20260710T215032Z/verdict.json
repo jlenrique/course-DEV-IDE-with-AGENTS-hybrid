@@ -1,0 +1,18 @@
+{
+  "story": "research-r2",
+  "flag_detective": "MARCUS_RESEARCH_DETECTIVE_LIVE=1",
+  "evidence_bolster": true,
+  "oauth_cache_loaded": true,
+  "intent_providers": [
+    "scite",
+    "consensus"
+  ],
+  "cross_validate": true,
+  "intent_text": "Corroborate claim: Worked examples improve novice transfer in introductory instruction. (context: Need a supporting citation for the worked-example rationale.)",
+  "shape_ok": true,
+  "dual_dispatch": false,
+  "dual_live_rows": false,
+  "error": "MCPFetchError: 'consensus' unexpected HTTP 404: {\"detail\":\"Not Found\"}",
+  "summary": {},
+  "pass": false
+}

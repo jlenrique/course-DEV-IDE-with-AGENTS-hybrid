@@ -12,9 +12,10 @@ WARN-ONLY CONTRACT (binding party amendment F1, John+Murat):
     source yields zero numeric tokens, the report `status` is "FAIL" because the
     audit cannot be performed (not a misleading clean PASS).
 
-    The semantic-coverage leg and any tripwire threshold are NOT implemented in
-    this module — see ``SEMANTIC_TRIPWIRE`` below. They are deliberately deferred
-    until >=3 tracked runs exist so a "trends up" claim is falsifiable.
+    The semantic-coverage leg is a **WARN-only heuristic tripwire** (see
+    ``SEMANTIC_TRIPWIRE`` / ``audit_semantic_framing``). It reports candidate
+    framing sentences; it NEVER gates production. Claim fence: pipeline +
+    disposition only — not comprehensive semantic claim↔source faithfulness.
 
 FROZEN NECK (binding party amendment F4, Winston):
     This module is a *pure read-only caller* of
@@ -40,13 +41,178 @@ from app.specialists._shared.figure_tokens import _figures, _normalize_figure
 __all__ = [
     "SEMANTIC_TRIPWIRE",
     "audit_numeric_provenance",
+    "audit_semantic_framing",
 ]
 
-# Semantic-coverage tripwire threshold. NOT tuned — the semantic leg is
-# measurement-only and explicitly non-gating until >=3 tracked runs exist (F1).
-# Keeping this `None` makes a future "net-new trends up run-over-run" claim
-# falsifiable: there is no number to relitigate, only a documented absence.
-SEMANTIC_TRIPWIRE = None  # not tuned until >=3 runs
+# WARN-only semantic disposition (TRAIL trio 2026-07-10 party MUST).
+# Non-None so the pipeline + disposition are falsifiable; still NEVER gates
+# production. Claim fence: heuristic framing candidates only — not a
+# comprehensive semantic claim↔source audit.
+SEMANTIC_TRIPWIRE: dict[str, object] = {
+    "mode": "warn_only",
+    "gates_production": False,
+    "disposition": "pipeline_and_disposition",
+    "version": "v0-heuristic-2026-07-10",
+    "claim_fence": (
+        "Reports candidate framing sentences that look like claims without "
+        "citation anchors and with weak lexical overlap to the source corpus. "
+        "Does NOT assert comprehensive semantic claim↔source faithfulness."
+    ),
+}
+
+_CLAIM_CUE_RE = re.compile(
+    r"\b("
+    r"causes?|caused|leads?\s+to|results?\s+in|increases?|decreases?|"
+    r"associated\s+with|significantly|more\s+than|less\s+than|"
+    r"proves?|demonstrates?|shows\s+that|indicates?\s+that"
+    r")\b",
+    re.IGNORECASE,
+)
+_CITATION_ANCHOR_RE = re.compile(
+    r"("
+    r"\[\d+\]|"
+    r"\(cite[:\s]|"
+    r"doi:\s*10\.\d{4,9}/|"
+    r"10\.\d{4,9}/[^\s]+|"
+    r"\([A-Z][A-Za-z\-]+(?:\s+et\s+al\.)?,?\s+\d{4}\)"
+    r")",
+)
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+_WORD_RE = re.compile(r"[A-Za-z][A-Za-z\-']{2,}")
+_STOP = frozenset(
+    {
+        "the",
+        "and",
+        "for",
+        "that",
+        "this",
+        "with",
+        "from",
+        "are",
+        "was",
+        "were",
+        "been",
+        "have",
+        "has",
+        "had",
+        "not",
+        "but",
+        "than",
+        "more",
+        "less",
+        "into",
+        "onto",
+        "over",
+        "under",
+        "about",
+        "their",
+        "there",
+        "which",
+        "while",
+        "when",
+        "where",
+        "what",
+        "who",
+        "how",
+        "why",
+        "also",
+        "only",
+        "such",
+        "then",
+        "they",
+        "them",
+        "these",
+        "those",
+        "through",
+        "between",
+        "among",
+        "using",
+        "used",
+        "use",
+        "can",
+        "may",
+        "might",
+        "will",
+        "would",
+        "should",
+        "could",
+        "does",
+        "did",
+        "doing",
+        "very",
+        "just",
+    }
+)
+
+
+def audit_semantic_framing(
+    narration_text: str,
+    source_text: str,
+) -> dict:
+    """Heuristic WARN-only framing candidates (not a full semantic audit).
+
+    Returns a report fragment for ``unsourced_framing``. Never raises; never
+    implies production FAIL. Empty narration/source → empty items (numeric
+    zero-denominator guard remains the FAIL path).
+    """
+    items: list[dict] = []
+    narration = (narration_text or "").strip()
+    source = (source_text or "").strip()
+    if not narration or not source:
+        return {
+            "count": 0,
+            "items": [],
+            "note": (
+                "WARN-only semantic framing leg: empty narration or source — "
+                "no framing candidates scored. "
+                + str(SEMANTIC_TRIPWIRE["claim_fence"])
+            ),
+            "disposition": SEMANTIC_TRIPWIRE,
+        }
+
+    source_words = {
+        w.lower()
+        for w in _WORD_RE.findall(source)
+        if w.lower() not in _STOP
+    }
+    for sentence in _SENTENCE_SPLIT_RE.split(narration):
+        text = sentence.strip()
+        if len(text) < 24:
+            continue
+        if not _CLAIM_CUE_RE.search(text):
+            continue
+        if _CITATION_ANCHOR_RE.search(text):
+            continue
+        content = [
+            w.lower()
+            for w in _WORD_RE.findall(text)
+            if w.lower() not in _STOP
+        ]
+        if len(content) < 3:
+            continue
+        overlap = sum(1 for w in content if w in source_words)
+        overlap_ratio = overlap / len(content)
+        if overlap_ratio >= 0.35:
+            continue
+        items.append(
+            {
+                "sentence": text,
+                "reason": "claim_cue_without_citation_anchor_and_weak_source_overlap",
+                "overlap_ratio": round(overlap_ratio, 3),
+                "severity": "warn_only",
+            }
+        )
+
+    return {
+        "count": len(items),
+        "items": items,
+        "note": (
+            "WARN-only semantic framing leg populated by heuristic tripwire; "
+            "does not gate production. "
+            + str(SEMANTIC_TRIPWIRE["claim_fence"])
+        ),
+        "disposition": SEMANTIC_TRIPWIRE,
+    }
 
 
 def _normalized_token_map(text: str) -> dict[str, set[str]]:
@@ -125,6 +291,7 @@ def audit_numeric_provenance(
     source_token_count = len(source_map)
 
     # ---- F2 zero-denominator guard: cannot audit with no tokens -> FAIL ----
+    framing = audit_semantic_framing(narration_text, source_text)
     if narration_token_count == 0 or source_token_count == 0:
         return {
             "status": "FAIL",
@@ -143,14 +310,7 @@ def audit_numeric_provenance(
                 "research_supplement": {"count": 0, "tokens": []},
                 "unsourced_numeric": {"count": 0, "pairs": []},
             },
-            "unsourced_framing": {
-                "count": 0,
-                "items": [],
-                "note": (
-                    "STUB — numeric leg leaves this empty; the future semantic "
-                    "leg populates framing/structure elaboration here."
-                ),
-            },
+            "unsourced_framing": framing,
             "classifications": [],
             "semantic_tripwire": SEMANTIC_TRIPWIRE,
         }
@@ -238,17 +398,8 @@ def audit_numeric_provenance(
                 "pairs": unsourced_pairs,
             },
         },
-        # F3 STUB: numeric leg never populates this; the report schema carries it
-        # so the semantic leg can fill framing/structure elaboration later.
-        "unsourced_framing": {
-            "count": 0,
-            "items": [],
-            "note": (
-                "STUB — numeric leg leaves this empty; the future semantic leg "
-                "populates framing/structure elaboration here (sanctioned "
-                "composition, NOT drift)."
-            ),
-        },
+        # F3: semantic framing leg (WARN-only tripwire; never gates).
+        "unsourced_framing": framing,
         "classifications": classifications,
         "semantic_tripwire": SEMANTIC_TRIPWIRE,
     }

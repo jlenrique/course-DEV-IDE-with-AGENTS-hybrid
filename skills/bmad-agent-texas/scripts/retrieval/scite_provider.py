@@ -322,6 +322,9 @@ class SciteProvider(RetrievalAdapter):
         # topical term search).
         if "dois" in params and params["dois"]:
             query["dois"] = [str(d) for d in params["dois"]]
+        # R3 title-bridge: resolve Consensus titles via Scite ``titles`` filter.
+        if "titles" in params and params["titles"]:
+            query["titles"] = [str(t) for t in params["titles"] if str(t).strip()]
         return query
 
     def _build_query_paper(
@@ -389,6 +392,13 @@ class SciteProvider(RetrievalAdapter):
             args = {
                 "dois": list(query["dois"]),
                 "limit": int(query.get("max_results", 1)),
+            }
+            result = client.call_tool(self.PROVIDER_INFO.id, _SCITE_TOOL_SEARCH, args)
+            return _extract_search_results(result)
+        if query.get("titles"):
+            args = {
+                "titles": list(query["titles"]),
+                "limit": int(query.get("max_results", len(query["titles"]))),
             }
             result = client.call_tool(self.PROVIDER_INFO.id, _SCITE_TOOL_SEARCH, args)
             return _extract_search_results(result)
@@ -609,25 +619,31 @@ class SciteProvider(RetrievalAdapter):
     # ---- T2: identity_key — 3-tier fallback -------------------------------
 
     def identity_key(self, row: TexasRow) -> str:
-        """Return DOI (primary) → scite_paper_id → source_id (final fallback).
+        """Return DOI (primary) → normalized title → scite_paper_id → source_id.
 
-        Raises `NotImplementedError` only if all three are empty/absent —
-        the dispatcher surfaces this at `cross_validate: true` preflight
-        (anti-pattern #10 from 27-0).
+        Title fingerprint enables R3 cross-provider merge when Consensus MCP
+        returns markdown without DOIs.
         """
         meta = row.provider_metadata or {}
         scite_meta = meta.get("scite") or {}
         doi = scite_meta.get("doi")
-        if isinstance(doi, str) and doi:
-            return doi
+        if isinstance(doi, str) and doi.strip():
+            return doi.strip().lower()
+        if isinstance(row.source_id, str) and row.source_id.lower().startswith("10."):
+            return row.source_id.strip().lower()
+        from .triangulator import normalize_title_key  # noqa: PLC0415
+
+        title_key = normalize_title_key(row.title)
+        if title_key:
+            return f"title:{title_key}"
         paper_id = scite_meta.get("scite_paper_id")
         if isinstance(paper_id, str) and paper_id:
             return paper_id
         if row.source_id:
             return row.source_id
         raise NotImplementedError(
-            f"SciteProvider.identity_key: no DOI / scite_paper_id / source_id "
-            f"on row {row!r}. Cross-validation requires one of these."
+            f"SciteProvider.identity_key: no DOI / title / scite_paper_id / "
+            f"source_id on row {row!r}. Cross-validation requires one of these."
         )
 
     def declare_honored_criteria(self) -> set[str]:

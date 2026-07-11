@@ -16,28 +16,34 @@ from skills.bmad_agent_tracy.scripts.posture_dispatcher import PostureDispatcher
 
 
 class TestPostureDispatcher:
-    """Test the PostureDispatcher class."""
+    """Test the PostureDispatcher class (R1: shapes RetrievalIntents)."""
 
     @pytest.fixture
     def dispatcher(self):
-        """Create a mock dispatcher."""
+        """Create a dispatcher (Texas fetch optional; shaping is local)."""
         mock_dispatcher = Mock()
         return PostureDispatcher(mock_dispatcher)
 
-    def test_embellish_not_implemented(self, dispatcher):
-        """Test that embellish raises NotImplementedError."""
-        with pytest.raises(NotImplementedError, match="Embellish posture not implemented"):
-            dispatcher.embellish("target", "examples")
+    def test_embellish_shapes_intent(self, dispatcher, monkeypatch):
+        """Embellish emits a Scite RetrievalIntent (no NotImplementedError)."""
+        monkeypatch.setenv("MARCUS_RESEARCH_DETECTIVE_LIVE", "1")
+        intent = dispatcher.embellish("target", "examples")
+        assert intent.provider_hints[0].provider == "scite"
+        assert intent.provider_hints[0].params["posture"] == "embellish"
 
-    def test_corroborate_not_implemented(self, dispatcher):
-        """Test that corroborate raises NotImplementedError."""
-        with pytest.raises(NotImplementedError, match="Corroborate posture not implemented"):
-            dispatcher.corroborate("claim", "context")
+    def test_corroborate_shapes_intent(self, dispatcher, monkeypatch):
+        """Corroborate emits a Scite RetrievalIntent (no NotImplementedError)."""
+        monkeypatch.setenv("MARCUS_RESEARCH_DETECTIVE_LIVE", "1")
+        intent = dispatcher.corroborate("claim", "context")
+        assert intent.provider_hints[0].provider == "scite"
+        assert intent.provider_hints[0].params["posture"] == "corroborate"
 
-    def test_gap_fill_not_implemented(self, dispatcher):
-        """Test that gap_fill raises NotImplementedError."""
-        with pytest.raises(NotImplementedError, match="Gap-Fill posture not implemented"):
-            dispatcher.gap_fill("gap", "type", "scope")
+    def test_gap_fill_shapes_intent(self, dispatcher, monkeypatch):
+        """Gap-fill emits a Scite RetrievalIntent (no NotImplementedError)."""
+        monkeypatch.setenv("MARCUS_RESEARCH_DETECTIVE_LIVE", "1")
+        intent = dispatcher.gap_fill("gap", "type", "scope")
+        assert intent.provider_hints[0].provider == "scite"
+        assert intent.provider_hints[0].params["posture"] == "gap_fill"
 
 
 class TestTracyVocabLockstep:

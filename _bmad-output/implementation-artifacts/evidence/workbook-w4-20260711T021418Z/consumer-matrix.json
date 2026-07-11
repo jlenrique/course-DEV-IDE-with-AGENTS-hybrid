@@ -1,0 +1,37 @@
+[
+  {
+    "consumer": "glossary_writer",
+    "access_mode": "resolve_for_glossary_writer / glossary_inputs_from_run",
+    "artifact": "run.json#research_wiring@04.55 \u2192 3 articles",
+    "packet_digest": "17d56b0c0a8792194fed333a351fae6f71db67fa3ea56b77f3b28029ec9544eb",
+    "witness": "PASS"
+  },
+  {
+    "consumer": "trends_projector",
+    "access_mode": "resolve_for_trends_projector / trends_inputs_from_run",
+    "artifact": "same packet \u2192 5 trends / 3 hot topics",
+    "packet_digest": "17d56b0c0a8792194fed333a351fae6f71db67fa3ea56b77f3b28029ec9544eb",
+    "witness": "PASS"
+  },
+  {
+    "consumer": "irene_intake",
+    "access_mode": "consume_research_entries(packet.entries)",
+    "artifact": "entries_consumed=21; fabricate_red=True",
+    "packet_digest": "17d56b0c0a8792194fed333a351fae6f71db67fa3ea56b77f3b28029ec9544eb",
+    "witness": "PASS"
+  },
+  {
+    "consumer": "spoc_receipt",
+    "access_mode": "disk run.json + workbook MD/DOCX sidecar",
+    "artifact": "_bmad-output/implementation-artifacts/evidence/workbook-w4-20260711T021418Z/artifacts/tejal-apc-c1-m1-p2-trends@1.md",
+    "packet_digest": "17d56b0c0a8792194fed333a351fae6f71db67fa3ea56b77f3b28029ec9544eb",
+    "witness": "PASS"
+  },
+  {
+    "consumer": "future_collateral",
+    "access_mode": "load_research_packet (named; implement later)",
+    "artifact": "research-packet.v1 contract pinned",
+    "packet_digest": "17d56b0c0a8792194fed333a351fae6f71db67fa3ea56b77f3b28029ec9544eb",
+    "witness": "PASS"
+  }
+]

@@ -26,6 +26,7 @@ from retrieval import get_provider, list_providers
         # placeholder, ratified -> ready (same supersession contract as
         # scite above). Repin per contracts-triage-ledger-2026-07-02 row 15.
         ("consensus", "retrieval", "ready"),
+        ("jefferson_library", "retrieval", "ready"),
         ("image", "retrieval", "ratified"),
         ("youtube", "retrieval", "ratified"),
         ("openai_chatgpt", "retrieval", "backlog"),

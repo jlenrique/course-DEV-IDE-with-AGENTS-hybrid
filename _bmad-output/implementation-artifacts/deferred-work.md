@@ -81,3 +81,7 @@
 
 - [edge] Refinement carry of fidelity is prompt-only: if the model drops recognized tags on a refinement pass, normalize does not merge them back from the incoming plan. Spec Always asks carry-forward via prompt; a deterministic merge backstop is a follow-on if live refinements strip tags.
 - [blind] Soft-omit of unknown fidelity values is intentional (spec Always); fail-loud on typos remains Ask-First / sibling of the prior Gary-path defer.
+
+## Deferred from: adversarial review of spec-fix-llm-execution-config-docstring (2026-07-10)
+
+- [hardening] The 2026-07-10 operator binding (vision batch model MUST equal realtime; never `gpt-4.1-*` as product default) is prose-only — no validator enforces it. `_require_vision` in `app/runtime/llm_execution_config.py` only checks a batch profile exists; a config setting `batch.model: gpt-4.1-mini` loads cleanly (only guard is a value-pin test). Natural home: model validator asserting `vision.batch.model == vision.realtime.model` or rejecting `gpt-4.1-*`. Also note `batch_model_fallback_family` is declared+tested but consumed by zero production code (`batch_route.py` submits `profile.model` verbatim; no rejection detection / auto-substitute) — implement or document-as-policy decision rides with this hardening.

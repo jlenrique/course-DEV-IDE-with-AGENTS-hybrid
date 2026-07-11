@@ -217,6 +217,24 @@ _RETRIEVAL_SHAPE_PLACEHOLDERS: tuple[ProviderInfo, ...] = (
             "Promote to ratified story when eval-framework scope authored."
         ),
     ),
+    ProviderInfo(
+        id="jefferson_library",
+        shape="retrieval",
+        status="ratified",
+        capabilities=["institutional-fulltext", "doi-openurl", "browser-session-sso"],
+        auth_env_vars=[
+            "JEFFERSON_CHROME_USER_DATA_DIR",
+            "JEFFERSON_LIBRARY_LIVE",
+        ],
+        spec_ref=(
+            "_bmad-output/implementation-artifacts/"
+            "agentic-research-foundations-stories-2026-07-10.md"
+        ),
+        notes=(
+            "Agentic Research Foundations R5. Institutional full-text via TJU "
+            "SSO browser session; superseded by JeffersonLibraryProvider when imported."
+        ),
+    ),
 )
 
 

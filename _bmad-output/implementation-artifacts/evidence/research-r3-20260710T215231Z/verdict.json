@@ -1,0 +1,400 @@
+{
+  "pass": true,
+  "reason": "explicit_single_provider_receipt",
+  "metadata": {
+    "row_count": 21,
+    "cluster_count": 21,
+    "dual_provider_count": 0,
+    "single_provider_count": 21
+  },
+  "top": [
+    {
+      "source_id": "10.1145/3304221.3319756",
+      "identity_key": "10.1145/3304221.3319756",
+      "rows_by_provider": {
+        "scite": {
+          "source_id": "10.1145/3304221.3319756",
+          "title": "Design and Pilot Testing of Subgoal Labeled Worked Examples for Five Core Concepts in CS1",
+          "body": "Subgoal learning has improved student problem-solving performance in programming, but it has been tested for only oneto-two hours of instruction at a time. Our work pioneers implementing subgoal learning throughout an entire introductory programming course. In this paper we discuss the protocol that we used to identify subgoals for core programming procedures, present the subgoal labels created for the course, and outline the subgoal-labeled instructional materials that were designed for a Java-based course. To examine the effect of subgoal labeled materials on student performance in the course, we compared quiz and exam grades between students who learned using subgoal labels and those who learned using conventional materials. Initial results indicate that learning with subgoals improves performance on early applications of concepts. Moreover, variance in performance was lower and persistence in the course was higher for students who learned with subgoals compared to those who learned with conventional materials, suggesting that learning with subgoal labels may uniquely benefit students who would normally receive low grades or dropout of the course.",
+          "authors": [
+            "Lauren E. Margulieux",
+            "Briana B. Morrison",
+            "Adrienne Decker"
+          ],
+          "date": "2019",
+          "provider": "scite",
+          "provider_metadata": {
+            "scite": {
+              "doi": "10.1145/3304221.3319756",
+              "scite_paper_id": null,
+              "venue": null,
+              "year": 2019,
+              "supporting_count": 0,
+              "contradicting_count": 0,
+              "mentioning_count": 6,
+              "cited_by_count": 6,
+              "citation_context_snippets": [],
+              "scite_report_url": null,
+              "known_losses": []
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "scite"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "consensus"
+        ],
+        "single_source_only": [
+          "scite"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "10.1145/3304221.3319756",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "scite"
+            ],
+            "single_source_only": [
+              "scite"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+      "identity_key": "consensus:08dc5aa06a4557a7ac6340f8c36a4a71",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+          "title": "Investigating how errors should be flagged and worked examples structured when providing feedback to novice learners of mathematics",
+          "body": "This study investigated the effectiveness of using a sequence of worked examples as part of the feedback cycle. Worked examples were either presented as full worked examples or partial worked examples (single-step and completion formats). In two experiments, grade 8 students completed a learning phase on a mathematics topic, which was immediately followed by a testing phase. A day later, participants were given feedback on their test papers and provided worked examples to problems where errors were made, and then re-tested. In Experiment 1 (N\u2009=\u200973), studying full worked examples led to greater improvement than studying single-step worked examples. In Experiment 2 (N\u2009=\u200974), full worked examples led to greater improvement than studying either single-step worked examples or completion worked examples. Furthermore, no learning differences were found when learner errors were directly flagged or otherwise. In conclusion, providing full worked examples as feedback to novice learners was helpful.",
+          "authors": [
+            "Elisapesi Manson et al."
+          ],
+          "date": "2019-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+              "title": "Investigating how errors should be flagged and worked examples structured when providing feedback to novice learners of mathematics",
+              "authors": [
+                "Elisapesi Manson et al."
+              ],
+              "year": 2019,
+              "venue": "Educational Psychology",
+              "abstract": "This study investigated the effectiveness of using a sequence of worked examples as part of the feedback cycle. Worked examples were either presented as full worked examples or partial worked examples (single-step and completion formats). In two experiments, grade 8 students completed a learning phase on a mathematics topic, which was immediately followed by a testing phase. A day later, participants were given feedback on their test papers and provided worked examples to problems where errors were made, and then re-tested. In Experiment 1 (N\u2009=\u200973), studying full worked examples led to greater improvement than studying single-step worked examples. In Experiment 2 (N\u2009=\u200974), full worked examples led to greater improvement than studying either single-step worked examples or completion worked examples. Furthermore, no learning differences were found when learner errors were directly flagged or otherwise. In conclusion, providing full worked examples as feedback to novice learners was helpful.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/08dc5aa06a4557a7ac6340f8c36a4a71/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+      "identity_key": "consensus:0e23400d76b75eb1b6c2f2a41699c7af",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+          "title": "Learning from Examples: Instructional Principles from the Worked Examples Research",
+          "body": "Worked examples are instructional devices that provide an expert's problem solution for a learner to study. Worked-examples research is a cognitive-experimental program that has relevance to classroom instruction and the broader educational research community. A frame- work for organizing the findings of this research is proposed, leading to instructional design principles. For instance, one instructional design principle suggests that effective examples have highly integrated components. They employ multiple modalities in presentation and emphasize conceptual structure by labeling or segmenting. At the lesson level, effective instruction employs multiple examples for each conceptual problem type, varies example formats within problem type, and employs surface features to signal deep structure. Also, examples should be presented in close proximity to matched practice problems. More- over, learners can be encouraged through direct training or by the structure of the worked example to actively self:explain examples. Worked examples are associated with early stages of skill development, but the design principles are relevant to constructivist research and teaching.",
+          "authors": [
+            "R. Atkinson et al."
+          ],
+          "date": "2000-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+              "title": "Learning from Examples: Instructional Principles from the Worked Examples Research",
+              "authors": [
+                "R. Atkinson et al."
+              ],
+              "year": 2000,
+              "venue": "Review of Educational Research",
+              "abstract": "Worked examples are instructional devices that provide an expert's problem solution for a learner to study. Worked-examples research is a cognitive-experimental program that has relevance to classroom instruction and the broader educational research community. A frame- work for organizing the findings of this research is proposed, leading to instructional design principles. For instance, one instructional design principle suggests that effective examples have highly integrated components. They employ multiple modalities in presentation and emphasize conceptual structure by labeling or segmenting. At the lesson level, effective instruction employs multiple examples for each conceptual problem type, varies example formats within problem type, and employs surface features to signal deep structure. Also, examples should be presented in close proximity to matched practice problems. More- over, learners can be encouraged through direct training or by the structure of the worked example to actively self:explain examples. Worked examples are associated with early stages of skill development, but the design principles are relevant to constructivist research and teaching.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/0e23400d76b75eb1b6c2f2a41699c7af/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "150a06967cc45063a8b342836cc9b3d6",
+      "identity_key": "consensus:150a06967cc45063a8b342836cc9b3d6",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "150a06967cc45063a8b342836cc9b3d6",
+          "title": "Enhancing students\u2019 critical thinking skills: is comparing correct and erroneous examples beneficial?",
+          "body": "There is a need for effective methods to teach critical thinking (CT). One instructional method that seems promising is comparing correct and erroneous worked examples (i.e., contrasting examples). The aim of the present study, therefore, was to investigate the effect of contrasting examples on learning and transfer of CT-skills, focusing on avoiding biased reasoning. Students (N\u2009=\u2009170) received instructions on CT and avoiding biases in reasoning tasks, followed by: (1) contrasting examples, (2) correct examples, (3) erroneous examples, or (4) practice problems. Performance was measured on a pretest, immediate posttest, 3-week delayed posttest, and 9-month delayed posttest. Our results revealed that participants\u2019 reasoning task performance improved from pretest to immediate posttest, and even further after a delay (i.e., they learned to avoid biased reasoning). Surprisingly, there were no differences in learning gains or transfer performance between the four conditions. Our findings raise questions about the preconditions of contrasting examples effects. Moreover, how transfer of CT-skills can be fostered remains an important issue for future research.",
+          "authors": [
+            "Lara M. van Peppen et al."
+          ],
+          "date": "2021-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "150a06967cc45063a8b342836cc9b3d6",
+              "title": "Enhancing students\u2019 critical thinking skills: is comparing correct and erroneous examples beneficial?",
+              "authors": [
+                "Lara M. van Peppen et al."
+              ],
+              "year": 2021,
+              "venue": "Instructional Science",
+              "abstract": "There is a need for effective methods to teach critical thinking (CT). One instructional method that seems promising is comparing correct and erroneous worked examples (i.e., contrasting examples). The aim of the present study, therefore, was to investigate the effect of contrasting examples on learning and transfer of CT-skills, focusing on avoiding biased reasoning. Students (N\u2009=\u2009170) received instructions on CT and avoiding biases in reasoning tasks, followed by: (1) contrasting examples, (2) correct examples, (3) erroneous examples, or (4) practice problems. Performance was measured on a pretest, immediate posttest, 3-week delayed posttest, and 9-month delayed posttest. Our results revealed that participants\u2019 reasoning task performance improved from pretest to immediate posttest, and even further after a delay (i.e., they learned to avoid biased reasoning). Surprisingly, there were no differences in learning gains or transfer performance between the four conditions. Our findings raise questions about the preconditions of contrasting examples effects. Moreover, how transfer of CT-skills can be fostered remains an important issue for future research.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/150a06967cc45063a8b342836cc9b3d6/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "150a06967cc45063a8b342836cc9b3d6",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "178a00439a4b5dbea9b4662d88fc1bd2",
+      "identity_key": "consensus:178a00439a4b5dbea9b4662d88fc1bd2",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "178a00439a4b5dbea9b4662d88fc1bd2",
+          "title": "Do novices and advanced students benefit differently from worked examples and ITS?",
+          "body": "Prior research shows that novices learn more from examples than unsupported problem solving. Intelligent Tutoring Systems (ITS) support problem solving in many ways, adaptive feedback being one of them. However, when students repeatedly request hints from ITSs, problem solving is eventually replaced with worked examples when students request solutions to the current step or the whole problem. We conducted a study to observe the difference in learning outcomes when novices and advanced students learn from examples or with an ITS. The study had three conditions: Examples Only (EO), Problems Only (PO) and Alternating Examples and Problems (AEP). After each example/problem, students received Self-Explanation (SE) prompts. The result shows that no vices learnt significantly more conceptual knowledge in the AEP compared to the PO condition. Moreover, novices in the AEP and PO conditions performed significantly better on SE prompts than students in the EO condition. Advanced students who learnt from examples only did not significantly improve in the study. Overall, the study suggests using AEP for novices and either AEP or PO for advanced students. The results clearly reveal that using examples alone is not an effective approach for novices and advanced students in comparison with ITSs.",
+          "authors": [
+            "A. Najar et al."
+          ],
+          "date": "2024-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "178a00439a4b5dbea9b4662d88fc1bd2",
+              "title": "Do novices and advanced students benefit differently from worked examples and ITS?",
+              "authors": [
+                "A. Najar et al."
+              ],
+              "year": 2024,
+              "venue": "International Conference on Computers in Education",
+              "abstract": "Prior research shows that novices learn more from examples than unsupported problem solving. Intelligent Tutoring Systems (ITS) support problem solving in many ways, adaptive feedback being one of them. However, when students repeatedly request hints from ITSs, problem solving is eventually replaced with worked examples when students request solutions to the current step or the whole problem. We conducted a study to observe the difference in learning outcomes when novices and advanced students learn from examples or with an ITS. The study had three conditions: Examples Only (EO), Problems Only (PO) and Alternating Examples and Problems (AEP). After each example/problem, students received Self-Explanation (SE) prompts. The result shows that no vices learnt significantly more conceptual knowledge in the AEP compared to the PO condition. Moreover, novices in the AEP and PO conditions performed significantly better on SE prompts than students in the EO condition. Advanced students who learnt from examples only did not significantly improve in the study. Overall, the study suggests using AEP for novices and either AEP or PO for advanced students. The results clearly reveal that using examples alone is not an effective approach for novices and advanced students in comparison with ITSs.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/178a00439a4b5dbea9b4662d88fc1bd2/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "178a00439a4b5dbea9b4662d88fc1bd2",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

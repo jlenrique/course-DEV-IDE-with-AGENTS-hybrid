@@ -526,6 +526,16 @@
       ],
       "default": null,
       "description": "Compile-time component selection this run composed + froze (S2). Persisted in the run record so the resume/recover walk REHYDRATES it and recomposes the SAME graph \u2014 never re-defaults (two-walk trap). None on legacy runs predating composition."
+    },
+    "llm_execution_mode": {
+      "default": "realtime",
+      "description": "Run-level LLM transport switch (Batch epic B6-land). realtime (default) = existing live calls; batch = opt-in LiteLLM Batch for A3-eligible sites only (vision first). Distinct from tracked/ad-hoc execution_mode in run_constants.",
+      "enum": [
+        "realtime",
+        "batch"
+      ],
+      "title": "Llm Execution Mode",
+      "type": "string"
     }
   },
   "required": [

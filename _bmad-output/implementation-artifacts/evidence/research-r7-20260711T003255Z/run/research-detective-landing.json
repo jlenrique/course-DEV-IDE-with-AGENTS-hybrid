@@ -1,0 +1,8 @@
+{
+  "schema_version": "research-detective-landing.v1",
+  "status": "awaiting_disposition",
+  "node_id": "08",
+  "trial_id": "816d4de2-53c6-4549-a5cc-6284dbbbb699",
+  "written_at": "2026-07-11T00:32:55.646628Z",
+  "note": "Hard-pause landing (R7 Teeth-Thin). Pass-2 blocked until research-detective-disposition.json carries approve|reject|defer. Resume/recover completeness = TRAIL (tracy-gate-resume-recover)."
+}

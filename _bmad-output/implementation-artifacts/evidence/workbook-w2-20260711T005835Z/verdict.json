@@ -1,0 +1,40 @@
+{
+  "story": "workbook-w2",
+  "pass": true,
+  "trial_id": "84c1e63d-0bb1-4d3e-a9c2-e14dbb40de09",
+  "claim": "Encyclopedia glossary articles from credibility-labeled research rows; provenance retained; empty not fabricated",
+  "steps": [
+    {
+      "step": "non_vacuous_encyclopedia_article",
+      "pass": true,
+      "article_count": 3,
+      "non_vacuous_count": 3,
+      "sample_term": "Switching Stay Home Instruction"
+    },
+    {
+      "step": "provenance_retained",
+      "pass": true,
+      "sample_source_ref": "retrieval:scite:10.1145/3368308.3415426",
+      "sample_tier": "T4_peer_other"
+    },
+    {
+      "step": "compose_research_glossary_section",
+      "pass": true
+    },
+    {
+      "step": "md_docx_same_composed_model",
+      "pass": true,
+      "markdown_path": "_bmad-output\\implementation-artifacts\\evidence\\workbook-w2-20260711T005835Z\\glossary-compose.md",
+      "docx_path": "_bmad-output\\implementation-artifacts\\evidence\\workbook-w2-20260711T005835Z\\glossary-compose.docx",
+      "g2_unsourced": 0
+    },
+    {
+      "step": "empty_research_not_fabricated",
+      "pass": true
+    }
+  ],
+  "known_losses_sample": [
+    "glossary_capped_at_3"
+  ],
+  "empty_reason": null
+}

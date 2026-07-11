@@ -1,0 +1,40 @@
+# runtime/config/llm_execution.yaml
+# Vision-first LLM execution profiles for Batch LLM Execution Mode (A1).
+# Sibling to model_cascade.yaml — does NOT replace the economics cascade.
+#
+# Operator binding 2026-07-10: batch model MUST match realtime — gpt-5.5
+# (or nearest GPT-5-family member available on Batch if gpt-5.5 is rejected).
+# Prior scratch smoke used gpt-4.1-mini successfully for PNG reads; that remains
+# a provider quality baseline only (harness_baseline_batch_id), NOT the product
+# default. Product dispatch is via LiteLLM (details may differ from scratch smoke).
+#
+# A1-EXT (all-node tiering) is TRAIL — only `vision` is required for v1.
+
+version: 1
+default_mode: realtime
+
+nodes:
+  vision:
+    default_mode: realtime
+    realtime:
+      provider: openai
+      model: gpt-5.5
+      max_completion_tokens: 8192
+      # Reserved for Responses-shaped profiles / future; chat/completions Batch may ignore.
+      reasoning_effort: medium
+      text_verbosity: low
+      prompt_cache_key_strategy: stable_perception_v1
+      prompt_cache_retention: 24h
+    batch:
+      provider: openai
+      model: gpt-5.5
+      max_completion_tokens: 8192
+      reasoning_effort: medium
+      text_verbosity: low
+      prompt_cache_key_strategy: stable_perception_v1
+      prompt_cache_retention: 24h
+      # If Batch rejects gpt-5.5, fall back within GPT-5 family (e.g. gpt-5 / gpt-5-mini)
+      # — do NOT silently drop to gpt-4.1-* for product defaults.
+      batch_model_fallback_family: gpt-5
+      # Historical PNG good-read smoke (model was gpt-4.1-mini) — quality narrative only.
+      harness_baseline_batch_id: batch_6a457bcac6488190b79224e61ea89b26

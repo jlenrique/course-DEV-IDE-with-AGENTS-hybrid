@@ -37,6 +37,9 @@ from app.models.state.validators.run_state_validators import (
 RunStatus = Literal["pending", "running", "complete", "failed"]
 """Closed enum: top-level run status."""
 
+LlmExecutionMode = Literal["realtime", "batch"]
+"""Run-level LLM transport switch (Batch epic B6-land). Not tracked/ad-hoc execution_mode."""
+
 ALLOWED_GRAPH_VERSIONS: frozenset[str] = frozenset({"v0.1-stub", "v42"})
 """Stub frozen-graph-version allowlist; Slab 4 Story 4.5 wires the real registry."""
 
@@ -121,6 +124,15 @@ class RunState(BaseModel):
             "None on legacy runs predating composition."
         ),
     )
+    llm_execution_mode: LlmExecutionMode = Field(
+        default="realtime",
+        description=(
+            "Run-level LLM transport switch (Batch epic B6-land). "
+            "realtime (default) = existing live calls; batch = opt-in LiteLLM "
+            "Batch for A3-eligible sites only (vision first). Distinct from "
+            "tracked/ad-hoc execution_mode in run_constants."
+        ),
+    )
 
     @field_validator("run_id")
     @classmethod
@@ -167,4 +179,10 @@ class RunState(BaseModel):
         return self
 
 
-__all__ = ["ALLOWED_GRAPH_VERSIONS", "ComponentSelection", "RunState", "RunStatus"]
+__all__ = [
+    "ALLOWED_GRAPH_VERSIONS",
+    "ComponentSelection",
+    "LlmExecutionMode",
+    "RunState",
+    "RunStatus",
+]

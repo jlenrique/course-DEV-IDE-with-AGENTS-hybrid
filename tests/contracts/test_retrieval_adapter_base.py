@@ -179,11 +179,77 @@ def _make_gamma_docs_harness() -> AdapterHarness:
     )
 
 
+def _make_jefferson_library_harness() -> AdapterHarness:
+    """JeffersonLibraryProvider contract harness (R5) — hermetic fetch_fn."""
+    from retrieval.jefferson_library_provider import JeffersonLibraryProvider
+
+    doi = "10.1056/NEJMoa2034577"
+
+    def _fetch(query: dict) -> list[dict]:
+        return [
+            {
+                "doi": query["doi"],
+                "title": "Fixture full text",
+                "pdf_bytes_len": 128,
+                "pdf_sha256": "abc",
+                "content_type": "application/pdf",
+                "access_url": "https://example.test/pdf",
+                "pdf_url": query.get("pdf_url"),
+                "is_pdf": True,
+                "access_path": "fixture",
+            }
+        ]
+
+    adapter = JeffersonLibraryProvider(fetch_fn=_fetch)
+    intent = RetrievalIntent(
+        intent=doi,
+        provider_hints=[
+            ProviderHint(
+                provider="jefferson_library",
+                params={"doi": doi, "pdf_url": f"https://www.nejm.org/doi/pdf/{doi}"},
+            )
+        ],
+        kind="direct_ref",
+        iteration_budget=1,
+        acceptance_criteria=AcceptanceCriteria(mechanical={"min_results": 1}),
+    )
+    raw_sample = [
+        {
+            "doi": doi,
+            "title": "A",
+            "pdf_bytes_len": 10,
+            "pdf_sha256": "x",
+            "is_pdf": True,
+        },
+        {
+            "doi": "10.1000/other",
+            "title": "B",
+            "pdf_bytes_len": 10,
+            "pdf_sha256": "y",
+            "is_pdf": True,
+        },
+    ]
+    known_row = TexasRow(
+        source_id=doi,
+        provider="jefferson_library",
+        provider_metadata={"jefferson_library": {"doi": doi}},
+    )
+    return AdapterHarness(
+        adapter=adapter,
+        intent=intent,
+        raw_sample=raw_sample,
+        known_identity_row=known_row,
+        known_identity_value=doi.lower(),
+        expected_honored_keys={"min_results", "exclude_ids"},
+    )
+
+
 # Parametrization target — adapters land here as they ship.
 ADAPTER_FACTORIES: list[tuple[str, Any]] = [
     ("fake", _make_fake_harness),
     ("scite", _make_scite_harness),
     ("gamma_docs", _make_gamma_docs_harness),
+    ("jefferson_library", _make_jefferson_library_harness),
 ]
 
 

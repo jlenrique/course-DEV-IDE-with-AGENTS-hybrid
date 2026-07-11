@@ -167,6 +167,7 @@
         "in-flight",
         "paused-at-gate",
         "paused-at-error",
+        "waiting_for_provider_batch",
         "completed",
         "failed"
       ],
@@ -177,10 +178,14 @@
       "anyOf": [
         {
           "enum": [
+            "G0E",
+            "G0R",
             "G1",
+            "G2B",
             "G2C",
             "G3",
-            "G4"
+            "G4",
+            "G4A"
           ],
           "type": "string"
         },
@@ -202,6 +207,18 @@
       ],
       "default": null,
       "title": "Paused Error Tag"
+    },
+    "waiting_batch_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Waiting Batch Id"
     },
     "langsmith_trace_id": {
       "anyOf": [

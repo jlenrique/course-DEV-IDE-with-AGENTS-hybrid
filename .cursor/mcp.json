@@ -17,10 +17,15 @@
       "transport": "http",
       "description": "scite.ai retrieval-shape MCP — Story 27-2 provider target. Auth: HTTP Basic via SCITE_USER_NAME / SCITE_PASSWORD. Consumed at runtime by skills/bmad-agent-texas/scripts/retrieval/mcp_client.py (Python JSON-RPC-over-HTTP client)."
     },
-    "consensus": {
-      "url": "https://api.consensus.app/mcp",
-      "transport": "http",
-      "description": "Consensus.app retrieval-shape MCP — Story 27-2.5 provider target; cross-validation partner to scite. Auth: Bearer via CONSENSUS_API_KEY. Consumed at runtime by retrieval/mcp_client.py."
+    "Consensus": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "mcp-remote@latest",
+        "https://mcp.consensus.app/mcp"
+      ]
     }
   }
 }

@@ -40,6 +40,7 @@ from app.marcus.lesson_plan.collateral_selection import (
 from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
     recover_production_trial,
+    resume_batch_production_trial,
     resume_production_trial,
     run_production_trial,
 )
@@ -328,6 +329,7 @@ def start_trial(
     picker_preflight_fn: Callable[..., dict[str, Any] | None] | None = None,
     selection_code: str | None = None,
     picker_events_path: Path | None = None,
+    llm_execution_mode: Literal["realtime", "batch"] = "realtime",
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     if not input_path.exists():
@@ -562,6 +564,7 @@ def start_trial(
         # the composer + both walks. None preserves today's behavior byte-
         # identically (the runner defaults to ComponentSelection.production_default).
         component_selection=component_selection,
+        llm_execution_mode=llm_execution_mode,
         **runner_kwargs,
     )
 
@@ -600,6 +603,13 @@ def start_trial(
         "lesson_plan_collateral_bundle_id": lesson_plan_bundle_id,
         "lesson_plan_selection_source": selection_source_receipt,
         "transport_kind": "cli",
+        "llm_execution_mode": llm_execution_mode,
+        "llm_batch_wait_note": (
+            "Eligible vision LLM work may wait on provider Batch completion "
+            "(poll/resume class lands in B3)."
+            if llm_execution_mode == "batch"
+            else None
+        ),
     }
     (run_dir / "trial-start.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
@@ -722,6 +732,7 @@ def start_trial_cli(args: argparse.Namespace) -> int:
                 start_selection.lesson_plan_collateral_bundle_id
             ),
             selection_code=getattr(args, "selection_code", None),
+            llm_execution_mode=getattr(args, "llm_execution_mode", "realtime"),
         )
     except FrontDoorError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
@@ -854,6 +865,52 @@ def recover_trial_cli(args: argparse.Namespace) -> int:
     return 0
 
 
+def resume_batch_trial(
+    *,
+    trial_id: UUID,
+    runs_root: Path = RUNS_ROOT,
+    max_specialist_calls: int | None = None,
+) -> dict[str, Any]:
+    """Poll existing provider Batch and continue when completed (B3)."""
+
+    _load_env_if_available()
+    envelope = resume_batch_production_trial(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        max_specialist_calls=max_specialist_calls,
+    )
+    result = {
+        "status": envelope.status,
+        "trial_id": str(trial_id),
+        "waiting_batch_id": envelope.waiting_batch_id,
+        "paused_gate": envelope.paused_gate,
+        "paused_error_tag": envelope.paused_error_tag,
+        "run_registry_path": str(runs_root / str(trial_id) / "run.json"),
+        "cost_report_json": str(envelope.cost_report_path)
+        if envelope.cost_report_path is not None
+        else None,
+        "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
+        "transport_kind": "cli",
+        "still_waiting": envelope.status == "waiting_for_provider_batch",
+    }
+    print(
+        f"trial {trial_id} status={envelope.status} "
+        f"waiting_batch_id={envelope.waiting_batch_id}",
+        file=sys.stderr,
+    )
+    return result
+
+
+def resume_batch_trial_cli(args: argparse.Namespace) -> int:
+    payload = resume_batch_trial(
+        trial_id=args.trial_id,
+        runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
+        max_specialist_calls=getattr(args, "max_specialist_calls", None),
+    )
+    print(json.dumps(payload, sort_keys=True))
+    return 0
+
+
 def build_trial_parser(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="trial_command")
     start = subparsers.add_parser("start")
@@ -944,6 +1001,18 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "knowing its honest readiness status. Off by default."
         ),
     )
+    start.add_argument(
+        "--llm-execution-mode",
+        choices=["realtime", "batch"],
+        default="realtime",
+        help=(
+            "Opt in to Batch transport for eligible vision LLM work "
+            "(default: realtime). When batch is waiting on the provider, "
+            "continue with `trial resume-batch`. Cost/latency report lands at "
+            "runs/<id>/llm_batch/cost-report.json. Does not change "
+            "tracked/ad-hoc execution_mode."
+        ),
+    )
     resume = subparsers.add_parser("resume")
     resume.add_argument("--trial-id", required=True, type=UUID)
     resume.add_argument("--verdict-file", required=True)
@@ -984,6 +1053,24 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "(Mine-next trust T2). Default retries the failed node only."
         ),
     )
+    resume_batch = subparsers.add_parser(
+        "resume-batch",
+        help=(
+            "Poll an existing LiteLLM Batch receipt for a trial in "
+            "waiting_for_provider_batch; continue when completed (never re-upload)."
+        ),
+    )
+    resume_batch.add_argument("--trial-id", required=True, type=UUID)
+    resume_batch.add_argument("--runs-root", required=False, help=argparse.SUPPRESS)
+    resume_batch.add_argument(
+        "--max-specialist-calls",
+        required=False,
+        type=int,
+        help=(
+            "Maximum downstream specialist calls during this resume-batch "
+            "continuation. Defaults to the paused runner cap."
+        ),
+    )
 
 
 __all__ = [
@@ -994,6 +1081,8 @@ __all__ = [
     "build_trial_parser",
     "recover_trial",
     "recover_trial_cli",
+    "resume_batch_trial",
+    "resume_batch_trial_cli",
     "resume_trial",
     "resume_trial_cli",
     "start_trial",

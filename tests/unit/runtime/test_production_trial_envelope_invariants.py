@@ -83,6 +83,10 @@ def test_every_persisted_run_json_round_trips_in_witness_mode() -> None:
     [
         ({"status": "paused-at-gate", "paused_gate": None}, "requires paused_gate"),
         ({"status": "paused-at-error", "paused_error_tag": None}, "requires paused_error_tag"),
+        (
+            {"status": "waiting_for_provider_batch", "waiting_batch_id": None},
+            "requires waiting_batch_id",
+        ),
         ({"status": "completed", "completed_at": None}, "requires completed_at"),
     ],
 )
@@ -96,6 +100,7 @@ def test_strict_mode_rejects_impossible_lifecycle_state(overrides, fragment) -> 
     [
         {"status": "paused-at-gate", "paused_gate": "G1"},
         {"status": "paused-at-error", "paused_error_tag": "gamma.input.missing"},
+        {"status": "waiting_for_provider_batch", "waiting_batch_id": "batch_abc"},
         {"status": "completed", "completed_at": datetime.now(tz=UTC)},
         {"status": "registered"},
         {"status": "in-flight"},

@@ -43,7 +43,7 @@ import re
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import yaml
 from docx import Document
@@ -57,6 +57,10 @@ from scripts.utilities.slide_production_gate import (
     fresh_gamma_required,
     reuse_stamp,
 )
+
+if TYPE_CHECKING:
+    from app.marcus.lesson_plan.glossary_projection import GlossaryArticleBrief
+    from app.marcus.lesson_plan.trends_projection import ResearchTrendsBrief
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 DEFAULT_WORKBOOK_OUTPUT_ROOT: Final[str] = "_bmad-output/artifacts/workbooks"
@@ -235,6 +239,9 @@ class ResearchEntry:
     Each carries a real ``source_id`` DOI; the producer renders the link as
     ``https://doi.org/{source_id}``. Empty in a v1 artifact whose research leg
     is not yet live (rendered as an explicit "deferred" note, never fabricated).
+
+    R4 credibility fields are additive (tier / peer-review / provenance /
+    triangulation) — projected when present; absent on older envelopes.
     """
 
     citation_id: str
@@ -244,6 +251,11 @@ class ResearchEntry:
     source_id: str
     source_hash: str | None = None
     supports_segment_id: str | None = None
+    evidence_hierarchy_tier: str | None = None
+    peer_reviewed: bool | None = None
+    provider_provenance: tuple[str, ...] | None = None
+    triangulation_status: str | None = None
+    reliability_score: float | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -487,15 +499,30 @@ def compose_workbook(
     research_entries: Sequence[ResearchEntry] = (),
     research_empty_reason: str | None = None,
     research_omitted_note: str | None = None,
+    glossary_articles: Sequence[GlossaryArticleBrief] = (),
+    glossary_empty_reason: str | None = None,
+    research_trends: ResearchTrendsBrief | None = None,
 ) -> _ComposedDoc:
     """Compose the canonical workbook model from the spec + transcript backbone.
 
-    Sections composed (design §2 v1 cut S0-S7):
+    Sections composed (design §2 v1 cut S0-S7 + W2 glossary + W3 trends):
       S0 Overview, S1 Learning Objectives, S2 Transcript-narrative (re-voiced
       deferred depth) + Depth-delta narrative, S3 Transcript of Record (literal
-      verbatim), S4 Figures, S5 Exercises + Answer Key, S6 References /
-      further-reading, S7 Human Review footer (added by the renderers).
+      verbatim), S4 Figures, S5 Exercises + Answer Key, W2 Research Glossary
+      (encyclopedia articles from wrangled research), S6 References /
+      further-reading, W3 Research Trends + hot-topics, S7 Human Review footer
+      (added by the renderers).
     """
+    # Lazy import: glossary_projection → research_packet → workbook_enrichment
+    # → this module (avoid circular import at package load).
+    from app.marcus.lesson_plan.glossary_projection import (  # noqa: PLC0415
+        render_glossary_markdown,
+    )
+    from app.marcus.lesson_plan.trends_projection import (  # noqa: PLC0415
+        ResearchTrendsBrief as _TrendsBrief,
+        render_trends_markdown,
+    )
+
     answer_keys = dict(answer_keys or {})
     doc = _ComposedDoc(title=f"Workbook: {plan_unit.event_type}")
 
@@ -655,6 +682,20 @@ def compose_workbook(
             answer_lines.append("")
     doc.blocks.append((2, "Answer Key", "\n".join(answer_lines).rstrip()))
 
+    # --- W2 Research Glossary (encyclopedia articles from wrangled research).
+    # Produce-time briefs only — not CollateralSpec. Placed after Answer Key and
+    # before References so W3 trends can stack after References later.
+    doc.blocks.append(
+        (
+            2,
+            "Research Glossary",
+            render_glossary_markdown(
+                glossary_articles,
+                empty_reason=glossary_empty_reason,
+            ),
+        )
+    )
+
     # --- S6 References / Further reading (rendered bibliography). Three tiers:
     # (a) per-segment source_ref traceability lines (the thin substrate),
     # (b) corpus-native + required-reading citations, (c) live-research DOI'd
@@ -699,10 +740,34 @@ def compose_workbook(
                 if entry.supports_segment_id
                 else ""
             )
+            credibility = ""
+            if entry.evidence_hierarchy_tier:
+                peer = (
+                    "peer-reviewed"
+                    if entry.peer_reviewed
+                    else "not peer-reviewed"
+                    if entry.peer_reviewed is False
+                    else "peer-review unknown"
+                )
+                prov = (
+                    ",".join(entry.provider_provenance)
+                    if entry.provider_provenance
+                    else entry.provider
+                )
+                tri = entry.triangulation_status or "none"
+                score = (
+                    f", reliability={entry.reliability_score:.2f}"
+                    if entry.reliability_score is not None
+                    else ""
+                )
+                credibility = (
+                    f", tier={entry.evidence_hierarchy_tier}, {peer}, "
+                    f"provenance={prov}, triangulation={tri}{score}"
+                )
             reference_lines.append(
                 f"- {entry.title}. https://doi.org/{entry.source_id} "
                 f"(provider: {entry.provider}, source_ref: `{entry.source_ref}`, "
-                f"citation_id: `{entry.citation_id}`){supports}"
+                f"citation_id: `{entry.citation_id}`{credibility}){supports}"
             )
     else:
         # D4 / F-2601: zero rows => recorded explicitly-empty WITH reason (mirror
@@ -718,6 +783,20 @@ def compose_workbook(
     if research_omitted_note:
         reference_lines.append(f"- *({research_omitted_note})*")
     doc.blocks.append((2, "References", "\n".join(reference_lines).rstrip()))
+
+    # --- W3 Research Trends + hot-topics (after References backmatter).
+    trends_brief = research_trends
+    if trends_brief is None:
+        trends_brief = _TrendsBrief(
+            trends=(),
+            hot_topics=(),
+            known_losses=(),
+            empty_reason=(
+                "no research-trends brief supplied for this artifact; "
+                "recorded explicitly-empty"
+            ),
+        )
+    doc.blocks.append((2, "Research Trends", render_trends_markdown(trends_brief)))
 
     return doc
 
@@ -860,6 +939,9 @@ class WorkbookProducer(ModalityProducer):
         research_entries: Sequence[ResearchEntry] = (),
         research_empty_reason: str | None = None,
         research_omitted_note: str | None = None,
+        glossary_articles: Sequence[GlossaryArticleBrief] = (),
+        glossary_empty_reason: str | None = None,
+        research_trends: ResearchTrendsBrief | None = None,
         research_supplements: set[str] | None = None,
         diff_files: Iterable[str] | None = None,
         reuse_sha: str = "WORKING",
@@ -890,6 +972,9 @@ class WorkbookProducer(ModalityProducer):
             research_entries=research_entries,
             research_empty_reason=research_empty_reason,
             research_omitted_note=research_omitted_note,
+            glossary_articles=glossary_articles,
+            glossary_empty_reason=glossary_empty_reason,
+            research_trends=research_trends,
         )
         markdown = render_markdown(doc)
 
@@ -906,11 +991,25 @@ class WorkbookProducer(ModalityProducer):
         # --- G2: citation-fidelity wiring + rendered research DOIs (F-2601). ---
         # Every rendered research_entry.source_ref MUST resolve in the G2 manifest
         # (the DOI section is now UNDER the citation gate, not rendered outside
-        # it): a corrupt/absent research source_ref FAILS G2.
+        # it): a corrupt/absent research source_ref FAILS G2. W2 glossary
+        # articles are under the same gate (provenance retained; no fabricate).
+        # W3 trend/hot-topic source_refs likewise.
         audited_citations = list(citations or [])
         audited_citations.extend(
             {"source_ref": entry.source_ref} for entry in research_entries
         )
+        audited_citations.extend(
+            {"source_ref": article.source_ref} for article in glossary_articles
+        )
+        if research_trends is not None:
+            for claim in research_trends.trends:
+                if claim.confidence != "unusable" and claim.source_ref:
+                    audited_citations.append({"source_ref": claim.source_ref})
+            for topic in research_trends.hot_topics:
+                if topic.confidence == "unusable":
+                    continue
+                for source_ref in topic.source_refs:
+                    audited_citations.append({"source_ref": source_ref})
         citation_audit = audit_citation_fidelity(
             audited_citations,
             source_ref_manifest or {},

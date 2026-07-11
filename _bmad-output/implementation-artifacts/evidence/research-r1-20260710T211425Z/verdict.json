@@ -1,0 +1,58 @@
+{
+  "story": "research-r1",
+  "flag": "MARCUS_RESEARCH_DETECTIVE_LIVE=1",
+  "seam": "DeterministicPostureSelector + Texas dispatch",
+  "pass": true,
+  "cases": [
+    {
+      "case_id": "corroborate",
+      "resolved_posture": "corroborate",
+      "intent_text": "Corroborate claim: Worked examples improve novice transfer in introductory instruction. (context: Need a supporting citation for the worked-example rationale.)",
+      "hint_params": {
+        "mode": "search",
+        "research_goal_id": "r1-live-corroborate",
+        "posture": "corroborate"
+      },
+      "providers": [
+        "scite"
+      ],
+      "row_count": 1,
+      "rows": [
+        {
+          "provider": "scite",
+          "source_id": "10.1145/3368308.3415426",
+          "title": "Switching to Stay Home Instruction",
+          "url": null,
+          "acceptance_met": true
+        }
+      ],
+      "error": null,
+      "pass": true
+    },
+    {
+      "case_id": "gap_fill",
+      "resolved_posture": "gap_fill",
+      "intent_text": "Fill research gap (background) on LO-cognitive-apprenticeship: Learners need prerequisite background on cognitive apprenticeship before applying modeling and coaching moves.",
+      "hint_params": {
+        "mode": "search",
+        "research_goal_id": "r1-live-gap-fill",
+        "posture": "gap_fill"
+      },
+      "providers": [
+        "scite"
+      ],
+      "row_count": 1,
+      "rows": [
+        {
+          "provider": "scite",
+          "source_id": "10.46542/pe.2023.231.491498",
+          "title": "Pharmacy students' perceptions of instructional methods of cognitive apprenticeship in clinical teaching: A qualitative study",
+          "url": null,
+          "acceptance_met": true
+        }
+      ],
+      "error": null,
+      "pass": true
+    }
+  ]
+}

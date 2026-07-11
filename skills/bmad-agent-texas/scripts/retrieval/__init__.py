@@ -51,6 +51,15 @@ from .dispatcher import AdapterFactory, DispatchError, dispatch
 # registered gamma_docs adapter on first call, independent of import order
 # (scite precedent / Amelia A-6). Pure leaf — imports no app.* module.
 from .gamma_docs_provider import GammaDocsProvider, GammaDocsTransportError  # noqa: E402,F401
+from .jefferson_library_provider import (  # noqa: E402,F401
+    JeffersonLibraryAuthError,
+    JeffersonLibraryFetchError,
+    JeffersonLibraryProvider,
+)
+from .openalex_provider import (  # noqa: E402,F401
+    OpenAlexFetchError,
+    OpenAlexProvider,
+)
 from .mcp_client import (
     MCPAuthError,
     MCPClient,
@@ -85,6 +94,11 @@ __all__ = [
     "DispatchError",
     "GammaDocsProvider",
     "GammaDocsTransportError",
+    "JeffersonLibraryAuthError",
+    "JeffersonLibraryFetchError",
+    "JeffersonLibraryProvider",
+    "OpenAlexFetchError",
+    "OpenAlexProvider",
     "MCPAuthError",
     "MCPClient",
     "MCPClientError",

@@ -7,7 +7,10 @@ and identity-key semantics for cross-validation with scite.
 
 from __future__ import annotations
 
+import json
 import os
+import re
+from pathlib import Path
 from typing import Any, ClassVar
 
 from .base import RetrievalAdapter
@@ -22,7 +25,14 @@ from .normalize import build_texas_row, coerce_authors
 from .refinement_registry import drop_filters_in_order, get_strategy
 
 CONSENSUS_MCP_URL = os.environ.get("CONSENSUS_MCP_URL", "https://mcp.consensus.app/mcp")
-"""Consensus MCP endpoint. Override via `CONSENSUS_MCP_URL` for local testing."""
+"""Consensus MCP endpoint. Override via `CONSENSUS_MCP_URL` for local testing.
+
+Default matches Consensus docs + Cursor ``mcp-remote`` config (``mcp.consensus.app``).
+The legacy ``api.consensus.app/mcp`` host returns HTTP 404 for tools/call and is
+rewritten to the official endpoint when detected.
+"""
+if CONSENSUS_MCP_URL.rstrip("/").endswith("api.consensus.app/mcp"):
+    CONSENSUS_MCP_URL = "https://mcp.consensus.app/mcp"
 
 CONSENSUS_API_KEY_ENV_VAR = "CONSENSUS_API_KEY"
 CONSENSUS_BASIC_AUTH_ENV_VARS: tuple[str, str] = (
@@ -34,6 +44,17 @@ CONSENSUS_AUTH_ENV_VARS: tuple[str, ...] = (
     *CONSENSUS_BASIC_AUTH_ENV_VARS,
 )
 """Accepted Consensus auth env vars. Runtime prefers bearer, then basic."""
+
+# Live Consensus MCP (2026-07) returns markdown in MCP content blocks, e.g.:
+# [1] [Title](https://consensus.app/papers/details/<id>/...) (Authors, 2023, 29 citations, Journal)
+_MARKDOWN_PAPER_RE = re.compile(
+    r"\[(?P<n>\d+)\]\s+"
+    r"\[(?P<title>[^\]]+)\]\((?P<url>https://consensus\.app/papers/details/"
+    r"(?P<paper_id>[a-f0-9]+)[^)]*)\)\s+"
+    r"\((?P<meta>.+?)\)\n"
+    r"(?P<body>.*?)(?=\n\n\[\d+\]|\n\nIMPORTANT|\Z)",
+    re.DOTALL,
+)
 
 _HONORED_CRITERIA: frozenset[str] = frozenset(
     {
@@ -56,6 +77,132 @@ CONSENSUS_REFINEMENT_KEY_ORDER: tuple[str, ...] = (
 
 _CONSENSUS_TOOL_SEARCH = "search"
 _CONSENSUS_TOOL_PAPER = "paper_metadata"
+
+
+def load_consensus_oauth_token_from_mcp_auth(
+    *,
+    mcp_auth_root: Path | None = None,
+) -> str | None:
+    """Load the newest mcp-remote OAuth access_token from ``~/.mcp-auth``.
+
+    Cursor ``mcp-remote`` stores tokens after interactive OAuth. Texas can reuse
+    that Bearer token as ``CONSENSUS_API_KEY`` for live dispatch without a
+    separate enterprise API key. Returns ``None`` when no token file exists.
+    Does not print or log the token value.
+    """
+    root = mcp_auth_root or (Path.home() / ".mcp-auth")
+    if not root.is_dir():
+        return None
+    candidates = sorted(
+        root.rglob("*_tokens.json"),
+        key=lambda p: p.stat().st_mtime,
+        reverse=True,
+    )
+    for path in candidates:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        token = str(payload.get("access_token") or "").strip()
+        if token:
+            return token
+    return None
+
+
+def ensure_consensus_bearer_from_mcp_auth() -> bool:
+    """If ``CONSENSUS_API_KEY`` is unset, populate it from mcp-remote OAuth cache.
+
+    Returns True when a bearer token is available after this call.
+    """
+    existing = os.environ.get(CONSENSUS_API_KEY_ENV_VAR, "").strip()
+    if existing:
+        return True
+    token = load_consensus_oauth_token_from_mcp_auth()
+    if not token:
+        return False
+    os.environ[CONSENSUS_API_KEY_ENV_VAR] = token
+    return True
+
+
+def _parse_markdown_papers(text: str) -> list[dict[str, Any]]:
+    """Parse Consensus MCP markdown search text into paper dicts."""
+    papers: list[dict[str, Any]] = []
+    for match in _MARKDOWN_PAPER_RE.finditer(text):
+        meta = match.group("meta")
+        # Authors, Year, N citations, Journal — authors may contain commas.
+        meta_match = re.match(
+            r"^(?P<authors>.+),\s+(?P<year>\d{4}),\s+"
+            r"(?P<citations>\d+)\s+citations?,\s+(?P<venue>.+)$",
+            meta,
+        )
+        authors_raw = meta_match.group("authors") if meta_match else meta
+        year = int(meta_match.group("year")) if meta_match else None
+        citations = (
+            int(meta_match.group("citations")) if meta_match else None
+        )
+        venue = meta_match.group("venue") if meta_match else None
+        body = (match.group("body") or "").strip()
+        if body.lower().startswith("abstract "):
+            body = body[9:].strip()
+        doi_match = re.search(
+            r"10\.\d{4,9}/[^\s\"<>\]]+",
+            f"{match.group('url')} {body}",
+            re.IGNORECASE,
+        )
+        doi = doi_match.group(0).rstrip(".,;)") if doi_match else None
+        papers.append(
+            {
+                "title": match.group("title").strip(),
+                "consensus_paper_id": match.group("paper_id"),
+                "consensus_url": match.group("url").split("?")[0],
+                "authors": authors_raw,
+                "year": year,
+                "venue": venue,
+                "abstract": body,
+                "cited_by_count": citations,
+                "doi": doi,
+                "source_id": doi or match.group("paper_id"),
+            }
+        )
+    return papers
+
+
+def _extract_search_results(result: Any) -> list[dict[str, Any]]:
+    """Lift paper list from Consensus search result (fixture OR live MCP).
+
+    Accepts:
+      - ``{papers: [...]}`` (legacy fixtures / older API shape)
+      - MCP ``{content:[{type:text,text:<json-or-markdown>}]}``
+      - Markdown paper list (live Consensus MCP 2026-07)
+    """
+    if isinstance(result, dict) and result.get("isError") is True:
+        return []
+
+    payload: Any = result
+    text_blobs: list[str] = []
+    if isinstance(result, dict) and isinstance(result.get("content"), list):
+        for part in result["content"]:
+            if isinstance(part, dict) and isinstance(part.get("text"), str):
+                text = part["text"]
+                text_blobs.append(text)
+                try:
+                    payload = json.loads(text)
+                except (json.JSONDecodeError, TypeError):
+                    continue
+                break
+
+    if isinstance(payload, dict):
+        for key in ("papers", "hits", "results"):
+            if isinstance(payload.get(key), list):
+                return [row for row in payload[key] if isinstance(row, dict)]
+
+    for text in text_blobs:
+        parsed = _parse_markdown_papers(text)
+        if parsed:
+            return parsed
+    if isinstance(result, dict) and isinstance(result.get("papers"), list):
+        return [row for row in result["papers"] if isinstance(row, dict)]
+    return []
 
 
 def _consensus_auth_config() -> tuple[list[str], str]:
@@ -208,16 +355,31 @@ class ConsensusProvider(RetrievalAdapter):
         if mode == "paper":
             args = {"doi": query["doi"]}
             result = client.call_tool(self.PROVIDER_INFO.id, _CONSENSUS_TOOL_PAPER, args)
-            return [result] if result else []
+            if isinstance(result, dict) and result:
+                return [result]
+            return []
 
-        args = {
-            "query": query["query"],
-            "max_results": query.get("max_results", 10),
-            "filters": dict(query.get("filters", {})),
-        }
+        # Live Consensus MCP search tool accepts top-level ``query`` (+ optional
+        # filter fields). Nested ``filters`` / ``max_results`` are ignored by the
+        # hosted tool and must not be required for a successful call.
+        args: dict[str, Any] = {"query": query["query"]}
+        filters = query.get("filters") if isinstance(query.get("filters"), dict) else {}
+        for key in (
+            "year_min",
+            "year_max",
+            "sample_size_min",
+            "study_types",
+            "human",
+            "sjr_max",
+            "medical_mode",
+            "exclude_preprints",
+        ):
+            if key in filters and filters[key] is not None:
+                args[key] = filters[key]
+            elif key in query and query[key] is not None:
+                args[key] = query[key]
         result = client.call_tool(self.PROVIDER_INFO.id, _CONSENSUS_TOOL_SEARCH, args)
-        papers = result.get("papers") if isinstance(result, dict) else None
-        return list(papers) if isinstance(papers, list) else []
+        return _extract_search_results(result)
 
     def apply_mechanical(
         self,
@@ -410,6 +572,14 @@ class ConsensusProvider(RetrievalAdapter):
         if doi is not None:
             return doi.lower()
 
+        from .triangulator import normalize_title_key  # noqa: PLC0415
+
+        title_key = normalize_title_key(
+            str(consensus_meta.get("title") or row.title or "")
+        )
+        if title_key:
+            return f"title:{title_key}"
+
         paper_id = _none_if_empty(
             consensus_meta.get("consensus_paper_id")
             or metadata.get("consensus_paper_id")
@@ -422,8 +592,8 @@ class ConsensusProvider(RetrievalAdapter):
             return source_id
 
         raise NotImplementedError(
-            "ConsensusProvider.identity_key: no DOI / consensus_paper_id / source_id "
-            f"on row {row!r}. Cross-validation requires one of these."
+            "ConsensusProvider.identity_key: no DOI / title / consensus_paper_id / "
+            f"source_id on row {row!r}. Cross-validation requires one of these."
         )
 
     def declare_honored_criteria(self) -> set[str]:

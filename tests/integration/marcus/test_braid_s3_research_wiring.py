@@ -463,7 +463,8 @@ def test_ac_d7_l2_engine_called_read_only_no_signature_change() -> None:
         "source_text",
         "research_supplements",
     ]
-    assert source_fidelity_audit.SEMANTIC_TRIPWIRE is None  # semantic leg still STUB
+    assert source_fidelity_audit.SEMANTIC_TRIPWIRE["mode"] == "warn_only"
+    assert source_fidelity_audit.SEMANTIC_TRIPWIRE["gates_production"] is False
 
 
 # --------------------------------------------------------------------------- #
@@ -495,6 +496,19 @@ def test_ac_d8_research_entries_handoff_shape() -> None:
         "source_id",
         "title",
         "source_hash",
+        # R4 credibility surfacing (additive; always present on minted entries)
+        "evidence_hierarchy_tier",
+        "peer_reviewed",
+        "provider_provenance",
+        "triangulation_status",
+        "reliability_score",
+    }
+    assert entry["evidence_hierarchy_tier"]
+    assert entry["provider_provenance"]
+    assert entry["triangulation_status"] in {
+        "dual_provider",
+        "single_provider",
+        "none",
     }
 
 
@@ -685,15 +699,24 @@ def test_ac2_selector_is_scite_canonical_excludes_consensus_and_gamma_docs() -> 
     assert intent.cross_validate is False
 
 
-def test_consensus_provider_live_enablement_deferred_skip_witness() -> None:
-    """Hard skip-witness NAMING the deferred-inventory entry so Consensus's
-    deferral from the live research path is explicit + traceable, not silent."""
-    pytest.skip(
-        "consensus-provider-live-enablement: Consensus live research dispatch is "
-        "party-deferred (deferred-inventory). S6 ships the Scite-canonical "
-        "literature path + this skip-witness only; Consensus stays out of scope "
-        "until its own live-enablement story lands (J1 fence)."
+def test_consensus_provider_live_enablement_bolster_path_unblocked() -> None:
+    """R2: Consensus remains deferred on the default Scite-canonical path, but
+    corroborate + evidence_bolster unlocks scite∩consensus cross_validate."""
+    selector = DeterministicPostureSelector()
+    default = selector.select_posture(
+        {"gap_description": "trend evidence", "target_element": "u1"}
     )
+    assert {h.provider for h in default.provider_hints} == {"scite"}
+
+    bolstered = selector.select_posture(
+        {
+            "claim": "Worked examples improve novice transfer.",
+            "evidence_bolster": True,
+        }
+    )
+    assert [h.provider for h in bolstered.provider_hints] == ["scite", "consensus"]
+    assert bolstered.cross_validate is True
+
 
 
 # --------------------------------------------------------------------------- #

@@ -21,7 +21,7 @@ from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.node_checkpoint import NodeCheckpoint, NodeCheckpointStatus
 from app.models.state.operator_verdict import OperatorVerdict, OperatorVerdictVerb
-from app.models.state.run_state import ALLOWED_GRAPH_VERSIONS, RunState, RunStatus
+from app.models.state.run_state import ALLOWED_GRAPH_VERSIONS, LlmExecutionMode, RunState, RunStatus
 from app.models.state.sanctum_fingerprint import SanctumFingerprint
 from app.models.state.specialist_envelope import SpecialistEnvelope
 from app.models.state.specialist_return import SpecialistReturn, SpecialistReturnVerb
@@ -30,6 +30,7 @@ from app.models.state.story_state import StoryState
 __all__ = [
     "ALLOWED_GRAPH_VERSIONS",
     "CacheState",
+    "LlmExecutionMode",
     "ModelResolutionEntry",
     "NodeCheckpoint",
     "NodeCheckpointStatus",

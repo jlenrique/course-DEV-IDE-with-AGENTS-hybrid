@@ -1,10 +1,17 @@
 # OpenAI Batch Mode Run Option - Handoff Brief
 
 **Date:** 2026-07-01  
+**Amended:** 2026-07-10 — LiteLLM hookup research folded (`technical-litellm-batch-hookup-research-2026-07-10.md`); operator pull-forward active.  
 **Purpose:** Operator-selectable runtime modality for the Marcus-SPOC production app.  
 **Boundary:** This is product work only if it improves the Marcus-SPOC runtime orchestrator. Concierge/proofing runs may inform defects and design constraints, but must not become the product target.
 
-> **⛔ CORRECTION (operator-confirmed 2026-07-01; binding — body below retained verbatim for audit):** the "Anthropic candidate… Fable 5" mentions in this brief (perception-candidate list, eval-harness comparison) are **SUPERSEDED**. Fable 5 (`claude-fable-5`) is the **IDE/AGENT model** — it powers Claude Code + spawned agents and is **never invoked by production runs**. The pipeline standard stays **OpenAI GPT-5**; batch mode = OpenAI GPT-5 batch + smaller OpenAI models (gpt-5-mini/nano) per node. Canonical framing: `epic-batch-llm-execution-mode-spec-2026-07-01.md` §Model policy.
+> **⛔ CORRECTION (operator-confirmed 2026-07-01; binding — body below retained verbatim for audit):** the "Anthropic candidate… Fable 5" mentions in this brief (perception-candidate list, eval-harness comparison) are **SUPERSEDED**. Fable 5 (`claude-fable-5`) is the **IDE/AGENT model** — it powers Claude Code + spawned agents and is **never invoked by production runs**. The pipeline standard stays **OpenAI GPT-5 family**; batch mode = provider Batch via **LiteLLM** + smaller OpenAI models (gpt-5-mini/nano) per node where harness-proven. Canonical framing: `epic-batch-llm-execution-mode-spec-2026-07-01.md`.
+
+> **⛔ CORRECTION (operator 2026-07-10; binding):** LiteLLM is **already installed** on this machine (`.venv` **1.90.2**). Spec/build work is **hookup + declare in pyproject + test** — not a future install. Product Batch path = LiteLLM Files + Batches SDK (`create_file` / `create_batch` / retrieve / file content), `custom_llm_provider="openai"` first. Do **not** use `litellm.batch_completion` as the cost-savings path (parallel sync ≠ Batch API).
+
+> **⛔ CORRECTION (research 2026-07-10):** Batch perception rows use multimodal **`/v1/chat/completions`** (LiteLLM `create_batch` endpoint Literal). Earlier `/v1/responses` Batch wording in this brief is **superseded for v1**. Workbook generation is **not** batch-eligible today (deterministic; no OpenAI).
+>
+> **⛔ CORRECTION (operator 2026-07-10; binding):** product **batch model = realtime model** — `gpt-5.5` (or nearest GPT-5-family member available on Batch). The scratch `gpt-4.1-mini` vision batch is a **quality baseline only**, not the product default.
 
 ## Executive Summary
 
@@ -38,6 +45,10 @@ Main tradeoff:
 - OpenAI Prompt Caching 201 cookbook: https://developers.openai.com/cookbook/examples/prompt_caching_201
 
 ## Local Scratch Evidence
+
+> **BINDING FINDING (operator-confirmed; mine this — do not rediscover):** OpenAI Batch API calls against multimodal endpoints have **already succeeded** at producing **good PNG slide reads** — completed vision batches returned **usable JSON perception artifacts** on real Gamma-export PNGs from the leg3 c-u03 probe deck. Provider-side feasibility of “Batch can read PNGs well enough for perception” is **settled** as a quality baseline.
+>
+> **Dispatch delta (operator 2026-07-10; binding):** production dispatch is via **LiteLLM** Files + Batches SDK (`create_file` / `create_batch` / retrieve / `file_content`, `custom_llm_provider="openai"`), not a copy of this scratchpad’s raw OpenAI client. Expect **different dispatch details** (wrapper kwargs, receipt/response shapes, errors). Remaining work = LiteLLM hookup + prove dispatch through that façade + pause/resume + SPOC switch + contract parity vs realtime `perceive_png` — not a first proof that Batch vision works, and not an assumption that LiteLLM plumbing matches the smoke script 1:1.
 
 Scratch sidecar:
 
@@ -89,7 +100,7 @@ python scratchpad/anthropic-batch-perception-smoke/openai_batch_smoke.py realtim
 
 Representative results:
 
-- `batch_6a457bcac6488190b79224e61ea89b26`: `gpt-4.1-mini`, two-slide vision batch, completed 2/2, usable JSON perception artifacts.
+- **`batch_6a457bcac6488190b79224e61ea89b26` (PRIMARY PNG-READ PROOF):** `gpt-4.1-mini`, two-slide vision batch on `c-u03-persubslide-probe_slide_01.png` + `_02.png`, completed 2/2, **usable JSON perception artifacts / good reads**.
 - `batch_6a457ea8e08481909cc6457a9f25442a`: `gpt-5-nano`, heartbeat, completed 1/1 with visible JSON.
 - `batch_6a45781aa2bc8190b62bc3ec389e0c41`: `gpt-5`, heartbeat, completed 1/1 with visible JSON, about 41 minute turnaround.
 - `batch_6a4581c643a48190b933482132430efe`: `gpt-5-nano`, shared-prefix cache probe, completed 2/2, one row reported `5248` cached input tokens.
@@ -180,15 +191,19 @@ Batch unit:
 
 - one row per slide image
 - `custom_id = <run_id>:<slide_id>` or similar
-- request body uses `/v1/responses`
+- request body uses **`/v1/chat/completions`** (LiteLLM Batch endpoint; multimodal `image_url` data-URI — mirrors `perceive_png`)
 - prompt contains stable schema/instructions first, variable slide image/content last
+
+> **Superseded (2026-07-10):** earlier draft said `/v1/responses`. LiteLLM `create_batch` does not accept that endpoint Literal today.
 
 Expected output:
 
-- same `PerceptionArtifact` / slide-read shape as realtime
+- same `VisionProviderResponse` / `PerceptionArtifact` / slide-read shape as realtime
 - strict JSON parse
 - schema validation before downstream consumption
 - failures isolated per slide, then either fail-loud or retry according to existing gate policy
+
+**Non-candidates (2026-07-10):** `workbook_producer`, workbook enrichment, Mine-6 prose uplift — no LLM. Irene Pass-1/2 main, G0 extraction, CD, pre-gate Marcus — weak/no (monolithic and/or HIL-adjacent).
 
 Prompt caching design:
 
@@ -253,65 +268,21 @@ Operator-facing wording should be explicit:
 
 ## Suggested BMAD Work Structure
 
-This likely deserves a small epic or sprint if productionized, because it touches runtime orchestration, provider adapters, cost reporting, and node contracts.
+This deserves a formal epic (party green-light → create-epics-and-stories). Research already filed:
 
-Suggested epic:
+`_bmad-output/planning-artifacts/research/technical-litellm-batch-hookup-research-2026-07-10.md`
 
-**Epic: Run-Start Batch LLM Execution Mode**
+Suggested epic stories (see amended epic for A0–B6 detail):
 
-Candidate stories:
-
-1. **Batch execution adapter scaffold**
-   - OpenAI Batch client wrapper.
-   - JSONL builder, submit, poll, cancel, result download.
-   - Persistent receipts and row-level parsing.
-
-2. **Perception node batch route**
-   - One request per slide.
-   - Same output contract as realtime perception.
-   - Join by `slide_id`.
-   - Fail-loud schema validation.
-
-3. **Run pause/resume for batch wait**
-   - Batch-submitted state.
-   - Idempotent poll/resume.
-   - Operator-visible status and timeout/expiry behavior.
-
-4. **Model/profile registry**
-   - Node-level provider/model/reasoning/verbosity/max-output profile.
-   - Start with `perception: gpt-5-mini, medium reasoning, low verbosity`.
-   - Allow A/B quality comparison across standard/mini/nano.
-
-5. **Cost and latency reporting**
-   - Final report records batch ids, turnaround, tokens, cached tokens, reasoning tokens, estimated cost.
-   - Compare realtime vs batch.
-
-6. **Quality evaluation harness**
-   - Frozen slide set.
-   - Compare current/default, `gpt-5`, `gpt-5-mini`, `gpt-5-nano`, and Anthropic candidates.
-   - Score perception quality and downstream script usefulness.
-
-7. **Prompt caching optimization**
-   - Stable-prefix prompt layout.
-   - `prompt_cache_key` strategy.
-   - Cache-hit metrics.
-   - Regression pin for stable prompt prefix.
-
-## Acceptance Criteria
-
-- A batch-mode perception run produces schema-valid perception artifacts equivalent in shape to realtime.
-- Batch output is joined by `custom_id` and is robust to out-of-order rows.
-- Failed rows are visible and actionable.
-- Run can pause and resume without duplicate downstream execution.
-- Final report includes batch ids, turnaround, token usage, cached-token usage, and cost estimate.
-- Operator can choose realtime vs batch at run start; the app then routes eligible nodes according to the selected mode and node profiles.
-- Quality comparison across at least full `gpt-5` and `gpt-5-mini` is completed before choosing a default.
-- Prompt caching is measured, not assumed.
+1. **A0 LiteLLM dep + naming-trap docs**
+2. **A1/A3 registry + eligibility matrix** (vision first; workbook out)
+3. **B1 LiteLLM Batch adapter scaffold** (Files + Batches SDK; not raw OpenAI-only; not `batch_completion`)
+4. **B2 Perception batch route** (`/v1/chat/completions` multimodal)
+5. **B3 Pause/resume**
+6. **A2 Quality harness** (LiteLLM-backed; rebuild missing smoke)
+7. **B4/B5 Cost + cache**
+8. **B6 Run-start switch** (gated on B3+B4)
 
 ## Current Recommendation
 
-Proceed as a first-class run-start mode switch, initially with slide perception as the eligible batched node.
-
-Start with slide perception because it is the cleanest batch boundary. Use `gpt-5-mini` with `reasoning_effort=medium`, `text_verbosity=low`, and calibrated output budget as the first likely value profile, while comparing quality against full `gpt-5` and the current realtime/default model.
-
-Do not promote the switch into normal production use until the run pause/resume story and final report cost accounting are in place.
+Proceed with party green-light on the **amended** epic. First eligible node = **07G slide perception** via **LiteLLM Batch** already installed on this machine. Hook up, declare dependency, test (T0–T7). Do not promote the switch until pause/resume + cost accounting land. Workbook customization is next **after** Batch — not a batch transport target.

@@ -16,6 +16,7 @@ from app.marcus.cli.plan_ratify_cli import (
 from app.marcus.cli.trial import (
     build_trial_parser,
     recover_trial_cli,
+    resume_batch_trial_cli,
     resume_trial_cli,
     start_trial_cli,
 )
@@ -72,6 +73,8 @@ def main(argv: list[str] | None = None) -> int:
         return resume_trial_cli(args)
     if args.command == "trial" and args.trial_command == "recover":
         return recover_trial_cli(args)
+    if args.command == "trial" and args.trial_command == "resume-batch":
+        return resume_batch_trial_cli(args)
     parser.error("a command is required")
     return 2
 

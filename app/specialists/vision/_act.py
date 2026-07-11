@@ -12,6 +12,7 @@ from app.models.perception.perception_artifact import PerceptionArtifact
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
+from app.specialists.vision.batch_route import is_batch_mode, run_vision_batch_perception
 from app.specialists.vision.provider import (
     DEFAULT_MODEL_ID,
     VisionProviderError,
@@ -23,6 +24,7 @@ from scripts.utilities.reading_path_classifier import with_llm_primary_reading_p
 VISION_RETRY_ATTEMPTS = 2
 RETRYABLE_STATUS_CODES = {408, 429}
 MODEL_CONFIG_PATH = Path(__file__).with_name("model_config.yaml")
+DEFAULT_RUNS_ROOT = Path("runs")
 
 
 def _payload(state: RunState) -> dict[str, Any]:
@@ -124,10 +126,7 @@ def _perceive_with_retry(path: Path, *, slide_id: str) -> PerceptionArtifact:
     raise last_error
 
 
-def act(state: RunState) -> dict[str, Any]:
-    if not state.model_resolution_trail:
-        raise RuntimeError("vision act invoked before plan; resolution trail is empty")
-    payload = _payload(state)
+def _act_realtime(payload: dict[str, Any]) -> list[PerceptionArtifact]:
     artifacts: list[PerceptionArtifact] = []
     for index, row in enumerate(_slide_rows(payload), start=1):
         slide_id = _slide_id(row, index)
@@ -138,16 +137,73 @@ def act(state: RunState) -> dict[str, Any]:
             else _perceive_with_retry(path, slide_id=slide_id)
         )
         artifacts.append(artifact)
+    return artifacts
+
+
+def _act_batch(
+    state: RunState,
+    payload: dict[str, Any],
+    *,
+    runs_root: Path,
+) -> list[PerceptionArtifact]:
+    """Batch path preserving input slide order (not-covered interleaved)."""
+
+    jobs: list[tuple[str, Path]] = []
+    placeholders: dict[int, PerceptionArtifact] = {}
+    ordered_ids: list[str] = []
+    for index, row in enumerate(_slide_rows(payload), start=1):
+        slide_id = _slide_id(row, index)
+        ordered_ids.append(slide_id)
+        path = _file_path(row)
+        if path is None:
+            placeholders[index - 1] = _not_covered(slide_id, row)
+        else:
+            jobs.append((slide_id, path))
+
+    responses = run_vision_batch_perception(
+        jobs,
+        run_id=str(state.run_id),
+        runs_root=runs_root,
+        wait_policy="raise_pending",
+    )
+    by_slide = {r.slide_id: r for r in responses}
+    artifacts: list[PerceptionArtifact] = []
+    for i, slide_id in enumerate(ordered_ids):
+        if i in placeholders:
+            artifacts.append(placeholders[i])
+            continue
+        response = by_slide[slide_id]
+        artifact = PerceptionArtifact.model_validate(response.model_dump())
+        artifacts.append(with_llm_primary_reading_path(artifact))
+    return artifacts
+
+
+def act(state: RunState, *, runs_root: Path | None = None) -> dict[str, Any]:
+    if not state.model_resolution_trail:
+        raise RuntimeError("vision act invoked before plan; resolution trail is empty")
+    payload = _payload(state)
+    root = runs_root if runs_root is not None else DEFAULT_RUNS_ROOT
+
+    if is_batch_mode(payload):
+        artifacts = _act_batch(state, payload, runs_root=root)
+        transport = "batch"
+        reason = "vision.batch.parsed.ok"
+    else:
+        artifacts = _act_realtime(payload)
+        transport = "realtime"
+        reason = "vision.parsed.ok"
+
     output = {
         "perception_artifacts": [artifact.model_dump() for artifact in artifacts],
         "vision_provider": {
             "model_id": _provider_model_id(),
             "retry_attempts": VISION_RETRY_ATTEMPTS,
+            "llm_execution_mode": transport,
         },
     }
     last = state.model_resolution_trail[-1]
     return {
-        "model_resolution_trail": [*state.model_resolution_trail, _trail(last, "vision.parsed.ok")],
+        "model_resolution_trail": [*state.model_resolution_trail, _trail(last, reason)],
         "cache_state": CacheState(
             cache_prefix=json.dumps(output, sort_keys=True),
             entries_count=(state.cache_state.entries_count + 1) if state.cache_state else 1,

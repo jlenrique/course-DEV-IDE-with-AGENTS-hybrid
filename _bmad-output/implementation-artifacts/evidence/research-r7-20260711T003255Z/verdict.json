@@ -1,0 +1,44 @@
+{
+  "story": "research-r7",
+  "pass": true,
+  "trial_id": "816d4de2-53c6-4549-a5cc-6284dbbbb699",
+  "flag": "MARCUS_RESEARCH_DETECTIVE_LIVE",
+  "trail_non_claim": "tracy-gate-resume-recover",
+  "teeth": "approve|reject|defer required before Pass-2 when detective ON",
+  "steps": [
+    {
+      "step": "landing_point",
+      "pass": true,
+      "path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/research-r7-20260711T003255Z/run/research-detective-landing.json"
+    },
+    {
+      "step": "pass2_blocked",
+      "pass": true,
+      "tag": "marcus.research.detective-gate-pending"
+    },
+    {
+      "step": "advisory_cannot_unlock",
+      "pass": true
+    },
+    {
+      "step": "disposition_then_proceed",
+      "pass": true,
+      "disposition": "approve",
+      "path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/research-r7-20260711T003255Z/run/research-detective-disposition.json"
+    },
+    {
+      "step": "flag_off_noop",
+      "pass": true
+    },
+    {
+      "step": "production_runner_seam",
+      "pass": true,
+      "wired_import": true,
+      "enforce_call_in_source": true
+    }
+  ],
+  "artifacts": {
+    "landing": "_bmad-output\\implementation-artifacts\\evidence\\research-r7-20260711T003255Z\\run\\research-detective-landing.json",
+    "disposition": "_bmad-output\\implementation-artifacts\\evidence\\research-r7-20260711T003255Z\\run\\research-detective-disposition.json"
+  }
+}

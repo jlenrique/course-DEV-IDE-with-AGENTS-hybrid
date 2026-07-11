@@ -1,0 +1,64 @@
+{
+  "probe": "jefferson-session-backed",
+  "timestamp_utc": "2026-07-10T21:31:56.433293+00:00",
+  "evidence_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\jefferson-access-probe-session-20260710T213156Z",
+  "chrome_processes_at_start": 0,
+  "cookies_copied": true,
+  "copy_warnings": [],
+  "probes": {
+    "primo_search": {
+      "url": "https://jefferson.primo.exlibrisgroup.com/discovery/search?vid=01TJU_INST:01TJU&query=any,contains,diabetes",
+      "status": 200,
+      "final_url": "https://jefferson.primo.exlibrisgroup.com/discovery/search?vid=01TJU_INST:01TJU&query=any,contains,diabetes",
+      "title": "Ex Libris Discovery - diabetes",
+      "is_pdf": false,
+      "body_size": 4784,
+      "cookie_absent": false,
+      "cloudflare": false,
+      "sign_in_hint": true
+    },
+    "nejm_article": {
+      "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2034577",
+      "status": 403,
+      "final_url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2034577",
+      "title": "Just a moment...",
+      "is_pdf": false,
+      "body_size": 6261,
+      "cookie_absent": false,
+      "cloudflare": true,
+      "sign_in_hint": true
+    },
+    "nejm_pdf": {
+      "url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577",
+      "request_status": 403,
+      "request_is_pdf": false,
+      "request_size": 5767,
+      "status": 200,
+      "final_url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577",
+      "title": "",
+      "is_pdf": false,
+      "body_size": 536,
+      "cookie_absent": false,
+      "cloudflare": false,
+      "sign_in_hint": false
+    }
+  },
+  "session_cookie_domains": {
+    ".nejm.org": [
+      "JSESSIONID",
+      "MACHINE_LAST_SEEN",
+      "MAID"
+    ],
+    "jefferson.primo.exlibrisgroup.com": [
+      "JSESSIONID",
+      "__Secure-UqZBpD3n3naPU20-9Fvn5i-TQ-tFpchbYtbA9YCEpg3UXgo_",
+      "institute",
+      "urm_se",
+      "urm_st"
+    ],
+    "www.nejm.org": [
+      "JSESSIONID"
+    ]
+  },
+  "pass": false
+}

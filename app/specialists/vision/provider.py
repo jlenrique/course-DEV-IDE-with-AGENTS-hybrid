@@ -35,6 +35,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from pydantic import ValidationError
 
 from app.models.adapter import make_chat_model
+from app.runtime.llm_batch.prompt_cache import resolve_vision_prompt_cache_key
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.vision.payload_contract import VisionProviderResponse
 
@@ -116,6 +117,39 @@ def _perception_prompt(slide_id: str) -> str:
         "If you cannot read the slide, set confidence to LOW and coverage to "
         "low-confidence."
     )
+
+
+def build_perception_openai_messages(
+    png_path: str | Path,
+    *,
+    slide_id: str,
+) -> list[dict[str, Any]]:
+    """OpenAI chat-completions messages for one PNG (shared by realtime + Batch JSONL).
+
+    Stable order: system, then user content with **text before** ``image_url``.
+    Does not change ``perceive_png`` semantics — realtime wraps these into
+    LangChain messages; Batch embeds the same dicts in JSONL bodies.
+    """
+
+    path = Path(png_path)
+    if not path.is_file():
+        raise VisionProviderError(
+            f"vision input PNG is missing: {path}",
+            status_code=None,
+            tag="vision.provider.input-missing",
+        )
+    image_b64 = base64.b64encode(path.read_bytes()).decode("ascii")
+    data_uri = f"data:image/png;base64,{image_b64}"
+    return [
+        {"role": "system", "content": PERCEPTION_SYSTEM_MESSAGE},
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": _perception_prompt(slide_id)},
+                {"type": "image_url", "image_url": {"url": data_uri}},
+            ],
+        },
+    ]
 
 
 def _decode_content(response: Any) -> str:
@@ -250,16 +284,10 @@ def perceive_png(
             tag="vision.provider.input-missing",
         )
 
-    image_b64 = base64.b64encode(path.read_bytes()).decode("ascii")
-    data_uri = f"data:image/png;base64,{image_b64}"
+    openai_messages = build_perception_openai_messages(path, slide_id=slide_id)
     messages = [
-        SystemMessage(content=PERCEPTION_SYSTEM_MESSAGE),
-        HumanMessage(
-            content=[
-                {"type": "text", "text": _perception_prompt(slide_id)},
-                {"type": "image_url", "image_url": {"url": data_uri}},
-            ]
-        ),
+        SystemMessage(content=openai_messages[0]["content"]),
+        HumanMessage(content=openai_messages[1]["content"]),
     ]
 
     try:
@@ -281,7 +309,12 @@ def perceive_png(
             status_code=None,
             tag="vision.provider.model-resolution",
         ) from exc
-    chat = handle.chat.bind(timeout=timeout_seconds)
+    # B5: shared prompt_cache_key (stable across slides; same derivation as batch).
+    cache_key = resolve_vision_prompt_cache_key(mode="realtime")
+    bind_kwargs: dict[str, Any] = {"timeout": timeout_seconds}
+    if cache_key:
+        bind_kwargs["model_kwargs"] = {"prompt_cache_key": cache_key}
+    chat = handle.chat.bind(**bind_kwargs)
 
     last_error: VisionProviderError | None = None
     for _attempt in range(1, MAX_JSON_REPAIR_ATTEMPTS + 1):
@@ -331,7 +364,11 @@ __all__ = [
     "DEFAULT_MODEL_ID",
     "DEFAULT_TIMEOUT_SECONDS",
     "MAX_JSON_REPAIR_ATTEMPTS",
+    "PERCEPTION_SYSTEM_MESSAGE",
     "VisionProviderError",
     "VisionProviderTimeout",
+    "build_perception_openai_messages",
     "perceive_png",
+    "_parse_response",
+    "_perception_prompt",
 ]

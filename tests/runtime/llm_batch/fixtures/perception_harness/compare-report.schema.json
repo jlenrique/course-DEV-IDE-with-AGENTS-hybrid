@@ -1,0 +1,28 @@
+{
+  "title": "A2 perception harness compare-report shape",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "claim",
+    "harness_baseline_batch_id_narrative",
+    "model_family",
+    "frozen_slides",
+    "realtime_scores",
+    "batch_scores",
+    "deltas",
+    "both_arms_non_vacuous",
+    "notes"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "claim": { "type": "string" },
+    "harness_baseline_batch_id_narrative": { "type": "string" },
+    "model_family": { "type": "string" },
+    "frozen_slides": { "type": "array" },
+    "realtime_scores": { "type": "array" },
+    "batch_scores": { "type": "array" },
+    "deltas": { "type": "array" },
+    "both_arms_non_vacuous": { "type": "boolean" },
+    "notes": { "type": "array" }
+  }
+}
