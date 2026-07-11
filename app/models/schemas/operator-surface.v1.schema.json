@@ -1,0 +1,955 @@
+{
+  "$defs": {
+    "EnvelopeSection": {
+      "additionalProperties": false,
+      "description": "Envelope status verbatim (AD-5) + pause metadata.",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "completed_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Completed At"
+        },
+        "paused_error_tag": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Paused Error Tag"
+        },
+        "paused_gate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Paused Gate"
+        },
+        "status": {
+          "enum": [
+            "registered",
+            "in-flight",
+            "paused-at-gate",
+            "paused-at-error",
+            "waiting_for_provider_batch",
+            "completed",
+            "failed"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "waiting_batch_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Waiting Batch Id"
+        }
+      },
+      "required": [
+        "as_of",
+        "status"
+      ],
+      "title": "EnvelopeSection",
+      "type": "object"
+    },
+    "HealthReading": {
+      "additionalProperties": false,
+      "description": "One historical health reading (feeds the tile drill-down).",
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "at",
+        "value"
+      ],
+      "title": "HealthReading",
+      "type": "object"
+    },
+    "HealthSection": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "tiles": {
+          "items": {
+            "$ref": "#/$defs/HealthTile"
+          },
+          "title": "Tiles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "HealthSection",
+      "type": "object"
+    },
+    "HealthTile": {
+      "additionalProperties": false,
+      "description": "One health-strip tile; history capped at ``HEALTH_HISTORY_CAP`` (AD-16).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "confidence": {
+          "default": "unknown",
+          "enum": [
+            "direct",
+            "proxy",
+            "unknown"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "history": {
+          "items": {
+            "$ref": "#/$defs/HealthReading"
+          },
+          "title": "History",
+          "type": "array"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "threshold_state": {
+          "default": "unknown",
+          "enum": [
+            "nominal",
+            "warning",
+            "breached",
+            "unknown"
+          ],
+          "title": "Threshold State",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "as_of",
+        "label",
+        "value"
+      ],
+      "title": "HealthTile",
+      "type": "object"
+    },
+    "HudConfig": {
+      "additionalProperties": false,
+      "description": "The one HUD/notify config shape (AD-19). Value-object: frozen.",
+      "properties": {
+        "hud_port": {
+          "default": 8791,
+          "description": "HUD server port (config key hud.port; AD-6 [ASSUMPTION] default 8791).",
+          "maximum": 65535,
+          "minimum": 1,
+          "title": "Hud Port",
+          "type": "integer"
+        },
+        "notifications": {
+          "additionalProperties": {
+            "$ref": "#/$defs/NotificationRule"
+          },
+          "description": "Per-event-class notification matrix {enabled, sound, push}.",
+          "propertyNames": {
+            "enum": [
+              "paused_at_gate",
+              "paused_at_error",
+              "batch_pause_resumed",
+              "health_threshold",
+              "run_stalled"
+            ]
+          },
+          "title": "Notifications",
+          "type": "object"
+        },
+        "staleness_budget_seconds": {
+          "default": 5,
+          "exclusiveMinimum": 0,
+          "title": "Staleness Budget Seconds",
+          "type": "integer"
+        },
+        "stall_budget_seconds": {
+          "default": 600,
+          "exclusiveMinimum": 0,
+          "title": "Stall Budget Seconds",
+          "type": "integer"
+        }
+      },
+      "title": "HudConfig",
+      "type": "object"
+    },
+    "IdentitySection": {
+      "additionalProperties": false,
+      "description": "Run identity \u2014 the HUD refuses to render on mismatch (AD-8).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "lesson": {
+          "description": "Lesson/corpus label, verbatim.",
+          "title": "Lesson",
+          "type": "string"
+        },
+        "operator_id": {
+          "title": "Operator Id",
+          "type": "string"
+        },
+        "preset": {
+          "enum": [
+            "production",
+            "explore"
+          ],
+          "title": "Preset",
+          "type": "string"
+        },
+        "trial_id": {
+          "format": "uuid",
+          "title": "Trial Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "as_of",
+        "trial_id",
+        "lesson",
+        "preset",
+        "operator_id"
+      ],
+      "title": "IdentitySection",
+      "type": "object"
+    },
+    "ModalitiesSection": {
+      "additionalProperties": false,
+      "description": "Run-modality readings (batch / detective / styleguide + provenance).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "detective_disposition": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detective Disposition"
+        },
+        "llm_execution_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Llm Execution Mode"
+        },
+        "styleguide": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Styleguide"
+        },
+        "styleguide_provenance": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Styleguide Provenance"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "ModalitiesSection",
+      "type": "object"
+    },
+    "NextActionSection": {
+      "additionalProperties": false,
+      "description": "The exact next-action command per pause class (AD-3; never freehand).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "command": {
+          "description": "Exact CLI command string from the CLI-co-located builder, verbatim.",
+          "title": "Command",
+          "type": "string"
+        },
+        "pause_class": {
+          "enum": [
+            "paused-at-gate",
+            "paused-at-error",
+            "waiting_for_provider_batch"
+          ],
+          "title": "Pause Class",
+          "type": "string"
+        }
+      },
+      "required": [
+        "as_of",
+        "command",
+        "pause_class"
+      ],
+      "title": "NextActionSection",
+      "type": "object"
+    },
+    "NotificationRule": {
+      "additionalProperties": false,
+      "description": "Per-event-class opt-in matrix row: {enabled, sound, push}.",
+      "properties": {
+        "enabled": {
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "push": {
+          "default": false,
+          "title": "Push",
+          "type": "boolean"
+        },
+        "sound": {
+          "default": false,
+          "title": "Sound",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled"
+      ],
+      "title": "NotificationRule",
+      "type": "object"
+    },
+    "NotificationsEchoSection": {
+      "additionalProperties": false,
+      "description": "Assembler echo of the parsed config + its parse status (AD-9/19).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "config": {
+          "$ref": "#/$defs/HudConfig"
+        },
+        "parse_status": {
+          "description": "\"ok\" or the loader reason string (e.g. defaults-active).",
+          "title": "Parse Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "as_of",
+        "config",
+        "parse_status"
+      ],
+      "title": "NotificationsEchoSection",
+      "type": "object"
+    },
+    "PreflightItem": {
+      "additionalProperties": false,
+      "description": "One pre-flight / heartbeat item (AD-11): ``missed`` != ``fail``.",
+      "properties": {
+        "latency_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Latency Ms"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "output": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Output"
+        },
+        "quota_confidence": {
+          "default": "unknown",
+          "enum": [
+            "direct",
+            "proxy",
+            "unknown"
+          ],
+          "title": "Quota Confidence",
+          "type": "string"
+        },
+        "quota_reading": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Quota/credit reading, verbatim display string.",
+          "title": "Quota Reading"
+        },
+        "state": {
+          "enum": [
+            "pending",
+            "running",
+            "pass",
+            "fail",
+            "missed"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "state"
+      ],
+      "title": "PreflightItem",
+      "type": "object"
+    },
+    "PreflightSection": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/PreflightItem"
+          },
+          "title": "Items",
+          "type": "array"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "PreflightSection",
+      "type": "object"
+    },
+    "SpecialistEntry": {
+      "additionalProperties": false,
+      "description": "Specialist roster activity row.",
+      "properties": {
+        "cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost Usd"
+        },
+        "current_node": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Current Node"
+        },
+        "last_artifact": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Artifact"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "status": {
+          "description": "Specialist activity status, verbatim.",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "status"
+      ],
+      "title": "SpecialistEntry",
+      "type": "object"
+    },
+    "SpecialistsSection": {
+      "additionalProperties": false,
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "roster": {
+          "items": {
+            "$ref": "#/$defs/SpecialistEntry"
+          },
+          "title": "Roster",
+          "type": "array"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "SpecialistsSection",
+      "type": "object"
+    },
+    "StepEntry": {
+      "additionalProperties": false,
+      "description": "One row of the two-stage you-are-here map.",
+      "properties": {
+        "blockers": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Blockers",
+          "type": "array"
+        },
+        "conditions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Conditions",
+          "type": "array"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "locked_artifact_summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Locked Artifact Summary"
+        },
+        "stage": {
+          "description": "stage-1 = manifest step; stage-2 = ratified hud_tracked node.",
+          "enum": [
+            "stage-1",
+            "stage-2"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "status": {
+          "description": "Per-step walker status, verbatim (vocabulary owned by the producer).",
+          "title": "Status",
+          "type": "string"
+        },
+        "step_id": {
+          "title": "Step Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step_id",
+        "label",
+        "stage",
+        "status"
+      ],
+      "title": "StepEntry",
+      "type": "object"
+    },
+    "StepsSection": {
+      "additionalProperties": false,
+      "description": "Two-stage step list + composed-manifest identity + walk markers (AD-15).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/StepEntry"
+          },
+          "title": "Entries",
+          "type": "array"
+        },
+        "manifest_digest": {
+          "description": "Compiled-graph digest of the composed manifest.",
+          "title": "Manifest Digest",
+          "type": "string"
+        },
+        "node_count": {
+          "minimum": 0,
+          "title": "Node Count",
+          "type": "integer"
+        },
+        "reentered_from": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Walk index the run re-entered from on recover-reenter, if any.",
+          "title": "Reentered From"
+        },
+        "walk_generation": {
+          "default": 0,
+          "description": "Incremented on recover-reenter so index regression renders as re-entry.",
+          "minimum": 0,
+          "title": "Walk Generation",
+          "type": "integer"
+        },
+        "walk_index": {
+          "minimum": 0,
+          "title": "Walk Index",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "as_of",
+        "manifest_digest",
+        "node_count",
+        "walk_index"
+      ],
+      "title": "StepsSection",
+      "type": "object"
+    },
+    "TraceEvent": {
+      "additionalProperties": false,
+      "description": "One state-trace event.",
+      "properties": {
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "event": {
+          "title": "Event",
+          "type": "string"
+        }
+      },
+      "required": [
+        "at",
+        "event"
+      ],
+      "title": "TraceEvent",
+      "type": "object"
+    },
+    "TraceSection": {
+      "additionalProperties": false,
+      "description": "State-trace ring buffer, capped at ``TRACE_RING_CAP`` (AD-16).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "events": {
+          "items": {
+            "$ref": "#/$defs/TraceEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "TraceSection",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "The v1 operator-surface projection (AD-1) \u2014 strict producer model.\n\nLifecycle-presence rules (AD-15): at ``registered`` only identity,\nenvelope (the status carrier), and notifications_echo are mandatory \u2014\nevery other section is ``None`` (pre-flight pending). Once past\n``registered``, ``steps`` and ``health`` are mandatory, and any paused\nstatus additionally demands ``next_action``. Enforcement follows the\nenvelope's witness-don't-gate pattern: violations LOG by default and\nraise only under ``invariant_mode: \"strict\"`` validation context.\n\nNote on the envelope section: the story field-inventory lists only\nidentity + notifications_echo as mandatory at ``registered``, but the\nlifecycle discriminator IS ``envelope.status`` and greenlight amendment 12\npins pre-envelope exits as \"projection at ``registered``\" \u2014 so the\nenvelope section is structurally required and simply reads\n``status=\"registered\"`` before the runtime envelope exists.",
+  "properties": {
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "envelope": {
+      "$ref": "#/$defs/EnvelopeSection"
+    },
+    "envelope_digest": {
+      "description": "Hash of the run.json content this projection derives from (AD-17).",
+      "title": "Envelope Digest",
+      "type": "string"
+    },
+    "health": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HealthSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "identity": {
+      "$ref": "#/$defs/IdentitySection"
+    },
+    "last_progress_at": {
+      "format": "date-time",
+      "title": "Last Progress At",
+      "type": "string"
+    },
+    "modalities": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ModalitiesSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "next_action": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/NextActionSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "notifications_echo": {
+      "$ref": "#/$defs/NotificationsEchoSection"
+    },
+    "preflight": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PreflightSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "progress_seq": {
+      "description": "Progress counter; advances only on walk-index change, node lifecycle, pre-flight item completion, or gate/pause/resume transitions (AD-10).",
+      "minimum": 0,
+      "title": "Progress Seq",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "v1",
+      "default": "v1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seq": {
+      "description": "Write counter; bumps on EVERY write (AD-10).",
+      "minimum": 0,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "specialists": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SpecialistsSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "steps": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StepsSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "trace": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TraceSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "seq",
+    "progress_seq",
+    "last_progress_at",
+    "envelope_digest",
+    "as_of",
+    "identity",
+    "envelope",
+    "notifications_echo"
+  ],
+  "title": "OperatorSurfaceProjection",
+  "type": "object"
+}

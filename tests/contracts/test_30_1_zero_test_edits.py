@@ -9,8 +9,8 @@ Inverted env-gate per M-1 rider: runs BY DEFAULT; skips only when
 ``MARCUS_30_1_ZERO_EDIT_CHECK_SKIP=1`` is set (for amendment scenarios
 where test edits are legal and expected in-flight).
 
-Pins against the commit range ``4911fc4..HEAD`` — rolled forward to the
-latest known clean concurrent-session baseline so the invariant guards
+Pins against the commit range ``_PRE_30_1_BASELINE_COMMIT..HEAD`` — rolled
+forward to the latest ratified story-close baseline so the invariant guards
 future edits instead of replaying historical, already-ratified changes.
 Commit-range pin survives local dirty state.
 
@@ -27,7 +27,12 @@ from pathlib import Path
 
 import pytest
 
-_PRE_30_1_BASELINE_COMMIT: str = "4911fc4"
+# Rolled forward 2026-07-11 at Epic-35 story 35.0 close (0f3fee72) per the
+# rollforward policy above: 30-2b and the intervening ratified arcs (incl.
+# the 35.0 lockstep-disposition edits to tests/test_run_hud.py and
+# tests/test_progress_map.py) are in-baseline; the allowlists below carry
+# only the in-flight Epic-35 test inventory.
+_PRE_30_1_BASELINE_COMMIT: str = "0f3fee72"
 _REPO_ROOT: Path = Path(__file__).parent.parent.parent.resolve()
 
 # Allowlist: new test files that are legitimately added in the range
@@ -37,12 +42,10 @@ _REPO_ROOT: Path = Path(__file__).parent.parent.parent.resolve()
 # additions need to appear here.
 _ALLOWED_NEW_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     {
-        # 30-2b new tests (AC-T.2–AC-T.7 + AC-C.1 spec entries).
-        "tests/test_marcus_intake_pre_packet_emission.py",
-        "tests/test_marcus_orchestrator_dispatch.py",
-        "tests/contracts/test_30_2b_single_writer_routing.py",
-        "tests/contracts/test_30_2b_dispatch_monopoly.py",
-        "tests/contracts/test_30_2b_voice_register.py",
+        # Epic 35 story 35.1 (party green-light
+        # epic-35-party-greenlight-2026-07-11.md; AD-4 dual pins).
+        "tests/unit/models/test_operator_surface_shape_pin.py",
+        "tests/contracts/test_operator_surface_parity.py",
     }
 )
 
@@ -51,10 +54,10 @@ _ALLOWED_NEW_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
 # specific AC or deferred finding that authorizes the edit.
 _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     {
-        # 30-2a G6-D1 deferral + 30-2b AC-B.9: extend the side-effect
-        # guard to cover the new marcus.intake.pre_packet and
-        # marcus.orchestrator.dispatch modules that land at 30-2b.
-        "tests/test_marcus_import_chain_side_effects.py",
+        # Standing self-entry: this guard file is modified at every story
+        # close by the rollforward policy itself (baseline advance +
+        # allowlist trim).
+        "tests/contracts/test_30_1_zero_test_edits.py",
     }
 )
 
@@ -64,8 +67,8 @@ _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     reason="MARCUS_30_1_ZERO_EDIT_CHECK_SKIP=1 set (amendment scenario)",
 )
 def test_no_preexisting_test_files_modified_in_30_1() -> None:
-    """AC-T.10 — ``git diff d7fd520..HEAD -- tests/`` contains no pre-existing
-    file edits outside the 30-1 allowlist.
+    """AC-T.10 — ``git diff <baseline>..HEAD -- tests/`` contains no
+    pre-existing file edits outside the allowlists.
 
     Commit-range pin (not working-tree diff) — survives local dirty state.
     """
