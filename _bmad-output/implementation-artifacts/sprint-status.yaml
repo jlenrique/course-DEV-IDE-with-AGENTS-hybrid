@@ -1759,3 +1759,19 @@ development_status:
   research-trail-semantic-warn-tripwire: done  # 2026-07-10 thin WARN-only SEMANTIC_TRIPWIRE + audit_semantic_framing; gates_production=False
   research-trail-llm-tracy-refine: deferred  # TRAIL — optional LLM intent refine
   trail-trio-2026-07-10: done  # party CLOSE-WITH-AMENDMENTS 4/4; letter trail-trio-close-2026-07-10.md
+
+  # === ARC hud-revival-2026-07-11: Operator HUD v1 flight deck (Epic 35; party GO-WITH-AMENDMENTS 2026-07-11) ===
+  # Branch: dev/hud-revival-2026-07-11. SSOT: epics-operator-hud-2026-07-11.md (amended per epic-35-party-greenlight-2026-07-11.md)
+  # Chain: brief (final) -> UX spines (operator-approved) -> architecture spine (final, 19 ADs) -> this epic.
+  # Sequence: 35.0 -> 35.1 -> 35.2 -> 35.3 (serial after 35.2) -> 35.5 -> 35.8 (after 35.5) -> 35.7. Lanes: 35.4 || 35.3; 35.6 || 35.5.
+  # DoD-over-clock: witness sets non-compressible; stop at last DoD-complete story at the wall.
+  epic-35-operator-hud-v1: in-progress  # 2026-07-11 party-greenlit; goal-directed 4h window 16:30-20:30
+  hud-35-0-tier2-manifest-bump-test-disposition: ready-for-dev
+  hud-35-1-operator-surface-contract: ready-for-dev  # blocked-by 35.0
+  hud-35-2-assembler-runner-emission: backlog  # blocked-by 35.1
+  hud-35-3-start-path-preflight-heartbeats: backlog  # blocked-by 35.2 (serial, same runner region)
+  hud-35-4-get-only-hud-server: backlog  # blocked-by 35.1; parallel lane with 35.3
+  hud-35-5-flight-deck-render: backlog  # blocked-by 35.2/35.4
+  hud-35-6-notifier-watchdog-push: backlog  # blocked-by 35.1; parallel lane with 35.5
+  hud-35-7-e2e-witness-party-review: backlog  # last; scoped-verdict schema binds
+  hud-35-8-legacy-retirement-import-fences: backlog  # strictly after 35.5
