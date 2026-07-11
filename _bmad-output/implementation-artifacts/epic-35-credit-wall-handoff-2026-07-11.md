@@ -52,3 +52,16 @@ semantics + real held-reader smoke; digest paste-chain verified vs live G4A fixt
 evidence hygiene prune (4873b74c). 35.3 DISPATCHED ~19:05 (start-path + pre-flight/heartbeats +
 L3 live witness). Remaining after 35.3: 35.5 (de-scope ladder engaged) → 35.8 → 35.7 E2E + party
 scoped-verdict review. The resume checklist above remains valid from step 4.
+
+---
+
+## GOAL REVISED 2026-07-11 19:53 (operator directive, on Opus 4.8 post-spend-switch)
+
+The active goal's **4-hour deadline is REMOVED**. New completion condition: **all four
+remaining Epic 35 stories fully authored (dev-complete + code-review + DoD met + committed):
+35.3, 35.5, 35.8, 35.7.** No time cutoff. 35.7 remains the live E2E small-run (3 slides /
+1 motion / 1 workbook, emergent small count per amendment 3) + fully-spawned party
+performance review under the scoped-verdict schema (amendment 2) and Murat's 10-item
+checklist (amendment 14). DoD-over-clock and no-thin-evidence still bind; the abort/
+continuity criterion (amendment 9) governs the paid run. Sequence from here:
+35.3 (in-flight) + 35.5 (in-flight, parallel) → 35.8 → 35.7.
