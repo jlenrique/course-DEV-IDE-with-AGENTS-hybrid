@@ -3,7 +3,7 @@ name = "course-dev-ide-with-agents"
 version = "0.1.0"
 description = "Collaborative intelligence infrastructure for course content production"
 requires-python = ">=3.11"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "Juanl" }]
 keywords = ["edtech", "course-production", "multi-agent", "content-creation"]
 
@@ -64,6 +64,14 @@ dev = [
     "jinja2>=3.1,<4",
 ]
 live-smoke = []
+
+[tool.uv]
+# This repo is an application, not a distributable package. Without this,
+# `uv run <script>` (which BMAD v6.10+/v7 skills invoke internally) tries to
+# build the repo (setuptools flat-layout discovery fails on the many top-level
+# dirs) and implicitly syncs dependencies into the live-verified .venv.
+# managed = false makes `uv run` use the active environment untouched.
+managed = false
 
 [tool.ruff]
 target-version = "py311"
