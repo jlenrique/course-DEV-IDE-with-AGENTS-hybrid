@@ -149,3 +149,9 @@ _artifacts/
 # styleguide-picker advisory lock files (Leg-D R8) - runtime artifacts adjacent to stores, never tracked
 *.yaml.lock
 *.jsonl.lock
+
+# Course-source media (corpus stays on disk per corpus convention; 5.3GB of
+# lecture MP4s under Meeting Recording Trim Deconstructed must never enter git)
+course-content/**/*.mp4
+course-content/**/*.mov
+course-content/**/*.m4a

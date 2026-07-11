@@ -480,3 +480,149 @@ This monitor did not rerun hermetic tests and relies on the visible proof packs/
 **Residual fencing:** commit/push, full code review, final branch-level close across the combined stack, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
 
 **Verdict:** Material artifact-level progress since SOP-R012. TRAIL trio has party close and OpenAlex live proof, so it is provisionally scoreable under tight claim fences. The branch remains not durable: no commit, push, or review boundary is visible, and the dirty stack now contains three scoreable-but-undurable claims.
+
+---
+### SOP-R014 - Research stack committed and pushed; review artifact still absent - 2026-07-10T23:04:18-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R013, current `git status --short --branch --untracked-files=all`, local git log, commit stats for `3231dd43` and `3b88dd1e`, latest evidence directory timestamps, `SESSION-HANDOFF.md`, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`. HEAD has advanced and matches origin at `3b88dd1e` (`docs(session): pin research WRAPUP push SHA in SESSION-HANDOFF`), with prior close commit `3231dd43` (`feat(research): close foundations, workbook products, and TRAIL trio`). This is the first poll where commit/push durability is visible for the research stack.
+
+**Worktree state:** the large research/workbook/TRAIL implementation stack is no longer dirty; it is contained in `3231dd43` plus wrap-up `3b88dd1e`. Remaining dirty/untracked items appear ambient/local and outside the research close surface: `.cursor/mcp.json`, `.mcp.json`, prior batch monitor ledger modification, workbooks-test outputs, prior product-gap monitor, regression scratch files, Irene literal proof leftovers, meeting transcript deconstruction files, and older `runs/*` artifacts. The current monitor append will make this ledger dirty again after this poll.
+
+**Selected claim envelope classification:** parent monitored claim remains **Agentic Research Foundations promote / close** with explicit R5 fence; successor **Workbook Research Products W0-W4 close** is committed; and **TRAIL trio close** is committed. All three claims now have commit/push durability at branch level. They remain distinct claim envelopes and must not be collapsed into a single broad "semantic research solved" claim.
+
+**BMAD gate/story visibility:** `SESSION-HANDOFF.md` records Research Foundations + Workbook Products + TRAIL trio CLOSED as Class S and says working-branch push was mandatory/done. It lists Step 0a/0b/0c skipped because Cora/`/harmonize` is unregistered, Step 1 ruff/focused suite green on TRAIL touchpaths, sprint-status update green, docs/current snapshot updated, and KG/ONBOARDING regeneration recommended later. TRAIL party close was visible in SOP-R013. This poll still found no separate `bmad-code-review` / code-review artifact for the combined stack.
+
+**Test / validation visibility:** latest formal evidence remains `openalex-live-20260711T024437Z`, followed by Workbook W4/W3 and foundations R7/R6/R5-fenced. `SESSION-HANDOFF.md` summarizes validation as ruff cleaned on TRAIL touchpaths, focused suite green for OpenAlex + glossary W2 + source fidelity audit + sprint-status yaml, and `tests/test_sprint_status_yaml.py` green. This monitor did not rerun tests and did not find a separate test transcript beyond committed evidence packs and the handoff summary.
+
+**Implementation visibility:** commit `3231dd43` is broad: 159 files changed, including foundations R1-R7, workbook research packet/glossary/trends production surfaces, W1-W4 evidence/scripts/tests, OpenAlex provider/evidence, semantic WARN tripwire, source-fidelity tests, docs, sprint/deferred inventory, and close artifacts. `3b88dd1e` pins the wrap-up SHA in `SESSION-HANDOFF.md`.
+
+**Scoreability:** Agentic Research Foundations is now **branch-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 is now **branch-durable and scoreable as a successor mini-epic close**. TRAIL trio is now **branch-durable and scoreable under tight fences**: OpenAlex DOI metadata/OA link discovery, glossary capability-note polish, and semantic WARN-only tripwire substrate. The remaining review gap means this monitor does not mark the combined stack as independently review-durable.
+
+**Findings / cautions:**
+**F-R-0066 [P1] Commit/push durability landed.** The research/workbook/TRAIL stack is committed at `3231dd43` and pushed, with wrap-up at `3b88dd1e`.
+**F-R-0067 [P1] Separate code-review artifact still absent.** I found party close/WRAPUP evidence but no dedicated code-review artifact for the 159-file close commit.
+**F-R-0068 [P1] R5 remains an explicit fence.** Branch durability does not upgrade Jefferson institutional retrieval from fenced to live-proven.
+**F-R-0069 [P2] Cora harmonize sweep was skipped.** Handoff records Step 0a/0b/0c skipped because Cora/`/harmonize` is unregistered, with a consecutive-skip tripwire.
+**F-R-0070 [P2] Claim fences remain binding.** OpenAlex is metadata/OA links only; semantic tripwire is WARN-only; G2 is not semantic claim support; full semantic claim-source audit remains TRAIL.
+
+**Residual fencing:** dedicated code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, KG/ONBOARDING regeneration, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** Material durability progress since SOP-R013. The research foundations, workbook products, and TRAIL trio stack is now committed and pushed on the research branch. It is branch-durable and scoreable under its named fences, but the absence of a dedicated code-review artifact remains the main governance caution.
+
+---
+### SOP-R015 - Stable pushed close; no review artifact or new evidence - 2026-07-10T23:19:21-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R014, current `git status --short --branch --untracked-files=all`, local git log, latest evidence directory timestamps, review artifact searches, and current dirty-file list. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`. HEAD remains `3b88dd1e` (`docs(session): pin research WRAPUP push SHA in SESSION-HANDOFF`), with the main research close at `3231dd43` (`feat(research): close foundations, workbook products, and TRAIL trio`). No new commit is visible since SOP-R014.
+
+**Worktree state:** the committed research/workbook/TRAIL stack remains branch-durable. Current tracked dirty files are limited to local MCP config, this research monitor ledger, and the older batch monitor ledger: `.cursor/mcp.json`, `.mcp.json`, `_bmad-output/implementation-artifacts/codex-shadow-monitor-agentic-research-foundations-2026-07-10.md`, and `_bmad-output/implementation-artifacts/codex-shadow-monitor-batch-mode-2026-07-10.md`. Untracked ambient artifacts remain visible, including workbooks-test outputs, prior product-gap monitor, regression scratch files, Irene literal proof leftovers, meeting transcript deconstruction files, and older `runs/*` artifacts. No newly dirty production/test research code is visible after the pushed close.
+
+**Selected claim envelope classification:** parent **Agentic Research Foundations promote / close**, successor **Workbook Research Products W0-W4 close**, and **TRAIL trio close** remain branch-durable and scoreable under their named fences. The envelopes remain distinct: R5 is fenced, Workbook W4 is narrow Tejal proof, OpenAlex is metadata/OA-link discovery only, and semantic tripwire is WARN-only.
+
+**BMAD gate/story visibility:** no new BMAD gate appeared after the WRAPUP handoff recorded in SOP-R014. Review artifact searches again found no dedicated `bmad-code-review` / code-review artifact for the combined 159-file close commit. Existing visible gates remain the story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, and `SESSION-HANDOFF.md`.
+
+**Test / validation visibility:** no evidence directory newer than `_bmad-output/implementation-artifacts/evidence/openalex-live-20260711T024437Z/` appeared. Latest formal evidence remains OpenAlex LIVE, followed by Workbook W4/W3 and foundations R7/R6/R5-fenced. This monitor did not rerun tests and found no new test transcript beyond committed evidence and handoff summaries.
+
+**Implementation visibility:** no new implementation surface appeared since SOP-R014. The scoreable implementation remains the committed `3231dd43` stack plus the WRAPUP SHA pin at `3b88dd1e`.
+
+**Scoreability:** Agentic Research Foundations remains **branch-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **branch-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **branch-durable and scoreable under tight fences**. The combined stack is still not independently review-durable because no dedicated review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0071 [P1] Stable branch durability, but no review artifact.** HEAD remains pushed at `3b88dd1e`; no separate code-review artifact appeared.
+**F-R-0072 [P2] No fresh validation after OpenAlex.** Latest evidence remains `openalex-live-20260711T024437Z`; no post-WRAPUP regression transcript is visible.
+**F-R-0073 [P2] Remaining dirty files are ambient/monitor-local.** Research production/test implementation is not dirty in this poll; current tracked dirt is local config and monitor ledgers.
+**F-R-0074 [P2] Claim fences remain binding.** R5 fenced, OpenAlex narrow, semantic WARN-only, and G2 not semantic support remain the key anti-overclaim constraints.
+
+**Residual fencing:** dedicated code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, KG/ONBOARDING regeneration, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No material change since SOP-R014. The research foundations, workbook products, and TRAIL trio stack remains committed, pushed, branch-durable, and scoreable under named fences. The only persistent governance caution is the absence of a dedicated code-review artifact.
+
+---
+### SOP-R016 - Docs and knowledge graph refresh pushed; review artifact still absent - 2026-07-10T23:34:27-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R015, current `git status --short --branch --untracked-files=all`, local git log, commit stats for `5c08bcef`, latest evidence directory timestamps, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`. HEAD has advanced to `5c08bcef` (`docs(onboarding): refresh knowledge graph + ONBOARDING at 3b88dd1e (incremental) + fold research foundations into user/dev/admin guides`). The branch now contains the main close commit `3231dd43`, WRAPUP pin `3b88dd1e`, and the follow-on docs/onboarding commit `5c08bcef`, all visible on origin.
+
+**Worktree state:** the committed research/workbook/TRAIL implementation stack remains branch-durable. The new `5c08bcef` commit updates `.understand-anything/fingerprints.json`, `.understand-anything/knowledge-graph.json`, `.understand-anything/meta.json`, `docs/ONBOARDING.md`, `docs/admin-guide.md`, `docs/dev-guide.md`, and `docs/user-guide.md`. Current remaining dirty/untracked state still appears ambient/monitor-local: local MCP config, this research monitor ledger, older batch monitor ledger, workbooks-test outputs, prior product-gap monitor, regression scratch files, Irene literal proof leftovers, meeting transcript deconstruction files, and older `runs/*` artifacts. No newly dirty production/test research code is visible.
+
+**Selected claim envelope classification:** parent **Agentic Research Foundations promote / close**, successor **Workbook Research Products W0-W4 close**, and **TRAIL trio close** remain branch-durable and scoreable under their named fences. The new docs/onboarding commit improves operator-facing and developer/admin discoverability but does not change the claim envelope or evidence bar.
+
+**BMAD gate/story visibility:** no new BMAD gate appeared after the WRAPUP handoff and prior party close artifacts. Review artifact searches again found no dedicated `bmad-code-review` / code-review artifact for the combined close commit. Existing visible gates remain the story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, and now updated user/dev/admin/onboarding documentation.
+
+**Test / validation visibility:** no evidence directory newer than `_bmad-output/implementation-artifacts/evidence/openalex-live-20260711T024437Z/` appeared. Latest formal evidence remains OpenAlex LIVE, followed by Workbook W4/W3 and foundations R7/R6/R5-fenced. This monitor did not rerun tests and found no new test transcript beyond committed evidence and handoff summaries.
+
+**Implementation visibility:** no new implementation surface appeared since SOP-R015. Scoreable implementation remains the committed `3231dd43` stack; `3b88dd1e` records WRAPUP push; `5c08bcef` records docs/onboarding/knowledge-graph refresh.
+
+**Scoreability:** Agentic Research Foundations remains **branch-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **branch-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **branch-durable and scoreable under tight fences**. Documentation coverage is now improved and pushed. The combined stack is still not independently review-durable because no dedicated review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0075 [P1] Documentation follow-through landed.** User/dev/admin guides, ONBOARDING, and knowledge graph were refreshed and pushed in `5c08bcef`.
+**F-R-0076 [P1] Separate code-review artifact still absent.** The branch has party close, WRAPUP, and docs follow-through, but no dedicated review artifact for the 159-file implementation close commit.
+**F-R-0077 [P2] No fresh formal evidence after OpenAlex.** Latest evidence remains `openalex-live-20260711T024437Z`; the new commit is documentation/knowledge graph, not new runtime proof.
+**F-R-0078 [P2] Claim fences remain binding in docs and scoring.** R5 fenced, OpenAlex narrow, semantic WARN-only, and G2 not semantic support remain the key anti-overclaim constraints.
+
+**Residual fencing:** dedicated code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** Material documentation progress since SOP-R015. The research foundations, workbook products, and TRAIL trio stack remains committed, pushed, branch-durable, and scoreable under named fences, and the user/dev/admin/onboarding docs are now refreshed. The persistent governance caution remains the absence of a dedicated code-review artifact.
+
+---
+### SOP-R017 - Stable after docs refresh; no new evidence or review artifact - 2026-07-10T23:49:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R016, current `git status --short --branch --untracked-files=all`, local git log, latest evidence directory timestamps, review artifact searches, and the newly visible untracked technical research planning file under `_bmad-output/planning-artifacts/research/`. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`. HEAD remains `5c08bcef` (`docs(onboarding): refresh knowledge graph + ONBOARDING at 3b88dd1e (incremental) + fold research foundations into user/dev/admin guides`). No new commit is visible since SOP-R016. The branch still contains the close commit `3231dd43`, WRAPUP pin `3b88dd1e`, and docs/onboarding refresh `5c08bcef`, all visible on origin.
+
+**Worktree state:** the committed research/workbook/TRAIL implementation stack remains branch-durable and is not newly dirty. Current tracked dirt remains local/monitor-adjacent: `.cursor/mcp.json`, `.mcp.json`, this research monitor ledger, and the older batch-mode monitor ledger. Ambient untracked artifacts remain visible. A new untracked planning artifact is visible at `_bmad-output/planning-artifacts/research/technical-latest-bmad-version-looping-feature-research-2026-07-10.md`; its current content is the generic research workflow scaffold with placeholder metadata, so this poll treats it as unscored planning residue rather than BMAD gate, implementation evidence, or liveproof.
+
+**Selected claim envelope classification:** parent **Agentic Research Foundations promote / close**, successor **Workbook Research Products W0-W4 close**, and **TRAIL trio close** remain branch-durable and scoreable under their named fences. No claim envelope expansion is visible in this poll. The new untracked technical research scaffold does not alter the selected claim classification.
+
+**BMAD gate/story visibility:** no new BMAD gate appeared after SOP-R016. Existing visible gates remain the story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, and updated user/dev/admin/onboarding documentation. Review artifact searches again found no dedicated `bmad-code-review` / code-review artifact for the combined implementation close.
+
+**Test / validation visibility:** no evidence directory newer than `_bmad-output/implementation-artifacts/evidence/openalex-live-20260711T024437Z/` appeared. Latest formal evidence remains OpenAlex LIVE, followed by Workbook W4/W3 and foundations R7/R6/R5-fenced. This monitor did not rerun tests and found no new test transcript beyond committed evidence and handoff summaries.
+
+**Implementation visibility:** no new implementation surface appeared since SOP-R016. Scoreable implementation remains the committed `3231dd43` stack; `3b88dd1e` records WRAPUP push; `5c08bcef` records docs/onboarding/knowledge-graph refresh.
+
+**Scoreability:** Agentic Research Foundations remains **branch-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **branch-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **branch-durable and scoreable under tight fences**. Documentation coverage remains pushed. The combined stack is still not independently review-durable because no dedicated review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0079 [P1] No material change after docs refresh.** HEAD remains pushed at `5c08bcef`; no new implementation commit or evidence appeared after SOP-R016.
+**F-R-0080 [P1] Separate code-review artifact still absent.** Party close, WRAPUP, evidence packs, and docs updates are visible, but no dedicated review artifact is visible for the 159-file implementation close.
+**F-R-0081 [P2] New untracked research planning scaffold is not scoreable.** The newly visible technical research file is placeholder/template-like and should not be counted as a gate, story, validation proof, or claim expansion unless later bound by BMAD artifacts and evidence.
+**F-R-0082 [P2] Claim fences remain binding.** R5 fenced, OpenAlex narrow, semantic WARN-only, and G2 not semantic support remain the key anti-overclaim constraints.
+
+**Residual fencing:** dedicated code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No material change since SOP-R016. The research foundations, workbook products, and TRAIL trio stack remains committed, pushed, branch-durable, and scoreable under named fences, with refreshed docs/onboarding also pushed. The persistent governance caution remains the absence of a dedicated code-review artifact; the new untracked technical research scaffold is not scoreable evidence.
+
+---
+### SOP-R018 - Stable branch; no post-close evidence or review boundary - 2026-07-11T00:04:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R017, current `git status --short --branch --untracked-files=all`, local git log, latest evidence directory timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`. HEAD remains `5c08bcef` (`docs(onboarding): refresh knowledge graph + ONBOARDING at 3b88dd1e (incremental) + fold research foundations into user/dev/admin guides`). No new commit is visible since SOP-R017. The branch still contains the close commit `3231dd43`, WRAPUP pin `3b88dd1e`, and docs/onboarding refresh `5c08bcef`, all visible on origin.
+
+**Worktree state:** the committed research/workbook/TRAIL implementation stack remains branch-durable and is not newly dirty. Current tracked dirt remains local/monitor-adjacent: `.cursor/mcp.json`, `.mcp.json`, this research monitor ledger, and the older batch-mode monitor ledger. Untracked ambient artifacts remain visible, including workbooks-test outputs, prior product-gap monitor, regression scratch files, Irene literal proof leftovers, meeting transcript deconstruction files, older `runs/*` artifacts, and the untracked placeholder-like technical research scaffold under `_bmad-output/planning-artifacts/research/`. No newly dirty production/test research implementation file is visible.
+
+**Selected claim envelope classification:** parent **Agentic Research Foundations promote / close**, successor **Workbook Research Products W0-W4 close**, and **TRAIL trio close** remain branch-durable and scoreable under their named fences. No claim envelope expansion is visible in this poll. The current untracked planning scaffold remains outside the scoreable claim envelope.
+
+**BMAD gate/story visibility:** no new BMAD gate appeared after SOP-R017. Current visible research implementation artifacts remain `agentic-research-foundations-stories-2026-07-10.md`, `agentic-research-foundations-promote-2026-07-10.md`, `research-r0-charter-taxonomy-live-matrix-2026-07-10.md`, `research-r1-posture-runtime-2026-07-10.md`, `research-r2-consensus-evidence-bolster-2026-07-10.md`, `workbook-research-products-stories-2026-07-10.md`, `workbook-w0-charter-consumer-matrix-2026-07-10.md`, `workbook-research-products-close-2026-07-10.md`, and `trail-trio-close-2026-07-10.md`. Review artifact searches again found no dedicated `bmad-code-review` / code-review artifact for the combined implementation close.
+
+**Test / validation visibility:** no evidence directory newer than `_bmad-output/implementation-artifacts/evidence/openalex-live-20260711T024437Z/` appeared. Latest formal evidence remains OpenAlex LIVE, followed by Workbook W4/W3 and foundations R7/R6/R5-fenced. This monitor did not rerun tests and found no new test transcript beyond committed evidence and handoff summaries.
+
+**Implementation visibility:** no new implementation surface appeared since SOP-R017. Scoreable implementation remains the committed `3231dd43` stack; `3b88dd1e` records WRAPUP push; `5c08bcef` records docs/onboarding/knowledge-graph refresh.
+
+**Scoreability:** Agentic Research Foundations remains **branch-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **branch-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **branch-durable and scoreable under tight fences**. Documentation coverage remains pushed. The combined stack is still not independently review-durable because no dedicated review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0083 [P1] Stable branch, no new scoreability movement.** HEAD remains pushed at `5c08bcef`; no new implementation commit, BMAD gate, or evidence directory appeared after SOP-R017.
+**F-R-0084 [P1] Separate code-review artifact still absent.** Close letters, story artifacts, WRAPUP, evidence packs, and docs updates are visible, but no dedicated review artifact is visible for the combined implementation close.
+**F-R-0085 [P2] Latest formal proof remains OpenAlex.** No validation newer than `openalex-live-20260711T024437Z` is visible; post-close status is stability, not fresh proof.
+**F-R-0086 [P2] Ambient untracked files remain outside the research score.** The placeholder-like technical research scaffold and older run/evidence leftovers should not be counted as claim evidence unless later bound by a story/gate/evidence record.
+
+**Residual fencing:** dedicated code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No material change since SOP-R017. The research foundations, workbook products, and TRAIL trio stack remains committed, pushed, branch-durable, and scoreable under named fences, with refreshed docs/onboarding also pushed. The persistent governance caution remains the absence of a dedicated code-review artifact; no new post-close evidence or claim expansion is visible.

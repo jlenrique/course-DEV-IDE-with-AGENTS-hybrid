@@ -1296,3 +1296,1813 @@ Independent shadow ledger for the Grok 4.5 Cursor-led dev session dedicated to t
 **Residual fencing:** durable commit/push, intentional staging hygiene, live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
 
 **Final verdict:** The session did well against the **local implementation** goal for a Batch processing run-start switch, but it did not finish the **repo-shippable** goal. The honest close is **COMPLETE locally / NOT DURABLE / NOT LIVE-PROVEN**, with explicit fences.
+
+---
+
+### SOP-BM042 - Post-final material update; Batch v1 is now durable on branch - 2026-07-10T09:15:25-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM041, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, commit stats for `9aa8ae1e` and `bfe5a02a`, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. **Material change:** HEAD is now `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`) and `origin/dev/batch-mode-2026-07-10` points to the same commit. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) is present directly below it. This resolves the prior durable-close finding.
+
+**Worktree state:** Batch implementation/story/test/config files are no longer visible as untracked. Remaining untracked surface appears to be pre-existing or non-Batch run/content/evidence artifacts, plus the separate Phase-2 product-gap monitor ledger. This monitor did not alter those files.
+
+**Selected claim envelope classification:** **Batch LLM Execution Mode v1 durable branch close.** The committed claim is still bounded to opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** Improved from SOP-BM041. `9aa8ae1e` committed the Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, Batch implementation/config, tests, and project docs. `bfe5a02a` pinned the wrapup SHA in `SESSION-HANDOFF.md`. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** The visible proof remains hermetic/story-claimed. This monitor found no evidence file newer than the 04:02 Batch close cluster and did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** Durable implementation is now visible in commit `9aa8ae1e`: CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** **YES for durable hermetic v1; NO for live-provider proof.** The active implementation is now scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It is still not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0218 [RESOLVED] Durable close is now present.** `origin/dev/batch-mode-2026-07-10` is at `bfe5a02a`, with `9aa8ae1e` carrying the Batch v1 implementation.
+**F-BM-0219 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0220 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0221 [P2] Residual untracked artifacts remain outside the Batch implementation close.** The remaining untracked files should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: MATERIAL IMPROVEMENT SINCE SOP-BM041.** Batch v1 is now **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries two cleanup cautions.
+
+---
+
+### SOP-BM043 - Post-durable steady poll; no change after branch close - 2026-07-10T09:25:49-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM042, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. HEAD remains `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`), aligned with `origin/dev/batch-mode-2026-07-10`. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains the durable Batch v1 close commit.
+
+**Worktree state:** only this monitor ledger is modified among tracked files. Remaining untracked surface appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**. The claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM042. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged: **YES for durable hermetic v1; NO for live-provider proof.** The active implementation remains scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It remains not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0222 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0223 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0224 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM042.** Batch v1 remains **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM044 - Post-durable steady poll; Batch branch remains scoreable hermetically - 2026-07-10T09:35:47-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM043, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. HEAD remains `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`), aligned with `origin/dev/batch-mode-2026-07-10`. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains the durable Batch v1 close commit.
+
+**Worktree state:** only this monitor ledger is modified among tracked files. Remaining untracked surface appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**. The claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM043. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged: **YES for durable hermetic v1; NO for live-provider proof.** The active implementation remains scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It remains not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0225 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0226 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0227 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM043.** Batch v1 remains **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM045 - Post-durable steady poll; no live-proof movement - 2026-07-10T09:45:47-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM044, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. HEAD remains `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`), aligned with `origin/dev/batch-mode-2026-07-10`. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains the durable Batch v1 close commit.
+
+**Worktree state:** only this monitor ledger is modified among tracked files. Remaining untracked surface appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**. The claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM044. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged: **YES for durable hermetic v1; NO for live-provider proof.** The active implementation remains scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It remains not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0228 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0229 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0230 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM044.** Batch v1 remains **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM046 - Post-durable steady poll; durable branch unchanged - 2026-07-10T09:55:45-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM045, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. HEAD remains `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`), aligned with `origin/dev/batch-mode-2026-07-10`. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains the durable Batch v1 close commit.
+
+**Worktree state:** only this monitor ledger is modified among tracked files. Remaining untracked surface appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**. The claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM045. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged: **YES for durable hermetic v1; NO for live-provider proof.** The active implementation remains scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It remains not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0231 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0232 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0233 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM045.** Batch v1 remains **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM047 - Post-durable steady poll; live-proof still fenced - 2026-07-10T10:05:47-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM046, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. HEAD remains `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`), aligned with `origin/dev/batch-mode-2026-07-10`. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains the durable Batch v1 close commit.
+
+**Worktree state:** only this monitor ledger is modified among tracked files. Remaining untracked surface appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**. The claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM046. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged: **YES for durable hermetic v1; NO for live-provider proof.** The active implementation remains scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It remains not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0234 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0235 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0236 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM046.** Batch v1 remains **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM048 - Post-durable steady poll; Batch scoreability unchanged - 2026-07-10T10:15:51-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM047, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. HEAD remains `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`), aligned with `origin/dev/batch-mode-2026-07-10`. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains the durable Batch v1 close commit.
+
+**Worktree state:** only this monitor ledger is modified among tracked files. Remaining untracked surface appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**. The claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM047. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged: **YES for durable hermetic v1; NO for live-provider proof.** The active implementation remains scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It remains not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0237 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0238 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0239 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM047.** Batch v1 remains **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM049 - Post-durable steady poll; non-Batch index files now dirty - 2026-07-10T10:25:54-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM048, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`. HEAD remains `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`), aligned with `origin/dev/batch-mode-2026-07-10`. The implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains the durable Batch v1 close commit.
+
+**Worktree state:** the monitor ledger remains modified. **New since prior steady polls:** `.understand-anything/fingerprints.json` and `.understand-anything/knowledge-graph.json` are also tracked-modified. These are outside the Batch implementation close and were not edited by this monitor. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**. The claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM048. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged: **YES for durable hermetic v1; NO for live-provider proof.** The active implementation remains scoreable as a committed/pushed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. It remains not scoreable as live-provider-proven, invoice-accurate, or generalized Batch execution beyond the v1 fences.
+
+**Findings / cautions:**
+**F-BM-0240 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0241 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0242 [P2] Non-Batch tracked index files are dirty.** `.understand-anything/fingerprints.json` and `.understand-anything/knowledge-graph.json` are modified outside the Batch close; do not mix them into Batch scoring.
+**F-BM-0243 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and cleanup/disposition of non-Batch dirty index files.
+
+**Verdict: BATCH SCOREABILITY UNCHANGED SINCE SOP-BM048.** Batch v1 remains **durable and hermetically scoreable** on `origin/dev/batch-mode-2026-07-10`; it remains **not live-provider-proven** and carries the same two cleanup cautions. New dirty `.understand-anything` files are outside the Batch claim.
+
+---
+
+### SOP-BM050 - Post-durable poll; local onboarding commit ahead of origin - 2026-07-10T10:35:57-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM049, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, local-ahead commit stat for `d92aa890`, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, but is now **ahead 1**. Local HEAD is `d92aa890` (`docs(onboarding): refresh knowledge graph + ONBOARDING at bfe5a02a (incremental)`). `origin/dev/batch-mode-2026-07-10` remains at `bfe5a02a` (`docs(session): pin Batch WRAPUP push SHA in SESSION-HANDOFF`). The Batch implementation commit `9aa8ae1e` (`feat(batch): close Batch LLM Execution Mode v1 (opt-in vision transport)`) remains durable below both.
+
+**Local-ahead commit visibility:** `d92aa890` changes `.understand-anything/fingerprints.json`, `.understand-anything/knowledge-graph.json`, `.understand-anything/meta.json`, and `docs/ONBOARDING.md`. This appears to be onboarding/index documentation refresh, not a Batch implementation or validation change. It is not pushed to origin as of this poll.
+
+**Worktree state:** the monitor ledger remains modified. The previously dirty `.understand-anything` files are no longer merely tracked-modified; their changes are now captured in the local-ahead `d92aa890` commit. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with a local non-Batch onboarding commit ahead of origin. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM049 for Batch. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs are durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA on origin. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done. The local `d92aa890` onboarding/index commit does not alter the Batch close evidence.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim at `9aa8ae1e`/`bfe5a02a`, bounded to the explicit opt-in vision-only envelope. The local-ahead `d92aa890` onboarding/index commit should not be treated as new Batch proof.
+
+**Findings / cautions:**
+**F-BM-0244 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0245 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0246 [P2] Local branch is ahead of origin by a non-Batch onboarding/index commit.** `d92aa890` is local-only as of this poll; do not confuse it with Batch implementation movement or liveproof.
+**F-BM-0247 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/push decision for the local onboarding/index commit.
+
+**Verdict: BATCH SCOREABILITY UNCHANGED SINCE SOP-BM049.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close; it remains **not live-provider-proven** and carries the same two cleanup cautions. The local-ahead `d92aa890` commit is outside the Batch claim.
+
+---
+
+### SOP-BM051 - Post-durable poll; guide updates pushed, Batch proof unchanged - 2026-07-10T10:45:49-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM050, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, commit stat for `d196972a`, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is aligned with origin again. HEAD is now `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The prior onboarding/index commit `d92aa890` is now below HEAD and no longer local-only. The Batch implementation commit `9aa8ae1e` and wrapup pin `bfe5a02a` remain durable below the new documentation commits.
+
+**New commit visibility:** `d196972a` changes `docs/admin-guide.md`, `docs/dev-guide.md`, and `docs/user-guide.md` only. This documents the Batch v1 close in user/admin/dev guides; it does not alter Batch runtime implementation or add live validation evidence.
+
+**Worktree state:** the monitor ledger remains modified. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, now with pushed onboarding/index and guide documentation updates above it. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** documentation visibility improved, implementation proof unchanged. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` folds the Batch close into user/admin/dev guides. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The new `d196972a` guide commit improves documentation, not execution proof.
+
+**Findings / cautions:**
+**F-BM-0248 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0249 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0250 [INFO] Guide documentation is now pushed.** `d196972a` updates user/admin/dev guides for Batch v1 and is aligned with origin.
+**F-BM-0251 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: DOCUMENTATION IMPROVED; BATCH SCOREABILITY UNCHANGED SINCE SOP-BM050.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM052 - Post-guide steady poll; Batch proof unchanged - 2026-07-10T10:55:50-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM051, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, aligned with origin. HEAD remains `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates above it. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM051. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The epic close artifact still reports party CLOSE 4/4 and all v1 stories done.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring text in `app/runtime/llm_execution_config.py` still remains. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The pushed guide/onboarding commits improve documentation and knowledge indexing, not execution proof.
+
+**Findings / cautions:**
+**F-BM-0252 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0253 [P2] Cleanup defects remain committed.** The stale `gpt-4.1-mini` docstring and weak B4 `or True` assertion are still present.
+**F-BM-0254 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, stale `llm_execution_config.py` docstring cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, and broader non-vision Batch tiering.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM051.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven** and carries the same two cleanup cautions.
+
+---
+
+### SOP-BM053 - Post-guide poll; stale docstring fixed locally, not pushed - 2026-07-10T11:05:57-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM052, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, local-ahead commit stat for `1b30e324`, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, but is now **ahead 1**. Local HEAD is `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Local-ahead commit visibility:** `1b30e324` changes `_bmad-output/implementation-artifacts/deferred-work.md`, `_bmad-output/implementation-artifacts/spec-fix-llm-execution-config-docstring.md`, and `app/runtime/llm_execution_config.py`. This appears to address the stale docstring cleanup caution. Direct text check no longer finds `gpt-4.1-mini` in `app/runtime/llm_execution_config.py`; it still finds expected `gpt-5.5` binding language. This fix is local-only as of this poll.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch proof. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit adds a fix spec/deferred-work note and updates a runtime config docstring, but it is not pushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** Batch implementation remains visible and durable for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. The stale `gpt-4.1-mini` docstring caution is **locally resolved** by `1b30e324`, but not yet durable on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof.
+
+**Findings / cautions:**
+**F-BM-0255 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0256 [P2] Stale docstring cleanup is local-only.** `1b30e324` appears to resolve the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0257 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0258 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: SMALL LOCAL CLEANUP IMPROVEMENT SINCE SOP-BM052; BATCH PROOF UNCHANGED.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is locally fixed but not pushed; the weak cost assertion remains.
+
+---
+
+### SOP-BM054 - Post-cleanup steady poll; local docstring fix still unpushed - 2026-07-10T11:15:50-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM053, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM053. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0259 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0260 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0261 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0262 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM053.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM055 - Post-cleanup steady poll; local docstring fix still ahead of origin - 2026-07-10T11:26:43-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM054, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM054. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0263 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0264 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0265 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0266 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM054.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM056 - Steady post-close poll; Batch proof unchanged - 2026-07-10T11:35:49-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM055, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM055. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0267 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0268 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0269 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0270 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM055.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM057 - Steady post-close poll; no new Batch evidence or push - 2026-07-10T11:45:48-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM056, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM056. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0271 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0272 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0273 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0274 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM056.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM058 - Steady post-close poll; local cleanup still unpushed - 2026-07-10T11:55:46-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM057, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM057. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0275 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0276 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0277 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0278 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM057.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM059 - Steady post-close poll; no live Batch proof surfaced - 2026-07-10T12:05:47-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM058, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM058. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0279 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0280 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0281 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0282 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM058.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM060 - Steady post-close poll; Batch status unchanged - 2026-07-10T12:15:54-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM059, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM059. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0283 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0284 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0285 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0286 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM059.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM061 - Steady post-close poll; no push or live evidence - 2026-07-10T12:25:48-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM060, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM060. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0287 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0288 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0289 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0290 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM060.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM062 - Steady post-close poll; Batch proof unchanged - 2026-07-10T12:35:48-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM061, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM061. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0291 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0292 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0293 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0294 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM061.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM063 - Steady post-close poll; local cleanup still ahead - 2026-07-10T12:45:49-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM062, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM062. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0295 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0296 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0297 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0298 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM062.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM064 - Steady post-close poll; no Batch movement - 2026-07-10T12:55:54-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM063, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM063. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0299 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0300 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0301 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0302 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM063.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM065 - Steady post-close poll; Batch proof remains hermetic-only - 2026-07-10T13:05:52-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM064, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM064. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0303 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0304 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0305 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0306 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM064.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM066 - Steady post-close poll; no live evidence surfaced - 2026-07-10T13:15:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM065, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM065. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0307 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0308 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0309 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0310 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM065.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM067 - Steady post-close poll; no branch or evidence movement - 2026-07-10T13:25:49-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM066, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM066. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0311 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0312 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0313 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0314 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM066.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM068 - Steady post-close poll; local cleanup still unpushed - 2026-07-10T13:35:49-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM067, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM067. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0315 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0316 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0317 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0318 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM067.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM069 - Steady post-close poll; Batch proof unchanged - 2026-07-10T13:45:51-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM068, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM068. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0319 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0320 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0321 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0322 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM068.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM070 - Steady post-close poll; Batch proof still bounded - 2026-07-10T13:55:50-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM069, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM069. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0323 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0324 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0325 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0326 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM069.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM071 - Steady post-close poll; no Batch state change - 2026-07-10T14:05:51-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM070, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM070. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0327 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0328 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0329 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0330 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM070.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM072 - Steady post-close poll; Batch status unchanged - 2026-07-10T14:15:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM071, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM071. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0331 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0332 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0333 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0334 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM071.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM073 - Steady post-close poll; no material Batch change - 2026-07-10T14:25:52-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM072, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM072. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0335 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0336 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0337 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0338 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM072.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM074 - Steady post-close poll; no new Batch evidence - 2026-07-10T14:35:54-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM073, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM073. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0339 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0340 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0341 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0342 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM073.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM075 - Steady post-close poll; Batch proof unchanged - 2026-07-10T14:47:00-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM074, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM074. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0343 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0344 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0345 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0346 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM074.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM076 - Steady post-close poll; Batch proof still unchanged - 2026-07-10T14:55:49-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM075, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM075. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0347 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0348 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0349 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0350 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM075.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM077 - Steady post-close poll; Batch proof remains unchanged - 2026-07-10T15:05:50-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM076, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM076. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0351 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0352 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0353 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0354 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM076.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM078 - Steady post-close poll; Batch proof unchanged - 2026-07-10T15:15:51-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM077, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM077. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0355 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0356 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0357 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0358 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM077.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM079 - Steady post-close poll; Batch proof unchanged - 2026-07-10T15:25:52-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM078, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM078. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0359 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0360 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0361 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0362 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM078.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM080 - Steady post-close poll; Batch proof unchanged - 2026-07-10T15:35:51-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM079, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM079. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0363 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0364 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0365 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0366 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM079.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM081 - Steady post-close poll; Batch proof unchanged - 2026-07-10T15:45:51-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM080, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM080. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0367 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0368 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0369 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0370 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM080.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM082 - Steady post-close poll; Batch proof unchanged - 2026-07-10T15:55:52-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM081, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM081. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0371 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0372 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0373 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0374 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM081.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM083 - Steady post-close poll; Batch proof unchanged - 2026-07-10T16:05:51-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM082, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM082. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0375 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0376 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0377 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0378 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM082.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM084 - Steady post-close poll; Batch proof unchanged - 2026-07-10T16:15:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM083, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM083. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0379 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0380 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0381 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0382 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM083.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM085 - Steady post-close poll; Batch proof unchanged - 2026-07-10T16:25:54-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM084, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM084. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0383 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0384 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0385 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0386 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM084.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM086 - Steady post-close poll; Batch proof unchanged - 2026-07-10T16:35:55-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM085, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM085. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** unchanged. The visible Batch proof remains hermetic/story-claimed. No evidence file newer than the 04:02 Batch close cluster was found. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0387 [P1] No live Batch evidence appeared.** The close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0388 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0389 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0390 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL CHANGE SINCE SOP-BM085.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The stale docstring issue is still fixed only locally; the weak cost assertion remains.
+
+---
+### SOP-BM087 - Steady post-close poll; non-Batch evidence timestamp churn - 2026-07-10T16:45:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM086, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM086. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The evidence scan now finds one newer non-Batch file, `_bmad-output/implementation-artifacts/evidence/irene-literal-liveproof-20260709T143510/irene_literal_liveproof_driver.py`, with `LastWriteTime` 2026-07-10 16:43:01 local. That file sits under older Irene literal liveproof evidence, not under Batch evidence, and does not change the Batch proof posture. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0391 [P1] No Batch live evidence appeared.** The only newly timestamped evidence file is under older Irene literal liveproof, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0392 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0393 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0394 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL BATCH CHANGE SINCE SOP-BM086.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. A newer timestamp appeared in an older Irene liveproof driver file, but no Batch evidence or implementation artifact moved.
+
+---
+### SOP-BM088 - Steady post-close poll; same non-Batch evidence timestamp persists - 2026-07-10T16:55:55-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM087, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/batch-mode-2026-07-10`, tracking `origin/dev/batch-mode-2026-07-10`, and is still **ahead 1**. Local HEAD remains `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`). `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, and guide commit `d196972a` remain durable below the local fix.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** unchanged: **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus a local unpushed cleanup commit. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged from SOP-BM087. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The local `1b30e324` cleanup commit remains unpushed.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The same newer non-Batch file persists in the evidence scan: `_bmad-output/implementation-artifacts/evidence/irene-literal-liveproof-20260709T143510/irene_literal_liveproof_driver.py`, `LastWriteTime` 2026-07-10 16:43:01 local, length 27563. It sits under older Irene literal liveproof evidence, not under Batch evidence, and does not change the Batch proof posture. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`; the local docstring fix remains in place but not on origin. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** unchanged for Batch v1: **YES for durable hermetic v1; NO for live-provider proof.** The active Batch implementation remains scoreable as the committed Batch v1 branch claim, bounded to the explicit opt-in vision-only envelope. The local cleanup commit improves source hygiene but does not add live execution proof and is not yet durable on origin.
+
+**Findings / cautions:**
+**F-BM-0395 [P1] No Batch live evidence appeared.** The only post-close evidence timestamp remains an older Irene literal liveproof file, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0396 [P2] Stale docstring cleanup remains local-only.** `1b30e324` resolves the `gpt-4.1-mini` docstring issue locally, but origin still points to `d196972a`.
+**F-BM-0397 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0398 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and push/disposition of the local docstring cleanup commit.
+
+**Verdict: NO MATERIAL BATCH CHANGE SINCE SOP-BM087.** Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides; it remains **not live-provider-proven**. The same newer timestamp persists in an older Irene liveproof driver file, but no Batch evidence or implementation artifact moved.
+
+---
+### SOP-BM089 - Branch changed to Agentic Research; Batch proof unchanged - 2026-07-10T17:05:55-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM088, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace is no longer on `dev/batch-mode-2026-07-10`. It is now on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`). The Batch implementation commit `9aa8ae1e`, wrapup pin `bfe5a02a`, onboarding/index commit `d92aa890`, guide commit `d196972a`, and local cleanup commit `1b30e324` remain in the visible history beneath the current Agentic Research head.
+
+**Worktree state:** the monitor ledger remains the only tracked modified file. Remaining untracked surface still appears outside the Batch implementation close: workbook-test artifacts, older evidence/temp files, course-source deconstruction files, run outputs, compositor outputs, and a separate Phase-2 product-gap monitor ledger. No Batch implementation/story/test/config file reappeared as untracked.
+
+**Selected claim envelope classification:** changed only in workspace focus, not in Batch proof. The active branch is now **Agentic Research Foundations**, while the monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the cleanup commit present locally and in current visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM088. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace has moved on to an Agentic Research mini-epic at `d1effcfa`.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The same newer non-Batch file persists in the evidence scan: `_bmad-output/implementation-artifacts/evidence/irene-literal-liveproof-20260709T143510/irene_literal_liveproof_driver.py`, `LastWriteTime` 2026-07-10 16:43:01 local, length 27563. It sits under older Irene literal liveproof evidence, not under Batch evidence, and does not change the Batch proof posture. This monitor did not rerun tests. Live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch is no longer the Batch branch. The committed Batch v1 branch claim remains scoreable from the visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. The current Agentic Research branch should not be treated as new Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0399 [P1] Active branch switched away from the Batch session branch.** Current workspace head is `d1effcfa` on `dev/agentic-research-foundations-2026-07-10`; Batch monitoring is now observing Batch artifacts/history from a successor branch context.
+**F-BM-0400 [P1] No Batch live evidence appeared.** The only post-close evidence timestamp remains an older Irene literal liveproof file, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0401 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0402 [P2] Residual untracked artifacts remain outside the Batch implementation close.** These should be handled separately from the Batch branch durability claim.
+
+**Residual fencing:** live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: MATERIAL WORKSPACE-FOCUS CHANGE; NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM088.** The active repo branch has moved to `dev/agentic-research-foundations-2026-07-10` at `d1effcfa`. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM090 - Agentic Research WIP visible; Batch proof unchanged - 2026-07-10T17:15:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM089, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch research work is now visible in tracked modifications: `_bmad-output/implementation-artifacts/agentic-research-foundations-stories-2026-07-10.md`, `_bmad-output/implementation-artifacts/research-r1-posture-runtime-2026-07-10.md`, `_bmad-output/implementation-artifacts/sprint-status.yaml`, `app/marcus/orchestrator/research_wiring.py`, `skills/bmad_agent_tracy/scripts/posture_dispatcher.py`, and `tests/contracts/test_tracy_postures.py`. New untracked Agentic Research files are also visible: `_bmad-output/implementation-artifacts/evidence/jefferson-access-probe-20260710/PROBE.md`, `_bmad-output/implementation-artifacts/evidence/research-r1-20260710T211425Z/*`, `scripts/utilities/run_research_r1_live_evidence.py`, and `tests/unit/marcus/orchestrator/test_research_r1_posture_runtime.py`. The monitor ledger remains modified by this monitor. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity is **Agentic Research Foundations / R1 posture runtime**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM089. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace now shows ongoing Agentic Research story/evidence files and code/test edits.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. Newer evidence files are Agentic Research / Jefferson probe artifacts, not Batch evidence: `research-r1-20260710T211425Z/PROOF.md`, `verdict.json`, `command-transcript.md`, and `jefferson-access-probe-20260710/PROBE.md`. The older non-Batch Irene literal liveproof driver timestamp persists. This monitor did not rerun tests. Batch live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are now clearly non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Agentic Research evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0403 [P1] Active WIP is no longer Batch.** Current tracked and untracked changes are Agentic Research / R1 posture runtime work on `dev/agentic-research-foundations-2026-07-10`.
+**F-BM-0404 [P1] No Batch live evidence appeared.** New evidence files are Agentic Research / Jefferson probe artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0405 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0406 [P2] Batch branch/source-of-truth context is now successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research WIP with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: MATERIAL NON-BATCH WIP; NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM089.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` and now has visible Agentic Research code/test/docs/evidence changes. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM091 - Agentic Research R2 WIP visible; Batch proof unchanged - 2026-07-10T17:25:56-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM090, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research work has expanded since SOP-BM090. Tracked modifications now include `_bmad-output/implementation-artifacts/agentic-research-foundations-stories-2026-07-10.md`, `_bmad-output/implementation-artifacts/research-r1-posture-runtime-2026-07-10.md`, `_bmad-output/implementation-artifacts/sprint-status.yaml`, `app/marcus/orchestrator/research_wiring.py`, `skills/bmad-agent-texas/scripts/retrieval/consensus_provider.py`, `skills/bmad_agent_tracy/scripts/irene_bridge.py`, `skills/bmad_agent_tracy/scripts/posture_dispatcher.py`, `tests/contracts/test_tracy_postures.py`, and `tests/integration/marcus/test_braid_s3_research_wiring.py`. New untracked Research/R2 files include `_bmad-output/implementation-artifacts/research-r2-consensus-evidence-bolster-2026-07-10.md`, `_bmad-output/implementation-artifacts/evidence/research-r2-20260710T211712Z/*`, `scripts/utilities/run_research_r2_live_evidence.py`, and `tests/unit/marcus/orchestrator/test_research_r2_evidence_bolster.py`. The monitor ledger remains modified by this monitor. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity is **Agentic Research Foundations / R2 consensus evidence bolster**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM090. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace now shows ongoing Agentic Research R1/R2 story/evidence files and code/test edits.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. Newer evidence files are Agentic Research / Jefferson probe artifacts, not Batch evidence: `research-r2-20260710T211712Z/PROOF.md`, `command-transcript.md`, `verdict.json`, `research-r1-20260710T211425Z/*`, and `jefferson-access-probe-20260710/PROBE.md`. The older non-Batch Irene literal liveproof driver timestamp persists. This monitor did not rerun tests. Batch live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are clearly non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Agentic Research R1/R2 evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0407 [P1] Active WIP remains non-Batch and has expanded to Research R2.** Current tracked and untracked changes are Agentic Research / R1/R2 posture and evidence-bolster work on `dev/agentic-research-foundations-2026-07-10`.
+**F-BM-0408 [P1] No Batch live evidence appeared.** New evidence files are Research R1/R2 / Jefferson probe artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0409 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0410 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research WIP with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: MATERIAL NON-BATCH R2 WIP; NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM090.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` and now has visible Agentic Research R2 code/test/docs/evidence changes. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM092 - Jefferson probe evidence expands; Batch proof unchanged - 2026-07-10T17:35:58-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM091, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research work has expanded again. Tracked modifications remain in Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. New untracked Jefferson probe scripts and evidence are visible: `run_jefferson_reauth_probe.py`, `run_jefferson_session_probe*.py`, `jefferson-access-probe-reauth-*`, `jefferson-access-probe-session-*`, and `jefferson-access-probe-session3-*` outputs. Research R1/R2 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity is **Agentic Research Foundations / Jefferson access + R2 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM091. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace now shows ongoing Agentic Research / Jefferson probe evidence growth.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. Newer evidence files are Jefferson access probe and Agentic Research R1/R2 artifacts, not Batch evidence. The newest visible evidence includes `jefferson-access-probe-session3-20260710T213250Z/*`, `jefferson-access-probe-session-20260710T213156Z/*`, and `jefferson-access-probe-reauth-20260710T172839Z/*`. This monitor did not rerun tests. Batch live A2 `--run-live`, provider parity, and invoice/cost accuracy remain unproven.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are clearly non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Jefferson/Research evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0411 [P1] Active WIP remains non-Batch and now includes Jefferson probe evidence.** Current changes are Agentic Research / Jefferson access probe work on `dev/agentic-research-foundations-2026-07-10`.
+**F-BM-0412 [P1] No Batch live evidence appeared.** New evidence files are Jefferson/Research artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0413 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0414 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research WIP with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: MATERIAL NON-BATCH JEFFERSON/RESEARCH WIP; NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM091.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` and now has visible Jefferson access probe evidence plus Agentic Research R1/R2 WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM093 - Jefferson/Research WIP persists; Batch proof unchanged - 2026-07-10T17:45:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM092, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson WIP persists. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + R2 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM092. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace still shows ongoing Agentic Research / Jefferson probe WIP.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. Newer evidence files remain Jefferson access probe and Agentic Research R1/R2 artifacts, not Batch evidence. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Jefferson/Research evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0415 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson access probe work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0416 [P1] No Batch live evidence appeared.** New evidence files are Jefferson/Research artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0417 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0418 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research WIP with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: MATERIAL NON-BATCH JEFFERSON/RESEARCH WIP PERSISTS; NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM092.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM094 - Research R2/R3 evidence expands; Batch proof unchanged - 2026-07-10T17:55:54-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM093, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson WIP persists and has added newer Research evidence. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence remain visible, and newer untracked Research evidence now includes `research-r2-20260710T215032Z/*`, `research-r2-20260710T215111Z/*`, `research-r3-20260710T215231Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM093. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace still shows ongoing Agentic Research / Jefferson probe WIP and newer R2/R3 evidence.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. Newer evidence files are Research R2/R3 and consensus MCP smoke artifacts, not Batch evidence. The newest visible evidence includes `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0419 [P1] Active WIP remains non-Batch and has expanded to Research R2/R3 evidence.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0420 [P1] No Batch live evidence appeared.** New evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0421 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0422 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: MATERIAL NON-BATCH RESEARCH R2/R3 EVIDENCE EXPANSION; NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM093.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM095 - Non-Batch Research WIP stable; Batch proof unchanged - 2026-07-10T18:05:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM094, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM094. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM094. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace still shows ongoing Agentic Research / Jefferson / consensus WIP.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. Newer evidence files remain Research R2/R3 and consensus MCP smoke artifacts, not Batch evidence. The newest visible evidence is still `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0423 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0424 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0425 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0426 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM094.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM096 - Non-Batch evidence remains latest; Batch proof unchanged - 2026-07-10T18:15:56-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM095, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM095. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM095. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. The active workspace still shows ongoing Agentic Research / Jefferson / consensus WIP.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0427 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0428 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0429 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0430 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM095.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM097 - Batch artifacts still unchanged; non-Batch WIP persists - 2026-07-10T18:25:52-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM096, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM096. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM096. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. Batch artifact timestamps remain unchanged from the early Batch close sequence; only the monitor ledger itself has a current timestamp.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0431 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0432 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0433 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0434 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM096.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM098 - Research branch still active; Batch proof unchanged - 2026-07-10T18:35:53-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM097, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM097. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM097. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. Batch artifact timestamps remain unchanged from the early Batch close sequence; only the monitor ledger itself has a current timestamp.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0435 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0436 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0437 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0438 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM097.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM099 - Batch proof unchanged; Research/Jefferson WIP still active - 2026-07-10T18:45:52-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM098, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM098. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM098. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. Batch artifact timestamps remain unchanged from the early Batch close sequence; only the monitor ledger itself has a current timestamp.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0439 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0440 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0441 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0442 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM098.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM100 - Batch monitor century poll; proof unchanged - 2026-07-10T18:55:52-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM099, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM099. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM099. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. Batch artifact timestamps remain unchanged from the early Batch close sequence; only the monitor ledger itself has a current timestamp.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0443 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0444 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0445 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0446 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM099.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM101 - Post-century poll; Batch proof still unchanged - 2026-07-10T19:05:55-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM100, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM100. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM100. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. Batch artifact timestamps remain unchanged from the early Batch close sequence; only the monitor ledger itself has a current timestamp.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0447 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0448 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0449 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0450 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM100.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM102 - Research successor branch persists; Batch proof unchanged - 2026-07-10T19:15:55-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM101, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM101. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked Jefferson probe scripts/evidence and Research R1/R2/R3 evidence/scripts/tests remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM101. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. Batch artifact timestamps remain unchanged from the early Batch close sequence; only the monitor ledger itself has a current timestamp.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3 and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0451 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0452 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0453 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0454 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM101.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.
+
+---
+### SOP-BM103 - Batch proof static; Research evidence remains latest - 2026-07-10T19:25:56-04:00
+
+**Scope reviewed:** Batch ledger through SOP-BM102, `git status --short --branch --untracked-files=all`, local git log, recent Batch artifact timestamps, post-close evidence timestamp scan, and direct cleanup checks for stale model text and weak cost assertion. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `dev/agentic-research-foundations-2026-07-10`, tracking `origin/dev/agentic-research-foundations-2026-07-10`, at `d1effcfa` (`feat(research): open Agentic Research Foundations mini-epic (R0 done)`). Local `dev/batch-mode-2026-07-10` remains visible at `1b30e324` (`fix(runtime): correct stale llm_execution_config docstrings to match batch model binding`), while `origin/dev/batch-mode-2026-07-10` remains at `d196972a` (`docs(guides): fold Batch LLM Execution Mode v1 close into user/admin/dev guides`).
+
+**Worktree state:** active non-Batch Agentic Research / Jefferson / consensus WIP remains visible and materially stable against SOP-BM102. Tracked modifications include `.cursor/mcp.json`, `.mcp.json`, Research story/status docs, `app/marcus/orchestrator/research_wiring.py`, Texas/Tracy research scripts, and Research-related contract/integration tests. Untracked workbook-test artifacts, Jefferson probe scripts/evidence, Research R1/R2/R3 evidence/scripts/tests, course deconstruction source material, and run outputs remain visible. No Batch implementation/story/test/config file reappeared as new untracked Batch work.
+
+**Selected claim envelope classification:** current workspace activity remains **Agentic Research Foundations / Jefferson access + Research R2/R3 evidence**, not a Batch claim. The monitored Batch claim remains **Batch LLM Execution Mode v1 durable branch close**, with pushed onboarding/index and guide documentation updates, plus the local cleanup commit in visible ancestry. The Batch claim remains opt-in, default-realtime, vision/07G-only transport Batch with B3 wait/resume, B4 cost reporting, A2 hermetic harness, and B5 shared prompt-cache key. A1-EXT all-node tiering remains deferred.
+
+**BMAD gate/story visibility:** unchanged for Batch from SOP-BM102. The Batch story ledger, close artifact, party greenlights, code-review artifacts, sprint-status updates, implementation/config, tests, and project docs remain durable in `9aa8ae1e`; `bfe5a02a` pins the wrapup SHA; `d196972a` documents the Batch close in user/admin/dev guides. Batch artifact timestamps remain unchanged from the early Batch close sequence; only the monitor ledger itself has a current timestamp.
+
+**Test / validation visibility:** Batch proof remains hermetic/story-claimed. The newest visible evidence remains non-Batch: `research-r3-20260710T215231Z/PROOF.md` and `verdict.json` at 2026-07-10 17:52:31 local, plus `research-r2-20260710T215111Z/*`, `research-r2-20260710T215032Z/*`, and `consensus-mcp-oauth-smoke-20260710/PROOF.md`. No Batch live A2 `--run-live`, provider parity, or invoice/cost accuracy evidence appeared. This monitor did not rerun tests.
+
+**Implementation visibility:** unchanged for Batch proof. Durable Batch implementation remains visible for CLI switch and `resume-batch`, orchestrator dispatch/pause/resume logic, state/schema additions, `app/runtime/llm_batch/*`, eligibility/config files, vision batch route, prompt-cache support, cost-report support, harness script, and broad unit/integration tests. Direct check still confirms `gpt-4.1-mini` is absent from `app/runtime/llm_execution_config.py`, while the intended vision note still references `gpt-5.5`. The always-true `or True` assertion in `tests/runtime/llm_batch/test_cost_report.py` still remains.
+
+**Scoreability:** Batch remains **YES for durable hermetic v1; NO for live-provider proof**, but the active workspace branch and WIP are non-Batch. The committed Batch v1 branch claim remains scoreable from visible commit history and artifacts, bounded to the explicit opt-in vision-only envelope. Current Research R2/R3, Jefferson access, and consensus MCP smoke evidence should not be treated as Batch liveproof.
+
+**Findings / cautions:**
+**F-BM-0455 [P1] Active WIP remains non-Batch.** Current changes are Agentic Research / Jefferson / consensus evidence work on `dev/agentic-research-foundations-2026-07-10`, including MCP config changes.
+**F-BM-0456 [P1] No Batch live evidence appeared.** Newest evidence files are Research/Jefferson/consensus artifacts, not Batch; the Batch close remains hermetic and explicitly fenced from live quality/cost claims.
+**F-BM-0457 [P2] Weak B4 cost assertion remains committed.** The `or True` assertion is still present in `tests/runtime/llm_batch/test_cost_report.py`.
+**F-BM-0458 [P2] Batch branch/source-of-truth context remains successor-branch based.** Batch artifacts are still visible, but continued Batch monitoring should avoid conflating Agentic Research, Jefferson access, or consensus MCP smoke evidence with Batch validation.
+
+**Residual fencing:** Batch live A2 `--run-live` / T3/T4/T5 evidence if later claimed, A1-EXT all-node tiering, workbook Batch exclusion, B4 weak assertion cleanup, provider compatibility check for realtime prompt-cache kwargs, live invoice/cost accuracy, broader non-vision Batch tiering, and disposition/merge expectations for Batch branch vs successor Agentic Research branch.
+
+**Verdict: NO MATERIAL BATCH PROOF CHANGE SINCE SOP-BM102.** The active repo branch remains `dev/agentic-research-foundations-2026-07-10` with visible Jefferson/Research/consensus WIP. Batch v1 remains **durable and hermetically scoreable** via the committed Batch close and documented in guides, but it remains **not live-provider-proven**, and no Batch evidence or implementation artifact moved in this poll.

@@ -1,0 +1,239 @@
+--- G0-CONFIRM-GATE ---
+directive=C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\e9ab808e-9157-4085-b14c-dbc0669721e7\directive.yaml auto=False -> edit-then-confirm
+--- G0-DIRECTIVE-PRINT ---
+run_id: e9ab808e-9157-4085-b14c-dbc0669721e7
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge
+sources:
+- ref_id: src-001
+  locator: assessments/comprehensive-module-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: Comprehensive module knowledge check assessment (quiz) for the course
+    module, delivered in Markdown.
+  expected_min_words: 700
+  excluded_reason: null
+- ref_id: src-002
+  locator: assessments/discussion-post-3-graded-peer-evaluation.md
+  provider: local_file
+  role: supporting
+  description: "Assignment instructions for Discussion Post 3 graded peer evaluation,\
+    \ outlining criteria and guidance for assessing peers\u2019 work related to an\
+    \ innovation topic."
+  expected_min_words: 160
+  excluded_reason: null
+- ref_id: src-003
+  locator: assessments/innovation-leader-playbook-entry-1.md
+  provider: local_file
+  role: supporting
+  description: Assignment prompt and guidelines for Innovation Leader Playbook Entry
+    1, detailing format, objectives, deliverables, and evaluation alignment.
+  expected_min_words: 600
+  excluded_reason: null
+- ref_id: src-004
+  locator: assessments/innovation-leader-playbook-master-grading-rubric.md
+  provider: local_file
+  role: supporting
+  description: Master grading rubric detailing criteria and scoring for the Innovation
+    Leader Playbook assessments.
+  expected_min_words: 600
+  excluded_reason: null
+- ref_id: src-005
+  locator: README.md
+  provider: local_file
+  role: supporting
+  description: Repository README providing an overview of the corpus, purpose (assessment
+    bridge), structure, and context such as proof-of-intent and pointers to primary
+    content and assessments.
+  expected_min_words: 300
+  excluded_reason: null
+- ref_id: src-006
+  locator: references/module-1-core-conceptual-pillars.md
+  provider: local_file
+  role: primary
+  description: "Outlines the core conceptual pillars for Module 1, providing the central\
+    \ teaching framework and key ideas that anchor the module\u2019s content."
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-007
+  locator: references/source-gap-ledger.md
+  provider: local_file
+  role: supporting
+  description: A reference ledger outlining source gaps and provenance notes for the
+    corpus, tracking missing or needed sources and coverage.
+  expected_min_words: 50
+  excluded_reason: null
+- ref_id: src-008
+  locator: references/source-provenance.md
+  provider: local_file
+  role: supporting
+  description: Provenance/reference note listing the curated corpus and source origins
+    for the course materials.
+  expected_min_words: 50
+  excluded_reason: null
+- ref_id: src-009
+  locator: slides/slide-1-summary-bridge-to-module-2.md
+  provider: local_file
+  role: primary
+  description: Markdown slide summarizing key takeaways and bridging to Module 2,
+    likely with bullets on conclusions, transitions, and next steps.
+  expected_min_words: 150
+  excluded_reason: null
+composed_at: '2026-07-09T18:46:34.407357Z'
+schema_version: 1
+gamma_settings:
+- variant_id: A
+  styleguide: hil-2026-apc-crossroads-classic
+styleguide_picker_provenance:
+  picked_at: '2026-07-09T18:46:34.610683+00:00'
+  picker_version: '1.0'
+  ssot_sha256: de1928b4fe4747224daa9d8e055167e1b5ca27d0f999f2b6122272882d1556a4
+  picks:
+  - variant_id: A
+    styleguide: hil-2026-apc-crossroads-classic
+  written_by: styleguide_picker
+  picked_by: juanl
+  publish_url: degraded:scripted-selection-code (no picker page published)
+  roster_sha256: c1bbe84a102e821715dada63a751eb20646b5498e50f0a3d8e0898c445e9375d
+  version_count: 1
+  selection_code: SGP-e9ab808e91574085b14cdbc0669721e7-A:hil-2026-apc-crossroads-classic
+  run_tag: e9ab808e91574085b14cdbc0669721e7
+
+--- G0-PROMPT ---
+G0 — Directive Composition
+Composed directive written to: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\e9ab808e-9157-4085-b14c-dbc0669721e7\directive.yaml
+Review the directive (printed above). Choose:
+  [c] confirm and proceed
+  [e] edit in $EDITOR, then reload and re-prompt
+  [s] save and show path; exit without running the trial
+  [x] cancel trial (no specialist dispatch)
+At-gate context: docs/conversational-gates/g0-directive-composition.md
+Choice [c/e/s/x]: 
+--- G0-REPLY ---
+e
+--- G0-EDIT ---
+appended inspection marker to C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\e9ab808e-9157-4085-b14c-dbc0669721e7\directive.yaml
+--- G0-DIRECTIVE-PRINT ---
+run_id: e9ab808e-9157-4085-b14c-dbc0669721e7
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge
+sources:
+- ref_id: src-001
+  locator: assessments/comprehensive-module-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: Comprehensive module knowledge check assessment (quiz) for the course
+    module, delivered in Markdown.
+  expected_min_words: 700
+  excluded_reason: null
+- ref_id: src-002
+  locator: assessments/discussion-post-3-graded-peer-evaluation.md
+  provider: local_file
+  role: supporting
+  description: "Assignment instructions for Discussion Post 3 graded peer evaluation,\
+    \ outlining criteria and guidance for assessing peers\u2019 work related to an\
+    \ innovation topic."
+  expected_min_words: 160
+  excluded_reason: null
+- ref_id: src-003
+  locator: assessments/innovation-leader-playbook-entry-1.md
+  provider: local_file
+  role: supporting
+  description: Assignment prompt and guidelines for Innovation Leader Playbook Entry
+    1, detailing format, objectives, deliverables, and evaluation alignment.
+  expected_min_words: 600
+  excluded_reason: null
+- ref_id: src-004
+  locator: assessments/innovation-leader-playbook-master-grading-rubric.md
+  provider: local_file
+  role: supporting
+  description: Master grading rubric detailing criteria and scoring for the Innovation
+    Leader Playbook assessments.
+  expected_min_words: 600
+  excluded_reason: null
+- ref_id: src-005
+  locator: README.md
+  provider: local_file
+  role: supporting
+  description: Repository README providing an overview of the corpus, purpose (assessment
+    bridge), structure, and context such as proof-of-intent and pointers to primary
+    content and assessments.
+  expected_min_words: 300
+  excluded_reason: null
+- ref_id: src-006
+  locator: references/module-1-core-conceptual-pillars.md
+  provider: local_file
+  role: primary
+  description: "Outlines the core conceptual pillars for Module 1, providing the central\
+    \ teaching framework and key ideas that anchor the module\u2019s content."
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-007
+  locator: references/source-gap-ledger.md
+  provider: local_file
+  role: supporting
+  description: A reference ledger outlining source gaps and provenance notes for the
+    corpus, tracking missing or needed sources and coverage.
+  expected_min_words: 50
+  excluded_reason: null
+- ref_id: src-008
+  locator: references/source-provenance.md
+  provider: local_file
+  role: supporting
+  description: Provenance/reference note listing the curated corpus and source origins
+    for the course materials.
+  expected_min_words: 50
+  excluded_reason: null
+- ref_id: src-009
+  locator: slides/slide-1-summary-bridge-to-module-2.md
+  provider: local_file
+  role: primary
+  description: Markdown slide summarizing key takeaways and bridging to Module 2,
+    likely with bullets on conclusions, transitions, and next steps.
+  expected_min_words: 150
+  excluded_reason: null
+composed_at: '2026-07-09T18:46:34.407357Z'
+schema_version: 1
+gamma_settings:
+- variant_id: A
+  styleguide: hil-2026-apc-crossroads-classic
+styleguide_picker_provenance:
+  picked_at: '2026-07-09T18:46:34.610683+00:00'
+  picker_version: '1.0'
+  ssot_sha256: de1928b4fe4747224daa9d8e055167e1b5ca27d0f999f2b6122272882d1556a4
+  picks:
+  - variant_id: A
+    styleguide: hil-2026-apc-crossroads-classic
+  written_by: styleguide_picker
+  picked_by: juanl
+  publish_url: degraded:scripted-selection-code (no picker page published)
+  roster_sha256: c1bbe84a102e821715dada63a751eb20646b5498e50f0a3d8e0898c445e9375d
+  version_count: 1
+  selection_code: SGP-e9ab808e91574085b14cdbc0669721e7-A:hil-2026-apc-crossroads-classic
+  run_tag: e9ab808e91574085b14cdbc0669721e7
+# irene-literal-hil-operator-edit: inspected directive; no semantic source change
+
+--- G0-PROMPT ---
+G0 — Directive Composition
+Composed directive written to: C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\e9ab808e-9157-4085-b14c-dbc0669721e7\directive.yaml
+Review the directive (printed above). Choose:
+  [c] confirm and proceed
+  [e] edit in $EDITOR, then reload and re-prompt
+  [s] save and show path; exit without running the trial
+  [x] cancel trial (no specialist dispatch)
+At-gate context: docs/conversational-gates/g0-directive-composition.md
+Choice [c/e/s/x]: 
+--- G0-REPLY ---
+c
+--- VERDICT ---
+{
+  "card_id": "13755b01-b136-4280-8c24-9b4c28fbe0c3",
+  "edit_payload": null,
+  "gate": "G0E",
+  "verb": "approve"
+}
+--- VERDICT ---
+{
+  "card_id": "1a29b734-a332-4c07-8613-cb4f8dbea66e",
+  "edit_payload": null,
+  "gate": "G0R",
+  "verb": "approve"
+}

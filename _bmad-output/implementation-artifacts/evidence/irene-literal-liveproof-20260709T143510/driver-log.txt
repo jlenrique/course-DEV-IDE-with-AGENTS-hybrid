@@ -1,0 +1,12 @@
+[2026-07-09T18:36:22.483888+00:00] env: OPENAI=sk-proj...oc0A (len 164); LANGSMITH+GAMMA present; corpus+intent OK; GUIDE=hil-2026-apc-crossroads-classic
+[2026-07-09T18:36:25.082003+00:00] styleguide hil-2026-apc-crossroads-classic: text_mode=condense amount=minimal
+[2026-07-09T18:36:25.082003+00:00] === start_trial (Irene-literal liveproof; classic-condense + AFK HIL) ===
+[2026-07-09T18:46:34.643156+00:00] G0 confirm feeder: edit
+[2026-07-09T18:46:34.644283+00:00] G0 edit_fn applied marker; bytes=3976
+[2026-07-09T18:46:34.654365+00:00] G0 confirm feeder: confirm
+[2026-07-09T18:47:02.007416+00:00] start_trial returned after 636.9s: {'status': 'registered-offline', 'trial_id': 'e9ab808e-9157-4085-b14c-dbc0669721e7', 'preset': 'production', 'input': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-c1m1-p4-assessments-bridge', 'operator_id': 'juanl', 'run_registry_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/e9ab808e-9157-4085-b14c-dbc0669721e7/run.json', 'cost_report_json': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/e9ab808e-9157-4085-b14c-dbc0669721e7/cost-report.json', 'cost_report_markdown': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/e9ab808e-9157-4085-b14c-dbc0669721e7/cost-report.md', 'langsmith_trace_status': 'skipped-no-langsmith-env', 'production_clone_launch_evidence': False, 'directive_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/e9ab808e-9157-4085-b14c-dbc0669721e7/directive.yaml', 'directive_digest': '01e9f111ad05f2af9fe018d51682533ba933b51d56a958fa55b477adab34f1db', 'lesson_plan_collateral_intent_path': 'C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/s8-tejal-p4-ratified-collateral-intent.yaml', 'lesson_plan_collateral_bundle_id': 'narrated-deck-with-workbook', 'transport_kind': 'cli'}
+[2026-07-09T18:47:02.017293+00:00] [loop 0] status=paused-at-gate gate=G0E err=None
+[2026-07-09T18:47:02.028118+00:00] resume approve G0E (cap=40)
+[2026-07-09T18:48:35.983853+00:00]   -> status=paused-at-gate paused_gate=G0R err=None
+[2026-07-09T18:48:35.993406+00:00] [loop 1] status=paused-at-gate gate=G0R err=None
+[2026-07-09T18:48:36.004131+00:00] resume approve G0R (cap=40)
