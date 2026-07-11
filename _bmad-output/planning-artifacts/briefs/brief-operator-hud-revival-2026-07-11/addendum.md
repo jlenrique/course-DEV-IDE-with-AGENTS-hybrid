@@ -44,3 +44,8 @@ notifications:
   health_threshold:    { enabled: false, sound: false }
 staleness_budget_seconds: 5
 ```
+
+## F. Review amendments (2026-07-11) + adjacent need
+
+- Phone push promoted to v1; new **run-stalled watchdog** event class (no progress within budget while nominally in-flight). Quota/credit sufficiency joined the falter-surface (proxies allowed, honest confidence display, never false green).
+- **Adjacent need (not HUD v1 scope, design hint for architecture):** the operator wants stall notifications for **dev runs** too (long dev-auto/test sessions while AFK). Design the notifier as a small shared service the HUD consumes, so a dev-side producer can reuse it later without touching the HUD.

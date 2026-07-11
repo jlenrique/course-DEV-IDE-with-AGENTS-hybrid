@@ -1,8 +1,9 @@
 ---
 title: Operator HUD — Flight Deck for Marcus-SPOC Production Runs
-status: draft
+status: final
 created: 2026-07-11
 updated: 2026-07-11
+reviewed: operator amendments applied 2026-07-11
 ---
 
 # Operator HUD — Flight Deck for Marcus-SPOC Production Runs
@@ -20,7 +21,7 @@ One solo operator/HIL, second monitor dedicated to the HUD, running hours-long p
 ## The run lifecycle the HUD renders
 
 1. **Pre-flight (Phase 01)** — runtime instance starts; HUD is already up showing "pre-flight in progress" on the you-are-here map. Checklist items render individually as the runtime tests them: hardware/software environment, default settings, databases, LiteLLM, **the HUD's own server**, and every essential readiness measure.
-2. **Heartbeats (Phase 02)** — live connectivity tests of every API/LLM/platform dependency, rendered per dependency. Heartbeats are real calls (see Principle 5).
+2. **Heartbeats (Phase 02)** — live connectivity AND **quota/credit sufficiency** tests of every API/LLM/platform dependency, rendered per dependency. Heartbeats are real calls (see Principle 5). Where a balance is not directly fetchable, use honest proxies (derived spend, rate-limit gauges, a successful cheap real call) and display confidence — never false green: a mid-run call must never fail on an exhausted subscription that pre-flight could have caught.
 
    **PRE-FLIGHT CONTRACT (load-bearing definition):** if pre-flight and heartbeats clear and the runtime then falters on missing or bad connectivity, pre-flight failed its job — coverage is defined as *anything whose absence would make the runtime falter* (the "falter-surface").
 3. **Spawn & conversation** — on all-green, Marcus-SPOC spawns; the HUD flips to run tracking.
@@ -30,18 +31,18 @@ One solo operator/HIL, second monitor dedicated to the HUD, running hours-long p
 
 ## Product principles (binding)
 
-1. **Read-only, zero-button.** No verdict affordances, ever; next actions render as copy-paste commands (decision-card digest pre-filled). `[ASSUMPTION: v1 keeps even the pre-flight trigger out of the HUD — the runtime start path executes pre-flight and gates SPOC spawn on it; the HUD only visualizes. Recommended because it keeps read-only pure and pre-flight authoritative whether or not the HUD is open.]`
+1. **Read-only, zero-button.** No verdict affordances, ever; next actions render as copy-paste commands (decision-card digest pre-filled). The runtime start path executes pre-flight and gates SPOC spawn on it; the HUD only visualizes — read-only stays pure and pre-flight stays authoritative whether or not the HUD is open. *(Recommended; accepted at operator review 2026-07-11.)*
 2. **Zero-lie rule.** The HUD never contradicts the envelope (the run's persisted state carrier); unrecognized states render as "unrecognized," never as garbage or stale truth. Every tile admits its age; a dead feed flips to an explicit STALE state.
 3. **Self-updating.** Live, moment-by-moment, no manual refresh — served locally from the runtime session. Local server approved; its readiness is itself a pre-flight item.
 4. **Glanceable by design.** Dark-cockpit hierarchy: at-a-glance status + health by default, maximum insight one drill-down away.
 5. **No-mocks heartbeats.** Heartbeats and pre-flight checks are real live calls — never mocked, simulated, or cached; cheap paid pings are acceptable.
-6. **Configurable notifications.** Per-event-class opt-in/out via a HUD config YAML. Starting set: batch-pause resumed, paused-at-gate, paused-at-error, health-threshold crossed. `[ASSUMPTION: v1 channels are on-HUD visual + optional sound; phone/email parked for v2.]`
+6. **Configurable notifications — including phone, in v1.** Per-event-class opt-in/out via a HUD config YAML. Starting event set: batch-pause resumed, paused-at-gate, paused-at-error, health-threshold crossed, and **run stalled** (watchdog: no progress within a configured budget while nominally in-flight — the "I'm AFK thinking everything is purring" case). Channels: on-HUD visual + optional sound + **phone push** (mechanism selected in architecture; operator review amendment 2026-07-11). Email/webhook stay out of v1.
 
 ## Scope
 
-**IN (v1):** pre-flight + heartbeat visualization; two-stage progress map with drill-down; gate briefings; specialist/service icons with briefings; read-only state-trace window; health strip (token use, platform credits where fetchable — mechanisms in addendum §C); modality indicators; YAML-configured notifications; locally served page.
+**IN (v1):** pre-flight + heartbeat visualization; two-stage progress map with drill-down; gate briefings; specialist/service icons with briefings; read-only state-trace window; health strip (token use, platform credits where fetchable — mechanisms in addendum §C); modality indicators; YAML-configured notifications with **phone push + stall watchdog**; locally served page.
 
-**OUT (v1):** any interactive affordance beyond copy-paste text; fleet/multi-run views; historical run browsing; phone/email/webhook notifications; full trace-waterfall re-implementation (link out to LangSmith for that depth); eval/drift panels; Dev-Cycle/sprint panels and the M5 relic panel (dev dashboards live elsewhere).
+**OUT (v1):** any interactive affordance beyond copy-paste text; fleet/multi-run views; historical run browsing; email/webhook notifications (phone push is IN); full trace-waterfall re-implementation (link out to LangSmith for that depth); eval/drift panels; Dev-Cycle/sprint panels and the M5 relic panel (dev dashboards live elsewhere).
 
 ## Success criteria
 
@@ -57,7 +58,7 @@ One solo operator/HIL, second monitor dedicated to the HUD, running hours-long p
 
 ## Open questions (for UX + architecture phases)
 
-- Transport detail: SSE vs. short-poll from the local server; the runtime↔HUD process lifecycle (who starts/stops the server). `[ASSUMPTION: poll-first, SSE only if the projection cadence demands it.]`
+- Transport detail: poll-first, SSE only if the projection cadence demands it *(pinned at operator review — "up to you")*; the runtime↔HUD process lifecycle (who starts/stops the server) stays an architecture question. Phone-push mechanism selection (ntfy/Pushover/Twilio-class) also lands in architecture.
 - Health thresholds and their notification defaults (delegated to team; operator reviews at UX gate).
 - Iconography and briefing content per specialist/service (UX phase, designed against real run-dir fixtures).
 - Pre-flight item inventory derivation — from `ready_for_trial` scripts + the falter-surface contract (architecture phase).
