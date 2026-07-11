@@ -1,0 +1,184 @@
+{
+  "probe": "jefferson-library-reauth",
+  "timestamp_utc": "2026-07-10T21:30:16Z",
+  "evidence_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\jefferson-access-probe-reauth-20260710T172839Z",
+  "curl_summary": [
+    {
+      "name": "portal",
+      "http_code": "200",
+      "magic": "bytes:\n\n\t\n",
+      "cf": "no_cf_signal",
+      "url_effective": "https://library.jefferson.edu/",
+      "url": "https://library.jefferson.edu/"
+    },
+    {
+      "name": "az_databases",
+      "http_code": "200",
+      "magic": "HTML",
+      "cf": "no_cf_signal",
+      "url_effective": "https://jefflibraries.libguides.com/az/databases",
+      "url": "https://jefflibraries.libguides.com/az/databases"
+    },
+    {
+      "name": "find_full_text",
+      "http_code": "200",
+      "magic": "HTML",
+      "cf": "no_cf_signal",
+      "url_effective": "https://jefflibraries.libguides.com/FindFullText/articles",
+      "url": "https://jefflibraries.libguides.com/FindFullText/articles"
+    },
+    {
+      "name": "primo_home",
+      "http_code": "200",
+      "magic": "HTML",
+      "cf": "no_cf_signal",
+      "url_effective": "https://jefferson.primo.exlibrisgroup.com/discovery/search?vid=01TJU_INST:01TJU",
+      "url": "https://jefferson.primo.exlibrisgroup.com/discovery/search?vid=01TJU_INST:01TJU"
+    },
+    {
+      "name": "primo_config",
+      "http_code": "200",
+      "magic": "JSON",
+      "cf": "no_cf_signal",
+      "url_effective": "https://jefferson.primo.exlibrisgroup.com/primaws/rest/pub/configuration/vid/01TJU_INST:01TJU",
+      "url": "https://jefferson.primo.exlibrisgroup.com/primaws/rest/pub/configuration/vid/01TJU_INST:01TJU"
+    },
+    {
+      "name": "primo_search",
+      "http_code": "200",
+      "magic": "HTML",
+      "cf": "no_cf_signal",
+      "url_effective": "https://jefferson.primo.exlibrisgroup.com/discovery/search?vid=01TJU_INST:01TJU&query=any,contains,diabetes&tab=Everything&search_scope=MyInst_and_CI&lang=en",
+      "url": "https://jefferson.primo.exlibrisgroup.com/discovery/search?vid=01TJU_INST:01TJU&query=any,contains,diabetes&tab=Everything&search_scope=MyInst_and_CI&lang=en"
+    },
+    {
+      "name": "primo_openurl",
+      "http_code": "200",
+      "magic": "HTML",
+      "cf": "no_cf_signal",
+      "url_effective": "https://jefferson.primo.exlibrisgroup.com/discovery/openurl?vid=01TJU_INST:01TJU&url_ver=Z39.88-2004&rft_id=info:doi/10.1056/NEJMoa2034577",
+      "url": "https://jefferson.primo.exlibrisgroup.com/discovery/openurl?vid=01TJU_INST:01TJU&url_ver=Z39.88-2004&rft_id=info:doi/10.1056/NEJMoa2034577"
+    },
+    {
+      "name": "proxy_guess_proxy1",
+      "http_code": "000",
+      "magic": "",
+      "cf": "no_cf_signal",
+      "url_effective": "https://proxy1.library.jefferson.edu/",
+      "url": "https://proxy1.library.jefferson.edu/"
+    },
+    {
+      "name": "proxy_guess_login_proxy1",
+      "http_code": "000",
+      "magic": "",
+      "cf": "no_cf_signal",
+      "url_effective": "https://login.proxy1.library.jefferson.edu/",
+      "url": "https://login.proxy1.library.jefferson.edu/"
+    },
+    {
+      "name": "proxy_guess_oclc",
+      "http_code": "000",
+      "magic": "",
+      "cf": "no_cf_signal",
+      "url_effective": "https://jefferson.idm.oclc.org/",
+      "url": "https://jefferson.idm.oclc.org/"
+    },
+    {
+      "name": "exl_rewrite_root",
+      "http_code": "403",
+      "magic": "HTML",
+      "cf": "no_cf_signal",
+      "url_effective": "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/",
+      "url": "https://proxy-na.hosted.exlibrisgroup.com/exl_rewrite/"
+    },
+    {
+      "name": "doi_nejm",
+      "http_code": "200",
+      "magic": "bytes:\n\n\n\n",
+      "cf": "cloudflare_signal",
+      "url_effective": "https://www.nejm.org/doi/10.1056/NEJMoa2034577",
+      "url": "https://doi.org/10.1056/NEJMoa2034577"
+    },
+    {
+      "name": "nejm_article",
+      "http_code": "403",
+      "magic": "HTML",
+      "cf": "cloudflare_signal",
+      "url_effective": "https://www.nejm.org/doi/full/10.1056/NEJMoa2034577",
+      "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2034577"
+    },
+    {
+      "name": "nejm_pdf",
+      "http_code": "200",
+      "magic": "bytes:\n\n\n\n",
+      "cf": "cloudflare_signal",
+      "url_effective": "https://www.nejm.org/action/cookieAbsent",
+      "url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577"
+    },
+    {
+      "name": "pubmed",
+      "http_code": "200",
+      "magic": "HTML",
+      "cf": "no_cf_signal",
+      "url_effective": "https://pubmed.ncbi.nlm.nih.gov/33378609/",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/33378609/"
+    }
+  ],
+  "nejm_pdf_curl": {
+    "exists": true,
+    "size": 68523,
+    "is_pdf": false,
+    "cookie_absent": false,
+    "cloudflare_challenge": false,
+    "head_snippet": "     <!DOCTYPE html>                      <html lang=\"en\"                                                                                                                                      class=\"pb-page\"          data-request-id=\"a192a8f",
+    "effective_note": "see curl url_effective for nejm_pdf"
+  },
+  "playwright_copied_profile": {
+    "chrome_user_data_exists": true,
+    "attempted": true,
+    "profiles_found": [
+      "Default"
+    ],
+    "temp_user_data": "C:\\Users\\juanl\\AppData\\Local\\Temp\\jeff-chrome-5o8xhh4p",
+    "copy_warnings": [
+      "Network: [('C:\\\\Users\\\\juanl\\\\AppData\\\\Local\\\\Google\\\\Chrome\\\\User Data\\\\Default\\\\Network\\\\Cookies', 'C:\\\\Users\\\\juanl\\\\AppData\\\\Local\\\\Temp\\\\jeff-chrome-5o8xhh4p\\\\Default\\\\Network\\\\Cookies', '[WinError 32] The process cannot access the file because it is being used by another process'), ('C:\\\\Users\\\\juanl\\\\AppData\\\\Local\\\\Google\\\\Chrome\\\\User Data\\\\Default\\\\Network\\\\Cookies-journal', 'C:\\\\Users\\\\juanl\\\\AppData\\\\Local\\\\Temp\\\\jeff-chrome-5o8xhh4p\\\\Default\\\\Network\\\\Cookies-journal', '[WinError 32] The process cannot access the file because it is being used by another process')]"
+    ],
+    "launch": "persistent_chrome_channel",
+    "probes": {
+      "primo_search": {
+        "status": 200,
+        "final_url": "https://jefferson.primo.exlibrisgroup.com/discovery/search?vid=01TJU_INST:01TJU&query=any,contains,diabetes",
+        "title": "",
+        "is_pdf": false,
+        "cookie_absent": false,
+        "cloudflare": false,
+        "sign_in_hint": false,
+        "body_size": null
+      },
+      "nejm_article": {
+        "status": 403,
+        "final_url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2034577?__cf_chl_rt_tk=iCsnGQUzWzhQtVLrtrhJ6WcFu0SPnA01RByL9mHwc_0-1783719013-1.0.1.1-vzd9D9yEcsDJkudOtaAuYnhjG5efkxT85s_c9qs8gsg",
+        "title": "Just a moment...",
+        "is_pdf": false,
+        "cookie_absent": false,
+        "cloudflare": true,
+        "sign_in_hint": false,
+        "body_size": null
+      },
+      "nejm_pdf": {
+        "status": 403,
+        "final_url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577?__cf_chl_rt_tk=4rplBFtrxD5ewWUzrHgK3OlPAGimPkPwzf9HsPDCL1Y-1783719014-1.0.1.1-3rwELDk1Ol02eKwkCk36MB0J9bpXmawNxuC0B1NExHU",
+        "title": "Just a moment...",
+        "is_pdf": false,
+        "cookie_absent": false,
+        "cloudflare": true,
+        "sign_in_hint": false,
+        "body_size": 6258
+      }
+    }
+  },
+  "playwright_real_profile": {
+    "attempted": true,
+    "error": "launch failed (likely profile lock): BrowserType.launch_persistent_context: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-com"
+  }
+}

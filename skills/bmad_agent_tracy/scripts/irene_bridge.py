@@ -56,6 +56,9 @@ class IreneTracyBridge:
                 brief = {k: v for k, v in brief.items() if v is not None and v != ""}
                 # Ensure scope_decision is always present
                 brief["scope_decision"] = scope_decision
+                # R2 — propagate layer-1 evidence_bolster into corroborate briefs.
+                if "evidence_bolster" in lesson_plan:
+                    brief["evidence_bolster"] = lesson_plan.get("evidence_bolster")
 
                 try:
                     res = self.dispatcher.select_posture(brief)
@@ -83,6 +86,8 @@ class IreneTracyBridge:
             brief = {k: v for k, v in brief.items() if v is not None and v != ""}
             # research_goals are lesson-scoped enrichment intent — always in-scope.
             brief["scope_decision"] = "in-scope"
+            if "evidence_bolster" in lesson_plan:
+                brief["evidence_bolster"] = lesson_plan.get("evidence_bolster")
 
             try:
                 res = self.dispatcher.select_posture(brief)

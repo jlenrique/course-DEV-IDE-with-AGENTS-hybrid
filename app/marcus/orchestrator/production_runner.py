@@ -42,6 +42,7 @@ from app.marcus.orchestrator import (
     irene_refinement_wiring,
     package_builders,
     pre_gate_marcus,
+    research_detective_gate,
     research_wiring,
     specialist_summary_writer,
     storyboard_publisher,
@@ -2221,6 +2222,15 @@ def _dispatch_specialist_at_node(
             specialist_id=specialist_id,
             run_dir=_run_dir(trial_id, runs_root),
         )
+    # R7 Teeth-Thin — when MARCUS_RESEARCH_DETECTIVE_LIVE is ON, Irene Pass-2
+    # (node 08) is blocked until approve|reject|defer disposition is on disk.
+    # Flag-OFF is a no-op (byte-identical). Resume/recover = TRAIL.
+    # ResearchDetectiveGateError ⊂ SpecialistDispatchError → _pause_at_error.
+    research_detective_gate.enforce_before_pass2(
+        specialist_id=specialist_id,
+        node_id=node.id,
+        run_dir=_run_dir(trial_id, runs_root),
+    )
     dependency_map = _resolve_dependency_map(
         node=node,
         specialist_id=specialist_id,

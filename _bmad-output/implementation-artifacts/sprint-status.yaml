@@ -1734,16 +1734,28 @@ development_status:
   # Branch: dev/agentic-research-foundations-2026-07-10. SSOT: epic-agentic-research-foundations-2026-07-10.md + agentic-research-foundations-stories-2026-07-10.md
   # Party: agentic-research-foundations-party-greenlight-2026-07-10.md. LIVE-TEST every component (operator). Borrow Epic 17/28/braid.
   # Sequence: R0 → R1 → R2 → R3 → R4 → R5 → R6 → R7 → promote. TRAIL: 17-2/3/4, semantic audit, PubMed v2, tracy-gate-resume-recover.
-  epic-agentic-research-foundations: in-progress  # 2026-07-10 party 4/4 GO-WITH-AMENDMENTS; Quinn Teeth-Thin R7
+  epic-agentic-research-foundations: done  # 2026-07-10 promote closed; letter agentic-research-foundations-promote-2026-07-10.md; detective default OFF
   research-r0-charter-taxonomy-live-matrix: done  # 2026-07-10 claim envelope + hierarchy taxonomy + live-test matrix
-  research-r1-posture-runtime: ready-for-dev  # next — single production seam; live Scite postures
-  research-r2-consensus-evidence-bolster: backlog  # borrow 27-2.5; live Scite∩Consensus
-  research-r3-triangulator: backlog  # thin 17-1 atop Texas rows; live composite
-  research-r4-credibility-surfacing: backlog  # hierarchy + peer-review + provenance on every row
-  research-r5-jefferson-library-provider: backlog  # Texas adapter; live when creds
-  research-r6-irene-retrieval-intake: backlog  # thin borrow; no fabricate-cite; live consume
-  research-r7-hard-pause-teeth: backlog  # Quinn; live disposition; resume/recover TRAIL
-  research-foundations-promote: backlog  # close letter after R0–R7
+  research-r1-posture-runtime: done  # 2026-07-10 posture-aware selector + live Scite corroborate/gap_fill
+  research-r2-consensus-evidence-bolster: done  # 2026-07-10 live Scite∩Consensus via mcp-remote OAuth Bearer
+  research-r3-triangulator: done  # 2026-07-10 title-bridge + live dual_provider (5 clusters)
+  research-r4-credibility-surfacing: done  # 2026-07-10 hierarchy+peer+provenance on every row; live 21/21
+  research-r5-jefferson-library-provider: done  # 2026-07-10 adapter+hermetic; live fenced chrome_running_quit_required
+  research-r6-irene-retrieval-intake: done  # 2026-07-10 thin intake packet + fabricate-cite RED; live 21 rows
+  research-r7-hard-pause-teeth: done  # 2026-07-10 live PASS evidence/research-r7-20260711T003255Z; Teeth-Thin; resume/recover TRAIL
+  research-foundations-promote: done  # 2026-07-10 close letter + live index; flag default OFF; next workbook-research-products
+  # === ARC workbook-research-products-glossary-trends-2026-07-10: post-foundations (operator pull after promote) ===
+  # Strawman→party: workbook-research-products-party-greenlight-2026-07-10.md (4/4 GO-WITH-AMENDMENTS). SSOT: workbook-research-products-stories-2026-07-10.md
+  epic-workbook-research-products: done  # 2026-07-10 W0–W4 closed; letter workbook-research-products-close-2026-07-10.md
+  workbook-w0-charter-consumer-matrix: done  # 2026-07-10 charter + consumer matrix + SSOT gap → W1 thin pin
+  workbook-w1-research-packet-ssot: done  # 2026-07-10 research_packet.py + live dual-consumer digest; no new builder
+  workbook-w2-glossary-encyclopedia: done  # 2026-07-10 Research Glossary section + live R4 encyclopedia articles
+  workbook-w3-trends-hot-topics: done  # 2026-07-10 Research Trends + hot-topics; model-prior unusable; live PASS
+  workbook-w4-live-workbook-arm: done  # 2026-07-10 Tejal MD+DOCX + Murat 3 witnesses; detective OFF empty honest
   research-trail-tracy-gate-resume-recover: deferred  # TRAIL — pause resilience outside foundations R7
-  research-trail-semantic-claim-audit: deferred  # TRAIL — claim↔source faithfulness
+  research-trail-openalex-adapter: done  # 2026-07-10 TRAIL trio — DOI metadata + OA links; live openalex-live-20260711T024437Z
+  research-trail-glossary-sme-polish: done  # 2026-07-10 TRAIL trio — capability note; no HTML stub in learner body
+  research-trail-semantic-claim-audit: deferred  # TRAIL — full claim↔source faithfulness still open; WARN-only tripwire substrate landed 2026-07-10 (partial)
+  research-trail-semantic-warn-tripwire: done  # 2026-07-10 thin WARN-only SEMANTIC_TRIPWIRE + audit_semantic_framing; gates_production=False
   research-trail-llm-tracy-refine: deferred  # TRAIL — optional LLM intent refine
+  trail-trio-2026-07-10: done  # party CLOSE-WITH-AMENDMENTS 4/4; letter trail-trio-close-2026-07-10.md

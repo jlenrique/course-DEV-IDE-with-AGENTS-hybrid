@@ -1,0 +1,75 @@
+{
+  "story": "workbook-w1",
+  "pass": false,
+  "trial_id": "da2e0fb6-714d-436e-80a1-89cda9bbc975",
+  "claim": "Thin shared research-packet reader; \u22652 consumers same digest; no new packet builder; M3-safe",
+  "steps": [
+    {
+      "step": "plant_r4_live_entries",
+      "pass": true,
+      "entry_count": 21,
+      "source": "_bmad-output\\implementation-artifacts\\evidence\\research-r4-20260710T233843Z\\entries.json"
+    },
+    {
+      "step": "dual_consumer_same_digest",
+      "pass": true,
+      "packet_digest": "5042182becfd55e5c59754881fd5b79f82f0fc06c5d1d678aa0a2fc0db689d32",
+      "consumers": [
+        "glossary_writer",
+        "trends_projector"
+      ]
+    },
+    {
+      "step": "irene_intake_same_entries",
+      "pass": true,
+      "entries_consumed": 21,
+      "fabricate_cite_path_red": true
+    },
+    {
+      "step": "shape_pin_required_fields",
+      "pass": true,
+      "required_fields": [
+        "citation_id",
+        "evidence_hierarchy_tier",
+        "peer_reviewed",
+        "provider",
+        "provider_provenance",
+        "source_hash",
+        "source_id",
+        "source_ref",
+        "triangulation_status"
+      ]
+    },
+    {
+      "step": "empty_require_usable_fail_closed",
+      "pass": true
+    },
+    {
+      "step": "m3_safe_module",
+      "pass": false,
+      "module": "app.marcus.lesson_plan.research_packet"
+    }
+  ],
+  "consumer_matrix_witness": [
+    {
+      "consumer": "glossary_writer",
+      "access_mode": "resolve_for_glossary_writer",
+      "artifact": "run.json#research_wiring@04.55",
+      "packet_digest": "5042182becfd55e5c59754881fd5b79f82f0fc06c5d1d678aa0a2fc0db689d32",
+      "entry_count": 21
+    },
+    {
+      "consumer": "trends_projector",
+      "access_mode": "resolve_for_trends_projector",
+      "artifact": "run.json#research_wiring@04.55",
+      "packet_digest": "5042182becfd55e5c59754881fd5b79f82f0fc06c5d1d678aa0a2fc0db689d32",
+      "entry_count": 21
+    },
+    {
+      "consumer": "irene_intake",
+      "access_mode": "consume_research_entries(packet.entries)",
+      "artifact": "same entries list (no re-fetch)",
+      "entries_consumed": 21
+    }
+  ]
+}

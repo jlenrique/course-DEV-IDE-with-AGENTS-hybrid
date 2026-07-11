@@ -1,0 +1,10 @@
+{
+  "schema_version": "research-detective-disposition.v1",
+  "disposition": "approve",
+  "operator_id": "live-r7",
+  "rationale": "R7 live teeth proof \u2014 operator disposition after landing block",
+  "trial_id": "816d4de2-53c6-4549-a5cc-6284dbbbb699",
+  "written_at": "2026-07-11T00:32:55.659286Z",
+  "unlocks_pass2": true,
+  "trail_non_claim": "tracy-gate-resume-recover"
+}

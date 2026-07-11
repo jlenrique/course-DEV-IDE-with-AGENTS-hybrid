@@ -1,0 +1,34 @@
+{
+  "story": "workbook-w3",
+  "pass": true,
+  "trial_id": "ba03aad6-429b-40db-b2ca-6888926146da",
+  "claim": "Packet-grounded research-trends + bounded hot-topics; model-prior topics unusable; confidence/provenance labeled",
+  "steps": [
+    {
+      "step": "non_vacuous_trends",
+      "pass": true,
+      "trend_count": 5,
+      "sample_claim": "Indexed literature signals continuing attention to **Switching Stay Home Instruction**, as framed by \u201cSwitching to Stay "
+    },
+    {
+      "step": "bounded_hot_topics_with_provenance",
+      "pass": true,
+      "hot_topic_count": 3,
+      "sample_topic": "Instruction-first problem-solving-first approaches alternativ\u2026"
+    },
+    {
+      "step": "model_prior_rejected",
+      "pass": true,
+      "unusable_count": 1
+    },
+    {
+      "step": "compose_section_after_references",
+      "pass": true
+    },
+    {
+      "step": "md_docx_same_model_g2_clean",
+      "pass": true,
+      "g2_unsourced": 0
+    }
+  ]
+}

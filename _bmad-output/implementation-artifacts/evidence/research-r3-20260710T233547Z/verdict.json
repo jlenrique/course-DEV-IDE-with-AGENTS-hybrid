@@ -1,0 +1,91 @@
+{
+  "story": "research-r3",
+  "flag_detective": "MARCUS_RESEARCH_DETECTIVE_LIVE=1",
+  "oauth_cache_loaded": true,
+  "title_bridge": true,
+  "gate_ok": true,
+  "gate_reason": "dual_provider",
+  "metadata": {
+    "row_count": 26,
+    "cluster_count": 21,
+    "dual_provider_count": 5,
+    "single_provider_count": 16,
+    "title_bridge_rows_added": 5
+  },
+  "dual_provider_examples": [
+    {
+      "identity_key": "10.1145/3732791",
+      "source_id": "10.1145/3732791",
+      "reliability_score": 0.5,
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "contradiction_flags": [
+        {
+          "source_id": "529da762ed9552fa89cb980fb1b71160",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus",
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "identity_key": "10.1007/s10639-022-11247-6",
+      "source_id": "10.1007/s10639-022-11247-6",
+      "reliability_score": 0.5,
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "contradiction_flags": [
+        {
+          "source_id": "e5bb2e10d05b5b6c92e4a915fd79efc8",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus",
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "identity_key": "10.1007/s11251-016-9399-4",
+      "source_id": "10.1007/s11251-016-9399-4",
+      "reliability_score": 0.85,
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "contradiction_flags": [
+        {
+          "source_id": "cc331e0c35615fe6baafd9f907dea390",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus",
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "error": null,
+  "pass": true
+}

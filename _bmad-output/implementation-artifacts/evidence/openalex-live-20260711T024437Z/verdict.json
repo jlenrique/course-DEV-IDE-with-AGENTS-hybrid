@@ -1,0 +1,67 @@
+{
+  "pass": true,
+  "positive_ok": true,
+  "negative_ok": true,
+  "claim": {
+    "claim": "DOI metadata + OA link discovery via OpenAlex public API",
+    "non_claims": [
+      "PDF byte download",
+      "institutional SSO",
+      "claim↔source semantic validation",
+      "arbiter / credibility scoring"
+    ],
+    "provider_id": "openalex",
+    "live_doi": "10.1038/s41586-020-2649-2"
+  },
+  "positive": {
+    "case_id": "positive_oa_doi",
+    "doi": "10.1038/s41586-020-2649-2",
+    "query": {
+      "mode": "doi",
+      "doi": "10.1038/s41586-020-2649-2"
+    },
+    "error": null,
+    "raw_count": 1,
+    "row_count": 1,
+    "rows": [
+      {
+        "source_id": "10.1038/s41586-020-2649-2",
+        "title": "Array programming with NumPy",
+        "provider": "openalex",
+        "openalex": {
+          "doi": "10.1038/s41586-020-2649-2",
+          "openalex_id": "https://openalex.org/W3035965352",
+          "is_oa": true,
+          "oa_status": "hybrid",
+          "oa_urls": [
+            "https://www.nature.com/articles/s41586-020-2649-2.pdf",
+            "https://doi.org/10.1038/s41586-020-2649-2",
+            "https://pubmed.ncbi.nlm.nih.gov/32939066",
+            "https://arxiv.org/pdf/2006.10256",
+            "http://arxiv.org/abs/2006.10256",
+            "http://urn.fi/URN:NBN:fi:jyu-202010096147",
+            "https://doi.org/10.1038/s41586-020-2649-2\"",
+            "https://escholarship.org/uc/item/5g41c0hp",
+            "http://europepmc.org/pmc/articles/PMC7759461",
+            "https://www.ncbi.nlm.nih.gov/pmc/articles/7759461"
+          ],
+          "cited_by_count": 22553,
+          "type": "article",
+          "known_losses": []
+        }
+      }
+    ]
+  },
+  "negative": {
+    "case_id": "negative_missing_doi",
+    "doi": "10.9999/this-doi-does-not-exist-openalex-trail-2026",
+    "query": {
+      "mode": "doi",
+      "doi": "10.9999/this-doi-does-not-exist-openalex-trail-2026"
+    },
+    "error": null,
+    "raw_count": 0,
+    "row_count": 0,
+    "rows": []
+  }
+}

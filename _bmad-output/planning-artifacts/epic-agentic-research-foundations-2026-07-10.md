@@ -1,11 +1,12 @@
 # EPIC SPEC — Agentic Research Foundations (Tracy Detective Service)
 
-**Status:** PARTY-RATIFIED GO-WITH-AMENDMENTS (2026-07-10) — MUST amendments folded below  
+**Status:** PROMOTED / CLOSED (2026-07-10) — R0–R7 done; close letter `agentic-research-foundations-promote-2026-07-10.md`  
 **Branch (proposed):** `dev/agentic-research-foundations-2026-07-10`  
 **Type:** Brownfield mini-epic — borrows Epic 17 + Epic 28 + braid S3/S6; does **not** reopen S8; does **not** require novel HAI/PHS content ingest  
 **Product goal:** Improve the **Marcus-SPOC runtime** so research is a flexible, robust, value-adding **service** for higher-ed production — not a DOI dump. Proofing runs may discover defects; they are not the design target.
 
-**Party:** John / Winston / Amelia / Murat — 4/4 GO-WITH-AMENDMENTS. Quinn synthesis on R7: **Teeth-Thin / TRAIL-Resilient**. Record: `agentic-research-foundations-party-greenlight-2026-07-10.md`.
+**Party:** John / Winston / Amelia / Murat — 4/4 GO-WITH-AMENDMENTS. Quinn synthesis on R7: **Teeth-Thin / TRAIL-Resilient**. Record: `agentic-research-foundations-party-greenlight-2026-07-10.md`.  
+**Promote:** Detective flag remains default **OFF**. Next: `workbook-research-products-glossary-and-trends`.
 
 ---
 
@@ -22,6 +23,10 @@ Wire foundations so specialty agents can pursue information **agentically / dete
 **Evidence policy:** Prefer peer-reviewed journals; allow the full **hierarchy of evidence** when credibility of each source is **explicitly surfaced** (never silent equivalence of a blog and a systematic review).
 
 **Access assumption:** Operator can provide **Jefferson library** credentials. Architect the Texas library provider seam; live-enable when creds present.
+
+### Standing invariant — research consumer availability (operator 2026-07-10)
+
+Wrangled research is a **run service**, not a workbook-only side effect. Current foundations stories and **all future** research/workbook specs MUST keep triangulated, credibility-labeled research available to appropriate consumers across the workflow (workbook writers/projectors, Irene retrieval intake, operator/SPOC receipts, future collateral). Fail-loud or record-empty — never silent fabricate. Post-foundations productization of this invariant: mini-epic `workbook-research-products-glossary-and-trends` (encyclopedia glossary + research-trends/hot-topics backmatter) — strawman `epic-workbook-research-products-glossary-trends-2026-07-10.md`.
 
 ### ⛔ LIVE-TEST BINDING (operator 2026-07-10 — epic-wide)
 
@@ -67,7 +72,8 @@ R5  Jefferson / institutional library Texas provider; live when creds present
 R6  Irene retrieval intake (thin); live consume rows; no fabricate-cite
 R7  Hard pause teeth (Quinn); live disposition → Pass-2; resume/recover = TRAIL
 ── promote foundations ──
-TRAIL: 17-2/17-3/17-4 · semantic claim audit · PubMed v2 · tracy-gate-resume-recover · LLM Tracy refine
+── NEXT (operator 2026-07-10): workbook-research-products-glossary-and-trends ──
+TRAIL: 17-2/17-3/17-4 · semantic claim audit · PubMed v2 · OpenAlex · ERIC (opt) · LoC primary-source · tracy-gate-resume-recover · LLM Tracy refine
 ```
 
 ---

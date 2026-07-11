@@ -20,7 +20,10 @@
 | LLM Tracy graph as production default | NO (TRAIL) |
 | Novel HAI/PHS content processing | NO |
 | Workbook layout redesign | NO |
+| Workbook encyclopedia glossary + research-trends/hot-topics | NO (post-foundations mini-epic `workbook-research-products-glossary-and-trends`) |
 | G2 becomes claim-support | NO (stays resolvability) |
+
+**Standing invariant (operator 2026-07-10):** wrangled research must remain available to appropriate consumers throughout the run (not workbook-only). Applies to foundations remainder and the post-foundations mini-epic.
 
 ## Locked party decisions (verbatim)
 

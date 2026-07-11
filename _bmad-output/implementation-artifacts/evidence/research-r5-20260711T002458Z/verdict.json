@@ -1,0 +1,17 @@
+{
+  "story": "research-r5",
+  "pass": false,
+  "fence": "jefferson-session-absent-or-locked",
+  "reasons": [
+    "chrome_running_quit_required"
+  ],
+  "preflight": {
+    "chrome_user_data": "C:\\Users\\juanl\\AppData\\Local\\Google\\Chrome\\User Data",
+    "chrome_user_data_exists": true,
+    "chrome_process_count": 22,
+    "cookies_likely_locked": true,
+    "live_armed": true,
+    "ready": false
+  },
+  "note": "Do not fake live. Quit Chrome after SSO login, re-run this script, or accept fence until operator session is available."
+}

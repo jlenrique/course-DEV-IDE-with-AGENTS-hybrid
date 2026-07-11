@@ -1,0 +1,1769 @@
+{
+  "query_intent": "Corroborate claim: Worked examples improve novice transfer in introductory instruction. (context: Need a supporting citation for the worked-example rationale.)",
+  "triangulated_rows": [
+    {
+      "source_id": "10.1145/3368308.3415426",
+      "identity_key": "10.1145/3368308.3415426",
+      "rows_by_provider": {
+        "scite": {
+          "source_id": "10.1145/3368308.3415426",
+          "title": "Switching to Stay Home Instruction",
+          "body": "The coronavirus pandemic of 2020 has caused significant interruptions of the regular approach to teaching. Here, we compare the impacts of Stay Home orders on the student learning outcomes in an introduction to algorithms and data structures university course. We describe an example course modification based on student feedback at the semester's half-time point, and how students performed the remainder of the semester in comparison to a comparable prior semester. We find several differences in the overall participation from the electronic textbook as well as the course overall. We do not find that there is a significant change in the overall course outcomes when contrasting the Spring 2020 course offering with that from the prior semester. CCS CONCEPTS \u2022 Applied computing \u2192 Computer-assisted instruction; Interactive learning environments; Distance learning.",
+          "authors": [
+            "Patrick Seeling"
+          ],
+          "date": "2020",
+          "provider": "scite",
+          "provider_metadata": {
+            "scite": {
+              "doi": "10.1145/3368308.3415426",
+              "scite_paper_id": null,
+              "venue": null,
+              "year": 2020,
+              "supporting_count": 0,
+              "contradicting_count": 0,
+              "mentioning_count": 0,
+              "cited_by_count": 0,
+              "citation_context_snippets": [],
+              "scite_report_url": null,
+              "known_losses": [
+                "full_text_paywalled"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "scite"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "consensus"
+        ],
+        "single_source_only": [
+          "scite"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "10.1145/3368308.3415426",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "scite"
+            ],
+            "single_source_only": [
+              "scite"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "d59268ae831952f597db8ed574c9c1ed",
+      "identity_key": "title:a meta analysis of the worked examples effect on mathematics performance",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "d59268ae831952f597db8ed574c9c1ed",
+          "title": "A Meta-analysis of the Worked Examples Effect on Mathematics Performance",
+          "body": "The current meta-analysis quantifies the average effect of worked examples on mathematics performance from elementary grades to postsecondary settings and to assess what moderates this effect. Though thousands of worked examples studies have been conducted to date, a corresponding meta-analysis has yet to be published. Exclusionary coding was conducted on 8033 abstracts from published and grey literature to yield a sample of high quality experimental and quasi-experimental work. This search yielded 43 articles reporting on 55 studies and 181 effect sizes. Using robust variance estimation (RVE) to account for clustered effect sizes, the average effect size of worked examples on mathematics performance outcomes was medium with g\u2009=\u20090.48 and p\u2009=\u20090.01. Moderators assessed included example type (correct vs. incorrect examples alone or in combination with correct examples), pairing with self-explanation prompts, and timing of administration (i.e., practice vs. skill acquisition). The inclusion of self-explanation prompts significantly moderated the effect of examples yielding a negative effect in comparison to worked examples conditions that did not include self-explanation prompts. Worked examples studies that used correct examples alone yielded larger effect sizes than those that used incorrect examples alone or correct examples in combination with incorrect examples. The worked examples effect yields a medium effect on mathematics outcomes whether used for practice or initial skill acquisition. Correct examples are particularly beneficial for learning overall, and pairing examples with self-explanation prompts may not be a fruitful design modification. Theoretical and practical implications are discussed.",
+          "authors": [
+            "C. Barbieri et al."
+          ],
+          "date": "2023-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "d59268ae831952f597db8ed574c9c1ed",
+              "title": "A Meta-analysis of the Worked Examples Effect on Mathematics Performance",
+              "authors": [
+                "C. Barbieri et al."
+              ],
+              "year": 2023,
+              "venue": "Educational Psychology Review",
+              "abstract": "The current meta-analysis quantifies the average effect of worked examples on mathematics performance from elementary grades to postsecondary settings and to assess what moderates this effect. Though thousands of worked examples studies have been conducted to date, a corresponding meta-analysis has yet to be published. Exclusionary coding was conducted on 8033 abstracts from published and grey literature to yield a sample of high quality experimental and quasi-experimental work. This search yielded 43 articles reporting on 55 studies and 181 effect sizes. Using robust variance estimation (RVE) to account for clustered effect sizes, the average effect size of worked examples on mathematics performance outcomes was medium with g\u2009=\u20090.48 and p\u2009=\u20090.01. Moderators assessed included example type (correct vs. incorrect examples alone or in combination with correct examples), pairing with self-explanation prompts, and timing of administration (i.e., practice vs. skill acquisition). The inclusion of self-explanation prompts significantly moderated the effect of examples yielding a negative effect in comparison to worked examples conditions that did not include self-explanation prompts. Worked examples studies that used correct examples alone yielded larger effect sizes than those that used incorrect examples alone or correct examples in combination with incorrect examples. The worked examples effect yields a medium effect on mathematics outcomes whether used for practice or initial skill acquisition. Correct examples are particularly beneficial for learning overall, and pairing examples with self-explanation prompts may not be a fruitful design modification. Theoretical and practical implications are discussed.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/d59268ae831952f597db8ed574c9c1ed/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "d59268ae831952f597db8ed574c9c1ed",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "afef7d11d69950a98dfc192930a7b873",
+      "identity_key": "title:effects of worked examples in a primary school mathematics curriculum",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "afef7d11d69950a98dfc192930a7b873",
+          "title": "Effects of worked examples in a primary school mathematics curriculum",
+          "body": "A large body of research has shown that for novice learners, instruction that relies more heavily on worked examples than on problem solving, is more effective for learning as shown by higher test performance. Moreover, this beneficial effect is often obtained with less acquisition time and lower cognitive load during acquisition and test phase. However, most of this research has been conducted in laboratory settings with college or university students and a control condition consisting of problem solving without any additional support. The present study, using a quasi-experimental design, investigated the effects of implementing worked examples in an existing primary school mathematics curriculum in which a realistic mathematics teaching method is used, during a 3-week period. The results showed no significant differences in test performance or cognitive load; however, the worked examples group attained this level of performance with significantly less acquisition time.",
+          "authors": [
+            "Nelleke van Loon-Hillen et al."
+          ],
+          "date": "2012-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "afef7d11d69950a98dfc192930a7b873",
+              "title": "Effects of worked examples in a primary school mathematics curriculum",
+              "authors": [
+                "Nelleke van Loon-Hillen et al."
+              ],
+              "year": 2012,
+              "venue": "Interactive Learning Environments",
+              "abstract": "A large body of research has shown that for novice learners, instruction that relies more heavily on worked examples than on problem solving, is more effective for learning as shown by higher test performance. Moreover, this beneficial effect is often obtained with less acquisition time and lower cognitive load during acquisition and test phase. However, most of this research has been conducted in laboratory settings with college or university students and a control condition consisting of problem solving without any additional support. The present study, using a quasi-experimental design, investigated the effects of implementing worked examples in an existing primary school mathematics curriculum in which a realistic mathematics teaching method is used, during a 3-week period. The results showed no significant differences in test performance or cognitive load; however, the worked examples group attained this level of performance with significantly less acquisition time.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/afef7d11d69950a98dfc192930a7b873/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "afef7d11d69950a98dfc192930a7b873",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "10.1145/3732791",
+      "identity_key": "10.1145/3732791",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "529da762ed9552fa89cb980fb1b71160",
+          "title": "Effects of Worked Examples with Explanation Types and Learner Motivation on Cognitive Load and Programming Problem-Solving Performance",
+          "body": "This study examined the effects of worked examples with different explanation types and novices\u2019 motivation on cognitive load, and how this subsequently influenced their programming problem-solving performance. Given the study\u2019s emphasis on both instructional approaches and learner motivation, the Cognitive Theory of Multimedia Learning served as the theoretical framework, as it integrates instructional design with motivational perspectives. The participants consisted of 75 university students who were non-computer majors and enrolled in their first programming course. A 2 \u00d7 2 between-subjects ANOVA design was employed, with two factors: explanation type (worked examples with instructional explanations vs. worked examples with guided questions to prompt self-explanations) and learner motivation level (high-motivated vs. less-motivated). The dependent variables included cognitive load components experienced by learners during learning and learning outcomes measured by retention and transfer performance. The results showed that (a) the worked example effect could reduce extraneous load and manage intrinsic load, thereby enhancing retention performance; (b) the combined effects of worked examples and guided self-explanations could benefit transfer learning, regardless of learners\u2019 motivation; and (c) the role of motivation was evident, as high-motivated learners exhibited better retention and transfer performance by exerting more cognitive effort, regardless of instructional approach. The findings suggest that combining worked examples with guided questions to prompt self-explanations through in-code commenting is an effective and constructive activity, enabling novices to focus on actual learning without expending excessive cognitive effort.",
+          "authors": [
+            "Chun-Ying Chen"
+          ],
+          "date": "2025-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "529da762ed9552fa89cb980fb1b71160",
+              "title": "Effects of Worked Examples with Explanation Types and Learner Motivation on Cognitive Load and Programming Problem-Solving Performance",
+              "authors": [
+                "Chun-Ying Chen"
+              ],
+              "year": 2025,
+              "venue": "ACM Transactions on Computing Education",
+              "abstract": "This study examined the effects of worked examples with different explanation types and novices\u2019 motivation on cognitive load, and how this subsequently influenced their programming problem-solving performance. Given the study\u2019s emphasis on both instructional approaches and learner motivation, the Cognitive Theory of Multimedia Learning served as the theoretical framework, as it integrates instructional design with motivational perspectives. The participants consisted of 75 university students who were non-computer majors and enrolled in their first programming course. A 2 \u00d7 2 between-subjects ANOVA design was employed, with two factors: explanation type (worked examples with instructional explanations vs. worked examples with guided questions to prompt self-explanations) and learner motivation level (high-motivated vs. less-motivated). The dependent variables included cognitive load components experienced by learners during learning and learning outcomes measured by retention and transfer performance. The results showed that (a) the worked example effect could reduce extraneous load and manage intrinsic load, thereby enhancing retention performance; (b) the combined effects of worked examples and guided self-explanations could benefit transfer learning, regardless of learners\u2019 motivation; and (c) the role of motivation was evident, as high-motivated learners exhibited better retention and transfer performance by exerting more cognitive effort, regardless of instructional approach. The findings suggest that combining worked examples with guided questions to prompt self-explanations through in-code commenting is an effective and constructive activity, enabling novices to focus on actual learning without expending excessive cognitive effort.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/529da762ed9552fa89cb980fb1b71160/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        },
+        "scite": {
+          "source_id": "10.1145/3732791",
+          "title": "Effects of Worked Examples with Explanation Types and Learner Motivation on Cognitive Load and Programming Problem-solving Performance",
+          "body": "This study examined the effects of worked examples with different explanation types and novices\u2019 motivation on cognitive load, and how this subsequently influenced their programming problem-solving performance. Given the study\u2019s emphasis on both instructional approaches and learner motivation, the Cognitive Theory of Multimedia Learning served as the theoretical framework, as it integrates instructional design with motivational perspectives. The participants consisted of 75 university students who were non-computer majors and enrolled in their first programming course. A 2 \u00d7 2 between-subjects ANOVA design was employed, with two factors: explanation type (worked examples with instructional explanations vs. worked examples with guided questions to prompt self-explanations) and learner motivation level (high-motivated vs. less-motivated). The dependent variables included cognitive load components experienced by learners during learning and learning outcomes measured by retention and transfer performance. The results showed that (a) the worked example effect could reduce extraneous load and manage intrinsic load, thereby enhancing retention performance; (b) the combined effects of worked examples and guided self-explanations could benefit transfer learning, regardless of learners\u2019 motivation; and (c) the role of motivation was evident, as high-motivated learners exhibited better retention and transfer performance by exerting more cognitive effort, regardless of instructional approach. The findings suggest that combining worked examples with guided questions to prompt self-explanations through in-code commenting is an effective and constructive activity, enabling novices to focus on actual learning without expending excessive cognitive effort.",
+          "authors": [
+            "Chun-Ying Chen"
+          ],
+          "date": "2025",
+          "provider": "scite",
+          "provider_metadata": {
+            "scite": {
+              "doi": "10.1145/3732791",
+              "scite_paper_id": null,
+              "venue": "acm transactions on computing education",
+              "year": 2025,
+              "supporting_count": 0,
+              "contradicting_count": 0,
+              "mentioning_count": 0,
+              "cited_by_count": 0,
+              "citation_context_snippets": [],
+              "scite_report_url": null,
+              "known_losses": [
+                "full_text_paywalled"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.5,
+      "triangulation_status": "dual_provider",
+      "contradiction_flags": []
+    },
+    {
+      "source_id": "92937f2e99e65953b6af11854e86d1e8",
+      "identity_key": "title:element interactivity as a factor influencing the effectiveness of worked example problem solving and problem solving worked example sequences",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "92937f2e99e65953b6af11854e86d1e8",
+          "title": "Element interactivity as a factor influencing the effectiveness of worked example-problem solving and problem solving-worked example sequences.",
+          "body": "The worked example effect in cognitive load theory suggests that providing worked examples first followed by solving similar problems would facilitate students' learning. Using problem solving-worked example sequence is another way of implementing example-based instruction. Although research has demonstrated the superiority of worked example-problem solving sequence on learning materials that presumably are high in element interactivity for novices, none of the previous studies have compared the two sequences with levels of element interactivity experimentally manipulated in a strictly controlled manner. The reported study aimed to investigate the effects of levels of element interactivity of the learning tasks and levels of learner prior knowledge on the effectiveness of two alternative example-based sequences, worked example-problem solving versus problem solving-worked example. Fifty-two Year five students, around 10 to 11\u00a0years old, from a primary school in Indonesia participated in Experiment 1, and 96 Year eight students, around 13 to 14\u00a0years old, from a secondary school in Indonesia participated in Experiment 2. 2 (sequences: worked example-problem solving vs. problem solving-worked example)\u00a0\u00d7\u00a02 (levels of element interactivity: low vs. high) experimental design, with the second factor repeatedly measured, was used in the two experiments conducted with learners at different levels of prior knowledge. The results showed the advantage of using worked example-problem solving sequence for learning materials high in element interactivity, especially for novice learners, whereas there were no differences between the worked example-problem solving and problem solving-worked example sequences for learning materials low in element interactivity for more knowledgeable learners. This study not only replicated the results of previous studies, but also extended their findings by experimentally manipulating levels of element interactivity of learning materials.",
+          "authors": [
+            "Ouhao Chen et al."
+          ],
+          "date": "2020-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "92937f2e99e65953b6af11854e86d1e8",
+              "title": "Element interactivity as a factor influencing the effectiveness of worked example-problem solving and problem solving-worked example sequences.",
+              "authors": [
+                "Ouhao Chen et al."
+              ],
+              "year": 2020,
+              "venue": "The British journal of educational psychology",
+              "abstract": "The worked example effect in cognitive load theory suggests that providing worked examples first followed by solving similar problems would facilitate students' learning. Using problem solving-worked example sequence is another way of implementing example-based instruction. Although research has demonstrated the superiority of worked example-problem solving sequence on learning materials that presumably are high in element interactivity for novices, none of the previous studies have compared the two sequences with levels of element interactivity experimentally manipulated in a strictly controlled manner. The reported study aimed to investigate the effects of levels of element interactivity of the learning tasks and levels of learner prior knowledge on the effectiveness of two alternative example-based sequences, worked example-problem solving versus problem solving-worked example. Fifty-two Year five students, around 10 to 11\u00a0years old, from a primary school in Indonesia participated in Experiment 1, and 96 Year eight students, around 13 to 14\u00a0years old, from a secondary school in Indonesia participated in Experiment 2. 2 (sequences: worked example-problem solving vs. problem solving-worked example)\u00a0\u00d7\u00a02 (levels of element interactivity: low vs. high) experimental design, with the second factor repeatedly measured, was used in the two experiments conducted with learners at different levels of prior knowledge. The results showed the advantage of using worked example-problem solving sequence for learning materials high in element interactivity, especially for novice learners, whereas there were no differences between the worked example-problem solving and problem solving-worked example sequences for learning materials low in element interactivity for more knowledgeable learners. This study not only replicated the results of previous studies, but also extended their findings by experimentally manipulating levels of element interactivity of learning materials.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/92937f2e99e65953b6af11854e86d1e8/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "92937f2e99e65953b6af11854e86d1e8",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "10.1007/s10639-022-11247-6",
+      "identity_key": "10.1007/s10639-022-11247-6",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "e5bb2e10d05b5b6c92e4a915fd79efc8",
+          "title": "Engaging students in active exploration of programming worked examples",
+          "body": "Worked examples can help novice learners develop early schemata from an expert's solution to a problem. Nonetheless, the worked examples themselves are no guarantee that students will explore these experts' solutions effectively. This study explores two different approaches to supporting engineering technology students' learning in an undergraduate introductory programming course: debugging and in-code commenting worked examples. In a Fall semester, students self-explained worked examples using in-code comments (n = 120), while in a Spring semester, students debugged worked examples (spring n = 101). Performance data included the midterm and final exams. Prior exposure to programming courses was taken from a survey at the beginning of each semester. Findings suggest that both the debugging and explaining forms of engagement with worked examples helped students with no prior programming experience to succeed in the course. For the worked examples to be effective, those need to be provided with some explicit form of engagement (i.e., debugging or self-explaining). Combining both strategies following explaining first and debugging second may result in a more effective approach.",
+          "authors": [
+            "Sebastian Garces et al."
+          ],
+          "date": "2022-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "e5bb2e10d05b5b6c92e4a915fd79efc8",
+              "title": "Engaging students in active exploration of programming worked examples",
+              "authors": [
+                "Sebastian Garces et al."
+              ],
+              "year": 2022,
+              "venue": "Education and Information Technologies",
+              "abstract": "Worked examples can help novice learners develop early schemata from an expert's solution to a problem. Nonetheless, the worked examples themselves are no guarantee that students will explore these experts' solutions effectively. This study explores two different approaches to supporting engineering technology students' learning in an undergraduate introductory programming course: debugging and in-code commenting worked examples. In a Fall semester, students self-explained worked examples using in-code comments (n = 120), while in a Spring semester, students debugged worked examples (spring n = 101). Performance data included the midterm and final exams. Prior exposure to programming courses was taken from a survey at the beginning of each semester. Findings suggest that both the debugging and explaining forms of engagement with worked examples helped students with no prior programming experience to succeed in the course. For the worked examples to be effective, those need to be provided with some explicit form of engagement (i.e., debugging or self-explaining). Combining both strategies following explaining first and debugging second may result in a more effective approach.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/e5bb2e10d05b5b6c92e4a915fd79efc8/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        },
+        "scite": {
+          "source_id": "10.1007/s10639-022-11247-6",
+          "title": "Engaging students in active exploration of programming worked examples",
+          "body": "",
+          "authors": [
+            "Sebastian Garces",
+            "Camilo Vieira",
+            "Guity Ravai"
+          ],
+          "date": "2022",
+          "provider": "scite",
+          "provider_metadata": {
+            "scite": {
+              "doi": "10.1007/s10639-022-11247-6",
+              "scite_paper_id": null,
+              "venue": "education and information technologies",
+              "year": 2022,
+              "supporting_count": 0,
+              "contradicting_count": 0,
+              "mentioning_count": 3,
+              "cited_by_count": 7,
+              "citation_context_snippets": [],
+              "scite_report_url": null,
+              "known_losses": [
+                "full_text_paywalled"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.5,
+      "triangulation_status": "dual_provider",
+      "contradiction_flags": []
+    },
+    {
+      "source_id": "150a06967cc45063a8b342836cc9b3d6",
+      "identity_key": "title:enhancing students critical thinking skills is comparing correct and erroneous examples beneficial",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "150a06967cc45063a8b342836cc9b3d6",
+          "title": "Enhancing students\u2019 critical thinking skills: is comparing correct and erroneous examples beneficial?",
+          "body": "There is a need for effective methods to teach critical thinking (CT). One instructional method that seems promising is comparing correct and erroneous worked examples (i.e., contrasting examples). The aim of the present study, therefore, was to investigate the effect of contrasting examples on learning and transfer of CT-skills, focusing on avoiding biased reasoning. Students (N\u2009=\u2009170) received instructions on CT and avoiding biases in reasoning tasks, followed by: (1) contrasting examples, (2) correct examples, (3) erroneous examples, or (4) practice problems. Performance was measured on a pretest, immediate posttest, 3-week delayed posttest, and 9-month delayed posttest. Our results revealed that participants\u2019 reasoning task performance improved from pretest to immediate posttest, and even further after a delay (i.e., they learned to avoid biased reasoning). Surprisingly, there were no differences in learning gains or transfer performance between the four conditions. Our findings raise questions about the preconditions of contrasting examples effects. Moreover, how transfer of CT-skills can be fostered remains an important issue for future research.",
+          "authors": [
+            "Lara M. van Peppen et al."
+          ],
+          "date": "2021-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "150a06967cc45063a8b342836cc9b3d6",
+              "title": "Enhancing students\u2019 critical thinking skills: is comparing correct and erroneous examples beneficial?",
+              "authors": [
+                "Lara M. van Peppen et al."
+              ],
+              "year": 2021,
+              "venue": "Instructional Science",
+              "abstract": "There is a need for effective methods to teach critical thinking (CT). One instructional method that seems promising is comparing correct and erroneous worked examples (i.e., contrasting examples). The aim of the present study, therefore, was to investigate the effect of contrasting examples on learning and transfer of CT-skills, focusing on avoiding biased reasoning. Students (N\u2009=\u2009170) received instructions on CT and avoiding biases in reasoning tasks, followed by: (1) contrasting examples, (2) correct examples, (3) erroneous examples, or (4) practice problems. Performance was measured on a pretest, immediate posttest, 3-week delayed posttest, and 9-month delayed posttest. Our results revealed that participants\u2019 reasoning task performance improved from pretest to immediate posttest, and even further after a delay (i.e., they learned to avoid biased reasoning). Surprisingly, there were no differences in learning gains or transfer performance between the four conditions. Our findings raise questions about the preconditions of contrasting examples effects. Moreover, how transfer of CT-skills can be fostered remains an important issue for future research.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/150a06967cc45063a8b342836cc9b3d6/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "150a06967cc45063a8b342836cc9b3d6",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "34d0c646d0355f0594becb0a719b23aa",
+      "identity_key": "title:evoking learning by examples through reducing misconceptions and highlighting procedures",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "34d0c646d0355f0594becb0a719b23aa",
+          "title": "Evoking Learning by Examples through Reducing Misconceptions and Highlighting Procedures",
+          "body": "Prior research highlights a positive effect of incorrect worked examples on mathematics learning. Yet the mechanisms underlying these benefits are unclear. To investigate potential mechanisms of the benefits of various worked example types, we examined process data from a previously published classroom-based experiment. More specifically, we analyzed students\u2019 explanations made while explaining worked examples in three varying example conditions as well as students\u2019 problem-solving errors made when solving problems. These data operationalize two potential mechanisms: a reduction of misconceptions (i.e., fewer targeted conceptual errors), and an increase in principled algebra knowledge (i.e., explanations focusing on principles underlying procedures). Mediation analyses revealed both as important mechanisms of varying effects. A reduction of misconceptions explained greater benefits of all three worked example conditions, compared to a problem-solving control, on an algebra concepts posttest. More principled explanations of procedures explained the benefits of incorrect worked examples on problem-solving at posttest compared to the two other example conditions. These findings help explain differential findings in prior work by example type and may elucidate potential avenues for errorful instruction.",
+          "authors": [
+            "C. Barbieri et al."
+          ],
+          "date": "2023-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "34d0c646d0355f0594becb0a719b23aa",
+              "title": "Evoking Learning by Examples through Reducing Misconceptions and Highlighting Procedures",
+              "authors": [
+                "C. Barbieri et al."
+              ],
+              "year": 2023,
+              "venue": "The Journal of Experimental Education",
+              "abstract": "Prior research highlights a positive effect of incorrect worked examples on mathematics learning. Yet the mechanisms underlying these benefits are unclear. To investigate potential mechanisms of the benefits of various worked example types, we examined process data from a previously published classroom-based experiment. More specifically, we analyzed students\u2019 explanations made while explaining worked examples in three varying example conditions as well as students\u2019 problem-solving errors made when solving problems. These data operationalize two potential mechanisms: a reduction of misconceptions (i.e., fewer targeted conceptual errors), and an increase in principled algebra knowledge (i.e., explanations focusing on principles underlying procedures). Mediation analyses revealed both as important mechanisms of varying effects. A reduction of misconceptions explained greater benefits of all three worked example conditions, compared to a problem-solving control, on an algebra concepts posttest. More principled explanations of procedures explained the benefits of incorrect worked examples on problem-solving at posttest compared to the two other example conditions. These findings help explain differential findings in prior work by example type and may elucidate potential avenues for errorful instruction.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/34d0c646d0355f0594becb0a719b23aa/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "34d0c646d0355f0594becb0a719b23aa",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "a23022f57cf55e5f8c340a81be3cf2f7",
+      "identity_key": "title:exploring the impact of worked examples in a novice programming environment",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "a23022f57cf55e5f8c340a81be3cf2f7",
+          "title": "Exploring the Impact of Worked Examples in a Novice Programming Environment",
+          "body": "Research in a variety of domains has shown that viewing worked examples (WEs) can be a more efficient way to learn than solving equivalent problems. We designed a Peer Code Helper system to display WEs, along with scaffolded self-explanation prompts, in a block-based, novice programming environment called \\snap. We evaluated our system during a high school summer camp with 22 students. Participants completed three programming problems with access to WEs on either the first or second problem. We found that WEs did not significantly impact students' learning, but may have impacted students' intrinsic cognitive load, suggesting that our WEs with scaffolded prompts may be an inherently different learning task. Our results show that WEs saved students time on initial tasks compared to writing code, but some of the time saved was lost in subsequent programming tasks. Overall, students with WEs completed more tasks within a fixed time period, but not significantly more. WEs may improve students' learning efficiency when programming, but these effects are nuanced and merit further study.",
+          "authors": [
+            "Rui Zhi et al."
+          ],
+          "date": "2019-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "a23022f57cf55e5f8c340a81be3cf2f7",
+              "title": "Exploring the Impact of Worked Examples in a Novice Programming Environment",
+              "authors": [
+                "Rui Zhi et al."
+              ],
+              "year": 2019,
+              "venue": "Proceedings of the 50th ACM Technical Symposium on Computer Science Education",
+              "abstract": "Research in a variety of domains has shown that viewing worked examples (WEs) can be a more efficient way to learn than solving equivalent problems. We designed a Peer Code Helper system to display WEs, along with scaffolded self-explanation prompts, in a block-based, novice programming environment called \\snap. We evaluated our system during a high school summer camp with 22 students. Participants completed three programming problems with access to WEs on either the first or second problem. We found that WEs did not significantly impact students' learning, but may have impacted students' intrinsic cognitive load, suggesting that our WEs with scaffolded prompts may be an inherently different learning task. Our results show that WEs saved students time on initial tasks compared to writing code, but some of the time saved was lost in subsequent programming tasks. Overall, students with WEs completed more tasks within a fixed time period, but not significantly more. WEs may improve students' learning efficiency when programming, but these effects are nuanced and merit further study.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/a23022f57cf55e5f8c340a81be3cf2f7/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "a23022f57cf55e5f8c340a81be3cf2f7",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "b8e9acc4722557eb8efbfb4d903393c3",
+      "identity_key": "title:ingame worked examples support as an alternative to textual instructions in serious games about programming",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "b8e9acc4722557eb8efbfb4d903393c3",
+          "title": "Ingame Worked Examples Support as an Alternative to Textual Instructions in Serious Games About Programming",
+          "body": "Serious games are considered an effective method to engage students in programming education and have been increasingly used in classrooms. An important part of the learning process with serious games involves the presentation of the new concepts and the provided support to encounter student difficulties. Although the most common approach is the use of instructional text, it comes with some drawbacks. This paper proposes an alternative method for user support in serious games about programming which mitigates current problems and provides improved learning efficiency. An experiment was conducted (N = 291) to test textual instructions learning efficiency compared to in-game worked examples. Two randomly assigned groups used different types of support in a block-based game, developed for the study. Our implementation provided support through a non-player character who executed worked examples inside the game world. The analysis showed a significant statistical difference in score performance between the two supports on both novice and experienced students. The results point to increased learning efficiency by students, when in-game worked examples and problem-solving are combined. We further argue that the Cognitive load theory can provide adequate justification for the outcomes.",
+          "authors": [
+            "Pavlos Toukiloglou et al."
+          ],
+          "date": "2022-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "b8e9acc4722557eb8efbfb4d903393c3",
+              "title": "Ingame Worked Examples Support as an Alternative to Textual Instructions in Serious Games About Programming",
+              "authors": [
+                "Pavlos Toukiloglou et al."
+              ],
+              "year": 2022,
+              "venue": "Journal of Educational Computing Research",
+              "abstract": "Serious games are considered an effective method to engage students in programming education and have been increasingly used in classrooms. An important part of the learning process with serious games involves the presentation of the new concepts and the provided support to encounter student difficulties. Although the most common approach is the use of instructional text, it comes with some drawbacks. This paper proposes an alternative method for user support in serious games about programming which mitigates current problems and provides improved learning efficiency. An experiment was conducted (N = 291) to test textual instructions learning efficiency compared to in-game worked examples. Two randomly assigned groups used different types of support in a block-based game, developed for the study. Our implementation provided support through a non-player character who executed worked examples inside the game world. The analysis showed a significant statistical difference in score performance between the two supports on both novice and experienced students. The results point to increased learning efficiency by students, when in-game worked examples and problem-solving are combined. We further argue that the Cognitive load theory can provide adequate justification for the outcomes.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/b8e9acc4722557eb8efbfb4d903393c3/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "b8e9acc4722557eb8efbfb4d903393c3",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "10.1007/s11251-016-9399-4",
+      "identity_key": "10.1007/s11251-016-9399-4",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "cc331e0c35615fe6baafd9f907dea390",
+          "title": "Instruction-first and problem-solving-first approaches: alternative pathways to learning complex tasks",
+          "body": "According to cognitive load theory, using worked examples is an effective and efficient instructional strategy for initial cognitive skill acquisition for novice learners, as it reduces cognitive load and frees up cognitive resources to build task competence. Contrary to this, productive failure (as well as invention learning, desirable difficulties and other problem-solving-first) frameworks suggest that scaffolded problem-solving activities (a generation phase) preceding explicit instruction enhance learners\u2019 performance. The reported experimental study investigated the effectiveness of different levels of instructional guidance provided to students during the learning phase preceding explicit instruction in standard solution procedures in enhancing students\u2019 engagement and transfer problem-solving skills. Specifically, the study compared partially-guided or unguided attempts at generating problem solutions as opposed to comprehensive guidance, in the form of a worked example. Levels of experienced cognitive load and learner motivation were evaluated in addition to delayed post-test performance scores. There were no differences between the three groups on the transfer post-test outcomes, even though the condition with fully-guided worked examples prior to the explicit instruction expectedly reduced cognitive load relative to the conditions without such guidance. There were also differences between the conditions on some sub-dimensions of the motivation scale. In general, the findings indicate that similar overall outcomes (delayed transfer performance) could be achieved by different sequences of instructional tasks aimed at achieving different sets of specific goals.",
+          "authors": [
+            "Vicki Likourezos et al."
+          ],
+          "date": "2017-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "cc331e0c35615fe6baafd9f907dea390",
+              "title": "Instruction-first and problem-solving-first approaches: alternative pathways to learning complex tasks",
+              "authors": [
+                "Vicki Likourezos et al."
+              ],
+              "year": 2017,
+              "venue": "Instructional Science",
+              "abstract": "According to cognitive load theory, using worked examples is an effective and efficient instructional strategy for initial cognitive skill acquisition for novice learners, as it reduces cognitive load and frees up cognitive resources to build task competence. Contrary to this, productive failure (as well as invention learning, desirable difficulties and other problem-solving-first) frameworks suggest that scaffolded problem-solving activities (a generation phase) preceding explicit instruction enhance learners\u2019 performance. The reported experimental study investigated the effectiveness of different levels of instructional guidance provided to students during the learning phase preceding explicit instruction in standard solution procedures in enhancing students\u2019 engagement and transfer problem-solving skills. Specifically, the study compared partially-guided or unguided attempts at generating problem solutions as opposed to comprehensive guidance, in the form of a worked example. Levels of experienced cognitive load and learner motivation were evaluated in addition to delayed post-test performance scores. There were no differences between the three groups on the transfer post-test outcomes, even though the condition with fully-guided worked examples prior to the explicit instruction expectedly reduced cognitive load relative to the conditions without such guidance. There were also differences between the conditions on some sub-dimensions of the motivation scale. In general, the findings indicate that similar overall outcomes (delayed transfer performance) could be achieved by different sequences of instructional tasks aimed at achieving different sets of specific goals.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/cc331e0c35615fe6baafd9f907dea390/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        },
+        "scite": {
+          "source_id": "10.1007/s11251-016-9399-4",
+          "title": "Instruction-first and problem-solving-first approaches: alternative pathways to learning complex tasks",
+          "body": "",
+          "authors": [
+            "Vicki Likourezos",
+            "Slava Kalyuga"
+          ],
+          "date": "2016",
+          "provider": "scite",
+          "provider_metadata": {
+            "scite": {
+              "doi": "10.1007/s11251-016-9399-4",
+              "scite_paper_id": null,
+              "venue": "instructional science",
+              "year": 2016,
+              "supporting_count": 9,
+              "contradicting_count": 0,
+              "mentioning_count": 42,
+              "cited_by_count": 52,
+              "citation_context_snippets": [],
+              "scite_report_url": null,
+              "known_losses": [
+                "full_text_paywalled"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": "peer-reviewed",
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.85,
+      "triangulation_status": "dual_provider",
+      "contradiction_flags": []
+    },
+    {
+      "source_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+      "identity_key": "title:investigating how errors should be flagged and worked examples structured when providing feedback to novice learners of mathematics",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+          "title": "Investigating how errors should be flagged and worked examples structured when providing feedback to novice learners of mathematics",
+          "body": "This study investigated the effectiveness of using a sequence of worked examples as part of the feedback cycle. Worked examples were either presented as full worked examples or partial worked examples (single-step and completion formats). In two experiments, grade 8 students completed a learning phase on a mathematics topic, which was immediately followed by a testing phase. A day later, participants were given feedback on their test papers and provided worked examples to problems where errors were made, and then re-tested. In Experiment 1 (N\u2009=\u200973), studying full worked examples led to greater improvement than studying single-step worked examples. In Experiment 2 (N\u2009=\u200974), full worked examples led to greater improvement than studying either single-step worked examples or completion worked examples. Furthermore, no learning differences were found when learner errors were directly flagged or otherwise. In conclusion, providing full worked examples as feedback to novice learners was helpful.",
+          "authors": [
+            "Elisapesi Manson et al."
+          ],
+          "date": "2019-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+              "title": "Investigating how errors should be flagged and worked examples structured when providing feedback to novice learners of mathematics",
+              "authors": [
+                "Elisapesi Manson et al."
+              ],
+              "year": 2019,
+              "venue": "Educational Psychology",
+              "abstract": "This study investigated the effectiveness of using a sequence of worked examples as part of the feedback cycle. Worked examples were either presented as full worked examples or partial worked examples (single-step and completion formats). In two experiments, grade 8 students completed a learning phase on a mathematics topic, which was immediately followed by a testing phase. A day later, participants were given feedback on their test papers and provided worked examples to problems where errors were made, and then re-tested. In Experiment 1 (N\u2009=\u200973), studying full worked examples led to greater improvement than studying single-step worked examples. In Experiment 2 (N\u2009=\u200974), full worked examples led to greater improvement than studying either single-step worked examples or completion worked examples. Furthermore, no learning differences were found when learner errors were directly flagged or otherwise. In conclusion, providing full worked examples as feedback to novice learners was helpful.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/08dc5aa06a4557a7ac6340f8c36a4a71/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+      "identity_key": "title:learning from examples instructional principles from the worked examples research",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+          "title": "Learning from Examples: Instructional Principles from the Worked Examples Research",
+          "body": "Worked examples are instructional devices that provide an expert's problem solution for a learner to study. Worked-examples research is a cognitive-experimental program that has relevance to classroom instruction and the broader educational research community. A frame- work for organizing the findings of this research is proposed, leading to instructional design principles. For instance, one instructional design principle suggests that effective examples have highly integrated components. They employ multiple modalities in presentation and emphasize conceptual structure by labeling or segmenting. At the lesson level, effective instruction employs multiple examples for each conceptual problem type, varies example formats within problem type, and employs surface features to signal deep structure. Also, examples should be presented in close proximity to matched practice problems. More- over, learners can be encouraged through direct training or by the structure of the worked example to actively self:explain examples. Worked examples are associated with early stages of skill development, but the design principles are relevant to constructivist research and teaching.",
+          "authors": [
+            "R. Atkinson et al."
+          ],
+          "date": "2000-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+              "title": "Learning from Examples: Instructional Principles from the Worked Examples Research",
+              "authors": [
+                "R. Atkinson et al."
+              ],
+              "year": 2000,
+              "venue": "Review of Educational Research",
+              "abstract": "Worked examples are instructional devices that provide an expert's problem solution for a learner to study. Worked-examples research is a cognitive-experimental program that has relevance to classroom instruction and the broader educational research community. A frame- work for organizing the findings of this research is proposed, leading to instructional design principles. For instance, one instructional design principle suggests that effective examples have highly integrated components. They employ multiple modalities in presentation and emphasize conceptual structure by labeling or segmenting. At the lesson level, effective instruction employs multiple examples for each conceptual problem type, varies example formats within problem type, and employs surface features to signal deep structure. Also, examples should be presented in close proximity to matched practice problems. More- over, learners can be encouraged through direct training or by the structure of the worked example to actively self:explain examples. Worked examples are associated with early stages of skill development, but the design principles are relevant to constructivist research and teaching.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/0e23400d76b75eb1b6c2f2a41699c7af/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "33a6f287fe61517c827b506ff52bf95c",
+      "identity_key": "title:learning from worked examples in mathematics students relate procedures to principles",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "33a6f287fe61517c827b506ff52bf95c",
+          "title": "Learning from worked-examples in mathematics: students relate procedures to principles",
+          "body": "This article discusses the relevance of the worked-example effect for mathematics education. This effect refers to the finding that, in initial cognitive skill acquisition, students profit more from studying worked examples as compared to solving problems. One reason for the effectiveness of worked examples is that the students get the opportunity to interrelate principles (e.g., mathematical theorems) with multiple problem cases. A knowledge structure in which principles and multiple problem cases are represented in an interconnected way is a very good pre-condition for transfer. Several potential objections against worked examples from a mathematics education perspective are discussed (e.g., worked examples do not address typical student errors) by referring primarily to our own studies. We also propose further research exploring whether the powerful method of learning from worked-examples can be adapted to and used in other, presently intensively discussed areas of mathematics education (e.g., fostering skills of mathematical modelling). Finally, recommendations for mathematics education are outlined.",
+          "authors": [
+            "A. Renkl"
+          ],
+          "date": "2017-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "33a6f287fe61517c827b506ff52bf95c",
+              "title": "Learning from worked-examples in mathematics: students relate procedures to principles",
+              "authors": [
+                "A. Renkl"
+              ],
+              "year": 2017,
+              "venue": "ZDM",
+              "abstract": "This article discusses the relevance of the worked-example effect for mathematics education. This effect refers to the finding that, in initial cognitive skill acquisition, students profit more from studying worked examples as compared to solving problems. One reason for the effectiveness of worked examples is that the students get the opportunity to interrelate principles (e.g., mathematical theorems) with multiple problem cases. A knowledge structure in which principles and multiple problem cases are represented in an interconnected way is a very good pre-condition for transfer. Several potential objections against worked examples from a mathematics education perspective are discussed (e.g., worked examples do not address typical student errors) by referring primarily to our own studies. We also propose further research exploring whether the powerful method of learning from worked-examples can be adapted to and used in other, presently intensively discussed areas of mathematics education (e.g., fostering skills of mathematical modelling). Finally, recommendations for mathematics education are outlined.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/33a6f287fe61517c827b506ff52bf95c/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "33a6f287fe61517c827b506ff52bf95c",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "079ab6f19f465ca7abd51a891c0bbf27",
+      "identity_key": "title:optimizing learning from examples using animated pedagogical agents",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "079ab6f19f465ca7abd51a891c0bbf27",
+          "title": "Optimizing learning from examples using animated pedagogical agents.",
+          "body": "This study attempted to optimize a computer-based learning environment designed to teach learners how to solve word problems by incorporating an animated pedagogical agent. The agent was programmed to deliver instructional explanations either textually or aurally, while simultaneously using gaze and gesture to direct the learners to focus their attention on the relevant part of the example. In Experiment 1, learners presented with an agent delivering explanations aurally (voice plus agent) outperformed their control peers on measures of transfer. In Experiment 2, learners in the voice-plus-agent condition outperformed their peers presented with textual explanations on a variety of measures, including far transfer. In sum, an animated agent programmed to deliver instructions aurally can help optimize learning from examples. A worked example is an instructional device that provides a model for solving a particular type of problem by presenting the solution in a step-by-step fashion. It is intended to provide the learner with an expert\u2019s solution, which the learner can use as a model for his or her own problem solving. To date, in most experiments, worked examples have been visually fixed; that is, the examples simultaneously presented a problem and an expert\u2019s solution steps. As such, these worked examples are similar to those found in traditional mathematics and science texts; however, instructional materials delivered on multimedia computer systems need not be limited in this way. For example, Stark (1999) and Renkl (1997) suggested that example processing can be enhanced by sequentially presenting problem states. According to Stark and Renkl, this type of presentation encourages learners to explain the examples to themselves by anticipating the next step in an example solution, then checking to determine whether the predicted step corresponded to the actual step\u2014a phenomenon Renkl termed anticipative reasoning. According to Catrambone (1994, 1996, 1998), worked examples should be structured so they emphasize conceptually related solution steps (i.e., subgoals) by visually isolating them, by labeling them, or both. With regard to presenting examples that require learners to reference multiple sources of information, Mousavi and his colleagues (Mousavi, Low, & Sweller, 1995) offer a simple solution: Some segments of instructional information should be presented visually, whereas other segments should be presented aurally (i.e., mixed-mode format). One advantage of using the computer to deliver instruction is that it enables instructional designers to combine multiple instructional principles or components in a worked example, which may prove to enhance its efficacy. According to Mayer\u2019s (1997) generative theory of multimedia learning, computers\u2014in contrast to a book-based medium\u2014also provide a more favorable environment in which to implement some forms of effective instruction, such as the coordination of the visual presentation of sequential problem states with an auditory description of each of those states. For example, in Atkinson and Derry (2000), one way to structure an example within a computer-based multimedia environment so that learning can be maximized was to create a multicomponent worked example that (a) was sequential, in that it consisted of a sequential presentation of problem states; (b) was constructed to emphasize problem subgoals (i.e., it is subgoal oriented); and (c) incorporated a second modality that is coordinated with the sequential presentation of problem states (i.e., visually presented steps coupled with verbal instructional explanations). Learners exposed to these sequential, subgoal-oriented (SE\u2013SO) examples with dual modes outperformed learners who were exposed to more traditional, simultaneous, non-subgoal-oriented examples on conceptually based measures of problem-solving transfer. Moreover, this difference occurred despite the fact that the examples in the latter condition were also dual mode.",
+          "authors": [
+            "R. Atkinson"
+          ],
+          "date": "2002-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "079ab6f19f465ca7abd51a891c0bbf27",
+              "title": "Optimizing learning from examples using animated pedagogical agents.",
+              "authors": [
+                "R. Atkinson"
+              ],
+              "year": 2002,
+              "venue": "Journal of Educational Psychology",
+              "abstract": "This study attempted to optimize a computer-based learning environment designed to teach learners how to solve word problems by incorporating an animated pedagogical agent. The agent was programmed to deliver instructional explanations either textually or aurally, while simultaneously using gaze and gesture to direct the learners to focus their attention on the relevant part of the example. In Experiment 1, learners presented with an agent delivering explanations aurally (voice plus agent) outperformed their control peers on measures of transfer. In Experiment 2, learners in the voice-plus-agent condition outperformed their peers presented with textual explanations on a variety of measures, including far transfer. In sum, an animated agent programmed to deliver instructions aurally can help optimize learning from examples. A worked example is an instructional device that provides a model for solving a particular type of problem by presenting the solution in a step-by-step fashion. It is intended to provide the learner with an expert\u2019s solution, which the learner can use as a model for his or her own problem solving. To date, in most experiments, worked examples have been visually fixed; that is, the examples simultaneously presented a problem and an expert\u2019s solution steps. As such, these worked examples are similar to those found in traditional mathematics and science texts; however, instructional materials delivered on multimedia computer systems need not be limited in this way. For example, Stark (1999) and Renkl (1997) suggested that example processing can be enhanced by sequentially presenting problem states. According to Stark and Renkl, this type of presentation encourages learners to explain the examples to themselves by anticipating the next step in an example solution, then checking to determine whether the predicted step corresponded to the actual step\u2014a phenomenon Renkl termed anticipative reasoning. According to Catrambone (1994, 1996, 1998), worked examples should be structured so they emphasize conceptually related solution steps (i.e., subgoals) by visually isolating them, by labeling them, or both. With regard to presenting examples that require learners to reference multiple sources of information, Mousavi and his colleagues (Mousavi, Low, & Sweller, 1995) offer a simple solution: Some segments of instructional information should be presented visually, whereas other segments should be presented aurally (i.e., mixed-mode format). One advantage of using the computer to deliver instruction is that it enables instructional designers to combine multiple instructional principles or components in a worked example, which may prove to enhance its efficacy. According to Mayer\u2019s (1997) generative theory of multimedia learning, computers\u2014in contrast to a book-based medium\u2014also provide a more favorable environment in which to implement some forms of effective instruction, such as the coordination of the visual presentation of sequential problem states with an auditory description of each of those states. For example, in Atkinson and Derry (2000), one way to structure an example within a computer-based multimedia environment so that learning can be maximized was to create a multicomponent worked example that (a) was sequential, in that it consisted of a sequential presentation of problem states; (b) was constructed to emphasize problem subgoals (i.e., it is subgoal oriented); and (c) incorporated a second modality that is coordinated with the sequential presentation of problem states (i.e., visually presented steps coupled with verbal instructional explanations). Learners exposed to these sequential, subgoal-oriented (SE\u2013SO) examples with dual modes outperformed learners who were exposed to more traditional, simultaneous, non-subgoal-oriented examples on conceptually based measures of problem-solving transfer. Moreover, this difference occurred despite the fact that the examples in the latter condition were also dual mode.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/079ab6f19f465ca7abd51a891c0bbf27/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "079ab6f19f465ca7abd51a891c0bbf27",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "92550e9ea7ae5083a3e74afca2c72f6d",
+      "identity_key": "title:process oriented worked examples improving transfer performance through enhanced understanding",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "92550e9ea7ae5083a3e74afca2c72f6d",
+          "title": "Process-Oriented Worked Examples: Improving Transfer Performance Through Enhanced Understanding",
+          "body": "The research on worked examples has shown thatfor novices, studying worked examples is oftena more effective and efficient way of learningthan solving conventional problems. Thistheoretical paper argues that addingprocess-oriented information to worked examplescan further enhance transfer performance,especially for complex cognitive skills withmultiple possible solution paths.Process-oriented information refers to theprincipled (``why'') and strategic (``how'')information that experts use when solvingproblems. From a cognitive load perspective,studying the expert's ``why'' and ``how''information can be seen as constituting agermane cognitive load, which can fosterstudents' understanding of the principles of adomain and the rationale behind the selectedoperators, and their knowledge about howexperts select a strategy, respectively. Issueswith regard to the design, implementation, andassessment of effects of process-orientedworked examples are discussed, as well as thequestions they raise for future research.",
+          "authors": [
+            "T. van Gog et al."
+          ],
+          "date": "2004-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "92550e9ea7ae5083a3e74afca2c72f6d",
+              "title": "Process-Oriented Worked Examples: Improving Transfer Performance Through Enhanced Understanding",
+              "authors": [
+                "T. van Gog et al."
+              ],
+              "year": 2004,
+              "venue": "Instructional Science",
+              "abstract": "The research on worked examples has shown thatfor novices, studying worked examples is oftena more effective and efficient way of learningthan solving conventional problems. Thistheoretical paper argues that addingprocess-oriented information to worked examplescan further enhance transfer performance,especially for complex cognitive skills withmultiple possible solution paths.Process-oriented information refers to theprincipled (``why'') and strategic (``how'')information that experts use when solvingproblems. From a cognitive load perspective,studying the expert's ``why'' and ``how''information can be seen as constituting agermane cognitive load, which can fosterstudents' understanding of the principles of adomain and the rationale behind the selectedoperators, and their knowledge about howexperts select a strategy, respectively. Issueswith regard to the design, implementation, andassessment of effects of process-orientedworked examples are discussed, as well as thequestions they raise for future research.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/92550e9ea7ae5083a3e74afca2c72f6d/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "92550e9ea7ae5083a3e74afca2c72f6d",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "10.23919/ilrn47897.2020.9155187",
+      "identity_key": "10.23919/ilrn47897.2020.9155187",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "f3ddb82c35415e1faa35cdc0a7c07655",
+          "title": "Reducing Cognitive Load through the Worked Example Effect within a Serious Game Environment",
+          "body": "Novices often struggle to represent problems mentally; the unfamiliar process can exhaust their cognitive resources, creating frustration that deters them from learning. By improving novices\u2019 mental representation of problems, worked examples improve both problem-solving skills and transfer performance. Programming requires both skills. In programming, it is not sufficient to simply understand how Stackoverflow examples work; programmers have to be able to adapt the principles and apply them to their own programs. This paper shows evidence in support of the theory that worked examples are the most efficient mode of instruction for novices. In the present study, 42 students were asked to solve the tutorial The Magic Word, a game especially for girls created with the Catrobat programming environment. While the experimental group was presented with a series of worked examples of code, the control groups were instructed through theoretical text examples. The final task was a transfer question. While the average score was not significantly better in the worked example condition, the fact that participants in this experimental group finished significantly faster than the control group suggests that their overall performance was better than that of their counterparts.",
+          "authors": [
+            "B. Spieler et al."
+          ],
+          "date": "2020-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "f3ddb82c35415e1faa35cdc0a7c07655",
+              "title": "Reducing Cognitive Load through the Worked Example Effect within a Serious Game Environment",
+              "authors": [
+                "B. Spieler et al."
+              ],
+              "year": 2020,
+              "venue": "2020 6th International Conference of the Immersive Learning Research Network (iLRN)",
+              "abstract": "Novices often struggle to represent problems mentally; the unfamiliar process can exhaust their cognitive resources, creating frustration that deters them from learning. By improving novices\u2019 mental representation of problems, worked examples improve both problem-solving skills and transfer performance. Programming requires both skills. In programming, it is not sufficient to simply understand how Stackoverflow examples work; programmers have to be able to adapt the principles and apply them to their own programs. This paper shows evidence in support of the theory that worked examples are the most efficient mode of instruction for novices. In the present study, 42 students were asked to solve the tutorial The Magic Word, a game especially for girls created with the Catrobat programming environment. While the experimental group was presented with a series of worked examples of code, the control groups were instructed through theoretical text examples. The final task was a transfer question. While the average score was not significantly better in the worked example condition, the fact that participants in this experimental group finished significantly faster than the control group suggests that their overall performance was better than that of their counterparts.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/f3ddb82c35415e1faa35cdc0a7c07655/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        },
+        "scite": {
+          "source_id": "10.23919/ilrn47897.2020.9155187",
+          "title": "Reducing Cognitive Load through the Worked Example Effect within a Serious Game Environment",
+          "body": "",
+          "authors": [
+            "Bernadette Spieler",
+            "Naomi Pfaff",
+            "Wolfgang Slany"
+          ],
+          "date": "2020",
+          "provider": "scite",
+          "provider_metadata": {
+            "scite": {
+              "doi": "10.23919/ilrn47897.2020.9155187",
+              "scite_paper_id": null,
+              "venue": null,
+              "year": 2020,
+              "supporting_count": 0,
+              "contradicting_count": 0,
+              "mentioning_count": 10,
+              "cited_by_count": 10,
+              "citation_context_snippets": [],
+              "scite_report_url": null,
+              "known_losses": [
+                "full_text_paywalled"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.5,
+      "triangulation_status": "dual_provider",
+      "contradiction_flags": []
+    },
+    {
+      "source_id": "10.1080/01443410.2023.2273762",
+      "identity_key": "10.1080/01443410.2023.2273762",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "8fba3910b73754f0b192c1ba93562d5a",
+          "title": "The effect of worked examples on learning solution steps and knowledge transfer",
+          "body": "The worked example effect has been well documented within the framework of Cognitive Load Theory (CLT), which suggests that teaching with examples would be superior to engaging in unguided problem solving, particularly for novices, as using worked examples would reduce their cognitive load, compared to solving problems, thus facilitating knowledge retention. This paper, using multiple-step mathematics problems, reports an experiment investigating the micro level of the worked example effect on learning solution steps, from the perspective of cognitive load and challenge (as a relevant affective, motivational factor), testing the worked example effect with a transfer test. The results favoured worked examples on both the retention and transfer tests after learning and showed that using worked examples would reduce cognitive load and impose less challenge on each step during learning.",
+          "authors": [
+            "Ouhao Chen et al."
+          ],
+          "date": "2023-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "8fba3910b73754f0b192c1ba93562d5a",
+              "title": "The effect of worked examples on learning solution steps and knowledge transfer",
+              "authors": [
+                "Ouhao Chen et al."
+              ],
+              "year": 2023,
+              "venue": "Educational Psychology",
+              "abstract": "The worked example effect has been well documented within the framework of Cognitive Load Theory (CLT), which suggests that teaching with examples would be superior to engaging in unguided problem solving, particularly for novices, as using worked examples would reduce their cognitive load, compared to solving problems, thus facilitating knowledge retention. This paper, using multiple-step mathematics problems, reports an experiment investigating the micro level of the worked example effect on learning solution steps, from the perspective of cognitive load and challenge (as a relevant affective, motivational factor), testing the worked example effect with a transfer test. The results favoured worked examples on both the retention and transfer tests after learning and showed that using worked examples would reduce cognitive load and impose less challenge on each step during learning.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/8fba3910b73754f0b192c1ba93562d5a/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        },
+        "scite": {
+          "source_id": "10.1080/01443410.2023.2273762",
+          "title": "The effect of worked examples on learning solution steps and knowledge transfer",
+          "body": "",
+          "authors": [
+            "Ouhao Chen",
+            "Endah Retnowati",
+            "Bobo Kai Yin Chan"
+          ],
+          "date": "2023",
+          "provider": "scite",
+          "provider_metadata": {
+            "scite": {
+              "doi": "10.1080/01443410.2023.2273762",
+              "scite_paper_id": null,
+              "venue": "educational psychology",
+              "year": 2023,
+              "supporting_count": 2,
+              "contradicting_count": 0,
+              "mentioning_count": 6,
+              "cited_by_count": 8,
+              "citation_context_snippets": [],
+              "scite_report_url": null,
+              "known_losses": []
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.65,
+      "triangulation_status": "dual_provider",
+      "contradiction_flags": []
+    },
+    {
+      "source_id": "b097912b94af57218e5a6dfdec2a451a",
+      "identity_key": "title:the worked example and expertise reversal effect in less structured tasks learning to reason about legal cases",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "b097912b94af57218e5a6dfdec2a451a",
+          "title": "The worked example and expertise reversal effect in less structured tasks : Learning to reason about legal cases",
+          "body": "The worked example effect indicates that learning by studying worked examples is more effective than learning by solving the equivalent problems. The expertise reversal effect indicates that this is only the case for novice learners; once prior knowledge of the task is available problem solving becomes more effective for learning. These effects, however, have mainly been studied using highly structured tasks. This study investigated whether they also occur on less structured tasks, in this case, learning to reason about legal cases. Less structured tasks take longer to master, and hence, examples may remain effective for a longer period of time. Novice and advanced law students received either a description of general process steps they should take, worked examples, worked examples including the process steps, or no instructional support for reasoning. Results show that worked examples were more effective for learning than problem-solving, both for novice and advanced students, even though the latter had significantly more prior knowledge. So, a worked example effect was found for both novice and advanced students, and no evidence for an expertise-reversal effect was found with these less structured tasks.",
+          "authors": [
+            "Fleurie Nievelstein et al."
+          ],
+          "date": "2013-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "b097912b94af57218e5a6dfdec2a451a",
+              "title": "The worked example and expertise reversal effect in less structured tasks : Learning to reason about legal cases",
+              "authors": [
+                "Fleurie Nievelstein et al."
+              ],
+              "year": 2013,
+              "venue": "Contemporary Educational Psychology",
+              "abstract": "The worked example effect indicates that learning by studying worked examples is more effective than learning by solving the equivalent problems. The expertise reversal effect indicates that this is only the case for novice learners; once prior knowledge of the task is available problem solving becomes more effective for learning. These effects, however, have mainly been studied using highly structured tasks. This study investigated whether they also occur on less structured tasks, in this case, learning to reason about legal cases. Less structured tasks take longer to master, and hence, examples may remain effective for a longer period of time. Novice and advanced law students received either a description of general process steps they should take, worked examples, worked examples including the process steps, or no instructional support for reasoning. Results show that worked examples were more effective for learning than problem-solving, both for novice and advanced students, even though the latter had significantly more prior knowledge. So, a worked example effect was found for both novice and advanced students, and no evidence for an expertise-reversal effect was found with these less structured tasks.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/b097912b94af57218e5a6dfdec2a451a/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "b097912b94af57218e5a6dfdec2a451a",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "ec33efbff35d5b1ebdd5b5207dd789b1",
+      "identity_key": "title:the worked example effect and a mastery approach goal orientation",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "ec33efbff35d5b1ebdd5b5207dd789b1",
+          "title": "The Worked-Example Effect and a Mastery Approach Goal Orientation",
+          "body": "This study aimed to explore the impact of a mastery approach goal orientation (MAGO) on learning from worked examples. In this experiment (N = 98, mean age = 13.9 years), learners had their MAGO measured, and received instruction in mathematics, either through a worked-example or a problem-solving strategy. The study demonstrated that the worked-examples approach resulted in enhanced retention (but not transfer) and decreased cognitive load when compared to the problem-solving approach. However, there was a significant interaction between instructional strategy and the MAGO, indicating that only learners with a high MAGO benefited from worked examples. Learners with higher MAGO levels also experienced less cognitive load than learners with a lower MAGO. These results indicate a moderating role of MGO in enhancing the effectiveness of worked examples. This study also found that prior knowledge was the only factor influencing transfer performance, highlighting the importance of studying its impact.",
+          "authors": [
+            "Hee-Min Lee et al."
+          ],
+          "date": "2024-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "ec33efbff35d5b1ebdd5b5207dd789b1",
+              "title": "The Worked-Example Effect and a Mastery Approach Goal Orientation",
+              "authors": [
+                "Hee-Min Lee et al."
+              ],
+              "year": 2024,
+              "venue": "Education Sciences",
+              "abstract": "This study aimed to explore the impact of a mastery approach goal orientation (MAGO) on learning from worked examples. In this experiment (N = 98, mean age = 13.9 years), learners had their MAGO measured, and received instruction in mathematics, either through a worked-example or a problem-solving strategy. The study demonstrated that the worked-examples approach resulted in enhanced retention (but not transfer) and decreased cognitive load when compared to the problem-solving approach. However, there was a significant interaction between instructional strategy and the MAGO, indicating that only learners with a high MAGO benefited from worked examples. Learners with higher MAGO levels also experienced less cognitive load than learners with a lower MAGO. These results indicate a moderating role of MGO in enhancing the effectiveness of worked examples. This study also found that prior knowledge was the only factor influencing transfer performance, highlighting the importance of studying its impact.",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/ec33efbff35d5b1ebdd5b5207dd789b1/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "ec33efbff35d5b1ebdd5b5207dd789b1",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "source_id": "c38ca4bd79c2589a938ce1724fda654a",
+      "identity_key": "title:transitioning from studying examples to solving problems effects of self explanation prompts and fading worked out steps",
+      "rows_by_provider": {
+        "consensus": {
+          "source_id": "c38ca4bd79c2589a938ce1724fda654a",
+          "title": "Transitioning From Studying Examples to Solving Problems: Effects of Self-Explanation Prompts and Fading Worked-Out Steps.",
+          "body": "Although research has demonstrated that successively fading or successively removing more and more worked-out solution steps as learners transition from relying on examples to independent problem solving reliably fosters performance on near-transfer tasks\u2014relative to example\u2013problem pairs\u2014this effect is not reliable on far-transfer tasks. To address this, the authors combined fading with the introduction of prompts designed to encourage learners to identify the underlying principle illustrated in each worked-out solution step. Across 2 experiments, this combination produced medium to large effects on near and far transfer without requiring additional time on task. Thus, the instructional procedure is highly recommendable because it (a) is relatively straightforward to implement, (b) does not prolong learning time, and (c) fosters both near- and far-transfer performance. Worked-out examples typically consist of a problem formulation, solution steps, and the final answer itself. Research indicates that exposure to worked-out examples is critical when learners are in the initial stages of learning a new cognitive skill in wellstructured domains such as mathematics, physics, and computer programming (Anderson, Fincham, & Douglass, 1997). Moreover, studies performed by Sweller and his colleagues (e.g., Sweller &",
+          "authors": [
+            "R. Atkinson et al."
+          ],
+          "date": "2003-01-01",
+          "provider": "consensus",
+          "provider_metadata": {
+            "consensus": {
+              "doi": null,
+              "consensus_paper_id": "c38ca4bd79c2589a938ce1724fda654a",
+              "title": "Transitioning From Studying Examples to Solving Problems: Effects of Self-Explanation Prompts and Fading Worked-Out Steps.",
+              "authors": [
+                "R. Atkinson et al."
+              ],
+              "year": 2003,
+              "venue": "Journal of Educational Psychology",
+              "abstract": "Although research has demonstrated that successively fading or successively removing more and more worked-out solution steps as learners transition from relying on examples to independent problem solving reliably fosters performance on near-transfer tasks\u2014relative to example\u2013problem pairs\u2014this effect is not reliable on far-transfer tasks. To address this, the authors combined fading with the introduction of prompts designed to encourage learners to identify the underlying principle illustrated in each worked-out solution step. Across 2 experiments, this combination produced medium to large effects on near and far transfer without requiring additional time on task. Thus, the instructional procedure is highly recommendable because it (a) is relatively straightforward to implement, (b) does not prolong learning time, and (c) fosters both near- and far-transfer performance. Worked-out examples typically consist of a problem formulation, solution steps, and the final answer itself. Research indicates that exposure to worked-out examples is critical when learners are in the initial stages of learning a new cognitive skill in wellstructured domains such as mathematics, physics, and computer programming (Anderson, Fincham, & Douglass, 1997). Moreover, studies performed by Sweller and his colleagues (e.g., Sweller &",
+              "consensus_score": null,
+              "study_design_tag": null,
+              "sample_size": null,
+              "evidence_strength": null,
+              "consensus_url": "https://consensus.app/papers/details/c38ca4bd79c2589a938ce1724fda654a/",
+              "known_losses": [
+                "abstract_only",
+                "study_design_unknown",
+                "sample_size_unknown",
+                "evidence_strength_unknown"
+              ]
+            }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": {
+            "providers_agreeing": [],
+            "providers_disagreeing": [
+              "scite"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          },
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+        }
+      },
+      "convergence_signal": {
+        "providers_agreeing": [],
+        "providers_disagreeing": [
+          "scite"
+        ],
+        "single_source_only": [
+          "consensus"
+        ]
+      },
+      "reliability_score": 0.1,
+      "triangulation_status": "single_provider",
+      "contradiction_flags": [
+        {
+          "source_id": "c38ca4bd79c2589a938ce1724fda654a",
+          "reason": "single_source_only",
+          "detail": {
+            "providers": [
+              "consensus"
+            ],
+            "single_source_only": [
+              "consensus"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "row_count": 26,
+    "cluster_count": 21,
+    "dual_provider_count": 5,
+    "single_provider_count": 16,
+    "title_bridge_rows_added": 5
+  }
+}

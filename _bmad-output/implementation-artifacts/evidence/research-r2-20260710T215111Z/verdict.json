@@ -1,0 +1,97 @@
+{
+  "story": "research-r2",
+  "flag_detective": "MARCUS_RESEARCH_DETECTIVE_LIVE=1",
+  "evidence_bolster": true,
+  "oauth_cache_loaded": true,
+  "intent_providers": [
+    "scite",
+    "consensus"
+  ],
+  "cross_validate": true,
+  "intent_text": "Corroborate claim: Worked examples improve novice transfer in introductory instruction. (context: Need a supporting citation for the worked-example rationale.)",
+  "shape_ok": true,
+  "dual_dispatch": true,
+  "dual_live_rows": true,
+  "error": null,
+  "summary": {
+    "provider_result_count": 2,
+    "providers_seen": [
+      "consensus",
+      "scite"
+    ],
+    "total_rows": 21,
+    "results": [
+      {
+        "provider": "scite",
+        "acceptance_met": true,
+        "row_count": 1,
+        "rows": [
+          {
+            "provider": "scite",
+            "source_id": "10.1145/3368308.3415426",
+            "title": "Switching to Stay Home Instruction",
+            "convergence": {
+              "providers_agreeing": [],
+              "providers_disagreeing": [
+                "consensus"
+              ],
+              "single_source_only": [
+                "scite"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "provider": "consensus",
+        "acceptance_met": true,
+        "row_count": 20,
+        "rows": [
+          {
+            "provider": "consensus",
+            "source_id": "8fba3910b73754f0b192c1ba93562d5a",
+            "title": "The effect of worked examples on learning solution steps and knowledge transfer",
+            "convergence": {
+              "providers_agreeing": [],
+              "providers_disagreeing": [
+                "scite"
+              ],
+              "single_source_only": [
+                "consensus"
+              ]
+            }
+          },
+          {
+            "provider": "consensus",
+            "source_id": "cc331e0c35615fe6baafd9f907dea390",
+            "title": "Instruction-first and problem-solving-first approaches: alternative pathways to learning complex tasks",
+            "convergence": {
+              "providers_agreeing": [],
+              "providers_disagreeing": [
+                "scite"
+              ],
+              "single_source_only": [
+                "consensus"
+              ]
+            }
+          },
+          {
+            "provider": "consensus",
+            "source_id": "529da762ed9552fa89cb980fb1b71160",
+            "title": "Effects of Worked Examples with Explanation Types and Learner Motivation on Cognitive Load and Programming Problem-Solving Performance",
+            "convergence": {
+              "providers_agreeing": [],
+              "providers_disagreeing": [
+                "scite"
+              ],
+              "single_source_only": [
+                "consensus"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "pass": true
+}

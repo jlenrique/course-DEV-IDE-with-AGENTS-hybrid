@@ -1,4 +1,46 @@
+# Session Handoff — 2026-07-10 (WRAPUP: **Research Foundations + Workbook Products + TRAIL trio CLOSED** — Class S)
+
+**Final class:** S. **Branch:** `dev/agentic-research-foundations-2026-07-10`. **Opened as:** S (Agentic Research Foundations → workbook products → TRAIL trio). **Class drift:** none.
+
+**What was completed:**
+1. **Agentic Research Foundations R0–R7 PROMOTED** — posture-aware detective (opt-in, default OFF); Scite+Consensus triangulation; credibility labels; Jefferson Texas seam (live fenced); Irene intake; R7 hard pause before Pass-2. Close: `agentic-research-foundations-promote-2026-07-10.md`.
+2. **Workbook research products W0–W4 CLOSED** — shared `research_packet` → encyclopedia Research Glossary + Research Trends/hot-topics in workbook compose; Tejal live W4. Close: `workbook-research-products-close-2026-07-10.md`.
+3. **TRAIL trio CLOSED under fences** (party CLOSE-WITH-AMENDMENTS 4/4): OpenAlex adapter + LIVE; glossary capability-note polish (no HTML stub in learner body); semantic WARN-only tripwire substrate. Full semantic claim↔source audit remains TRAIL. Close: `trail-trio-close-2026-07-10.md`.
+4. Amelia MUST-FIX folded: OpenAlex does not map `is_oa` → `authority_tier=peer_reviewed`.
+
+**What is next:** Workbook artifact customization (interactive design). Do not reopen S8 / Batch v1 / foundations or workbook-products claim envelopes. Pull full semantic audit / ERIC/LoC / detective default-ON only by explicit operator/party ask.
+
+**Unresolved / risks:**
+- Full semantic claim↔source audit still open (WARN tripwire only)
+- ERIC/LoC; Tracy resume/recover; LLM Tracy refine; Consensus/Jefferson default-ON policy
+- Tejal/motion/HELR/Batch A1-EXT residuals unchanged
+- **Step 0a/0b/0c SKIPPED** — Cora/`/harmonize` unregistered (consecutive-skip tripwire; force full sweep when Cora available). Proceed-with-acknowledged-gap.
+
+**Key lessons:** (a) Research must stay a shared run packet, not workbook-only DOI dumps. (b) Detective default OFF preserves bit-identical quiet path. (c) Claim fences matter: OA≠peer-review; glossary stub≠SME; semantic WARN≠production FAIL.
+
+**Validation summary:**
+- Step 0a/0b/0c: SKIPPED — Cora unregistered; tripwire noted (third consecutive Class-S skip).
+- Step 1: ruff cleaned on TRAIL touchpaths; focused suite green (openalex + glossary_w2 + source_fidelity_audit + sprint-status yaml).
+- Step 4a: sprint-status updated (foundations/workbook products/trail-trio done; semantic full audit deferred); `tests/test_sprint_status_yaml.py` green.
+- Step 3: SKIPPED — no bmm-workflow-status phase transition (implementation Kanban only).
+- Step 4b: SKIPPED — no new BMAD agent skill created (Texas providers are retrieval adapters).
+- Step 5: `docs/project-context.md` + `docs/STATE-OF-THE-APP.md` CURRENT SNAPSHOT updated; agent-environment unchanged.
+- Step 6: SKIPPED — no course-content staging promotion.
+- Step 9: KG/ONBOARDING regen recommended (≥10 app/skills files) — not blocking; operator may run `/understand` later.
+- Step 11: class S matches diff; single worktree; master merge SKIPPED (scoped research branch).
+
+**Content creation summary:** none this session (substrate + workbook projectors + evidence packs).
+
+**Artifact update checklist:** sprint-status ✅; deferred-inventory ✅; STATE-OF-THE-APP ✅; project-context ✅; next-session-start-here ✅; SESSION-HANDOFF (this) ✅; close letters ✅; bmm-workflow-status skip; KG/ONBOARDING recommend later; master merge SKIPPED; no `reports/dev-coherence/` (Step 0 skip).
+
+**Ambient left untouched:** `runs/*` trial dirs; `runs/compositor/`; `_tmp-regression*`; `workbooks-test/`; Meeting Recording deconstruct; `.cursor/mcp.json` / `.mcp.json` local edits; unrelated shadow-monitor leftovers; jefferson probe packs optional (session-owned evidence staged if present under evidence/).
+
+**Push:** working-branch push MANDATORY at WRAPUP — see Step 12 note below (SHA filled after push). Master merge SKIPPED (scoped research branch).
+
+---
+
 # Session Handoff — 2026-07-10 (WRAPUP: **Batch LLM Execution Mode v1 CLOSED** — Class S)
+
 
 **Final class:** S. **Branch:** `dev/batch-mode-2026-07-10`. **Opened as:** S (Batch epic BMAD spine through formal close). **Class drift:** none.
 

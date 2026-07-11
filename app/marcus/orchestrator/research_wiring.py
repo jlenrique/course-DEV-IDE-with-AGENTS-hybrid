@@ -47,12 +47,15 @@ credentials are absent / the service is unreachable.
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from app.marcus.orchestrator.research_citation import (
     CitedResearchEntry,
+    apply_triangulation_to_entries,
+    assert_credibility_fields,
     assemble_l2_citation_report,
     audit_research_supplements,
     build_citation_manifest,
@@ -91,6 +94,10 @@ CITATION_MANIFEST_KEY = "citation_manifest"
 # wiring filtered as failed/non-intent, recorded so a shaping failure leaves a
 # run-record trace rather than vanishing.
 DROPPED_DISPATCH_KEY = "dropped_dispatch_failures"
+# R3 — triangulation receipt (composite reliability + contradiction flags).
+TRIANGULATION_RECEIPT_KEY = "triangulation_receipt"
+# R6 — Irene retrieval intake packet (consumable by Pass-2; no fabricate-cite).
+RESEARCH_INTAKE_KEY = "research_intake"
 
 # --- Canonical-arc S6 ------------------------------------------------------- #
 # D2 — Scite-canonical literature research. The literature-shape research
@@ -109,9 +116,145 @@ DEFERRED_LITERATURE_PROVIDERS: frozenset[str] = frozenset({"consensus", "gamma_d
 RESEARCH_DEGRADE_KEY = "research_degrade"
 RESEARCH_DEGRADE_MARKER = "research enrichment skipped — credentials unavailable"
 
+# Agentic Research Foundations R1 — opt-in detective posture shaping.
+# Distinct from MARCUS_RESEARCH_DISPATCH_LIVE (network gate). Default OFF until
+# R3+R4 hermetic+live green; flag-OFF path must stay bit-identical to pre-R1.
+RESEARCH_DETECTIVE_LIVE_ENV = "MARCUS_RESEARCH_DETECTIVE_LIVE"
+RESEARCH_DETECTIVE_LIVE_TRUTHY: frozenset[str] = frozenset(
+    {"1", "true", "yes", "on"}
+)
+
+# R2 — evidence-bolster control surface (layer 1 operator knob). When true on a
+# corroborate brief, selector emits scite+consensus with cross_validate=True.
+# Distinct from MARCUS_RESEARCH_DETECTIVE_LIVE (posture text) and
+# MARCUS_RESEARCH_DISPATCH_LIVE (network gate). Default OFF.
+EVIDENCE_BOLSTER_ENV = "MARCUS_EVIDENCE_BOLSTER"
+EVIDENCE_BOLSTER_TRUTHY: frozenset[str] = frozenset({"1", "true", "yes", "on"})
+BOLSTER_CROSS_VALIDATE_PROVIDERS: tuple[str, ...] = ("scite", "consensus")
+
+ResearchPosture = Literal["corroborate", "gap_fill", "embellish"]
+
 _TEXAS_SCRIPTS_DIR = (
     Path(__file__).resolve().parents[3] / "skills" / "bmad-agent-texas" / "scripts"
 )
+
+
+def research_detective_live() -> bool:
+    """Return True iff detective posture shaping is opted in (default OFF)."""
+    return (
+        os.environ.get(RESEARCH_DETECTIVE_LIVE_ENV, "").strip().lower()
+        in RESEARCH_DETECTIVE_LIVE_TRUTHY
+    )
+
+
+def _truthy_flag(value: Any) -> bool:
+    if value is True:
+        return True
+    if value is False or value is None:
+        return False
+    return str(value).strip().lower() in EVIDENCE_BOLSTER_TRUTHY
+
+
+def evidence_bolster_active(brief: dict[str, Any] | None = None) -> bool:
+    """Layer-1 evidence_bolster knob: brief field wins, else env (default OFF)."""
+    if brief is not None and "evidence_bolster" in brief:
+        return _truthy_flag(brief.get("evidence_bolster"))
+    return (
+        os.environ.get(EVIDENCE_BOLSTER_ENV, "").strip().lower()
+        in EVIDENCE_BOLSTER_TRUTHY
+    )
+
+
+def consensus_creds_present() -> bool:
+    """True when Consensus Bearer or Basic auth env is configured.
+
+    Also treats a cached mcp-remote OAuth access_token as sufficient (loads into
+    ``CONSENSUS_API_KEY`` when unset).
+    """
+    if os.environ.get("CONSENSUS_API_KEY", "").strip():
+        return True
+    # Lazy import via Texas scripts path (same seam as _import_retrieval).
+    texas = str(_TEXAS_SCRIPTS_DIR)
+    if texas not in sys.path:
+        sys.path.insert(0, texas)
+    try:
+        from retrieval.consensus_provider import (  # noqa: PLC0415
+            ensure_consensus_bearer_from_mcp_auth,
+        )
+    except ImportError:
+        ensure_consensus_bearer_from_mcp_auth = None  # type: ignore[assignment]
+    if ensure_consensus_bearer_from_mcp_auth is not None:
+        try:
+            if ensure_consensus_bearer_from_mcp_auth():
+                return True
+        except Exception:  # noqa: BLE001 — creds probe must not raise
+            pass
+    user = os.environ.get("CONSENSUS_USER_NAME", "").strip()
+    password = os.environ.get("CONSENSUS_PASSWORD", "").strip()
+    return bool(user and password)
+
+
+def resolve_research_posture(brief: dict[str, Any]) -> ResearchPosture:
+    """Map a gap/goal brief to one of Tracy's three research postures.
+
+    Deterministic mechanical rules (no LLM). Explicit ``posture`` /
+    ``suggested_posture`` on the brief wins when it names a known posture.
+    """
+    explicit = str(
+        brief.get("posture") or brief.get("suggested_posture") or ""
+    ).strip().lower().replace("-", "_")
+    if explicit in {"corroborate", "gap_fill", "embellish"}:
+        return explicit  # type: ignore[return-value]
+    if explicit == "gapfill":
+        return "gap_fill"
+
+    claim = str(brief.get("claim") or "").strip()
+    if claim:
+        return "corroborate"
+
+    enrichment_type = str(brief.get("enrichment_type") or "").strip()
+    gap_type = str(brief.get("gap_type") or "").strip().lower()
+    dial = str(brief.get("dial") or "").strip()
+    if enrichment_type or dial or gap_type in {"enrichment", "embellish"}:
+        return "embellish"
+
+    return "gap_fill"
+
+
+def _legacy_intent_text(brief: dict[str, Any]) -> str:
+    """Pre-R1 generic intent text — preserved for flag-OFF bit-identity."""
+    description = str(brief.get("gap_description") or brief.get("description") or "")
+    target = str(brief.get("target_element") or "")
+    if description or target:
+        return (
+            f"Find evidence for research-enrichment gap on {target}: "
+            f"{description}"
+        ).strip()
+    return "Find evidence for the in-scope research-enrichment gap"
+
+
+def _detective_intent_text(brief: dict[str, Any], posture: ResearchPosture) -> str:
+    """Posture-aware intent text used when ``MARCUS_RESEARCH_DETECTIVE_LIVE`` is ON."""
+    claim = str(brief.get("claim") or "").strip()
+    source_context = str(brief.get("source_context") or "").strip()
+    description = str(brief.get("gap_description") or brief.get("description") or "")
+    target = str(brief.get("target_element") or "")
+    enrichment_type = str(brief.get("enrichment_type") or "general").strip()
+    content_type = str(brief.get("content_type") or "explanation").strip()
+
+    if posture == "corroborate":
+        base = f"Corroborate claim: {claim}" if claim else _legacy_intent_text(brief)
+        if source_context:
+            return f"{base} (context: {source_context})"
+        return base
+    if posture == "embellish":
+        focus = description or enrichment_type
+        where = f" on {target}" if target else ""
+        return f"Embellish{where} with {enrichment_type}: {focus}".strip()
+    # gap_fill
+    focus = description or "in-scope research gap"
+    where = f" on {target}" if target else ""
+    return f"Fill research gap ({content_type}){where}: {focus}".strip()
 
 
 class DeterministicPostureSelector:
@@ -126,6 +269,10 @@ class DeterministicPostureSelector:
     Provider selection consults the LIVE provider directory: it names only
     ``ready``/``stub`` retrieval providers from ``list_providers()`` (AC-D3 —
     never names a provider the directory does not register).
+
+    When ``MARCUS_RESEARCH_DETECTIVE_LIVE`` is OFF (default), intent text and
+    hint params match the pre-R1 generic Scite search path (bit-identical).
+    When ON, intents are posture-tagged (corroborate / gap_fill / embellish).
     """
 
     def select_posture(self, brief: dict[str, Any]) -> Any:
@@ -142,28 +289,47 @@ class DeterministicPostureSelector:
                 "no ready/stub retrieval providers registered; cannot shape "
                 "a RetrievalIntent for the research-enrichment gap"
             )
-        # S6 D2 — Scite-canonical: scope the literature research dispatch to
-        # SCITE. Exclude consensus (party-deferred) + gamma_docs (no DOIs). A
-        # single literature provider ⇒ no cross-validation partner.
-        selected = [
-            p
-            for p in ready
-            if p == LITERATURE_RESEARCH_PROVIDER
-            and p not in DEFERRED_LITERATURE_PROVIDERS
-        ]
-        if not selected:
-            raise RetrievalProviderUnavailableError(
-                f"the canonical literature-research provider "
-                f"{LITERATURE_RESEARCH_PROVIDER!r} is not registered ready/stub; "
-                "cannot shape a Scite-canonical RetrievalIntent for the "
-                "research-enrichment gap"
-            )
-        description = str(brief.get("gap_description") or brief.get("description") or "")
-        target = str(brief.get("target_element") or "")
+
+        detective = research_detective_live()
+        posture = resolve_research_posture(brief)
+        bolster = evidence_bolster_active(brief)
+
+        # R2 — corroborate + evidence_bolster: Scite∩Consensus cross_validate.
+        # Default / non-bolster / non-corroborate remains S6 Scite-canonical
+        # (consensus stays deferred on that path; gamma_docs always excluded).
+        if posture == "corroborate" and bolster:
+            selected = [
+                p
+                for p in BOLSTER_CROSS_VALIDATE_PROVIDERS
+                if p in ready and p not in {"gamma_docs"}
+            ]
+            missing = [
+                p for p in BOLSTER_CROSS_VALIDATE_PROVIDERS if p not in selected
+            ]
+            if missing:
+                raise RetrievalProviderUnavailableError(
+                    "evidence_bolster corroborate requires ready providers "
+                    f"{list(BOLSTER_CROSS_VALIDATE_PROVIDERS)}; missing {missing}"
+                )
+        else:
+            selected = [
+                p
+                for p in ready
+                if p == LITERATURE_RESEARCH_PROVIDER
+                and p not in DEFERRED_LITERATURE_PROVIDERS
+            ]
+            if not selected:
+                raise RetrievalProviderUnavailableError(
+                    f"the canonical literature-research provider "
+                    f"{LITERATURE_RESEARCH_PROVIDER!r} is not registered ready/stub; "
+                    "cannot shape a Scite-canonical RetrievalIntent for the "
+                    "research-enrichment gap"
+                )
+
         intent_text = (
-            f"Find evidence for research-enrichment gap on {target}: {description}".strip()
-            if description or target
-            else "Find evidence for the in-scope research-enrichment gap"
+            _detective_intent_text(brief, posture)
+            if detective
+            else _legacy_intent_text(brief)
         )
         # S6 D7 — MECHANICAL provenance carry: when the brief originates from a
         # collateral.research_goal, stamp the goal_id onto each provider hint's
@@ -174,6 +340,12 @@ class DeterministicPostureSelector:
         research_goal_id = str(brief.get("research_goal_id") or "")
         if research_goal_id:
             hint_params["research_goal_id"] = research_goal_id
+        # Detective-only posture stamp — absent when flag OFF so flag-OFF
+        # params stay bit-identical to the pre-R1 shape.
+        if detective:
+            hint_params["posture"] = posture
+        if posture == "corroborate" and bolster:
+            hint_params["evidence_bolster"] = True
         return retrieval_intent_cls(
             intent=intent_text,
             provider_hints=[
@@ -525,6 +697,8 @@ def run_research_wiring(
 
     cited_entries: list[CitedResearchEntry] = []
     dropped_failures: list[dict[str, Any]] = []
+    triangulation_receipt: Any | None = None
+    evidence_bolster_active = False
     if injected_cited_entries is not None:
         cited_entries = list(injected_cited_entries)
     elif in_scope_with_gaps:
@@ -551,7 +725,53 @@ def run_research_wiring(
                 cited_entries.append(
                     mint_cited_entry(row, citation_index=citation_index)
                 )
+            # R3 — attach triangulation receipt whenever live rows exist.
+            try:
+                if str(_TEXAS_SCRIPTS_DIR) not in sys.path:
+                    sys.path.insert(0, str(_TEXAS_SCRIPTS_DIR))
+                from retrieval.triangulator import (  # noqa: PLC0415
+                    corroborate_requires_triangulation,
+                    triangulate_texas_rows,
+                )
 
+                triangulation_receipt = triangulate_texas_rows(
+                    rows,
+                    query_intent="; ".join(
+                        getattr(i, "intent", "") for i in intents[:3]
+                    ),
+                    title_bridge=bool(
+                        research_detective_live()
+                        and any(getattr(i, "cross_validate", False) for i in intents)
+                    ),
+                )
+                # R4 — overlay triangulation status/score onto cited entries.
+                cited_entries = apply_triangulation_to_entries(
+                    cited_entries, triangulation_receipt
+                )
+                bolstered_corroborate = any(
+                    getattr(i, "cross_validate", False) for i in intents
+                )
+                evidence_bolster_active = bool(bolstered_corroborate)
+                if bolstered_corroborate and research_detective_live():
+                    ok, reason = corroborate_requires_triangulation(
+                        triangulation_receipt
+                    )
+                    if not ok:
+                        logger.warning(
+                            "research-wiring: corroborate triangulation gate "
+                            "failed (%s); recording receipt anyway",
+                            reason,
+                        )
+            except Exception:  # noqa: BLE001 — triangulation must not kill wiring
+                logger.warning(
+                    "research-wiring: triangulation failed; continuing without receipt",
+                    exc_info=True,
+                )
+                triangulation_receipt = None
+
+            # R4 fail-loud: every minted row carries hierarchy + provenance.
+            for entry in cited_entries:
+                assert_credibility_fields(entry)
     # Duplicate-citation de-dup (SHOULD-FIX): identical (provider, source_id)
     # rows are minted as distinct citation_ids; collapse them first-wins so the
     # manifest carries no duplicate provenance rows.
@@ -564,6 +784,29 @@ def run_research_wiring(
             "failures": dropped_failures,
         },
     }
+    if triangulation_receipt is not None:
+        output[TRIANGULATION_RECEIPT_KEY] = triangulation_receipt.model_dump(
+            mode="json"
+        )
+
+    # R6 — durable intake packet for Irene Pass-2 / other consumers.
+    try:
+        from app.specialists._shared.research_intake import (  # noqa: PLC0415
+            consume_research_entries,
+        )
+
+        intake = consume_research_entries(
+            [e.model_dump(mode="json") for e in cited_entries],
+            cluster_id="research_wiring",
+            intake_mode="corroborate",
+            evidence_bolster_active=evidence_bolster_active,
+        )
+        output[RESEARCH_INTAKE_KEY] = intake.model_dump(mode="json")
+    except Exception:  # noqa: BLE001 — intake must not kill wiring
+        logger.warning(
+            "research-wiring: research intake packet failed; continuing",
+            exc_info=True,
+        )
 
     # --- G2 trial-path gate + run-record assembly (spec §3.4) ---
     if cited_entries:
@@ -651,6 +894,7 @@ __all__ = [
     "RESEARCH_DEGRADE_KEY",
     "RESEARCH_DEGRADE_MARKER",
     "RESEARCH_ENTRIES_KEY",
+    "RESEARCH_INTAKE_KEY",
     "RESEARCH_WIRING_MODEL_MARKER",
     "RESEARCH_WIRING_NODE_ID",
     "RESEARCH_WIRING_NODE_IDS",

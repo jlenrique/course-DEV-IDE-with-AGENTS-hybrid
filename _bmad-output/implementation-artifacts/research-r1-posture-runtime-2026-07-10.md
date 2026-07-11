@@ -1,6 +1,6 @@
 # Story R1 — Posture runtime on production seam
 
-Status: ready-for-dev  
+Status: done  
 Date: 2026-07-10  
 Epic: Agentic Research Foundations  
 Depends: R0 (done)  
@@ -22,6 +22,13 @@ Replace one-shot generic Scite search shaping with **posture-aware** intent emis
 ## DoD
 
 Hermetic green **and** authentic live evidence pack. Default flag may remain OFF after live probe if R3+R4 not yet green (document in Completion Notes).
+
+## Completion Notes (2026-07-10)
+
+- **Seam chosen:** posture-aware `DeterministicPostureSelector` (production); `PostureDispatcher` is a thin façade over the same selector — not a second shaping fantasy.
+- **Flag:** `MARCUS_RESEARCH_DETECTIVE_LIVE` default remains OFF (R3+R4 not green yet). Flag-OFF intent text + hint params bit-identical to pre-R1.
+- **Hermetic:** 20 tests green (`test_research_r1_posture_runtime.py` + updated `test_tracy_postures.py`).
+- **Live:** `evidence/research-r1-20260710T211425Z/` — corroborate DOI `10.1145/3368308.3415426`; gap_fill DOI `10.46542/pe.2023.231.491498`.
 
 ## Out of scope
 

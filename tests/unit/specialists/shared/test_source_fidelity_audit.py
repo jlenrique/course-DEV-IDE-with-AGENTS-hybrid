@@ -12,6 +12,7 @@ import importlib
 from app.specialists._shared.source_fidelity_audit import (
     SEMANTIC_TRIPWIRE,
     audit_numeric_provenance,
+    audit_semantic_framing,
 )
 
 # Mirrors the real c2c6dcbf drift: narration $4.5T vs source $5.2T; 73 days + 66%
@@ -83,13 +84,56 @@ def test_sourced_numbers_classify_source_derived_and_drift_flagged() -> None:
     assert _bucket(report, "research_supplement")["tokens"] == []  # empty-but-present
     assert unsourced["count"] >= 1
 
-    # F3: unsourced_framing stub present but empty.
+    # F3: unsourced_framing present; this fixture has no claim-cue orphans.
     assert report["unsourced_framing"]["count"] == 0
     assert report["unsourced_framing"]["items"] == []
 
-    # F1: tripwire not tuned.
+    # F1 / TRAIL: tripwire is WARN-only disposition (non-None, non-gating).
     assert report["semantic_tripwire"] is SEMANTIC_TRIPWIRE
-    assert SEMANTIC_TRIPWIRE is None
+    assert SEMANTIC_TRIPWIRE["mode"] == "warn_only"
+    assert SEMANTIC_TRIPWIRE["gates_production"] is False
+
+
+def test_semantic_framing_warns_on_uncited_claim_cue() -> None:
+    narration = (
+        "Administrative waste causes significant budget overruns across "
+        "hospital systems without any supporting citation nearby."
+    )
+    source = (
+        "National health expenditures reached $5.2 trillion in 2024. "
+        "Compute capacity metrics are reported separately."
+    )
+    framing = audit_semantic_framing(narration, source)
+    assert framing["count"] >= 1
+    assert framing["items"][0]["severity"] == "warn_only"
+    report = audit_numeric_provenance(narration, source)
+    # Numeric may FAIL (no figures) but semantic never flips to production gate.
+    assert report["non_gating"] is True
+    assert report["semantic_tripwire"]["gates_production"] is False
+    assert report["unsourced_framing"]["count"] >= 1
+
+
+def test_semantic_framing_skips_cited_claim_sentences() -> None:
+    narration = (
+        "Administrative waste causes significant budget overruns (Smith, 2024)."
+    )
+    source = "Unrelated corpus about astronomy and planetary rings."
+    framing = audit_semantic_framing(narration, source)
+    assert framing["count"] == 0
+
+
+def test_semantic_framing_negative_control_high_overlap() -> None:
+    narration = (
+        "National health expenditures increases are associated with "
+        "reported AI adoption in organizations."
+    )
+    source = (
+        "National health expenditures reached record levels. Roughly two-thirds "
+        "of organizations report AI adoption in surveyed cohorts."
+    )
+    framing = audit_semantic_framing(narration, source)
+    # High lexical overlap → not flagged (negative control).
+    assert framing["count"] == 0
 
 
 def test_declared_research_supplement_reclassifies_and_drops_from_drift() -> None:

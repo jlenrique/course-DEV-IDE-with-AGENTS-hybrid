@@ -1,0 +1,91 @@
+{
+  "probe": "jefferson-session-v3-pdf-network",
+  "chrome_count": "0",
+  "evidence_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\jefferson-access-probe-session3-20260710T213250Z",
+  "pass": true,
+  "openurl_final": "https://jefferson.primo.exlibrisgroup.com/discovery/openurl?vid=01TJU_INST:01TJU&url_ver=Z39.88-2004&rft_id=info:doi%2F10.1056%2FNEJMoa2034577",
+  "openurl_title": "",
+  "pdf_nav_final": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577",
+  "pdf_nav_title": "",
+  "api_request": {
+    "status": 403,
+    "content_type": "text/html; charset=UTF-8",
+    "size": 5767,
+    "is_pdf": false,
+    "head_ascii": "<!DOCTYPE html><html lang=\"en-US\"><head><title>Just a moment...</title><meta http-equiv=\"Content-Type\" content=\"text/htm"
+  },
+  "page_fetch": {
+    "status": 200,
+    "size": 771183,
+    "contentType": "application/pdf;charset=UTF-8",
+    "head": [
+      37,
+      80,
+      68,
+      70,
+      45,
+      49,
+      46,
+      51
+    ],
+    "isPdf": true,
+    "saved": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\jefferson-access-probe-session3-20260710T213250Z\\nejm-page-fetch.pdf"
+  },
+  "pdf_network_hits": [
+    {
+      "url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577",
+      "status": 200,
+      "content_type": "application/pdf;charset=utf-8",
+      "size": 536,
+      "is_pdf": false
+    },
+    {
+      "url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577",
+      "status": 200,
+      "content_type": "",
+      "size": 13527,
+      "is_pdf": false
+    },
+    {
+      "url": "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/928d60c0-4515-4830-b8e7-e23658da5d8d",
+      "status": 200,
+      "content_type": "application/pdf;charset=utf-8",
+      "size": 771183,
+      "is_pdf": true,
+      "saved": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\jefferson-access-probe-session3-20260710T213250Z\\captured-2.pdf"
+    },
+    {
+      "url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577",
+      "status": 200,
+      "content_type": "application/pdf;charset=utf-8",
+      "size": 906022,
+      "is_pdf": true,
+      "saved": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\jefferson-access-probe-session3-20260710T213250Z\\captured-3.pdf"
+    },
+    {
+      "url": "https://www.nejm.org/doi/pdf/10.1056/NEJMoa2034577",
+      "status": 200,
+      "content_type": "application/pdf;charset=utf-8",
+      "size": 906022,
+      "is_pdf": true,
+      "saved": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\_bmad-output\\implementation-artifacts\\evidence\\jefferson-access-probe-session3-20260710T213250Z\\captured-4.pdf"
+    }
+  ],
+  "cookies": {
+    ".nejm.org": [
+      "JSESSIONID",
+      "MACHINE_LAST_SEEN",
+      "MAID"
+    ],
+    "jefferson.primo.exlibrisgroup.com": [
+      "JSESSIONID",
+      "__Secure-UqZBpD3n3naPU20-9Fvn5i-TQ-tFpchbYtbA9YCEpg3UXgo_",
+      "institute",
+      "urm_se",
+      "urm_st"
+    ],
+    "www.nejm.org": [
+      "JSESSIONID"
+    ]
+  }
+}

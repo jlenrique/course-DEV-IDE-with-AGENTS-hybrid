@@ -1,0 +1,292 @@
+{
+  "cluster_id": "r6-live",
+  "intake_mode": "corroborate",
+  "evidence_bolster_active": true,
+  "entries_consumed": 21,
+  "retrieval_provenance": [
+    {
+      "source_id": "10.1145/3368308.3415426",
+      "providers": [
+        "scite"
+      ],
+      "citation_id": "cite-001",
+      "source_ref": "retrieval:scite:10.1145/3368308.3415426",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "According to scite.ai citation-context analysis."
+    },
+    {
+      "source_id": "8fba3910b73754f0b192c1ba93562d5a",
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "citation_id": "cite-002",
+      "source_ref": "retrieval:consensus:8fba3910b73754f0b192c1ba93562d5a",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "dual_provider",
+      "reliability_score": 0.65,
+      "attribution_phrase": "Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence."
+    },
+    {
+      "source_id": "cc331e0c35615fe6baafd9f907dea390",
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "citation_id": "cite-003",
+      "source_ref": "retrieval:consensus:cc331e0c35615fe6baafd9f907dea390",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "dual_provider",
+      "reliability_score": 0.85,
+      "attribution_phrase": "Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence."
+    },
+    {
+      "source_id": "529da762ed9552fa89cb980fb1b71160",
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "citation_id": "cite-004",
+      "source_ref": "retrieval:consensus:529da762ed9552fa89cb980fb1b71160",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "dual_provider",
+      "reliability_score": 0.5,
+      "attribution_phrase": "Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence."
+    },
+    {
+      "source_id": "f3ddb82c35415e1faa35cdc0a7c07655",
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "citation_id": "cite-005",
+      "source_ref": "retrieval:consensus:f3ddb82c35415e1faa35cdc0a7c07655",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "dual_provider",
+      "reliability_score": 0.5,
+      "attribution_phrase": "Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence."
+    },
+    {
+      "source_id": "e5bb2e10d05b5b6c92e4a915fd79efc8",
+      "providers": [
+        "consensus",
+        "scite"
+      ],
+      "citation_id": "cite-006",
+      "source_ref": "retrieval:consensus:e5bb2e10d05b5b6c92e4a915fd79efc8",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "dual_provider",
+      "reliability_score": 0.5,
+      "attribution_phrase": "Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence."
+    },
+    {
+      "source_id": "33a6f287fe61517c827b506ff52bf95c",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-007",
+      "source_ref": "retrieval:consensus:33a6f287fe61517c827b506ff52bf95c",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "92550e9ea7ae5083a3e74afca2c72f6d",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-008",
+      "source_ref": "retrieval:consensus:92550e9ea7ae5083a3e74afca2c72f6d",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "d59268ae831952f597db8ed574c9c1ed",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-009",
+      "source_ref": "retrieval:consensus:d59268ae831952f597db8ed574c9c1ed",
+      "evidence_hierarchy_tier": "T1_systematic",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "c38ca4bd79c2589a938ce1724fda654a",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-010",
+      "source_ref": "retrieval:consensus:c38ca4bd79c2589a938ce1724fda654a",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "92937f2e99e65953b6af11854e86d1e8",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-011",
+      "source_ref": "retrieval:consensus:92937f2e99e65953b6af11854e86d1e8",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "08dc5aa06a4557a7ac6340f8c36a4a71",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-012",
+      "source_ref": "retrieval:consensus:08dc5aa06a4557a7ac6340f8c36a4a71",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "079ab6f19f465ca7abd51a891c0bbf27",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-013",
+      "source_ref": "retrieval:consensus:079ab6f19f465ca7abd51a891c0bbf27",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "a23022f57cf55e5f8c340a81be3cf2f7",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-014",
+      "source_ref": "retrieval:consensus:a23022f57cf55e5f8c340a81be3cf2f7",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "b8e9acc4722557eb8efbfb4d903393c3",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-015",
+      "source_ref": "retrieval:consensus:b8e9acc4722557eb8efbfb4d903393c3",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "150a06967cc45063a8b342836cc9b3d6",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-016",
+      "source_ref": "retrieval:consensus:150a06967cc45063a8b342836cc9b3d6",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "afef7d11d69950a98dfc192930a7b873",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-017",
+      "source_ref": "retrieval:consensus:afef7d11d69950a98dfc192930a7b873",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "ec33efbff35d5b1ebdd5b5207dd789b1",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-018",
+      "source_ref": "retrieval:consensus:ec33efbff35d5b1ebdd5b5207dd789b1",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "0e23400d76b75eb1b6c2f2a41699c7af",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-019",
+      "source_ref": "retrieval:consensus:0e23400d76b75eb1b6c2f2a41699c7af",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "34d0c646d0355f0594becb0a719b23aa",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-020",
+      "source_ref": "retrieval:consensus:34d0c646d0355f0594becb0a719b23aa",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    },
+    {
+      "source_id": "b097912b94af57218e5a6dfdec2a451a",
+      "providers": [
+        "consensus"
+      ],
+      "citation_id": "cite-021",
+      "source_ref": "retrieval:consensus:b097912b94af57218e5a6dfdec2a451a",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "peer_reviewed": true,
+      "triangulation_status": "single_provider",
+      "reliability_score": 0.1,
+      "attribution_phrase": "Per Consensus research synthesis."
+    }
+  ],
+  "known_losses": [],
+  "attribution_phrases": [
+    "According to scite.ai citation-context analysis.",
+    "Corroborated by multiple independent sources, with support from peer-reviewed citation context and synthesis evidence.",
+    "Per Consensus research synthesis."
+  ]
+}

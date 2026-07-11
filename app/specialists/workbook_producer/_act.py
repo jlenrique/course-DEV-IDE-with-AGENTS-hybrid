@@ -16,7 +16,9 @@ sequence:
    enrichment card is a RESOLUTION OVERLAY (exercises, further-reading, answer
    keys, LO statements) layered on top — it may NOT author sections;
 5. read the S6 ``research_entries`` (from ``run.json``) and render them under the
-   G2 citation manifest;
+   G2 citation manifest; W2 also projects encyclopedia glossary articles from the
+   shared research packet (``resolve_for_glossary_writer``); W3 projects
+   research-trends + hot-topics (``resolve_for_trends_projector``);
 6. honor the ``declaration`` discriminant (present+blueprint => produce;
    none/absent => explicit no-op skip);
 7. run ``WorkbookProducer.produce(...)`` => MD + DOCX + G1/G2/AC audits => sidecar.
@@ -45,6 +47,14 @@ import yaml
 from pydantic import ValidationError
 
 from app.marcus.lesson_plan.collateral_spec import CollateralSpec, WorkbookSpec
+from app.marcus.lesson_plan.glossary_projection import (
+    GlossaryArticleBrief,
+    glossary_inputs_from_run,
+)
+from app.marcus.lesson_plan.trends_projection import (
+    ResearchTrendsBrief,
+    trends_inputs_from_run,
+)
 from app.marcus.lesson_plan.produced_asset import ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
 from app.marcus.lesson_plan.workbook_enrichment import (
@@ -377,6 +387,9 @@ class WorkbookInputs:
     vo_script_text: str
     research_empty_reason: str | None
     research_omitted_note: str | None
+    glossary_articles: tuple[GlossaryArticleBrief, ...]
+    glossary_empty_reason: str | None
+    research_trends: ResearchTrendsBrief
 
 
 def _research_inputs(
@@ -418,6 +431,16 @@ def _research_inputs(
                 source_hash=e.get("source_hash"),
                 # F-2604: only if already present on the entry.
                 supports_segment_id=e.get("supports_segment_id"),
+                # R4 credibility (additive; absent on pre-R4 envelopes).
+                evidence_hierarchy_tier=e.get("evidence_hierarchy_tier"),
+                peer_reviewed=e.get("peer_reviewed"),
+                provider_provenance=(
+                    tuple(e["provider_provenance"])
+                    if isinstance(e.get("provider_provenance"), list)
+                    else None
+                ),
+                triangulation_status=e.get("triangulation_status"),
+                reliability_score=e.get("reliability_score"),
             )
         )
         if source_ref:
@@ -565,6 +588,25 @@ def build_workbook_inputs(
     for source_ref, source_hash in research_manifest.items():
         source_ref_manifest.setdefault(source_ref, source_hash)
 
+    # W2: encyclopedia glossary from shared research packet (same SSOT as W1).
+    glossary_articles, glossary_empty_reason, _glossary_losses = glossary_inputs_from_run(
+        run_dir
+    )
+    for article in glossary_articles:
+        if article.source_ref and article.source_ref not in source_ref_manifest:
+            source_ref_manifest[article.source_ref] = _hash(article.source_ref)
+
+    research_trends = trends_inputs_from_run(run_dir)
+    for claim in research_trends.trends:
+        if claim.source_ref and claim.source_ref not in source_ref_manifest:
+            source_ref_manifest[claim.source_ref] = _hash(claim.source_ref)
+    for topic in research_trends.hot_topics:
+        if topic.confidence == "unusable":
+            continue
+        for source_ref in topic.source_refs:
+            if source_ref and source_ref not in source_ref_manifest:
+                source_ref_manifest[source_ref] = _hash(source_ref)
+
     # D1: generalize the plan-unit header off the run's real lesson plan / corpus.
     unit_id, event_type = _derive_plan_unit_fields(lesson_plan, collateral, run_dir)
     source_fitness_diagnosis = (
@@ -594,6 +636,9 @@ def build_workbook_inputs(
         vo_script_text=vo_script_text,
         research_empty_reason=research_empty_reason,
         research_omitted_note=research_omitted_note,
+        glossary_articles=glossary_articles,
+        glossary_empty_reason=glossary_empty_reason,
+        research_trends=research_trends,
     )
 
 
@@ -654,6 +699,9 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             research_entries=inputs.research_entries,
             research_empty_reason=inputs.research_empty_reason,
             research_omitted_note=inputs.research_omitted_note,
+            glossary_articles=inputs.glossary_articles,
+            glossary_empty_reason=inputs.glossary_empty_reason,
+            research_trends=inputs.research_trends,
             # DP6 (spec landmine): workbook-only diff justifies reuse; do not force
             # a spurious fresh-gamma. Stamp the in-graph run id.
             diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
