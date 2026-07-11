@@ -40,3 +40,15 @@ are dev-complete but NOT closed — reviews/folds outstanding. Nothing is claime
 ## Goal loop disposition
 Operator goal (E2E party PASS or 4h) ends unmet on the E2E leg: wall was 20:30, credit wall hit ~19:10.
 Per the goal's OR-clause + DoD-over-clock, the honest stop is here, at the last durable checkpoint.
+
+---
+
+## UPDATE 2026-07-11 19:05 — credit wall RECOVERED mid-session; handoff partially superseded
+
+Capacity returned ~19:20 monitor-time. Since the wall: 35.6 CLOSED (c556508d — M1 episode reset +
+S1/S2/S3/N4, 34 tests), 35.4 CLOSED (9d8eb339 — raw-identity 409 probe-verified + RFC ETag + env
+exits + honest placeholder, 33 tests), 35.2 CLOSED (86292fdd — tick-start guard + reentered_from
+semantics + real held-reader smoke; digest paste-chain verified vs live G4A fixture; 585 green),
+evidence hygiene prune (4873b74c). 35.3 DISPATCHED ~19:05 (start-path + pre-flight/heartbeats +
+L3 live witness). Remaining after 35.3: 35.5 (de-scope ladder engaged) → 35.8 → 35.7 E2E + party
+scoped-verdict review. The resume checklist above remains valid from step 4.
