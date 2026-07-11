@@ -43,6 +43,13 @@
 
 Follow-on stories named in existing specs or retrospectives but not yet filed as sprint-status entries. Filed only when their parent story closes and/or the trigger fires.
 
+### BMAD harness v6.10.0 upgrade follow-ons (filed 2026-07-11 at the 4/4 GO-WITH-AMENDMENTS upgrade gate; SSOT = bmad-harness-upgrade-v6.10.0-2026-07-11.md)
+
+- **`bmad-6-10-pre-gate-witness-set`** (Murat amendment; **gates the next real sprint story, not the merge**): before the first story-close relies on the upgraded harness, witness (1) one throwaway `bmad-code-review` run on an existing small diff, (2) one `bmad-quick-dev` smoke on a trivial change, (3) one TEA `GATE` intent invocation against existing story evidence, (4) one **read-only** bmb v2.1 analysis pass on a single custom sanctum agent (Marcus or Tracy) before any builder is pointed at the fleet, (5) memlog persistence check at next session start.
+- **`bmad-party-machinery-check`** (John amendment, standing item): the first real party-mode gate on production work appends a "did the new machinery behave" note to its record — did persistent memory persist, did anti-consensus surface dissent or rubber-stamp.
+- **`claude-md-v7-shim-reference-cleanup`** (Winston amendment): CLAUDE.md sprint-governance references `bmad-create-prd` / `bmad-create-architecture` chains — currently deprecated shims, **removed in BMAD v7**. Reactivation trigger: BEFORE first v7 upgrade. Ten-minute edit to `bmad-prd` / `bmad-architecture`.
+- **`bmad-cp1252-upstream-bug`** (Amelia amendment): `resolve_party.py` subprocess readers crash under Windows cp1252 without `PYTHONUTF8=1` (mitigated machine-locally in `.claude/settings.json` env + dev-guide note). Optional: file upstream at bmad-code-org/BMAD-METHOD. Direction may flip if upstream fixes first.
+
 ### Phase-2 six-mine integrated E2E fenced residuals (filed 2026-07-10 party CLOSE-amendment)
 
 - **`lesson-plan-json-cli-flag-docstring`**: inline docstring on `--lesson-plan-json` clarifying precedence vs ratified intent and that `start_trial` re-resolves plan-JSON companions.

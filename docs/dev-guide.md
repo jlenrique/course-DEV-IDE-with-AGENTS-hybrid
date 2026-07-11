@@ -115,6 +115,14 @@ Retrieval providers (Texas Shape-3, roster authoritative via `run_wrangler.py --
 
 Live evidence discipline: each story has a `scripts/utilities/run_research_r{1–7}_live_evidence.py` / `run_workbook_w{1–4}_live_evidence.py` / `run_openalex_live_evidence.py` driver writing a timestamped pack under `_bmad-output/implementation-artifacts/evidence/` with `verdict.json` + `PROOF.md`; first-run-stands, no retry-to-green.
 
+### BMAD Harness v6.10.0 — uv + Windows Notes (2026-07-11)
+
+The BMAD methodology harness was upgraded to v6.10.0 stable (bmb 2.1.0, tea 1.19.0, cis 0.2.1) on 2026-07-11 — record + party gate at [`_bmad-output/implementation-artifacts/bmad-harness-upgrade-v6.10.0-2026-07-11.md`](../_bmad-output/implementation-artifacts/bmad-harness-upgrade-v6.10.0-2026-07-11.md). Three standing facts for anyone touching harness scripts:
+
+- **`uv run` at repo root is safe ONLY because `[tool.uv] managed = false` is set in `pyproject.toml`.** BMAD v6.10+ skills invoke `uv run` internally (mandatory in v7). Without that pin, uv tries to build this repo as a package (setuptools flat-layout discovery fails on the many top-level dirs) and implicitly syncs dependencies into the live-verified `.venv`. Do not remove the pin; the app runtime stays on `.venv/Scripts/python.exe`.
+- **Windows consoles default to cp1252; BMAD scripts assume UTF-8.** `PYTHONUTF8=1` is set in `.claude/settings.json` env (machine-local) — set it in any other shell/profile you run harness scripts from, or `resolve_party.py`-style subprocess readers crash with `UnicodeDecodeError` (upstream bug candidate, filed in deferred inventory).
+- **The repo carries no tracked pin of its BMAD version** (`_bmad/*` is gitignored except `memory/` sanctums and `custom/` overrides). The upgrade-record artifact is the only cross-machine signal; after pulling, re-run `npx bmad-method@latest install --directory . --action update --all-stable -y` per machine.
+
 ### Development Guardrails
 
 - Do not reopen S8 or replace the selection bridge to make a later convenience path work.

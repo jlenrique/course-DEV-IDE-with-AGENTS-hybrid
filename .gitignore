@@ -33,6 +33,11 @@ PROJECT-STRUCTURE-MAP-*.md
 # re-include files under a fully-excluded parent dir).
 _bmad/*
 !_bmad/memory/
+# _bmad/custom/ holds installer-never-touched project overrides (config.toml,
+# customize.toml files) — hand-authored, so single-disk loss is real; track it.
+# Its own .gitignore keeps user-scoped *.user.toml files out. (Party amendment,
+# BMAD v6.10.0 upgrade gate 2026-07-11.)
+!_bmad/custom/
 
 # BMad skills distributed to IDE surfaces (installed by bmb setup)
 # `skills/` itself carries critical agent-definition content (SKILL.md +
