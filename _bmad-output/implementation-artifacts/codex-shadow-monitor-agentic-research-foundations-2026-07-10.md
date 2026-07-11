@@ -771,3 +771,293 @@ This monitor did not rerun hermetic tests and relies on the visible proof packs/
 **Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
 
 **Verdict:** No research-claim movement since SOP-R022. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. The dev-auto / lesson-plan CLI docstring residual has been merged to master, but no new research evidence or dedicated research review artifact appeared.
+
+---
+### SOP-R024 - BMAD pre-gate witness work landed; research claim unchanged - 2026-07-11T01:34:28-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R023, current `git status --short --branch --untracked-files=all`, local git log, commit stats for `62702563` and `0d0fb8f0`, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, now at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). Since SOP-R023, master advanced through `62702563` (`chore(bmad): complete pre-gate witness set (5/5) + receipt-1 code-review triage fixes`) and then banked the prior monitor append in `0d0fb8f0`. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, no tracked dirty files were visible. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. The new `62702563` work is **BMAD harness / pre-gate witness and workflow hygiene**, a separate governance/maintenance envelope that does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. `62702563` updates the BMAD harness upgrade artifact, deferred inventory, docs, and workflow config; it is not a research-specific gate. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close; visible recent code-review artifacts are batch/harness-adjacent, not research review.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R023. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, non-research dev-auto residual merge in `6d265d2c`, and later non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0107 [P1] New master movement is non-research governance work.** `62702563` advances BMAD harness/pre-gate witness and workflow hygiene, not the research evidence or implementation claim.
+**F-R-0108 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0109 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+**F-R-0110 [P2] Worktree has no tracked research dirt.** Pre-append tracked status was clean; remaining visible dirt is untracked ambient output outside the research score.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R023. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. BMAD pre-gate witness/governance work landed after the research close, but no new research evidence or dedicated research review artifact appeared.
+
+---
+### SOP-R025 - Stable after BMAD pre-gate witness; research proof set unchanged - 2026-07-11T01:49:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R024, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R024. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R024 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. No new research-specific BMAD gate appeared after SOP-R024. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R024. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0111 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R024.
+**F-R-0112 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0113 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0114 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R024. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R026 - Stable master; no new research gate or evidence - 2026-07-11T02:04:28-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R025, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R025. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R025 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. No new research-specific BMAD gate appeared after SOP-R025. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R025. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0115 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R025.
+**F-R-0116 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0117 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0118 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R025. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R027 - Stable master; review gap still open - 2026-07-11T02:19:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R026, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R026. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R026 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. No new research-specific BMAD gate appeared after SOP-R026. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R026. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0119 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R026.
+**F-R-0120 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0121 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0122 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R026. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R028 - Stable monitor-only dirt; research score unchanged - 2026-07-11T02:34:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R027, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R027. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R027 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. No new research-specific BMAD gate appeared after SOP-R027. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R027. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0123 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R027.
+**F-R-0124 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0125 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0126 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R027. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R029 - Stable master; research review gap unchanged - 2026-07-11T02:49:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R028, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R028. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R028 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. No new research-specific BMAD gate appeared after SOP-R028. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R028. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0127 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R028.
+**F-R-0128 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0129 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0130 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R028. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R030 - Stable master; no research-specific review boundary - 2026-07-11T03:04:29-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R029, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R029. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R029 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. No new research-specific BMAD gate appeared after SOP-R029. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R029. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0131 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R029.
+**F-R-0132 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0133 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0134 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R029. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R031 - Stable master; no new research evidence or review artifact - 2026-07-11T03:20:54-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R030, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex evidence directory names/timestamps, implementation-artifact inventory, and review artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R030. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R030 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. No new research-specific BMAD gate appeared after SOP-R030. Review artifact searches still found no dedicated research `bmad-code-review` / code-review artifact for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, and `openalex-live-20260711T024437Z`. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R030. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0135 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R030.
+**F-R-0136 [P1] Dedicated research review artifact still absent.** No research-specific code-review artifact appeared despite master durability and later governance commits.
+**F-R-0137 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0138 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, and OpenAlex live; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R030. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. No new research evidence or dedicated research review artifact appeared; current tracked dirt is monitor-local.
+
+---
+### SOP-R032 - Stable master; evidence set and review gap unchanged - 2026-07-11T03:34:42-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R031, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex/Jefferson/Consensus evidence directory names/timestamps, implementation-artifact inventory, and review/gate artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R031. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R031 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. Review/gate artifact search surfaced only already-known research-related artifacts: `28-2-tracy-gate-hardening.md`, `workbook-research-products-close-2026-07-10.md`, `trail-trio-close-2026-07-10.md`, and `research-r2-consensus-evidence-bolster-2026-07-10.md`. No dedicated research `bmad-code-review` / code-review artifact is visible for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, `openalex-live-20260711T024437Z`, Jefferson access probes, and Consensus OAuth smoke evidence. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R031. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0139 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R031.
+**F-R-0140 [P1] Dedicated research review artifact still absent.** Artifact search found known story/close/gate docs, but no research-specific code-review artifact.
+**F-R-0141 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0142 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, OpenAlex live, Jefferson probes, and Consensus OAuth smoke; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R031. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. Evidence and gate/close visibility are unchanged; no dedicated research code-review artifact appeared, and current tracked dirt is monitor-local.
+
+---
+### SOP-R033 - Stable master; no post-close research movement - 2026-07-11T03:49:41-04:00
+
+**Scope reviewed:** research monitor ledger through SOP-R032, current `git status --short --branch --untracked-files=all`, local git log, latest research/workbook/OpenAlex/Jefferson/Consensus evidence directory names/timestamps, implementation-artifact inventory, and review/gate artifact searches. No tests were run by this monitor poll. No production, test, runtime, Cursor, Grok, or BMAD-owned files were edited by this monitor; this SOP append is the only intentional write.
+
+**Current repo state:** workspace remains on `master`, tracking `origin/master`, at `0d0fb8f0` (`chore(monitor): bank shadow-monitor ledger append`). No new commit is visible since SOP-R032. The research line remains present underneath master via `067c687b` and `6d14c640`.
+
+**Worktree state:** before this SOP append, the only tracked dirty file was this research shadow-monitor ledger from the SOP-R032 append. Untracked ambient outputs remain visible: workbooks-test artifacts, regression scratch files, meeting transcript deconstruction files, and older `runs/*` artifacts. No tracked production/test research implementation dirt is visible.
+
+**Selected claim envelope classification:** monitored research claim envelopes remain **Agentic Research Foundations promote / close**, **Workbook Research Products W0-W4 close**, and **TRAIL trio close**. No new claim envelope is visible in this poll. BMAD harness / pre-gate witness work remains a separate governance/maintenance envelope and does not expand or re-score the research mini-epic claim.
+
+**BMAD gate/story visibility:** previously visible research story SSOTs, workbook close letter, TRAIL party greenlight/close, TRAIL close letter, `SESSION-HANDOFF.md`, docs/onboarding updates, and master consolidation remain present. Review/gate artifact search again surfaced only already-known research-related artifacts: `28-2-tracy-gate-hardening.md`, `research-r2-consensus-evidence-bolster-2026-07-10.md`, `trail-trio-close-2026-07-10.md`, and `workbook-research-products-close-2026-07-10.md`. No dedicated research `bmad-code-review` / code-review artifact is visible for the research/workbook/TRAIL implementation close.
+
+**Test / validation visibility:** no new research evidence directory name appeared. The visible research evidence set remains foundations R1-R7, Workbook W1-W4, `openalex-live-20260711T024437Z`, Jefferson access probes, and Consensus OAuth smoke evidence. Evidence directory `LastWriteTime` values remain commonly refreshed to `2026-07-11 00:09:09` after consolidation, but the evidence set itself did not expand. This monitor did not rerun tests.
+
+**Implementation visibility:** no new research implementation surface appeared since SOP-R032. Scoreable research implementation remains rooted in `3231dd43`, with WRAPUP/docs in `3b88dd1e` and `5c08bcef`, stray-bank consolidation in `6d14c640`, research master merge in `067c687b`, BMAD upgrade merge in `e88cd030`, dev-auto residual merge in `6d265d2c`, and non-research BMAD pre-gate witness work in `62702563`.
+
+**Scoreability:** Agentic Research Foundations remains **master-durable and provisionally scoreable with explicit R5 fence**. Workbook Research Products W0-W4 remains **master-durable and scoreable as a successor mini-epic close**. TRAIL trio remains **master-durable and scoreable under tight fences**. The combined research stack remains not independently review-durable because no dedicated research code-review artifact is visible.
+
+**Findings / cautions:**
+**F-R-0143 [P1] Stable master, no new research movement.** HEAD remains `0d0fb8f0`; no new research implementation commit, BMAD gate, or evidence directory appeared after SOP-R032.
+**F-R-0144 [P1] Dedicated research review artifact still absent.** Artifact search found known story/close/gate docs, but no research-specific code-review artifact.
+**F-R-0145 [P2] Current tracked dirt is monitor-local.** The only tracked dirty file before this append was this ledger, from the previous monitor update.
+**F-R-0146 [P2] Evidence set remains unchanged.** The visible proof set is still foundations R1-R7, Workbook W1-W4, OpenAlex live, Jefferson probes, and Consensus OAuth smoke; no new post-close research proof is visible.
+
+**Residual fencing:** dedicated research code-review artifact, R5 live upgrade after Chrome quit / SSO-cookie availability, full semantic claim-source audit calibration across multiple workbook runs, Epic 17 related-resources/inline/hypothesis modes, ERIC / LoC adapters, PubMed v2, Tracy gate resume/recover, LLM Tracy refine, Consensus/Jefferson default-ON policy, novel HAI/PHS ingestion, and any claim that G2 or the WARN tripwire has become semantic claim-support.
+
+**Verdict:** No research-claim movement since SOP-R032. The research foundations, workbook products, and TRAIL trio stack remains master-durable and scoreable under named fences. Evidence and gate/close visibility are unchanged; no dedicated research code-review artifact appeared, and current tracked dirt is monitor-local.
