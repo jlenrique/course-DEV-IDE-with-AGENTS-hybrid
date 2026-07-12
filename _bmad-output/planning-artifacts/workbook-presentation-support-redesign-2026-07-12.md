@@ -81,15 +81,86 @@ Pre-work is a **stable weekly ritual** (predictable container so the learner lea
 
 **Mode-agnostic:** the mechanism is identical whether the presentation is live (HAI) or recorded (HIL); the live lecture only amplifies beat-3's payoff.
 
+### Frame-generalization test (Part 2 vs Part 4)
+
+The three-beat frame was tested on two very different C1M1 lessons:
+- **Part 2 — Macro Trends** (a fresh-pain lecture): scene = the "Modern Clinician's Dilemma" (a recurring transport-delay you can't fix), harvested from the SME's own Chapter-2 Q5; friction = *the system fighting your practice*; promise = *tell system-design pain from resilience pain*.
+- **Part 4 — Assessments & Bridge to Module 2** (a bridge/capstone week, one closing video + assessments): scene = *the threshold of championing an idea vs. merely having one*; friction = *the "10% idea / 90% leadership" gap* (introspective/identity, not external system-pain); promise = *see the 90% as buildable skill, not innate gift*.
+
+**Finding:** the frame **generalizes**, but the **Scene's *archetype* is lesson-type-dependent** — a fresh-pain lecture yields an external-friction scene; a bridge/identity capstone yields an introspective-threshold scene; a dry skill-build yields a difficulty scene. **The producer must detect lesson type and select the scene archetype accordingly.** Part 4 also carries an explicit source-adequacy warning ("fail loud, don't invent missing assets"), which becomes the producer's **adequacy gate**: on thin-source weeks the pre-work degrades honestly rather than fabricating a pain the deck can't pay off.
+
 ---
 
-## 4. Open threads (not yet designed)
+## 5. Reproduction / production architecture — the `pre_work_producer`
 
-- **REVIEW posture** — the other half of "support," where beat-2's friction marks come home to roost. (Not yet brainstormed.)
-- **Chime mechanics** — *how* does the producer make beat-3's pertinent-ability vows reliably **rhyme** with beat-1's scene, week after week, without an author hand-tuning each one? (Where the Irene / lesson-plan pipeline must actually deliver.)
-- **Depth payload organization** — prose depth keyed per-slide vs. some other structure (the core "review/during" value).
+**The problem this section answers:** a BMAD creative party generated the Part-2 gem *once*. Production (Marcus-SPOC) must reproduce that quality across many courses and runs **with no party in the loop.** The resolution is the same one the codebase already uses twice — the party is a **design-time** activity whose output is a **reusable contract + gates + a golden exemplar**, not the content itself. Content is generated **per-run by a producer**, deterministically where possible and by a *leashed* LLM only where it must.
+
+### 5.1 The precedent to mirror (do not reinvent)
+
+`app/marcus/lesson_plan/glossary_projection.py` (W2) and `trends_projection.py` (W3) are the exact pattern:
+- a **deterministic default projector** (`default_glossary_writer`) that composes from tier-labeled rows,
+- an **injectable writer seam** (`GlossaryWriter`) for a richer LLM/SME pass later,
+- **anti-fabrication** (rows missing provenance/`source_ref` are skipped into `known_losses`, never invented),
+- **empty-honesty** (explicitly-empty section when no usable rows),
+- a **shared-SSOT intake idiom** (`research_packet.resolve_for_<consumer>` — one load path, one witnessed digest).
+
+`pre_work_producer` is a **new sibling projector** in the same M3-safe layer (imports `lesson_plan`, never `marcus.orchestrator`), most likely `app/marcus/lesson_plan/prework_projection.py`, consumed by the workbook producer leg the same way glossary/trends are wired in `workbook_producer/_act.py::build_workbook_inputs`.
+
+### 5.2 Decompose the gem: deterministic vs. leashed-LLM
+
+| Beat / element | Mechanism | Notes |
+|---|---|---|
+| The three-beat **frame** | **Deterministic** | Structure is fixed; renders identically every week/course. |
+| Beat ② **Friction Scale instrument** | **Deterministic template** | The 0–10 scale, the locate field, the one-line field, the anchors, the "keep this for review" hook. No model. Byte-identical every run. |
+| Honesty framing + review hook | **Deterministic** | Fixed copy. |
+| Beat ① **The Scene** | **Leashed LLM** (extraction + composition) | Synthesized from *extracted* friction; **must trace to slide/narration provenance**; **harvest SME-authored scenarios first** (e.g. Part-2 Ch2 Q5) and only compose when none exists. Scene archetype selected by lesson-type detection (§4 finding). |
+| Beat ③ **The Promise** | **Leashed LLM** (transform) | **Re-voices ratified LOs** into pertinent-ability vows. Respect-not-replace; never invents an objective. |
+
+Only **two** beats touch a model, and both are bounded to *extract* or *transform* — never to *invent*.
+
+### 5.3 LO source of truth — Irene's **ratified** Lesson Plan (binding)
+
+**Once ratified, Irene's Lesson Plan is the single source of truth for learning objectives.** Beat ③ transforms the **ratified** LO set — not the raw SME slide bullets, not an ad-hoc extraction. Consequences:
+- The pre-work (and the workbook generally) reads LOs from the ratified lesson plan; the SME's raw objectives are *input to Irene's planning*, not the producer's LO source.
+- This **eliminates the "objective statement unresolved for `uNN`" placeholder** seen in the first-run artifact: a ratified plan resolves every bound objective by definition, so beat ③ always has real LOs to transform.
+- **Ratification is a precondition.** Before ratification, LOs are provisional and pre-work beat ③ must not claim finality (degrade-with-record, consistent with the app's honesty discipline).
+
+### 5.4 The party's judgment → encoded constraints + gates
+
+Every rule the room fought over becomes a machine-enforceable constraint, not a vibe:
+
+| Party ruling | Enforcement mechanism |
+|---|---|
+| Extract, don't invent | **Provenance gate** — scene friction traces to a slide/narration `source_ref` (same discipline as workbook G1 numeric / G2 citation fidelity). |
+| Pain, not solution | **Prompt constraint** on the Scene composer. |
+| Half-rhyme, not spoiler | **Spoiler-guard** — a review check / named operator spot-check that beat ③ foreshadows without handing over the answer. |
+| Abilities, not complete-solution LOs | **Prompt constraint** on the Promise transform (over ratified LOs). |
+| Must be pay-off-able / fail loud on thin source | **Adequacy gate** — degrade honestly (or request source) rather than fabricate; Part 4's README demands exactly this. |
+| Friction flexes beyond suffering | **Lesson-type detection** selects the scene archetype (fresh-pain / bridge-identity / skill-build). |
+
+### 5.5 The Part-2 gem seeds the producer
+
+The gem is not discarded — it becomes:
+- a **few-shot exemplar** inside the Scene/Promise prompts ("here is what excellent looks like; match this shape"), and
+- a **golden shape-pin test** the producer's output is validated against (mirroring the workbook's existing shape-pin discipline).
+
+### 5.6 Where it plugs in
+
+- **Inputs:** `run_dir` (segment-manifest narration + corpus slides for scene extraction) · Irene's **ratified** lesson plan (`lesson_plan_from_run` — LO SSOT) · optional research packet (shared intake idiom, if a scene wants a cited anchor).
+- **Output:** a `PreWorkBrief` (scene, friction-scale spec, promise vows + provenance) rendered into the workbook's front matter and, later, its own emitted section — same Markdown-canonical → DOCX path as the rest of the workbook.
+- **Producer discipline:** deterministic frame + two leashed LLM steps + the §5.4 gates + empty/adequacy honesty. No new render dependency.
+
+**Build-story shape:** a new `prework_projection.py` sibling (mirrors glossary/trends) + a thin wire-in at `build_workbook_inputs` + the §5.4 gates + the Part-2 golden fixture. Design-time party judgment is now a run-time producer.
+
+---
+
+## 6. Open threads (not yet designed)
+
+- **REVIEW posture** — the other half of "support," where beat-②'s friction marks come home to roost (self-close the loop; aggregate into the term-long self-portrait). **Next up.**
+- **Depth payload organization** — prose depth keyed per-slide vs. some other structure (the core "during/review" value; slides are glance-only by design).
 - **Glossary + Trends** — formal promotion to standard sections; placement (Sally: glossary may want to be a *running margin*, not back-matter; Trends/Hot-Topics as the "sequel hook / door left ajar").
-- **Concrete draft** — mock the three-beat pre-work page on the tejal leadership-bridge lesson to react to something real.
+
+**Resolved since v1 of this doc:** concrete pre-work draft (Part 2 + Part 4, §3 / §5) · reproduction architecture + `pre_work_producer` spec (§5) · lesson-type-detection finding (§4 test) · LO SSOT = ratified lesson plan (§5.3).
 
 ---
 
