@@ -218,11 +218,65 @@ This inverts today's flow (research minted generically up front at node `04.55`)
 ## 9. Open threads (remaining)
 
 - **Depth payload organization** — per-slide vs. per-ability keying within the deep dive is leaning **per-ability** (§7); confirm at build.
-- **Encyclopedia glossary + Trends** — formal promotion to standard sections is now designed (§6.2, §8); remaining work is the render change (inline markers + separate section) and the two-ask wiring.
 - **Term-highlighting render** — how bolded inline markers link to the separate glossary section in Markdown→DOCX (anchor links vs. plain bold).
-- **Producer build** — `prework_projection.py` (§5) + a `review`/deep-dive producer leg + the two Tracy asks + the graph-order change (§8).
+- **Producer build** — see §11.
 
-**Resolved since v1:** pre-work design + draft (§3–5) · reproduction architecture (§5) · LO SSOT = ratified plan (§5.3) · full Review design (§6) · deep-dive scope/design/produce + enrichment (§7) · two-research-ask model + production sequence (§8).
+**Resolved since v1:** pre-work design + draft (§3–5) · reproduction architecture (§5) · LO SSOT = ratified plan (§5.3) · full Review design (§6) · deep-dive scope/design/produce + enrichment + binding cite-sources (§7) · two-research-ask model + production sequence (§8).
+
+---
+
+## 10. Consolidated standard section model (SUPERSEDES the 2026-06-25 S0–S9)
+
+**Scope ruling (operator, 2026-07-12):** everything developed *this session* is the workbook; anything in the prior design that did not find a place today is **dropped.** The new standard **presentation-support workbook** is:
+
+| Order | Section | Watchword | Source in old design |
+|---|---|---|---|
+| — | **Cover** *(deferred — see §12)* | — | old S0 (partly) |
+| 1 | **Pre-work — The Scene** | engagement | NEW |
+| 2 | **Pre-work — The Friction Scale** | engagement | NEW |
+| 3 | **Pre-work — The Promise** (abilities) | — | **transformed** from S1 Learning Objectives |
+| — | *[the presentation is encountered — live HAI / recorded HIL]* | — | — |
+| 4 | **Review — Bookend** (friction callback) | engagement | NEW |
+| 5 | **Review — Deep Dive** (cited read-prose; glossary terms bolded inline) | **depth** | **transformed** from S2 Narrative/deferred-depth |
+| 6 | **Review — Check on Learning** (retrieval; tests the abilities) | **recall** | **transformed** from S5 Exercises/Answer-key |
+| 7 | **Review — The Door Left Ajar** (trends / hot-topics) | **engagement** | **kept + upgraded** from S9 |
+| 8 | **Review — Closing Reflection** (apply abilities to her friction) | **transfer** | NEW |
+| 9 | **Encyclopedia Glossary** (separate section; entries for the bolded terms) | depth | **kept + upgraded** from S8 |
+| 10 | **References / Further Reading** (citations; binding) | depth | **kept** from S6 |
+| 11 | **Honesty footer** (review marker; no reading-path halo) | — | **kept** from S7 |
+
+**DROPPED (did not find a place today):**
+- **S3 Transcript of record** → broken out as a **separate, optionally-downloadable** student resource (not a workbook section).
+- **S4 Key figures / embedded slide screenshots** → cut (the deck is downloadable; screenshots were bloat).
+- **S4b Key-figures claim table** → cut (was already deferred; not carried forward).
+
+---
+
+## 11. Review / deep-dive producer spec (extends §5)
+
+Same discipline as `pre_work_producer` (§5): a sibling projector in the M3-safe `lesson_plan` layer (e.g. `review_projection.py`), consumed by the workbook producer leg; **deterministic frame + leashed-LLM only where it must + gates + empty/adequacy honesty.**
+
+**Deterministic (free, every run):** the 5-beat review frame; the **Bookend** template (surfaces the learner's own pre-work friction mark); the **Check-on-Learning** instrument shell; the **Closing Reflection** prompt shell; the glossary **inline-marker + separate-section** render; the honesty footer.
+
+**Leashed-LLM (bounded to transform/extract, never invent):**
+- **Deep Dive** — re-voice + expand the SME narration to the depth-delta, ability-organized; **must cite sources inline** (§7 binding requirement); superset-of-VO; no-new-unsourced-claims.
+- **Check on Learning** — retrieval questions that test the **beat-③ abilities** (promise→proof), grounded in the lesson (answers trace to source).
+- **Closing Reflection** — a transfer prompt keyed to the abilities + the learner's friction (asks for *capability* — name/see/do — per Sophia's shifted-question rule, **not** a re-rate).
+
+**Gates:** G2 citation-fidelity (deep-dive + research cite real sources) · numeric fidelity · superset-of-VO invariant · spoiler-guard (promise/check alignment doesn't leak the answer) · adequacy/empty-honesty (thin-source weeks degrade, never fabricate) · lesson-type detection (scene/deep-dive archetype).
+
+**Research wiring (§8 two-ask model):** **Ask A** (concept/narrative enrichment — feeds deep dive + glossary, one pass) and **Ask B** (hot-topics/trends — separate, last, scoped to abilities/scene). Graph-order change: research is **demand-driven by the workbook's own abilities**, replacing the generic upfront mint at node `04.55` for these consumers.
+
+**Golden fixtures:** the Part-2 pre-work gem (§3) + a Part-2 review/deep-dive golden, as few-shot exemplars **and** shape-pin tests.
+
+---
+
+## 12. Deferred — Cover design (post-trial, operator 2026-07-12)
+
+**Do not design yet — after the workbook has had trial runs.** The cover will be **one "page" in three parts:**
+1. An **eye-grabbing screen** created as a **custom Gamma** based on the given presentation's **scenario and/or topics.**
+2. A **creatively-presented Table of Contents** for the workbook.
+3. **Workbook provenance details.**
 
 ---
 
