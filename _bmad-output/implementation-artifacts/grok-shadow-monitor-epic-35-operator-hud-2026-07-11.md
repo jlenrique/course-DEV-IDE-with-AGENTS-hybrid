@@ -611,3 +611,318 @@ Claude terminal: **monthly spend limit hit again** while spawning “Dev story 3
 **Next poll:** ~15m. Expect: failure disposition, code-review, and/or close commit including render tests.
 
 ---
+
+### SOP-E35-019 — 15m poll — 2026-07-11T21:00:11-04:00
+
+**Scope reviewed:** HEAD `e524f42c` = origin (0/0); Kanban; claim-audit on close SHA; 35.8 agent in flight. Ledger-only.
+
+**Commit:** `e524f42c` — **35.9 CLOSED** (review APPROVE). Explicitly banks 35.5 render goldens missed at prior close + zero-test-edits guard rollforward.
+
+---
+
+#### Claim audit (WP13)
+
+| Claim | Monitor | Verdict |
+|---|---|---|
+| Render tests durable | `git ls-tree e524f42c tests/hud/*render*` present; `pytest tests/hud` on HEAD → **65 passed** | **F-E35-0031 CLOSED** |
+| AD-1 stopgap gone on SHA | `page.py` completed path uses `projection.deliverables`; chip-only `last_artifact` | **F-E35-0034 CLOSED** |
+| Parity pin shipped | `test_operator_surface_projection_demands_parity.py` in commit | **present** |
+| Kanban “982 passed” | Aggregate suite now → **982 passed, 1 skipped, 1 failed** (`test_transform_registry_lockstep` only; `30_1` no longer red) | **Pass count MATCH**; residual transform fail still in suite — not called out on Kanban row |
+| 35.9 done / 35.8 in-progress | Kanban matches; dirty `pyproject.toml` + `test_30_1_zero_test_edits.py` mid-35.8 | OK |
+
+Driver credited Grok P1 catch in terminal — acknowledged.
+
+---
+
+#### Design / sequencing (WP14)
+
+- **35.8 opened** after 35.9 close — correct order per KEY DECISION 2. Comment still says “35.5 merged” (omits 35.9) — **F-E35-0036 residual hygiene** (low).
+- **F-E35-0038 still OPEN** — epic header still lists remaining as `(35.3/35.5/35.8/35.7)` though only **35.8 + 35.7** remain.
+- **F-E35-0040 [P2] Aggregate still carries transform-registry red.** 35.9 close treated `30_1` (fixed/rollforward) but transform fail remains on the same verification command. Confirm it is accepted ambient / out-of-epic before 35.7 claim language, or fix — do not let “982 passed” imply the verification command exits 0.
+- **35.8 watch:** legacy `run_hud.py` retirement + import fences — must not break 35.4/35.5/35.9 surfaces; no premature “performed to spec.” Agent visible: “Running run_hud reti…”
+
+**Board:** 35.0–35.6 + **35.9 done**; **35.8 in-progress**; **35.7 backlog** (last).
+
+**Verdict: 35.9 CLOSED CLEAN ON EVIDENCE (P1 REMEDIATED); 35.8 BUILDING; EPIC-HEADER + TRANSFORM-RED HYGIENE REMAIN.**
+
+**Next poll:** ~15m. Expect: 35.8 substrate/review progress.
+
+---
+
+### SOP-E35-020 — 15m poll — 2026-07-11T21:15:23-04:00
+
+**Scope reviewed:** HEAD `9f9c9cf3` = origin; Kanban (35.8 done, **35.7 in-progress**); 35.8 completion notes + targeted pytest/CLI claim audit; Claude presenting 35.7 live-run options to operator. Ledger-only.
+
+**Commit:** `9f9c9cf3` — **35.8 CLOSED** (review APPROVE). Working tree clean on key surfaces.
+
+---
+
+#### Claim audit — 35.8 (WP13)
+
+| Claim | Monitor | Verdict |
+|---|---|---|
+| `run_hud` stub; CLI deprecation exit 2 | `python -m scripts.utilities.run_hud` → deprecation text, **exit 2** | **MATCH** (note: bare `python scripts/utilities/run_hud.py` ImportErrors — notes correctly specify `-m`) |
+| Retired symbols gone; `PIPELINE_STEPS` kept | `collect_hud_data`/`render_html`/`_query_active_run_id`/`_find_latest_bundle` absent; `PIPELINE_STEPS` len 36 | **MATCH** |
+| `hud_data_sources.py` deleted | absent on disk / deleted in commit | **MATCH** |
+| `tests/test_run_hud.py` retirement smoke | **3 passed** | **MATCH** |
+| `tests/hud` unbroken | **65 passed** | **MATCH** |
+| Notes suite: **1364 passed, 1 skipped, 1 failed** (transform) | Not fully re-run this poll (time); transform red was reproduced earlier (SOP-019) | **plausible / prior-corroborated** |
+| Kanban: **1387 passed (2 pre-existing reds deferred)** | **≠ notes 1364** — count drift vs cited command | **MISMATCH (P3)** — different suite composition or inflated Kanban prose; prefer notes’ command+tail |
+| Second red: `test_per_step_summary_derivation` 07D.5 | Notes claim fails on clean `e524f42c`; honest deviation section | **accept notes’ pre-existing framing pending 35.7** — **F-E35-0040** expands to *two* deferred reds |
+
+**Finding resolutions:** 35.8 close remediates sequencing worry; **F-E35-0036** effectively discharged (35.8 correctly after 35.9).
+
+**F-E35-0041 [P3] Kanban pass-count ≠ notes tail for 35.8.** 1387 vs 1364 — keep citing the notes command, not the Kanban gloss.
+
+---
+
+#### Design / 35.7 gate (WP14)
+
+- Legacy wrong-run fallback removal is the load-bearing AD-8 win — stub docstring + symbol absence support it; good.
+- HUD2 fence claimed in notes/pyproject — not independently lint-imports re-run this poll; accept pending any 35.7 breakage.
+- **F-E35-0038 still OPEN** — epic header still lists 35.3/35.5 as “remaining.”
+- **35.7 in-progress:** driver offering operator choices (scoped pause-surface E2E vs full paid completed run vs human-driven HIL). **Claim fence binds:** whichever option, party scoped-verdict must not say “performed to spec” beyond Murat checklist + evidence actually collected. Prefer not thinning 35.7 to force goal-complete.
+
+**Board:** all substrate stories **done** (0–6, 8, 9); **only 35.7** remains.
+
+**Verdict: 35.8 CLOSED WITH VERIFIED RETIREMENT SMOKE; 35.7 AWAITING OPERATOR LIVE-RUN DISPOSITION; WATCH CLAIM FENCE.**
+
+**Next poll:** ~15m. Expect: operator choice + 35.7 evidence starting, or hold.
+
+---
+
+### SOP-E35-021 — 15m poll — 2026-07-11T21:30:23-04:00
+
+**Scope reviewed:** HEAD still `9f9c9cf3` = origin (0/0); Kanban unchanged; no 35.7 evidence artifacts; Claude terminal still on 35.7 live-run **option menu**. Ledger-only.
+
+**Delta:** **None on critical path.** ~23m since 35.8 close. No new commits. Key production tree clean. No `hud-35-7-*` evidence files.
+
+**35.7 status:** Kanban `in-progress`, but work is **blocked on operator disposition**. Terminal still showing the 3-option chooser (scoped pause-surface E2E / full autonomous paid completed run / operator-driven HIL) — no selection visible in the capture.
+
+**Claim / design watch (standing):**
+- **F-E35-0038** epic header still stale.
+- **Claim fence:** until a scoped-verdict + Murat checklist evidence exists, do not treat Epic 35 as “performed to spec.”
+- No fabricated progress — honest idle.
+
+**Verdict: 35.7 AWAITING OPERATOR CHOICE — NO E2E EVIDENCE YET.**
+
+**Next poll:** ~15m. Expect: option selected + run/party start, or continued hold.
+
+---
+
+### SOP-E35-022 — 15m poll — 2026-07-11T21:45:23-04:00
+
+**Scope reviewed:** HEAD still `9f9c9cf3`; Kanban 35.7 `in-progress`; Claude still on live-run option menu; no 35.7 evidence. Ledger-only.
+
+**Delta:** **None.** Second consecutive no-progress poll since 35.8 close (~38m). Operator chooser unchanged (scoped E2E / full paid / HIL).
+
+**Watch:** Claim fence idle-honest. **F-E35-0038** epic header still stale. No substrate churn — good while waiting.
+
+**Verdict: STILL AWAITING OPERATOR 35.7 DISPOSITION.**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-023 — 15m poll — 2026-07-11T22:00:24-04:00
+
+**Scope reviewed:** HEAD `8555ccb6` = origin; handoff auth text; Kanban; Claude mapping trial-start runbook. Ledger-only.
+
+**Commit:** `8555ccb6` — `docs(35.7): operator authorized full autonomous paid E2E run (capstone)`.
+
+**Disposition (option 2):** Full autonomous paid small trial to `completed` (3 slides / 1 motion / 1 workbook), weed-clearing gate posture, party on Murat 10-item + scoped-verdict. Amendment 9 abort rules + first-run-stands bind. Recorded in credit-wall handoff §35.7 CAPSTONE.
+
+**Active work:** Driver exploring live trial-start runbook (CLI, corpus, gate-decide). No `hud-35-7-*` evidence yet — pre-flight of the paid run.
+
+**Adversarial / claim fence (WP14):**
+- **F-E35-0042 [P1 watch]** Capstone is the first live full-stack HUD integration. Party must score against **actual** checklist evidence, not substrate-story greens. SC5 keep-it-open remains L4.
+- **F-E35-0043 [P2]** “Weed-clearing accept-at-gates” can mask product friction — findings must still be logged (amendment 9); do not launder nits into silent accepts without postmortem entries.
+- **F-E35-0044 [P2]** First-run-stands forbids retry-to-green of the paid run — if emission corrupts or walk blocks, abort path must be honest; shadow will watch for a second paid “do-over” without authorization.
+- Epic header (**F-E35-0038**) still lists closed stories as remaining — hygiene.
+
+**Verdict: 35.7 UNBLOCKED — FULL PAID E2E AUTHORIZED; RUNBOOK MAPPING IN FLIGHT; NO WITNESS YET.**
+
+**Next poll:** ~15m. Expect: trial start / run_id / projection+HUD activity, or continued runbook prep.
+
+---
+
+### SOP-E35-024 — 15m poll — 2026-07-11T22:15:25-04:00
+
+**Scope reviewed:** HEAD still `8555ccb6`; live trial run dir; witness folder; projection JSON; start.log; Claude investigating pause. Ledger-only.
+
+**Live run STARTED:** `69338610-23bc-4889-9bfb-fb64f0142a95`  
+Corpus: `tejal-c1m1-p4-assessments-bridge` / bundle `narrated-deck-with-workbook`.  
+Evidence dir (untracked): `evidence/hud-35-7-e2e-witness/` (`trial-id.txt`, `start.log`).
+
+**Ground truth at poll:**
+- Envelope **`paused-at-gate` / `G0E`** with `decision-card-G0E.json`, cost-report, `operator-surface.json` (~16.7KB).
+- Projection carries **`decision_card` + `next_action`** (`gate decide … --verb approve`) — first live assembler emission witness.
+- Preflight items mostly **pass**, including `hud-server-healthz` identity match + `openai`/`gamma` live + langsmith env-presence.
+- **`health`: null** despite key present.
+- `trial-start.json`: **`status=registered-offline`**, `langsmith_trace_status=skipped-no-langsmith-env`, yet `llm_execution_mode=realtime` and preflight saw LangSmith key.
+
+---
+
+#### Findings (live)
+
+**F-E35-0045 [P1] Assembler emits without required `health` section (witness-mode invariant spam).** `start.log` repeats `status=in-flight requires the health section` dozens of times, then also `paused-at-gate requires the health section`. Live projection has `health: null`. Driver correctly treating as logged HUD gap (amendment 9 — continue). Capstone party **must** score this on Murat health-tile / honesty items — not wash as “substrate green.”
+
+**F-E35-0046 [P1] `registered-offline` / `skipped-no-langsmith-env` vs live keys + realtime LLM.** Receipt claims offline/no-langsmith while preflight reports `LANGSMITH_API_KEY present` and OpenAI/Gamma heartbeats succeeded. Risk: capstone is a **degraded** or mislabeled registration, not a clean live integration. Driver investigating before gate drive — correct hold. Shadow will not accept “full live E2E” claims without resolving this labeling.
+
+**F-E35-0047 [P2] `hud-server.log` is 0 bytes** despite healthz identity pass. Possible logging gap or server wrote elsewhere — verify HUD is actually serving the projection for the checklist “HUD open end-to-end” item.
+
+**F-E35-0042/0043/0044** still bind: first-run-stands; log weed-clearing nits; no retry-to-green.
+
+**Driver:** paused at G0E; investigating (1) health invariant (2) offline/langsmith receipt before approving gates.
+
+**Verdict: PAID CAPSTONE LIVE — PAUSED AT G0E WITH REAL PROJECTION; HEALTH + OFFLINE-LABEL GAPS ARE FIRST-CONTACT P1s; HOLD GATE-DRIVE UNTIL DISPOSITION.**
+
+**Next poll:** ~15m. Expect: disposition notes + gate advances, or abort/continue decision recorded.
+
+---
+
+### SOP-E35-025 — 15m poll — 2026-07-11T22:30:14-04:00
+
+**Scope reviewed:** same trial `69338610-…2a95`; witness folder growth; live projection; FINDINGS.md; Claude mid G2C→G3 (motion). Ledger-only. HEAD still `8555ccb6`.
+
+**Run progress:** Weed-clearing approvals advanced **G0E → G0R → G1 → G2B → G2C**; live projection now **`paused-at-gate` / G2C**; cost ~**$0.358**; motion segment starting toward G3. Witness bank includes projections/HTML at G0E+G2B, resume logs, verdicts, `FINDINGS.md`.
+
+**Driver FINDINGS (logged, first-run-stands — not fixed mid-run):**
+1. **F-E2E-1 [HIGH]** HUD `next_action` emits `gate decide …` which **fails cross-process** (`GateError: card_missing`); working path is `trial resume --verdict-file`. Paste-the-command JTBD broken. Matches shadow concern on claim fence.
+2. **F-E2E-2 [MED]** Ambient sections (`health`/`specialists`/`modalities`/`trace`) **not emitted** mid-walk — expands **F-E35-0045**.
+
+**Shadow claim audit / adversarial:**
+- **F-E35-0045** corroborated + broadened (not only health).
+- **F-E35-0048 [P1]** Capstone is proving the **resume shim**, not the HUD command block. Party scoped-verdict **must not** claim “what-to-paste works” / Murat paste-path green. F-E2E-1 is product-blocking for zero-button operator UX even if the trial completes.
+- **F-E35-0046** still open — `trial-start.json` still `registered-offline` / `skipped-no-langsmith-env` despite realtime work + cost. Label honesty for “full live” claim still unresolved in receipt.
+- **F-E35-0047** softened — FINDINGS assert `/healthz`+`/projection`+`/` live; standalone HUD HTML banked. Empty `hud-server.log` less material if HTTP witnesses hold (keep as P3 log-hygiene).
+- Weed-clearing continues with nits logged — amendment 9 posture OK so far; watch silent accepts without FINDINGS growth.
+
+**Verdict: CAPSTONE ADVANCING THROUGH GATES; TWO REAL PRODUCT GAPS BANKED (PASTE-COMMAND + AMBIENT SECTIONS); HEALTH STILL NULL; DO NOT PRE-CLAIM HUD-TO-SPEC.**
+
+**Next poll:** ~15m. Expect: G3/motion progress or next pause; FINDINGS updates.
+
+---
+
+### SOP-E35-026 — 15m poll — 2026-07-11T22:45:28-04:00
+
+**Scope reviewed:** HEAD `9bc8f501` (1 ahead of origin); live run now **paused-at-error**; FINDINGS.md; Claude option menu for vision-bug fork. Ledger-only.
+
+**Run state:** `paused-at-error` / tag **`vision.provider.transport`** / node 32 · `error_message` verbatim populated · `next_action` = `trial recover --trial-id …` · cost ~$0.358 · **no deliverables** · health/specialists still empty. Gates witnessed: G0E/G0R/G1/G2B/G2C. Pause classes: **gate + error** (batch not hit — realtime).
+
+**Commit:** `9bc8f501` banks FINDINGS prose only. **Most witness binaries/logs still untracked** (`projection-*.json`, HTML, verdicts, resume logs) — durability hole. Branch **1 commit ahead** of origin (push lag).
+
+---
+
+#### Claim / finding audit
+
+| Item | Monitor | Notes |
+|---|---|---|
+| F-E2E-1 gate paste broken | Prior corroboration + FINDINGS refine: **error-class `trial recover` works**; gate-class `gate decide` only | **F-E35-0048 refined** — gate-only |
+| F-E2E-2 ambient empty | Live proj still `health=null`, specialists false | **F-E35-0045 OPEN** |
+| F-E2E-3 vision `model_kwargs` | Live `error_message` matches claimed SDK reject string; production bug framing | Accept as non-HUD blocker; out of HUD epic but blocks `completed` |
+| Error pause HUD render | Banked `projection-G2C-error.json` + `hud-render-error.html`; `error_message` present | Strong FR5/35.9 live witness |
+| “2 pause classes witnessed” | gate + error on this run | **MATCH** |
+
+**F-E35-0049 [P2] Witness corpus mostly undurable.** Only FINDINGS.md committed; HTML/JSON/logs still `??`. Same class as 35.5 render-test miss — bank before party close.
+
+**F-E35-0050 [P2] Capstone fork — operator choice pending.** Options: (1) close 35.7 on partial witness + debt, (2) Claude-direct mid-run vision fix + recover same run, (3) formal vision fix + **fresh** paid run. Adversarial: FINDINGS themselves reject Claude-direct hotfix; **F-E35-0044** first-run-stands + auth text assumed one paid run — option 3 needs explicit re-auth if a second paid trial starts; option 2 mixes substrate change into HUD arc and softens first-run-stands. Prefer honest scoped 35.7 close (1) **or** disciplined (3); treat (2) as guardrail-tension.
+
+**F-E35-0046** still open (receipt still `registered-offline` earlier — not re-litigated this poll).
+
+**Verdict: ERROR-PAUSE WITNESSED CLEANLY; VISION BUG BLOCKS COMPLETED; AWAITING OPERATOR FORK; BANK FULL WITNESS + PUSH.**
+
+**Next poll:** ~15m. Expect: operator disposition + either scoped close path or vision-fix path.
+
+---
+
+### SOP-E35-027 — 15m poll — 2026-07-11T23:00:14-04:00
+
+**Scope reviewed:** HEAD still `9bc8f501` (1 ahead of origin); run still paused-at-error; Claude still on vision-bug option menu; witness durability. Ledger-only.
+
+**Delta:** **None.** ~15m idle at the same fork. Run unchanged (`vision.provider.transport`, recover next_action, ~$0.358). Kanban still `in-progress`.
+
+**Open items unchanged:**
+- **F-E35-0049** — 20 witness files still untracked (only FINDINGS.md committed).
+- **F-E35-0050** — operator fork still pending (scoped close / mid-run fix / fresh run).
+- Push lag: FINDINGS commit not on origin yet.
+- Claim fence: no “performed to spec” / completed witness.
+
+**Verdict: STILL AWAITING OPERATOR DISPOSITION AT VISION-BUG FORK.**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-028 — 15m poll — 2026-07-11T23:15:12-04:00
+
+**Scope reviewed:** HEAD `9bc8f501` still 1 ahead; run frozen at error pause (as_of unchanged since ~22:32); Claude option menu unchanged. Ledger-only.
+
+**Delta:** **None.** ~30m at the vision-bug fork with no selection. **F-E35-0049/0050** still open. No vision-code dirty; no new commits.
+
+**Verdict: CONTINUED HOLD — OPERATOR INPUT REQUIRED.**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-029 — event + 15m poll — 2026-07-11T23:30:33-04:00
+
+**Trigger:** Operator note that Claude has started up again + cadence tick. Ledger-only.
+
+**HEAD:** still `9bc8f501` (1 ahead of origin). Kanban 35.7 `in-progress`.
+
+**Fork disposition (inferred — option 2 executing):** Claude-direct mid-run vision fix + `trial recover` on the same paid trial. Dirty `app/specialists/vision/provider.py` (+6/−1): `bind_kwargs["model_kwargs"]={prompt_cache_key}` → **`bind_kwargs["prompt_cache_key"]=cache_key`** (realtime path). Comment cites 35.7 07G. New witness file `recover-07G.log` (health-invariant spam while still error-paused). Terminal: recover re-invoking vision; 2 shells still running; goal ~7h.
+
+**Run ground truth at poll:** still **`paused-at-error` / `vision.provider.transport`**, next=`trial recover`, cost ~$0.358, `as_of` refreshing (~03:30Z) — recover in flight, fix not yet empirically confirmed by status flip.
+
+**Finding updates:**
+- **F-E35-0050 → IN PROGRESS as option 2** (Claude-direct + same-run recover). Prior FINDINGS text preferred formal cycle; operator/driver overrode. Shadow records tension with first-run-stands / “no mid-run fix” prose — not a veto if product-bug-on-merits holds, but party must label this run as **recovered-after-hotfix**, not virgin first-contact completed.
+- **F-E35-0051 [P2]** Vision fix uncommitted while recover spends. Bank + test before claiming durable production fix; do not leave only a dirty tree if recover succeeds.
+- **F-E35-0049** still OPEN (witness corpus mostly untracked; FINDINGS-only commit).
+- **F-E35-0045** still OPEN (health invariant continues through recover log).
+
+**Claim fence:** Even if recover reaches `completed`, F-E2E-1 (gate paste) + F-E2E-2 (ambient) remain HUD blockers for “performed to spec.” Vision fix is production-non-HUD.
+
+**Verdict: CLAUDE RESUMED — OPTION-2 VISION HOTFIX + RECOVER IN FLIGHT; AWAIT STATUS FLIP PAST 07G.**
+
+**Next poll:** ~15m. Expect: paused-at-gate G3 / still-error / or completed path; vision commit.
+
+---
+
+### SOP-E35-030 — 15m poll — 2026-07-11T23:45:14-04:00
+
+**Scope reviewed:** HEAD `b2715c23` = origin (0/0); completed run; FINDINGS Murat scorecard; party seats dispatching. Ledger-only.
+
+**Commits since SOP-029:**
+1. `247cf72d` — vision realtime `prompt_cache_key` first-class bind (**F-E35-0051 CLOSED** as durable)
+2. `b2715c23` — full witness bank + FINDINGS COMPLETED section + Murat scorecard (**F-E35-0049 CLOSED**)
+
+**Run ground truth:** **`status=completed`** @ 03:41:37Z · cost **$0.599893** · gates G0E…G4A present · `deliverables` all three components true + export_paths · `health` still **null** / specialists false on completed projection (ambient gap persists to the end).
+
+---
+
+#### Claim audit (WP13)
+
+| Claim | Monitor | Verdict |
+|---|---|---|
+| completed + deliverables | Live + banked `projection-completed.json` match | **MATCH** |
+| Vision fix landed | `247cf72d` on origin; dirty tree clean | **MATCH** |
+| Witness corpus durable | 32 files tracked in evidence commit | **MATCH** (remediates 0049) |
+| Murat #3 FAIL (paste) | Consistent with F-E2E-1 / prior gate-decide log | **honest FAIL** |
+| Murat #5 FAIL (health) | completed proj `health=None` | **honest FAIL** |
+| Murat #1 PASS | components true + cost | **plausible MATCH** |
+| “first-run-stands; NOT fixed mid-run” header vs recover-after-hotfix | Header prose stale; body admits recover via `247cf72d` | **tension** — party must treat as recovered-after-hotfix |
+| FINDINGS earlier “NOT Claude-direct” vs actual path | Option 2 executed | Documented contradiction — label honestly in verdict |
+
+**Adversarial (WP14):** Driver correctly tees party with contrarians on whether completed+broken-gate-paste is PASS-with-fixes. Shadow stance: **cannot** call “HUD performed to spec” while Murat #3 (JTBD#1) fails; “performed on witnessed surface with named defects” is the only honest envelope. Batch pause class still debt. Party in flight (Murat/John done-dispatching; Winston/Amelia/Splinter/Level launching).
+
+**Finding resolutions:** 0049/0051 closed; **0045/0048** remain product defects for post-35.7 fixes; **0046** offline-label less material given completed realtime run but receipt history still worth a footnote.
+
+**Kanban:** still `in-progress` — correct until party+close.
+
+**Verdict: CAPSTONE COMPLETED AFTER VISION HOTFIX; WITNESS DURABLE; MURAT PRE-SCORE HONEST (2 FAIL); PARTY IN FLIGHT — CLAIM FENCE BINDS.**
+
+**Next poll:** ~15m. Expect: party consensus / scoped verdict / 35.7 Kanban flip.
+
+---

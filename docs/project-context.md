@@ -1,3 +1,17 @@
+# Current Context Addendum - 2026-07-11 (session WRAPUP: Operator HUD Epic 35 — full arc + live E2E party verdict)
+
+**Session class:** S. Branch `dev/hud-revival-2026-07-11`.
+
+**Landed:** Operator HUD **Epic 35 — ALL 10 stories (35.0–35.9) authored+closed**. Full chain: bmad-ux (approved spines) → bmad-architecture (19-AD projection-contract spine) → 6-seat party green-light → per-story fresh-dev + adversarial review. New substrate: `app/hud/**` (GET-only server + render), `app/notify/**` (notifier+watchdog, real ntfy L3), `app/models/runtime/operator_surface.py` (projection contract, dual pins + §Projection-Demands parity pin), `app/marcus/orchestrator/operator_surface_assembler.py` (sole-writer emission at `_persist_envelope`), start-path pre-flight/heartbeats + HUD-server launch, legacy `run_hud.py`→deprecation stub (wrong-run fallback deleted).
+
+**Live E2E (35.7):** operator-authorized full paid run reached `completed` ($0.60). 6-seat party (incl. contrarians) verdict = **CONDITIONAL/PARTIAL pass on the witnessed surface** — decision-support CORE proven live (zero-lie, pre-flight, server/render, all 3 briefing sections, gate+error pause classes), but flagship gate paste-command FAILED (F-E2E-1) + ambient instruments empty mid-run (F-E2E-2). HUD NOT operator-usable until those + re-witness.
+
+**Production fix:** vision realtime `prompt_cache_key` bug (247cf72d) — surfaced by the proofing run at node 07G.
+
+**Next:** HUD operator-readiness fix arc (`hud-operator-readiness-followon`). Do not reopen closed Epic-35 stories except for the F-E2E fixes.
+
+---
+
 # Current Context Addendum - 2026-07-10 (session WRAPUP: Research foundations + workbook products + TRAIL trio)
 
 **Session class:** S. Branch `dev/agentic-research-foundations-2026-07-10`.

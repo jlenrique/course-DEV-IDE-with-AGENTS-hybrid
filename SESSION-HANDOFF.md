@@ -1,3 +1,33 @@
+# Session Handoff — 2026-07-11 (WRAPUP: **Operator HUD — Epic 35 full arc + live E2E party verdict** — Class S)
+
+**Final class:** S. **Branch:** `dev/hud-revival-2026-07-11`. **Opened as:** UX (bmad-ux for the HUD) then escalated through the full HUD delivery chain per operator goal. **Class drift:** none (S throughout — planning + substrate + live production).
+
+## Completed
+1. **Full HUD delivery chain, planning → substrate → live proof:** bmad-ux (DESIGN.md + EXPERIENCE.md, operator-approved) → bmad-architecture (19-AD projection-contract spine, 4-lens reviewed incl. adversary) → epics/stories (Epic 35; 6-seat party green-light incl. contrarians Splinter/Level) → **all 10 stories 35.0–35.9 authored + closed**, each with a fresh dev agent + adversarial bmad-code-review + fold + commit/push + shadow-monitor poll.
+2. **Party KEY DECISION 2 (mid-dev, contrarian-shaped):** 35.9 widened the operator-surface contract (decision_card/error_message/deliverables, additive v1, no version bump) + added Splinter's §Projection-Demands **parity pin** + restored AD-1 (deleted 35.5's consumer-side deliverables workaround).
+3. **Live E2E witness (35.7 — operator-authorized full paid run):** trial `69338610-23bc-4889-9bfb-fb64f0142a95` reached **completed** ($0.60; deck 23 PNGs + motion mp4 real; **workbook cache-only**). First live integration of the whole HUD stack. **6-seat party performance review → CONDITIONAL/PARTIAL pass on the witnessed surface:** CORE PROVEN LIVE (zero-lie held at every state, assembler seq 0→872, pre-flight w/ live heartbeats, GET-only server + render, all 3 briefing sections populated on real data, 2/3 pause classes gate+error witnessed), but **flagship gate paste-command FAILED (F-E2E-1)** and **4 ambient instruments empty mid-run (F-E2E-2)**. Verdict record: `_bmad-output/planning-artifacts/epic-35-story-35.7-party-performance-review-2026-07-11.md`.
+4. **Production vision bug fixed mid-run** (`247cf72d`): realtime `prompt_cache_key` `model_kwargs`→first-class bind (surfaced by the proofing run at node 07G; was breaking vision for ALL realtime runs; the batch/LiteLLM path was unaffected).
+
+## What is next
+**HUD operator-readiness fix arc** (deferred-inventory: `hud-operator-readiness-followon`) — the HUD is **NOT operator-usable** until: F-E2E-1 [P0] (build_next_action gate branch → inline-verdict `trial resume` + cross-process EXECUTION test + re-witness), F-E2E-2 [HIGH] (wire ambient section updates into the walk). Also F-E2E-4 (workbook cache-only, production not HUD) + debt (batch pause-class witness via `--llm-execution-mode batch`/LiteLLM; browser DOM/notification witness; L2-golden promotion of the 5 snapshots). Then: branch consolidation to master (standing owed).
+
+## Unresolved issues / risks
+- F-E2E-1/F-E2E-2 block real operator use of the HUD (gate paste-command non-functional; standing instruments empty).
+- 2-of-3 consumable deliverables (workbook produced no file — cache-only).
+- 2 pre-existing ambient reds (not this arc): `test_transform_registry_lockstep`, `test_per_step_summary_derivation` (07D.5) — both in deferred-inventory.
+- **Step 0 Cora harmonize NOT run this session** — per-story adversarial code-reviews + dual shadow-monitor lanes (Grok `grok-shadow-monitor-epic-35-…`, Claude `claude-shadow-monitor-hud-revival-…`) served the coherence function continuously throughout the arc; recorded as proceed-with-acknowledged-disposition. Note: this is the 1st Cora-skip; a 2nd consecutive skip forces a full sweep next session.
+
+## Validation summary
+Per-story adversarial code reviews (all APPROVE / findings folded, incl. real MUSTs caught: 35.6 silent-ack, 35.4 identity-guard bypass, 35.2 tick-raise). Quality gate: ruff clean on HUD surface; lint-imports 18 kept/0 broken; sprint-status test 2 passed. Live E2E reached completed; 6-seat party issued a documented scoped verdict. Vision fix verified live (run cleared 07G post-fix).
+
+## Push
+Working-branch push **MANDATORY at WRAPUP — done** (HEAD on `origin/dev/hud-revival-2026-07-11`). Master merge **SKIPPED** (scoped HUD arc branch; consolidation to master remains owed).
+
+## Ambient worktree state (not session-owned)
+`_bmad-output/artifacts/workbooks/u01@1.{md,docx}` (M), `codex-shadow-monitor-…-2026-07-10.md` (M, dirty at session start), `_tmp-regression-*.txt` (untracked ambient), `state/runtime/notify/` + `runs/*` + `state/config/runs/69338610…` (untracked runtime artifacts from the live run).
+
+---
+
 # Session Handoff — 2026-07-10 (WRAPUP: **Research Foundations + Workbook Products + TRAIL trio CLOSED** — Class S)
 
 **Final class:** S. **Branch:** `dev/agentic-research-foundations-2026-07-10`. **Opened as:** S (Agentic Research Foundations → workbook products → TRAIL trio). **Class drift:** none.
