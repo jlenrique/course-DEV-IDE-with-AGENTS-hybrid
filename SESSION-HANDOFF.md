@@ -1,3 +1,52 @@
+# Session Handoff — 2026-07-12 (WRAPUP: **Presentation-Support Workbook — planned end-to-end** — Class P)
+
+**Final class:** P (Planning). **Branch:** `master` (all commits pushed; origin/master at HEAD `0b7c3534`). **Opened as:** D (git consolidation + KG refresh) then the dominant work was P (workbook redesign planning arc). No substrate/schema/pipeline/runtime/test code touched — no upgrade to S.
+
+## Completed
+1. **Git consolidation + KG refresh (session open):** merged the HUD arc `dev/hud-revival-2026-07-11` → `master` (merge `fcaca8e7`, zero conflicts; the pre-existing `test_transform_registry_lockstep` red was verified in a throwaway worktree to pre-date the merge). Pushed master. Regenerated the `/understand` knowledge graph (2899 nodes / 5790 edges at `fcaca8e7`) + re-emitted `docs/ONBOARDING.md` (commit `9994f142`). *(The KG incremental-update hit the documented `batch-existing.json` merge-drop gotcha — worked around by renaming to `batch-9000.json`.)*
+2. **Presentation-Support Workbook — redesigned end-to-end (Class P core):**
+   - BMAD creative party (Carson/Caravaggio/Sophia/Maya/Sally) redesigned the workbook as an async **preview + review** scaffold around the weekly presentation (HIL fully-async / HAI hybrid). Design doc `workbook-presentation-support-redesign-2026-07-12.md` §0–§13 (serves as PRD; §13 = FR1-17/NFR1-8).
+   - Pre-work = 3 beats (Scene · Friction Scale · Promise); Review = 5 beats mapped to recall/depth/transfer/engagement; deep-dive = cited re-voiced narration (binding cite-sources); two Tracy research asks (enrich vs hot-topics); reproduction architecture (design-time party → run-time producer + gates + golden).
+   - Epics/stories `epics-presentation-support-workbook-2026-07-12.md` (Epics 36–40).
+   - **Green-light party 4/4 GO-WITH-AMENDMENTS** (John/Winston/Amelia/Murat spawned as real subagents); amendments **A1–A10 folded** (37.2 split, DAG resequence, citation-COVERAGE gate, leashed-LLM seam, Epic-38 graph surgery, mode parity, per-learner fixes).
+   - **Epic-38 graph-shape RATIFIED** (Winston + Amelia): terminal 4-node workbook band (07W.1–07W.4) ahead of the unchanged model-free `07W` leaf; 3 packets / 3 digests; +Story 38.0; 38.3 split a/b; Tier-2 v4.2-lineage lockstep.
+   - **Sprint-planned:** Epics 36–40 added to `sprint-status.yaml` (all backlog; Epic-38 retro required).
+
+## What is next
+Workbook BUILD per the DAG (build order, not epic numbering): `38-0 → 38-3b(stubs) → {36-*, 37-1, 37-2a, 37-3, 37-4} → 38-3a → 38-1 → 37-2b → 39-1 → 38-2 → 39-2 → 40-1`. Per-story fresh dev + `bmad-code-review` before `done`; Epic 38 is pipeline-lockstep (regime doc at T1). Cut a working branch from master.
+
+## Unresolved issues / risks
+- **The deep-dive is a net-new prose-fabrication surface — the crux.** Murat's A2: G2 gates citation *resolvability*, not *coverage*; the A2 coverage gate (enrichment sentence must cite) in **37-2b** is the highest-risk item. Superset-of-VO must be defined operationally (A3).
+- **Epic 38 = graph-topology + intake-contract surgery** (lockstep, low reversibility); two new live LLM calls (cost/latency); two-walk parity discipline.
+- Pre-existing ambient reds (NOT this session): `test_transform_registry_lockstep`, `test_per_step_summary_derivation` (07D.5) — both in deferred-inventory.
+- **Ambient worktree (not session-owned):** `codex-shadow-monitor-agentic-research-foundations-2026-07-10.md` (M); untracked `runs/*`, `_bmad-output/artifacts/workbooks-test/`, `state/runtime/notify/`, course-content sources — runtime/ambient by design, left untouched.
+
+## Key lessons
+- **Party gem → producer reproduction pattern:** the creative party's output is not the content but a reusable CONTRACT + gates + golden exemplar; content is generated per-run by a producer (mirrors glossary/trends projectors). Design-time judgment, run-time machine.
+- **Citation resolvability ≠ coverage:** an anti-fabrication gate that only checks that existing citations resolve does NOT catch a *missing* citation — the trust backbone needs a coverage gate.
+- **Design for the weakest environment:** pre-work self-closes for the solitary async HIL learner; hybrid HAI's live lecture is a bonus amplifier, not a dependency.
+- **Knowledge upstream, entries downstream:** the Ask-A research pool feeds the deep-dive narrative (upstream); glossary entries are scoped by the terms the narrative bolds (downstream) — same pool, no circularity.
+
+## Validation summary
+- **Step 0 (Cora):** SKIPPED — Class P; no invariant files touched (no pipeline-manifest / schema / governance-JSON / structural-walk edits). ⚠️ Consecutive-skip tripwire: recent sessions have skipped Cora — a substrate session should engage the full sweep.
+- **Step 1 quality gate:** planning/docs session, no Python edits; `git diff --check` clean; `tests/test_sprint_status_yaml.py` → 2 passed.
+- **Step 4a:** sprint-status updated (Epics 36–40 backlog) + test green.
+- KG validated earlier this session (0 issues, 0 dangling edges).
+
+## Artifact update checklist
+- [x] Design doc / PRD (§0–§13) — committed
+- [x] Epics + amendments + graph-shape — committed
+- [x] `sprint-status.yaml` (Epics 36–40) — committed + test green
+- [x] `next-session-start-here.md` (Step 7) — rewritten
+- [x] `SESSION-HANDOFF.md` (Step 8) — this section
+- [x] KG + `docs/ONBOARDING.md` — refreshed at session open (commit `9994f142`)
+- [n/a] `project-context.md` / `agent-environment.md` — no rules/phase/architecture/MCP change (planning only)
+
+## Push
+Working-branch push (master) MANDATORY at WRAPUP — **DONE** (origin/master at `0b7c3534`). No master-merge exception needed — the working branch **is** master this session.
+
+---
+
 # Session Handoff — 2026-07-12 (WRAPUP amendment: **HUD operator-readiness fix arc CLOSED — active goal MET** — Class S)
 
 **Final class:** S. **Branch:** `dev/hud-revival-2026-07-11` (HEAD `9c9ed7a2` on origin). **Continues** the 2026-07-11 HUD arc below. **Class drift:** none.
