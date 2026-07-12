@@ -1778,3 +1778,37 @@ development_status:
   hud-35-7-e2e-witness-party-review: done  # 2026-07-11 live paid run reached completed ($0.60); 6-seat party (incl. contrarians) issued documented scoped verdict: CORE PROVEN LIVE, flagship gate-command FAILED (F-E2E-1) -> CONDITIONAL/PARTIAL pass; not operator-usable until F-E2E-1/F-E2E-2 fixed+re-witnessed (deferred-inventory: hud-operator-readiness-followon)
   hud-35-8-legacy-retirement-import-fences: done  # 2026-07-11 review APPROVE (no MUST); run_hud.py->deprecation stub, wrong-run fallback DELETED (AD-8, pinned), hud_data_sources deleted, HUD2 fence, 1387 passed (2 pre-existing reds deferred)
   hud-operator-readiness-followon: done  # 2026-07-12 FIX ARC CLOSED. Both blocking HUD defects fixed + re-witnessed on a completed live paid run (trial 31ff847c, $0.38, 8 gates + G4A). F-E2E-1 gate command flipped `gate decide`->`trial resume` (ffc97f45): all 8 gates paste-driven from the HUD's own rendered command, exit 0, ZERO card_missing. F-E2E-2 ambient sections (health/specialists/modalities/trace) wired into both walks (ed9d1c25): non-null throughout (roster 1->17, trace 66 events). Same 6-seat party (incl. both contrarians Splinter+Level) UNANIMOUS re-verdict: HUD PERFORMED TO SPEC ON THE WITNESSED SURFACE; operator-readiness gate MET; authorized for real operator use. 2 production bugs (NOT HUD) fixed on own merits per SPOC-goal guardrail: vision prompt_cache_key (247cf72d), research figure-normalizer DOI-x crash (5ace59f7). Carried DEBT (non-blocking): batch pause-class un-witnessed; workbook cache-only (2-of-3 consumable, F-E2E-4); browser DOM/notification un-witnessed; L2-golden gate-snapshot capture. Record: epic-35-story-35.7-party-performance-review-2026-07-11.md (RE-WITNESS BINDING VERDICT section).
+
+  # ── Presentation-Support Workbook (Epics 36-40) — added 2026-07-12 via bmad-sprint-planning ──
+  # Source: epics-presentation-support-workbook-2026-07-12.md (status greenlit-with-amendments; amendments A1-A10 + RATIFIED Epic-38 graph-shape).
+  # BUILD ORDER IS A DAG, NOT EPIC NUMBERING: 38-0 -> 38-3b(stubs) -> {36-*, 37-1, 37-2a, 37-3, 37-4} -> 38-3a -> 38-1 -> 37-2b -> 39-1 -> 38-2 -> 39-2 -> 40-1.
+  # Governance: Epic 38 is pipeline-lockstep (Tier-2, v4.2-lineage) + regime-doc at T1; Epic 38 already had its graph-shape party round. Per-story: fresh dev + bmad-code-review before done. All backlog (no story files created yet).
+  epic-36-prework-producer: backlog  # Pre-work producer (prework_projection.py)
+  36-1-prework-contract-frame-friction-scale: backlog
+  36-2-scene-extraction-lesson-type-adequacy: backlog  # SHOULD: split lesson-type detector out (amendment)
+  36-3-promise-transform-ratified-los: backlog
+  36-4-wire-prework-part2-golden: backlog
+  epic-36-retrospective: optional
+  epic-37-review-deep-dive-producer: backlog  # Review + deep-dive producer (review_projection.py)
+  37-1-review-frame-bookend: backlog  # A7: bookend emits callback PROMPT, not learner value
+  37-2a-deep-dive-skeleton: backlog  # A1 split; superset-of-VO operational (A3); NO Ask-A dep
+  37-2b-deep-dive-enrichment-cited: backlog  # A1 split; citation-COVERAGE gate (A2); dep 38-0 + 38-1
+  37-3-check-on-learning-retrieval: backlog
+  37-4-closing-reflection-shifted-question: backlog
+  37-5-wire-review-golden-references: backlog  # A8: assemble+dedupe+render References section (FR12)
+  37-6-mode-parity-hil-hai: backlog  # A6 (new): mode input + HIL/HAI parity AC
+  epic-37-retrospective: optional
+  epic-38-research-asks-graph: backlog  # Research asks + graph-topology surgery
+  38-0-two-packet-intake-contract: backlog  # NEW (graph-shape); LANDS FIRST; lesson_plan M3-safe; 3 packets/3 digests
+  38-1-ask-a-enrichment-wiring: backlog  # orchestrator; node 07W.2 (Tracy+Texas scoped to 07W.1 terms)
+  38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST)
+  38-3a-research-packet-consume-side: backlog  # lesson_plan; readers + cross-layer string-contract test; fixture-tested
+  38-3b-graph-topology-band-orchestrator: backlog  # orchestrator; 4-node band + 07W re-point + two-walk parity + LOCKSTEP (Tier-2, regime-doc T1)
+  epic-38-retrospective: required  # governance/substrate change (graph topology + lockstep surface)
+  epic-39-glossary-trends-render: backlog
+  39-1-glossary-downstream-render: backlog  # downstream of 37-2a bolded terms; inline-marker + separate section (39.1 T1: MD->DOCX anchor vs plain-bold)
+  39-2-trends-door-ajar: backlog
+  epic-39-retrospective: optional
+  epic-40-cover: backlog
+  40-1-cover-placeholder-hero-toc-provenance: backlog  # Gamma hero = placeholder + art-brief; TOC + provenance deterministic
+  epic-40-retrospective: optional
