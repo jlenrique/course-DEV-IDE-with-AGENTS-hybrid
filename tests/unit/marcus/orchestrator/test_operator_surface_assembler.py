@@ -307,7 +307,11 @@ def test_paused_at_gate_emits_next_action_command(tmp_path: Path) -> None:
     proj = _read(asm)
     assert proj.next_action is not None
     assert proj.next_action.pause_class == "paused-at-gate"
-    assert proj.next_action.command.startswith("gate decide")
+    # F-E2E-1: gate-class next-action now emits the cross-process `trial resume`
+    # inline-verdict command (the former `gate decide` read an empty in-memory
+    # card store cross-shell and failed card_missing).
+    assert proj.next_action.command.startswith("trial resume")
+    assert "--verb approve" in proj.next_action.command
     assert f"--trial-id {tid}" in proj.next_action.command
     assert "--gate-id G1" in proj.next_action.command
 

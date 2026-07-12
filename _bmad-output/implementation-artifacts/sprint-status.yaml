@@ -1765,6 +1765,7 @@ development_status:
   # Chain: brief (final) -> UX spines (operator-approved) -> architecture spine (final, 19 ADs) -> this epic.
   # Sequence: 35.0 -> 35.1 -> 35.2 -> 35.3 (serial after 35.2) -> 35.5 -> 35.8 (after 35.5) -> 35.7. Lanes: 35.4 || 35.3; 35.6 || 35.5.
   # DoD-over-clock: witness sets non-compressible; stop at last DoD-complete story at the wall.
+  hud-followon-f-e2e-1-2: in-review  # 2026-07-12 F-E2E-1 (gate cmd cross-process) + F-E2E-2 (ambient sections) DEV+REVIEW APPROVE; pending live re-witness + party performed-to-spec verdict
   epic-35-operator-hud-v1: done  # 2026-07-11 ALL 10 stories authored+closed (35.0-35.9); live E2E witnessed + party performance review issued (scoped verdict); operator-readiness fix arc filed (hud-operator-readiness-followon)
   hud-35-0-tier2-manifest-bump-test-disposition: done  # 2026-07-11 review APPROVE; no-bump per regime determination 2026-06-12; checker exit 0; 100/2/0
   hud-35-1-operator-surface-contract: done  # 2026-07-11 review APPROVE; S1/S2 folded (pause-identity refire, hud-block zero-lie); 108 passed; byte-pin debe6224

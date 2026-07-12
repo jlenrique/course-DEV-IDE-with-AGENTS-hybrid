@@ -50,6 +50,9 @@ _ALLOWED_NEW_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
         "tests/hud/_render_fixtures.py",
         "tests/hud/test_render_goldens.py",
         "tests/hud/test_render_units.py",
+        # F-E2E-2 — new ambient-sections witness suite (health/specialists/
+        # modalities/trace wired into the walk); operator-readiness fix arc.
+        "tests/unit/marcus/orchestrator/test_operator_surface_ambient_f_e2e_2.py",
     }
 )
 

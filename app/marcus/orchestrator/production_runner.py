@@ -278,6 +278,206 @@ def _append_operator_surface_trace(
         LOGGER.exception("operator-surface trace wrapper failed — swallowed")
 
 
+# --------------------------------------------------------------------------
+# Ambient operator-surface sections (F-E2E-2): health / specialists /
+# modalities / trace — populated from live run state DURING the walk so the
+# HUD's health strip (FR9), specialist chips (FR7), modality chips (FR10), and
+# state-trace well (FR8) are non-empty mid-run rather than empty. Every read is
+# guarded and zero-lie: a value not cheaply known mid-walk renders `unknown`
+# (never green), and a missing source omits its tile/field, never fabricates.
+# --------------------------------------------------------------------------
+
+
+def _operator_surface_cost_reading(
+    trial_id: UUID | str, runs_root: Path, run_state: Any
+) -> tuple[float | None, str]:
+    """``(cost_usd, confidence)`` for the run-cost health tile.
+
+    Prefers the persisted ``cost-report.json`` total; falls back to the live
+    accumulated per-contribution spend (a real, known partial mid-walk). Never
+    raises — returns ``(None, "unknown")`` when nothing is resolvable.
+    """
+    try:
+        path = runs_root / str(trial_id) / "cost-report.json"
+        if path.is_file():
+            data = json.loads(path.read_text(encoding="utf-8"))
+            cost = data.get("total_cost_usd") if isinstance(data, dict) else None
+            if isinstance(cost, (int, float)) and cost >= 0:
+                return float(cost), "proxy"
+    except Exception:  # noqa: BLE001
+        LOGGER.warning("operator-surface cost-report read failed for %s", trial_id)
+    try:
+        pe = getattr(run_state, "production_envelope", None)
+        contributions = getattr(pe, "contributions", ()) or ()
+        total = 0.0
+        for contribution in contributions:
+            value = getattr(contribution, "cost_usd", 0.0)
+            total += float(value) if isinstance(value, (int, float)) else 0.0
+        return total, "proxy"
+    except Exception:  # noqa: BLE001
+        return None, "unknown"
+
+
+def _operator_surface_health_tiles(
+    trial_id: UUID | str, runs_root: Path, run_state: Any
+) -> list[Any]:
+    """Build the health-strip tiles (FR9). Never-false-green (AD): unknown stays unknown."""
+    from app.models.runtime.operator_surface import HealthTile
+
+    now = _now()
+    tiles: list[Any] = []
+    cost_value, cost_conf = _operator_surface_cost_reading(trial_id, runs_root, run_state)
+    if cost_value is not None:
+        tiles.append(
+            HealthTile(
+                as_of=now,
+                label="run cost",
+                value=round(cost_value, 6),
+                unit="USD",
+                confidence=cost_conf,
+                threshold_state="unknown",
+            )
+        )
+    # Platform quota/credit is not cheaply known mid-walk -> unknown, never green.
+    for label in ("openai", "gamma"):
+        tiles.append(
+            HealthTile(
+                as_of=now,
+                label=f"{label} quota",
+                value="unknown",
+                confidence="unknown",
+                threshold_state="unknown",
+            )
+        )
+    return tiles
+
+
+def _operator_surface_specialist_roster(run_state: Any) -> list[Any]:
+    """Build the specialist roster (FR7) from accumulated envelope contributions.
+
+    A display projection (AD-16 bounded): one row per specialist, cost summed,
+    ``current_node``/``model`` from the most recent contribution. Empty until the
+    first specialist contributes; never fabricates a roster.
+    """
+    from app.models.runtime.operator_surface import SpecialistEntry
+
+    roster: list[Any] = []
+    try:
+        pe = getattr(run_state, "production_envelope", None)
+        contributions = getattr(pe, "contributions", ()) or ()
+        agg: dict[str, dict[str, Any]] = {}
+        order: list[str] = []
+        for contribution in contributions:
+            sid = getattr(contribution, "specialist_id", None)
+            if not sid:
+                continue
+            if sid not in agg:
+                agg[sid] = {"cost": 0.0, "node": None, "model": None}
+                order.append(sid)
+            value = getattr(contribution, "cost_usd", 0.0)
+            agg[sid]["cost"] += float(value) if isinstance(value, (int, float)) else 0.0
+            node = getattr(contribution, "node_id", None)
+            if node:
+                agg[sid]["node"] = node
+            model = getattr(contribution, "model_used", None)
+            if model:
+                agg[sid]["model"] = model
+        for sid in order:
+            entry = agg[sid]
+            roster.append(
+                SpecialistEntry(
+                    name=sid,
+                    status="contributed",
+                    current_node=entry["node"],
+                    model=entry["model"],
+                    last_artifact=None,
+                    cost_usd=max(entry["cost"], 0.0),
+                )
+            )
+    except Exception:  # noqa: BLE001
+        LOGGER.warning("operator-surface specialist roster build failed")
+    return roster
+
+
+def _operator_surface_styleguide(directive_path: Path) -> tuple[str | None, str | None]:
+    """Resolve styleguide name(s) + provenance from the directive. Never raises."""
+    if not directive_path.is_file():
+        return None, None
+    loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+    if not isinstance(loaded, dict):
+        return None, None
+    names: list[str] = []
+    raw = loaded.get("gamma_settings")
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                styleguide = item.get("styleguide")
+                if isinstance(styleguide, str) and styleguide.strip():
+                    names.append(styleguide.strip())
+    resolved = ", ".join(dict.fromkeys(names)) or None
+    provenance: str | None = None
+    prov = loaded.get("styleguide_picker_provenance")
+    if isinstance(prov, dict):
+        source = prov.get("source") or prov.get("provenance") or prov.get("picker")
+        if source:
+            provenance = str(source)[:240]
+    return resolved, provenance
+
+
+def _operator_surface_modalities(
+    trial_id: UUID | str, runs_root: Path, run_state: Any
+) -> dict[str, Any] | None:
+    """Build the modality readings (FR10): batch mode, detective disposition, styleguide."""
+    mod: dict[str, Any] = {}
+    lem = getattr(run_state, "llm_execution_mode", None)
+    if lem:
+        mod["llm_execution_mode"] = str(lem)
+    run_dir = runs_root / str(trial_id)
+    try:
+        receipt = research_detective_gate.load_disposition(run_dir)
+        if receipt and receipt.get("disposition"):
+            mod["detective_disposition"] = str(receipt.get("disposition"))
+        elif research_detective_gate.landing_path(run_dir).is_file():
+            mod["detective_disposition"] = "awaiting_disposition"
+    except Exception:  # noqa: BLE001
+        LOGGER.warning(
+            "operator-surface detective disposition read failed for %s", trial_id
+        )
+    try:
+        styleguide, provenance = _operator_surface_styleguide(run_dir / "directive.yaml")
+        if styleguide:
+            mod["styleguide"] = styleguide
+        if provenance:
+            mod["styleguide_provenance"] = provenance
+    except Exception:  # noqa: BLE001
+        LOGGER.warning("operator-surface styleguide read failed for %s", trial_id)
+    return mod or None
+
+
+def _refresh_operator_surface_ambient(
+    trial_id: UUID | str,
+    runs_root: Path,
+    run_state: Any,
+    *,
+    trace_event: tuple[str, str | None] | None = None,
+) -> None:
+    """Refresh ambient HUD sections (health/specialists/modalities [+trace]).
+
+    Populates the four sections the walk (F-E2E-2) otherwise left empty mid-run.
+    Double-guarded (the assembler also swallows), so ambient refresh can NEVER
+    perturb the paid walk (greenlight amendment 8 / AD-17: run.json stays truth).
+    """
+    try:
+        OperatorSurfaceAssembler(trial_id, runs_root).update_ambient(
+            health_tiles=_operator_surface_health_tiles(trial_id, runs_root, run_state),
+            specialist_roster=_operator_surface_specialist_roster(run_state),
+            modalities=_operator_surface_modalities(trial_id, runs_root, run_state),
+            trace_event=trace_event,
+        )
+    except Exception:  # noqa: BLE001 — ambient refresh must never break the walk
+        LOGGER.exception("operator-surface ambient wrapper failed — swallowed")
+
+
 def emit_registered_and_terminal_trace(
     trial_id: UUID,
     runs_root: Path,
@@ -2888,6 +3088,17 @@ def run_production_trial(
         ),
         production_envelope=production_envelope,
     )
+    # F-E2E-2: establish the ambient sections (health/specialists/modalities +
+    # an opening trace event) BEFORE the in-flight transition persists, so the
+    # in-flight emit's read-merge-write inherits a present health section and the
+    # witness-mode lifecycle invariant ("status=in-flight requires the health
+    # section") never fires. run_state already carries llm_execution_mode.
+    _refresh_operator_surface_ambient(
+        effective_trial_id,
+        runs_root,
+        run_state,
+        trace_event=("walk-start", "specialist walk starting"),
+    )
     envelope = envelope.model_copy(update={"status": "in-flight"})
     _persist_envelope(envelope, runs_root)
 
@@ -2907,6 +3118,16 @@ def run_production_trial(
             # AD-15: advance the projected walk index as the loop progresses
             # (a node-lifecycle progress event; bumps progress_seq, AD-10).
             _emit_operator_surface_steps(effective_trial_id, runs_root, manifest, index)
+            # F-E2E-2: refresh ambient sections + append a node-enter trace event
+            # each iteration so the health cost tile, specialist chips, and the
+            # state-trace well grow as the walk progresses (ambient refresh: seq
+            # bumps, progress_seq does not — the steps emit above owns progress).
+            _refresh_operator_surface_ambient(
+                effective_trial_id,
+                runs_root,
+                run_state,
+                trace_event=("node-enter", str(node.id)),
+            )
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
@@ -3816,6 +4037,16 @@ def _continue_production_walk(
     # (M-5); a no-op when UDAC is OFF. Idempotent re-cross preserves ratified_at.
     _udac_ratify_gate(last_gate_crossed, trial_id, runs_root)
 
+    # F-E2E-2: repopulate ambient sections at continuation entry — run_state was
+    # rehydrated from the persisted checkpoint/error-pause, so its contributions
+    # (specialist roster / live cost) and modes are known and must not read empty
+    # on the HUD after a resume/recover.
+    _refresh_operator_surface_ambient(
+        trial_id,
+        runs_root,
+        run_state,
+        trace_event=("walk-continue", f"resuming at index {start_index}"),
+    )
     _continue_assembler = OperatorSurfaceAssembler(trial_id, runs_root)
     with _continue_assembler.freshness_tick(), _trial_trace_context(
         trial_id=trial_id,
@@ -3826,6 +4057,15 @@ def _continue_production_walk(
             # AD-15: advance the projected walk index as the continuation walk
             # progresses (node-lifecycle progress event; bumps progress_seq).
             _emit_operator_surface_steps(trial_id, runs_root, manifest, index)
+            # F-E2E-2: refresh ambient sections + node-enter trace on the
+            # continuation walk too (two-walk parity — the HUD must not go empty
+            # after a resume/recover).
+            _refresh_operator_surface_ambient(
+                trial_id,
+                runs_root,
+                run_state,
+                trace_event=("node-enter", str(node.id)),
+            )
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":

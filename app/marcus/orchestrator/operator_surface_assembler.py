@@ -59,11 +59,14 @@ from app.models.runtime.operator_surface import (
     HealthSection,
     HealthTile,
     IdentitySection,
+    ModalitiesSection,
     NextActionSection,
     NotificationsEchoSection,
     OperatorSurfaceProjection,
     PreflightItem,
     PreflightSection,
+    SpecialistEntry,
+    SpecialistsSection,
     StepEntry,
     StepsSection,
     TraceEvent,
@@ -676,6 +679,101 @@ class OperatorSurfaceAssembler:
         except Exception:  # noqa: BLE001
             LOGGER.exception(
                 "update_health failed for trial %s — swallowed", self.trial_id
+            )
+            return False
+
+    # -- public API: ambient sections (health/specialists/modalities/trace) --
+
+    def update_ambient(
+        self,
+        *,
+        health_tiles: list[HealthTile | dict[str, Any]] | None = None,
+        specialist_roster: list[SpecialistEntry | dict[str, Any]] | None = None,
+        modalities: ModalitiesSection | dict[str, Any] | None = None,
+        trace_event: tuple[str, str | None] | None = None,
+    ) -> bool:
+        """Refresh the ambient (non-progress) HUD sections in ONE merge-write.
+
+        Populates the health strip (FR9), specialist chips (FR7), modality chips
+        (FR10), and appends one state-trace event (FR8) — the four sections the
+        walk otherwise left empty mid-run (F-E2E-2). A ``None`` argument leaves
+        that section untouched (prev value preserved); an argument that is a
+        present-but-empty list still WRITES the (empty) section so a run with no
+        contributions yet renders a present-but-empty projection, never a null.
+
+        Never a progress event (AD-10: ``seq`` bumps, ``progress_seq`` does not —
+        these are ambient refreshes, not walk advances). Never raises into the
+        walk (greenlight amendment 8): a bad tile/entry logs and skips.
+        """
+        try:
+            tile_dicts: list[dict[str, Any]] | None = None
+            if health_tiles is not None:
+                tile_dicts = [
+                    (
+                        t
+                        if isinstance(t, HealthTile)
+                        else HealthTile.model_validate(t)
+                    ).model_dump(mode="json")
+                    for t in health_tiles
+                ]
+            roster_dicts: list[dict[str, Any]] | None = None
+            if specialist_roster is not None:
+                roster_dicts = [
+                    (
+                        s
+                        if isinstance(s, SpecialistEntry)
+                        else SpecialistEntry.model_validate(s)
+                    ).model_dump(mode="json")
+                    for s in specialist_roster
+                ]
+
+            if (
+                tile_dicts is None
+                and roster_dicts is None
+                and modalities is None
+                and trace_event is None
+            ):
+                return False
+
+            def _build(
+                prev: OperatorSurfaceProjection | None, now: datetime
+            ) -> dict[str, Any]:
+                built: dict[str, Any] = {}
+                if tile_dicts is not None:
+                    built["health"] = HealthSection(
+                        as_of=now, tiles=[]
+                    ).model_dump(mode="json") | {"tiles": tile_dicts}
+                if roster_dicts is not None:
+                    built["specialists"] = SpecialistsSection(
+                        as_of=now, roster=[]
+                    ).model_dump(mode="json") | {"roster": roster_dicts}
+                if modalities is not None:
+                    if isinstance(modalities, ModalitiesSection):
+                        section = modalities.model_copy(update={"as_of": now})
+                    else:
+                        section = ModalitiesSection(as_of=now, **modalities)
+                    built["modalities"] = section.model_dump(mode="json")
+                if trace_event is not None:
+                    event, detail = trace_event
+                    events: list[dict[str, Any]] = []
+                    if prev is not None and prev.trace is not None:
+                        events = [e.model_dump(mode="json") for e in prev.trace.events]
+                    events.append(
+                        TraceEvent(at=now, event=event, detail=detail).model_dump(
+                            mode="json"
+                        )
+                    )
+                    built["trace"] = TraceSection(
+                        as_of=now, events=[]
+                    ).model_dump(mode="json") | {"events": events}
+                return built
+
+            return self._merge_write(
+                build=_build, progress=lambda prev: False, require_prev=True
+            )
+        except Exception:  # noqa: BLE001
+            LOGGER.exception(
+                "update_ambient failed for trial %s — swallowed", self.trial_id
             )
             return False
 

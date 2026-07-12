@@ -128,7 +128,10 @@ def test_paused_at_gate_projection_carries_next_action(tmp_path: Path) -> None:
     _persist_envelope(_envelope(tid, "paused-at-gate", paused_gate="G1"), tmp_path)
     proj = _projection(run_dir)
     assert proj.next_action is not None
-    assert proj.next_action.command.startswith("gate decide")
+    # F-E2E-1: gate-class next-action emits the cross-process `trial resume`
+    # inline-verdict command (former `gate decide` read an empty in-memory card
+    # store cross-shell and failed card_missing).
+    assert proj.next_action.command.startswith("trial resume")
 
 
 # --------------------------------------------------------------------------
