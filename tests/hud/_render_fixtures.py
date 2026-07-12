@@ -24,7 +24,7 @@ _T5 = "2026-07-11T11:59:55+00:00"  # 5s before NOW
 _T_STALE = "2026-07-11T11:58:00+00:00"  # 120s before NOW (past 60s tile budget)
 
 GATE_CMD = (
-    "gate decide --trial-id 22b27500-6e67-4dd7-8308-fd89defe3d99 "
+    "trial resume --trial-id 22b27500-6e67-4dd7-8308-fd89defe3d99 "
     "--gate-id G4A --verb approve --card-id 131e70a2 "
     "--decision-card-digest 3f8ac21 --operator-id juanl"
 )

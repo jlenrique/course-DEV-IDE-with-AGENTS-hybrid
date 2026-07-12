@@ -4,7 +4,12 @@ Architecture spine AD-3: the HUD never composes commands and the runner never
 freehands them — the exact copy-paste command per pause class comes from THIS
 builder, which lives beside the CLI definitions it targets:
 
-* ``paused-at-gate`` -> ``gate decide ...`` (grammar in ``app.marcus.cli.gate_cli``)
+* ``paused-at-gate`` -> ``trial resume ...`` inline-verdict mode (grammar in
+  ``app.marcus.cli.trial``). The former ``gate decide ...`` target read an
+  in-memory ``_CARD_STORE`` that is empty cross-process and never drove the
+  walk, so a freshly-pasted command failed ``card_missing`` (F-E2E-1). The
+  ``trial resume`` inline path builds the ``OperatorVerdict`` from the flags and
+  reuses the proven disk-rehydration + walk-continuation of ``--verdict-file``.
 * ``paused-at-error`` -> ``trial recover ...`` (grammar in ``app.marcus.cli.trial``)
 * ``waiting_for_provider_batch`` -> ``trial resume-batch ...`` (same grammar)
 
@@ -64,7 +69,7 @@ def build_next_action(envelope: Any, card_path: Path | None = None) -> str:
         card_id, digest = _read_card_fields(card_path)
         operator_id = str(envelope.operator_id)
         return (
-            "gate decide"
+            "trial resume"
             f" --trial-id {shlex.quote(trial_id)}"
             f" --gate-id {shlex.quote(gate_id)}"
             " --verb approve"

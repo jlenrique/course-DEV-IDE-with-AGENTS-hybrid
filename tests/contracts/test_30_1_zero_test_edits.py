@@ -66,6 +66,15 @@ _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
         # and the 35.2 assembler suite (party KEY DECISION 2).
         "tests/contracts/test_operator_surface_parity.py",
         "tests/unit/marcus/orchestrator/test_operator_surface_assembler.py",
+        # F-E2E-1 — gate-class next-action flipped from `gate decide` (empty
+        # cross-process in-memory card store -> card_missing) to `trial resume`
+        # inline-verdict mode. The round-trip test now proves the command
+        # assembles a valid OperatorVerdict; the assembler suite's gate-command
+        # assertion updates in lockstep (already allowlisted above). The runner
+        # projection-emission suite asserts the same gate-command shape and
+        # updates with it.
+        "tests/unit/marcus/cli/test_next_action.py",
+        "tests/unit/marcus/orchestrator/test_runner_projection_emission.py",
         # Epic 35 story 35.8 — legacy HUD retirement (AD-8 / AD-12). The legacy
         # generator is now a deprecation stub, so its tests retire with it:
         #   - test_run_hud.py reduced to a stub smoke test (2 story-35.0
