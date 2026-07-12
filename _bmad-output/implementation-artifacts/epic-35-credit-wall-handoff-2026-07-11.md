@@ -75,3 +75,18 @@ When the active goal completes (all remaining Epic 35 stories authored+closed:
 1. Run the BMAD **session-WRAPUP** protocol (bmad session protocol session wrapup —
    Step 12 = push; update sprint-status/next-session-start-here/state anchors; close letters).
 2. Then **WAIT** (idle for operator input; do not start new work).
+
+---
+
+## 35.7 CAPSTONE — operator authorized FULL AUTONOMOUS PAID RUN (2026-07-11)
+
+Operator chose "Full autonomous paid run now" at the 35.7 fork. Authorized: run the
+complete small production trial (3 slides / 1 motion / 1 workbook, emergent small count)
+to `completed`, HUD open end-to-end, driving every gate as operator stand-in under the
+weed-clearing posture (recommend/accept at gates; nits → postmortem). Party reviews the
+completed run against Murat's full 10-item checklist (greenlight amendment 14) + scoped-
+verdict schema (amendment 2). Abort/continuity criterion (amendment 9) binds: HUD/projection
+defect = logged finding, run continues on SPOC; abort only if emission corrupts run.json or
+blocks a walk; first-run-stands (no retry-to-green of the paid run). This is ALSO the first
+live integration of the full HUD stack (assembler emission + start-path + server + render +
+notifier) — first-contact bugs get logged/fixed per amendment 9.
