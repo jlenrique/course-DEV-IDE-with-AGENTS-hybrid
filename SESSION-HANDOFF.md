@@ -1,6 +1,28 @@
+# Session Handoff — 2026-07-12 (WRAPUP amendment: **HUD operator-readiness fix arc CLOSED — active goal MET** — Class S)
+
+**Final class:** S. **Branch:** `dev/hud-revival-2026-07-11` (HEAD `9c9ed7a2` on origin). **Continues** the 2026-07-11 HUD arc below. **Class drift:** none.
+
+## Completed (this fix-arc window)
+1. **Both blocking HUD defects FIXED + re-witnessed on a completed live paid run** (trial `31ff847c-78c3-4029-b554-ded64bf…` → `31ff847c`, $0.38, all 8 gates G0E→G4A → completed; deck 23 PNGs + motion mp4 real):
+   - **F-E2E-1 [was P0] FIXED (`ffc97f45`)** — `build_next_action` gate branch flipped `gate decide`→inline-verdict `trial resume` (new `_build_inline_verdict` + inline mode on `resume_trial_cli`, mutually exclusive with `--verdict-file`, converges on proven `resume_production_trial`). Re-witnessed: all 8 gates driven by pasting the HUD's own rendered command → exit 0, ZERO card_missing. Hermetic cross-process EXECUTION test added (`test_gate_command_reaches_resume_walk_cross_process`) — closes the round-trip-vs-execution gap that let it ship broken.
+   - **F-E2E-2 [was HIGH] FIXED (`ed9d1c25`)** — ambient section-update APIs wired into BOTH walks (`_refresh_operator_surface_ambient` + `update_ambient` on the assembler). Re-witnessed: health/specialists/modalities/trace NON-NULL at every checkpoint (roster 1→3→17, trace 66 events, mode=realtime, health tiles incl. run cost). 18 witness tests.
+2. **2 production bugs (NOT HUD) fixed on their own merits** per the SPOC-goal guardrail (proofing runs surface real defects; fix only genuine product problems): vision realtime `prompt_cache_key` bind (`247cf72d`); research `_normalize_figure` crash on non-numeric DOI/retrieval tokens ending in "x" (`5ace59f7`).
+3. **Same 6-seat party (incl. contrarians Splinter + Level) UNANIMOUS re-verdict: HUD PERFORMED TO SPEC ON THE WITNESSED SURFACE.** Both prior contrarian fences cleared and verified in code + logs. Operator-readiness gate MET; HUD authorized for real operator use. **Active goal terminal condition satisfied.** Record: `epic-35-story-35.7-party-performance-review-2026-07-11.md` §RE-WITNESS BINDING VERDICT. Sprint-status `hud-operator-readiness-followon: done`.
+
+## Carried-forward DEBT (non-blocking, unanimously not gating)
+- `waiting_for_provider_batch` pause class still un-witnessed live (needs `--llm-execution-mode batch`/LiteLLM run).
+- Workbook cache-only — **2-of-3 consumable deliverables** (deck+motion real; workbook true-flag with no artifact). Pre-existing PRODUCTION gap (F-E2E-4), NOT HUD.
+- Browser DOM-preservation + live notification-during-run un-witnessed (browser→localhost blocked; 35.6 real ntfy receipt banked separately).
+- Post-fix gate-paused projection snapshot not recaptured as a saved artifact (command shape proven by paste-log output + `next_action.py:72` + G0E/G0R captured commands in `evidence/…/rewitness-gate-commands.txt`); capture + L2-golden promotion on next gate-pausing run.
+
+## What is next
+Nothing blocks. Optional: (1) **branch consolidation to master** (standing owed) — confirm with operator; (2) residual non-blocking HUD debt above; (3) F-E2E-4 workbook (own dev cycle).
+
+---
+
 # Session Handoff — 2026-07-11 (WRAPUP: **Operator HUD — Epic 35 full arc + live E2E party verdict** — Class S)
 
-**Final class:** S. **Branch:** `dev/hud-revival-2026-07-11`. **Opened as:** UX (bmad-ux for the HUD) then escalated through the full HUD delivery chain per operator goal. **Class drift:** none (S throughout — planning + substrate + live production).
+**Final class:** S. **Branch:** `dev/hud-revival-2026-07-11`. **Opened as:** UX (bmad-ux for the HUD) then escalated through the full HUD delivery chain per operator goal. **Class drift:** none (S throughout — planning + substrate + live production). **[SUPERSEDED by the 2026-07-12 amendment above: the CONDITIONAL verdict's two blockers are now FIXED + re-witnessed; HUD is operator-usable.]**
 
 ## Completed
 1. **Full HUD delivery chain, planning → substrate → live proof:** bmad-ux (DESIGN.md + EXPERIENCE.md, operator-approved) → bmad-architecture (19-AD projection-contract spine, 4-lens reviewed incl. adversary) → epics/stories (Epic 35; 6-seat party green-light incl. contrarians Splinter/Level) → **all 10 stories 35.0–35.9 authored + closed**, each with a fresh dev agent + adversarial bmad-code-review + fold + commit/push + shadow-monitor poll.
