@@ -39,6 +39,8 @@ from app.marcus.lesson_plan.collateral_selection import (
 )
 from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
+    PreflightGateFailed,
+    emit_registered_and_terminal_trace,
     recover_production_trial,
     resume_batch_production_trial,
     resume_production_trial,
@@ -330,6 +332,7 @@ def start_trial(
     selection_code: str | None = None,
     picker_events_path: Path | None = None,
     llm_execution_mode: Literal["realtime", "batch"] = "realtime",
+    hud: Literal["on", "off"] = "on",
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     if not input_path.exists():
@@ -528,6 +531,18 @@ def start_trial(
                 operator_id=operator_id,
                 reason="directive_composition_declined",
             )
+            # Amendment 12: a pre-envelope exit leaves the projection at
+            # `registered` with a terminal trace event (the HUD/notifier can
+            # render the cancellation honestly).
+            emit_registered_and_terminal_trace(
+                effective_trial_id,
+                runs_root,
+                corpus_path=input_path,
+                preset=preset,
+                operator_id=operator_id,
+                event="trial-cancelled-at-g0",
+                detail="directive composition declined at G0",
+            )
             print(
                 "directive composition declined; trial halted at G0 with no "
                 "specialist dispatch"
@@ -550,6 +565,17 @@ def start_trial(
         if pick_record is not None:
             _warn_if_pick_dropped_by_edit(directive_path, pick_record["picks"])
         if verdict == "saved-only":
+            # Amendment 12: pre-envelope exit → projection at `registered` +
+            # terminal trace event.
+            emit_registered_and_terminal_trace(
+                effective_trial_id,
+                runs_root,
+                corpus_path=input_path,
+                preset=preset,
+                operator_id=operator_id,
+                event="trial-saved-only",
+                detail="directive saved without running the trial",
+            )
             return {
                 "status": "saved-only",
                 "trial_id": str(effective_trial_id),
@@ -581,6 +607,7 @@ def start_trial(
         # identically (the runner defaults to ComponentSelection.production_default).
         component_selection=component_selection,
         llm_execution_mode=llm_execution_mode,
+        hud=hud,
         **runner_kwargs,
     )
 
@@ -759,7 +786,14 @@ def start_trial_cli(args: argparse.Namespace) -> int:
             ),
             selection_code=getattr(args, "selection_code", None),
             llm_execution_mode=getattr(args, "llm_execution_mode", "realtime"),
+            hud=getattr(args, "hud", "on"),
         )
+    except PreflightGateFailed as exc:
+        # AD-7/AD-11: pre-flight blocked SPOC spawn. The projection is left at
+        # `registered` showing the failed item(s); surface a clear message and
+        # let the operator fix the dependency and re-run start.
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
     except FrontDoorError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
@@ -790,14 +824,31 @@ def start_trial_cli(args: argparse.Namespace) -> int:
 def resume_trial(
     *,
     trial_id: UUID,
-    verdict_file: Path,
+    verdict_file: Path | None = None,
+    verdict: OperatorVerdict | None = None,
     runs_root: Path = RUNS_ROOT,
     max_specialist_calls: int | None = None,
 ) -> dict[str, Any]:
+    """Continue a gate-paused trial from a verdict (file OR inline).
+
+    Exactly one verdict source must be supplied: ``verdict_file`` (the proven
+    JSON-on-disk path) or an already-built ``verdict`` (F-E2E-1 inline mode —
+    the HUD's copy-paste ``trial resume ... --verb approve`` command assembles
+    the OperatorVerdict from flags in :func:`resume_trial_cli`). Both paths
+    converge on the SAME cross-process ``resume_production_trial`` walk
+    continuation, which rehydrates from the run directory on disk.
+    """
     _load_env_if_available()
-    verdict = OperatorVerdict.model_validate_json(
-        verdict_file.read_text(encoding="utf-8")
-    )
+    if (verdict_file is None) == (verdict is None):
+        raise ValueError(
+            "resume_trial requires exactly one of verdict_file or verdict "
+            f"(got verdict_file={verdict_file!r}, verdict={'set' if verdict else None})"
+        )
+    if verdict is None:
+        assert verdict_file is not None  # narrowed by the guard above
+        verdict = OperatorVerdict.model_validate_json(
+            verdict_file.read_text(encoding="utf-8")
+        )
     if verdict.trial_id != trial_id:
         raise ValueError(
             f"verdict trial_id={verdict.trial_id} does not match --trial-id={trial_id}"
@@ -826,10 +877,87 @@ def resume_trial(
     return result
 
 
+_INLINE_VERDICT_ARGS = ("gate_id", "verb", "card_id", "decision_card_digest", "operator_id")
+
+
+def _build_inline_verdict(args: argparse.Namespace) -> OperatorVerdict:
+    """Assemble an OperatorVerdict from the ``trial resume`` inline flags (F-E2E-1).
+
+    This is the fresh-shell copy-paste path the HUD emits for a gate pause. A
+    fresh ``verdict_id`` (uuid4) and ``timestamp`` (now, UTC) are minted here;
+    ``card_id`` is coerced from its string flag by pydantic. ``--edit-payload``
+    / ``--reject-reason`` are honored so ``edit`` / ``reject`` verbs satisfy the
+    OperatorVerdict payload-consistency invariant.
+    """
+    verdict_kwargs: dict[str, Any] = {
+        "trial_id": args.trial_id,
+        "gate_id": args.gate_id,
+        "verb": args.verb,
+        "card_id": args.card_id,
+        "decision_card_digest": args.decision_card_digest,
+        "operator_id": args.operator_id,
+        "verdict_id": uuid4(),
+        "timestamp": datetime.now(UTC),
+    }
+    edit_payload = getattr(args, "edit_payload", None)
+    if edit_payload is not None:
+        verdict_kwargs["edit_payload"] = json.loads(edit_payload)
+    reject_reason = getattr(args, "reject_reason", None)
+    if reject_reason is not None:
+        verdict_kwargs["reject_reason"] = reject_reason
+    return OperatorVerdict(**verdict_kwargs)
+
+
 def resume_trial_cli(args: argparse.Namespace) -> int:
+    verdict_file = getattr(args, "verdict_file", None)
+    inline_present = any(getattr(args, name, None) for name in _INLINE_VERDICT_ARGS)
+    if verdict_file and inline_present:
+        print(
+            "ERROR: trial resume accepts EITHER --verdict-file OR the inline "
+            "verdict flags (--gate-id/--verb/--card-id/--decision-card-digest/"
+            "--operator-id), not both.",
+            file=sys.stderr,
+        )
+        return 2
+    if not verdict_file and not inline_present:
+        print(
+            "ERROR: trial resume requires a verdict: pass --verdict-file, or the "
+            "inline flags --gate-id --verb --card-id --decision-card-digest "
+            "--operator-id (the HUD emits the inline form).",
+            file=sys.stderr,
+        )
+        return 2
+
+    inline_verdict: OperatorVerdict | None = None
+    if inline_present:
+        missing = [
+            f"--{name.replace('_', '-')}"
+            for name in _INLINE_VERDICT_ARGS
+            if not getattr(args, name, None)
+        ]
+        if missing:
+            print(
+                "ERROR: the inline trial-resume verdict requires all of "
+                "--gate-id --verb --card-id --decision-card-digest --operator-id; "
+                f"missing: {', '.join(missing)}.",
+                file=sys.stderr,
+            )
+            return 2
+        try:
+            inline_verdict = _build_inline_verdict(args)
+        except Exception as exc:  # noqa: BLE001 — map verb/payload validation to clean exit-2
+            # e.g. `--verb edit`/`select` without `--edit-payload`, or bad JSON:
+            # surface as an operator-legible error, not a raw traceback (F-E2E-1 review SHOULD-2).
+            print(
+                f"ERROR: invalid inline verdict ({type(exc).__name__}): {exc}",
+                file=sys.stderr,
+            )
+            return 2
+
     payload = resume_trial(
         trial_id=args.trial_id,
-        verdict_file=Path(args.verdict_file),
+        verdict_file=Path(verdict_file) if verdict_file else None,
+        verdict=inline_verdict,
         runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
         max_specialist_calls=args.max_specialist_calls,
     )
@@ -1038,6 +1166,17 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         ),
     )
     start.add_argument(
+        "--hud",
+        choices=["on", "off"],
+        default="on",
+        help=(
+            "Launch the operator HUD server + notifier as start-path children "
+            "(default: on, per AD-7). Pre-flight/heartbeats are runtime-owned "
+            "and run regardless of this flag; only the server/notifier launches "
+            "are gated. Use 'off' to run the pre-flight gate without the HUD."
+        ),
+    )
+    start.add_argument(
         "--llm-execution-mode",
         choices=["realtime", "batch"],
         default="realtime",
@@ -1049,9 +1188,66 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "tracked/ad-hoc execution_mode."
         ),
     )
-    resume = subparsers.add_parser("resume")
+    resume = subparsers.add_parser(
+        "resume",
+        help=(
+            "Continue a gate-paused trial from an operator verdict. Supply either "
+            "--verdict-file (JSON on disk) OR the inline verdict flags "
+            "(--gate-id --verb --card-id --decision-card-digest --operator-id) — "
+            "the HUD next-action command emits the inline form (F-E2E-1). Both "
+            "paths drive the same cross-process disk-rehydrated walk continuation."
+        ),
+    )
     resume.add_argument("--trial-id", required=True, type=UUID)
-    resume.add_argument("--verdict-file", required=True)
+    # F-E2E-1: --verdict-file is now OPTIONAL. It is mutually exclusive with the
+    # inline verdict flags; exactly one source is validated in resume_trial_cli.
+    resume.add_argument(
+        "--verdict-file",
+        required=False,
+        help=(
+            "Path to an OperatorVerdict JSON on disk. Mutually exclusive with the "
+            "inline verdict flags below."
+        ),
+    )
+    resume.add_argument(
+        "--gate-id",
+        required=False,
+        help="Inline verdict: gate identifier (e.g. G1, G2C). With --verb/--card-id/etc.",
+    )
+    resume.add_argument(
+        "--verb",
+        required=False,
+        choices=["approve", "edit", "reject", "select"],
+        help=(
+            "Inline verdict: decision verb. 'edit' needs --edit-payload; "
+            "'reject' needs --reject-reason."
+        ),
+    )
+    resume.add_argument(
+        "--card-id",
+        required=False,
+        help="Inline verdict: UUID4 of the DecisionCard the operator reviewed.",
+    )
+    resume.add_argument(
+        "--decision-card-digest",
+        required=False,
+        help="Inline verdict: lowercase sha256 digest bound to the decision card.",
+    )
+    resume.add_argument(
+        "--operator-id",
+        required=False,
+        help="Inline verdict: operator identifier (letter-first alnum/underscore/dash).",
+    )
+    resume.add_argument(
+        "--edit-payload",
+        required=False,
+        help="Inline verdict: JSON object required when --verb edit.",
+    )
+    resume.add_argument(
+        "--reject-reason",
+        required=False,
+        help="Inline verdict: reason string required when --verb reject.",
+    )
     resume.add_argument("--runs-root", required=False, help=argparse.SUPPRESS)
     resume.add_argument(
         "--max-specialist-calls",

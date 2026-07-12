@@ -49,6 +49,10 @@ from app.marcus.orchestrator import (
     udac_wiring,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
+from app.marcus.orchestrator.operator_surface_assembler import (
+    DEFAULT_HUD_CONFIG_PATH,
+    OperatorSurfaceAssembler,
+)
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
 from app.marcus.orchestrator.research_citation import CitationFidelityError
 from app.marcus.orchestrator.slide_variant_selection import (
@@ -177,6 +181,28 @@ class GateBypassError(RuntimeError):
     """Raised when a production pause-point gate would be silently skipped."""
 
 
+class PreflightGateFailed(RuntimeError):  # noqa: N818 — a gate outcome, named for the event
+    """Start-path pre-flight did not go all-green — SPOC spawn is blocked (AD-7/11).
+
+    Raised from :func:`run_production_trial` BEFORE any specialist dispatch when
+    a pre-flight/heartbeat item is not ``pass``. The registered projection is
+    already persisted showing the failed item(s) plus a terminal trace event;
+    the walk never runs. ``blocking_items`` are the non-soft items that gated
+    the spawn (each a contract ``PreflightItem``).
+    """
+
+    def __init__(self, trial_id: UUID | str, blocking_items: list[Any]) -> None:
+        self.trial_id = trial_id
+        self.blocking_items = blocking_items
+        names = ", ".join(
+            f"{item.name}={item.state}" for item in blocking_items
+        ) or "<none>"
+        super().__init__(
+            f"pre-flight blocked SPOC spawn for trial {trial_id}: {names}. "
+            "Fix the failed dependency and re-run trial start."
+        )
+
+
 def _has_live_openai() -> bool:
     return bool(os.getenv("OPENAI_API_KEY"))
 
@@ -218,10 +244,359 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     )
 
 
+def _emit_operator_surface(envelope: ProductionTrialEnvelope, runs_root: Path) -> None:
+    """Project the envelope transition through the sole-writer assembler (AD-2).
+
+    Wrapper double-guard: the assembler already swallows every exception
+    (amendment 8), but the runner walk must NEVER be perturbed by projection
+    emission, so we belt-and-suspenders here too. ``run.json`` is already
+    written by the time we reach this call, so it remains truth (AD-17).
+    """
+    try:
+        OperatorSurfaceAssembler(envelope.trial_id, runs_root).emit(envelope)
+    except Exception:  # noqa: BLE001 — emission must never break the walk
+        LOGGER.exception("operator-surface emit wrapper failed — swallowed")
+
+
+def _emit_operator_surface_steps(
+    trial_id: UUID, runs_root: Path, manifest: Any, walk_index: int
+) -> None:
+    """Project the two-stage steps map + walk index (AD-15). Never raises."""
+    try:
+        OperatorSurfaceAssembler(trial_id, runs_root).update_steps(manifest, walk_index)
+    except Exception:  # noqa: BLE001 — emission must never break the walk
+        LOGGER.exception("operator-surface steps wrapper failed — swallowed")
+
+
+def _append_operator_surface_trace(
+    trial_id: UUID | str, runs_root: Path, event: str, detail: str | None = None
+) -> None:
+    """Append one state-trace event to the projection (AD-16). Never raises."""
+    try:
+        OperatorSurfaceAssembler(trial_id, runs_root).append_trace(event, detail)
+    except Exception:  # noqa: BLE001 — trace append must never break the start path
+        LOGGER.exception("operator-surface trace wrapper failed — swallowed")
+
+
+# --------------------------------------------------------------------------
+# Ambient operator-surface sections (F-E2E-2): health / specialists /
+# modalities / trace — populated from live run state DURING the walk so the
+# HUD's health strip (FR9), specialist chips (FR7), modality chips (FR10), and
+# state-trace well (FR8) are non-empty mid-run rather than empty. Every read is
+# guarded and zero-lie: a value not cheaply known mid-walk renders `unknown`
+# (never green), and a missing source omits its tile/field, never fabricates.
+# --------------------------------------------------------------------------
+
+
+def _operator_surface_cost_reading(
+    trial_id: UUID | str, runs_root: Path, run_state: Any
+) -> tuple[float | None, str]:
+    """``(cost_usd, confidence)`` for the run-cost health tile.
+
+    Prefers the persisted ``cost-report.json`` total; falls back to the live
+    accumulated per-contribution spend (a real, known partial mid-walk). Never
+    raises — returns ``(None, "unknown")`` when nothing is resolvable.
+    """
+    try:
+        path = runs_root / str(trial_id) / "cost-report.json"
+        if path.is_file():
+            data = json.loads(path.read_text(encoding="utf-8"))
+            cost = data.get("total_cost_usd") if isinstance(data, dict) else None
+            if isinstance(cost, (int, float)) and cost >= 0:
+                return float(cost), "proxy"
+    except Exception:  # noqa: BLE001
+        LOGGER.warning("operator-surface cost-report read failed for %s", trial_id)
+    try:
+        pe = getattr(run_state, "production_envelope", None)
+        contributions = getattr(pe, "contributions", ()) or ()
+        total = 0.0
+        for contribution in contributions:
+            value = getattr(contribution, "cost_usd", 0.0)
+            total += float(value) if isinstance(value, (int, float)) else 0.0
+        return total, "proxy"
+    except Exception:  # noqa: BLE001
+        return None, "unknown"
+
+
+def _operator_surface_health_tiles(
+    trial_id: UUID | str, runs_root: Path, run_state: Any
+) -> list[Any]:
+    """Build the health-strip tiles (FR9). Never-false-green (AD): unknown stays unknown."""
+    from app.models.runtime.operator_surface import HealthTile
+
+    now = _now()
+    tiles: list[Any] = []
+    cost_value, cost_conf = _operator_surface_cost_reading(trial_id, runs_root, run_state)
+    if cost_value is not None:
+        tiles.append(
+            HealthTile(
+                as_of=now,
+                label="run cost",
+                value=round(cost_value, 6),
+                unit="USD",
+                confidence=cost_conf,
+                threshold_state="unknown",
+            )
+        )
+    # Platform quota/credit is not cheaply known mid-walk -> unknown, never green.
+    for label in ("openai", "gamma"):
+        tiles.append(
+            HealthTile(
+                as_of=now,
+                label=f"{label} quota",
+                value="unknown",
+                confidence="unknown",
+                threshold_state="unknown",
+            )
+        )
+    return tiles
+
+
+def _operator_surface_specialist_roster(run_state: Any) -> list[Any]:
+    """Build the specialist roster (FR7) from accumulated envelope contributions.
+
+    A display projection (AD-16 bounded): one row per specialist, cost summed,
+    ``current_node``/``model`` from the most recent contribution. Empty until the
+    first specialist contributes; never fabricates a roster.
+    """
+    from app.models.runtime.operator_surface import SpecialistEntry
+
+    roster: list[Any] = []
+    try:
+        pe = getattr(run_state, "production_envelope", None)
+        contributions = getattr(pe, "contributions", ()) or ()
+        agg: dict[str, dict[str, Any]] = {}
+        order: list[str] = []
+        for contribution in contributions:
+            sid = getattr(contribution, "specialist_id", None)
+            if not sid:
+                continue
+            if sid not in agg:
+                agg[sid] = {"cost": 0.0, "node": None, "model": None}
+                order.append(sid)
+            value = getattr(contribution, "cost_usd", 0.0)
+            agg[sid]["cost"] += float(value) if isinstance(value, (int, float)) else 0.0
+            node = getattr(contribution, "node_id", None)
+            if node:
+                agg[sid]["node"] = node
+            model = getattr(contribution, "model_used", None)
+            if model:
+                agg[sid]["model"] = model
+        for sid in order:
+            entry = agg[sid]
+            roster.append(
+                SpecialistEntry(
+                    name=sid,
+                    status="contributed",
+                    current_node=entry["node"],
+                    model=entry["model"],
+                    last_artifact=None,
+                    cost_usd=max(entry["cost"], 0.0),
+                )
+            )
+    except Exception:  # noqa: BLE001
+        LOGGER.warning("operator-surface specialist roster build failed")
+    return roster
+
+
+def _operator_surface_styleguide(directive_path: Path) -> tuple[str | None, str | None]:
+    """Resolve styleguide name(s) + provenance from the directive. Never raises."""
+    if not directive_path.is_file():
+        return None, None
+    loaded = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+    if not isinstance(loaded, dict):
+        return None, None
+    names: list[str] = []
+    raw = loaded.get("gamma_settings")
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                styleguide = item.get("styleguide")
+                if isinstance(styleguide, str) and styleguide.strip():
+                    names.append(styleguide.strip())
+    resolved = ", ".join(dict.fromkeys(names)) or None
+    provenance: str | None = None
+    prov = loaded.get("styleguide_picker_provenance")
+    if isinstance(prov, dict):
+        source = prov.get("source") or prov.get("provenance") or prov.get("picker")
+        if source:
+            provenance = str(source)[:240]
+    return resolved, provenance
+
+
+def _operator_surface_modalities(
+    trial_id: UUID | str, runs_root: Path, run_state: Any
+) -> dict[str, Any] | None:
+    """Build the modality readings (FR10): batch mode, detective disposition, styleguide."""
+    mod: dict[str, Any] = {}
+    lem = getattr(run_state, "llm_execution_mode", None)
+    if lem:
+        mod["llm_execution_mode"] = str(lem)
+    run_dir = runs_root / str(trial_id)
+    try:
+        receipt = research_detective_gate.load_disposition(run_dir)
+        if receipt and receipt.get("disposition"):
+            mod["detective_disposition"] = str(receipt.get("disposition"))
+        elif research_detective_gate.landing_path(run_dir).is_file():
+            mod["detective_disposition"] = "awaiting_disposition"
+    except Exception:  # noqa: BLE001
+        LOGGER.warning(
+            "operator-surface detective disposition read failed for %s", trial_id
+        )
+    try:
+        styleguide, provenance = _operator_surface_styleguide(run_dir / "directive.yaml")
+        if styleguide:
+            mod["styleguide"] = styleguide
+        if provenance:
+            mod["styleguide_provenance"] = provenance
+    except Exception:  # noqa: BLE001
+        LOGGER.warning("operator-surface styleguide read failed for %s", trial_id)
+    return mod or None
+
+
+def _refresh_operator_surface_ambient(
+    trial_id: UUID | str,
+    runs_root: Path,
+    run_state: Any,
+    *,
+    trace_event: tuple[str, str | None] | None = None,
+) -> None:
+    """Refresh ambient HUD sections (health/specialists/modalities [+trace]).
+
+    Populates the four sections the walk (F-E2E-2) otherwise left empty mid-run.
+    Double-guarded (the assembler also swallows), so ambient refresh can NEVER
+    perturb the paid walk (greenlight amendment 8 / AD-17: run.json stays truth).
+    """
+    try:
+        OperatorSurfaceAssembler(trial_id, runs_root).update_ambient(
+            health_tiles=_operator_surface_health_tiles(trial_id, runs_root, run_state),
+            specialist_roster=_operator_surface_specialist_roster(run_state),
+            modalities=_operator_surface_modalities(trial_id, runs_root, run_state),
+            trace_event=trace_event,
+        )
+    except Exception:  # noqa: BLE001 — ambient refresh must never break the walk
+        LOGGER.exception("operator-surface ambient wrapper failed — swallowed")
+
+
+def emit_registered_and_terminal_trace(
+    trial_id: UUID,
+    runs_root: Path,
+    *,
+    corpus_path: Path,
+    preset: Literal["production", "explore"],
+    operator_id: str,
+    event: str,
+    detail: str | None = None,
+) -> None:
+    """Emit a ``registered`` projection + a terminal trace event (amendment 12).
+
+    Pre-envelope start exits (``cancelled-at-g0`` / ``saved-only``) happen in
+    ``start_trial`` BEFORE ``run_production_trial`` ever persists a projection.
+    Per greenlight amendment 12 those exits leave the projection at
+    ``registered`` with a terminal trace event, so this builds a minimal
+    registered envelope, emits it (establishing the projection), then appends
+    the terminal trace. Idempotent and never raises into the caller.
+    """
+    try:
+        production_envelope = ProductionEnvelope(trial_id=trial_id)
+        envelope = ProductionTrialEnvelope(
+            trial_id=trial_id,
+            preset=preset,
+            corpus_path=corpus_path.as_posix(),
+            operator_id=operator_id,
+            started_at=_now(),
+            status="registered",
+            production_clone_launch_evidence=False,
+            production_clone_launch_evidence_reason="registered-no-specialist-fired",
+            production_envelope=production_envelope,
+        )
+        _emit_operator_surface(envelope, runs_root)
+        _append_operator_surface_trace(trial_id, runs_root, event, detail)
+    except Exception:  # noqa: BLE001 — a pre-envelope exit must never raise here
+        LOGGER.exception(
+            "emit_registered_and_terminal_trace failed for trial %s — swallowed",
+            trial_id,
+        )
+
+
+def _run_start_preflight_gate(
+    trial_id: UUID,
+    run_dir: Path,
+    runs_root: Path,
+    *,
+    hud: Literal["on", "off"],
+    producer_pid: int,
+) -> Any:
+    """Launch the HUD server + notifier (``--hud`` gated) and run pre-flight.
+
+    Returns a ``PreflightResult``. Pre-flight itself is runtime-owned and runs
+    regardless of ``--hud``; only the server + notifier LAUNCHES are gated by
+    the flag (AD-7). A server child that fails to launch (or fails its healthz
+    identity check) surfaces as a pre-flight FAIL, never a raise.
+    """
+    from app.marcus.orchestrator.preflight import (
+        PreflightDeps,
+        launch_hud_server,
+        run_preflight,
+    )
+    from app.models.runtime.operator_surface import PreflightItem, load_hud_config
+
+    config, _parse_status = load_hud_config(DEFAULT_HUD_CONFIG_PATH)
+    port = config.hud_port
+
+    healthz_url: str | None = None
+    expected_launch_nonce: str | None = None
+    healthz_fn = None
+    notifier_alive_fn = None
+    if hud == "on":
+        expected_launch_nonce = uuid4().hex
+        server_proc = launch_hud_server(
+            trial_id=trial_id,
+            run_dir=run_dir,
+            launch_nonce=expected_launch_nonce,
+            port=port,
+            mode="session",
+        )
+        if server_proc is None:
+            # Launch failure → healthz item FAIL, never a raise (AD-7).
+            def healthz_fn() -> PreflightItem:  # type: ignore[misc]
+                return PreflightItem(
+                    name="hud-server-healthz",
+                    state="fail",
+                    output="HUD server child failed to launch",
+                )
+        else:
+            healthz_url = f"http://127.0.0.1:{port}/healthz"
+        try:
+            from app.notify.__main__ import launch_notifier
+
+            notifier_proc = launch_notifier(
+                str(trial_id), str(run_dir), producer_pid=producer_pid
+            )
+            notifier_alive_fn = lambda: notifier_proc.poll() is None  # noqa: E731
+        except Exception:  # noqa: BLE001 — a notifier launch failure is a FAIL item
+            LOGGER.exception("notifier launch failed — recording as pre-flight item")
+
+            def notifier_alive_fn() -> bool:  # type: ignore[misc]
+                return False
+
+    deps = PreflightDeps(
+        healthz_url=healthz_url,
+        healthz_fn=healthz_fn,
+        expected_trial_id=str(trial_id),
+        expected_launch_nonce=expected_launch_nonce,
+        notifier_alive_fn=notifier_alive_fn,
+    )
+    return run_preflight(trial_id, runs_root, deps)
+
+
 def _persist_envelope(envelope: ProductionTrialEnvelope, runs_root: Path) -> Path:
     path = _run_dir(envelope.trial_id, runs_root) / "run.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(envelope.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    # AD-2: emit the projection AFTER the run.json write (never before; run.json
+    # write semantics are unchanged — same plain write_text, same bytes).
+    _emit_operator_surface(envelope, runs_root)
     return path
 
 
@@ -2619,6 +2994,7 @@ def run_production_trial(
     directive_path: Path | None = None,
     component_selection: ComponentSelection | None = None,
     llm_execution_mode: LlmExecutionMode = "realtime",
+    hud: Literal["on", "off"] = "on",
 ) -> ProductionTrialEnvelope:
     """Register, compose, and start a production trial.
 
@@ -2658,6 +3034,39 @@ def run_production_trial(
     # rehydrates it and never re-defaults (two-walk trap).
     selection = component_selection or ComponentSelection.production_default()
     manifest = compose_manifest(load_manifest(manifest_path), selection)
+    # AD-15: project the composed-manifest identity + two-stage steps map at
+    # composition (walk index 0), so the in-flight emit below already carries steps.
+    _emit_operator_surface_steps(effective_trial_id, runs_root, manifest, 0)
+
+    # AD-7/AD-8/AD-11 pinned start sequence: with the run dir + registered
+    # projection + steps in place, launch the HUD server child (--hud gated),
+    # launch the notifier, and run pre-flight/heartbeats BEFORE any specialist
+    # dispatch — SPOC spawn is gated on all-green. Pre-flight is runtime-owned
+    # regardless of the --hud flag; only the server/notifier launches are gated.
+    # Offline harness runs (allow_offline_cost_report) skip the live gate: they
+    # carry no keys and are not real clone-launch starts (their status is
+    # already "registered-offline").
+    if not allow_offline_cost_report:
+        _preflight_result = _run_start_preflight_gate(
+            effective_trial_id,
+            composer_run_dir,
+            runs_root,
+            hud=hud,
+            producer_pid=os.getpid(),
+        )
+        if not _preflight_result.all_green:
+            # Abort cleanly BEFORE any specialist dispatch. The projection is
+            # left at `registered` showing the failed pre-flight item(s); append
+            # a terminal trace event; the walk never runs (AD-7/AD-11).
+            blocking = _preflight_result.blocking_items()
+            _append_operator_surface_trace(
+                effective_trial_id,
+                runs_root,
+                "preflight-blocked-spawn",
+                detail="; ".join(f"{i.name}={i.state}" for i in blocking) or None,
+            )
+            raise PreflightGateFailed(effective_trial_id, blocking)
+
     active_gate_ids = production_gate_ids(manifest)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
@@ -2679,6 +3088,17 @@ def run_production_trial(
         ),
         production_envelope=production_envelope,
     )
+    # F-E2E-2: establish the ambient sections (health/specialists/modalities +
+    # an opening trace event) BEFORE the in-flight transition persists, so the
+    # in-flight emit's read-merge-write inherits a present health section and the
+    # witness-mode lifecycle invariant ("status=in-flight requires the health
+    # section") never fires. run_state already carries llm_execution_mode.
+    _refresh_operator_surface_ambient(
+        effective_trial_id,
+        runs_root,
+        run_state,
+        trace_event=("walk-start", "specialist walk starting"),
+    )
     envelope = envelope.model_copy(update={"status": "in-flight"})
     _persist_envelope(envelope, runs_root)
 
@@ -2688,12 +3108,26 @@ def run_production_trial(
     last_gate_crossed: str | None = None
     trace_metadata: dict[str, str]
 
-    with _trial_trace_context(
+    _start_assembler = OperatorSurfaceAssembler(effective_trial_id, runs_root)
+    with _start_assembler.freshness_tick(), _trial_trace_context(
         trial_id=effective_trial_id,
         preset=preset,
         operator_id=operator_id,
     ) as trace_metadata:
         for index, node in enumerate(manifest.nodes):
+            # AD-15: advance the projected walk index as the loop progresses
+            # (a node-lifecycle progress event; bumps progress_seq, AD-10).
+            _emit_operator_surface_steps(effective_trial_id, runs_root, manifest, index)
+            # F-E2E-2: refresh ambient sections + append a node-enter trace event
+            # each iteration so the health cost tile, specialist chips, and the
+            # state-trace well grow as the walk progresses (ambient refresh: seq
+            # bumps, progress_seq does not — the steps emit above owns progress).
+            _refresh_operator_surface_ambient(
+                effective_trial_id,
+                runs_root,
+                run_state,
+                trace_event=("node-enter", str(node.id)),
+            )
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
@@ -3145,6 +3579,11 @@ def resume_production_trial(
         # witness->strict flip is a post-S5 ceremony).
         context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
+    # AD-17: reconcile-on-entry — re-emit the projection from the current
+    # (run.json-derived) envelope FIRST, before doing anything else, so a stale
+    # projection (crash between run.json persist and projection write) renders
+    # run.json truth after any runner touch. Idempotent + cheap.
+    _emit_operator_surface(envelope, runs_root)
     if envelope.status != "paused-at-gate":
         raise RuntimeError(
             f"trial {trial_id} is not paused at a gate; status={envelope.status!r}"
@@ -3276,6 +3715,8 @@ def resume_batch_production_trial(
         (run_dir / "run.json").read_text(encoding="utf-8"),
         context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
+    # AD-17: reconcile-on-entry (re-emit run.json truth before anything else).
+    _emit_operator_surface(envelope, runs_root)
     if envelope.status != "waiting_for_provider_batch":
         raise RuntimeError(
             f"trial {trial_id} is not waiting for a provider batch; "
@@ -3434,6 +3875,8 @@ def recover_production_trial(
         # witness->strict flip is a post-S5 ceremony).
         context={"anomaly_sink": run_dir / "anomalies.jsonl"},
     )
+    # AD-17: reconcile-on-entry (re-emit run.json truth before anything else).
+    _emit_operator_surface(envelope, runs_root)
     if envelope.status != "paused-at-error":
         raise RuntimeError(
             f"trial {trial_id} is not paused at a dispatch error; "
@@ -3498,10 +3941,11 @@ def recover_production_trial(
         run_state = run_state.model_copy(
             update={"production_envelope": envelope.production_envelope}
         )
-        (run_dir / "run.json").write_text(
-            envelope.model_dump_json(indent=2) + "\n",
-            encoding="utf-8",
-        )
+        # AD-2: the lone direct run.json bypass is routed through
+        # _persist_envelope so the projection stays reconciled (byte-identical
+        # envelope content — _persist_envelope writes the same
+        # model_dump_json(indent=2) + "\n" this bypass used to write directly).
+        _persist_envelope(envelope, runs_root)
         start_index = reenter_index
         non_evidence_reason = (
             f"recovered-reenter-at-node:{reenter_at_node}:dropped={dropped}"
@@ -3559,6 +4003,10 @@ def _continue_production_walk(
     # is the selection the start walk froze.
     selection = run_state.component_selection or ComponentSelection.production_default()
     manifest = compose_manifest(load_manifest(manifest_path), selection)
+    # AD-15: project the recomposed steps map at the continuation entry index.
+    # An index REGRESSION vs the last-seen walk index (recover-reenter) is
+    # inferred inside the assembler as a labeled re-entry (walk_generation++).
+    _emit_operator_surface_steps(trial_id, runs_root, manifest, start_index)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
     production_envelope = envelope.production_envelope
@@ -3589,12 +4037,35 @@ def _continue_production_walk(
     # (M-5); a no-op when UDAC is OFF. Idempotent re-cross preserves ratified_at.
     _udac_ratify_gate(last_gate_crossed, trial_id, runs_root)
 
-    with _trial_trace_context(
+    # F-E2E-2: repopulate ambient sections at continuation entry — run_state was
+    # rehydrated from the persisted checkpoint/error-pause, so its contributions
+    # (specialist roster / live cost) and modes are known and must not read empty
+    # on the HUD after a resume/recover.
+    _refresh_operator_surface_ambient(
+        trial_id,
+        runs_root,
+        run_state,
+        trace_event=("walk-continue", f"resuming at index {start_index}"),
+    )
+    _continue_assembler = OperatorSurfaceAssembler(trial_id, runs_root)
+    with _continue_assembler.freshness_tick(), _trial_trace_context(
         trial_id=trial_id,
         preset=runner.get("preset") or envelope.preset,
         operator_id=runner.get("operator_id") or envelope.operator_id,
     ) as trace_metadata:
         for index, node in enumerate(manifest.nodes[start_index:], start=start_index):
+            # AD-15: advance the projected walk index as the continuation walk
+            # progresses (node-lifecycle progress event; bumps progress_seq).
+            _emit_operator_surface_steps(trial_id, runs_root, manifest, index)
+            # F-E2E-2: refresh ambient sections + node-enter trace on the
+            # continuation walk too (two-walk parity — the HUD must not go empty
+            # after a resume/recover).
+            _refresh_operator_surface_ambient(
+                trial_id,
+                runs_root,
+                run_state,
+                trace_event=("node-enter", str(node.id)),
+            )
             handler = _active_node_handler(graph, node.id)
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
@@ -4047,7 +4518,9 @@ __all__ = [
     "DEFAULT_MANIFEST_PATH",
     "GateBypassError",
     "MissingUpstreamContributionError",
+    "PreflightGateFailed",
     "apply_llm_execution_mode_overlay",
+    "emit_registered_and_terminal_trace",
     "recover_production_trial",
     "resume_batch_production_trial",
     "resume_production_trial",

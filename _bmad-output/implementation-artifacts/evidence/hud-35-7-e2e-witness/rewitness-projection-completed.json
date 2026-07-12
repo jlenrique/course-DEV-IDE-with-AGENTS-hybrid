@@ -1,0 +1,1081 @@
+{
+  "schema_version": "v1",
+  "seq": 747,
+  "progress_seq": 70,
+  "last_progress_at": "2026-07-12T04:52:55.018185Z",
+  "envelope_digest": "21883a95bc2f5a8b2144738231f672d9a13846a90cbe421ee6ad8ec872813db3",
+  "as_of": "2026-07-12T04:52:55.018185Z",
+  "identity": {
+    "as_of": "2026-07-12T04:52:55.018185Z",
+    "trial_id": "31ff847c-78c3-4029-b554-ed34baaf7fc6",
+    "lesson": "course-content/courses/tejal-c1m1-p4-assessments-bridge",
+    "preset": "production",
+    "operator_id": "juanl"
+  },
+  "envelope": {
+    "as_of": "2026-07-12T04:52:55.018185Z",
+    "status": "completed",
+    "paused_gate": null,
+    "paused_error_tag": null,
+    "waiting_batch_id": null,
+    "completed_at": "2026-07-12T04:52:54.943165Z"
+  },
+  "notifications_echo": {
+    "as_of": "2026-07-12T04:25:14.844248Z",
+    "config": {
+      "notifications": {
+        "paused_at_gate": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        },
+        "paused_at_error": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        },
+        "batch_pause_resumed": {
+          "enabled": true,
+          "sound": true,
+          "push": false
+        },
+        "health_threshold": {
+          "enabled": true,
+          "sound": false,
+          "push": false
+        },
+        "run_stalled": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        }
+      },
+      "staleness_budget_seconds": 5,
+      "stall_budget_seconds": 600,
+      "hud_port": 8791
+    },
+    "parse_status": "ok"
+  },
+  "next_action": null,
+  "steps": {
+    "as_of": "2026-07-12T04:52:54.811770Z",
+    "manifest_digest": "f5a032f7f04dc12381d9068cc6a78849e118da79404fac05096850bf7785a307",
+    "node_count": 47,
+    "walk_index": 46,
+    "walk_generation": 1,
+    "reentered_from": 15,
+    "entries": [
+      {
+        "step_id": "directive-composer",
+        "label": "G0 — Directive Composition (Slab 7a / Story 7a.1)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "pre-gate-marcus",
+        "label": "Pre-Gate Marcus - C1 template-with-slots pre-fill (Slab 7a / Story 7a.3)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "per-slide-subgraph",
+        "label": "Per-Slide Subgraph Fan-Out (Slab 7a / Story 7a.4)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "html-review-pack-emitter",
+        "label": "HTML Review-Pack Emitter (Slab 7a / Story 7a.4)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "g0-enrichment",
+        "label": "G0 Source-Content Enrichment (Story G0-S2)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "g0-enrichment-gate",
+        "label": "G0 Source-Enrichment Confirm Gate",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "irene-refinement",
+        "label": "Irene Refinement Loop (Story G0-S3)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "g0-ratify-gate",
+        "label": "Operator LO Ratify Gate",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "01",
+        "label": "Activation + Preflight",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "02",
+        "label": "Source Authority Map",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "02A",
+        "label": "Operator Directives",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "03",
+        "label": "Ingestion + Evidence Log",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04",
+        "label": "Ingestion Quality Gate + Irene Packet",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04A",
+        "label": "Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL)",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04.5",
+        "label": "Parent Slide Count Polling",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04.55",
+        "label": "Estimator + Run Constants Lock",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "4.75",
+        "label": "Creative Directive Resolution (CD)",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "05",
+        "label": "Irene Pass 1 + Gate 1 Fidelity",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "05B",
+        "label": "Cluster Plan G1.5 Gate",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "06",
+        "label": "Pre-Dispatch Package Build",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "6.2",
+        "label": "Cluster Prompt Engineering (Conditional)",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "6.3",
+        "label": "Cluster Dispatch Sequencing (Conditional)",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "06B",
+        "label": "Literal-Visual Operator Build",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07",
+        "label": "Gary Dispatch + Export",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "7.5",
+        "label": "Cluster Coherence G2.5 Gate (Conditional)",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07B",
+        "label": "Variant Selection Gate",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07B-gate",
+        "label": "Variant Selection HIL Gate",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07C",
+        "label": "Storyboard A + Gate 2 Approval + Winner Authorization",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07D",
+        "label": "Gate 2M Motion Designation",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07D.5",
+        "label": "Motion Planning",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07E",
+        "label": "Motion Generation / Import",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07F",
+        "label": "Motion Gate",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07G",
+        "label": "PNG-Grounded Vision Perception",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "08",
+        "label": "Irene Pass 2 + Segment Manifest",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "08B",
+        "label": "Storyboard B + HIL Review",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "09",
+        "label": "Gate 3 - Lock Pass 2 Package",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "10",
+        "label": "Fidelity + Quality Pre-Spend",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11",
+        "label": "ElevenLabs Voice Selection HIL",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11-gate",
+        "label": "Voice Selection HIL Gate",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11B",
+        "label": "ElevenLabs Input Package HIL",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11B-gate",
+        "label": "Input Package HIL Gate",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "12",
+        "label": "ElevenLabs Audio Generation",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "13",
+        "label": "Quinn-R Pre-Composition QA",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "14",
+        "label": "Compositor Assembly Bundle",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "14.5",
+        "label": "Desmond Run-Scoped Operator Brief",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "15",
+        "label": "Operator Handoff - Descript Ready",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07W",
+        "label": "Companion Workbook Producer",
+        "stage": "stage-2",
+        "status": "active",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      }
+    ]
+  },
+  "preflight": {
+    "as_of": "2026-07-12T04:25:17.241660Z",
+    "items": [
+      {
+        "name": "env-keys-present",
+        "state": "pass",
+        "output": "OPENAI_API_KEY + LANGSMITH_API_KEY present",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "runs-root-writable",
+        "state": "pass",
+        "output": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "coordination-db-readable",
+        "state": "pass",
+        "output": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/runtime/coordination.db",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "litellm-importable",
+        "state": "pass",
+        "output": "import ok",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "cascade-config-validates",
+        "state": "pass",
+        "output": "cascade + pricing validated",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "hud-server-healthz",
+        "state": "pass",
+        "output": "identity matched (31ff847c-78c3-4029-b554-ed34baaf7fc6)",
+        "latency_ms": 1047.000000020489,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "notifier-process-alive",
+        "state": "pass",
+        "output": "notifier child alive",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "openai",
+        "state": "pass",
+        "output": "GET /v1/models 200 (no rate-limit headers)",
+        "latency_ms": 812.0000000344589,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "gamma",
+        "state": "pass",
+        "output": "list_themes 200 (1 theme(s) reachable)",
+        "latency_ms": 187.00000003445894,
+        "quota_reading": "credits not exposed by /themes",
+        "quota_confidence": "proxy"
+      },
+      {
+        "name": "langsmith",
+        "state": "pass",
+        "output": "LANGSMITH_API_KEY present (project=course-content-production)",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      }
+    ]
+  },
+  "health": {
+    "as_of": "2026-07-12T04:52:54.828383Z",
+    "tiles": [
+      {
+        "as_of": "2026-07-12T04:52:54.814802Z",
+        "label": "run cost",
+        "value": 0.380244,
+        "unit": "USD",
+        "confidence": "proxy",
+        "threshold_state": "unknown",
+        "history": []
+      },
+      {
+        "as_of": "2026-07-12T04:52:54.814802Z",
+        "label": "openai quota",
+        "value": "unknown",
+        "unit": null,
+        "confidence": "unknown",
+        "threshold_state": "unknown",
+        "history": []
+      },
+      {
+        "as_of": "2026-07-12T04:52:54.814802Z",
+        "label": "gamma quota",
+        "value": "unknown",
+        "unit": null,
+        "confidence": "unknown",
+        "threshold_state": "unknown",
+        "history": []
+      }
+    ]
+  },
+  "specialists": {
+    "as_of": "2026-07-12T04:52:54.828383Z",
+    "roster": [
+      {
+        "name": "g0_enrichment",
+        "status": "contributed",
+        "current_node": "g0-enrichment",
+        "model": "deterministic-g0-enrichment-offline",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "irene_refinement",
+        "status": "contributed",
+        "current_node": "irene-refinement",
+        "model": "deterministic-irene-refinement-offline",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "texas",
+        "status": "contributed",
+        "current_node": "03",
+        "model": "gpt-5-nano",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "irene_pass1",
+        "status": "contributed",
+        "current_node": "05B",
+        "model": "gpt-5.4",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "research_wiring",
+        "status": "contributed",
+        "current_node": "04.55",
+        "model": "deterministic-research-wiring",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "cd",
+        "status": "contributed",
+        "current_node": "4.75",
+        "model": "gpt-5",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "package_builder",
+        "status": "contributed",
+        "current_node": "06",
+        "model": "deterministic-package-builder",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "gary",
+        "status": "contributed",
+        "current_node": "07",
+        "model": "gpt-5-nano",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "vera",
+        "status": "contributed",
+        "current_node": "7.5",
+        "model": "gpt-5",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "quinn_r",
+        "status": "contributed",
+        "current_node": "13",
+        "model": "gpt-5",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "motion_planner",
+        "status": "contributed",
+        "current_node": "07D.5",
+        "model": "gpt-5-nano",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "kira",
+        "status": "contributed",
+        "current_node": "07E",
+        "model": "gpt-5-nano",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "vision",
+        "status": "contributed",
+        "current_node": "07G",
+        "model": "gpt-5.5",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "irene",
+        "status": "contributed",
+        "current_node": "08",
+        "model": "gpt-5",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "enrique",
+        "status": "contributed",
+        "current_node": "12",
+        "model": "gpt-5",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "compositor",
+        "status": "contributed",
+        "current_node": "14",
+        "model": "deterministic-compositor-v0",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "desmond",
+        "status": "contributed",
+        "current_node": "14.5",
+        "model": "gpt-5-nano",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      }
+    ]
+  },
+  "modalities": {
+    "as_of": "2026-07-12T04:52:54.828383Z",
+    "llm_execution_mode": "realtime",
+    "detective_disposition": null,
+    "styleguide": null,
+    "styleguide_provenance": null
+  },
+  "trace": {
+    "as_of": "2026-07-12T04:52:54.828383Z",
+    "events": [
+      {
+        "at": "2026-07-12T04:25:17.567699Z",
+        "event": "walk-start",
+        "detail": "specialist walk starting"
+      },
+      {
+        "at": "2026-07-12T04:25:17.608977Z",
+        "event": "node-enter",
+        "detail": "directive-composer"
+      },
+      {
+        "at": "2026-07-12T04:25:17.639862Z",
+        "event": "node-enter",
+        "detail": "pre-gate-marcus"
+      },
+      {
+        "at": "2026-07-12T04:25:17.669603Z",
+        "event": "node-enter",
+        "detail": "per-slide-subgraph"
+      },
+      {
+        "at": "2026-07-12T04:25:17.703084Z",
+        "event": "node-enter",
+        "detail": "html-review-pack-emitter"
+      },
+      {
+        "at": "2026-07-12T04:25:17.737232Z",
+        "event": "node-enter",
+        "detail": "g0-enrichment"
+      },
+      {
+        "at": "2026-07-12T04:25:17.792691Z",
+        "event": "node-enter",
+        "detail": "g0-enrichment-gate"
+      },
+      {
+        "at": "2026-07-12T04:25:56.162837Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 6"
+      },
+      {
+        "at": "2026-07-12T04:25:56.191555Z",
+        "event": "node-enter",
+        "detail": "irene-refinement"
+      },
+      {
+        "at": "2026-07-12T04:25:56.229391Z",
+        "event": "node-enter",
+        "detail": "g0-ratify-gate"
+      },
+      {
+        "at": "2026-07-12T04:26:40.690202Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 8"
+      },
+      {
+        "at": "2026-07-12T04:26:40.724244Z",
+        "event": "node-enter",
+        "detail": "01"
+      },
+      {
+        "at": "2026-07-12T04:26:40.757391Z",
+        "event": "node-enter",
+        "detail": "02"
+      },
+      {
+        "at": "2026-07-12T04:26:43.683409Z",
+        "event": "node-enter",
+        "detail": "02A"
+      },
+      {
+        "at": "2026-07-12T04:26:43.710313Z",
+        "event": "node-enter",
+        "detail": "03"
+      },
+      {
+        "at": "2026-07-12T04:26:46.005371Z",
+        "event": "node-enter",
+        "detail": "04"
+      },
+      {
+        "at": "2026-07-12T04:27:24.626469Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 13"
+      },
+      {
+        "at": "2026-07-12T04:27:24.659893Z",
+        "event": "node-enter",
+        "detail": "04A"
+      },
+      {
+        "at": "2026-07-12T04:27:51.140569Z",
+        "event": "node-enter",
+        "detail": "04.5"
+      },
+      {
+        "at": "2026-07-12T04:27:51.167779Z",
+        "event": "node-enter",
+        "detail": "04.55"
+      },
+      {
+        "at": "2026-07-12T04:32:29.795214Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 13"
+      },
+      {
+        "at": "2026-07-12T04:32:29.828266Z",
+        "event": "node-enter",
+        "detail": "04A"
+      },
+      {
+        "at": "2026-07-12T04:32:51.632403Z",
+        "event": "node-enter",
+        "detail": "04.5"
+      },
+      {
+        "at": "2026-07-12T04:32:51.659462Z",
+        "event": "node-enter",
+        "detail": "04.55"
+      },
+      {
+        "at": "2026-07-12T04:32:53.850874Z",
+        "event": "node-enter",
+        "detail": "4.75"
+      },
+      {
+        "at": "2026-07-12T04:33:12.913584Z",
+        "event": "node-enter",
+        "detail": "05"
+      },
+      {
+        "at": "2026-07-12T04:33:30.294684Z",
+        "event": "node-enter",
+        "detail": "05B"
+      },
+      {
+        "at": "2026-07-12T04:33:40.018889Z",
+        "event": "node-enter",
+        "detail": "06"
+      },
+      {
+        "at": "2026-07-12T04:33:40.049444Z",
+        "event": "node-enter",
+        "detail": "6.2"
+      },
+      {
+        "at": "2026-07-12T04:33:40.076999Z",
+        "event": "node-enter",
+        "detail": "6.3"
+      },
+      {
+        "at": "2026-07-12T04:33:40.103506Z",
+        "event": "node-enter",
+        "detail": "06B"
+      },
+      {
+        "at": "2026-07-12T04:33:40.130661Z",
+        "event": "node-enter",
+        "detail": "07"
+      },
+      {
+        "at": "2026-07-12T04:35:28.703170Z",
+        "event": "node-enter",
+        "detail": "7.5"
+      },
+      {
+        "at": "2026-07-12T04:35:28.769601Z",
+        "event": "node-enter",
+        "detail": "07B"
+      },
+      {
+        "at": "2026-07-12T04:35:28.856661Z",
+        "event": "node-enter",
+        "detail": "07B-gate"
+      },
+      {
+        "at": "2026-07-12T04:36:07.449285Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 27"
+      },
+      {
+        "at": "2026-07-12T04:36:07.478413Z",
+        "event": "node-enter",
+        "detail": "07C"
+      },
+      {
+        "at": "2026-07-12T04:37:42.433776Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 28"
+      },
+      {
+        "at": "2026-07-12T04:37:42.469294Z",
+        "event": "node-enter",
+        "detail": "07D"
+      },
+      {
+        "at": "2026-07-12T04:37:42.504000Z",
+        "event": "node-enter",
+        "detail": "07D.5"
+      },
+      {
+        "at": "2026-07-12T04:37:43.196556Z",
+        "event": "node-enter",
+        "detail": "07E"
+      },
+      {
+        "at": "2026-07-12T04:41:10.312850Z",
+        "event": "node-enter",
+        "detail": "07F"
+      },
+      {
+        "at": "2026-07-12T04:41:10.368799Z",
+        "event": "node-enter",
+        "detail": "07G"
+      },
+      {
+        "at": "2026-07-12T04:45:54.882464Z",
+        "event": "node-enter",
+        "detail": "08"
+      },
+      {
+        "at": "2026-07-12T04:47:14.623222Z",
+        "event": "node-enter",
+        "detail": "08B"
+      },
+      {
+        "at": "2026-07-12T04:47:14.683088Z",
+        "event": "node-enter",
+        "detail": "09"
+      },
+      {
+        "at": "2026-07-12T04:49:11.438902Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 36"
+      },
+      {
+        "at": "2026-07-12T04:49:11.469441Z",
+        "event": "node-enter",
+        "detail": "10"
+      },
+      {
+        "at": "2026-07-12T04:51:11.231295Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 37"
+      },
+      {
+        "at": "2026-07-12T04:51:11.260754Z",
+        "event": "node-enter",
+        "detail": "11"
+      },
+      {
+        "at": "2026-07-12T04:51:11.905699Z",
+        "event": "node-enter",
+        "detail": "11-gate"
+      },
+      {
+        "at": "2026-07-12T04:52:03.072345Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 39"
+      },
+      {
+        "at": "2026-07-12T04:52:03.110043Z",
+        "event": "node-enter",
+        "detail": "11B"
+      },
+      {
+        "at": "2026-07-12T04:52:03.763441Z",
+        "event": "node-enter",
+        "detail": "11B-gate"
+      },
+      {
+        "at": "2026-07-12T04:52:03.792871Z",
+        "event": "node-enter",
+        "detail": "12"
+      },
+      {
+        "at": "2026-07-12T04:52:31.641889Z",
+        "event": "node-enter",
+        "detail": "13"
+      },
+      {
+        "at": "2026-07-12T04:52:31.706873Z",
+        "event": "node-enter",
+        "detail": "14"
+      },
+      {
+        "at": "2026-07-12T04:52:31.781416Z",
+        "event": "node-enter",
+        "detail": "14.5"
+      },
+      {
+        "at": "2026-07-12T04:52:54.800455Z",
+        "event": "node-enter",
+        "detail": "15"
+      },
+      {
+        "at": "2026-07-12T04:52:54.828383Z",
+        "event": "node-enter",
+        "detail": "07W"
+      }
+    ]
+  },
+  "decision_card": null,
+  "error_message": null,
+  "deliverables": {
+    "as_of": "2026-07-12T04:52:55.018185Z",
+    "components": {
+      "deck": true,
+      "motion": true,
+      "workbook": true
+    },
+    "total_cost_usd": 0.38278045,
+    "export_paths": [
+      "exports/gary",
+      "exports/gary-dispatch-payload.json",
+      "exports/segment-manifest-storyboard-b.yaml",
+      "exports/storyboard-A-pack",
+      "exports/storyboard-B-pack"
+    ]
+  }
+}

@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operator HUD — Architecture Walkthrough</title>
+<style>
+  :root {
+    --surface-base: #0F172A;
+    --surface-raised: #1E293B;
+    --surface-inset: #0B1120;
+    --border-hairline: #293548;
+    --ink-primary: #E2E8F0;
+    --ink-secondary: #94A3B8;
+    --ink-dim: #64748B;
+    --active: #38BDF8;
+    --active-ink: #06263A;
+    --nominal: #22C55E;
+    --nominal-dim: #166534;
+    --caution: #FBBF24;
+    --caution-ink: #1C1403;
+    --warning: #EF4444;
+    --warning-ink: #FFFFFF;
+    --wait: #A78BFA;
+    --wait-ink: #1E1633;
+    --idle: #64748B;
+    --sans: 'Segoe UI', system-ui, sans-serif;
+    --mono: 'Cascadia Mono', Consolas, monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--surface-base);
+    color: var(--ink-primary);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ---------- layout: rail + stage ---------- */
+  #app { display: flex; height: 100vh; }
+  #rail {
+    width: 218px; flex: 0 0 218px;
+    background: var(--surface-inset);
+    border-right: 1px solid var(--border-hairline);
+    padding: 18px 0 12px 0;
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+  #rail .rail-title {
+    padding: 0 16px 14px 16px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.10em;
+    text-transform: uppercase; color: var(--ink-dim);
+    border-bottom: 1px solid var(--border-hairline);
+    margin-bottom: 8px;
+  }
+  #rail button.navitem {
+    display: flex; align-items: baseline; gap: 8px;
+    width: 100%; text-align: left;
+    background: none; border: none; cursor: pointer;
+    padding: 6px 16px;
+    font-family: var(--sans); font-size: 12px; line-height: 1.35;
+    color: var(--ink-dim);
+    border-left: 2px solid transparent;
+  }
+  #rail button.navitem .n { font-family: var(--mono); font-size: 11px; flex: 0 0 18px; }
+  #rail button.navitem:hover { color: var(--ink-secondary); background: rgba(56,189,248,0.05); }
+  #rail button.navitem.current {
+    color: var(--ink-primary);
+    border-left-color: var(--active);
+    background: rgba(56,189,248,0.08);
+  }
+  #rail .rail-foot {
+    margin-top: auto; padding: 12px 16px 4px 16px;
+    font-size: 11px; color: var(--ink-dim);
+    border-top: 1px solid var(--border-hairline);
+  }
+
+  #stage { flex: 1; position: relative; overflow: hidden; }
+
+  .slide {
+    position: absolute; inset: 0;
+    padding: 42px 56px 84px 56px;
+    overflow-y: auto;
+    opacity: 0; visibility: hidden;
+    transform: translateX(28px);
+    transition: opacity 240ms ease, transform 240ms ease, visibility 0s linear 240ms;
+  }
+  .slide.active {
+    opacity: 1; visibility: visible; transform: translateX(0);
+    transition: opacity 240ms ease, transform 240ms ease, visibility 0s;
+  }
+  .slide.exit-right { transform: translateX(-28px); }
+  @media (prefers-reduced-motion: reduce) {
+    .slide, .slide.active { transition: none; transform: none; }
+  }
+
+  /* ---------- slide furniture ---------- */
+  .kicker {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.10em;
+    text-transform: uppercase; color: var(--ink-dim); margin-bottom: 8px;
+  }
+  h1 { font-size: 30px; font-weight: 700; letter-spacing: 0.01em; line-height: 1.2; margin-bottom: 6px; }
+  h2 { font-size: 24px; font-weight: 700; line-height: 1.25; margin-bottom: 4px; }
+  h3 { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-secondary); margin-bottom: 8px; }
+  .adline { margin: 6px 0 22px 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .ad {
+    display: inline-block;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--active);
+    border: 1px solid rgba(56,189,248,0.35);
+    border-radius: 4px; padding: 1px 7px;
+    background: rgba(56,189,248,0.06);
+    white-space: nowrap;
+  }
+  .lead { font-size: 15px; color: var(--ink-secondary); max-width: 760px; margin-bottom: 20px; }
+  .lead strong, li strong { color: var(--ink-primary); font-weight: 600; }
+
+  .cols { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
+  .col { flex: 1 1 320px; min-width: 300px; }
+
+  .card {
+    background: var(--surface-raised);
+    border: 1px solid var(--border-hairline);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  .card.accent-cyan   { border-left: 3px solid var(--active); }
+  .card.accent-amber  { border-left: 3px solid var(--caution); }
+  .card.accent-red    { border-left: 3px solid var(--warning); }
+  .card.accent-violet { border-left: 3px solid var(--wait); }
+  .card.accent-green  { border-left: 3px solid var(--nominal-dim); }
+  .card h3 { margin-bottom: 6px; }
+
+  ul.tight { list-style: none; }
+  ul.tight li {
+    padding: 4px 0 4px 18px; position: relative;
+    color: var(--ink-secondary); font-size: 13.5px;
+  }
+  ul.tight li::before {
+    content: "▸"; position: absolute; left: 0; top: 4px;
+    color: var(--ink-dim); font-size: 11px;
+  }
+  ul.tight li.hot::before { content: "▸"; color: var(--active); }
+  ul.tight li.warn::before { content: "⚠"; color: var(--caution); }
+  ul.tight li.dead::before { content: "✕"; color: var(--warning); }
+  ul.tight li.keep::before { content: "✓"; color: var(--nominal); }
+
+  code, .mono {
+    font-family: var(--mono); font-size: 12.5px;
+    color: var(--ink-primary);
+    background: var(--surface-inset);
+    border: 1px solid var(--border-hairline);
+    border-radius: 4px; padding: 0 5px;
+    white-space: nowrap;
+  }
+  .cmdblock {
+    font-family: var(--mono); font-size: 12.5px; line-height: 1.55;
+    background: var(--surface-inset);
+    border: 1px solid var(--active);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--ink-primary);
+    overflow-x: auto;
+    margin: 8px 0;
+    white-space: pre;
+  }
+  .quiet { color: var(--ink-dim); }
+  .amber { color: var(--caution); }
+  .red { color: var(--warning); }
+  .cyan { color: var(--active); }
+  .violet { color: var(--wait); }
+  .green { color: var(--nominal); }
+
+  table.spec { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table.spec th, table.spec td {
+    text-align: left; padding: 7px 12px;
+    border-bottom: 1px solid var(--border-hairline);
+    vertical-align: top; color: var(--ink-secondary);
+  }
+  table.spec th {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-dim);
+  }
+  table.spec td:first-child { color: var(--ink-primary); white-space: nowrap; }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    border-radius: 4px; padding: 1px 7px; white-space: nowrap;
+  }
+  .badge.amber  { background: var(--caution); color: var(--caution-ink); }
+  .badge.red    { background: var(--warning); color: var(--warning-ink); }
+  .badge.violet { background: var(--wait); color: var(--wait-ink); }
+  .badge.cyan   { background: var(--active); color: var(--active-ink); }
+  .badge.dim    { background: var(--surface-inset); color: var(--ink-dim); border: 1px solid var(--border-hairline); }
+  .badge.green  { background: var(--nominal-dim); color: #DCFCE7; }
+
+  .seq { list-style: none; counter-reset: seq; max-width: 780px; }
+  .seq li {
+    counter-increment: seq;
+    position: relative;
+    padding: 9px 14px 9px 52px;
+    margin-bottom: 6px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-hairline);
+    border-radius: 6px;
+    color: var(--ink-secondary); font-size: 13.5px;
+  }
+  .seq li::before {
+    content: counter(seq, decimal-leading-zero);
+    position: absolute; left: 14px; top: 10px;
+    font-family: var(--mono); font-size: 12px; color: var(--active);
+  }
+  .seq li strong { color: var(--ink-primary); }
+
+  svg text { font-family: var(--sans); }
+  svg .mono-t { font-family: var(--mono); }
+
+  /* ---------- footer nav ---------- */
+  #footer {
+    position: absolute; bottom: 0; left: 218px; right: 0;
+    height: 52px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    background: linear-gradient(to top, var(--surface-base) 55%, rgba(15,23,42,0));
+    pointer-events: none;
+    z-index: 5;
+  }
+  #footer .hint { font-size: 11px; color: var(--ink-dim); }
+  #footer .navbtns { display: flex; gap: 8px; align-items: center; pointer-events: auto; }
+  #footer .counter { font-family: var(--mono); font-size: 12px; color: var(--ink-dim); margin-right: 8px; }
+  #footer button {
+    background: var(--surface-raised);
+    border: 1px solid var(--border-hairline);
+    color: var(--ink-primary);
+    font-family: var(--sans); font-size: 13px;
+    border-radius: 6px; padding: 6px 14px; cursor: pointer;
+  }
+  #footer button:hover { border-color: var(--active); color: var(--active); }
+  #footer button:disabled { opacity: 0.35; cursor: default; }
+  #footer button:disabled:hover { border-color: var(--border-hairline); color: var(--ink-primary); }
+
+  @media (max-width: 980px) {
+    #rail { display: none; }
+    #footer { left: 0; }
+    .slide { padding: 28px 24px 84px 24px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <nav id="rail" aria-label="Slide navigation"></nav>
+  <main id="stage">
+
+    <!-- ============ SLIDE 1 — TITLE ============ -->
+    <section class="slide" data-title="Title & paradigm">
+      <div style="max-width:880px; margin-top:8vh;">
+        <div class="kicker">Architecture walkthrough · 2026-07-11 · finalized spine, 19 ADs</div>
+        <h1 style="font-size:40px; margin-bottom:16px;">Operator HUD — Flight Deck</h1>
+        <p class="lead" style="font-size:19px; max-width:840px; color:var(--ink-primary);">
+          <strong class="cyan">Single-writer projected read model (CQRS-lite) + dumb-terminal view:</strong>
+          the production runtime is the sole writer of one small, versioned
+          <code>operator-surface.json</code>; everything HUD-side is a pure, dumb view over that document.
+        </p>
+        <p class="lead">Commands (verdicts, recovers, resumes) never flow through this system — they stay on the
+          existing SPOC / gate-CLI surface. The HUD is read-only, by construction and by import-linter.</p>
+        <div class="adline" style="margin-top:26px;">
+          <span class="badge dim">AD-1 … AD-19</span>
+          <span class="badge dim">projection contract</span>
+          <span class="badge dim">assembler</span>
+          <span class="badge dim">GET-only server</span>
+          <span class="badge dim">notifier service</span>
+          <span class="badge dim">legacy retirement</span>
+          <span class="badge dim">evidence ladder</span>
+        </div>
+        <p class="quiet" style="margin-top:34px; font-size:12px;">
+          Content authority: <span class="mono">ARCHITECTURE-SPINE.md</span> · this deck is the ~10-minute tour.
+          Navigate with ← → arrow keys, the rail, or the buttons below.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 2 — BIG PICTURE ============ -->
+    <section class="slide" data-title="The big picture">
+      <div class="kicker">02 · System shape</div>
+      <h2>One document. One writer. Dumb consumers.</h2>
+      <div class="adline"><span class="ad">Paradigm</span><span class="ad">AD-1</span><span class="ad">AD-2</span><span class="ad">AD-9</span></div>
+
+      <svg viewBox="0 0 980 470" style="width:100%; max-width:980px; display:block;" role="img"
+           aria-label="Layer flow: runner walks feed the OperatorSurfaceAssembler, which writes operator-surface.json; the HUD server serves the browser page and the notifier pushes to the phone; all consumers depend only on the contract package.">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#94A3B8"/>
+          </marker>
+          <marker id="arrCyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#38BDF8"/>
+          </marker>
+          <marker id="arrViolet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#A78BFA"/>
+          </marker>
+        </defs>
+
+        <!-- producer: runner walks -->
+        <rect x="20" y="30" width="250" height="74" rx="8" fill="#1E293B" stroke="#293548"/>
+        <text x="145" y="56" text-anchor="middle" fill="#E2E8F0" font-size="14" font-weight="600">production_runner.py</text>
+        <text x="145" y="76" text-anchor="middle" fill="#94A3B8" font-size="12">BOTH node walks · _persist_envelope</text>
+        <text x="145" y="93" text-anchor="middle" fill="#64748B" font-size="11">+ pre-flight · health · trace sections</text>
+
+        <!-- assembler -->
+        <rect x="330" y="30" width="260" height="74" rx="8" fill="#1E293B" stroke="#38BDF8" stroke-width="1.5"/>
+        <text x="460" y="56" text-anchor="middle" fill="#38BDF8" font-size="14" font-weight="700">OperatorSurfaceAssembler</text>
+        <text x="460" y="76" text-anchor="middle" fill="#94A3B8" font-size="12">SOLE writer · 3 legal emit triggers</text>
+        <text x="460" y="93" text-anchor="middle" fill="#64748B" font-size="11">atomic temp + os.replace · owns seq counters</text>
+
+        <!-- projection doc -->
+        <rect x="650" y="24" width="310" height="86" rx="8" fill="#0B1120" stroke="#38BDF8" stroke-width="1.5"/>
+        <text x="805" y="52" text-anchor="middle" fill="#E2E8F0" font-size="13" font-weight="600" class="mono-t">operator-surface.json</text>
+        <text x="805" y="72" text-anchor="middle" fill="#94A3B8" font-size="11" class="mono-t">state/config/runs/&lt;trial_id&gt;/</text>
+        <text x="805" y="92" text-anchor="middle" fill="#64748B" font-size="11">schema_version v1 · ≤128KB target · seq + progress_seq</text>
+
+        <!-- runner -> assembler -->
+        <line x1="270" y1="67" x2="322" y2="67" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="296" y="58" text-anchor="middle" fill="#64748B" font-size="10">feeds</text>
+        <!-- assembler -> doc -->
+        <line x1="590" y1="67" x2="642" y2="67" stroke="#38BDF8" stroke-width="1.5" marker-end="url(#arrCyan)"/>
+        <text x="616" y="58" text-anchor="middle" fill="#38BDF8" font-size="10">writes</text>
+
+        <!-- HUD server -->
+        <rect x="560" y="180" width="220" height="70" rx="8" fill="#1E293B" stroke="#293548"/>
+        <text x="670" y="206" text-anchor="middle" fill="#E2E8F0" font-size="13" font-weight="600">app/hud/server.py</text>
+        <text x="670" y="224" text-anchor="middle" fill="#94A3B8" font-size="11">GET-only · own process child</text>
+        <text x="670" y="240" text-anchor="middle" fill="#64748B" font-size="11">/ · /projection · /healthz</text>
+
+        <!-- browser -->
+        <rect x="820" y="180" width="140" height="70" rx="8" fill="#1E293B" stroke="#293548"/>
+        <text x="890" y="210" text-anchor="middle" fill="#E2E8F0" font-size="13" font-weight="600">Browser page</text>
+        <text x="890" y="228" text-anchor="middle" fill="#94A3B8" font-size="11">ETag poll 2–5s</text>
+
+        <!-- notifier -->
+        <rect x="560" y="290" width="220" height="70" rx="8" fill="#1E293B" stroke="#293548"/>
+        <text x="670" y="316" text-anchor="middle" fill="#E2E8F0" font-size="13" font-weight="600">app/notify/ (own process)</text>
+        <text x="670" y="334" text-anchor="middle" fill="#94A3B8" font-size="11">projection watcher + watchdog</text>
+        <text x="670" y="350" text-anchor="middle" fill="#64748B" font-size="11">not fate-shared with the session</text>
+
+        <!-- phone -->
+        <rect x="820" y="290" width="140" height="70" rx="8" fill="#1E293B" stroke="#A78BFA"/>
+        <text x="890" y="316" text-anchor="middle" fill="#E2E8F0" font-size="13" font-weight="600">Phone</text>
+        <text x="890" y="334" text-anchor="middle" fill="#A78BFA" font-size="11">Pushover / ntfy</text>
+        <text x="890" y="350" text-anchor="middle" fill="#64748B" font-size="11">via Apprise</text>
+
+        <!-- doc -> server (read) -->
+        <path d="M 730 110 Q 690 148 678 176" fill="none" stroke="#94A3B8" stroke-width="1.5" marker-start="url(#arr)"/>
+        <text x="650" y="146" text-anchor="end" fill="#64748B" font-size="10">reads (only input)</text>
+        <!-- doc -> notifier (read) -->
+        <path d="M 700 112 Q 610 190 600 286" fill="none" stroke="#94A3B8" stroke-width="1.5" marker-start="url(#arr)"/>
+        <!-- server -> browser -->
+        <line x1="780" y1="215" x2="812" y2="215" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+        <!-- notifier -> phone -->
+        <line x1="780" y1="325" x2="812" y2="325" stroke="#A78BFA" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrViolet)"/>
+        <text x="796" y="316" text-anchor="middle" fill="#A78BFA" font-size="10">push</text>
+
+        <!-- contract package -->
+        <rect x="20" y="180" width="470" height="180" rx="8" fill="#0B1120" stroke="#293548"/>
+        <text x="40" y="208" fill="#E2E8F0" font-size="13" font-weight="600">Contract package — app/models/runtime/operator_surface.py</text>
+        <text x="40" y="232" fill="#94A3B8" font-size="12">strict producer model (extra="forbid", byte-pin source)</text>
+        <text x="40" y="252" fill="#94A3B8" font-size="12">read_operator_surface_lenient(raw) — consumers' only parse</text>
+        <text x="40" y="272" fill="#94A3B8" font-size="12">derive_event_transitions(prev, cur) — one derivation, shared</text>
+        <text x="40" y="292" fill="#94A3B8" font-size="12">HudConfig — single owner, single defaults constant</text>
+        <text x="40" y="316" fill="#64748B" font-size="11" class="mono-t">+ committed operator-surface.v1.schema.json (byte-pin)</text>
+        <text x="40" y="344" fill="#64748B" font-size="11">imports nothing from orchestrator / hud / notify</text>
+
+        <!-- consumers -> contract -->
+        <line x1="556" y1="215" x2="494" y2="230" stroke="#94A3B8" stroke-width="1.2" marker-end="url(#arr)"/>
+        <line x1="556" y1="325" x2="494" y2="310" stroke="#94A3B8" stroke-width="1.2" marker-end="url(#arr)"/>
+        <line x1="145" y1="104" x2="145" y2="176" stroke="#94A3B8" stroke-width="1.2" marker-end="url(#arr)"/>
+        <text x="152" y="146" fill="#64748B" font-size="10">depends on</text>
+
+        <!-- enforcement note -->
+        <rect x="20" y="396" width="940" height="52" rx="6" fill="none" stroke="#FBBF24" stroke-dasharray="6 4"/>
+        <text x="40" y="418" fill="#FBBF24" font-size="12" font-weight="600">⚠ ARROWS ARE ENFORCED, NOT ASPIRATIONAL</text>
+        <text x="40" y="437" fill="#94A3B8" font-size="11.5">import-linter (pyproject.toml) forbids: app.hud / app.notify → app.marcus.orchestrator · anything → hud_data_sources · consumer imports of the strict parse surface (AD-4)</text>
+      </svg>
+    </section>
+
+    <!-- ============ SLIDE 3 — PROJECTION CONTRACT ============ -->
+    <section class="slide" data-title="The projection contract">
+      <div class="kicker">03 · Contract</div>
+      <h2>The projection contract</h2>
+      <div class="adline"><span class="ad">AD-1</span><span class="ad">AD-3</span><span class="ad">AD-4</span><span class="ad">AD-5</span><span class="ad">AD-16</span></div>
+      <p class="lead">One versioned document is the <strong>only</strong> input to HUD data collection and the notifier.
+        If the projection doesn't say it, downstream doesn't show it.</p>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>What rides in the document — AD-1 / AD-3</h3>
+            <ul class="tight">
+              <li class="hot"><code>OperatorSurfaceProjection</code> (Pydantic, <code>schema_version: "v1"</code>) at <span class="mono">state/config/runs/&lt;trial_id&gt;/operator-surface.json</span></li>
+              <li>Everything EXPERIENCE.md demands: identity, status, steps, pre-flight, health, trace, notifications echo</li>
+              <li>External references (LangSmith trace, artifacts, sample audio) ride <strong>inside</strong> as plain URLs/paths — no live calls in the data path</li>
+              <li class="hot">The <strong>exact next-action command string</strong> per pause class — built by a function co-located with the CLI definition; L1 round-trips every emitted command through the actual CLI parser</li>
+              <li class="dead">Zero-lie: no <code>run.json</code> parse (525KB trap), no coordination.db, no bundle-gate yaml, no LangSmith call — ever</li>
+            </ul>
+          </div>
+          <div class="card accent-green">
+            <h3>Status vocabulary — AD-5</h3>
+            <ul class="tight">
+              <li>Envelope status strings embedded <strong>verbatim</strong> (all seven, mixed separators preserved)</li>
+              <li>L1 enum set-equality test vs <code>production_trial_envelope.py</code></li>
+              <li>Reverse tripwire: envelope status-model files added to <code>block_mode_trigger_paths</code> (Tier-2, party-gated)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>Dual pins + additive-only evolution — AD-4</h3>
+            <ul class="tight">
+              <li class="keep"><strong>Pin (a):</strong> byte-identical emitted-schema pin vs committed <span class="mono">operator-surface.v1.schema.json</span></li>
+              <li class="keep"><strong>Pin (b):</strong> producer↔consumer parity test — field presence, enum parity, round-trip, bidirectional required/optional</li>
+              <li>Within v1: <strong>additive-only</strong> (new optional fields). Any removal / retype / rename → version bump + new schema file beside the old</li>
+              <li class="hot"><strong>Two parse surfaces:</strong> strict producer model vs <code>read_operator_surface_lenient(raw)</code> — ignores unknown added fields, returns typed <code>Unrecognized</code> on unknown version/status, never raises</li>
+              <li class="warn">Consumers <strong>forbidden</strong> (import-linter) from strict parse — a strict HUD parse white-screens on the very evolution the contract permits</li>
+            </ul>
+          </div>
+          <div class="card accent-amber">
+            <h3>Size caps — AD-16</h3>
+            <ul class="tight">
+              <li>Bounded snapshot: trace ring buffer <span class="mono">last 200</span> <span class="badge dim">assumption</span> · health history <span class="mono">last 50/tile</span> <span class="badge dim">assumption</span></li>
+              <li>Target ≤128KB serialized · <strong class="amber">L1 tripwire fails loud above 256KB</strong></li>
+              <li>Full operator-visible trace, if ever wanted, is a deferred sidecar with its own contract</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 4 — WHY THE ASSEMBLER ============ -->
+    <section class="slide" data-title="Why the assembler exists">
+      <div class="kicker">04 · Producer</div>
+      <h2>Why the assembler exists</h2>
+      <div class="adline"><span class="ad">AD-2</span><span class="ad">AD-15</span><span class="ad">AD-17</span></div>
+      <p class="lead">The adversary review's top finding: <strong>the natural choke-point can't see the whole picture.</strong>
+        <code>_persist_envelope</code> is the only <code>run.json</code> writer and fires in <strong>both</strong> node walks — but it sees
+        <em>only the envelope</em>. Asked to emit steps / pre-flight / health, it would either crash validation or write a
+        schema-satisfying projection that lies by omission. Hence a dedicated single writer.</p>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>OperatorSurfaceAssembler — AD-15</h3>
+            <ul class="tight">
+              <li class="hot">The <strong>only</strong> code that writes <code>operator-surface.json</code>; instantiated per trial; owns both counters; one in-process lock; bounded work only</li>
+              <li>Walk feeds it sections as they materialize: steps on manifest composition (graph digest + node count + <code>walk_generation</code>/<code>reentered_from</code> — index regression renders as labeled re-entry, not corruption), pre-flight items as tested, health on refresh, trace on event</li>
+              <li>Per-stage presence rules: at <code>registered</code> only identity + notifications echo; once <code>in-flight</code>, steps and health are mandatory</li>
+            </ul>
+          </div>
+          <div class="card accent-amber">
+            <h3>Crash window: run.json is truth — AD-17</h3>
+            <ul class="tight">
+              <li class="warn">A crash between the <code>run.json</code> persist and the projection write must not leave two truths forever (HUD showing IN FLIGHT over a paused run; the pause push never firing)</li>
+              <li>Projection carries <code>envelope_digest</code> of the <code>run.json</code> it derives from</li>
+              <li class="hot"><strong>Reconcile-on-entry:</strong> every runner entry point (start, continue/resume, recover, resume-batch, status) re-emits the projection from the current envelope before doing anything else — idempotent, cheap</li>
+              <li>Consumers never read <code>run.json</code>; their guard is staleness + the watchdog. L2 fixture: skewed pair</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>Exactly three legal emit triggers — AD-2</h3>
+            <ul class="tight">
+              <li class="hot"><strong>(a) Envelope transition</strong> — <code>assembler.emit(envelope)</code> inside <code>_persist_envelope</code> (<span class="mono">production_runner.py:221</span>) → covers <strong>both walks</strong> (the standing two-walk gotcha, closed structurally)</li>
+              <li><strong>(b) Section update</strong> — pre-flight item completion, health refresh, trace append, via the section API</li>
+              <li><strong>(c) Freshness tick</strong> — periodic while <code>in-flight</code>, interval ≤ 2s staleness budget (transition-only emission would break the 5s UX budget on any long node)</li>
+              <li class="dead">The one <code>run.json</code> bypass (recover reenter, ~line 3501) gets routed through <code>_persist_envelope</code>; after that, any direct write is a defect. L1 tripwire in CI</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Windows write discipline</h3>
+            <ul class="tight">
+              <li>Atomic temp + <code>os.replace</code>; verified: raises <code>PermissionError</code> while a reader holds the file — bounded retry ~5× with backoff</li>
+              <li class="warn">On exhaustion: <strong>log and skip, never propagate into the walk</strong> — next tick self-heals (run.json stays truth)</li>
+              <li>Consumers open-read-close in one gulp; server reads bytes then responds — streaming the live file is a defect. L1 exercises replace-under-open-reader</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 5 — TRANSPORT ============ -->
+    <section class="slide" data-title="Transport">
+      <div class="kicker">05 · View server</div>
+      <h2>Transport: GET-only, ETag poll</h2>
+      <div class="adline"><span class="ad">AD-6</span></div>
+      <p class="lead">No interactive surface can grow on the HUD port. No unbounded re-parse/re-render churn.</p>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>The server</h3>
+            <ul class="tight">
+              <li class="hot"><code>app/hud/server.py</code> — FastAPI, <strong>GET routes only</strong>: <code>/</code> (page), <code>/projection</code> (JSON), <code>/healthz</code></li>
+              <li class="dead">No POST / PUT / DELETE / WebSocket, <strong>ever</strong> — a mutation route on this app is a defect regardless of intent</li>
+              <li>Own port, distinct from runtime server + gate endpoint; config key <code>hud.port</code> <span class="badge dim">assumption: 8791</span></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Deferred, deliberately</h3>
+            <ul class="tight">
+              <li>SSE is a Tier-1 follow-on — only if the gate-verdict flow independently justifies a served operator API; adopting it must not change the projection contract</li>
+              <li>Any future actionable affordance requires a fresh party gate (governance rider on top of the GET-only structural guard)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>The poll loop</h3>
+            <ul class="tight">
+              <li class="hot"><code>/projection</code> = read-then-respond <strong>byte snapshot</strong> with <code>ETag: &lt;schema_version&gt;:&lt;seq&gt;</code></li>
+              <li class="warn">Never mtime+size — same-size rewrites inside timestamp granularity would silently skip updates</li>
+              <li class="warn">Route implements <code>If-None-Match</code> → <code>304</code> itself (web-verified: Starlette <code>FileResponse</code> sets ETag but never returns 304)</li>
+              <li>Page polls every 2–5s with <code>If-None-Match</code>; re-renders only on 200</li>
+              <li>Updates are in-place DOM replacement, section-scoped (see slide 9) — the April <code>location.reload()</code> pattern retires</li>
+            </ul>
+          </div>
+          <div class="cmdblock"><span class="quiet"># steady state, nothing changed</span>
+GET /projection  If-None-Match: "v1:8412"   <span class="green">→ 304</span>
+<span class="quiet"># assembler wrote (transition | section | tick)</span>
+GET /projection  If-None-Match: "v1:8412"   <span class="cyan">→ 200  ETag: "v1:8413"</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 6 — LIFECYCLE ============ -->
+    <section class="slide" data-title="Lifecycle & identity">
+      <div class="kicker">06 · Lifecycle</div>
+      <h2>Lifecycle: session-owned, identity-bound</h2>
+      <div class="adline"><span class="ad">AD-7</span><span class="ad">AD-8</span></div>
+      <div class="cols">
+        <div class="col" style="flex: 1.15 1 360px;">
+          <h3 style="margin-bottom:10px;">The pinned start sequence — AD-7</h3>
+          <ol class="seq">
+            <li><strong>Mint <code>trial_id</code></strong> (+ <code>launch_nonce</code>)</li>
+            <li><strong>Create run dir</strong></li>
+            <li><strong>Write the <code>registered</code> projection</strong> — via the assembler, so the file exists before anything can read it</li>
+            <li><strong>Launch the HUD server</strong> — dir + projection guaranteed present; child of the runtime session; explicit <code>trial_id</code> argument, never discovery</li>
+            <li><strong>Run pre-flight</strong> — whose <code>healthz</code> item is <strong class="amber">identity-checked</strong>: passes only on <code>trial_id</code> + nonce match with what step 1 minted. A child bind failure is a pre-flight FAIL, never a fall-through to whatever answers the port</li>
+            <li><strong>Spawn SPOC</strong> — gated on pre-flight</li>
+          </ol>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>Server lifetime rules — AD-7</h3>
+            <ul class="tight">
+              <li>Zero state beyond bound <code>trial_id</code> + run-dir path; survives run completion while the session lives; dies with the session</li>
+              <li>Mid-run server death never touches the run — SPOC and the runtime are unaffected; restartable via <code>trial hud</code></li>
+              <li>Logs to <span class="mono">&lt;run_dir&gt;/hud-server.log</span></li>
+              <li>Standalone <code>trial hud --trial-id &lt;id&gt;</code> <span class="badge dim">assumption</span> serves an existing run dir read-only, post-hoc; binds an <strong>ephemeral</strong> port, refuses <code>hud.port</code> when taken</li>
+            </ul>
+          </div>
+          <div class="card accent-red">
+            <h3>The wrong-run fallback is dead — AD-8</h3>
+            <ul class="tight">
+              <li class="dead">April bug: <code>_query_active_run_id</code> → newest-mtime-bundle fallback rendered the <strong>wrong run</strong> with no indication</li>
+              <li class="hot">Server binds one <code>trial_id</code> at launch; projection carries <code>trial_id</code>; on mismatch or ambiguity the view renders <span class="badge dim">refuse-to-render</span> — never a substitute run</li>
+              <li class="dead">coordination.db reader, <code>_find_latest_bundle</code>, bundle-gate yaml pipeline: <strong>deleted</strong> from the HUD path (retire story), not bypassed</li>
+              <li>L2 fixtures include wrong-server-on-port</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 7 — PRE-FLIGHT ============ -->
+    <section class="slide" data-title="Pre-flight & heartbeats">
+      <div class="kicker">07 · Producer</div>
+      <h2>Pre-flight &amp; heartbeats</h2>
+      <div class="adline"><span class="ad">AD-11</span></div>
+      <p class="lead"><strong>Runtime-executed, projection-reported.</strong> The runtime start path runs pre-flight (phase 01)
+        and live heartbeats (phase 02 — real calls, never mocked/cached) and gates SPOC spawn on them.
+        The HUD only visualizes; pre-flight stays authoritative with the HUD closed.</p>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>Item inventory is data, not code</h3>
+            <ul class="tight">
+              <li>Phase-01 items derive from the <code>ready_for_trial</code> check set, adapted in-runtime</li>
+              <li>Phase-02 heartbeats derive from the run's <strong>actual dependency set</strong> (component selection + specialist/service registry)</li>
+              <li class="hot"><strong>Falter-surface contract:</strong> anything whose absence would make the runtime falter is on the list</li>
+              <li class="warn">Regression rule (AD-13): any falter attributable to a checkable dependency that pre-flight passed is a <strong>pre-flight defect</strong> — each occurrence adds that check permanently</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Per-platform quota mechanics (addendum §C)</h3>
+            <ul class="tight">
+              <li>OpenAI usage/costs needs a separate <strong>Admin API key</strong> env var — not the inference key</li>
+              <li>Gamma <code>credits.remaining</code> piggybacks generation polls; last-seen + staleness between polls</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card accent-amber">
+            <h3>Never-false-green</h3>
+            <ul class="tight">
+              <li>Per-item results written into the projection as they complete: state, output, latency, quota reading + confidence</li>
+              <li class="hot">Confidence tags: <code>direct</code> / <code>proxy</code> / <code>unknown</code> — quota/credit readings may claim green <strong>only</strong> with <code>direct</code> or <code>proxy</code></li>
+              <li class="warn">Heartbeat vocabulary splits <code>missed</code> (reading absent/overdue) from <code>fail</code> (check ran and failed) — <strong>two different alarms</strong></li>
+            </ul>
+          </div>
+          <div class="card" style="font-family:var(--mono); font-size:12.5px; background:var(--surface-inset);">
+            <div class="quiet" style="font-family:var(--sans); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px;">Pre-flight board (rendered from projection)</div>
+            <div><span class="green">✓</span> run-dir writable <span class="quiet">· 12ms</span></div>
+            <div><span class="green">✓</span> openai heartbeat <span class="quiet">· 810ms · quota</span> <span class="badge green">direct</span></div>
+            <div><span class="green">✓</span> gamma heartbeat <span class="quiet">· 1.2s · credits 412</span> <span class="badge dim">proxy</span></div>
+            <div><span class="amber">⧗</span> elevenlabs heartbeat <span class="quiet">· reading overdue</span> <span class="badge amber">missed</span></div>
+            <div><span class="red">✕</span> descript heartbeat <span class="quiet">· 401 on live call</span> <span class="badge red">fail</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 8 — NOTIFIER ============ -->
+    <section class="slide" data-title="Notifier & watchdog">
+      <div class="kicker">08 · Notifier</div>
+      <h2>Notifier: the watchdog must not die with what it guards</h2>
+      <div class="adline"><span class="ad">AD-9</span><span class="ad">AD-10</span><span class="ad">AD-18</span><span class="ad">AD-19</span></div>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-violet">
+            <h3>Own process, shared service — AD-9</h3>
+            <ul class="tight">
+              <li class="hot"><code>app/notify/</code> — launched by the start path but <strong>not fate-shared</strong> with the runtime session's Python process (adversary F7: it must survive the wedge classes that kill the session); exits on terminal status + grace</li>
+              <li>Consumes the projection file + <code>hud-config.yaml</code> only; failures never propagate to runner or server loop</li>
+              <li>Push via <strong>Apprise</strong> URL strings — primary <strong>Pushover</strong> (native APNs/FCM, reliable on locked/dozing phones, priority −2..2), fallback <strong>ntfy</strong>; mechanism swap is config, not code. Two configured push URLs only — a new channel class is a scope change</li>
+              <li>On-HUD visual + sound belong to the HUD page (from projection state + config echo) — the notifier never drives the browser</li>
+              <li>Restart semantics pinned: own state dir (<span class="mono">state/runtime/notify/</span>, never the run dir); <code>paused_*</code>/<code>run_stalled</code> fire while active + unacknowledged; <code>batch_pause_resumed</code> on observed transition only. L2: restart-mid-pause. Creds env-only</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card accent-amber">
+            <h3>Stall watchdog: seq vs progress_seq — AD-10</h3>
+            <ul class="tight">
+              <li><code>seq</code> = write counter — bumps on <strong>every</strong> write incl. freshness ticks; feeds the ETag</li>
+              <li class="hot"><code>progress_seq</code> + <code>last_progress_at</code> — advance <strong>only</strong> on walk-index change, node lifecycle, pre-flight completion, gate/pause/resume transition; ticks forbidden from bumping them (L1)</li>
+              <li>Watchdog binds to <code>progress_seq</code> exclusively; fires <code>run_stalled</code> when <code>in-flight</code> and no advance within budget <span class="badge dim">assumption: 600s</span>; <code>waiting_for_provider_batch</code> exempt by status</li>
+              <li>Producer-death detection: mtime frozen while <code>in-flight</code> + producer process gone → <code>run_stalled</code> ("producer dead"). No new heartbeat substrate — document monotonicity <em>is</em> the heartbeat</li>
+            </ul>
+          </div>
+          <div class="card accent-cyan">
+            <h3>One derivation, one config owner — AD-18 / AD-19</h3>
+            <ul class="tight">
+              <li class="hot"><code>derive_event_transitions(prev, cur)</code> lives in the <strong>contract</strong>; notifier (push) and view (toast) both consume it — no phone-buzz-without-toast drift. L1 parity across all five classes incl. resume-that-repauses + recover-reenter</li>
+              <li>Five v1 event classes: <code>paused_at_gate</code> · <code>paused_at_error</code> · <code>batch_pause_resumed</code> · <code>health_threshold</code> · <code>run_stalled</code></li>
+              <li class="hot"><code>HudConfig</code>: one model, one loader, one defaults constant in the contract; assembler <strong>echoes parsed config + parse status into the projection</strong> — that echo is what the HUD renders (header chip, "config unreadable — defaults active"), keeping AD-3 intact</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 9 — REUSE & RETIREMENT ============ -->
+    <section class="slide" data-title="Reuse & retirement">
+      <div class="kicker">09 · View</div>
+      <h2>Reuse &amp; retirement</h2>
+      <div class="adline"><span class="ad">AD-12</span></div>
+      <p class="lead">Retarget the data layer, keep the render shell. The April HUD's layers separate cleanly —
+        don't torch ~98 passing render pins for aesthetics; don't keep legacy readers out of sunk cost.</p>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-green">
+            <h3>Kept</h3>
+            <ul class="tight">
+              <li class="keep"><code>render_html(data)</code>-style pure-dict rendering + urgency auto-expand contract</li>
+              <li class="keep">~98 render pins where compatible, re-pointed at projection-fed fixtures</li>
+              <li class="keep"><code>collect</code>/<code>render</code> stays a pure seam: data in, HTML out, no I/O inside render</li>
+              <li class="keep">New thin reader: <code>read_operator_surface(run_dir)</code> — explicit path argument (the L2 injection seam), no ambient discovery</li>
+            </ul>
+          </div>
+          <div class="card accent-cyan">
+            <h3>Poll renders in place — never full-page</h3>
+            <ul class="tight">
+              <li class="hot">Section-scoped DOM replacement keyed by zone id, re-applying the urgency contract</li>
+              <li>Preserves disclosure state, scroll position, text selection — a snapshot that wipes the operator's half-selected command block is a defect</li>
+              <li>Full-page render is cold-load only; the April <code>location.reload()</code> pattern retires</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card accent-red">
+            <h3>Retired</h3>
+            <ul class="tight">
+              <li class="dead">Legacy data layer: <code>hud_data_sources</code> readers — import-linter forbids anything importing it</li>
+              <li class="dead">Dev-Cycle + M5 panels, with their pins</li>
+              <li class="dead"><code>run_hud.py</code> disposition pinned: becomes a <strong>deprecation stub</strong> (exits with a pointer to <code>trial hud</code>) in the retire story; <code>tests/test_run_hud.py</code> retires with it</li>
+              <li class="dead">coordination.db reader chain + <code>_find_latest_bundle</code> + bundle-gate yaml (per AD-8): deleted from the HUD path</li>
+              <li class="warn">Tier-2 manifest bump updates <code>run_hud.py</code> trigger-path rows in the same change</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Why the legacy readers had to die</h3>
+            <ul class="tight">
+              <li>coordination.db <code>production_runs</code> is written only by the skills layer — the migrated runtime never writes it → query returns None → silent newest-mtime fallback → the April wrong-run bug</li>
+              <li><code>read_active_trial</code> parsed 525KB of <code>run.json</code> discarding 99%; <code>read_adhoc_summary</code> made a live LangSmith call in the data path</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 10 — GOVERNANCE & EVIDENCE ============ -->
+    <section class="slide" data-title="Governance & evidence">
+      <div class="kicker">10 · Governance</div>
+      <h2>Governance &amp; evidence</h2>
+      <div class="adline"><span class="ad">AD-13</span><span class="ad">AD-14</span></div>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-amber">
+            <h3>Lockstep boundary — AD-14</h3>
+            <ul class="tight">
+              <li><code>run_hud.py</code> / <code>progress_map.py</code> + tests are already <code>block_mode_trigger_paths</code></li>
+              <li class="hot">New contract, producer-emission, HUD server, and notifier files added via <strong>one Tier-2 manifest bump — party-gated before dev opens</strong> (its own pre-dev story, bundled with the AD-5 reverse tripwire)</li>
+              <li>Trigger paths MAY be registered ahead of file creation; inert until the paths exist — the lockstep checker must never require their existence</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Test hygiene</h3>
+            <ul class="tight">
+              <li>HUD tests touching network/db are marked <code>serial</code> or <code>live</code> (xdist default excludes them)</li>
+              <li>Every story's DoD names its witness set</li>
+            </ul>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card accent-cyan">
+            <h3>Evidence ladder — AD-13 (vs risk R1: wrong-but-plausible state, High/High)</h3>
+            <table class="spec">
+              <tr><th>Rung</th><th>Witness</th></tr>
+              <tr><td><span class="badge cyan">L1</span></td><td>Enum/contract tests: dual shape-pins (AD-4), status set-equality (AD-5), size tripwire, cadence + counter rules, command round-trip</td></tr>
+              <tr><td><span class="badge cyan">L2</span></td><td>Golden run-dir fixtures per pause class + legacy-shaped dir → UNRECOGNIZED, narrowed-component-selection run, recover-reenter run, wrong-server-on-port, skewed pair, notifier restart-mid-pause</td></tr>
+              <tr><td><span class="badge cyan">L3</span></td><td>One <strong>first-run-stands live witness per pause class</strong> as it lands, promoted into the L2 golden set</td></tr>
+              <tr><td><span class="badge amber">L4</span></td><td>Arc-level usage witness (brief SC5): operator completes the next real production trial using <strong>only HUD + SPOC</strong> — v1 pays for itself in that trial or we cut deeper</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 11 — DEFERRED + ASSUMPTIONS ============ -->
+    <section class="slide" data-title="Deferred & assumptions">
+      <div class="kicker">11 · Open surface</div>
+      <h2>Deferred &amp; [ASSUMPTION] roster</h2>
+      <div class="adline"><span class="ad">Deferred</span><span class="ad">AD-6</span><span class="ad">AD-7</span><span class="ad">AD-10</span><span class="ad">AD-16</span></div>
+      <div class="cols">
+        <div class="col">
+          <div class="card accent-amber">
+            <h3>[ASSUMPTION] roster — correctable at operator review or story level</h3>
+            <table class="spec">
+              <tr><th>Assumption</th><th>Default</th></tr>
+              <tr><td><code>hud.port</code></td><td>8791 (AD-6)</td></tr>
+              <tr><td>Stall budget</td><td>600s of no <code>progress_seq</code> advance (AD-10)</td></tr>
+              <tr><td>Ring buffers</td><td>trace last 200 events · health last 50 readings/tile (AD-16)</td></tr>
+              <tr><td>Apprise dep</td><td>new dep <span class="mono">&gt;=1.9.8,&lt;2</span> (current 1.12.0) — buys mechanism-swap-as-config (Stack)</td></tr>
+              <tr><td><code>trial hud</code> CLI</td><td>standalone read-only post-hoc viewer, ephemeral port (AD-7)</td></tr>
+              <tr><td>Specialist monogram chips</td><td>UX call — swap for pictographic icons at UX-gate review (DESIGN.md)</td></tr>
+            </table>
+          </div>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>Deferred — explicit, with re-entry conditions</h3>
+            <ul class="tight">
+              <li><strong>SSE / served operator API</strong> — only if gate-verdict flow independently justifies it; projection contract must not change (AD-6). Plus the party rider: any actionable affordance needs a fresh party gate</li>
+              <li><strong>Dev-side stall producer</strong> — notifier already producer-agnostic (AD-9); wiring dev-auto runs is a later arc</li>
+              <li><strong>Projection v2 fields</strong> (fleet/history, per-specialist deep telemetry) — v2 waits for a real consumer</li>
+              <li><strong>Per-platform credit-fetch beyond addendum §C</strong> — story-level under AD-11 confidence rules</li>
+              <li><strong>Legacy <code>run_hud.py</code> panels beyond the HUD path</strong> — dev-dashboard salvage out of scope</li>
+              <li class="warn"><strong>UX Flow-1 "HUD up between runs"</strong> — session-owned server means a tab between sessions shows a dead connection, not styled NO-ACTIVE-RUN (still reachable standalone). Spine wins; one-line UX update owed at story time</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 12 — NEXT STEPS ============ -->
+    <section class="slide" data-title="Next steps">
+      <div class="kicker">12 · Forward</div>
+      <h2>Next steps</h2>
+      <div class="adline"><span class="ad">AD-13</span><span class="ad">AD-14</span><span class="ad">spine status: draft → operator review</span></div>
+      <div class="cols">
+        <div class="col">
+          <ol class="seq">
+            <li><strong>Operator review of this deck + spine</strong> — especially the [ASSUMPTION] roster (slide 11) and the Deferred list</li>
+            <li><strong>Cut epics &amp; stories</strong> from the spine (altitude: feature — keeps epics), story boundaries following the layer map: contract → producer/assembler → server+view → notifier → retire</li>
+            <li><strong>Pre-dev governance story first</strong> — the Tier-2 <code>block_mode_trigger_paths</code> manifest bump + AD-5 reverse tripwire, <strong>party-gated before dev opens</strong> (AD-14)</li>
+            <li><strong>Contract story creates</strong> <code>operator_surface.py</code>, committed v1 schema, <code>derive_event_transitions</code>, <code>HudConfig</code> + <code>hud-config.yaml</code> (file does not exist yet — AD-19)</li>
+            <li><strong>Every story's DoD names its witness set</strong> on the L1–L4 ladder; L3 live witnesses promoted into L2 goldens as they land</li>
+            <li><strong>L4 exit:</strong> next real production trial run on HUD + SPOC alone — v1 pays for itself in that trial or we cut deeper</li>
+          </ol>
+        </div>
+        <div class="col">
+          <div class="card">
+            <h3>Story-shaped seams already visible</h3>
+            <ul class="tight">
+              <li>Contract package (models + schema pin + parity tests)</li>
+              <li>Assembler + <code>_persist_envelope</code> hook + bypass rerouting + cadence tripwire</li>
+              <li>Reconcile-on-entry across all runner entry points</li>
+              <li>HUD server + lifecycle + identity-checked healthz</li>
+              <li>Data/render retarget + in-place poll rendering</li>
+              <li>Notifier process + Apprise wiring + watchdog</li>
+              <li>Retire story: legacy readers deleted, <code>run_hud.py</code> stub</li>
+            </ul>
+          </div>
+          <div class="card accent-cyan">
+            <h3>Where things live</h3>
+            <ul class="tight">
+              <li><span class="mono">ARCHITECTURE-SPINE.md</span> — the contract (19 ADs, conventions, stack, seed, capability map)</li>
+              <li><span class="mono">.memlog.md</span> — rationale trail (adversary findings, web-verify corrections, reviewer gate)</li>
+              <li><span class="mono">ux-operator-hud-2026-07-11/DESIGN.md</span> — the cockpit design tokens this deck borrows</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div id="footer">
+      <span class="hint">← → arrow keys · Home / End</span>
+      <div class="navbtns">
+        <span class="counter" id="counter">1 / 12</span>
+        <button id="prevBtn" type="button" aria-label="Previous slide">← Prev</button>
+        <button id="nextBtn" type="button" aria-label="Next slide">Next →</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+(function () {
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var rail = document.getElementById('rail');
+  var counter = document.getElementById('counter');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var current = 0;
+
+  // build rail
+  var title = document.createElement('div');
+  title.className = 'rail-title';
+  title.textContent = 'Operator HUD · Architecture';
+  rail.appendChild(title);
+  var railBtns = slides.map(function (s, i) {
+    var b = document.createElement('button');
+    b.className = 'navitem';
+    b.type = 'button';
+    b.innerHTML = '<span class="n">' + String(i + 1).padStart(2, '0') + '</span><span>' + s.getAttribute('data-title') + '</span>';
+    b.addEventListener('click', function () { go(i); });
+    rail.appendChild(b);
+    return b;
+  });
+  var foot = document.createElement('div');
+  foot.className = 'rail-foot';
+  foot.textContent = '19 ADs · spine 2026-07-11';
+  rail.appendChild(foot);
+
+  function go(i) {
+    if (i < 0 || i >= slides.length || i === current) { render(); return; }
+    var prev = current;
+    current = i;
+    slides.forEach(function (s, k) {
+      s.classList.toggle('active', k === current);
+      s.classList.toggle('exit-right', k === prev && prev > current ? false : (k === prev && prev < current));
+    });
+    render();
+  }
+
+  function render() {
+    slides.forEach(function (s, k) { s.classList.toggle('active', k === current); });
+    railBtns.forEach(function (b, k) { b.classList.toggle('current', k === current); });
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+    if (history.replaceState) {
+      history.replaceState(null, '', '#' + (current + 1));
+    }
+    var active = slides[current];
+    if (active) { active.scrollTop = 0; }
+  }
+
+  prevBtn.addEventListener('click', function () { go(current - 1); });
+  nextBtn.addEventListener('click', function () { go(current + 1); });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'PageDown':
+      case ' ':
+        e.preventDefault(); go(current + 1); break;
+      case 'ArrowLeft':
+      case 'PageUp':
+        e.preventDefault(); go(current - 1); break;
+      case 'ArrowDown':
+        e.preventDefault(); go(current + 1); break;
+      case 'ArrowUp':
+        e.preventDefault(); go(current - 1); break;
+      case 'Home':
+        e.preventDefault(); go(0); break;
+      case 'End':
+        e.preventDefault(); go(slides.length - 1); break;
+    }
+  });
+
+  // deep link: #N
+  var h = parseInt((location.hash || '').replace('#', ''), 10);
+  if (!isNaN(h) && h >= 1 && h <= slides.length) { current = h - 1; }
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+Wrote C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\31ff847c-78c3-4029-b554-ed34baaf7fc6\exports\storyboard-A-pack\storyboard\storyboard.json
+Wrote C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\state\config\runs\31ff847c-78c3-4029-b554-ed34baaf7fc6\exports\storyboard-A-pack\storyboard\index.html
+{
+  "status": "published",
+  "run_id": "31ff847c-78c3-4029-b554-ed34baaf7fc6",
+  "snapshot_dir": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\exports\\storyboard-31ff847c-78c3-4029-b554-ed34baaf7fc6",
+  "zip_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\exports\\storyboard-31ff847c-78c3-4029-b554-ed34baaf7fc6.zip",
+  "publish_url": "https://jlenrique.github.io/assets/storyboards/31ff847c-78c3-4029-b554-ed34baaf7fc6/index.html",
+  "target_subdir": "assets/storyboards/31ff847c-78c3-4029-b554-ed34baaf7fc6",
+  "site_repo_url": "https://github.com/jlenrique/jlenrique.github.io",
+  "changed": true,
+  "file_count": 10,
+  "receipt_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\exports\\storyboard-31ff847c-78c3-4029-b554-ed34baaf7fc6-publish-receipt.json"
+}
+{"cost_report_json": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\31ff847c-78c3-4029-b554-ed34baaf7fc6\\cost-report.json", "paused_gate": "G2C", "production_clone_launch_evidence": true, "run_registry_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\31ff847c-78c3-4029-b554-ed34baaf7fc6\\run.json", "status": "paused-at-gate", "transport_kind": "cli", "trial_id": "31ff847c-78c3-4029-b554-ed34baaf7fc6"}

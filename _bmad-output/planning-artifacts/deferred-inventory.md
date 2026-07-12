@@ -41,6 +41,37 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+### hud-operator-readiness-followon (filed 2026-07-11 — ~~BLOCKING ITEMS CLOSED 2026-07-12~~; residual DEBT reduced)
+The live E2E party review passed the HUD's decision-support CORE on the witnessed surface but gated it from real operator use until the two blocking defects landed (see epic-35-story-35.7-party-performance-review-2026-07-11.md §RE-WITNESS BINDING VERDICT). **Fix arc CLOSED 2026-07-12 — UNANIMOUS 6-seat re-verdict "PERFORMED TO SPEC ON THE WITNESSED SURFACE"; HUD authorized for real operator use.**
+- ~~**F-E2E-1 [P0]**~~ **FIXED (ffc97f45)** — gate branch flipped `gate decide`→inline-verdict `trial resume` (reuses resume_production_trial); round-trip test upgraded to cross-process subprocess EXECUTION (test_gate_command_reaches_resume_walk_cross_process); re-witnessed all 8 gates paste-driven, exit 0, zero card_missing.
+- ~~**F-E2E-2 [HIGH]**~~ **FIXED (ed9d1c25)** — assembler ambient section-update calls (health/specialists/modalities/trace) wired into both walks via `_refresh_operator_surface_ambient`; non-null throughout re-witness (roster 1→17, trace 66 events); 18 witness-mode tests.
+- **F-E2E-4 [MED, production/pipeline NOT HUD] — STILL OPEN.** workbook_producer emits cache-payload-only (no workbook.md/.docx) — component flag true but zero consumable bytes; a 2-of-3-deliverable run. Own dev cycle (not the HUD arc).
+- **DEBT — STILL OPEN (non-blocking):** witness waiting_for_provider_batch via a `--llm-execution-mode batch` (LiteLLM) run; browser-witness DOM-preservation + live notification-during-run; capture a post-fix gate-paused projection snapshot + promote to L2 golden (the re-witness saved only the completed projection; command shape proven by paste-log output + next_action.py:72 + G0E/G0R captured commands); future witnesses co-snapshot run.json at each pause for post-hoc zero-lie re-derivation.
+Direction may flip if substrate evolves.
+
+
+### epic-35-hud-07d5-per-step-summary-derivation (filed 2026-07-11, surfaced at 35.8 sweep)
+`tests/unit/hud/test_per_step_summary_derivation.py` — 2 failures: manifest step `07D.5` lacks `derive_step_07d_5_summary` in `hud_per_step_summary.py`. Pre-existing, unrelated to Epic-35 retirement (confirmed identical on clean HEAD e524f42c with 35.8 changes stashed; touches files 35.8 does not own). Reactivate: 07D.5 summary owner / next hud_per_step_summary maintenance. Direction may flip if substrate evolves.
+
+
+### epic-35-hud-transform-registry-format-drift (filed 2026-07-11, surfaced at 35.9 broad sweep)
+`tests/contracts/test_transform_registry_lockstep.py::test_every_format_covered_or_exempted` red — transform-registry.md missing format sections (Box fetch-layer + Image intake unexempted). Pre-existing, unrelated to Epic 35 (35.9 touches zero transform files; first flagged at the 35.1 close). Reactivate: next transform-registry maintenance. Direction may flip if substrate evolves.
+
+
+### epic-35-hud-walk-loop-emission-assertions (filed 2026-07-11, story 35.2 close, review S4)
+Both-walk projection goldens use the spec-sanctioned fallback (direct _persist_envelope + entry-point drives); no test executes the walk loops asserting per-node update_steps/tick emission. Covering evidence: 35.3's L3 live start witness will observe the real loop wiring. Reactivate: 35.3 close (verify the witness actually covers it) or first post-E2E hardening story. Direction may flip if substrate evolves.
+
+
+### epic-35-hud-ambient-manifest-suite-reds (filed 2026-07-11, story 35.0 close)
+10 pre-existing failures in manifest-adjacent suites (tests/unit/manifest/, test_pipeline_manifest_loader.py, etc. — e.g. stale `schema_version == "v4.2-migration-stub"` pin), verified identical with and without the 35.0 diff (git-stash witness in evidence/hud-35-0-completion-notes.md). Not Epic-35 scope. Reactivate: next manifest-regime maintenance story. Direction may flip if substrate evolves.
+
+### epic-35-hud-replace-under-open-reader-hammer (filed 2026-07-11, greenlight amendment 10)
+True Windows multi-process os.replace contention stress for the operator-surface projection (party-downgraded to deterministic smoke in 35.2). Reactivate: post-arc hardening or first observed contention skip storm in a live run. Direction may flip if substrate evolves.
+
+### epic-35-hud-panel-state-fixture-fast-follow (filed 2026-07-11, greenlight amendment 10)
+35.5 v1 golden matrix trimmed to 7 statuses + 4 panel states; binding / feed-lost / config-unreadable golden fixtures are the named fast-follow. Reactivate: first post-E2E HUD hygiene story. Direction may flip if substrate evolves.
+
+
 Follow-on stories named in existing specs or retrospectives but not yet filed as sprint-status entries. Filed only when their parent story closes and/or the trigger fires.
 
 ### BMAD harness v6.10.0 upgrade follow-ons (filed 2026-07-11 at the 4/4 GO-WITH-AMENDMENTS upgrade gate; SSOT = bmad-harness-upgrade-v6.10.0-2026-07-11.md)

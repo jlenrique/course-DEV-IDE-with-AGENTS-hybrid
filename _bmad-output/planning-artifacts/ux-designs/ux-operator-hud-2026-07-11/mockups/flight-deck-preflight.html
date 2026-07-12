@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Operator HUD — Flight Deck — pre-flight in progress</title>
+<style>
+/* ============================================================
+   KEY-SCREEN MOCK · flight-deck-preflight
+   Spine sections governed:
+   - EXPERIENCE.md §State Patterns rows: `in-flight (pre-flight
+     running)` + panel-level `Tile stale` (stale veil exemplar)
+   - EXPERIENCE.md §Component Patterns: pre-flight check row
+     (○ → ◐ → ✓/✕), heartbeat row (latency + quota reading +
+     confidence tag: direct / proxy / unknown — never a false
+     green), health tile (stale veil), modality chips
+   - EXPERIENCE.md §The Two-Stage You-Are-Here Map: stage-2
+     placeholder "workflow pends ratification" (map never
+     invents unratified steps)
+   - EXPERIENCE.md §Key Flows: Flow 1 — pre-flight to spawn
+   - DESIGN.md components: stale-veil (dashed amber border,
+     content dimmed 60%, "STALE · last good {t}" stamp),
+     pre-flight check row shapes
+   ============================================================ */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { background:#0F172A; }
+body {
+  color:#E2E8F0;
+  font-family:'Segoe UI', system-ui, sans-serif;
+  font-size:14px; font-weight:400; line-height:1.5;
+  min-width:1100px;
+}
+a { color:#94A3B8; text-decoration:underline; text-underline-offset:2px; }
+.mono { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; line-height:1.5; }
+.num  { font-size:16px; font-weight:600; line-height:1.2; letter-spacing:0.01em; font-variant-numeric:tabular-nums; }
+.meta { font-size:12px; font-weight:400; line-height:1.4; color:#64748B; }
+
+/* ---- Zone 1 · annunciator — quiet nominal ---- */
+.annunciator {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  font-size:20px; font-weight:700; line-height:1.2; letter-spacing:0.06em;
+  background:#0B1120; color:#64748B;
+}
+.annunciator .sym { font-size:18px; }
+
+/* ---- Zone 2 · identity header ---- */
+.id-header {
+  display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px;
+  padding:10px 16px;
+  border-bottom:1px solid #293548;
+}
+.id-header .trial { color:#94A3B8; }
+.id-header .kv { color:#94A3B8; }
+.id-header .kv b { color:#E2E8F0; font-weight:600; }
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 10px; border-radius:4px;
+  font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+  background:#166534; color:#BBF7D0;
+}
+.chip {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:3px 12px; border-radius:9999px;
+  background:#1E293B; border:1px solid #293548;
+  font-size:12px; line-height:1.4; color:#64748B;
+}
+.chip .dot { width:8px; height:8px; border-radius:9999px; border:1px solid #64748B; background:transparent; }
+.chip.on { color:#E2E8F0; border-color:#166534; }
+.chip.on .dot { background:#22C55E; border-color:#22C55E; }
+.id-right { margin-left:auto; display:flex; gap:16px; align-items:baseline; }
+
+/* ---- Zone 3 · health strip ---- */
+.health { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; padding:12px 16px; }
+.tile { background:#1E293B; border:1px solid #293548; border-radius:6px; padding:8px 12px; }
+.tile .lbl { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.tile .val { font-size:16px; font-weight:600; letter-spacing:0.01em; font-variant-numeric:tabular-nums; color:#94A3B8; margin-top:2px; }
+.tile .sub { font-size:12px; color:#64748B; }
+.tile .age { font-size:12px; color:#64748B; margin-top:2px; }
+.conf { font-family:'Cascadia Mono', Consolas, monospace; font-size:11px; color:#64748B; border:1px solid #293548; border-radius:4px; padding:0 4px; }
+/* stale veil — dashed amber border, content dimmed to 60%, amber stamp */
+.tile.stale { border:1px dashed #FBBF24; }
+.tile.stale .lbl, .tile.stale .val, .tile.stale .sub, .tile.stale .age { opacity:0.6; }
+.tile.stale .stamp { font-size:12px; line-height:1.4; color:#FBBF24; margin-top:2px; }
+
+/* ---- Zone 4 · main deck ---- */
+.deck { display:grid; grid-template-columns:3fr 2fr; gap:16px; padding:4px 16px 12px; align-items:start; }
+@media (max-width:1100px) { .deck { grid-template-columns:1fr; } }
+
+.map-group { margin-bottom:12px; }
+.map-title { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; padding:6px 2px; border-bottom:1px solid #293548; margin-bottom:4px; }
+.node { display:flex; align-items:center; gap:10px; padding:4px 8px; border-radius:6px; color:#64748B; }
+.node .mark { width:18px; text-align:center; color:#64748B; flex:none; }
+.node .nid { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; min-width:118px; flex:none; }
+.node .lab { flex:1; }
+.gatebadge {
+  display:inline-block; padding:0 6px; border-radius:4px;
+  font-family:'Cascadia Mono', Consolas, monospace; font-size:11px;
+  border:1px solid #293548; color:#64748B;
+}
+/* stage-2 placeholder — dim single row; the map never invents steps */
+.placeholder {
+  padding:14px 12px; border:1px dashed #293548; border-radius:6px;
+  color:#64748B; font-size:13px;
+}
+.placeholder .mark { margin-right:8px; }
+
+/* ---- right column · pre-flight board ---- */
+.board {
+  background:#1E293B; border:1px solid #293548; border-radius:8px;
+  padding:12px 14px;
+}
+.phase-title { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; padding-bottom:4px; border-bottom:1px solid #293548; }
+.phase-title + .check { margin-top:4px; }
+.phase2 { margin-top:14px; }
+.check { display:flex; align-items:baseline; gap:10px; padding:5px 0; border-bottom:1px solid #29354866; font-size:13px; }
+.check:last-child { border-bottom:none; }
+.check .mark { width:16px; text-align:center; flex:none; }
+.check .name { color:#E2E8F0; min-width:118px; flex:none; }
+.check .res { color:#94A3B8; flex:1; }
+.check .dur { font-size:12px; color:#64748B; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.check.pass .mark { color:#22C55E; }        /* full green — operator actively reading the checklist */
+.check.run  .mark { color:#38BDF8; }
+.check.run  .name { color:#E2E8F0; }
+.check.pend .mark { color:#64748B; }
+.check.pend .name, .check.pend .res { color:#64748B; }
+.conf-inline { font-family:'Cascadia Mono', Consolas, monospace; font-size:11px; color:#64748B; border:1px solid #293548; border-radius:4px; padding:0 4px; }
+
+/* ---- Zone 5 · state-trace well ---- */
+.trace { margin:4px 16px 16px; background:#0B1120; border:1px solid #293548; border-radius:6px; color:#94A3B8; }
+.trace summary { padding:8px 12px; cursor:pointer; list-style:none; font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.trace summary::-webkit-details-marker { display:none; }
+.trace pre { font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; line-height:1.5; padding:4px 12px 12px; overflow-x:auto; color:#94A3B8; }
+</style>
+</head>
+<body>
+
+<!-- Zone 1 · annunciator — quiet: pre-flight is nominal, watch only -->
+<div class="annunciator" role="status" aria-live="polite">
+  <span class="sym">◐</span>
+  <span>PRE-FLIGHT IN PROGRESS</span>
+</div>
+
+<!-- Zone 2 · identity header -->
+<header class="id-header">
+  <span class="mono trial">22b27500-6e67-4dd7-8308-fd89defe3d99</span>
+  <span class="kv">lesson <b>tejal-part-4</b></span>
+  <span class="kv">preset <b>production</b></span>
+  <span class="badge"><span>▶</span> in-flight</span>
+  <span class="chip"><span class="dot"></span> BATCH</span>
+  <span class="chip"><span class="dot"></span> DETECTIVE</span>
+  <span class="chip on"><span class="dot"></span> hil-2026-apc-crossroads-classic-preserve</span>
+  <span class="id-right">
+    <span class="kv">elapsed <b class="num">0:00:14</b></span>
+    <span class="meta">snapshot 1s ago</span>
+  </span>
+</header>
+
+<!-- Zone 3 · health strip — run not walking yet; one exemplar STALE veil (LangSmith) -->
+<section class="health" aria-label="health strip">
+  <div class="tile">
+    <div class="lbl">Tokens</div>
+    <div class="val">0</div>
+    <div class="sub">run not started</div>
+    <div class="age">as of 14:33:38 · 1s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Cost</div>
+    <div class="val">$0.00</div>
+    <div class="sub">no cap</div>
+    <div class="age">as of 14:33:38 · 1s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">OpenAI</div>
+    <div class="val">quota: ok</div>
+    <div class="sub"><span class="conf">proxy</span> rate-limit headers</div>
+    <div class="age">3s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">Gamma</div>
+    <div class="val">412</div>
+    <div class="sub">credits remaining · <span class="conf">direct</span></div>
+    <div class="age">6s ago</div>
+  </div>
+  <div class="tile">
+    <div class="lbl">ElevenLabs</div>
+    <div class="val">—</div>
+    <div class="sub">heartbeat pending · <span class="conf">unknown</span></div>
+    <div class="age">no reading yet</div>
+  </div>
+  <div class="tile stale">
+    <div class="lbl">LangSmith</div>
+    <div class="val">reachable</div>
+    <div class="sub">project marcus-spoc</div>
+    <div class="stamp">⧗ STALE · last good 14:32:07 (92s ago)</div>
+  </div>
+</section>
+
+<!-- Zone 4 · main deck -->
+<main class="deck">
+
+  <!-- left · two-stage map: stage 1 pending, stage 2 = placeholder -->
+  <section aria-label="you-are-here map">
+    <div class="map-group">
+      <div class="map-title">Planning — intake &amp; ratification</div>
+      <div class="node"><span class="mark">○</span><span class="nid">directive-composer</span><span class="lab">Directive Composer</span></div>
+      <div class="node"><span class="mark">○</span><span class="nid">corpus-mount</span><span class="lab">Corpus Mount + Verify</span></div>
+      <div class="node"><span class="mark">○</span><span class="nid">material-partition</span><span class="lab">Material Partition</span></div>
+      <div class="node"><span class="mark">○</span><span class="nid">lo-refinement</span><span class="lab">LO Refinement — Irene</span></div>
+      <div class="node"><span class="mark">○</span><span class="nid">lesson-plan</span><span class="lab">Lesson Plan Draft</span></div>
+      <div class="node"><span class="mark">○</span><span class="nid">workflow-compose</span><span class="lab">Workflow Composer</span></div>
+      <div class="node"><span class="mark">○</span><span class="nid">g0-evidence-gate</span><span class="lab">Evidence Review</span><span class="gatebadge">⏸ G0E</span></div>
+      <div class="node"><span class="mark">○</span><span class="nid">g0-ratify-gate</span><span class="lab">Lesson-Plan + Workflow Ratify</span><span class="gatebadge">⏸ G0R</span></div>
+    </div>
+
+    <div class="map-group">
+      <div class="map-title">Ratified workflow</div>
+      <div class="placeholder"><span class="mark">○</span>workflow pends ratification — steps will appear here after G0R</div>
+    </div>
+  </section>
+
+  <!-- right · pre-flight board: phase 01 checklist, then phase 02 heartbeats -->
+  <aside aria-label="context panel">
+    <div class="board">
+      <div class="phase-title">Pre-flight 01 · Readiness</div>
+      <div class="check pass"><span class="mark">✓</span><span class="name">environment</span><span class="res">python 3.12 venv · keys present</span><span class="dur">0.4s</span></div>
+      <div class="check pass"><span class="mark">✓</span><span class="name">settings</span><span class="res">settings.yaml parsed · preset production</span><span class="dur">0.1s</span></div>
+      <div class="check pass"><span class="mark">✓</span><span class="name">databases</span><span class="res">postgres reachable · migrations current</span><span class="dur">0.8s</span></div>
+      <div class="check run"><span class="mark">◐</span><span class="name">litellm</span><span class="res">proxy starting · port 4000</span><span class="dur">2.1s…</span></div>
+      <div class="check pass"><span class="mark">✓</span><span class="name">hud server</span><span class="res">serving :8321 · this page</span><span class="dur">0.2s</span></div>
+      <div class="check pend"><span class="mark">○</span><span class="name">run-dir scaffold</span><span class="res">pending</span><span class="dur">—</span></div>
+      <div class="check pend"><span class="mark">○</span><span class="name">notify config</span><span class="res">pending</span><span class="dur">—</span></div>
+
+      <div class="phase-title phase2">Pre-flight 02 · Heartbeats</div>
+      <div class="check pass"><span class="mark">✓</span><span class="name">openai</span><span class="res">412ms · quota: ok · <span class="conf-inline">proxy</span> rate-limit headers</span><span class="dur">0.4s</span></div>
+      <div class="check pass"><span class="mark">✓</span><span class="name">gamma</span><span class="res">688ms · credits: 412 remaining · <span class="conf-inline">direct</span></span><span class="dur">0.7s</span></div>
+      <div class="check pend"><span class="mark">○</span><span class="name">elevenlabs</span><span class="res">pending</span><span class="dur">—</span></div>
+      <div class="check pend"><span class="mark">○</span><span class="name">kling</span><span class="res">pending</span><span class="dur">—</span></div>
+      <div class="check pend"><span class="mark">○</span><span class="name">descript</span><span class="res">pending</span><span class="dur">—</span></div>
+      <div class="check pend"><span class="mark">○</span><span class="name">langsmith</span><span class="res">pending</span><span class="dur">—</span></div>
+    </div>
+  </aside>
+</main>
+
+<!-- Zone 5 · state-trace well (collapsed by default) -->
+<details class="trace">
+  <summary>State trace — 11 events · newest last</summary>
+  <pre>14:33:24  hud bound · trial 22b27500-6e67-4dd7-8308-fd89defe3d99
+14:33:25  pre-flight 01 start · 7 checks
+14:33:26  check pass · environment · 0.4s
+14:33:27  check pass · settings · 0.1s
+14:33:28  check pass · databases · 0.8s
+14:33:29  check run · litellm · proxy starting
+14:33:31  heartbeat pass · openai · 412ms · quota proxy
+14:33:33  heartbeat pass · gamma · 688ms · credits 412 direct</pre>
+</details>
+
+</body>
+</html>

@@ -310,10 +310,15 @@ def perceive_png(
             tag="vision.provider.model-resolution",
         ) from exc
     # B5: shared prompt_cache_key (stable across slides; same derivation as batch).
+    # Pass it as a first-class Completions param (openai SDK >=1.x accepts
+    # prompt_cache_key directly). `.bind(model_kwargs=...)` was wrong: LangChain
+    # forwards a bound `model_kwargs` as a literal create() kwarg, which the SDK
+    # rejects ("unexpected keyword argument 'model_kwargs'") — surfaced by the
+    # 35.7 live E2E proofing run at node 07G.
     cache_key = resolve_vision_prompt_cache_key(mode="realtime")
     bind_kwargs: dict[str, Any] = {"timeout": timeout_seconds}
     if cache_key:
-        bind_kwargs["model_kwargs"] = {"prompt_cache_key": cache_key}
+        bind_kwargs["prompt_cache_key"] = cache_key
     chat = handle.chat.bind(**bind_kwargs)
 
     last_error: VisionProviderError | None = None

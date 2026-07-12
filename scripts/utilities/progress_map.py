@@ -162,6 +162,17 @@ WAVE_LABELS: dict[str, str] = {
     "31": "Tri-phasic Contract Primitives + Gates",
     "32": "Envelope Audit + Coverage Manifest",
     "33": "Pipeline Lockstep Substrate",
+    # Named (non-numeric) epic IDs — sprint-status.yaml keys of the form
+    # epic-<name>. Added at Story 35.0 (stale-pin disposition): the live
+    # contract test TestACDWaveLabelsContract pins WAVE_LABELS coverage of
+    # every live epic ID in sprint-status.yaml.
+    "enhanced-vo": "Enhanced VO Generation",
+    "concierge-substrate": "Concierge Production Substrate",
+    "lesson-planning-phase2-bridge": "Lesson Planning Phase-2 Bridge",
+    "batch-llm-execution-mode": "Batch LLM Execution Mode",
+    "agentic-research-foundations": "Agentic Research Foundations",
+    "workbook-research-products": "Workbook Research Products",
+    "35-operator-hud-v1": "Operator HUD v1 Flight Deck",
 }
 
 # ---------------------------------------------------------------------------

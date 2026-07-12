@@ -1,0 +1,57 @@
+# Operator HUD / notifier configuration (v1) — Story 35.6.
+#
+# Schema owner: app.models.runtime.operator_surface.HudConfig (AD-19 — one
+# model, one loader, one defaults constant). This file is parsed by that single
+# loader (load_hud_config); the assembler echoes the parsed result + parse
+# status into the projection's notifications section, and the HUD renders THAT
+# echo. Push credentials are NEVER here — they live in the HUD_PUSH_URLS env
+# var only (AD-9). Unknown keys are rejected (extra="forbid"); an unreadable or
+# invalid file falls back to defaults ("config unreadable — defaults active").
+#
+# Per-event-class notification matrix (EXPERIENCE.md §Notifications defaults).
+# enabled = surfaces at all; sound = HUD plays a sound; push = phone push fires.
+# On-HUD toast + sound are the HUD page's channel; push is the notifier's.
+notifications:
+  # A gate awaits an operator verdict — the loudest class.
+  paused_at_gate:
+    enabled: true
+    sound: true
+    push: true
+  # Run parked at a recoverable error.
+  paused_at_error:
+    enabled: true
+    sound: true
+    push: true
+  # A provider batch landed and the run resumed — on-HUD + sound, no push
+  # (good news does not need to buzz the phone).
+  batch_pause_resumed:
+    enabled: true
+    sound: true
+    push: false
+  # A health tile crossed its configured threshold — on-HUD only (no sound,
+  # no push): informational, visible at the next glance.
+  health_threshold:
+    enabled: true
+    sound: false
+    push: false
+  # The "AFK while wedged" guard: nominally in-flight but no progress within
+  # the stall budget — pushes so the operator comes to look.
+  run_stalled:
+    enabled: true
+    sound: true
+    push: true
+
+# Run-state staleness budget in seconds (HUD flips the stale veil past this).
+# NOTE: the 60s health-tile budget in EXPERIENCE.md is a render-side default
+# (owned by the HUD render, not this v1 config schema — the HudConfig model
+# carries a single staleness budget).
+staleness_budget_seconds: 5
+
+# Stall-watchdog budget: run_stalled fires when progress_seq has not advanced
+# within this many seconds while nominally in-flight (AD-10 default 600s).
+stall_budget_seconds: 600
+
+# HUD server port (config key hud.port; AD-6 default 8791). The single loader
+# normalises this nested form onto the flat model field.
+hud:
+  port: 8791

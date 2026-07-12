@@ -9,8 +9,8 @@ Inverted env-gate per M-1 rider: runs BY DEFAULT; skips only when
 ``MARCUS_30_1_ZERO_EDIT_CHECK_SKIP=1`` is set (for amendment scenarios
 where test edits are legal and expected in-flight).
 
-Pins against the commit range ``4911fc4..HEAD`` — rolled forward to the
-latest known clean concurrent-session baseline so the invariant guards
+Pins against the commit range ``_PRE_30_1_BASELINE_COMMIT..HEAD`` — rolled
+forward to the latest ratified story-close baseline so the invariant guards
 future edits instead of replaying historical, already-ratified changes.
 Commit-range pin survives local dirty state.
 
@@ -27,7 +27,12 @@ from pathlib import Path
 
 import pytest
 
-_PRE_30_1_BASELINE_COMMIT: str = "4911fc4"
+# Rolled forward 2026-07-11 at Epic-35 story 35.9 close (20cd0744 = 35.5 close)
+# per the rollforward policy above: Epic-35 stories 35.1-35.5 test inventory is
+# now in-baseline; the allowlists below carry only the in-flight 35.9 test
+# footprint (its new parity-pin + the 35.5 render tests that land one commit
+# late here + the two 35.9-modified suites).
+_PRE_30_1_BASELINE_COMMIT: str = "20cd0744"
 _REPO_ROOT: Path = Path(__file__).parent.parent.parent.resolve()
 
 # Allowlist: new test files that are legitimately added in the range
@@ -37,24 +42,56 @@ _REPO_ROOT: Path = Path(__file__).parent.parent.parent.resolve()
 # additions need to appear here.
 _ALLOWED_NEW_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     {
-        # 30-2b new tests (AC-T.2–AC-T.7 + AC-C.1 spec entries).
-        "tests/test_marcus_intake_pre_packet_emission.py",
-        "tests/test_marcus_orchestrator_dispatch.py",
-        "tests/contracts/test_30_2b_single_writer_routing.py",
-        "tests/contracts/test_30_2b_dispatch_monopoly.py",
-        "tests/contracts/test_30_2b_voice_register.py",
+        # Epic 35 story 35.9 — new §Projection-Demands parity fence
+        # (party KEY DECISION 2).
+        "tests/contracts/test_operator_surface_projection_demands_parity.py",
+        # Epic 35 story 35.5 render tests — created at 35.5 but not staged in
+        # the 20cd0744 close commit; land here (extended by 35.9).
+        "tests/hud/_render_fixtures.py",
+        "tests/hud/test_render_goldens.py",
+        "tests/hud/test_render_units.py",
+        # F-E2E-2 — new ambient-sections witness suite (health/specialists/
+        # modalities/trace wired into the walk); operator-readiness fix arc.
+        "tests/unit/marcus/orchestrator/test_operator_surface_ambient_f_e2e_2.py",
+        # Production fix (not HUD) surfaced by the 35.7 re-witness: figure
+        # normalizer must not crash on non-numeric DOI/retrieval tokens.
+        "tests/unit/specialists/test_figure_tokens_normalize.py",
     }
 )
 
 # Modified-file allowlist: pre-existing test files that are legitimately
-# MODIFIED in the range ``4911fc4..HEAD``. Each entry must name the
+# MODIFIED in the range ``<baseline>..HEAD``. Each entry must name the
 # specific AC or deferred finding that authorizes the edit.
 _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     {
-        # 30-2a G6-D1 deferral + 30-2b AC-B.9: extend the side-effect
-        # guard to cover the new marcus.intake.pre_packet and
-        # marcus.orchestrator.dispatch modules that land at 30-2b.
-        "tests/test_marcus_import_chain_side_effects.py",
+        # Standing self-entry: this guard file is modified at every story
+        # close by the rollforward policy itself (baseline advance +
+        # allowlist trim).
+        "tests/contracts/test_30_1_zero_test_edits.py",
+        # Epic 35 story 35.9 — contract widening extends the 35.1 parity suite
+        # and the 35.2 assembler suite (party KEY DECISION 2).
+        "tests/contracts/test_operator_surface_parity.py",
+        "tests/unit/marcus/orchestrator/test_operator_surface_assembler.py",
+        # F-E2E-1 — gate-class next-action flipped from `gate decide` (empty
+        # cross-process in-memory card store -> card_missing) to `trial resume`
+        # inline-verdict mode. The round-trip test now proves the command
+        # assembles a valid OperatorVerdict; the assembler suite's gate-command
+        # assertion updates in lockstep (already allowlisted above). The runner
+        # projection-emission suite asserts the same gate-command shape and
+        # updates with it.
+        "tests/unit/marcus/cli/test_next_action.py",
+        "tests/unit/marcus/orchestrator/test_runner_projection_emission.py",
+        # Epic 35 story 35.8 — legacy HUD retirement (AD-8 / AD-12). The legacy
+        # generator is now a deprecation stub, so its tests retire with it:
+        #   - test_run_hud.py reduced to a stub smoke test (2 story-35.0
+        #     `retired-by-35.8` skips removed);
+        #   - the three suites below exercised the deleted generator internals
+        #     (run_hud rendering / watch mode) and the deleted
+        #     `hud_data_sources` data layer, so they are DELETED (status D).
+        "tests/test_run_hud.py",
+        "tests/integration/hud/test_per_step_summary_rendering.py",
+        "tests/integration/hud/test_hud_watch_mode.py",
+        "tests/unit/hud/test_hud_data_sources.py",
     }
 )
 
@@ -64,8 +101,8 @@ _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     reason="MARCUS_30_1_ZERO_EDIT_CHECK_SKIP=1 set (amendment scenario)",
 )
 def test_no_preexisting_test_files_modified_in_30_1() -> None:
-    """AC-T.10 — ``git diff d7fd520..HEAD -- tests/`` contains no pre-existing
-    file edits outside the 30-1 allowlist.
+    """AC-T.10 — ``git diff <baseline>..HEAD -- tests/`` contains no
+    pre-existing file edits outside the allowlists.
 
     Commit-range pin (not working-tree diff) — survives local dirty state.
     """

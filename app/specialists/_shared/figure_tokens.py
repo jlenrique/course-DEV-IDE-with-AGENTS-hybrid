@@ -63,19 +63,31 @@ def _normalize_money(number: float, unit: str | None) -> str:
 
 def _normalize_figure(value: str) -> str:
     token = value.lower().replace(" ", "").replace(",", "")
-    if token.startswith("$"):
-        number = float(re.search(r"\d+(?:\.\d+)?", token).group(0))  # type: ignore[union-attr]
-        if "trillion" in token or token.endswith("t"):
-            unit: str | None = "trillion"
-        elif "billion" in token or token.endswith("b"):
-            unit = "billion"
-        else:
-            unit = None
-        return _normalize_money(number, unit)
-    if token.endswith("%"):
-        return f"percent:{float(token[:-1]):g}"
-    if token.endswith("x"):
-        return f"multiple:{float(token[:-1]):g}"
+    # A token merely ending in %/x or starting with $ is NOT necessarily a
+    # figure — e.g. a DOI / retrieval reference like
+    # ``retrieval:scite:10.1057/s41599-024-03196-x`` ends in "x" but is not a
+    # multiple. Guard the numeric parses so a non-numeric token falls through to
+    # an opaque token instead of crashing the numeric-provenance audit
+    # (surfaced by the 35.7 re-witness run at node 08 / research supplements).
+    try:
+        if token.startswith("$"):
+            match = re.search(r"\d+(?:\.\d+)?", token)
+            if match is None:
+                return token
+            number = float(match.group(0))
+            if "trillion" in token or token.endswith("t"):
+                unit: str | None = "trillion"
+            elif "billion" in token or token.endswith("b"):
+                unit = "billion"
+            else:
+                unit = None
+            return _normalize_money(number, unit)
+        if token.endswith("%"):
+            return f"percent:{float(token[:-1]):g}"
+        if token.endswith("x"):
+            return f"multiple:{float(token[:-1]):g}"
+    except ValueError:
+        return token
     return token
 
 

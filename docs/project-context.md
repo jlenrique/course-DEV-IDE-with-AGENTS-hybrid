@@ -1,3 +1,19 @@
+# Current Context Addendum - 2026-07-11 (session WRAPUP: Operator HUD Epic 35 — full arc + live E2E party verdict)
+
+**Session class:** S. Branch `dev/hud-revival-2026-07-11`.
+
+**Landed:** Operator HUD **Epic 35 — ALL 10 stories (35.0–35.9) authored+closed**. Full chain: bmad-ux (approved spines) → bmad-architecture (19-AD projection-contract spine) → 6-seat party green-light → per-story fresh-dev + adversarial review. New substrate: `app/hud/**` (GET-only server + render), `app/notify/**` (notifier+watchdog, real ntfy L3), `app/models/runtime/operator_surface.py` (projection contract, dual pins + §Projection-Demands parity pin), `app/marcus/orchestrator/operator_surface_assembler.py` (sole-writer emission at `_persist_envelope`), start-path pre-flight/heartbeats + HUD-server launch, legacy `run_hud.py`→deprecation stub (wrong-run fallback deleted).
+
+**Live E2E (35.7):** operator-authorized full paid run reached `completed` ($0.60). Initial 6-seat party verdict = CONDITIONAL/PARTIAL (flagship gate paste-command FAILED F-E2E-1 + ambient instruments empty F-E2E-2).
+
+**Fix arc CLOSED — active goal MET (2026-07-12):** both blockers fixed + re-witnessed on a completed live paid run (trial `31ff847c`, $0.38, all 8 gates→G4A). F-E2E-1 (`ffc97f45`) gate command `gate decide`→`trial resume` inline-verdict — 8/8 gates paste-driven exit 0, zero card_missing + cross-process EXECUTION test. F-E2E-2 (`ed9d1c25`) ambient sections wired into both walks — non-null throughout (roster 1→17, trace 66 events). **Same 6-seat party (incl. contrarians Splinter+Level) UNANIMOUS re-verdict: PERFORMED TO SPEC ON THE WITNESSED SURFACE; HUD authorized for real operator use.** 2 production bugs (NOT HUD) fixed on own merits per SPOC-goal guardrail: vision `prompt_cache_key` (`247cf72d`), research figure-normalizer DOI-x crash (`5ace59f7`). Residual non-blocking DEBT: batch pause-class un-witnessed, workbook cache-only (2-of-3, F-E2E-4), browser DOM/notification, L2-golden gate-snapshot.
+
+**Production fix:** vision realtime `prompt_cache_key` bug (247cf72d) — surfaced by the proofing run at node 07G.
+
+**Next:** HUD arc DONE + operator-usable. Optional: branch consolidation to master (owed); residual non-blocking HUD debt (batch witness, browser witness, L2-golden snapshot); F-E2E-4 workbook (own dev cycle). Do not reopen closed Epic-35 stories.
+
+---
+
 # Current Context Addendum - 2026-07-10 (session WRAPUP: Research foundations + workbook products + TRAIL trio)
 
 **Session class:** S. Branch `dev/agentic-research-foundations-2026-07-10`.

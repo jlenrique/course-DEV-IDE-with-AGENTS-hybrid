@@ -1,0 +1,9 @@
+Enrique segment seg-01 [1/8] OK | duration=21.9s | cost=0.1005
+Enrique segment seg-02 [2/8] OK | duration=27.2s | cost=0.1209
+Enrique segment seg-03 [3/8] OK | duration=40.2s | cost=0.1722
+Enrique segment seg-04 [4/8] OK | duration=23.7s | cost=0.1098
+Enrique segment seg-05 [5/8] OK | duration=31.5s | cost=0.1407
+Enrique segment seg-06 [6/8] OK | duration=29.7s | cost=0.1278
+Enrique segment seg-07 [7/8] OK | duration=36.0s | cost=0.1482
+Enrique segment seg-08 [8/8] OK | duration=32.7s | cost=0.1461
+{"cost_report_json": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\31ff847c-78c3-4029-b554-ed34baaf7fc6\\cost-report.json", "paused_gate": null, "production_clone_launch_evidence": true, "run_registry_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\31ff847c-78c3-4029-b554-ed34baaf7fc6\\run.json", "status": "completed", "transport_kind": "cli", "trial_id": "31ff847c-78c3-4029-b554-ed34baaf7fc6"}

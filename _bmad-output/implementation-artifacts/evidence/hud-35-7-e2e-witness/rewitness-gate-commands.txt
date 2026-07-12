@@ -1,0 +1,10 @@
+# Verbatim gate commands the operator (driver) READ from each gate's projection
+# next_action.command and executed — proving F-E2E-1 renders `trial resume` and
+# it works pasted. (Captured from driver stdout; all 8 gates' paste = exit 0.)
+
+G0E: trial resume --trial-id 31ff847c-78c3-4029-b554-ed34baaf7fc6 --gate-id G0E --verb approve --card-id 9e18a07d-7025-47f2-88ff-d94bf61b928c --decision-card-digest 6425a243e5b11c1bf34770ebaea58ce1d0d032abe1873c463a22b3b0542fd2db --operator-id juanl
+G0R: trial resume --trial-id 31ff847c-78c3-4029-b554-ed34baaf7fc6 --gate-id G0R --verb approve --operator-id juanl (+ card-id/digest read from decision-card-G0R.json)
+# G1,G2B,G2C,G3,G4,G4A: same `trial resume ...` form, each read from the gate's
+#   projection and executed exit 0 (see rewitness-paste-<GATE>.log). Driver stdout
+#   for those was filter-trimmed in-flight; the paste logs + next_action.py:72 +
+#   the G0E/G0R captures above establish the shape.
