@@ -231,7 +231,7 @@ This inverts today's flow (research minted generically up front at node `04.55`)
 
 | Order | Section | Watchword | Source in old design |
 |---|---|---|---|
-| — | **Cover** *(deferred — see §12)* | — | old S0 (partly) |
+| 0 | **Cover** (hero illustration [Gamma placeholder] · creative TOC · provenance) — see §12 | — | old S0 (partly) |
 | 1 | **Pre-work — The Scene** | engagement | NEW |
 | 2 | **Pre-work — The Friction Scale** | engagement | NEW |
 | 3 | **Pre-work — The Promise** (abilities) | — | **transformed** from S1 Learning Objectives |
@@ -271,12 +271,26 @@ Same discipline as `pre_work_producer` (§5): a sibling projector in the M3-safe
 
 ---
 
-## 12. Deferred — Cover design (post-trial, operator 2026-07-12)
+## 12. Cover design (operator 2026-07-12)
 
-**Do not design yet — after the workbook has had trial runs.** The cover will be **one "page" in three parts:**
-1. An **eye-grabbing screen** created as a **custom Gamma** based on the given presentation's **scenario and/or topics.**
-2. A **creatively-presented Table of Contents** for the workbook.
-3. **Workbook provenance details.**
+The cover is **one "page" in three parts** — the workbook's front door. It absorbs the front-matter role of the old S0 Overview (the "how to use with the deck" note lives in Part 3's provenance).
+
+### Part 1 — Hero illustration  *(⏳ Gamma generation = PLACEHOLDER)*
+A full-width, eye-grabbing visual keyed to **this presentation's scenario and/or topics** — visually echoing the pre-work Scene so the cover and the friction the learner is about to name are dual-coded.
+- **Gamma generation is deferred to a later step.** For now the producer emits a **named placeholder slot**: a deterministic **art-brief** derived from the scenario/topics (what the illustration should depict) + alt-text, occupying the hero position. The placeholder is *spec-in-place*, never an empty box; a later Gamma step swaps the real image in without a layout change.
+- **Honesty:** the placeholder is visibly a placeholder in trial runs (no fabricated "final art" claim).
+
+### Part 2 — Creative Table of Contents
+Not a dry section list — a **learner-facing map of the journey**, framed by the three-phase rhythm:
+- **Before you watch** → the pre-work beats (the Scene, your Friction Scale, the Promise).
+- **[The presentation]** → live (HAI) or recorded (HIL).
+- **After you watch** → the review beats (bookend, deep dive, test yourself, what's next in the field, your move) + the glossary + references.
+- Friendly labels ("Test yourself," not "S6 Check on Learning"); generated deterministically from the §10 section model, with optional light scenario-flavored framing.
+
+### Part 3 — Workbook provenance details
+The trust/registry block: the presentation/module it supports (unit + objective binding), the SME, the production run id, generation date, the source-bundle/deck reference, the **citation/fidelity stamp** (G2 passed, capability notes), and the **"how to use this workbook with the deck"** note (dual-coding statement — glance-deck vs. read-workbook). Deterministic from run metadata; absorbs old S0 (how-to-use) + S7 (honesty) provenance.
+
+**Produce:** Parts 2 & 3 are **deterministic** (from the section model + run metadata); Part 1 is a **deterministic placeholder + art-brief** now, **Gamma-filled later**. No new render dependency for the placeholder path.
 
 ---
 
