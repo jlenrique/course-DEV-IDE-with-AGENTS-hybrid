@@ -197,9 +197,14 @@ Re-voicing risks mere **paraphrase** — which adds no depth. Genuine expansion 
 - **Ask A — Concept / Narrative Enrichment** *(inward-deepening)*: wrangle credible expert knowledge on the **concepts the lesson already teaches** (the mechanism behind "administrative waste," the evidence on burnout-as-system-design, etc.). Feeds **both** the deep-dive prose (§7) **and** the encyclopedia glossary — same intent, so **pair them into one research pass** (the "encyclopedic terms" step). Cited + credibility-tiered.
 - **Ask B — Hot Topics / Trends** *(forward-expanding)*: **where the field is moving / being contested**, scoped tight to the specific abilities (even the pre-work scenario when possible). Different query, different intent — a **separate call to Tracy, run last.** Its narrowness is what keeps it honest (not a discipline survey / forecasting theater).
 
-*Same agent (Tracy), two masks, never confused: Act-two researcher-enricher (arm-in-arm with the glossary), Act-four scout.*
+### 8.1 Glossary ↔ deep-dive dependency (operator finesse, 2026-07-12)
 
-**Production sequence (a real graph-order change — research is demand-driven by the workbook's own abilities, finest-grained last):**
+Separate the **knowledge** from the **rendered entries** — this dissolves the apparent circularity ("do I need the encyclopedic understanding to *write* the narrative, or the narrative to know which *entries* to render?"):
+- **Ask A produces an encyclopedic KNOWLEDGE POOL** on the lesson's key concepts/terms — **upstream** — and it is exactly what the deep-dive writer draws on to write an informed, cited narrative. The encyclopedic understanding **is** available to (and informs) the narrative; there is no circular wait.
+- The deep-dive writing, drawing on that pool, **marks the load-bearing terms** (bolds them inline).
+- The rendered **Glossary section** is generated **downstream**, for exactly those bolded terms, **from the same pool** (no re-research). Optional targeted top-up only if a bolded term went uncovered.
+
+So: **knowledge upstream** (feeds the narrative), **rendered entries downstream** (scoped by the narrative), one Ask-A pool serving both — writer stays informed, glossary stays non-redundant. (a real graph-order change — research is demand-driven by the workbook's own abilities, finest-grained last):**
 
 ```
 (1) ratified LOs → abilities
@@ -291,6 +296,69 @@ Not a dry section list — a **learner-facing map of the journey**, framed by th
 The trust/registry block: the presentation/module it supports (unit + objective binding), the SME, the production run id, generation date, the source-bundle/deck reference, the **citation/fidelity stamp** (G2 passed, capability notes), and the **"how to use this workbook with the deck"** note (dual-coding statement — glance-deck vs. read-workbook). Deterministic from run metadata; absorbs old S0 (how-to-use) + S7 (honesty) provenance.
 
 **Produce:** Parts 2 & 3 are **deterministic** (from the section model + run metadata); Part 1 is a **deterministic placeholder + art-brief** now, **Gamma-filled later**. No new render dependency for the placeholder path.
+
+---
+
+## 13. PRD layer (this doc serves as the PRD — operator 2026-07-12)
+
+Formal requirement elements so this design doc drives `bmad-create-epics-and-stories` directly (operator delegated: augment with any missing PRD elements, then use as the PRD).
+
+### 13.1 Goals
+- Replace the disliked first-run S0–S9 workbook with a **presentation-support workbook** that measurably improves **long-term retention + application**, wrapped as **preview + review** around the weekly presentation.
+- Make it **reproducible across courses/runs by a producer** — design-time judgment encoded as run-time producer + gates + golden (no party per run).
+
+### 13.2 Non-goals / out of scope
+- **Per-learner content generation** (personalization is the learner's pen only — beats 1 & 5).
+- **Gamma illustration generation** (placeholder this pass — §12 Part 1).
+- **PDF render · worksheet fill-in affordances · full semantic claim audit** (deferred braids).
+- **Other workbook types + job aids** (future; this is the *presentation-support* type only).
+
+### 13.3 Users / personas
+- **Primary:** the async adult professional learner (e.g. practicing physician) in **HIL** (fully async, recorded) or **HAI** (hybrid, live) courses.
+- **Secondary:** the operator/SME (trust via verifiable citations); the reviewer (fidelity gates).
+
+### 13.4 Functional requirements (FR)
+- **FR1** — Pre-work renders three beats: Scene · Friction Scale · Promise (§3).
+- **FR2** — The Scene is **reverse-engineered** from the SME presentation (extract-not-invent; traceable to slides; harvest SME-authored scenarios first); **lesson-type detection** selects the scene archetype (§4/§5).
+- **FR3** — The **Friction Scale** is the deterministic weekly instrument (rate 0–10 · locate · one line); un-failable; self-closing; aggregates into a term-long self-portrait.
+- **FR4** — The **Promise** transforms **ratified LOs** into pertinent-ability vows (respect-not-replace; half-rhyme / no-spoiler).
+- **FR5** — Review renders five beats: Bookend · Deep Dive · Check-on-Learning · Door-Ajar · Reflection, each mapped to a watchword (§6).
+- **FR6** — Bookend surfaces the learner's own pre-work friction mark (her pen).
+- **FR7** — Deep Dive = **cited** self-contained read-prose, re-voiced + expanded from narration to the depth-delta, ability-organized, **superset-of-VO**, glossary terms bolded inline; **must cite sources** (binding, §7).
+- **FR8** — Check-on-Learning = **retrieval** self-assessment testing the beat-③ abilities (promise→proof).
+- **FR9** — Door-Ajar = trends / hot-topics (Ask B), scoped tight to abilities/scene, bounded + honest.
+- **FR10** — Closing Reflection = transfer prompt keyed to abilities + friction; **Sophia's shifted question** (capability, not re-rate).
+- **FR11** — Encyclopedia Glossary = separate section, entries for the bolded terms, from the Ask-A knowledge pool (§8.1).
+- **FR12** — References / Further Reading renders the citation set (G2).
+- **FR13** — Cover = hero placeholder + art-brief · creative journey-TOC · provenance (§12).
+- **FR14** — LO SSOT = Irene's **ratified** lesson plan; pre-ratification degrades honestly (§5.3).
+- **FR15** — Empty/adequacy honesty: thin-source weeks degrade, never fabricate (Part-4 case).
+- **FR16** — Two research asks (A enrich+glossary-knowledge; B hot-topics), **demand-driven graph order** (§8).
+- **FR17** — Dropped from the workbook: transcript (separate download), slide screenshots, claim table (§10).
+
+### 13.5 Non-functional requirements (NFR)
+- **NFR1 — Anti-fabrication:** extract/transform only; uncited enrichment does not enter; numeric fidelity; superset-of-VO; general semantic audit honestly deferred (WARN).
+- **NFR2 — Determinism where possible:** frame · friction-scale · TOC · provenance · honesty footer are deterministic; only Scene · Promise · Deep-Dive · Check · Reflection are leashed-LLM.
+- **NFR3 — Reproducible without a party:** producer + gates + golden exemplars; per-run; mode-agnostic.
+- **NFR4 — Producible, not per-learner:** lesson-level content generated once; personalization via the learner's pen only.
+- **NFR5 — Mode-agnostic + weekly ritual:** identical mechanism for HIL (recorded) / HAI (live); stable frame, fresh content.
+- **NFR6 — Render:** Markdown-canonical → DOCX; no new render dependency (Gamma deferred).
+- **NFR7 — Governance/layering:** pipeline-lockstep if trigger paths touched; M3-safe (`lesson_plan`, never `marcus.orchestrator`).
+- **NFR8 — Evidence:** golden shape-pins + fidelity gates + operator prose spot-check; trial-run witness on the frozen tejal deck.
+
+### 13.6 Success metrics
+Pre-work completion rate · friction-scale engagement · retrieval-check performance · term-long self-portrait continuity · citation-verifiability (G2 pass, zero unsourced) · HIL/HAI parity.
+
+### 13.7 Assumptions & dependencies
+- Irene's **ratified** lesson plan is available as LO SSOT.
+- Tracy + Texas research leg available for Ask A / Ask B.
+- Existing substrate reused: `workbook_producer` (Markdown→DOCX), `glossary_projection`, `trends_projection`, `research_packet` intake idiom, `prose_revoicer` seam.
+
+### 13.8 Risks
+- Fabrication on the net-new prose surface → mitigated by the binding cite-sources rule + gates.
+- Research cost/latency of two Tracy passes per lesson.
+- Lesson-type detection misclassifying the scene archetype.
+- Thin-source weeks → adequacy gate must degrade honestly, never invent.
 
 ---
 
