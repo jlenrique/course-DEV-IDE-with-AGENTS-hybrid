@@ -1771,7 +1771,8 @@ development_status:
   hud-35-2-assembler-runner-emission: done  # 2026-07-11 review CHANGES-REQUIRED folded (MUST tick-start guard + S2 reentered_from semantics + S3 real held-reader smoke); digest paste-chain verified vs live fixture; 585 green
   hud-35-3-start-path-preflight-heartbeats: done  # 2026-07-11 review APPROVE (no MUST); gate-before-spend + notifier wired + two-walk-safe + real OpenAI/Gamma heartbeats; L3 preflight witness all_green
   hud-35-4-get-only-hud-server: done  # 2026-07-11 review CHANGES-REQUESTED fully folded (MUST-1 raw-identity 409 probe-verified + S2 RFC ETag + S3 env exits + S4 honest placeholder); 33 tests
-  hud-35-5-flight-deck-render: in-progress  # 2026-07-11 dispatched (Opus; de-scope ladder engaged; app/hud only, disjoint from 35.3)
+  hud-35-5-flight-deck-render: done  # 2026-07-11 review APPROVE (XSS clean, AD-6 intact, zero-lie); render SHOULDs -> 35.9; deliverables-from-last_artifact = labeled stopgap superseded by 35.9; 61 tests
   hud-35-6-notifier-watchdog-push: done  # 2026-07-11 review CHANGES-REQUIRED fully folded (M1 episode reset + S1/S2/S3 + N4); 34 tests; REAL ntfy L3 witness wmUW9CnmLm6S re-verified
+  hud-35-9-contract-enrichment-parity-pin: ready-for-dev  # party KEY DECISION 2 — widen decision_card+error+minimal-deliverables (additive v1) + Projection-Demands parity pin; after 35.5, before 35.8
   hud-35-7-e2e-witness-party-review: backlog  # last; scoped-verdict schema binds
   hud-35-8-legacy-retirement-import-fences: backlog  # strictly after 35.5

@@ -329,3 +329,158 @@ Independent shadow ledger for **Epic 35 (Operator HUD v1 — Flight Deck)** on b
 **Next poll:** ~15m. Expect: 35.2 → done on origin, or continued assembler fold.
 
 ---
+
+### SOP-E35-010 — 15m poll — 2026-07-11T19:15:13-04:00
+
+**Scope reviewed:** HEAD `c1a4033f` = origin (0/0); Kanban; clean key surfaces; Claude terminal credit-wall again. Ledger-only write.
+
+**Commits since last poll:**
+1. `86292fdd` — **35.2 CLOSED** (tick-start guard + `reentered_from` + held-reader smoke; 585 green)
+2. `c1a4033f` — handoff updated: wall recovered, **5 stories closed** (35.0/35.1/35.2/35.4/35.6)
+
+**Finding resolutions:**
+- **F-E35-0020 [P1] DISCHARGED** — 35.2 closed; serial gate to 35.3 is open.
+- **F-E35-0021 [P2] CLOSED** — sole parallel-lane gate cleared.
+
+**Story board now:**
+| Story | Kanban | Notes |
+|-------|--------|-------|
+| 35.0 / 35.1 / **35.2** / 35.4 / 35.6 | **done** | Five closed on origin |
+| **35.3** | **backlog** | Comment still says `blocked-by 35.2` — **stale** after 35.2 close |
+| 35.5 | backlog | Unblocked on 35.2+35.4 deps |
+| 35.7 / 35.8 | backlog | |
+
+**Working tree:** key HUD/Marcus/notify paths clean. No `app/hud/render` yet (35.5 not opened).
+
+**Active-driver / credit wall:**
+Claude terminal: **monthly spend limit hit again** while spawning “Dev story 35.3 start-path integration” — background agent **failed** (API error / spend limit). Goal still shows ~2h active. Same failure class as earlier credit-wall arc, but after five-story close bank.
+
+**New findings:**
+**F-E35-0023 [P1] Credit wall re-hit mid-35.3 open.** 35.3 was correctly attempted after 35.2 close, then killed by spend limit. Operator must top up / switch model / hand off before 35.3 substrate lands. Do not treat “35.3 started” as durable without commit.
+**F-E35-0024 [P2] Kanban stale block comment on 35.3.** Row still `backlog # blocked-by 35.2` after 35.2 `done`. Flip to `ready-for-dev`/`in-progress` when work resumes so WP8 stays honest.
+**F-E35-0025 [P2] Clock vs remaining scope.** ~1h15m left in 16:30–20:30 window; remaining = 35.3 + 35.5 (+ optional depth) + 35.8 + 35.7. De-scope ladder for 35.5 likely; DoD-over-clock still binds 35.7.
+
+**Verdict: FIVE STORIES CLOSED CLEAN — 35.3 UNBLOCKED BUT STALLED ON CREDIT WALL; OPERATOR ACTION REQUIRED.**
+
+**Next poll:** ~15m. Expect: wall cleared + 35.3 in-progress, or idle/handoff-only.
+
+---
+
+### SOP-E35-011 — 15m poll — 2026-07-11T19:30:14-04:00
+
+**Scope reviewed:** HEAD still `c1a4033f` = origin (0/0); Kanban unchanged; Claude terminal still spend-limited; no new Epic 35 commits since SOP-E35-010. Ledger-only write.
+
+**Delta vs last poll:** **None on critical path.** No new commits (~27m since handoff `c1a4033f`). Five stories remain closed; 35.3–35.5/35.7/35.8 still backlog. Key HUD/Marcus/notify surfaces still clean of tracked diffs. `app/hud/render` still absent.
+
+**Credit wall:** Claude terminal output **unchanged** — same spend-limit message; “Dev story 35.3…” agent still failed. Goal banner still active but no progress. **F-E35-0023 remains OPEN (P1).**
+
+**Kanban:** 35.3 still `backlog # blocked-by 35.2` — **F-E35-0024 still OPEN** (stale after 35.2 done).
+
+**Ambient:** working tree has ~28 dirty/untracked lines (monitor ledger + ambient evidence/tmp noise); none are production 35.3 substrate.
+
+**Clock:** ~1h left in cited 16:30–20:30 window. Without operator credit/model recovery, remaining stories will miss the goal window; DoD-over-clock still prefers a clean last closed story over a thin rush.
+
+**Verdict: STALLED — credit wall holds; no 35.3 progress; operator action still required.**
+
+**Next poll:** ~15m. Expect: recovery + 35.3 open, or continued idle (possible session stop/handoff).
+
+---
+
+### SOP-E35-012 — 15m poll — 2026-07-11T19:45:14-04:00
+
+**Scope reviewed:** HEAD still `c1a4033f` = origin (0/0); Kanban unchanged; Claude terminal still spend-limited; no alternate driver terminal active on Epic 35. Ledger-only write.
+
+**Delta vs last poll:** **None.** ~42m since last Epic 35 commit. Five closed stories banked; 35.3–35.8 unchanged. Key production surfaces clean; no `app/hud/render`.
+
+**Credit wall:** Same terminal freeze — spend limit + failed 35.3 agent. Goal banner now shows **~3h** elapsed (still “active” with no progress). **F-E35-0023 OPEN.** **F-E35-0024 OPEN** (35.3 Kanban still stale `blocked-by 35.2`).
+
+**Clock:** ~45m left in cited 16:30–20:30 window. Realistic remaining scope (35.3+35.5+35.8+35.7) will not fit unless wall clears immediately and de-scope ladder engages hard. Prefer durable five-story bank over a thin incomplete 35.3.
+
+**Verdict: STILL STALLED — third consecutive no-progress poll; credit wall remains the blocker.**
+
+**Next poll:** ~15m. Expect: continued idle near goal-window end, or operator recovery/stop.
+
+---
+
+### SOP-E35-013 — event poll (Opus resume) — 2026-07-11T19:55:48-04:00
+
+**Trigger:** Operator notice — story authoring recommenced with **Opus 4.8** as alternate model (post spend-limit). Out-of-cadence survey; ledger-only write.
+
+**HEAD / sync:** `0c011fab` = origin (0/0). Message: `chore(sprint): 35.3 + 35.5 dispatched in parallel (Opus, post spend-limit switch)`.
+
+**Finding resolutions:**
+- **F-E35-0023 [P1] CLOSED** — credit wall cleared via model switch; work resumed.
+- **F-E35-0024 [P2] CLOSED** — Kanban honesty restored: 35.3 and 35.5 both `in-progress` with accurate comments (35.3: runner free post-35.2; 35.5: de-scope ladder, `app/hud` only, disjoint from 35.3).
+
+**Story board now:**
+| Story | Kanban | Notes |
+|-------|--------|-------|
+| 35.0 / 35.1 / 35.2 / 35.4 / 35.6 | done | banked |
+| **35.3** | **in-progress** | Opus; runner region |
+| **35.5** | **in-progress** | Opus; parallel, de-scope ladder; no `app/hud/render` on disk yet at this poll |
+| 35.7 / 35.8 | backlog | |
+
+**Driver note (Claude terminal):** Waiting on **2 background agents**; processing as they report. Operator asked to revise goal from clock deadline → **complete when all Epic stories fully authored** (~4 remaining). Driver acknowledged DoD-over-clock / no thin 35.7: will bank 35.3/35.5 as dev-complete-pending-review if needed and re-gate 35.7/35.8 rather than force a “performed to spec” verdict.
+
+**Sequencing hygiene:** Parallel 35.3∥35.5 matches green-light (disjoint regions: runner vs `app/hud`). **Watch:** no shared-file collision; 35.8 still strictly after 35.5; 35.7 last with scoped-verdict claim fence.
+
+**New findings:**
+**F-E35-0026 [P2] Goal contract flipped from 4h window to epic-complete.** Clock 16:30–20:30 is no longer the stop criterion; authorship completeness is. Monitor will track story closes + claim hygiene rather than “minutes left.” Prior F-E35-0025 clock pressure is **superseded** for stop-decision purposes (still useful as pacing context only).
+**F-E35-0027 [P3] Dual Opus lanes in flight — durability lag expected.** Substrate may appear dirty before the next bank commit; do not treat agent progress as closed until Kanban → review/done + origin.
+
+**Verdict: RECOVERED — 35.3 + 35.5 DISPATCHED IN PARALLEL ON OPUS; MONITOR RESUMES ACTIVE WATCH.**
+
+**Next poll:** ~15m (cadence). Expect: dirty/render trees and/or first 35.3 or 35.5 bank commit.
+
+---
+
+### SOP-E35-014 — 15m poll — 2026-07-11T20:00:12-04:00
+
+**Scope reviewed:** HEAD `456d7719` = origin (0/0); Kanban; dirty 35.3/35.5 substrate; Claude terminal still waiting on 2 Opus agents. Ledger-only write.
+
+**Commits since SOP-E35-013:**
+1. `456d7719` — handoff: goal revised — **no deadline**; complete when all 4 remaining stories authored (**F-E35-0026 corroborated on origin**).
+
+**Kanban:** unchanged — 35.3 + 35.5 still `in-progress`; 35.7/35.8 backlog. Epic comment still mentions old 4h window (cosmetic lag vs handoff; not a WP8 lie while stories themselves are accurate).
+
+**Substrate (dirty / untracked — not yet durable):**
+- 35.3: `M app/marcus/orchestrator/production_runner.py`; `?? preflight.py`; `?? evidence/hud-35-3-completion-notes.md`
+- 35.5: `?? app/hud/render/` (so far `styles.py` only — render package started)
+- Regions still disjoint — sequencing hygiene OK so far.
+
+**Driver:** Still waiting on 2 background agents; stated close path = code-review → fold → commit/push → Kanban → shadow poll → 35.8 after 35.5 → 35.7 last with scoped-verdict. One visible agent: “Adding PreflightGate…” (~9m).
+
+**Findings:**
+- **F-E35-0027 [P3] still OPEN** — durability lag expected; substrate present but uncommitted.
+- **F-E35-0028 [P3]** Epic Kanban header comment still cites `16:30-20:30` after goal flip — refresh when convenient so epic-row matches handoff (story rows already fine).
+
+**Verdict: BOTH LANES BUILDING — RENDER + PREFLIGHT APPEARING; AWAIT BANK COMMITS + REVIEW.**
+
+**Next poll:** ~15m. Expect: more render modules and/or 35.3/35.5 review/close commits.
+
+---
+
+### SOP-E35-015 — 15m poll — 2026-07-11T20:15:11-04:00
+
+**Scope reviewed:** HEAD still `456d7719` = origin (0/0); Kanban epic-row refresh; expanded dirty 35.3/35.5 trees; Claude mid code-review + party. Ledger-only write.
+
+**Commits:** none since SOP-E35-014 (still pre-bank). **F-E35-0027 durability lag remains OPEN.**
+
+**Kanban:** 35.3/35.5 still `in-progress`. Epic header comment now says goal REVISED (no deadline) — **F-E35-0028 CLOSED**.
+
+**Substrate growth (uncommitted):**
+- **35.3:** `preflight.py`, `production_runner.py`, `trial.py`, unit tests (`test_preflight`, `test_start_path_sequence`), completion notes + **preflight live witness** evidence.
+- **35.5:** `app/hud/render/` now `{__init__,client,page,styles}.py`; `server.py` + `test_server_routes.py`; render fixtures/units/goldens; `pyproject.toml`; 35.5 completion notes.
+- Regions still look disjoint (marcus orchestrator/cli vs app/hud) — good.
+
+**Driver ceremony:** 35.5 agent finished enough to start **code-review** (backgrounded) **in parallel with a focused party** on a “contract-gap” key decision (Winston/John + Splinter/Level). Monitor watch: party outcome must not invent product surface just to unblock review; claim fence still binds for 35.7.
+
+**New findings:**
+**F-E35-0029 [P2] Large dual-lane dirty bank without origin commit.** Both stories appear near/at completion-notes stage while HEAD is still the goal-revision doc. Prefer bank WIP or close commits soon (credit-wall lesson) before opening 35.8.
+**F-E35-0030 [P2] Contract-gap party in flight on 35.5.** Track whether disposition is fold-into-35.5, defer-to-follow-on, or scope cut under de-scope ladder — and that Kanban/evidence match the decision.
+
+**Verdict: DEV SUBSTANTIALLY ADVANCED — 35.5 IN REVIEW + CONTRACT PARTY; 35.3 EVIDENCE PRESENT; AWAIT FOLDS + DURABLE CLOSES.**
+
+**Next poll:** ~15m. Expect: review findings / party memo / first close commit(s).
+
+---

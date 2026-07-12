@@ -95,6 +95,12 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "SIM"]
 # CSS/HTML in Python string literals is long by necessity (same rationale as
 # run_hud.py above). Exempt E501 (line-too-long) for this generator only.
 "skills/bmad-agent-marcus/scripts/generate-storyboard.py" = ["E501"]
+# The flight-deck render (Story 35.5) carries the stylesheet and the client
+# poll renderer as embedded CSS/JS string assets — long by necessity, same
+# rationale as run_hud.py above. Exempt E501 for these two asset files only;
+# the render logic in app/hud/render/page.py stays within the 100-col limit.
+"app/hud/render/styles.py" = ["E501"]
+"app/hud/render/client.py" = ["E501"]
 
 [tool.pytest.ini_options]
 addopts = "-p no:randomly -n auto --dist loadfile -m 'not live and not serial and not quarantined'"

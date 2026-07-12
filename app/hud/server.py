@@ -44,7 +44,8 @@ from fastapi import FastAPI, Request, Response
 from fastapi.responses import HTMLResponse, JSONResponse
 
 from app.hud.data import projection_etag, read_snapshot
-from app.models.runtime.operator_surface import OperatorSurfaceProjection
+from app.hud.render import render_page
+from app.models.runtime.operator_surface import OperatorSurfaceProjection, Unrecognized
 
 DEFAULT_HUD_PORT = 8791
 DEFAULT_BIND_HOST = "127.0.0.1"
@@ -123,108 +124,59 @@ def _if_none_match_matches(header_value: str | None, etag: str) -> bool:
     return False
 
 
-def _flight_deck_html(trial_id: str, mode: str) -> str:
-    """The v1 placeholder shell — dark page + real ETag poll loop (35.5 replaces)."""
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Operator HUD — {trial_id}</title>
-<style>
-  :root {{ color-scheme: dark; }}
-  html, body {{ margin: 0; height: 100%; }}
-  body {{
-    background: #0F172A; color: #E2E8F0;
-    font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    padding: 24px;
-  }}
-  h1 {{ font-size: 15px; font-weight: 600; margin: 0 0 4px; color: #94A3B8; }}
-  .id {{ color: #64748B; font-size: 12px; }}
-  #annunciator {{ margin: 20px 0; font-size: 20px; font-weight: 600; }}
-  #status {{ font-size: 13px; color: #94A3B8; }}
-  #detail {{ margin-top: 16px; white-space: pre-wrap; color: #CBD5E1; font-size: 12px; }}
-  .refuse {{ color: #F87171; }}
-  .stale {{ color: #FBBF24; }}
-</style>
-</head>
-<body>
-  <h1>OPERATOR HUD <span class="id">· {mode} · {trial_id}</span></h1>
-  <div id="annunciator">…</div>
-  <div id="status">connecting…</div>
-  <div id="detail"></div>
-<script>
-  const annunciator = document.getElementById("annunciator");
-  const statusEl = document.getElementById("status");
-  const detailEl = document.getElementById("detail");
-  let etag = null;
-  function set(annun, status, detail, cls) {{
-    annunciator.textContent = annun;
-    annunciator.className = cls || "";
-    statusEl.textContent = status;
-    detailEl.textContent = detail || "";
-  }}
-  async function poll() {{
-    const headers = {{}};
-    if (etag) headers["If-None-Match"] = etag;
-    let resp;
-    try {{
-      // Header echoed verbatim; the server strips W/ + quotes when comparing.
-      resp = await fetch("/projection", {{ headers, cache: "no-store" }});
-    }} catch (err) {{
-      // DISCONNECTED means the transport failed — never a render/parse fault.
-      set("DISCONNECTED", String(err), "", "stale");
-      return;
-    }}
-    const now = new Date().toLocaleTimeString();
-    if (resp.status === 304) {{ statusEl.textContent = "up to date · " + now; return; }}
-    const newEtag = resp.headers.get("ETag");
-    if (resp.status === 409) {{
-      etag = newEtag;
-      const body = await resp.json();
-      set("REFUSE TO RENDER", "identity mismatch",
-          "bound: " + body.bound + "\\nfound: " + body.found, "refuse");
-      return;
-    }}
-    if (resp.status === 404) {{
-      set("NO PROJECTION", "waiting for runtime…", "", "stale");
-      return;
-    }}
-    if (!resp.ok) {{ set("ERROR", "HTTP " + resp.status, "", "stale"); return; }}
-    const bare = (newEtag || "").replace(/^[Ww]\\//, "").replace(/"/g, "");
-    if (bare.startsWith("unrecognized:")) {{
-      // Honest state keyed off the ETag itself: non-JSON / unknown-schema 200s
-      // render UNRECOGNIZED literally — never a parse-throw into DISCONNECTED.
-      const text = await resp.text();
-      etag = newEtag;
-      set("UNRECOGNIZED", "unparseable projection · " + now,
-          text.slice(0, 400), "stale");
-      return;
-    }}
-    let data;
-    try {{
-      data = await resp.json();
-    }} catch (err) {{
-      // Render failed: do NOT cache the etag, so the next poll retries fresh.
-      set("UNRECOGNIZED", "body did not parse · " + now, String(err), "stale");
-      return;
-    }}
-    etag = newEtag;
-    const status = (data && data.envelope && data.envelope.status) || null;
-    if (!status) {{
-      set("UNRECOGNIZED", "schema_version " + (data && data.schema_version),
-          JSON.stringify(data).slice(0, 400), "stale");
-      return;
-    }}
-    set(status.toUpperCase(), "seq " + data.seq + " · " + now,
-        "lesson: " + (data.identity && data.identity.lesson));
-  }}
-  poll();
-  setInterval(poll, 3000);
-</script>
-</body>
-</html>
-"""
+def _flight_deck_data(
+    run_dir: Path,
+    bound_trial_id: str,
+    mode: str,
+) -> dict:
+    """Build the render envelope for the COLD-load page (Story 35.5).
+
+    Mirrors the ``/projection`` identity guard so the first paint is honest and
+    never renders a foreign run: absent snapshot -> ``binding``; a parsed
+    projection whose identity matches -> ``ok`` (rendered from the parsed model
+    dump — the JS then re-renders from the raw ``/projection`` bytes each poll);
+    an identity mismatch -> ``refuse-to-render``; an ``Unrecognized`` snapshot
+    with no foreign identity -> ``unrecognized`` (raw value quoted, zero-lie).
+
+    Pure with respect to the render layer: the only I/O is the one snapshot read
+    (open-read-close via :func:`read_snapshot`); ``render_page`` itself never
+    does I/O.
+    """
+    base: dict = {"bound_trial_id": bound_trial_id, "mode": mode, "projection": None}
+    snapshot = read_snapshot(run_dir)
+    if snapshot is None:
+        base["panel_state"] = "binding"
+        return base
+
+    parsed = snapshot.parsed
+    if isinstance(parsed, OperatorSurfaceProjection):
+        found = _canonical_trial_id(str(parsed.identity.trial_id))
+        if found != bound_trial_id:
+            base["panel_state"] = "refuse-to-render"
+            base["refuse"] = {"bound": bound_trial_id, "found": found}
+            return base
+        base["panel_state"] = "ok"
+        base["projection"] = parsed.model_dump(mode="json")
+        return base
+
+    # Unrecognized snapshot — guard identity first (a foreign readable id must
+    # veil, never render), then render UNRECOGNIZED literally.
+    raw_trial_id = _raw_identity_trial_id(snapshot.raw)
+    if raw_trial_id is not None:
+        found = _canonical_trial_id(raw_trial_id)
+        if found != bound_trial_id:
+            base["panel_state"] = "refuse-to-render"
+            base["refuse"] = {"bound": bound_trial_id, "found": found}
+            return base
+    reason = parsed.reason if isinstance(parsed, Unrecognized) else "unparseable projection"
+    schema_version = parsed.schema_version if isinstance(parsed, Unrecognized) else None
+    base["panel_state"] = "unrecognized"
+    base["unrecognized"] = {
+        "raw": snapshot.raw.decode("utf-8", errors="replace")[:2000],
+        "schema_version": schema_version,
+        "reason": reason,
+    }
+    return base
 
 
 def create_hud_app(
@@ -257,7 +209,8 @@ def create_hud_app(
 
     @app.get("/")
     def flight_deck() -> HTMLResponse:
-        return HTMLResponse(_flight_deck_html(trial_id, mode))
+        data = _flight_deck_data(run_dir, bound_trial_id, mode)
+        return HTMLResponse(render_page(data))
 
     @app.get("/projection")
     def projection(request: Request) -> Response:

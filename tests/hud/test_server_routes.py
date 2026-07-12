@@ -296,20 +296,26 @@ def test_absent_projection_returns_404(run_dir, bound_trial_id) -> None:
 
 
 # --------------------------------------------------------------------------
-# Flight-deck placeholder shell (35.5 replaces).
+# Flight-deck page (Story 35.5 retargeted the placeholder to the real render).
 # --------------------------------------------------------------------------
 
 
-def test_root_serves_dark_placeholder_shell(client: TestClient) -> None:
+def test_root_serves_flight_deck_page(client: TestClient) -> None:
     resp = client.get("/")
     assert resp.status_code == 200
     assert resp.headers["content-type"].startswith("text/html")
     body = resp.text
-    assert "#0F172A" in body  # dark cockpit background
+    assert "#0F172A" in body  # dark cockpit background (DESIGN.md token)
     assert "/projection" in body  # real poll loop target
     assert "If-None-Match" in body  # ETag-gated polling
-    assert "<button" not in body.lower()  # zero-button
-    assert len(body.splitlines()) < 150  # placeholder stays a shell
+    assert "<button" not in body.lower()  # zero-button (banned interaction)
+    # The five stable zone containers the poll renderer replaces in place.
+    for zone in ("annunciator", "identity-header", "health-strip", "main-deck", "state-trace"):
+        assert f'id="{zone}"' in body
+    # Story 35.5 replaced the ~130-line placeholder shell with the full
+    # flight-deck render (CSS tokens + poll renderer); the line-count pin is
+    # updated honestly to the real page (was `< 150`).
+    assert len(body.splitlines()) > 150
 
 
 def test_placeholder_shell_keys_unrecognized_off_etag_prefix(
