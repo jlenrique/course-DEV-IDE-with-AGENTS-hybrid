@@ -154,13 +154,73 @@ The gem is not discarded — it becomes:
 
 ---
 
-## 6. Open threads (not yet designed)
+## 6. REVIEW design (the "off-ramp" half of support)
 
-- **REVIEW posture** — the other half of "support," where beat-②'s friction marks come home to roost (self-close the loop; aggregate into the term-long self-portrait). **Next up.**
-- **Depth payload organization** — prose depth keyed per-slide vs. some other structure (the core "during/review" value; slides are glance-only by design).
-- **Glossary + Trends** — formal promotion to standard sections; placement (Sally: glossary may want to be a *running margin*, not back-matter; Trends/Hot-Topics as the "sequel hook / door left ajar").
+Review is the **heavy** consolidation half (not a light loop-close): it carries all four watchwords, woven on a **learner-owned thread** rather than stacked as sections. It subtly **bookends** pre-work, then does real work for long-term retention + application.
 
-**Resolved since v1 of this doc:** concrete pre-work draft (Part 2 + Part 4, §3 / §5) · reproduction architecture + `pre_work_producer` spec (§5) · lesson-type-detection finding (§4 test) · LO SSOT = ratified lesson plan (§5.3).
+### 6.1 The five-beat integrated structure (each beat → a watchword)
+
+1. **Bookend** *(learner's pen)* — the friction-callback from pre-work. Short; sets the lens. → *engagement / loop-close.*
+2. **Deep Dive** *(lesson-level)* — the prose depth the glance-deck couldn't hold (see §7), with **glossary terms bolded/highlighted inline as markers**; full encyclopedia entries live in their **own separate section** (textbook style). → **DEPTH.**
+3. **Check on Learning** *(retrieval, not re-read)* — active-recall self-assessment that tests the **beat-③ abilities** the presentation promised → **promise-becomes-proof.** → **RECALL.**
+4. **The Door Left Ajar** *(lesson-level)* — **trends / hot-topics** as the forward hook, scoped tight to the abilities (see §8). Honest, bounded, never forecasting-theater. → **ENGAGEMENT** (pulls her toward next week).
+5. **Closing Reflection** *(learner's pen)* — apply the abilities to *her* friction: "given what you can now see/name/do — one move this week." Fuses bookend + transfer. → **TRANSFER.**
+
+### 6.2 Decisions
+
+- **Personalization lives in the learner's pen, not per-learner generation.** Only beats 1 & 5 are learner-written; beats 2–4 are **lesson-level** (produced once per lesson), framed to *invite* her to map them onto her friction. Producible *and* personal. (The producer must NOT promise "the deep dive is about YOUR friction" — it can't generate per-student.)
+- **Measurement = Sophia's shifted question, NOT re-rating.** Do not re-rate the same 0–10 (the friction often won't drop — we didn't fix her EHR this week). Instead ask what she can now **name / see / do** that she couldn't in beat ① — measuring **capability gained, not cure.** Honors that her *relationship* to the friction changed even when the friction didn't.
+- **Glossary = inline markers + separate section.** Key terms/concepts in the deep dive are **bolded/highlighted** as signals; the full encyclopedia entries live in a dedicated glossary section (reverses the current producer's trailing-block-only render).
+
+---
+
+## 7. THE DEEP DIVE — scope · design · produce
+
+The core "at a glance can't hold this" payload. The presentation is glance-only *by design*; this is where the deferred depth lives.
+
+- **Scope:** the **depth-delta** — precisely what the glance-slides omitted (mechanism, "why it matters," caveats, reasoning), organized **around the abilities** (ratified LOs), sub-threaded by the presentation's arc so it reads as narrative. A **proper superset** of the heard narration (the AC-8 `workbook_narrative ⊋ VO_script` invariant), never a disjoint rewrite, never contradicting the deck.
+- **Design:** self-contained **read-prose** (a reader who missed the talk can follow), distinct from the now-separate downloadable transcript. Glossary terms **bolded inline** → entries in their own section (§6.2).
+- **Produce:** **re-voice + expand the SME's narration** into read-prose via the `prose_revoicer` seam (the old design's `REVOICE-REQUIRED` stub) — a **transform of real source, not invention.** The narration is already fuller than the slide (e.g. Slide 2's speaker notes carry the whole system-design argument); the deep dive blooms *that*.
+
+### 7.1 The enrichment problem (operator, 2026-07-12)
+
+Re-voicing risks mere **paraphrase** — which adds no depth. Genuine expansion to the depth-delta needs **content the SME's thin notes don't contain**, and that content may **only** come from **credible sourced expert knowledge — never model priors** (that would be fabrication). This is where **Tracy + Texas** first enter: they wrangle the enriching detail (mechanism, primary evidence, nuance) from credible resources, and the re-voicer expands *that*. Every enriching sentence that enters the narrative **carries its citation**, or it does not enter. Fabrication gates on this net-new prose surface: **numeric fidelity, superset-of-VO invariant, no-new-unsourced-claims, operator prose spot-check** (general semantic claim audit honestly deferred, per the existing `braid-workbook-semantic-claim-citation-audit`).
+
+---
+
+## 8. RESEARCH ASKS & PRODUCTION SEQUENCE (Tracy + Texas)
+
+**Two distinct research asks — different purpose, do not smear them (operator, 2026-07-12):**
+
+- **Ask A — Concept / Narrative Enrichment** *(inward-deepening)*: wrangle credible expert knowledge on the **concepts the lesson already teaches** (the mechanism behind "administrative waste," the evidence on burnout-as-system-design, etc.). Feeds **both** the deep-dive prose (§7) **and** the encyclopedia glossary — same intent, so **pair them into one research pass** (the "encyclopedic terms" step). Cited + credibility-tiered.
+- **Ask B — Hot Topics / Trends** *(forward-expanding)*: **where the field is moving / being contested**, scoped tight to the specific abilities (even the pre-work scenario when possible). Different query, different intent — a **separate call to Tracy, run last.** Its narrowness is what keeps it honest (not a discipline survey / forecasting theater).
+
+*Same agent (Tracy), two masks, never confused: Act-two researcher-enricher (arm-in-arm with the glossary), Act-four scout.*
+
+**Production sequence (a real graph-order change — research is demand-driven by the workbook's own abilities, finest-grained last):**
+
+```
+(1) ratified LOs → abilities
+(2) pre-work scene + friction
+(3) deep-dive skeleton (narration re-voiced to depth-delta, ability-organized)
+(4) Ask A → Tracy+Texas enrich concepts + ground glossary  (scoped to lesson concepts)
+(5) Check-on-learning (tests beat-③ abilities)
+(6) Ask B → Tracy hot-topics/trends  (scoped to the specific abilities + scene) — LAST
+(7) compose review
+```
+
+This inverts today's flow (research minted generically up front at node `04.55`); the workbook's trends/enrichment are **derived from its own abilities**, not a generic upfront sweep. Flag loud for the build: this is a pipeline-ordering change, and Ask B is a *late, narrowly-scoped* Tracy pass distinct from the upfront research wiring.
+
+---
+
+## 9. Open threads (remaining)
+
+- **Depth payload organization** — per-slide vs. per-ability keying within the deep dive is leaning **per-ability** (§7); confirm at build.
+- **Encyclopedia glossary + Trends** — formal promotion to standard sections is now designed (§6.2, §8); remaining work is the render change (inline markers + separate section) and the two-ask wiring.
+- **Term-highlighting render** — how bolded inline markers link to the separate glossary section in Markdown→DOCX (anchor links vs. plain bold).
+- **Producer build** — `prework_projection.py` (§5) + a `review`/deep-dive producer leg + the two Tracy asks + the graph-order change (§8).
+
+**Resolved since v1:** pre-work design + draft (§3–5) · reproduction architecture (§5) · LO SSOT = ratified plan (§5.3) · full Review design (§6) · deep-dive scope/design/produce + enrichment (§7) · two-research-ask model + production sequence (§8).
 
 ---
 
