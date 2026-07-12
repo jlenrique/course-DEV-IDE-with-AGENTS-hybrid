@@ -53,6 +53,9 @@ _ALLOWED_NEW_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
         # F-E2E-2 — new ambient-sections witness suite (health/specialists/
         # modalities/trace wired into the walk); operator-readiness fix arc.
         "tests/unit/marcus/orchestrator/test_operator_surface_ambient_f_e2e_2.py",
+        # Production fix (not HUD) surfaced by the 35.7 re-witness: figure
+        # normalizer must not crash on non-numeric DOI/retrieval tokens.
+        "tests/unit/specialists/test_figure_tokens_normalize.py",
     }
 )
 
