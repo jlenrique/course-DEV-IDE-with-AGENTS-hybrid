@@ -926,3 +926,763 @@ Evidence dir (untracked): `evidence/hud-35-7-e2e-witness/` (`trial-id.txt`, `sta
 **Next poll:** ~15m. Expect: party consensus / scoped verdict / 35.7 Kanban flip.
 
 ---
+
+### SOP-E35-031 — 15m poll — 2026-07-12T00:00:13-04:00
+
+**Scope reviewed:** HEAD `1740aa5f` = origin; Kanban all Epic 35 rows **done**; party verdict doc; deferred-inventory follow-on; WRAPUP commit. Ledger-only.
+
+**Commits since SOP-030:**
+1. `9772a758` — party performance review; **Epic 35 CLOSED**
+2. `1740aa5f` — session-WRAPUP (Class S)
+
+---
+
+#### Claim audit — party verdict vs prior shadow findings
+
+| Shadow / Murat | Party binding verdict | Align? |
+|---|---|---|
+| F-E2E-1 gate paste P0 | **FLAGSHIP FAILED** — not operator-usable until fixed+re-witnessed | **YES** |
+| F-E2E-2 ambient empty | **HIGH** — same gate | **YES** |
+| No unqualified “performed to spec” | **CONDITIONAL / PARTIAL PASS ON WITNESSED SURFACE**; CORE PROVEN LIVE | **YES** (claim fence held) |
+| Recovered-after-hotfix | Verdict notes completed after vision recover; defects not mid-run-fixed (HUD) | Acceptable labeling |
+| Level workbook 2-of-3 | F-E2E-4 in deferred inventory | **YES** |
+| Follow-on filed | `hud-operator-readiness-followon` in deferred-inventory | **YES** |
+
+**Kanban honesty:** epic + 35.0–35.9 all `done` with accurate 35.7 comment (CONDITIONAL/PARTIAL; not operator-usable). Epic header hygiene from F-E35-0038 superseded by close.
+
+**Finding closures:** monitor arc’s open claim-fence watches on 35.7 discharge into the binding party doc. Product defects remain as **follow-on**, not epic reopen.
+
+**Monitor posture:** Epic 35 production goal met (stories authored+closed + scoped verdict). 15m poll loop still armed — next ticks will be idle unless operator stops the sentinel or starts the readiness follow-on.
+
+**Verdict: EPIC 35 CLOSED CLEAN ON GOVERNANCE — CORE LIVE, FLAGSHIP FAIL HONESTLY SCOPED; OPERATOR-READINESS FOLLOW-ON FILED.**
+
+**Next poll:** ~15m (or stop if operator ends monitor). Expect: idle / WRAPUP aftermath only.
+
+---
+
+### SOP-E35-032 — 15m poll — 2026-07-12T00:15:12-04:00
+
+**Scope reviewed:** HEAD `ffc97f45` = origin; readiness follow-on in flight; F-E2E-1 fix claim audit; dirty F-E2E-2 surfaces; Claude mid F-E2E-2 review. Ledger-only.
+
+**Not idle.** Post-WRAPUP, driver opened **HUD operator-readiness fix arc** (goal: clean party PASS).
+
+**Commit:** `ffc97f45` — **F-E2E-1 fix** (gate `next_action` → `trial resume` inline-verdict; review APPROVE + folds).
+
+---
+
+#### Claim audit — F-E2E-1 (WP13)
+
+| Claim | Monitor | Verdict |
+|---|---|---|
+| Gate command is `trial resume …` not `gate decide` | `next_action.py` returns `"trial resume"` for paused-at-gate | **MATCH** |
+| Notes: unit/cli+assembler+emission+30_1 → **140 passed** | Same paths now → **144 passed** | **NEAR** (+4; likely F-E2E-2 dirty assembler/runner tests already on disk) |
+| Notes: parity+hud → **171 passed** | **171 passed** | **MATCH** |
+| Commit msg “36 tests green” | Narrower than notes; `test_next_action.py` alone = 9 | Prefer notes tails; msg count incomplete |
+| Party fence: live paste re-witness | **NOT done yet** — hermetic EXECUTION tests banked; live paste→accept still required before “performed to spec” | **OPEN** |
+
+**F-E2E-2 in flight:** dirty `operator_surface_assembler.py` (+98) + `production_runner.py` (+240); code-review agent running. Deferred-inventory entry still lists both F-E2E-1 and F-E2E-2 (F-E2E-1 inventory line not yet struck — hygiene lag).
+
+**Adversarial:** Closing readiness before a **fresh live run** where the HUD-emitted gate command is pasted and accepted would re-violate the party’s non-negotiable operator-readiness gate. Driver’s stated plan (re-witness + reconvene party) is the correct claim path.
+
+**Verdict: F-E2E-1 LANDED ON ORIGIN (TESTS MOSTLY VERIFY); F-E2E-2 REVIEWING; LIVE RE-WITNESS STILL REQUIRED FOR CLAIM UPGRADE.**
+
+**Next poll:** ~15m. Expect: F-E2E-2 close commit and/or live re-witness start.
+
+---
+
+### SOP-E35-033 — 15m poll — 2026-07-12T00:30:12-04:00
+
+**Scope reviewed:** HEAD still `ed9d1c25` = origin; re-witness trial `31ff847c-78c3-4029-b554-ed34baaf7fc6`; paste logs; live projection; Claude diagnosing post-G1 crash. Ledger-only.
+
+**Re-witness LIVE:** new paid/small run under readiness arc. At poll: **`paused-at-gate` / G1** (as_of ~04:28Z). Cost tiny so far (~$0.00001 at this snapshot — early gates).
+
+---
+
+#### Claim audit — party fence items (WP13)
+
+| Fence requirement | Live evidence | Verdict |
+|---|---|---|
+| F-E2E-1: HUD emits `trial resume …` | Projection `next_action` = `trial resume --trial-id 31ff847c… --gate-id G1 --verb approve …` | **MATCH** |
+| F-E2E-1: paste accepted first-try | `rewitness-paste-G0E/G0R/G1.log` present; driver reports G0E+G0R advanced without `card_missing`; G0E log shows clean pause advance to G0R | **PROVEN at ≥2 gates** (G1 paste accepted; walk then hit non-HUD crash) |
+| F-E2E-2: ambient sections populated | Live proj: `health` PRESENT, `specialists`/`modalities`/`trace` True | **PROVEN** |
+
+**New finding — F-E35-0052 [P1 production, not HUD]:** After successful G1 HUD-paste resume, walk crashed in research numeric-provenance / `_normalize_figure` via `float('retrieval:scite:10.1057/…')` → `ValueError` (unmapped crash, not clean error-pause). Data-dependent; first capstone run did not trip it. Driver reading `figure_tokens.py`. **Does not unwind** the HUD paste/ambient proofs already banked at G0E/G0R/G1.
+
+**Adversarial:** HUD readiness fence for F-E2E-1/2 is essentially **satisfied on this re-witness through G1**. “Clean party PASS / performed to spec” still needs (a) durable bank of paste logs + ambient snapshots, (b) disposition of this research crash (fix-and-continue vs scoped PASS with named production debt), (c) party reconvene. Prefer not to dilute HUD PASS by waiting on unrelated research audit hardening unless operator wants a full completed re-run.
+
+**Witness durability:** rewitness-* files still `??` untracked — bank before close.
+
+**Verdict: HUD FIXES LIVE-PROVEN (PASTE + AMBIENT); RE-WITNESS BLOCKED MID-RUN BY NEW RESEARCH FIGURE-TOKEN BUG; AWAIT DISPOSITION.**
+
+**Next poll:** ~15m. Expect: figure-token fix/recover, or scoped readiness close + party.
+
+---
+
+### SOP-E35-034 — 15m poll — 2026-07-12T00:45:13-04:00
+
+**Scope reviewed:** HEAD `5ace59f7` = origin; re-witness trial `31ff847c-…`; paste logs through G2C; Claude driving toward G3/motion. Ledger-only.
+
+**Commit:** `5ace59f7` — research `_normalize_figure` must not crash on non-numeric DOI/retrieval tokens (**F-E35-0052 CLOSED** as durable production fix).
+
+**Re-witness progress:** After figure-token fix, paste-driven advances continued. At poll: live proj **`paused-at-gate` / G2C** → driver reports G2C→G3 (motion) in flight. Cost ~**$0.24**. Ambient still **PRESENT** (`health`/`specialists`). `next_action` still `trial resume …`.
+
+**Paste log bank (still untracked):** G0E, G0R, G1, G2B present; `rewitness-paste-G2C.log` is **0 bytes** while driver claims G2C paste exit 0 — minor evidence-hygiene gap (log may still be writing / empty success). Prefer non-empty paste transcripts for party.
+
+**Claim status:**
+- F-E2E-1/2 live proofs **strengthened** (now through G2B/G2C, not just G1).
+- Full “clean party PASS” still needs **completed** (or explicit scoped stop) + banked evidence + reconvene (operator already said reconvene once complete).
+- Context pressure: terminal shows **98% context used** — watch for another credit/context wall mid-motion.
+
+**Verdict: FIGURE-TOKEN FIXED; RE-WITNESS PASTING CLEANLY THROUGH G2C INTO MOTION; AWAIT G3+ / COMPLETED + EVIDENCE BANK.**
+
+**Next poll:** ~15m. Expect: G3/G4/G4A/completed or another production hitch.
+
+---
+
+### SOP-E35-035 — 15m poll — 2026-07-12T01:00:14-04:00
+
+**Scope reviewed:** HEAD `84bb8316` (1 ahead of origin); re-witness **completed**; REWITNESS.md + banked evidence; Claude compacting at 100% context before party reconvene. Ledger-only.
+
+**Run:** `31ff847c-…` → **`status=completed`** @ 04:52:54Z · cost **$0.3828** · all 8 gate cards · ambient **PRESENT** at completed · deliverables section populated (flags true).
+
+**Evidence commit:** `84bb8316` banks REWITNESS.md, paste logs G0E–G4A, gate-commands.txt, completed projection. **Push lag:** 1 ahead of origin.
+
+---
+
+#### Claim audit (WP13)
+
+| Claim | Monitor | Verdict |
+|---|---|---|
+| F-E2E-1 all 8 gates paste exit 0 | REWITNESS + paste logs + gate-commands (G0E/G0R verbatim `trial resume`) | **ACCEPT** (honest that mid-gate stdout was filter-trimmed; behavior+logs still hold) |
+| F-E2E-2 ambient non-null through completed | Banked completed proj: health PRESENT, specialists True | **MATCH** |
+| Completed + motion on disk | Cost/deliverables present; REWITNESS cites mp4 | Plausible; not re-hashed this poll |
+| “Fence satisfied / clean PASS ready” | F-E2E-1/2 operator-readiness gate **met on evidence** | **YES for readiness fence** — party must still ratify |
+| 2-of-3 consumable deliverables | REWITNESS honesty disclosure + F-E2E-4 | **honest** — do not launder as 3/3 files |
+| Gate-paused snapshot debt | Disclosed — only completed proj banked for re-witness; intermediate JSONs are stale first-run | **honest debt** |
+
+**Adversarial:** Driver’s REWITNESS.md is claim-hygiene strong (workbook gap + snapshot debt named). Terminal at **100% context / compacting** while “reconvene party once complete” — risk of thin or deferred party if compaction loses seats. Prefer durable push of `84bb8316` before party memo.
+
+**Finding updates:** F-E2E-1/2 live re-witness **discharged** pending party label; F-E2E-4 remains; push-cadence open for evidence commit.
+
+**Verdict: RE-WITNESS COMPLETED — HUD READINESS FENCE EVIDENCE IN HAND; AWAIT PARTY RECONVENE + PUSH; CONTEXT WALL RISK.**
+
+**Next poll:** ~15m. Expect: party verdict / Kanban-deferred-inventory update / push.
+
+---
+
+### SOP-E35-036 — 15m poll — 2026-07-12T01:15:13-04:00
+
+**Scope reviewed:** HEAD `3c6cda8c` = origin (0/0); party re-verdict; Kanban/deferred; Claude idle post-WRAPUP. Ledger-only.
+
+**Commits since SOP-035:**
+1. `9c9ed7a2` — governance: fix arc CLOSED — unanimous 6-seat **PERFORMED-TO-SPEC**
+2. `3c6cda8c` — wrapup: HUD fix arc CLOSED — goal MET (pushed)
+
+---
+
+#### Claim audit — re-verdict (WP13/WP14)
+
+| Claim | Source | Monitor stance |
+|---|---|---|
+| Unanimous 6/6 PERFORMED TO SPEC on witnessed surface | Party review §RE-WITNESS BINDING VERDICT | **Aligns** with prior shadow: F-E2E-1/2 live-proven on completed paste-driven run |
+| Operator-readiness gate MET; authorized for real use | Same | **Accept** with named debt still binding honesty |
+| Non-blocking debt: batch pause, workbook 2-of-3, browser DOM/ntfy, L2 gate snapshots | Deferred inventory reduced; F-E2E-1/2 struck | **MATCH** prior disclosures |
+| Goal MET + WRAPUP + pushed | Terminal + HEAD on origin | **MATCH** |
+
+**Kanban hygiene:** `hud-operator-readiness-followon: done` (accurate). Sibling row `hud-followon-f-e2e-1-2: in-review` still present — **stale** vs close (P3; flip/archive when convenient).
+
+**Monitor posture:** Active goal (clean party PASS after readiness fixes) is **complete**. Epic 35 + fix arc both closed on origin. 15m sentinel still armed — further polls will be idle unless operator stops the loop or opens new work (e.g. merge-to-master).
+
+**Verdict: READINESS ARC CLOSED — HUD PERFORMED-TO-SPEC (UNANIMOUS); GOAL MET; MONITOR MAY IDLE.**
+
+**Next poll:** ~15m (idle expected) or stop on operator request.
+
+---
+
+### SOP-E35-037 — 15m poll — 2026-07-12T01:30:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Only standing operator ask: consolidate branch → `master` on confirm. Stale Kanban row `hud-followon-f-e2e-1-2: in-review` still unflipped (P3 hygiene from SOP-036).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-038 — 15m poll — 2026-07-12T01:45:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-039 — 15m poll — 2026-07-12T02:00:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-040 — 15m poll — 2026-07-12T02:15:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-041 — 15m poll — 2026-07-12T02:30:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP (prompt now shows `/clear` save hint); no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-042 — 15m poll — 2026-07-12T02:45:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-043 — 15m poll — 2026-07-12T03:00:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-044 — 15m poll — 2026-07-12T03:15:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-045 — 15m poll — 2026-07-12T03:30:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-046 — 15m poll — 2026-07-12T03:45:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-047 — 15m poll — 2026-07-12T04:00:13-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-048 — 15m poll — 2026-07-12T04:15:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-049 — 15m poll — 2026-07-12T04:30:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only.
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-050 — 15m poll — 2026-07-12T04:45:16-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~3.5h idle since WRAPUP `3c6cda8c` @ 01:06.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-051 — 15m poll — 2026-07-12T05:00:16-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~4h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-052 — 15m poll — 2026-07-12T05:15:14-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~4.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-053 — 15m poll — 2026-07-12T05:30:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~4.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-054 — 15m poll — 2026-07-12T05:45:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~4.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-055 — 15m poll — 2026-07-12T06:00:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-056 — 15m poll — 2026-07-12T06:15:10-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~5.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-057 — 15m poll — 2026-07-12T06:30:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~5.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-058 — 15m poll — 2026-07-12T06:45:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~5.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-059 — 15m poll — 2026-07-12T07:00:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~6h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-060 — 15m poll — 2026-07-12T07:15:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~6.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-061 — 15m poll — 2026-07-12T07:30:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~6.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-062 — 15m poll — 2026-07-12T07:45:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~6.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-063 — 15m poll — 2026-07-12T08:00:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~7h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-064 — 15m poll — 2026-07-12T08:15:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~7.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-065 — 15m poll — 2026-07-12T08:30:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~7.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-066 — 15m poll — 2026-07-12T08:45:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~7.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-067 — 15m poll — 2026-07-12T09:00:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~8h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-068 — 15m poll — 2026-07-12T09:15:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~8.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-069 — 15m poll — 2026-07-12T09:30:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~8.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-070 — 15m poll — 2026-07-12T09:45:18-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~8.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-071 — 15m poll — 2026-07-12T10:00:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~9h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-072 — 15m poll — 2026-07-12T10:15:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~9.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-073 — 15m poll — 2026-07-12T10:30:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~9.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-074 — 15m poll — 2026-07-12T10:45:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~9.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-075 — 15m poll — 2026-07-12T11:00:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~10h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-076 — 15m poll — 2026-07-12T11:15:33-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~10.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-077 — 15m poll — 2026-07-12T11:30:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~10.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-078 — 15m poll — 2026-07-12T11:45:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~10.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-079 — 15m poll — 2026-07-12T12:00:13-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~11h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-080 — 15m poll — 2026-07-12T12:15:11-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~11.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-081 — 15m poll — 2026-07-12T12:30:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~11.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-082 — 15m poll — 2026-07-12T12:45:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~11.75h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-083 — 15m poll — 2026-07-12T13:00:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~12h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-084 — 15m poll — 2026-07-12T13:15:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~12.25h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
+
+### SOP-E35-085 — 15m poll — 2026-07-12T13:30:12-04:00
+
+**Scope reviewed:** HEAD still `3c6cda8c` = origin; Claude still waiting post-WRAPUP; no new commits. Ledger-only. (~12.5h idle since WRAPUP.)
+
+**Delta:** **None.** Goal remains MET. Standing ask unchanged: merge → `master` on confirm, or stop monitor. Stale `hud-followon-f-e2e-1-2: in-review` still unflipped (P3).
+
+**Verdict: IDLE — ARC CLOSED; AWAITING OPERATOR (MERGE-TO-MASTER OR STOP MONITOR).**
+
+**Next poll:** ~15m.
+
+---
