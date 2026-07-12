@@ -43,3 +43,36 @@ All six seats agree on the substance; the only divergence was whether the *label
 
 ## Story 35.7 disposition
 The story's deliverable — a live E2E witness + a documented fully-spawned party performance review under the scoped-verdict schema — is COMPLETE. 35.7 is closed on that basis (the review happened and rendered an honest, documented, scoped verdict). The verdict being conditional does not un-author the story. The three findings become the **HUD operator-readiness follow-on** (filed in deferred-inventory), tracked for a fix arc before the HUD is put in front of the operator at a live gate.
+
+---
+
+# RE-WITNESS BINDING VERDICT (operator-readiness fix arc — 2026-07-12)
+
+After the CONDITIONAL verdict above, the two blocking HUD defects were fixed and the run re-witnessed end-to-end on a completed live paid run (trial `31ff847c-78c3-4029-b554-ed34baaf7fc6`, $0.38, all 8 gates + terminal G4A). The SAME fully-spawned 6-seat party (incl. both contrarians) re-reviewed against the operator-readiness gate.
+
+## Fixes landed
+- **F-E2E-1 [was P0 BLOCKING] — FIXED (`ffc97f45`).** Gate-class `next_action.command` flipped from the dead-end `gate decide` (in-memory `_CARD_STORE` → `card_missing` cross-process) to `trial resume …` inline-verdict mode, converging on the proven `resume_production_trial` path. Re-witnessed: all 8 gates driven by pasting the HUD's OWN rendered command verbatim → **exit 0, zero `card_missing`**, run advanced to completed. Hermetic execution test added (`test_gate_command_reaches_resume_walk_cross_process`) closing the round-trip-vs-execution gap Murat's fence named.
+- **F-E2E-2 [was HIGH] — FIXED (`ed9d1c25`).** Ambient section-update APIs are now called during BOTH walks (`_refresh_operator_surface_ambient`). Re-witnessed: `health`/`specialists`/`modalities`/`trace` NON-NULL at every checkpoint (roster grew 1→3→17; trace 66 events; modalities mode=realtime; health tiles incl. run cost). 18-test witness suite added.
+- **2 production bugs (NOT HUD) surfaced by the run, fixed on their own merits per the SPOC-goal guardrail:** vision realtime `prompt_cache_key` bind (`247cf72d`); research `_normalize_figure` crash on non-numeric DOI/retrieval tokens (`5ace59f7`).
+
+## Re-review votes (6 of 6)
+| Seat | Vote |
+|---|---|
+| John (PM / operator stand-in) | **PERFORMED-TO-SPEC** — operator-usable YES; JTBD#1 now functional |
+| Murat (test architect) | **PERFORMED-TO-SPEC** — items 3+5 now PASS; roster/trace populated |
+| Winston (architect) | **PERFORMED-TO-SPEC** — defects resolved at predicted layers; spine held |
+| Amelia (dev) | **PERFORMED-TO-SPEC** — fix plans faithful; execution-test gap closed |
+| Splinter (contrarian, consensus-challenger) | **PERFORMED-TO-SPEC** — "my prior fence is CLEARED… a contrarian who rejects a cleared fence is just noise. This one is cleared. I accept it." |
+| Level (contrarian, claim-checker) | **PERFORMED-TO-SPEC** — "the re-witness honestly supports it. Not a whitewash." All claims verified against artifacts. |
+
+## BINDING VERDICT — HUD PERFORMED TO SPEC ON THE WITNESSED SURFACE (UNANIMOUS 6/6, no impasse)
+
+Both blocking defects are genuinely cleared, verified live and in code by both contrarians. The operator-readiness gate's two non-negotiable conditions are MET: (1) F-E2E-1 fixed AND re-witnessed end-to-end (gate command pasted → accepted first try, no card_missing across all 8 gates); (2) F-E2E-2 emits non-empty ambient sections throughout. The HUD is authorized for real operator use on the witnessed surface.
+
+**Carried-forward DEBT (non-blocking, contrarian-flagged, unanimously not gating):**
+1. `waiting_for_provider_batch` pause class still un-witnessed live (needs a `--llm-execution-mode batch` / LiteLLM run).
+2. Live notification-during-run + DOM-preservation browser-un-witnessed (browser→localhost blocked; 35.6 real ntfy receipt banked separately).
+3. Workbook remains cache-only — deliverables are **2-of-3 consumable** (deck + motion real; workbook a true-flag with no artifact). Pre-existing PRODUCTION/pipeline gap (F-E2E-4), NOT a HUD defect.
+4. Post-fix gate-paused projection JSON not recaptured as a saved artifact (proven by paste-log output-shape + `next_action.py:72` + G0E/G0R captured commands); capture + promote to L2 golden on the next gate-pausing run.
+
+**Goal condition MET:** the active goal's terminal condition — "until the bmad party mode team reviews the performance of the completed HUD during a live E2E runner + Marcus-SPOC orchestrated E2E small production run and finds the HUD performed to spec" — is satisfied. The party reviewed a completed live small production run (3-slide deck + 1 motion video; workbook flag-only per debt #3) and unanimously found the HUD performed to spec on the witnessed surface, with named non-blocking debt.

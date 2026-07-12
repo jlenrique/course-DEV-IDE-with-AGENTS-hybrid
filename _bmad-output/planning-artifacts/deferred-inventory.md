@@ -41,12 +41,12 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
-### hud-operator-readiness-followon (filed 2026-07-11, Epic-35 story 35.7 party verdict)
-The live E2E party review passed the HUD's decision-support CORE on the witnessed surface but gated it from real operator use until these land (see epic-35-story-35.7-party-performance-review-2026-07-11.md). A fix arc before the operator drives a live gate:
-- **F-E2E-1 [P0]** build_next_action gate branch emits `gate decide` (fails card_missing cross-process); flip to an inline-verdict `trial resume --trial-id --gate-id --verb --card-id --decision-card-digest --operator-id` form (add inline-verdict mode to `trial resume`, reuse resume_production_trial); upgrade the 35.2 round-trip test from argparse-acceptance to real cross-process subprocess EXECUTION; re-witness end-to-end (paste→accepted first try). ~0.5d (Amelia).
-- **F-E2E-2 [HIGH]** wire assembler ambient section-update calls (health/specialists/modalities/trace) into `_emit_operator_surface`/walk so the standing instruments aren't empty mid-run; witness-mode tests. ~1-1.5d (Amelia).
-- **F-E2E-4 [MED, production/pipeline not HUD]** workbook_producer emits cache-payload-only (no workbook.md/.docx) — component flag true but zero consumable bytes; a 2-of-3-deliverable run. Own dev cycle (not the HUD arc).
-- **DEBT** witness waiting_for_provider_batch via a `--llm-execution-mode batch` (LiteLLM) run; browser-witness DOM-preservation + live notification-during-run; promote the 5 projection snapshots to L2 golden; future witnesses co-snapshot run.json at each pause for post-hoc zero-lie re-derivation.
+### hud-operator-readiness-followon (filed 2026-07-11 — ~~BLOCKING ITEMS CLOSED 2026-07-12~~; residual DEBT reduced)
+The live E2E party review passed the HUD's decision-support CORE on the witnessed surface but gated it from real operator use until the two blocking defects landed (see epic-35-story-35.7-party-performance-review-2026-07-11.md §RE-WITNESS BINDING VERDICT). **Fix arc CLOSED 2026-07-12 — UNANIMOUS 6-seat re-verdict "PERFORMED TO SPEC ON THE WITNESSED SURFACE"; HUD authorized for real operator use.**
+- ~~**F-E2E-1 [P0]**~~ **FIXED (ffc97f45)** — gate branch flipped `gate decide`→inline-verdict `trial resume` (reuses resume_production_trial); round-trip test upgraded to cross-process subprocess EXECUTION (test_gate_command_reaches_resume_walk_cross_process); re-witnessed all 8 gates paste-driven, exit 0, zero card_missing.
+- ~~**F-E2E-2 [HIGH]**~~ **FIXED (ed9d1c25)** — assembler ambient section-update calls (health/specialists/modalities/trace) wired into both walks via `_refresh_operator_surface_ambient`; non-null throughout re-witness (roster 1→17, trace 66 events); 18 witness-mode tests.
+- **F-E2E-4 [MED, production/pipeline NOT HUD] — STILL OPEN.** workbook_producer emits cache-payload-only (no workbook.md/.docx) — component flag true but zero consumable bytes; a 2-of-3-deliverable run. Own dev cycle (not the HUD arc).
+- **DEBT — STILL OPEN (non-blocking):** witness waiting_for_provider_batch via a `--llm-execution-mode batch` (LiteLLM) run; browser-witness DOM-preservation + live notification-during-run; capture a post-fix gate-paused projection snapshot + promote to L2 golden (the re-witness saved only the completed projection; command shape proven by paste-log output + next_action.py:72 + G0E/G0R captured commands); future witnesses co-snapshot run.json at each pause for post-hoc zero-lie re-derivation.
 Direction may flip if substrate evolves.
 
 
