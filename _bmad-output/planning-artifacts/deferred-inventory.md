@@ -41,6 +41,15 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+### hud-operator-readiness-followon (filed 2026-07-11, Epic-35 story 35.7 party verdict)
+The live E2E party review passed the HUD's decision-support CORE on the witnessed surface but gated it from real operator use until these land (see epic-35-story-35.7-party-performance-review-2026-07-11.md). A fix arc before the operator drives a live gate:
+- **F-E2E-1 [P0]** build_next_action gate branch emits `gate decide` (fails card_missing cross-process); flip to an inline-verdict `trial resume --trial-id --gate-id --verb --card-id --decision-card-digest --operator-id` form (add inline-verdict mode to `trial resume`, reuse resume_production_trial); upgrade the 35.2 round-trip test from argparse-acceptance to real cross-process subprocess EXECUTION; re-witness end-to-end (paste→accepted first try). ~0.5d (Amelia).
+- **F-E2E-2 [HIGH]** wire assembler ambient section-update calls (health/specialists/modalities/trace) into `_emit_operator_surface`/walk so the standing instruments aren't empty mid-run; witness-mode tests. ~1-1.5d (Amelia).
+- **F-E2E-4 [MED, production/pipeline not HUD]** workbook_producer emits cache-payload-only (no workbook.md/.docx) — component flag true but zero consumable bytes; a 2-of-3-deliverable run. Own dev cycle (not the HUD arc).
+- **DEBT** witness waiting_for_provider_batch via a `--llm-execution-mode batch` (LiteLLM) run; browser-witness DOM-preservation + live notification-during-run; promote the 5 projection snapshots to L2 golden; future witnesses co-snapshot run.json at each pause for post-hoc zero-lie re-derivation.
+Direction may flip if substrate evolves.
+
+
 ### epic-35-hud-07d5-per-step-summary-derivation (filed 2026-07-11, surfaced at 35.8 sweep)
 `tests/unit/hud/test_per_step_summary_derivation.py` — 2 failures: manifest step `07D.5` lacks `derive_step_07d_5_summary` in `hud_per_step_summary.py`. Pre-existing, unrelated to Epic-35 retirement (confirmed identical on clean HEAD e524f42c with 35.8 changes stashed; touches files 35.8 does not own). Reactivate: 07D.5 summary owner / next hud_per_step_summary maintenance. Direction may flip if substrate evolves.
 
