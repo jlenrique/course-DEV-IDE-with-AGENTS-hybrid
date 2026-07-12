@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import json
+import ast
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
@@ -83,6 +83,41 @@ def _write_run(
         trial.model_dump_json(),
         encoding="utf-8",
     )
+
+
+def _write_contributions(
+    run_dir: Path,
+    contributions: list[tuple[str, str, dict]],
+) -> None:
+    trial_id = UUID("12345678-1234-4234-8234-123456789abc")
+    envelope = ProductionEnvelope(
+        trial_id=trial_id,
+        contributions=tuple(
+            SpecialistContribution.from_output(
+                specialist_id=specialist_id,
+                output=output,
+                model_used="fixture",
+                node_id=node_id,
+                provenance="fixture",
+            )
+            for specialist_id, node_id, output in contributions
+        ),
+        fixture_run=True,
+    )
+    started = datetime(2026, 7, 10, 12, 0, tzinfo=UTC)
+    trial = ProductionTrialEnvelope(
+        trial_id=trial_id,
+        preset="explore",
+        corpus_path="fixture",
+        operator_id="w1-hermetic",
+        started_at=started,
+        completed_at=started,
+        status="completed",
+        production_clone_launch_evidence=True,
+        production_envelope=envelope,
+    )
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run.json").write_text(trial.model_dump_json(), encoding="utf-8")
 
 
 def test_absent_run_is_honest_empty(tmp_path: Path) -> None:
@@ -170,3 +205,303 @@ def test_research_entries_key_wrong_type_fail_loud(tmp_path: Path) -> None:
     (tmp_path / "run.json").write_text(trial.model_dump_json(), encoding="utf-8")
     with pytest.raises(rp.ResearchPacketShapeError, match="must be a list"):
         rp.load_research_packet(tmp_path)
+
+
+def test_public_packet_coordinates_are_frozen_and_exported() -> None:
+    expected = {
+        "GENERIC_RESEARCH_SPECIALIST_ID": "research_wiring",
+        "GENERIC_RESEARCH_NODE_ID": "04.55",
+        "ASK_A_ENRICHMENT_SPECIALIST_ID": "ask_a_enrichment",
+        "ASK_A_ENRICHMENT_NODE_ID": "07W.2",
+        "ASK_B_HOT_TOPICS_SPECIALIST_ID": "ask_b_hot_topics",
+        "ASK_B_HOT_TOPICS_NODE_ID": "07W.4",
+    }
+    for name, value in expected.items():
+        assert getattr(rp, name) == value
+        assert name in rp.__all__
+    assert "resolve_for_enrichment_pool" in rp.__all__
+    assert "resolve_for_hot_topics" in rp.__all__
+    assert "RunEnvelopeCorruptError" in rp.__all__
+
+
+def test_three_packets_select_exact_coordinates_and_witness_digests(tmp_path: Path) -> None:
+    generic = _valid_entry(citation_id="generic", source_hash="sha256:generic")
+    ask_a = _valid_entry(citation_id="ask-a", source_hash="sha256:ask-a")
+    ask_b = _valid_entry(citation_id="ask-b", source_hash="sha256:ask-b")
+    _write_contributions(
+        tmp_path,
+        [
+            ("research_wiring", "04.55", {"research_entries": [generic]}),
+            ("ask_a_enrichment", "07W.2", {"research_entries": [ask_a]}),
+            ("ask_b_hot_topics", "07W.4", {"research_entries": [ask_b]}),
+            ("ask_a_enrichment", "collision", {"research_entries": [generic]}),
+            ("collision", "07W.2", {"research_entries": [ask_b]}),
+        ],
+    )
+
+    default = rp.load_research_packet(tmp_path)
+    explicit = rp.load_research_packet(
+        tmp_path,
+        specialist_id="research_wiring",
+        node_id="04.55",
+    )
+    enrichment = rp.resolve_for_enrichment_pool(tmp_path)
+    hot_topics = rp.resolve_for_hot_topics(tmp_path)
+
+    assert default == explicit
+    assert (default.specialist_id, default.node_id) == ("research_wiring", "04.55")
+    assert (enrichment.specialist_id, enrichment.node_id) == (
+        "ask_a_enrichment",
+        "07W.2",
+    )
+    assert (hot_topics.specialist_id, hot_topics.node_id) == (
+        "ask_b_hot_topics",
+        "07W.4",
+    )
+    assert default.entries[0]["citation_id"] == "generic"
+    assert enrichment.entries[0]["citation_id"] == "ask-a"
+    assert hot_topics.entries[0]["citation_id"] == "ask-b"
+    assert enrichment == rp.resolve_for_enrichment_pool(tmp_path)
+    assert len(
+        {default.packet_digest, enrichment.packet_digest, hot_topics.packet_digest}
+    ) == 3
+
+
+@pytest.mark.parametrize(
+    ("specialist_id", "node_id", "expected_loss"),
+    [
+        ("research_wiring", "04.55", "research_wiring_contribution_absent"),
+        (
+            "ask_a_enrichment",
+            "07W.2",
+            "packet_contribution_absent:ask_a_enrichment@07W.2",
+        ),
+        (
+            "ask_b_hot_topics",
+            "07W.4",
+            "packet_contribution_absent:ask_b_hot_topics@07W.4",
+        ),
+    ],
+)
+def test_missing_packet_is_coordinate_specific_honest_empty(
+    tmp_path: Path, specialist_id: str, node_id: str, expected_loss: str
+) -> None:
+    _write_contributions(tmp_path, [])
+    packet = rp.load_research_packet(
+        tmp_path, specialist_id=specialist_id, node_id=node_id
+    )
+    assert packet.status == "empty"
+    assert packet.known_losses == (expected_loss,)
+    assert (packet.specialist_id, packet.node_id) == (specialist_id, node_id)
+
+
+@pytest.mark.parametrize(
+    "resolver",
+    [rp.resolve_for_enrichment_pool, rp.resolve_for_hot_topics],
+)
+def test_named_resolvers_require_usable_and_validate_rows(
+    tmp_path: Path, resolver: object
+) -> None:
+    target = (
+        ("ask_a_enrichment", "07W.2")
+        if resolver is rp.resolve_for_enrichment_pool
+        else ("ask_b_hot_topics", "07W.4")
+    )
+    _write_contributions(
+        tmp_path,
+        [(target[0], target[1], {"research_entries": [{"bad": "row"}]})],
+    )
+    packet = resolver(tmp_path)  # type: ignore[operator]
+    assert packet.status == "empty"
+    assert packet.known_losses == (
+        "entry_shape_invalid:0",
+        "research_entries_all_invalid",
+    )
+    with pytest.raises(rp.ResearchPacketShapeError, match="requires usable"):
+        resolver(tmp_path, require_usable=True)  # type: ignore[operator]
+
+
+def test_non_generic_empty_paths_preserve_requested_coordinates(tmp_path: Path) -> None:
+    absent = rp.load_research_packet(
+        tmp_path, specialist_id="ask_a_enrichment", node_id="07W.2"
+    )
+    assert (absent.specialist_id, absent.node_id) == ("ask_a_enrichment", "07W.2")
+    assert absent.known_losses == ("run_json_absent",)
+
+    _write_contributions(
+        tmp_path,
+        [("ask_a_enrichment", "07W.2", {"not_research_entries": []})],
+    )
+    missing_key = rp.resolve_for_enrichment_pool(tmp_path)
+    assert (missing_key.specialist_id, missing_key.node_id) == (
+        "ask_a_enrichment",
+        "07W.2",
+    )
+    assert missing_key.known_losses == ("research_entries_key_absent",)
+
+
+def test_named_resolvers_fail_loud_for_wrong_container_and_corrupt_run(
+    tmp_path: Path,
+) -> None:
+    _write_contributions(
+        tmp_path,
+        [("ask_b_hot_topics", "07W.4", {"research_entries": {"bad": "type"}})],
+    )
+    with pytest.raises(rp.ResearchPacketShapeError, match="must be a list"):
+        rp.resolve_for_hot_topics(tmp_path)
+    (tmp_path / "run.json").write_text("{nope", encoding="utf-8")
+    with pytest.raises(RunEnvelopeCorruptError):
+        rp.resolve_for_enrichment_pool(tmp_path)
+
+
+def test_research_packet_has_no_orchestrator_import() -> None:
+    source = Path(rp.__file__).read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    imported_roots = {
+        node.module
+        for node in ast.walk(tree)
+        if isinstance(node, ast.ImportFrom) and node.module is not None
+    }
+    imported_roots.update(
+        alias.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Import)
+        for alias in node.names
+    )
+    assert not any(
+        module == "app.marcus.orchestrator"
+        or module.startswith("app.marcus.orchestrator.")
+        for module in imported_roots
+    )
+
+
+def test_default_generic_load_equals_explicit_across_all_honest_shapes(
+    tmp_path: Path,
+) -> None:
+    cases: dict[str, list[tuple[str, str, dict]] | None] = {
+        "absent-run": None,
+        "missing-contribution": [],
+        "missing-key": [("research_wiring", "04.55", {"other": []})],
+        "empty": [("research_wiring", "04.55", {"research_entries": []})],
+        "degraded": [
+            (
+                "research_wiring",
+                "04.55",
+                {"research_entries": [{"bad": "row"}, _valid_entry()]},
+            )
+        ],
+        "all-invalid": [
+            ("research_wiring", "04.55", {"research_entries": [{"bad": "row"}]})
+        ],
+        "ready": [
+            ("research_wiring", "04.55", {"research_entries": [_valid_entry()]})
+        ],
+    }
+    for name, contributions in cases.items():
+        run_dir = tmp_path / name
+        if contributions is not None:
+            _write_contributions(run_dir, contributions)
+        assert rp.load_research_packet(run_dir) == rp.load_research_packet(
+            run_dir,
+            specialist_id=rp.GENERIC_RESEARCH_SPECIALIST_ID,
+            node_id=rp.GENERIC_RESEARCH_NODE_ID,
+        )
+
+
+def test_none_node_id_is_rejected_before_any_node_lookup(tmp_path: Path) -> None:
+    _write_contributions(
+        tmp_path,
+        [
+            ("ask_a_enrichment", "wrong-node", {"research_entries": [_valid_entry()]}),
+            (
+                "ask_a_enrichment",
+                "07W.2",
+                {"research_entries": [_valid_entry(citation_id="intended")]},
+            ),
+        ],
+    )
+    with pytest.raises(rp.ResearchPacketShapeError, match="node_id"):
+        rp.load_research_packet(
+            tmp_path,
+            specialist_id="ask_a_enrichment",
+            node_id=None,  # type: ignore[arg-type]
+        )
+
+
+_PACKET_IDENTITIES = [
+    ("research_wiring", "04.55", "glossary_writer"),
+    ("ask_a_enrichment", "07W.2", "enrichment_pool"),
+    ("ask_b_hot_topics", "07W.4", "hot_topics"),
+]
+
+
+@pytest.mark.parametrize(
+    ("specialist_id", "node_id", "consumer_id"),
+    _PACKET_IDENTITIES,
+)
+@pytest.mark.parametrize(
+    "state",
+    ["ready", "empty", "degraded", "missing-key", "wrong-container", "corrupt"],
+)
+def test_identity_by_state_validation_parity(
+    tmp_path: Path,
+    specialist_id: str,
+    node_id: str,
+    consumer_id: rp.ConsumerId,
+    state: str,
+) -> None:
+    if state == "corrupt":
+        (tmp_path / "run.json").write_text("{nope", encoding="utf-8")
+        with pytest.raises(RunEnvelopeCorruptError):
+            rp.load_research_packet(
+                tmp_path, specialist_id=specialist_id, node_id=node_id
+            )
+        return
+
+    outputs = {
+        "ready": {"research_entries": [_valid_entry()]},
+        "empty": {"research_entries": []},
+        "degraded": {
+            "research_entries": [{"bad": "row"}, _valid_entry()]
+        },
+        "missing-key": {"other": []},
+        "wrong-container": {"research_entries": {"bad": "type"}},
+    }
+    _write_contributions(
+        tmp_path,
+        [(specialist_id, node_id, outputs[state])],
+    )
+    if state == "wrong-container":
+        with pytest.raises(rp.ResearchPacketShapeError, match="must be a list"):
+            rp.load_research_packet(
+                tmp_path, specialist_id=specialist_id, node_id=node_id
+            )
+        return
+
+    packet = rp.load_research_packet(
+        tmp_path, specialist_id=specialist_id, node_id=node_id
+    )
+    expected_status = {
+        "ready": "ready",
+        "empty": "empty",
+        "degraded": "degraded",
+        "missing-key": "empty",
+    }[state]
+    assert packet.status == expected_status
+    assert (packet.specialist_id, packet.node_id) == (specialist_id, node_id)
+    if state == "empty":
+        assert packet.known_losses == ("research_entries_empty",)
+    elif state == "degraded":
+        assert packet.known_losses == ("entry_shape_invalid:0",)
+    elif state == "missing-key":
+        assert packet.known_losses == ("research_entries_key_absent",)
+
+    if not packet.usable:
+        with pytest.raises(rp.ResearchPacketShapeError, match="requires usable"):
+            rp.resolve_for_consumer(
+                tmp_path,
+                consumer_id,
+                require_usable=True,
+                specialist_id=specialist_id,
+                node_id=node_id,
+            )

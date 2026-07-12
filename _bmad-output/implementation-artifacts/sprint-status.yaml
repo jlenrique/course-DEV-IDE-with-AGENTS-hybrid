@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-10  # Batch LLM A0+A1+A3 done; next B1 LiteLLM adapter scaffold. Prior chronicle retained in git history / SESSION-HANDOFF.
+last_updated: 2026-07-12  # Presentation-support workbook Story 38-0 moved to review.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1798,8 +1798,8 @@ development_status:
   37-5-wire-review-golden-references: backlog  # A8: assemble+dedupe+render References section (FR12)
   37-6-mode-parity-hil-hai: backlog  # A6 (new): mode input + HIL/HAI parity AC
   epic-37-retrospective: optional
-  epic-38-research-asks-graph: backlog  # Research asks + graph-topology surgery
-  38-0-two-packet-intake-contract: backlog  # NEW (graph-shape); LANDS FIRST; lesson_plan M3-safe; 3 packets/3 digests
+  epic-38-research-asks-graph: in-progress  # Research asks + graph-topology surgery; opened with dependency-first Story 38-0.
+  38-0-two-packet-intake-contract: done  # 2026-07-12 mandatory 3-layer review closed; 3/3 patches resolved; focused 52/52 + Ruff + diff check green. Full-suite HUD/notifier subprocess hang documented in story.
   38-1-ask-a-enrichment-wiring: backlog  # orchestrator; node 07W.2 (Tracy+Texas scoped to 07W.1 terms)
   38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST)
   38-3a-research-packet-consume-side: backlog  # lesson_plan; readers + cross-layer string-contract test; fixture-tested
