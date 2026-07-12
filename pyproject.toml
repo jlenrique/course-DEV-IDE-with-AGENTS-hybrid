@@ -391,6 +391,46 @@ forbidden_modules = [
 ]
 include_external_packages = true
 
+# HUD2 (Story 35.8; ADs 9/12, paradigm arrows). Mirror of HUD1 for the
+# notifier lane: the shared notifier service is a pure consumer of the
+# operator-surface contract + hud-config.yaml — it never reaches into the
+# runner/orchestrator, never re-opens the retired April data readers, and
+# never touches the gate machinery. Forbidding the whole external `scripts`
+# top-level is the same strictly-stronger guarantee HUD1 relies on: because
+# `scripts` is not a root_package, `scripts.utilities.hud_data_sources` cannot
+# be named as a subpackage directly, so forbidding all of `scripts` fences off
+# the (now-DELETED) legacy reader and everything else under scripts/.
+[[tool.importlinter.contracts]]
+name = "HUD2 - app.notify imports the contract only (never orchestrator / legacy readers / gates)"
+type = "forbidden"
+source_modules = ["app.notify"]
+forbidden_modules = [
+    "app.marcus.orchestrator",
+    "app.gates",
+    "scripts",
+]
+include_external_packages = true
+
+# NOTE — the "nothing may import scripts.utilities.hud_data_sources" rule
+# (Story 35.8 task 4 / AD-8): the module is DELETED, so no import of it is
+# possible. Expressing a *global* `anything -> hud_data_sources` contract would
+# require adding `scripts` to `[tool.importlinter].root_packages`, which pulls
+# the entire `scripts/` tree (~hundreds of modules) into contract graph
+# analysis — a large, unrelated surface that would likely surface pre-existing
+# cross-imports and materially slow every lint-imports run. That cost is
+# declined deliberately: the only two app-side layers the AD-3/AD-8 rule binds
+# are `app.hud` (HUD1) and `app.notify` (HUD2), and both already forbid the
+# whole `scripts` tree — a strictly stronger fence than naming one deleted
+# module. `app` is the sole root_package, so no other app code can import it
+# either without tripping these two contracts.
+#
+# NOTE — the AD-4 "consumers must not strict-parse the projection" rule is NOT
+# import-linter-expressible: the strict producer model and the lenient reader
+# are same-module symbols in `app.models.runtime.operator_surface`, and
+# import-linter operates at module granularity, not symbol granularity. It is
+# enforced in-code (consumers call `read_operator_surface_lenient(...)`; the
+# strict model is the byte-pin source only) and by the HUD server route tests.
+
 [build-system]
 requires = ["setuptools>=77"]  # >=77 required for PEP 639 string `license = "MIT"`
 build-backend = "setuptools.build_meta"

@@ -1774,5 +1774,5 @@ development_status:
   hud-35-5-flight-deck-render: done  # 2026-07-11 review APPROVE (XSS clean, AD-6 intact, zero-lie); render SHOULDs -> 35.9; deliverables-from-last_artifact = labeled stopgap superseded by 35.9; 61 tests
   hud-35-6-notifier-watchdog-push: done  # 2026-07-11 review CHANGES-REQUIRED fully folded (M1 episode reset + S1/S2/S3 + N4); 34 tests; REAL ntfy L3 witness wmUW9CnmLm6S re-verified
   hud-35-9-contract-enrichment-parity-pin: done  # 2026-07-11 review APPROVE (no MUST/SHOULD); additive v1 no version bump; AD-1 restored; parity pin fails-red-on-drift; 982 passed. Also banks 35.5 render goldens (missed at 35.5 close) + zero-test-edits guard rollforward
-  hud-35-7-e2e-witness-party-review: backlog  # last; scoped-verdict schema binds
-  hud-35-8-legacy-retirement-import-fences: in-progress  # 2026-07-11 dispatched (35.5 merged; last substrate story before 35.7 E2E)
+  hud-35-7-e2e-witness-party-review: in-progress  # 2026-07-11 ALL 8 substrate stories closed; live E2E small run + party scoped-verdict review = terminal goal condition
+  hud-35-8-legacy-retirement-import-fences: done  # 2026-07-11 review APPROVE (no MUST); run_hud.py->deprecation stub, wrong-run fallback DELETED (AD-8, pinned), hud_data_sources deleted, HUD2 fence, 1387 passed (2 pre-existing reds deferred)

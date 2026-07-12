@@ -66,6 +66,17 @@ _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
         # and the 35.2 assembler suite (party KEY DECISION 2).
         "tests/contracts/test_operator_surface_parity.py",
         "tests/unit/marcus/orchestrator/test_operator_surface_assembler.py",
+        # Epic 35 story 35.8 — legacy HUD retirement (AD-8 / AD-12). The legacy
+        # generator is now a deprecation stub, so its tests retire with it:
+        #   - test_run_hud.py reduced to a stub smoke test (2 story-35.0
+        #     `retired-by-35.8` skips removed);
+        #   - the three suites below exercised the deleted generator internals
+        #     (run_hud rendering / watch mode) and the deleted
+        #     `hud_data_sources` data layer, so they are DELETED (status D).
+        "tests/test_run_hud.py",
+        "tests/integration/hud/test_per_step_summary_rendering.py",
+        "tests/integration/hud/test_hud_watch_mode.py",
+        "tests/unit/hud/test_hud_data_sources.py",
     }
 )
 

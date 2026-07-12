@@ -41,6 +41,10 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+### epic-35-hud-07d5-per-step-summary-derivation (filed 2026-07-11, surfaced at 35.8 sweep)
+`tests/unit/hud/test_per_step_summary_derivation.py` — 2 failures: manifest step `07D.5` lacks `derive_step_07d_5_summary` in `hud_per_step_summary.py`. Pre-existing, unrelated to Epic-35 retirement (confirmed identical on clean HEAD e524f42c with 35.8 changes stashed; touches files 35.8 does not own). Reactivate: 07D.5 summary owner / next hud_per_step_summary maintenance. Direction may flip if substrate evolves.
+
+
 ### epic-35-hud-transform-registry-format-drift (filed 2026-07-11, surfaced at 35.9 broad sweep)
 `tests/contracts/test_transform_registry_lockstep.py::test_every_format_covered_or_exempted` red — transform-registry.md missing format sections (Box fetch-layer + Image intake unexempted). Pre-existing, unrelated to Epic 35 (35.9 touches zero transform files; first flagged at the 35.1 close). Reactivate: next transform-registry maintenance. Direction may flip if substrate evolves.
 
