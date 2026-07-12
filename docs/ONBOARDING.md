@@ -4,9 +4,9 @@
 
 **Languages:** Python (3.11+), Markdown, YAML, JSON, JavaScript, Shell, PowerShell, SQL
 **Core frameworks:** LangChain, LangGraph, Pydantic v2 (plus httpx, FastAPI/Uvicorn, Pytest in the runtime/tooling layers)
-**Branch (at analysis):** `dev/agentic-research-foundations-2026-07-10`
-**Graph baseline:** commit `3b88dd1e` · **2655 nodes / 5378 edges / 8 layers · 845 files** analyzed (`app/`, `scripts/`, `skills/`)
-**Regenerated:** 2026-07-10 (incremental update at HEAD; covers the Agentic Research Foundations mini-epic R0–R7 and the Workbook Research Products stories W0–W4)
+**Branch (at analysis):** `master`
+**Graph baseline:** commit `fcaca8e7` · **2899 nodes / 5790 edges / 8 layers · 863 files** analyzed (`app/`, `scripts/`, `skills/`)
+**Regenerated:** 2026-07-12 (incremental update at HEAD; covers the Epic 35 Operator HUD revival arc — flight-deck HUD, notify service, operator-surface assembler/projection — merged to master)
 
 > This guide is generated from the `/understand` knowledge graph. It is a **map, not the territory** — file summaries are LLM-derived and occasionally reflect one representative symbol in a file. When a summary and the code disagree, the code wins. Re-run `/understand` after significant changes and `/understand-onboard` to refresh this file.
 
@@ -24,6 +24,7 @@ Three design commitments run through everything:
 
 Recent substrate milestones reflected in this graph scan:
 
+- **Operator HUD Revival — Epic 35 (2026-07-11, merged to master)** — a flight-deck operator HUD surface (`app/hud/` — data sources, server, and `render/` page/client/styles) reads a per-run operator-surface projection assembled by `app/marcus/orchestrator/operator_surface_assembler.py` from the run's `operator-surface.v1` schema (`app/models/schemas/operator-surface.v1.schema.json`, `app/models/runtime/operator_surface.py`), with an `app/notify/` ntfy notification service and `scripts/utilities/hud_data_sources.py` / `run_hud.py` / `progress_map.py` operator tooling. Parity is contract-pinned (`tests/contracts/test_operator_surface_parity.py`, `test_operator_surface_projection_demands_parity.py`) and the emit seam lives in `production_runner.py`.
 - **Agentic Research Foundations (R0–R7, 2026-07-10)** — the research leg grows from "one Scite dispatch" into a governed research runtime: Tracy's posture runtime (`app/specialists/tracy/` — posture dispatch over the research charter), evidence-hierarchy credibility classification (`app/marcus/orchestrator/research_credibility.py`, closed tier set T1 systematic-review → unclassified per `docs/dev-guide/research-evidence-hierarchy.md`), anti-fabrication research intake for specialists (`app/specialists/_shared/research_intake.py`, re-exported to Irene via `app/specialists/irene/retrieval_intake.py` so specialists never import the orchestrator), and the **R7 research-detective hard-pause gate** (`research_detective_gate.py`) that blocks Irene Pass-2 dispatch until an operator disposition receipt lands.
 - **Workbook Research Products (W0–W4, 2026-07-10)** — research-grounded workbook sections: a thin shared research-packet reader over the node-04.55 research contribution (`app/marcus/lesson_plan/research_packet.py`), glossary and trends projections (`glossary_projection.py`, `trends_projection.py`) that turn tier-labeled research rows into encyclopedia-style glossary articles and a grounded `ResearchTrendsBrief`, composed into the workbook by the generalized `workbook_producer` chain with empty-honesty behavior (sections are omitted, never fabricated, when the packet is empty).
 - **Batch LLM Execution Mode v1 (2026-07-10)** — opt-in LiteLLM Batch transport (`app/runtime/llm_batch/`) trading latency for ~50% provider cost on eligible call sites; per-node realtime/batch transport profiles (`llm_execution_config.py`), an A3 eligibility matrix (`llm_batch_eligibility.py`), a vision batch route (`app/specialists/vision/batch_route.py`), and a `WaitingForProviderBatchError` pause/resume seam in the production runner.
@@ -37,18 +38,18 @@ Recent substrate milestones reflected in this graph scan:
 
 ## 2. Architecture Layers
 
-The graph assigns all 846 file-level nodes to eight layers. Roughly top-to-bottom:
+The graph assigns all 863 file-level nodes to eight layers. Roughly top-to-bottom:
 
 | Layer | Nodes | What lives here |
 |---|---:|---|
-| **Marcus Orchestration** | 148 | `app/marcus/` — Marcus-SPOC CLI, trial driver, production runner, dispatch adapter, lesson-plan compilation (incl. drill/quiz/workbook producers + research-packet/glossary/trends projections), course-source registry, styleguide picker/publisher, G0/research/coverage wiring incl. credibility scoring and the R7 detective gate. The layer that *drives* a production run. |
-| **Specialist Agents & Composers** | 191 | `app/specialists/` — per-specialist LangGraph agents (irene, gary, texas, tracy, enrique, vision, wanda, kira, motion_planner, quinn_r, workbook_producer, …) + `_shared` audits/research intake and composer nodes (incl. the Section 02A directive composer). |
-| **Gates & Workflow Substrate** | 59 | `app/gates/`, `app/manifest/`, `app/cora/` — HIL gate decision modules (incl. Section 02A G0 poll surface), pipeline-manifest compiler, Cora block-mode dev-graph enforcement. |
-| **Domain Models** | 167 | `app/models/` — Pydantic v2 domain & runtime-state models + emitted JSON schemas: decision-cards, lesson-plan envelopes, contributions side-cars, collateral specs. |
-| **Runtime & Transport** | 65 | `app/runtime/` (incl. the new `llm_batch/` LiteLLM Batch transport package + eligibility/execution config), `app/replay/`, `app/http/`, `app/ledger/`, `app/mcp_server/`, `app/parity/`, `app/audit/` — Postgres checkpointer/retention, resume-and-recover replay, HTTP/MCP transport, parity checks, audit plumbing. |
+| **Marcus Orchestration** | 146 | `app/marcus/` — Marcus-SPOC CLI, trial driver, production runner, dispatch adapter, lesson-plan compilation (incl. drill/quiz/workbook producers + research-packet/glossary/trends projections), course-source registry, styleguide picker/publisher, G0/research/coverage wiring incl. credibility scoring and the R7 detective gate. The layer that *drives* a production run. |
+| **Specialist Agents & Composers** | 184 | `app/specialists/` — per-specialist LangGraph agents (irene, gary, texas, tracy, enrique, vision, wanda, kira, motion_planner, quinn_r, workbook_producer, …) + `_shared` audits/research intake and composer nodes (incl. the Section 02A directive composer). |
+| **Gates & Workflow Substrate** | 39 | `app/gates/`, `app/manifest/`, `app/cora/` — HIL gate decision modules (incl. Section 02A G0 poll surface), pipeline-manifest compiler, Cora block-mode dev-graph enforcement. |
+| **Domain Models** | 170 | `app/models/` — Pydantic v2 domain & runtime-state models + emitted JSON schemas: decision-cards, lesson-plan envelopes, contributions side-cars, collateral specs. |
+| **Runtime & Transport** | 39 | `app/runtime/` (incl. the `llm_batch/` LiteLLM Batch transport package + eligibility/execution config), the new `app/hud/` flight-deck operator HUD, `app/notify/` ntfy service, `app/replay/`, `app/http/`, `app/ledger/`, `app/mcp_server/`, `app/parity/`, `app/audit/` — Postgres checkpointer/retention, resume-and-recover replay, HTTP/MCP transport, parity checks, audit plumbing. |
 | **Operator & Developer Tooling** | 124 | `scripts/` — API clients, content generators, diagnostics, operator utilities, live-proof drivers. |
 | **BMAD Agent Skills** | 88 | `skills/` — operator-facing BMAD agent skill packages (`SKILL.md` persona files, reference contracts) for custom personas Marcus routes to. |
-| **Project Root & Configuration** | 4 | Top-level env templates, git/coverage attributes, tooling artifacts. |
+| **Project Root & Configuration** | 73 | Top-level env templates, git/coverage attributes, `state/` runtime config (incl. `hud-config.yaml`, `pipeline-manifest.yaml`), and tooling artifacts. |
 
 ---
 
@@ -210,4 +211,4 @@ The graph flags **135** file-level nodes as `complex`. The ones a new developer 
 
 ---
 
-*Generated from `.understand-anything/knowledge-graph.json` (commit `3b88dd1e`, 2026-07-10). Regenerate with `/understand` (incremental) or `/understand --full`, then `/understand-onboard`.*
+*Generated from `.understand-anything/knowledge-graph.json` (commit `fcaca8e7`, 2026-07-12). Regenerate with `/understand` (incremental) or `/understand --full`, then `/understand-onboard`.*

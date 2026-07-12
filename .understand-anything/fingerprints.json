@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "3b88dd1e35bde1e90be7ab176d907f92ef191e0e",
-  "generatedAt": "2026-07-11T03:26:21.395Z",
+  "gitCommitHash": "fcaca8e7404b9ff191a159315f88bae3120b9b9b",
+  "generatedAt": "2026-07-12T18:50:15.936Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -12,16 +12,6 @@
       "exports": [],
       "totalLines": 68,
       "hasStructuralAnalysis": false
-    },
-    ".env.example": {
-      "filePath": ".env.example",
-      "contentHash": "4053c600ee47f81d96e864d92808b3cb0ac67658af104cc0cf7b8cf3321b4c1b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 136,
-      "hasStructuralAnalysis": true
     },
     ".gitattributes": {
       "filePath": ".gitattributes",
@@ -1756,16 +1746,6 @@
         "resume_from_verdict"
       ],
       "totalLines": 193,
-      "hasStructuralAnalysis": true
-    },
-    "app/gates/schema/operator_verdict.v1.schema.json": {
-      "filePath": "app/gates/schema/operator_verdict.v1.schema.json",
-      "contentHash": "de6e08852da45ec2c5fad3271662d211864203e53ae52a39c8a512fa92c48c78",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 96,
       "hasStructuralAnalysis": true
     },
     "app/gates/section_02a/__init__.py": {
@@ -4810,14 +4790,733 @@
       "totalLines": 119,
       "hasStructuralAnalysis": true
     },
-    "app/http/README.md": {
-      "filePath": "app/http/README.md",
-      "contentHash": "200f052c5ab959abc6da583e23c2921ff96395f1df256a051728d2fd54d15345",
+    "app/hud/__init__.py": {
+      "filePath": "app/hud/__init__.py",
+      "contentHash": "090ff4dd398a446ac2d4b65f876a1f5a3bc8d2257c93878132a7a9f612b4053e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 6,
+      "totalLines": 16,
+      "hasStructuralAnalysis": true
+    },
+    "app/hud/data.py": {
+      "filePath": "app/hud/data.py",
+      "contentHash": "f3a247088630f81a5c5e0141732a61772e6bbbf82a074bdce4e118e59fea23bb",
+      "functions": [
+        {
+          "name": "projection_path",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "read_snapshot",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "ProjectionSnapshot | None",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "read_operator_surface",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "OperatorSurfaceProjection | Unrecognized | None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "projection_etag",
+          "params": [
+            "parsed",
+            "mtime_ns"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [
+        {
+          "name": "ProjectionSnapshot",
+          "methods": [],
+          "properties": [
+            "raw",
+            "mtime_ns",
+            "parsed"
+          ],
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "app.models.runtime.operator_surface",
+          "specifiers": [
+            "OperatorSurfaceProjection",
+            "Unrecognized",
+            "read_operator_surface_lenient"
+          ]
+        }
+      ],
+      "exports": [
+        "ProjectionSnapshot",
+        "projection_path",
+        "read_snapshot",
+        "read_operator_surface",
+        "projection_etag"
+      ],
+      "totalLines": 136,
+      "hasStructuralAnalysis": true
+    },
+    "app/hud/render/__init__.py": {
+      "filePath": "app/hud/render/__init__.py",
+      "contentHash": "5e78fa2ef0fd3ae72e43fdf6ced045a41ee15c434bce7fc50c7885effde0829b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.hud.render.page",
+          "specifiers": [
+            "ZONE_IDS",
+            "render_page",
+            "render_zones"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 13,
+      "hasStructuralAnalysis": true
+    },
+    "app/hud/render/client.py": {
+      "filePath": "app/hud/render/client.py",
+      "contentHash": "3d71765f146bc4f6e14cb641e845f01013a8dfac031090331c1d90486a5fd5ce",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 427,
+      "hasStructuralAnalysis": true
+    },
+    "app/hud/render/page.py": {
+      "filePath": "app/hud/render/page.py",
+      "contentHash": "c7a15ab8a58b21d733b24f3ae7a878bdf93e1d7e339d7649e6417c42679ea4b9",
+      "functions": [
+        {
+          "name": "_esc",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_parse_dt",
+          "params": [
+            "value"
+          ],
+          "returnType": "datetime | None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_clock",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_age_seconds",
+          "params": [
+            "as_of",
+            "now"
+          ],
+          "returnType": "float | None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_age_stamp",
+          "params": [
+            "as_of",
+            "now"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_active_entry",
+          "params": [
+            "steps"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_view",
+          "params": [
+            "data"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "_annunciator_parts",
+          "params": [
+            "view"
+          ],
+          "returnType": "tuple[str, str, str]",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "_zone_annunciator",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_chip",
+          "params": [
+            "label",
+            "on",
+            "batch"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_zone_identity",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "_health_tile",
+          "params": [
+            "tile",
+            "now",
+            "budget",
+            "force_stale"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "_zone_health",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_step_kind",
+          "params": [
+            "entry",
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_map_node",
+          "params": [
+            "entry",
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "_zone_map",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "_monogram",
+          "params": [
+            "name"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_specialist_chip",
+          "params": [
+            "spec"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_zone_specialists",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_command_block",
+          "params": [
+            "command",
+            "caption"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_artifacts_block",
+          "params": [
+            "items"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_next_action",
+          "params": [
+            "view"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_ctx_preflight",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "_ctx_walking",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_decision_card",
+          "params": [
+            "view"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_labelled_artifacts",
+          "params": [
+            "label",
+            "items"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_ctx_gate",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 53
+        },
+        {
+          "name": "_ctx_error",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "_ctx_batch",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_ctx_completed",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "_ctx_failed",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_zone_context",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_panel_message",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "_zone_main_deck",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_zone_trace",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "render_zones",
+          "params": [
+            "data"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "render_page",
+          "params": [
+            "data"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "html",
+          "specifiers": [
+            "_html"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "app.hud.render.client",
+          "specifiers": [
+            "POLL_JS"
+          ]
+        },
+        {
+          "source": "app.hud.render.styles",
+          "specifiers": [
+            "CSS"
+          ]
+        }
+      ],
+      "exports": [
+        "_esc",
+        "_parse_dt",
+        "_clock",
+        "_age_seconds",
+        "_age_stamp",
+        "_active_entry",
+        "_view",
+        "_annunciator_parts",
+        "_zone_annunciator",
+        "_chip",
+        "_zone_identity",
+        "_health_tile",
+        "_zone_health",
+        "_step_kind",
+        "_map_node",
+        "_zone_map",
+        "_monogram",
+        "_specialist_chip",
+        "_zone_specialists",
+        "_command_block",
+        "_artifacts_block",
+        "_next_action",
+        "_ctx_preflight",
+        "_ctx_walking",
+        "_decision_card",
+        "_labelled_artifacts",
+        "_ctx_gate",
+        "_ctx_error",
+        "_ctx_batch",
+        "_ctx_completed",
+        "_ctx_failed",
+        "_zone_context",
+        "_panel_message",
+        "_zone_main_deck",
+        "_zone_trace",
+        "render_zones",
+        "render_page"
+      ],
+      "totalLines": 942,
+      "hasStructuralAnalysis": true
+    },
+    "app/hud/render/styles.py": {
+      "filePath": "app/hud/render/styles.py",
+      "contentHash": "cf8289c4345e7410db758c22200fdf3b65622328d6a23aa13b65327d381188de",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 243,
+      "hasStructuralAnalysis": true
+    },
+    "app/hud/server.py": {
+      "filePath": "app/hud/server.py",
+      "contentHash": "0e1718723afbfd39c12f99bd4ebc7b6571d849314a66f4bdb99eecf8f95915d8",
+      "functions": [
+        {
+          "name": "_canonical_trial_id",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_raw_identity_trial_id",
+          "params": [
+            "raw"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_quote_etag",
+          "params": [
+            "core"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_if_none_match_matches",
+          "params": [
+            "header_value",
+            "etag"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_flight_deck_data",
+          "params": [
+            "run_dir",
+            "bound_trial_id",
+            "mode"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 53
+        },
+        {
+          "name": "create_hud_app",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "launch_nonce",
+            "mode"
+          ],
+          "returnType": "FastAPI",
+          "exported": true,
+          "lineCount": 90
+        },
+        {
+          "name": "_required_env",
+          "params": [
+            "name"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "run_hud_server",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "launch_nonce",
+            "port",
+            "mode",
+            "host"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 41
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "FastAPI",
+            "Request",
+            "Response"
+          ]
+        },
+        {
+          "source": "fastapi.responses",
+          "specifiers": [
+            "HTMLResponse",
+            "JSONResponse"
+          ]
+        },
+        {
+          "source": "app.hud.data",
+          "specifiers": [
+            "projection_etag",
+            "read_snapshot"
+          ]
+        },
+        {
+          "source": "app.hud.render",
+          "specifiers": [
+            "render_page"
+          ]
+        },
+        {
+          "source": "app.models.runtime.operator_surface",
+          "specifiers": [
+            "OperatorSurfaceProjection",
+            "Unrecognized"
+          ]
+        }
+      ],
+      "exports": [
+        "_canonical_trial_id",
+        "_raw_identity_trial_id",
+        "_quote_etag",
+        "_if_none_match_matches",
+        "_flight_deck_data",
+        "create_hud_app",
+        "_required_env",
+        "run_hud_server"
+      ],
+      "totalLines": 344,
       "hasStructuralAnalysis": true
     },
     "app/ledger/__init__.py": {
@@ -5293,46 +5992,6 @@
         "sanctum_mutations"
       ],
       "totalLines": 135,
-      "hasStructuralAnalysis": true
-    },
-    "app/ledger/schema.sql": {
-      "filePath": "app/ledger/schema.sql",
-      "contentHash": "0105eea87d324e73837838f0b110f3e42a4e0c54d7535a3c842fbf1cb42f6e31",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 16,
-      "hasStructuralAnalysis": true
-    },
-    "app/ledger/schema/override_event.v1.schema.json": {
-      "filePath": "app/ledger/schema/override_event.v1.schema.json",
-      "contentHash": "b623e9ac1c3daffcf6935b81926eb491027c14ba78c765d321dc7fb13b726f97",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 78,
-      "hasStructuralAnalysis": true
-    },
-    "app/ledger/schema/sanctum_mutation_event.v1.schema.json": {
-      "filePath": "app/ledger/schema/sanctum_mutation_event.v1.schema.json",
-      "contentHash": "8b96ac02e505f1db9585426cd5523513c5ecb1fbe2834b00d7b62eea90bd8a16",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 75,
-      "hasStructuralAnalysis": true
-    },
-    "app/ledger/schema/verdict_event.v1.schema.json": {
-      "filePath": "app/ledger/schema/verdict_event.v1.schema.json",
-      "contentHash": "ba855f5d3f6f470f61bee2845a8a294759aab063fe276a2263d1451e1c72a0a7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 73,
       "hasStructuralAnalysis": true
     },
     "app/manifest/__init__.py": {
@@ -6142,16 +6801,6 @@
         "load"
       ],
       "totalLines": 73,
-      "hasStructuralAnalysis": true
-    },
-    "app/manifest/README.md": {
-      "filePath": "app/manifest/README.md",
-      "contentHash": "192871e431b76c34f1c799a55d83eadc9961fce55d71ecd2074c3796462e18a7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
       "hasStructuralAnalysis": true
     },
     "app/manifest/refs.py": {
@@ -8431,6 +9080,70 @@
       "totalLines": 1530,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/cli/next_action.py": {
+      "filePath": "app/marcus/cli/next_action.py",
+      "contentHash": "e0cd26a92cc7d3d1efafcb6a6ae0eb0f76e0659fc85a6ebb4dc4dc4ef27c956e",
+      "functions": [
+        {
+          "name": "_read_card_fields",
+          "params": [
+            "card_path"
+          ],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "build_next_action",
+          "params": [
+            "envelope",
+            "card_path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 30
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "shlex",
+          "specifiers": [
+            "shlex"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "_read_card_fields",
+        "build_next_action"
+      ],
+      "totalLines": 91,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/cli/plan_dialogue_cli.py": {
       "filePath": "app/marcus/cli/plan_dialogue_cli.py",
       "contentHash": "90ab91fb1470ff92a07156990e693e734aa4027b7b37cd748c1c7f3af73cc364",
@@ -8817,7 +9530,7 @@
     },
     "app/marcus/cli/trial.py": {
       "filePath": "app/marcus/cli/trial.py",
-      "contentHash": "6c5af5e80014744e083fe6b694dce9fe69a33f8670b02edf847b782673ee0a35",
+      "contentHash": "55780d2e5620400565ffb637967c702a9cf1ce679dd65a5bc025b69281823394",
       "functions": [
         {
           "name": "_load_env_if_available",
@@ -8955,11 +9668,12 @@
             "picker_preflight_fn",
             "selection_code",
             "picker_events_path",
-            "llm_execution_mode"
+            "llm_execution_mode",
+            "hud"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 306
+          "lineCount": 347
         },
         {
           "name": "_resolve_bundle_selection",
@@ -8977,7 +9691,7 @@
           ],
           "returnType": "_StartSelection",
           "exported": true,
-          "lineCount": 61
+          "lineCount": 71
         },
         {
           "name": "start_trial_cli",
@@ -8986,19 +9700,29 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 52
+          "lineCount": 59
         },
         {
           "name": "resume_trial",
           "params": [
             "trial_id",
             "verdict_file",
+            "verdict",
             "runs_root",
             "max_specialist_calls"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 37
+          "lineCount": 54
+        },
+        {
+          "name": "_build_inline_verdict",
+          "params": [
+            "args"
+          ],
+          "returnType": "OperatorVerdict",
+          "exported": true,
+          "lineCount": 26
         },
         {
           "name": "resume_trial_cli",
@@ -9007,7 +9731,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 9
+          "lineCount": 55
         },
         {
           "name": "recover_trial",
@@ -9057,7 +9781,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 160
+          "lineCount": 238
         }
       ],
       "classes": [
@@ -9248,6 +9972,8 @@
         {
           "source": "app.marcus.orchestrator.production_runner",
           "specifiers": [
+            "PreflightGateFailed",
+            "emit_registered_and_terminal_trace",
             "recover_production_trial",
             "resume_batch_production_trial",
             "resume_production_trial",
@@ -9303,6 +10029,7 @@
         "_resolve_start_component_selection",
         "start_trial_cli",
         "resume_trial",
+        "_build_inline_verdict",
         "resume_trial_cli",
         "recover_trial",
         "recover_trial_cli",
@@ -9310,7 +10037,7 @@
         "resume_batch_trial_cli",
         "build_trial_parser"
       ],
-      "totalLines": 1091,
+      "totalLines": 1323,
       "hasStructuralAnalysis": true
     },
     "app/marcus/course_source/__init__.py": {
@@ -10662,16 +11389,6 @@
         "load_course"
       ],
       "totalLines": 23,
-      "hasStructuralAnalysis": true
-    },
-    "app/marcus/course_source/schema/canonical_asset_record.v0_1.schema.json": {
-      "filePath": "app/marcus/course_source/schema/canonical_asset_record.v0_1.schema.json",
-      "contentHash": "a47c82693741a07d8ec3cb0fab5dc185d540dbbdedaa32eee4dffeb936835f9a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 187,
       "hasStructuralAnalysis": true
     },
     "app/marcus/course_source/sme_registry.py": {
@@ -14395,16 +15112,6 @@
         "coverage_plan_view_from_dicts"
       ],
       "totalLines": 871,
-      "hasStructuralAnalysis": true
-    },
-    "app/marcus/lesson_plan/dials-spec.md": {
-      "filePath": "app/marcus/lesson_plan/dials-spec.md",
-      "contentHash": "5c62bbe106422e3edf2e765b9ccced227d355b0ed95d27ac54db25c9a93f298f",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 111,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/digest.py": {
@@ -18559,56 +19266,6 @@
         "FitReport"
       ],
       "totalLines": 639,
-      "hasStructuralAnalysis": true
-    },
-    "app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json": {
-      "filePath": "app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json",
-      "contentHash": "9069564e78a196acb4478d0102f2846171f2d2b682f65a85dcec8ed2e7e03c45",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 234,
-      "hasStructuralAnalysis": true
-    },
-    "app/marcus/lesson_plan/schema/coverage_manifest.v1.schema.json": {
-      "filePath": "app/marcus/lesson_plan/schema/coverage_manifest.v1.schema.json",
-      "contentHash": "3a8bee3d376745509855d3b456287fcec6a61b1e1033ff7312382127e6814de3",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 200,
-      "hasStructuralAnalysis": true
-    },
-    "app/marcus/lesson_plan/schema/fit_report.v1.schema.json": {
-      "filePath": "app/marcus/lesson_plan/schema/fit_report.v1.schema.json",
-      "contentHash": "83b17e2141fdfb3879b136822ad2e8c7f1aeec33e6c88a84923158545307cd9e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 140,
-      "hasStructuralAnalysis": true
-    },
-    "app/marcus/lesson_plan/schema/learning_objective.v1.schema.json": {
-      "filePath": "app/marcus/lesson_plan/schema/learning_objective.v1.schema.json",
-      "contentHash": "9ecc3b90a322768ca1207b134c50e3ed35ad8070926aab6954cd3b8a040abf3e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 184,
-      "hasStructuralAnalysis": true
-    },
-    "app/marcus/lesson_plan/schema/lesson_plan.v1.schema.json": {
-      "filePath": "app/marcus/lesson_plan/schema/lesson_plan.v1.schema.json",
-      "contentHash": "04f9e2e616ba0a255b1b2f7400c0921ac4b4739ab9d2916e2149f24ae79cb459",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 363,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/source_assessment.py": {
@@ -23944,6 +24601,202 @@
       "totalLines": 479,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/orchestrator/operator_surface_assembler.py": {
+      "filePath": "app/marcus/orchestrator/operator_surface_assembler.py",
+      "contentHash": "70d32699639eb819db53c677709b59f1da21eb1eb96b8abeb48418a856069c22",
+      "functions": [
+        {
+          "name": "_lock_for",
+          "params": [
+            "trial_id"
+          ],
+          "returnType": "threading.Lock",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_now",
+          "params": [],
+          "returnType": "datetime",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_sha256_text",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_run_json_digest",
+          "params": [
+            "envelope"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "OperatorSurfaceAssembler",
+          "methods": [
+            "__init__",
+            "run_dir",
+            "projection_path",
+            "_read_prev",
+            "_atomic_write",
+            "_merge_write",
+            "_notifications_echo_dict",
+            "_ensure_notifications_echo",
+            "emit",
+            "_next_action_dict",
+            "_summarize_context_entry",
+            "_decision_card_dict",
+            "_error_message_dict",
+            "_deliverables_dict",
+            "_read_component_selection",
+            "_read_total_cost",
+            "_read_export_paths",
+            "update_steps",
+            "update_preflight_item",
+            "update_health",
+            "update_ambient",
+            "append_trace",
+            "set_notifications_echo",
+            "_freshness_tick_once",
+            "freshness_tick"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 747
+        }
+      ],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "threading",
+          "specifiers": [
+            "threading"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable",
+            "Iterator"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "contextmanager",
+            "suppress"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "app.models.runtime.operator_surface",
+          "specifiers": [
+            "DecisionCardSection",
+            "DeliverableComponents",
+            "DeliverablesSection",
+            "DraftedProposal",
+            "EnvelopeSection",
+            "ErrorMessageSection",
+            "HealthSection",
+            "HealthTile",
+            "IdentitySection",
+            "ModalitiesSection",
+            "NextActionSection",
+            "NotificationsEchoSection",
+            "OperatorSurfaceProjection",
+            "PreflightItem",
+            "PreflightSection",
+            "SpecialistEntry",
+            "SpecialistsSection",
+            "StepEntry",
+            "StepsSection",
+            "TraceEvent",
+            "TraceSection",
+            "Unrecognized",
+            "load_hud_config",
+            "read_operator_surface_lenient"
+          ]
+        }
+      ],
+      "exports": [
+        "_lock_for",
+        "_now",
+        "_sha256_text",
+        "_run_json_digest",
+        "OperatorSurfaceAssembler"
+      ],
+      "totalLines": 890,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/orchestrator/package_builders.py": {
       "filePath": "app/marcus/orchestrator/package_builders.py",
       "contentHash": "72a4dc603789cfc2d402f363979198c57c6809debc24d05c11fb920175c2e3fd",
@@ -24630,9 +25483,301 @@
       "totalLines": 101,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/orchestrator/preflight.py": {
+      "filePath": "app/marcus/orchestrator/preflight.py",
+      "contentHash": "285d773c3a8af6423a84fed435586d0f9f6f60a7619cc5cd6667658b9dca6dd4",
+      "functions": [
+        {
+          "name": "_canonical_trial_id",
+          "params": [
+            "value"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_safe",
+          "params": [
+            "name",
+            "producer"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_env_keys_item",
+          "params": [
+            "env"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_runs_root_writable_item",
+          "params": [
+            "runs_root"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_coordination_db_item",
+          "params": [
+            "db_path"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_litellm_import_item",
+          "params": [],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_cascade_config_item",
+          "params": [],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_notifier_alive_item",
+          "params": [
+            "alive_fn"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_default_healthz_item",
+          "params": [
+            "deps"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 63
+        },
+        {
+          "name": "_default_openai_heartbeat",
+          "params": [
+            "env"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "_default_gamma_heartbeat",
+          "params": [
+            "env"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "_langsmith_env_heartbeat",
+          "params": [
+            "env"
+          ],
+          "returnType": "PreflightItem",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "run_preflight",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "deps"
+          ],
+          "returnType": "PreflightResult",
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "_terminate_quietly",
+          "params": [
+            "proc"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "launch_hud_server",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "launch_nonce",
+            "port",
+            "mode",
+            "python_executable",
+            "popen"
+          ],
+          "returnType": "subprocess.Popen | None",
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "classes": [
+        {
+          "name": "PreflightResult",
+          "methods": [
+            "blocking_items"
+          ],
+          "properties": [
+            "all_green",
+            "items"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "PreflightDeps",
+          "methods": [],
+          "properties": [
+            "env",
+            "coordination_db_path",
+            "healthz_url",
+            "expected_trial_id",
+            "expected_launch_nonce",
+            "notifier_alive_fn",
+            "openai_heartbeat_fn",
+            "gamma_heartbeat_fn",
+            "healthz_fn"
+          ],
+          "exported": true,
+          "lineCount": 21
+        }
+      ],
+      "imports": [
+        {
+          "source": "atexit",
+          "specifiers": [
+            "atexit"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sqlite3",
+          "specifiers": [
+            "sqlite3"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable",
+            "Mapping"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "suppress"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "httpx",
+          "specifiers": [
+            "httpx"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.operator_surface_assembler",
+          "specifiers": [
+            "OperatorSurfaceAssembler"
+          ]
+        },
+        {
+          "source": "app.models.runtime.operator_surface",
+          "specifiers": [
+            "PreflightItem"
+          ]
+        }
+      ],
+      "exports": [
+        "PreflightResult",
+        "PreflightDeps",
+        "_canonical_trial_id",
+        "_safe",
+        "_env_keys_item",
+        "_runs_root_writable_item",
+        "_coordination_db_item",
+        "_litellm_import_item",
+        "_cascade_config_item",
+        "_notifier_alive_item",
+        "_default_healthz_item",
+        "_default_openai_heartbeat",
+        "_default_gamma_heartbeat",
+        "_langsmith_env_heartbeat",
+        "run_preflight",
+        "_terminate_quietly",
+        "launch_hud_server"
+      ],
+      "totalLines": 570,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "c2079e33b1d457d04340a13a013360bc5021b02d5124dbf7f6878eab0591c406",
+      "contentHash": "fd1a0b7b309be262acb1479f9498e136f41eb2781df143979dd713119e7d5659",
       "functions": [
         {
           "name": "_research_dispatch_live",
@@ -24694,6 +25839,131 @@
           "lineCount": 6
         },
         {
+          "name": "_emit_operator_surface",
+          "params": [
+            "envelope",
+            "runs_root"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_emit_operator_surface_steps",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "manifest",
+            "walk_index"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_append_operator_surface_trace",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "event",
+            "detail"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_operator_surface_cost_reading",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "run_state"
+          ],
+          "returnType": "tuple[float | None, str]",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "_operator_surface_health_tiles",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "run_state"
+          ],
+          "returnType": "list[Any]",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "_operator_surface_specialist_roster",
+          "params": [
+            "run_state"
+          ],
+          "returnType": "list[Any]",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "_operator_surface_styleguide",
+          "params": [
+            "directive_path"
+          ],
+          "returnType": "tuple[str | None, str | None]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_operator_surface_modalities",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "run_state"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "_refresh_operator_surface_ambient",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "run_state",
+            "trace_event"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "emit_registered_and_terminal_trace",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "corpus_path",
+            "preset",
+            "operator_id",
+            "event",
+            "detail"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "_run_start_preflight_gate",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "runs_root",
+            "hud",
+            "producer_pid"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
           "name": "_persist_envelope",
           "params": [
             "envelope",
@@ -24701,7 +25971,7 @@
           ],
           "returnType": "Path",
           "exported": true,
-          "lineCount": 5
+          "lineCount": 8
         },
         {
           "name": "_fallback_cost_report",
@@ -25431,11 +26701,12 @@
             "pause_at_gates",
             "directive_path",
             "component_selection",
-            "llm_execution_mode"
+            "llm_execution_mode",
+            "hud"
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 522
+          "lineCount": 581
         },
         {
           "name": "resume_production_trial",
@@ -25447,7 +26718,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 125
+          "lineCount": 130
         },
         {
           "name": "resume_batch_production_trial",
@@ -25459,7 +26730,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 146
+          "lineCount": 148
         },
         {
           "name": "recover_production_trial",
@@ -25471,7 +26742,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 121
+          "lineCount": 124
         },
         {
           "name": "_continue_production_walk",
@@ -25492,7 +26763,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 513
+          "lineCount": 540
         }
       ],
       "classes": [
@@ -25518,6 +26789,15 @@
           "properties": [],
           "exported": true,
           "lineCount": 2
+        },
+        {
+          "name": "PreflightGateFailed",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 20
         },
         {
           "name": "SelectionBindingError",
@@ -25690,6 +26970,13 @@
           ]
         },
         {
+          "source": "app.marcus.orchestrator.operator_surface_assembler",
+          "specifiers": [
+            "DEFAULT_HUD_CONFIG_PATH",
+            "OperatorSurfaceAssembler"
+          ]
+        },
+        {
           "source": "app.marcus.orchestrator.pre_gate_marcus",
           "specifiers": [
             "PreFillProposal"
@@ -25836,12 +27123,24 @@
         "MissingUpstreamContributionError",
         "LegacyEnvelopeSchemaError",
         "GateBypassError",
+        "PreflightGateFailed",
         "_has_live_openai",
         "_has_langsmith_env",
         "_now",
         "_run_dir",
         "_udac_ratify_gate",
         "_write_json",
+        "_emit_operator_surface",
+        "_emit_operator_surface_steps",
+        "_append_operator_surface_trace",
+        "_operator_surface_cost_reading",
+        "_operator_surface_health_tiles",
+        "_operator_surface_specialist_roster",
+        "_operator_surface_styleguide",
+        "_operator_surface_modalities",
+        "_refresh_operator_surface_ambient",
+        "emit_registered_and_terminal_trace",
+        "_run_start_preflight_gate",
         "_persist_envelope",
         "_fallback_cost_report",
         "_trial_trace_context",
@@ -25912,7 +27211,7 @@
         "recover_production_trial",
         "_continue_production_walk"
       ],
-      "totalLines": 4056,
+      "totalLines": 4529,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_citation.py": {
@@ -29083,16 +30382,6 @@
       "totalLines": 26,
       "hasStructuralAnalysis": true
     },
-    "app/mcp_server/README.md": {
-      "filePath": "app/mcp_server/README.md",
-      "contentHash": "5c845f3def60a941e889c6b0e4bd9b78880df8df4a7e3bf2641f87b2396307ef",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
-      "hasStructuralAnalysis": true
-    },
     "app/mcp_server/server.py": {
       "filePath": "app/mcp_server/server.py",
       "contentHash": "059bf0c7b643934b1072e39f6e4f7ecdf123e672a1d498e383c2651eea1cbf91",
@@ -30715,106 +32004,6 @@
         "OverrideEvent"
       ],
       "totalLines": 63,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/README.md": {
-      "filePath": "app/models/decision_cards/README.md",
-      "contentHash": "b18639e882999950534c68108c3628a1abbf73f41ad0af56b33ec04aea84fc04",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/decision_card_base.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/decision_card_base.v1.schema.json",
-      "contentHash": "4e13c24f7ac62e1277810c5c09bad767f9a6acba93a0d509dfaa9f90f231a06b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 307,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g0.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g0.v1.schema.json",
-      "contentHash": "71ac4dc560466faade5e90085a9727e61d48b0df610829aa9ca23e093e480688",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 195,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g1.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g1.v1.schema.json",
-      "contentHash": "8a2d823106700c9df0da7ce8c7022811f8126cdb90b0f89d917b48ae6b4787a7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 209,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g2a.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g2a.v1.schema.json",
-      "contentHash": "eb635b40ce6d7c499e7846d9654595b5b0b50f9391392bfcd00c008a5347b529",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 206,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g2c.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g2c.v1.schema.json",
-      "contentHash": "9c5a4cc34627ee7f16a804b1137a483779e242b273c68757a6cd236c8d69a8da",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 198,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g3.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g3.v1.schema.json",
-      "contentHash": "9eef123995d5e6e4e3c88726af30d5aad1d57b72a74470b22fa93b44c8187a56",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 202,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g4.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g4.v1.schema.json",
-      "contentHash": "a022d9b075e0dd893267dde1333367808eb28455fb8fc3ec62c001a149d42746",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 198,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g5.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g5.v1.schema.json",
-      "contentHash": "552dc11f0d82975e0d164f149c7b70adf5e9cb415fbb7af3396eeeeea96cc54c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 196,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/decision_cards/schema/g6.v1.schema.json": {
-      "filePath": "app/models/decision_cards/schema/g6.v1.schema.json",
-      "contentHash": "1cfd53670111e4579e72a23c89bf732c0d21f3e4c258c49ac8f8e1c33a34baec",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 208,
       "hasStructuralAnalysis": true
     },
     "app/models/decision_cards/vocabulary.py": {
@@ -33165,16 +34354,6 @@
       "totalLines": 75,
       "hasStructuralAnalysis": true
     },
-    "app/models/gates/schema/party_mode_contribution.v1.schema.json": {
-      "filePath": "app/models/gates/schema/party_mode_contribution.v1.schema.json",
-      "contentHash": "cd666ae5aa8e3be9ef51da7e6b4639f10a78ecc2372ca4315e4347eab7a2c690",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 49,
-      "hasStructuralAnalysis": true
-    },
     "app/models/glossary_emit.py": {
       "filePath": "app/models/glossary_emit.py",
       "contentHash": "9cb4db350f75bdc1dda7b37f19c0aa2ffb7c472ab064e2dfa559e68d1c2ab2cf",
@@ -33446,16 +34625,6 @@
       "totalLines": 135,
       "hasStructuralAnalysis": true
     },
-    "app/models/operator_verdict_section_04_5.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_04_5.v1.schema.json",
-      "contentHash": "4aae1aa46b1bf07b7a02f024ac19507bd52f21a44630774ed3d30ab252854282",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
-      "hasStructuralAnalysis": true
-    },
     "app/models/operator_verdict_section_04_55.py": {
       "filePath": "app/models/operator_verdict_section_04_55.py",
       "contentHash": "cafeb056e4a211d9ff4adf845d5a6f4e236488094f190972782a8117f02ca492",
@@ -33547,16 +34716,6 @@
         "Section04_55OperatorVerdict"
       ],
       "totalLines": 145,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/operator_verdict_section_04_55.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_04_55.v1.schema.json",
-      "contentHash": "2ddf0794af982c8bacf36e49f763e1d754e44cd30eb30f91196a7829e798dc1a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
       "hasStructuralAnalysis": true
     },
     "app/models/operator_verdict_section_04a.py": {
@@ -33663,16 +34822,6 @@
         "Section04AOperatorVerdict"
       ],
       "totalLines": 167,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/operator_verdict_section_04a.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_04a.v1.schema.json",
-      "contentHash": "db61abec41605d0222d21aa3f91dbfbaf9f30bed55c042c5f795a54f3881848b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
       "hasStructuralAnalysis": true
     },
     "app/models/operator_verdict_section_05_5.py": {
@@ -33793,16 +34942,6 @@
         "Section05_5OperatorVerdict"
       ],
       "totalLines": 206,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/operator_verdict_section_05_5.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_05_5.v1.schema.json",
-      "contentHash": "367b390914a90db5c77955b3530fdad1c0fa48453788feed15a4c4bc6036588a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 152,
       "hasStructuralAnalysis": true
     },
     "app/models/operator_verdict_section_06b.py": {
@@ -33939,16 +35078,6 @@
       "totalLines": 216,
       "hasStructuralAnalysis": true
     },
-    "app/models/operator_verdict_section_06b.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_06b.v1.schema.json",
-      "contentHash": "00185535a804336c6f88316a717f05204bb788dccabb4ab2c3672df465ab67d1",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 182,
-      "hasStructuralAnalysis": true
-    },
     "app/models/operator_verdict_section_07b.py": {
       "filePath": "app/models/operator_verdict_section_07b.py",
       "contentHash": "f2a76bda36957e1af9010cea1a3155ddec4097134d6233483009a5d74fc3fc56",
@@ -34067,16 +35196,6 @@
         "Section07BOperatorVerdict"
       ],
       "totalLines": 211,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/operator_verdict_section_07b.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_07b.v1.schema.json",
-      "contentHash": "e587ed547e6d02b3fde47a6a2ec6fb3b0f617a481abd8cee4fe45cf406ee4496",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 155,
       "hasStructuralAnalysis": true
     },
     "app/models/operator_verdict_section_07c.py": {
@@ -34201,16 +35320,6 @@
       "totalLines": 201,
       "hasStructuralAnalysis": true
     },
-    "app/models/operator_verdict_section_07c.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_07c.v1.schema.json",
-      "contentHash": "2a0c2418e42cfb754705307a100670bd6e9e2b9a90cf358ee59c6d2169e4e341",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 143,
-      "hasStructuralAnalysis": true
-    },
     "app/models/operator_verdict_section_07d.py": {
       "filePath": "app/models/operator_verdict_section_07d.py",
       "contentHash": "3fa5be995fa5f45951f84767478af28b526807d39db7fa75d517e9730ced0f37",
@@ -34315,16 +35424,6 @@
         "Section07DOperatorVerdict"
       ],
       "totalLines": 167,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/operator_verdict_section_07d.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_07d.v1.schema.json",
-      "contentHash": "745c4098154a2a40af37c75ac698b0e170f882905769b010a47de4d9cd6bd20e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
       "hasStructuralAnalysis": true
     },
     "app/models/operator_verdict_section_07f.py": {
@@ -34433,16 +35532,6 @@
       "totalLines": 167,
       "hasStructuralAnalysis": true
     },
-    "app/models/operator_verdict_section_07f.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_07f.v1.schema.json",
-      "contentHash": "ac80d1bee71efb2fc7ee2cc07841e905cc8797f18943bde661f262c7184c68e0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
-      "hasStructuralAnalysis": true
-    },
     "app/models/operator_verdict_section_08b.py": {
       "filePath": "app/models/operator_verdict_section_08b.py",
       "contentHash": "aceb3c38dda2681cf7779028e518001f5fe087e260baa15587fd8f6d33b6343f",
@@ -34547,16 +35636,6 @@
         "Section08BOperatorVerdict"
       ],
       "totalLines": 167,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/operator_verdict_section_08b.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_08b.v1.schema.json",
-      "contentHash": "103714010f9dea395bd0c2fbc9439df7c42c596a10ecc9ea7cae65bb0fb934a1",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
       "hasStructuralAnalysis": true
     },
     "app/models/operator_verdict_section_11.py": {
@@ -34680,16 +35759,6 @@
       "totalLines": 210,
       "hasStructuralAnalysis": true
     },
-    "app/models/operator_verdict_section_11.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_11.v1.schema.json",
-      "contentHash": "fe4e1a6c5ddf577a20f741f894a1caafc44ae744d9ac2dc3a823ba2234cf1c5f",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 149,
-      "hasStructuralAnalysis": true
-    },
     "app/models/operator_verdict_section_11b.py": {
       "filePath": "app/models/operator_verdict_section_11b.py",
       "contentHash": "30fdcf7882f04003c5cfcd7b54386520538a755b565328ddc88221aa5210781d",
@@ -34794,16 +35863,6 @@
         "Section11BOperatorVerdict"
       ],
       "totalLines": 167,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/operator_verdict_section_11b.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_11b.v1.schema.json",
-      "contentHash": "b74f8d30f3507e6eb7fa88a4f007cf7d85b434e3fe2ad7c7816954099cbd8469",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
       "hasStructuralAnalysis": true
     },
     "app/models/operator_verdict_section_15.py": {
@@ -34912,16 +35971,6 @@
       "totalLines": 167,
       "hasStructuralAnalysis": true
     },
-    "app/models/operator_verdict_section_15.v1.schema.json": {
-      "filePath": "app/models/operator_verdict_section_15.v1.schema.json",
-      "contentHash": "0d588b0d09024181bc09e7d66b7df2874ae647a7e70c777f90793f7190b14cea",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 107,
-      "hasStructuralAnalysis": true
-    },
     "app/models/perception/__init__.py": {
       "filePath": "app/models/perception/__init__.py",
       "contentHash": "9c04a652741d49fc73a9b533266d216a5cc7c7d3f7a4dd7fee8d36f43f268551",
@@ -35023,16 +36072,6 @@
         "PerceptionArtifact"
       ],
       "totalLines": 167,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/README.md": {
-      "filePath": "app/models/README.md",
-      "contentHash": "75d6500d18048ba9af4cf5ac914250a2e697d5d0fdc1d3e22b8b321699d4a6f0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
       "hasStructuralAnalysis": true
     },
     "app/models/registry_check.py": {
@@ -35182,16 +36221,6 @@
       "totalLines": 142,
       "hasStructuralAnalysis": true
     },
-    "app/models/registry.yaml": {
-      "filePath": "app/models/registry.yaml",
-      "contentHash": "2183d6013b9fe432d30306f5a17149217725ff297823de7efe72ea5f53c4bda2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 68,
-      "hasStructuralAnalysis": true
-    },
     "app/models/runtime/__init__.py": {
       "filePath": "app/models/runtime/__init__.py",
       "contentHash": "de26df14cbf1d6470e4f2511cf1e2d8d7747b5bac9a45482e7ee8f53c721c79f",
@@ -35281,6 +36310,553 @@
         "AdhocResponse"
       ],
       "totalLines": 36,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/runtime/operator_surface.py": {
+      "filePath": "app/models/runtime/operator_surface.py",
+      "contentHash": "0ffac56ade42f09148258b19e8d3f80f7b84338f3ab35c432233d7bda5a6fcfc",
+      "functions": [
+        {
+          "name": "_default_notifications",
+          "params": [],
+          "returnType": "dict[str, NotificationRule]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "load_hud_config",
+          "params": [
+            "path"
+          ],
+          "returnType": "tuple[HudConfig, str]",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "operator_surface_schema_text",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "emit_operator_surface_schema",
+          "params": [
+            "schema_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_strip_value",
+          "params": [
+            "annotation",
+            "value"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_strip_unknown_fields",
+          "params": [
+            "model_cls",
+            "data"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "read_operator_surface_lenient",
+          "params": [
+            "raw"
+          ],
+          "returnType": "OperatorSurfaceProjection | Unrecognized",
+          "exported": true,
+          "lineCount": 71
+        },
+        {
+          "name": "_health_states",
+          "params": [
+            "projection"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "derive_event_transitions",
+          "params": [
+            "prev",
+            "cur"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 58
+        },
+        {
+          "name": "stall_condition",
+          "params": [
+            "cur",
+            "now",
+            "budget_seconds"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [
+        {
+          "name": "NotificationRule",
+          "methods": [],
+          "properties": [
+            "enabled",
+            "sound",
+            "push"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "HudConfig",
+          "methods": [],
+          "properties": [
+            "notifications",
+            "staleness_budget_seconds",
+            "stall_budget_seconds",
+            "hud_port"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_Section",
+          "methods": [
+            "_enforce_as_of_tz"
+          ],
+          "properties": [
+            "as_of"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "IdentitySection",
+          "methods": [
+            "_enforce_trial_uuid4"
+          ],
+          "properties": [
+            "trial_id",
+            "lesson",
+            "preset",
+            "operator_id"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "EnvelopeSection",
+          "methods": [
+            "_enforce_completed_tz"
+          ],
+          "properties": [
+            "status",
+            "paused_gate",
+            "paused_error_tag",
+            "waiting_batch_id",
+            "completed_at"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "NextActionSection",
+          "methods": [],
+          "properties": [
+            "command",
+            "pause_class"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "StepEntry",
+          "methods": [],
+          "properties": [
+            "step_id",
+            "label",
+            "stage",
+            "status",
+            "conditions",
+            "blockers",
+            "locked_artifact_summary"
+          ],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "StepsSection",
+          "methods": [],
+          "properties": [
+            "manifest_digest",
+            "node_count",
+            "walk_index",
+            "walk_generation",
+            "reentered_from",
+            "entries"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "PreflightItem",
+          "methods": [],
+          "properties": [
+            "name",
+            "state",
+            "output",
+            "latency_ms",
+            "quota_reading",
+            "quota_confidence"
+          ],
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "PreflightSection",
+          "methods": [],
+          "properties": [
+            "items"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "HealthReading",
+          "methods": [
+            "_enforce_at_tz"
+          ],
+          "properties": [
+            "at",
+            "value"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "HealthTile",
+          "methods": [
+            "_trim_history"
+          ],
+          "properties": [
+            "label",
+            "value",
+            "unit",
+            "confidence",
+            "threshold_state",
+            "history"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "HealthSection",
+          "methods": [],
+          "properties": [
+            "tiles"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "SpecialistEntry",
+          "methods": [],
+          "properties": [
+            "name",
+            "status",
+            "current_node",
+            "model",
+            "last_artifact",
+            "cost_usd"
+          ],
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "SpecialistsSection",
+          "methods": [],
+          "properties": [
+            "roster"
+          ],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "ModalitiesSection",
+          "methods": [],
+          "properties": [
+            "llm_execution_mode",
+            "detective_disposition",
+            "styleguide",
+            "styleguide_provenance"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "TraceEvent",
+          "methods": [
+            "_enforce_at_tz"
+          ],
+          "properties": [
+            "at",
+            "event",
+            "detail"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "TraceSection",
+          "methods": [
+            "_trim_ring"
+          ],
+          "properties": [
+            "events"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "NotificationsEchoSection",
+          "methods": [],
+          "properties": [
+            "config",
+            "parse_status"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "DraftedProposal",
+          "methods": [],
+          "properties": [
+            "decision",
+            "confidence",
+            "rationale"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "DecisionCardSection",
+          "methods": [],
+          "properties": [
+            "gate_focus",
+            "operator_prompt",
+            "drafted_proposal",
+            "pick_context",
+            "evidence"
+          ],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "ErrorMessageSection",
+          "methods": [],
+          "properties": [
+            "message",
+            "node_index",
+            "tag"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "DeliverableComponents",
+          "methods": [],
+          "properties": [
+            "deck",
+            "motion",
+            "workbook"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "DeliverablesSection",
+          "methods": [],
+          "properties": [
+            "components",
+            "total_cost_usd",
+            "export_paths"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "OperatorSurfaceProjection",
+          "methods": [
+            "_enforce_top_tz",
+            "_lifecycle_invariants"
+          ],
+          "properties": [
+            "schema_version",
+            "seq",
+            "progress_seq",
+            "last_progress_at",
+            "envelope_digest",
+            "as_of",
+            "identity",
+            "envelope",
+            "notifications_echo",
+            "next_action",
+            "steps",
+            "preflight",
+            "health",
+            "specialists",
+            "modalities",
+            "trace",
+            "decision_card",
+            "error_message",
+            "deliverables"
+          ],
+          "exported": true,
+          "lineCount": 95
+        },
+        {
+          "name": "Unrecognized",
+          "methods": [],
+          "properties": [
+            "reason",
+            "raw_value",
+            "schema_version"
+          ],
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "types",
+          "specifiers": [
+            "types"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal",
+            "Union",
+            "get_args",
+            "get_origin"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "ValidationError",
+            "ValidationInfo",
+            "field_validator",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware",
+            "enforce_uuid4_version"
+          ]
+        }
+      ],
+      "exports": [
+        "NotificationRule",
+        "_default_notifications",
+        "HudConfig",
+        "load_hud_config",
+        "_Section",
+        "IdentitySection",
+        "EnvelopeSection",
+        "NextActionSection",
+        "StepEntry",
+        "StepsSection",
+        "PreflightItem",
+        "PreflightSection",
+        "HealthReading",
+        "HealthTile",
+        "HealthSection",
+        "SpecialistEntry",
+        "SpecialistsSection",
+        "ModalitiesSection",
+        "TraceEvent",
+        "TraceSection",
+        "NotificationsEchoSection",
+        "DraftedProposal",
+        "DecisionCardSection",
+        "ErrorMessageSection",
+        "DeliverableComponents",
+        "DeliverablesSection",
+        "OperatorSurfaceProjection",
+        "operator_surface_schema_text",
+        "emit_operator_surface_schema",
+        "Unrecognized",
+        "_strip_value",
+        "_strip_unknown_fields",
+        "read_operator_surface_lenient",
+        "_health_states",
+        "derive_event_transitions",
+        "stall_condition"
+      ],
+      "totalLines": 911,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/production_envelope.py": {
@@ -35616,36 +37192,6 @@
       "totalLines": 98,
       "hasStructuralAnalysis": true
     },
-    "app/models/schemas/decision_cards.schema.json": {
-      "filePath": "app/models/schemas/decision_cards.schema.json",
-      "contentHash": "fe92fbcb5e1221bcd823b7d023c42aba861f50f2e87bee3f1a3592a1ea1d14e9",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 49,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/schemas/operator_verdict.schema.json": {
-      "filePath": "app/models/schemas/operator_verdict.schema.json",
-      "contentHash": "42a67cc603c108fd6a5f681f94360d1c4dc4639fbe516c6a8d91d5aa40e443fd",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 105,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/schemas/specialist_state.schema.json": {
-      "filePath": "app/models/schemas/specialist_state.schema.json",
-      "contentHash": "c6f607fa70cef2556d81c35e3a112f35e92f1b07f9254148387c74254203066b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 198,
-      "hasStructuralAnalysis": true
-    },
     "app/models/selection_policy.py": {
       "filePath": "app/models/selection_policy.py",
       "contentHash": "68a64664bce3de320d2dafecd32a3da1e7d82e5e17efa8452e3cb45eb6e61139",
@@ -35703,16 +37249,6 @@
         "ModelSelectionPolicy"
       ],
       "totalLines": 100,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/selection_policy.yaml": {
-      "filePath": "app/models/selection_policy.yaml",
-      "contentHash": "0dc3db1920f774beac51055642a1fc50a74a9e23deb4b5e80ef032fbd40a79c3",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 42,
       "hasStructuralAnalysis": true
     },
     "app/models/selector.py": {
@@ -36437,16 +37973,6 @@
         "main"
       ],
       "totalLines": 162,
-      "hasStructuralAnalysis": true
-    },
-    "app/models/state/README.md": {
-      "filePath": "app/models/state/README.md",
-      "contentHash": "203caa9b170e84c02c545d60ccdc44a01e9dd200de350ccb4fcb6ab126f2d48e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
       "hasStructuralAnalysis": true
     },
     "app/models/state/run_state.py": {
@@ -37483,16 +39009,6 @@
       "totalLines": 100,
       "hasStructuralAnalysis": true
     },
-    "app/models/trial3_transcript.v1.schema.json": {
-      "filePath": "app/models/trial3_transcript.v1.schema.json",
-      "contentHash": "40de12a6a257e8b387d4b665a5b579067593ef59c24f43f99bf8e1485203950b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 110,
-      "hasStructuralAnalysis": true
-    },
     "app/models/tripwire_ledger.py": {
       "filePath": "app/models/tripwire_ledger.py",
       "contentHash": "60d6d7c34793635017f542419c781ba724d20d43bd82afdd35b30822d4eefc24",
@@ -37613,6 +39129,397 @@
       "imports": [],
       "exports": [],
       "totalLines": 9,
+      "hasStructuralAnalysis": true
+    },
+    "app/notify/__init__.py": {
+      "filePath": "app/notify/__init__.py",
+      "contentHash": "330949b8fcd6a874ecb35bc65a53feae1bab03f9b143a0b99c2298bf52233586",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "app.notify.service",
+          "specifiers": [
+            "ALLOWED_PUSH_SCHEMES",
+            "DEFAULT_POLL_INTERVAL_SECONDS",
+            "DEFAULT_STATE_ROOT",
+            "NotificationEvent",
+            "NotifierService",
+            "NotifierState",
+            "validate_push_urls"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 42,
+      "hasStructuralAnalysis": true
+    },
+    "app/notify/__main__.py": {
+      "filePath": "app/notify/__main__.py",
+      "contentHash": "d6d8d35b530ed809681282672216827184d97ebdf03c7aa83bee665eeebe9195",
+      "functions": [
+        {
+          "name": "run_forever",
+          "params": [
+            "service",
+            "poll_interval",
+            "grace_seconds",
+            "sleep_fn",
+            "monotonic_fn",
+            "now_fn",
+            "max_iterations"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
+          "name": "_detached_popen_kwargs",
+          "params": [
+            "logfile"
+          ],
+          "returnType": "dict",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "launch_notifier",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "config",
+            "state_dir",
+            "poll_interval",
+            "python_executable",
+            "producer_pid"
+          ],
+          "returnType": "subprocess.Popen",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "_build_arg_parser",
+          "params": [],
+          "returnType": "argparse.ArgumentParser",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "main",
+          "params": [
+            "argv"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "argparse",
+          "specifiers": [
+            "argparse"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "subprocess",
+          "specifiers": [
+            "subprocess"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "time",
+          "specifiers": [
+            "time"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "app.notify.service",
+          "specifiers": [
+            "DEFAULT_POLL_INTERVAL_SECONDS",
+            "DEFAULT_STATE_ROOT",
+            "PRODUCER_PID_ENV",
+            "NotifierService"
+          ]
+        }
+      ],
+      "exports": [
+        "run_forever",
+        "_detached_popen_kwargs",
+        "launch_notifier",
+        "_build_arg_parser",
+        "main"
+      ],
+      "totalLines": 199,
+      "hasStructuralAnalysis": true
+    },
+    "app/notify/service.py": {
+      "filePath": "app/notify/service.py",
+      "contentHash": "d3a2d4edef9a5df4164960b90425e50d9e41d9a3f6d642da31462db360d3cec0",
+      "functions": [
+        {
+          "name": "_utcnow",
+          "params": [],
+          "returnType": "datetime",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "validate_push_urls",
+          "params": [
+            "urls"
+          ],
+          "returnType": "tuple[list[str], list[str]]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_push_urls_from_env",
+          "params": [],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_producer_pid_from_env",
+          "params": [],
+          "returnType": "int | None",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_default_pid_alive",
+          "params": [
+            "pid"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "_compose",
+          "params": [
+            "event_class",
+            "cur",
+            "reason"
+          ],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "_current_node",
+          "params": [
+            "cur"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_redact",
+          "params": [
+            "url"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [
+        {
+          "name": "_RealApprise",
+          "methods": [
+            "__init__",
+            "add",
+            "notify"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "NotifierState",
+          "methods": [
+            "to_dict",
+            "from_dict"
+          ],
+          "properties": [
+            "last_processed_progress_seq",
+            "last_status",
+            "acked",
+            "push_attempts"
+          ],
+          "exported": true,
+          "lineCount": 49
+        },
+        {
+          "name": "NotificationEvent",
+          "methods": [],
+          "properties": [
+            "event_class",
+            "enabled",
+            "sound",
+            "push",
+            "pushed",
+            "reason"
+          ],
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "NotifierService",
+          "methods": [
+            "__init__",
+            "_load_state",
+            "_persist_state",
+            "_read_projection",
+            "poll_once",
+            "_process_transition",
+            "_reset_pause_episode",
+            "_record_outcome",
+            "_retry_failed_pushes",
+            "_evaluate_watchdog",
+            "_fire_stall",
+            "_act",
+            "_push",
+            "_ensure_transport",
+            "_ack_key",
+            "current_status",
+            "is_terminal"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 343
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "sys",
+          "specifiers": [
+            "sys"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable"
+          ]
+        },
+        {
+          "source": "dataclasses",
+          "specifiers": [
+            "dataclass",
+            "field"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "urllib.parse",
+          "specifiers": [
+            "urlsplit"
+          ]
+        },
+        {
+          "source": "app.models.runtime.operator_surface",
+          "specifiers": [
+            "OperatorSurfaceProjection",
+            "Unrecognized",
+            "derive_event_transitions",
+            "load_hud_config",
+            "read_operator_surface_lenient",
+            "stall_condition"
+          ]
+        }
+      ],
+      "exports": [
+        "_utcnow",
+        "validate_push_urls",
+        "_push_urls_from_env",
+        "_producer_pid_from_env",
+        "_default_pid_alive",
+        "_RealApprise",
+        "NotifierState",
+        "NotificationEvent",
+        "NotifierService",
+        "_compose",
+        "_current_node",
+        "_redact"
+      ],
+      "totalLines": 662,
       "hasStructuralAnalysis": true
     },
     "app/parity/contracts/__init__.py": {
@@ -40045,7 +41952,7 @@
     },
     "app/runtime/llm_batch/__init__.py": {
       "filePath": "app/runtime/llm_batch/__init__.py",
-      "contentHash": "2eb935149c323d861882a1b56a9e99f8f59d9e877173a37c0aacefda0d4cbbb3",
+      "contentHash": "2ba31c3fdc72fa41a7dd32356f5cad0d1fbeb6919c7c0fa8ac116cca8d7ca9fb",
       "functions": [],
       "classes": [],
       "imports": [
@@ -40332,7 +42239,7 @@
     },
     "app/runtime/llm_batch/errors.py": {
       "filePath": "app/runtime/llm_batch/errors.py",
-      "contentHash": "4724d14cca114047576f9d59118446f7a7141c2e413bac02c88ac8457b3eb7e5",
+      "contentHash": "75d0793b641b2f68ee8ce27849bcbcf3ab0a76d30a77128185365faa31b65fd0",
       "functions": [],
       "classes": [
         {
@@ -41402,16 +43309,6 @@
       "totalLines": 63,
       "hasStructuralAnalysis": true
     },
-    "app/runtime/README.md": {
-      "filePath": "app/runtime/README.md",
-      "contentHash": "a0a016eab0d904d3b60f272bffe65b1b9af4f0cd26e5adf6377eedd547f0e56a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
-      "hasStructuralAnalysis": true
-    },
     "app/runtime/retention_policy.py": {
       "filePath": "app/runtime/retention_policy.py",
       "contentHash": "588510f46f8fb165a43ad07f9fd7de3e617318f85287f5883b797b09b1aa17d3",
@@ -41754,26 +43651,6 @@
         "SanctumWatcher"
       ],
       "totalLines": 217,
-      "hasStructuralAnalysis": true
-    },
-    "app/runtime/schema/override_warning.v1.schema.json": {
-      "filePath": "app/runtime/schema/override_warning.v1.schema.json",
-      "contentHash": "98be26f6e76cfa1f46c6acbe520ece42a79a5fb2aad3cfbddf4e26e9b6b8fd1d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 81,
-      "hasStructuralAnalysis": true
-    },
-    "app/runtime/schema/sanctum_warning.v1.schema.json": {
-      "filePath": "app/runtime/schema/sanctum_warning.v1.schema.json",
-      "contentHash": "9387abdf6c069121052c5670093684629fd331ba51d993041154bf0f9660dfa0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 50,
       "hasStructuralAnalysis": true
     },
     "app/runtime/server.py": {
@@ -42171,16 +44048,6 @@
       "totalLines": 21,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/_scaffold/expertise/README.md": {
-      "filePath": "app/specialists/_scaffold/expertise/README.md",
-      "contentHash": "7b029dfc4a46c62f09e297186d6d6babc48d01fd6a20b2ba5167a18e436771d9",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 16,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/_scaffold/graph.py": {
       "filePath": "app/specialists/_scaffold/graph.py",
       "contentHash": "0e10b62cb8dfd785a34f77a9d74f64699efaa6589e4d6b5bdd7c50c71eb71c43",
@@ -42345,16 +44212,6 @@
       "totalLines": 134,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/_scaffold/model_config.yaml": {
-      "filePath": "app/specialists/_scaffold/model_config.yaml",
-      "contentHash": "35e9f7c77a16f39ae4c8b8324c90effe5fd0d18e434238e12810d46f61f5f96d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/_scaffold/sanctum_exceptions.py": {
       "filePath": "app/specialists/_scaffold/sanctum_exceptions.py",
       "contentHash": "463452455bfd28d0ffb473cc7e9ebe2f00e2ed1c2b38dcfbeb58fe667386253b",
@@ -42457,7 +44314,7 @@
     },
     "app/specialists/_shared/figure_tokens.py": {
       "filePath": "app/specialists/_shared/figure_tokens.py",
-      "contentHash": "483b05022ecc1c74238bf445f1aafb373a319d76140814f7d7888bb63e8b9a7a",
+      "contentHash": "fa0b243c183fb17647060d5f1eec18eb523eed4a3a4a0ecfbdef9c8c5e01cc52",
       "functions": [
         {
           "name": "_parse_numeric",
@@ -42494,7 +44351,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 16
+          "lineCount": 28
         },
         {
           "name": "_figure_near_match",
@@ -42523,7 +44380,7 @@
         "_normalize_figure",
         "_figure_near_match"
       ],
-      "totalLines": 115,
+      "totalLines": 127,
       "hasStructuralAnalysis": true
     },
     "app/specialists/_shared/research_intake.py": {
@@ -43166,16 +45023,6 @@
       "totalLines": 7,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/aria/expertise/README.md": {
-      "filePath": "app/specialists/aria/expertise/README.md",
-      "contentHash": "d42842ed1750ab5fcfcff7c41ed446102bcc99e7f9df0c704bc8cd454dca88c5",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/aria/graph.py": {
       "filePath": "app/specialists/aria/graph.py",
       "contentHash": "0b94b2ac1570637c6efca63f73231ed0ce19523b82270b1de1cd5b7783f2298e",
@@ -43403,16 +45250,6 @@
       "totalLines": 242,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/aria/model_config.yaml": {
-      "filePath": "app/specialists/aria/model_config.yaml",
-      "contentHash": "a3cfce625d27939b11a9621f4113749655ee8efc2a9e2fe364ec2afdba1f0665",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/aria/state.py": {
       "filePath": "app/specialists/aria/state.py",
       "contentHash": "72cb45f97725ca457f2f9bfb11197309184aeac9b8e1cd78315eeb01f8b3a63d",
@@ -43507,16 +45344,6 @@
       ],
       "exports": [],
       "totalLines": 7,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/cd/expertise/README.md": {
-      "filePath": "app/specialists/cd/expertise/README.md",
-      "contentHash": "732e2c4ecd9735afafe3d1ed355b0fc92dde02ea1ee3bbe1ff4e69295d92d50a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/cd/graph.py": {
@@ -43933,16 +45760,6 @@
       "totalLines": 835,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/cd/model_config.yaml": {
-      "filePath": "app/specialists/cd/model_config.yaml",
-      "contentHash": "7bf8d7698796e4d16c97bf1036049778a9be5bf23018ff4360175e8b148e84e7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/cd/state.py": {
       "filePath": "app/specialists/cd/state.py",
       "contentHash": "4f5410e244d70deae935aaa323488be7691d147450e450756930421924949c9d",
@@ -44266,26 +46083,6 @@
       "totalLines": 200,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/compositor/config.yaml": {
-      "filePath": "app/specialists/compositor/config.yaml",
-      "contentHash": "ee008f0e6a287a05a459214b07d188a5092248ee13cea88cee46a1ca265c9431",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 21,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/compositor/expertise/README.md": {
-      "filePath": "app/specialists/compositor/expertise/README.md",
-      "contentHash": "906a6161853dd4becc1091f5f04faaa0c94c5fdbfc8dd92348813f7a13ae879a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 8,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/compositor/graph.py": {
       "filePath": "app/specialists/compositor/graph.py",
       "contentHash": "d90c7c5ad6c54311251fd57f597cc031cb82247bc843a382d86be0f1ec5b22f3",
@@ -44459,16 +46256,6 @@
         "build_compositor_graph"
       ],
       "totalLines": 106,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/compositor/model_config.yaml": {
-      "filePath": "app/specialists/compositor/model_config.yaml",
-      "contentHash": "fac72133c04661adf440ee57d146a6deed7e2fbb439602260e066bc3353dbdfc",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 7,
       "hasStructuralAnalysis": true
     },
     "app/specialists/compositor/payload_contract.py": {
@@ -44728,26 +46515,6 @@
       "totalLines": 216,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/dan/config.yaml": {
-      "filePath": "app/specialists/dan/config.yaml",
-      "contentHash": "e69c79e3eef911d4b0b81524566ccb2faccbd2a231ccc20d87d3c7444f80653a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/dan/expertise/README.md": {
-      "filePath": "app/specialists/dan/expertise/README.md",
-      "contentHash": "e546ac61e872ecc4b43f11e31e8dd0d003c5a43d6200dbf8fe974b9a7e0b9fd0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/dan/graph.py": {
       "filePath": "app/specialists/dan/graph.py",
       "contentHash": "17f22deb45684b74367abd4bceadcd5380b352d5396e0ef12b4aaf7de3c602e9",
@@ -44916,16 +46683,6 @@
       "totalLines": 133,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/dan/model_config.yaml": {
-      "filePath": "app/specialists/dan/model_config.yaml",
-      "contentHash": "c250a92327dd9aa5e689337c1c5510b020466dc579d2395d82b65290ed2c5edb",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/dan/state.py": {
       "filePath": "app/specialists/dan/state.py",
       "contentHash": "9d40b6564ff1ca5aa8a9e033942ab7672f65cec8f436e11f744ad2445c55599f",
@@ -45020,16 +46777,6 @@
       ],
       "exports": [],
       "totalLines": 7,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/desmond/expertise/README.md": {
-      "filePath": "app/specialists/desmond/expertise/README.md",
-      "contentHash": "98fe0810d6d37995c47c49329dab36de474ccbed0a5f2f4f6b36dd54e1284030",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/desmond/graph.py": {
@@ -45327,16 +47074,6 @@
         "build_desmond_graph"
       ],
       "totalLines": 450,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/desmond/model_config.yaml": {
-      "filePath": "app/specialists/desmond/model_config.yaml",
-      "contentHash": "289842ec44793c9792696f89bc15bdf3ff2cfe2ee82dc7449e28b23315e08345",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
       "hasStructuralAnalysis": true
     },
     "app/specialists/desmond/state.py": {
@@ -45908,16 +47645,6 @@
       "totalLines": 1000,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/enrique/config.yaml": {
-      "filePath": "app/specialists/enrique/config.yaml",
-      "contentHash": "7b9f5ee884f3f00d649151c57b54e0f629472661c56cd470d21f53ee977dcff6",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/enrique/elevenlabs_dispatch.py": {
       "filePath": "app/specialists/enrique/elevenlabs_dispatch.py",
       "contentHash": "3f4ef659c7dd1d69093d95af1a9c86200637deb5d006aee149756e673841a35f",
@@ -46017,16 +47744,6 @@
         "dispatch_to_elevenlabs"
       ],
       "totalLines": 126,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/enrique/expertise/README.md": {
-      "filePath": "app/specialists/enrique/expertise/README.md",
-      "contentHash": "e33ff80e9c73865ec669efe3004b93a80ac4007062e13a295fa0cb0f7ea86f7b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/enrique/graph.py": {
@@ -46230,16 +47947,6 @@
       "totalLines": 152,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/enrique/model_config.yaml": {
-      "filePath": "app/specialists/enrique/model_config.yaml",
-      "contentHash": "5c2719b924ff70b16af8f84c08e7b1cd0cff95d580f18dbbc5dcca87bf30d579",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/enrique/payload_contract.py": {
       "filePath": "app/specialists/enrique/payload_contract.py",
       "contentHash": "d3d97a19baa391226d8eb62d10b09dda964d12a2958c74b80d111308094b30f0",
@@ -46320,16 +48027,6 @@
         "EnriqueReturn"
       ],
       "totalLines": 51,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/enrique/voice_direction_map.yaml": {
-      "filePath": "app/specialists/enrique/voice_direction_map.yaml",
-      "contentHash": "833da78dd2114ed8d0f14e0cf497395970295f1f169947706147fa0d3dce1f96",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 56,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/__init__.py": {
@@ -46829,26 +48526,6 @@
       "totalLines": 1542,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/gary/config.yaml": {
-      "filePath": "app/specialists/gary/config.yaml",
-      "contentHash": "826bf07d38aa8ecb3a0923bfa39c7f65ff1fc73a997ae90d681e34b0e7a0f2f0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 4,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/gary/expertise/README.md": {
-      "filePath": "app/specialists/gary/expertise/README.md",
-      "contentHash": "d44c305f8ea2b1836a7efc30436f6ff2eb5a3a1cbeb969fd0e5fb11be8dbfc02",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 17,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/gary/gamma_dispatch.py": {
       "filePath": "app/specialists/gary/gamma_dispatch.py",
       "contentHash": "f3db4e57a622cd70fbe78c44430ac04cca5c0dd7784127375f6046d84fe6f93f",
@@ -47346,16 +49023,6 @@
         "active_learned_rules"
       ],
       "totalLines": 334,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/gary/model_config.yaml": {
-      "filePath": "app/specialists/gary/model_config.yaml",
-      "contentHash": "42a143a05fa401aadab88a621dbd4623d6f14ca34539bfe15d369e04747ff157",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 11,
       "hasStructuralAnalysis": true
     },
     "app/specialists/gary/payload_contract.py": {
@@ -48185,16 +49852,6 @@
       "totalLines": 682,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/irene_pass1/expertise/README.md": {
-      "filePath": "app/specialists/irene_pass1/expertise/README.md",
-      "contentHash": "31bac83f08aa4359f027008d263db8d55405f127732146116f75bb82bc664791",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 13,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/irene_pass1/graph.py": {
       "filePath": "app/specialists/irene_pass1/graph.py",
       "contentHash": "c645f142f005e5a9db67cf3d95cc009ea8061ec511cf0bcfaa85ea3168c2ee20",
@@ -48355,16 +50012,6 @@
         "build_irene_pass1_graph"
       ],
       "totalLines": 126,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/irene_pass1/model_config.yaml": {
-      "filePath": "app/specialists/irene_pass1/model_config.yaml",
-      "contentHash": "c414cb37ced7933966418453207092a33f8fd3da84ba52c588794b9f1dd86cda",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 7,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene_pass1/payload_contract.py": {
@@ -48984,16 +50631,6 @@
         "gate_warm_callback"
       ],
       "totalLines": 137,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/irene/expertise/README.md": {
-      "filePath": "app/specialists/irene/expertise/README.md",
-      "contentHash": "f91515f493f8f2d04092d6f8373333c81cfdc352f5fa09dd1bace2e34c58fb55",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 49,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene/graph.py": {
@@ -49990,16 +51627,6 @@
       "totalLines": 2574,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/irene/model_config.yaml": {
-      "filePath": "app/specialists/irene/model_config.yaml",
-      "contentHash": "6d6d325d90f8b1775c19e7e1362fa8f8997f995b9d5762e98d5f69692339f19d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 29,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/irene/payload_contract.py": {
       "filePath": "app/specialists/irene/payload_contract.py",
       "contentHash": "1a92a6257794e9ec2eefc6966f93de883d26cedbb24b188d1ffb3aa73308816b",
@@ -50130,16 +51757,6 @@
       ],
       "exports": [],
       "totalLines": 7,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/kim/expertise/README.md": {
-      "filePath": "app/specialists/kim/expertise/README.md",
-      "contentHash": "f4bf8f22cc5d08cefa292e23ef83969f181a8205f59893068e6a65fd42d06621",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/kim/graph.py": {
@@ -50367,16 +51984,6 @@
         "build_kim_graph"
       ],
       "totalLines": 238,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/kim/model_config.yaml": {
-      "filePath": "app/specialists/kim/model_config.yaml",
-      "contentHash": "155ee4e1cf2c067aa5c9f427d09e4a4121a2fe89ea67900b07d4570b59dd10f4",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
       "hasStructuralAnalysis": true
     },
     "app/specialists/kim/state.py": {
@@ -50734,26 +52341,6 @@
       "totalLines": 349,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/kira/config.yaml": {
-      "filePath": "app/specialists/kira/config.yaml",
-      "contentHash": "252c08eb0966cd6e2d070439e4a2f019a35ceec721c1f173de23616b6427803e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 4,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/kira/expertise/README.md": {
-      "filePath": "app/specialists/kira/expertise/README.md",
-      "contentHash": "b7cc6480781bbb040c48683dbbed08f1952c2bef2d6ff4c8389193029e61c3ae",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/kira/graph.py": {
       "filePath": "app/specialists/kira/graph.py",
       "contentHash": "c3ba2374274030c2788dd0bd89d50ea99d4ca093b8b68ad521cf546c8efcb975",
@@ -51026,16 +52613,6 @@
       "totalLines": 99,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/kira/model_config.yaml": {
-      "filePath": "app/specialists/kira/model_config.yaml",
-      "contentHash": "5f12ce098c15c4ab13a175daf77f77fb1fc9f19a594f1a88da82e718947c6af5",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 18,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/kira/payload_contract.py": {
       "filePath": "app/specialists/kira/payload_contract.py",
       "contentHash": "420a97a32321fad8d06b20f1bebddc516c13b813cc551d2f5c76f71611dedd42",
@@ -51139,16 +52716,6 @@
       ],
       "exports": [],
       "totalLines": 7,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/mira/expertise/README.md": {
-      "filePath": "app/specialists/mira/expertise/README.md",
-      "contentHash": "330b5b1c7925c5a90649468e74b7defdbaae039c531916feaa144e7af0e175c1",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/mira/graph.py": {
@@ -51376,16 +52943,6 @@
         "build_mira_graph"
       ],
       "totalLines": 241,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/mira/model_config.yaml": {
-      "filePath": "app/specialists/mira/model_config.yaml",
-      "contentHash": "d56ac35a3da297c6c788d2ed738f012aea71a17981a49c2ce286058a52a14291",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
       "hasStructuralAnalysis": true
     },
     "app/specialists/mira/state.py": {
@@ -51753,16 +53310,6 @@
       "totalLines": 537,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/motion_planner/config.yaml": {
-      "filePath": "app/specialists/motion_planner/config.yaml",
-      "contentHash": "1d8a278b3a4d07c6b20be2c042b1df714a6fb720b12bcc822136e72e3268948f",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 11,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/motion_planner/graph.py": {
       "filePath": "app/specialists/motion_planner/graph.py",
       "contentHash": "361d20a6ab88e7a7d437305e9efc62b3a74bc771f014fab1bf5bbc8099be600a",
@@ -51935,16 +53482,6 @@
         "build_motion_planner_graph"
       ],
       "totalLines": 114,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/motion_planner/model_config.yaml": {
-      "filePath": "app/specialists/motion_planner/model_config.yaml",
-      "contentHash": "df3b4dcc34376feee2290a5a1bfb6b276401bd699789b6587a37da0e14cad97b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 20,
       "hasStructuralAnalysis": true
     },
     "app/specialists/motion_planner/payload_contract.py": {
@@ -52331,16 +53868,6 @@
         "act"
       ],
       "totalLines": 257,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/quinn_r/expertise/README.md": {
-      "filePath": "app/specialists/quinn_r/expertise/README.md",
-      "contentHash": "5a8dc173e125053893e2373377d5f3a170ddb31c64907c4f1813aca6ddafa42f",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 11,
       "hasStructuralAnalysis": true
     },
     "app/specialists/quinn_r/fidelity_detector.py": {
@@ -52781,16 +54308,6 @@
       "totalLines": 383,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/quinn_r/model_config.yaml": {
-      "filePath": "app/specialists/quinn_r/model_config.yaml",
-      "contentHash": "4eb80b9d76cf3ba13554491956d82928b72c72ce62d9f3ffad17261325d10f46",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/quinn_r/payload_contract.py": {
       "filePath": "app/specialists/quinn_r/payload_contract.py",
       "contentHash": "98221be31841aab4f4e17d7adb747fbca10481e71789ce3459d717e2010f2db1",
@@ -53182,16 +54699,6 @@
       "totalLines": 7,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/tamara/expertise/README.md": {
-      "filePath": "app/specialists/tamara/expertise/README.md",
-      "contentHash": "f105eb2ccb4c4478584f2377df40f371d999e2fec257741564e8088fecd3d170",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/tamara/graph.py": {
       "filePath": "app/specialists/tamara/graph.py",
       "contentHash": "7f77cec244d89fdc9ae35d324516ecd3985f30237753494644b7c30151af4661",
@@ -53417,16 +54924,6 @@
         "build_tamara_graph"
       ],
       "totalLines": 246,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/tamara/model_config.yaml": {
-      "filePath": "app/specialists/tamara/model_config.yaml",
-      "contentHash": "1ced22b7594c0576438551aa46f546fcda50fd33d2e85050c44f249df38144c7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
       "hasStructuralAnalysis": true
     },
     "app/specialists/tamara/state.py": {
@@ -53752,26 +55249,6 @@
       "totalLines": 387,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/texas/expertise/README.md": {
-      "filePath": "app/specialists/texas/expertise/README.md",
-      "contentHash": "f6f94707e9492d5d539659ac740c001cbc8239e1dd11e0b4dfcdde7fe03790af",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 20,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/texas/expertise/retrieval-contract-ref.md": {
-      "filePath": "app/specialists/texas/expertise/retrieval-contract-ref.md",
-      "contentHash": "485991ca97f9dc292f0f1bb60b012862d70b913a710afaacce0fb06810698007",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 2,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/texas/graph.py": {
       "filePath": "app/specialists/texas/graph.py",
       "contentHash": "e30faa0700cbd5084e9e76d43902215afe6a8388803d1cde94c863c6be0b811d",
@@ -54047,16 +55524,6 @@
         "build_texas_graph"
       ],
       "totalLines": 309,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/texas/model_config.yaml": {
-      "filePath": "app/specialists/texas/model_config.yaml",
-      "contentHash": "af975a688d900235f11eca4f4353ec67069245925fce7c3f0dbaa2167e81a605",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 11,
       "hasStructuralAnalysis": true
     },
     "app/specialists/texas/retrieval_dispatch.py": {
@@ -54451,16 +55918,6 @@
       "totalLines": 310,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/tracy/expertise/README.md": {
-      "filePath": "app/specialists/tracy/expertise/README.md",
-      "contentHash": "03392794f984eae897e197e52a48fe4a4d1d5fa60869304fde5c7acc752b7919",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/tracy/graph.py": {
       "filePath": "app/specialists/tracy/graph.py",
       "contentHash": "691fb502149a23173f96b0810717293f99331f186a44663a01607d4c566f2dc6",
@@ -54635,16 +56092,6 @@
         "build_tracy_graph"
       ],
       "totalLines": 142,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/tracy/model_config.yaml": {
-      "filePath": "app/specialists/tracy/model_config.yaml",
-      "contentHash": "3e7b36a39a695a661d90c7a2a1c7b8b86d41e0793a746f4f35a01095cddc2080",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/tracy/posture_dispatch.py": {
@@ -55036,16 +56483,6 @@
       "totalLines": 354,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/vera/expertise/README.md": {
-      "filePath": "app/specialists/vera/expertise/README.md",
-      "contentHash": "51fcba60c815201e3305a59ce4164591df4740596fdbaab8e3f078836798fd75",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 11,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/vera/graph.py": {
       "filePath": "app/specialists/vera/graph.py",
       "contentHash": "5b94ed69e66effc46b413e6f7ac3ac9815b959ec5889269f5398d8b14a2be4ac",
@@ -55312,16 +56749,6 @@
         "build_vera_graph"
       ],
       "totalLines": 317,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/vera/model_config.yaml": {
-      "filePath": "app/specialists/vera/model_config.yaml",
-      "contentHash": "627935bbabf77883abe1d32a00273d5f6e517b01b5bc619283e9a4a64cbe5089",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 11,
       "hasStructuralAnalysis": true
     },
     "app/specialists/vera/sensory_bridges_dispatch.py": {
@@ -55728,7 +57155,7 @@
     },
     "app/specialists/vision/batch_route.py": {
       "filePath": "app/specialists/vision/batch_route.py",
-      "contentHash": "fcbb49d35f06d84007c9fc82073c69343d2e513ffddb4c669ede251f555fc71d",
+      "contentHash": "396ccd4aded7902bed60ba4bc6830da1cd77a6b1f4cce7949b8a0980626b05d9",
       "functions": [
         {
           "name": "resolve_vision_execution_mode",
@@ -55932,16 +57359,6 @@
       "totalLines": 345,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/vision/expertise/README.md": {
-      "filePath": "app/specialists/vision/expertise/README.md",
-      "contentHash": "e45d243039583964bcb94de013e2947f0187eaf3bd161a9e7ac1f401297aa4c3",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/vision/graph.py": {
       "filePath": "app/specialists/vision/graph.py",
       "contentHash": "e2200495f460a21a1b4b7e7ecf196cfe2e297bd67fdac104a041bf0c7b8047b7",
@@ -56116,16 +57533,6 @@
       "totalLines": 104,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/vision/model_config.yaml": {
-      "filePath": "app/specialists/vision/model_config.yaml",
-      "contentHash": "e17ae3edde49479f65ce5d9c3bf30fe2cae8efc5dce03c7b35b1fd5d5040dcdf",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 15,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/vision/payload_contract.py": {
       "filePath": "app/specialists/vision/payload_contract.py",
       "contentHash": "b1dc0f7ba5409b1ecf1d81da9ad4c86ba593cae0108c7d1ebf1baa22c0e30c8d",
@@ -56191,7 +57598,7 @@
     },
     "app/specialists/vision/provider.py": {
       "filePath": "app/specialists/vision/provider.py",
-      "contentHash": "221e2e0baeb55f5acac6e74e038501611b3eb63cbdd08c4a12d95c3327c32bb7",
+      "contentHash": "c74fd2ea246cf66e9672b583d7bac34d65cf6da7d6e003dbe665cc7dc09cd753",
       "functions": [
         {
           "name": "_perception_prompt",
@@ -56261,7 +57668,7 @@
           ],
           "returnType": "VisionProviderResponse",
           "exported": true,
-          "lineCount": 101
+          "lineCount": 106
         }
       ],
       "classes": [
@@ -56370,7 +57777,7 @@
         "_map_sdk_exception",
         "perceive_png"
       ],
-      "totalLines": 375,
+      "totalLines": 380,
       "hasStructuralAnalysis": true
     },
     "app/specialists/vision/repeatability.py": {
@@ -56569,16 +57976,6 @@
       ],
       "exports": [],
       "totalLines": 7,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/vyx/expertise/README.md": {
-      "filePath": "app/specialists/vyx/expertise/README.md",
-      "contentHash": "b8b3667fa6087bc7ad93b77a7d40260c238b850987b92e9f86a9f65b5e319856",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/vyx/graph.py": {
@@ -56806,16 +58203,6 @@
         "build_vyx_graph"
       ],
       "totalLines": 237,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/vyx/model_config.yaml": {
-      "filePath": "app/specialists/vyx/model_config.yaml",
-      "contentHash": "3ba64493344fa3d162e429497f6d914b2ee9fbd0b3bccc429797ee88cf508185",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 9,
       "hasStructuralAnalysis": true
     },
     "app/specialists/vyx/state.py": {
@@ -57129,26 +58516,6 @@
       "totalLines": 240,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/wanda/config.yaml": {
-      "filePath": "app/specialists/wanda/config.yaml",
-      "contentHash": "e203cca8d53ef5f26244275a102543c852535853c1a6c42195891b16e7e79d0e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 6,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/wanda/expertise/README.md": {
-      "filePath": "app/specialists/wanda/expertise/README.md",
-      "contentHash": "94e6e841e62a6a627f24cf52070441009873e58f22566bfe85a025e613bbecd9",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/wanda/graph.py": {
       "filePath": "app/specialists/wanda/graph.py",
       "contentHash": "1016f97219639350742bdee2a4e7f4ef4036a2dba6e83c90359baf3eab1317ee",
@@ -57348,16 +58715,6 @@
         "build_wanda_graph"
       ],
       "totalLines": 162,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/wanda/model_config.yaml": {
-      "filePath": "app/specialists/wanda/model_config.yaml",
-      "contentHash": "080403fea5cd1d5fb297f3d5de205580b071c3247620897e17c10801025684d4",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 10,
       "hasStructuralAnalysis": true
     },
     "app/specialists/wanda/state.py": {
@@ -57958,16 +59315,6 @@
       "totalLines": 802,
       "hasStructuralAnalysis": true
     },
-    "app/specialists/workbook_producer/config.yaml": {
-      "filePath": "app/specialists/workbook_producer/config.yaml",
-      "contentHash": "fe4a8784ab8ebb85bee550291bdf82c33642125e3a1d1d9c85983915aa6c0e8e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 13,
-      "hasStructuralAnalysis": true
-    },
     "app/specialists/workbook_producer/graph.py": {
       "filePath": "app/specialists/workbook_producer/graph.py",
       "contentHash": "9bfef375863b7d32eb7c3d7970a7257b3b0b4c0dc21f773535a64d179e86b698",
@@ -58140,16 +59487,6 @@
         "build_workbook_producer_graph"
       ],
       "totalLines": 117,
-      "hasStructuralAnalysis": true
-    },
-    "app/specialists/workbook_producer/model_config.yaml": {
-      "filePath": "app/specialists/workbook_producer/model_config.yaml",
-      "contentHash": "37c21ff6472b1031c35952d493a334ea8d45cdaa6255a4808f7807c6d6b62d8c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 21,
       "hasStructuralAnalysis": true
     },
     "app/specialists/workbook_producer/payload_contract.py": {
@@ -60826,16 +62163,6 @@
         "main"
       ],
       "totalLines": 150,
-      "hasStructuralAnalysis": true
-    },
-    "scripts/dev/init_postgres.sql": {
-      "filePath": "scripts/dev/init_postgres.sql",
-      "contentHash": "dfa6919a3b2ad6901daf5b86d1f9922210c2b7b9dbf4e1367867990927d47425",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 28,
       "hasStructuralAnalysis": true
     },
     "scripts/diagnostics/elevenlabs_api_sweep.py": {
@@ -64658,16 +65985,6 @@
       "totalLines": 2,
       "hasStructuralAnalysis": true
     },
-    "skills/app-maturity-audit/SKILL.md": {
-      "filePath": "skills/app-maturity-audit/SKILL.md",
-      "contentHash": "cf9b76143d1f315a02347260306a0ae98aecc913a9b4819dee5c08c4b17bdab6",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 35,
-      "hasStructuralAnalysis": true
-    },
     "skills/bmad_agent_tracy/__init__.py": {
       "filePath": "skills/bmad_agent_tracy/__init__.py",
       "contentHash": "7e33194cedfbf79fc8525e8032ec2f20baabadf163bebfad110bce3b0d34615a",
@@ -64676,16 +65993,6 @@
       "imports": [],
       "exports": [],
       "totalLines": 2,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad_agent_tracy/README.md": {
-      "filePath": "skills/bmad_agent_tracy/README.md",
-      "contentHash": "c928ce3d8c65a938bf65bef2b9e473fe735cc6d2dacf01a093a178b4228c7ff7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 70,
       "hasStructuralAnalysis": true
     },
     "skills/bmad_create_specialist/__init__.py": {
@@ -64698,686 +66005,6 @@
       "totalLines": 2,
       "hasStructuralAnalysis": true
     },
-    "skills/bmad-agent-articulate/SKILL.md": {
-      "filePath": "skills/bmad-agent-articulate/SKILL.md",
-      "contentHash": "d24de530b2ef7b829cb7e003dede2aa18d22dad7000821bb7ca14f40f7626a9d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 49,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-audra/SKILL.md": {
-      "filePath": "skills/bmad-agent-audra/SKILL.md",
-      "contentHash": "b1c929c6f1a13a00b48e4ba1ef547a47b15029c2bc9633239a3ce6bb3cb24e9b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 158,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-canva/SKILL.md": {
-      "filePath": "skills/bmad-agent-canva/SKILL.md",
-      "contentHash": "87137227300d84ab3d38e5d0e131f57cafa5bbcd629ce5cf771d9325be88dc77",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 89,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cd/assets/BOND-template.md": {
-      "filePath": "skills/bmad-agent-cd/assets/BOND-template.md",
-      "contentHash": "c6a21f8411e931869a4f4b743fa54eeee1299bcfe6fd1c55185101846b8aa2ac",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 55,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cd/assets/CAPABILITIES-template.md": {
-      "filePath": "skills/bmad-agent-cd/assets/CAPABILITIES-template.md",
-      "contentHash": "09cd1e62e59da1de75f5ce83ea1a4dc4dc7f18bd0640e499d8cfc1da3e420382",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 36,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cd/assets/CREED-template.md": {
-      "filePath": "skills/bmad-agent-cd/assets/CREED-template.md",
-      "contentHash": "64b8d3e997edb66320a9cf742790adc53ced19571b64baaaf653a0cfeacc211a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 75,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cd/assets/INDEX-template.md": {
-      "filePath": "skills/bmad-agent-cd/assets/INDEX-template.md",
-      "contentHash": "e64f7aadf0ba8b99a98393c54b1ff2aaf91aec2a0e7c1df2a478375d33b16879",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 29,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cd/assets/MEMORY-template.md": {
-      "filePath": "skills/bmad-agent-cd/assets/MEMORY-template.md",
-      "contentHash": "a9e95315f34e801a82b24c4710cb91e19f551c6c87e648931dc7317d3acb138b",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 49,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cd/assets/PERSONA-template.md": {
-      "filePath": "skills/bmad-agent-cd/assets/PERSONA-template.md",
-      "contentHash": "06f3e64626e0ac8d05859a9f000e89336f3ec1d0fa20be5a5f8e11fca2d9d47d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 33,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cd/SKILL.md": {
-      "filePath": "skills/bmad-agent-cd/SKILL.md",
-      "contentHash": "2c72aa1907a064afce40051233d055a3fffe80f8244acb9a7673cab6236ce153",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 61,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-content-creator/assets/BOND-template.md": {
-      "filePath": "skills/bmad-agent-content-creator/assets/BOND-template.md",
-      "contentHash": "f329bbdf32d4b31e25d026b298215d158fddb7e4286598eb731c9ce5fb87f100",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-content-creator/assets/CAPABILITIES-template.md": {
-      "filePath": "skills/bmad-agent-content-creator/assets/CAPABILITIES-template.md",
-      "contentHash": "29bbf93272716837a2375fb92e15ea02ef0cb1762aa09b7f86675b155f59daa5",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 58,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-content-creator/assets/CREED-template.md": {
-      "filePath": "skills/bmad-agent-content-creator/assets/CREED-template.md",
-      "contentHash": "ad19ee0a2926303a82ae8b2298701b09ce4e1c3ffa89491a6f58d77c612cadb6",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 83,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-content-creator/assets/INDEX-template.md": {
-      "filePath": "skills/bmad-agent-content-creator/assets/INDEX-template.md",
-      "contentHash": "79cc3b8f2a46752e0d0b700531d5f40747fb00cdcca24baf073d984a9a404371",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 46,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-content-creator/assets/MEMORY-template.md": {
-      "filePath": "skills/bmad-agent-content-creator/assets/MEMORY-template.md",
-      "contentHash": "38e877c0731f59e3ca856b922a796a8e7575e27c2772c57036bb4a6583f35e08",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 65,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-content-creator/assets/PERSONA-template.md": {
-      "filePath": "skills/bmad-agent-content-creator/assets/PERSONA-template.md",
-      "contentHash": "46adc6278e47e6844651fc4c66fcbf3641d4b63ee205c645be2e7788c085077d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 36,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-content-creator/SKILL.md": {
-      "filePath": "skills/bmad-agent-content-creator/SKILL.md",
-      "contentHash": "281b9f7ad5398013529e4047134a59bee90f968f1f156ccd75019f08a79b88af",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 59,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-cora/SKILL.md": {
-      "filePath": "skills/bmad-agent-cora/SKILL.md",
-      "contentHash": "eb81570eef4d0ff61784731e930db7bde471e13811d47b2a716875b5ab1492bc",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 152,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-coursearc/SKILL.md": {
-      "filePath": "skills/bmad-agent-coursearc/SKILL.md",
-      "contentHash": "38b35a970f7386065420b590d779d82c6d7de8ea2610df70117c4833d4bba9da",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 128,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-dan/SKILL.md": {
-      "filePath": "skills/bmad-agent-dan/SKILL.md",
-      "contentHash": "346901e7ffbb718a79891a6baa445cf573a5f96804c45f036d8523e2dd623793",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 17,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-desmond/SKILL.md": {
-      "filePath": "skills/bmad-agent-desmond/SKILL.md",
-      "contentHash": "01ca3c692025426d3790e609e27229687db06edeb8395eef7bbe65a71e5f2fc0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 39,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-elevenlabs/SKILL.md": {
-      "filePath": "skills/bmad-agent-elevenlabs/SKILL.md",
-      "contentHash": "b3c01cf0be723a75bd5ad5daf3c676a6fc6658873a9d36e37cebfe5562940a3a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 106,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-enrique/SKILL.md": {
-      "filePath": "skills/bmad-agent-enrique/SKILL.md",
-      "contentHash": "24acae3c087ea0502d85da11f43cc66f13d71884484b21693352ce169c3c6497",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 18,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-fidelity-assessor/SKILL.md": {
-      "filePath": "skills/bmad-agent-fidelity-assessor/SKILL.md",
-      "contentHash": "ea14eeaa5ba070a53bd09f7e6d1a61a9881543acd161fd45befd8460a165a091",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 111,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-gamma/SKILL.md": {
-      "filePath": "skills/bmad-agent-gamma/SKILL.md",
-      "contentHash": "abcef4bb00f87ca79b6bd7e25e93b4f7e5851e8fec9d27382766ff6a87791ec3",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 165,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-gary/SKILL.md": {
-      "filePath": "skills/bmad-agent-gary/SKILL.md",
-      "contentHash": "abde091c8dc24c47608a8d88357f452d53f405f8bb4ef28d9267a72f4d3931e4",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 18,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-kira/SKILL.md": {
-      "filePath": "skills/bmad-agent-kira/SKILL.md",
-      "contentHash": "1b8e69194b5e1a6ce534a9bfec09a2e98272f5abd1b2cbce7823b205234ec76d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 18,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-kling/SKILL.md": {
-      "filePath": "skills/bmad-agent-kling/SKILL.md",
-      "contentHash": "3390e8e3e1a01b55e2c64cf9455b77f4a83444a998ee64a8e1ffd7a6a94fd07d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 198,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/assets/BOND-template.md": {
-      "filePath": "skills/bmad-agent-marcus/assets/BOND-template.md",
-      "contentHash": "858a1bd1cf2e3a6980ea62579782623e267a4a1566616b5927b879859306d6b3",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 50,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/assets/CAPABILITIES-template.md": {
-      "filePath": "skills/bmad-agent-marcus/assets/CAPABILITIES-template.md",
-      "contentHash": "0f87c9a23134e42507e38688b888092add9bc00381d1a85def036c62dcab8eb2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 55,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/assets/CREED-template.md": {
-      "filePath": "skills/bmad-agent-marcus/assets/CREED-template.md",
-      "contentHash": "4f15f8eb2c840e91aea02a1169683628ee2a37c21fb76db36bcda564aa2e418c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 78,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/assets/INDEX-template.md": {
-      "filePath": "skills/bmad-agent-marcus/assets/INDEX-template.md",
-      "contentHash": "9cebe89f8cf7de6ac577db72fdfb49fa7b3e1431979061898b682be212ea0a2d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 32,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/assets/MEMORY-template.md": {
-      "filePath": "skills/bmad-agent-marcus/assets/MEMORY-template.md",
-      "contentHash": "8b5e757c7d1a9c83d451d0c73763de3114d52a56189372a31103928e3964bf11",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/assets/PERSONA-template.md": {
-      "filePath": "skills/bmad-agent-marcus/assets/PERSONA-template.md",
-      "contentHash": "c6eeaf35758a4b415f6adc44697dc2585e18ac057505428115d081905bff7a05",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 36,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/pr-hc.md": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/pr-hc.md",
-      "contentHash": "b8eb4d0c53a20a9a17cdb4d2752b01ec21dcd5f7dd54567951b4ed9f631e85d7",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/pr-pf.md": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/pr-pf.md",
-      "contentHash": "1c125bdfa505c0db16b732e5d8e128172af4fb7b37391f414dc2d2d2bf43b2f6",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 62,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/pr-rc.md": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/pr-rc.md",
-      "contentHash": "1f3ccdb1eea6731cfe4a9c473c8999a1ec7fdb785093b21cf23772426305abf0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 85,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/pr-rs.md": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/pr-rs.md",
-      "contentHash": "0a2cbdf778794c5347f95f5a5aca5cbf10c88ccaca1d2ac803f2f1f4f1c2fc40",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 50,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/registry.yaml": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/registry.yaml",
-      "contentHash": "f76bc37246ffa53c216c169e256039eb2381f2b9885a5ad6304f6b25f1dba763",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 41,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/schemas/pr_hc.yaml": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/schemas/pr_hc.yaml",
-      "contentHash": "ec568889001a5bb35814d3bcc61ccc3c7da18179c96af486e913f26ee2b6b193",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 18,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/schemas/pr_pf.yaml": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/schemas/pr_pf.yaml",
-      "contentHash": "3f163a5d0a8bb33d75cfa3cfb7f101699fe3a49442318439acf9ba85bc6aa1e9",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 34,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/schemas/pr_rc.yaml": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/schemas/pr_rc.yaml",
-      "contentHash": "d227e365e0a14eb2ddc83e04cd0ede907fdf7fefaf1616ea3dd1f47734c9285e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 32,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/capabilities/schemas/pr_rs.yaml": {
-      "filePath": "skills/bmad-agent-marcus/capabilities/schemas/pr_rs.yaml",
-      "contentHash": "f21c2a846d6198c401e820150556ae5d26098e3ca3cb589a409b4fb079e0e60f",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 22,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-marcus/SKILL.md": {
-      "filePath": "skills/bmad-agent-marcus/SKILL.md",
-      "contentHash": "b25d41e20a6be2896ecee55991f7b7df3cc5df55963124678e1d89d4bc1591bb",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 88,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-midjourney/SKILL.md": {
-      "filePath": "skills/bmad-agent-midjourney/SKILL.md",
-      "contentHash": "5f3adfdd7e593b2674ae51132e781b2be6d40242d2be527fab522783122440d2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 49,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-quality-reviewer/SKILL.md": {
-      "filePath": "skills/bmad-agent-quality-reviewer/SKILL.md",
-      "contentHash": "320c6807becbd71564b7162b35f56d54cdd38265c66d34e5eaef32457570b6e3",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 155,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-texas/assets/BOND-template.md": {
-      "filePath": "skills/bmad-agent-texas/assets/BOND-template.md",
-      "contentHash": "d562f7d92dacdca0c60a215442aac835b383759cc12d3415ef6a1aad1e3ef679",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 25,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-texas/assets/CAPABILITIES-template.md": {
-      "filePath": "skills/bmad-agent-texas/assets/CAPABILITIES-template.md",
-      "contentHash": "c1977d5a5fa4de527f8d8713b41b833af893fc4be1d9185ca9320b1d1ff4b413",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 38,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-texas/assets/CREED-template.md": {
-      "filePath": "skills/bmad-agent-texas/assets/CREED-template.md",
-      "contentHash": "f0b64bbb1b07d5f0db509df9bf7bb2ace0719b2f85ba2160a95852b84e6d3247",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 67,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-texas/assets/INDEX-template.md": {
-      "filePath": "skills/bmad-agent-texas/assets/INDEX-template.md",
-      "contentHash": "4fca16e3243e8103974bf481530e3bc43ac5798bbbf47ff412fad6c29fc280c4",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 15,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-texas/assets/MEMORY-template.md": {
-      "filePath": "skills/bmad-agent-texas/assets/MEMORY-template.md",
-      "contentHash": "56c17cc1722b6c35e9906613d6295eceac3c2ddff5a7d188fd1a9d908f5a50e2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 16,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-texas/assets/PERSONA-template.md": {
-      "filePath": "skills/bmad-agent-texas/assets/PERSONA-template.md",
-      "contentHash": "e836d5dfe89166a63ea5de049c6f47f03bac1d19525ae78eb295c44c63f16dc2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 25,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-texas/SKILL.md": {
-      "filePath": "skills/bmad-agent-texas/SKILL.md",
-      "contentHash": "c33fb0219b74f966dd900571515d5a7aec67053ebb80740d1482cd837980ec8e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 36,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-tracy/SKILL.md": {
-      "filePath": "skills/bmad-agent-tracy/SKILL.md",
-      "contentHash": "835939abcedf3af091c651837f20569dee388479a0c708152e203304befc9198",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 17,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-vyond/SKILL.md": {
-      "filePath": "skills/bmad-agent-vyond/SKILL.md",
-      "contentHash": "6202e1e14ad36ab07096100ce7a0ca0095c09dfd3fb13e3c24019cdd7470bec5",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wanda/SKILL.md": {
-      "filePath": "skills/bmad-agent-wanda/SKILL.md",
-      "contentHash": "3bf11a96eb9ea2ae9e4032134038b2054c0bbfa886ed2733a88e0cba74a3e45a",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 18,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wondercraft/assets/BOND-template.md": {
-      "filePath": "skills/bmad-agent-wondercraft/assets/BOND-template.md",
-      "contentHash": "b72d0bfdd33a5ad5a0910c193f20fabdb2d25f0f6d2816aed9bf57736ba6dd87",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 43,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wondercraft/assets/CAPABILITIES-template.md": {
-      "filePath": "skills/bmad-agent-wondercraft/assets/CAPABILITIES-template.md",
-      "contentHash": "96f19014c3c5123d0a98671ed5336e8b9978b9b92f9db326ccc1f3db6012be94",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 30,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wondercraft/assets/CREED-template.md": {
-      "filePath": "skills/bmad-agent-wondercraft/assets/CREED-template.md",
-      "contentHash": "552732f70cf9a8c5c0e41f191ba2ab37a2bbd21337f8eadb92245159c562d7ce",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 35,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wondercraft/assets/INDEX-template.md": {
-      "filePath": "skills/bmad-agent-wondercraft/assets/INDEX-template.md",
-      "contentHash": "6170f3251ea2a3ff7616ad2e2efec1ff0815e8f1c6b48a8a85babc71fd204be6",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 30,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wondercraft/assets/MEMORY-template.md": {
-      "filePath": "skills/bmad-agent-wondercraft/assets/MEMORY-template.md",
-      "contentHash": "86a4cbd1d72ecebaec8d8b5ce3b3dde1b75925bea708d350072c6c4c87f1d055",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 42,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wondercraft/assets/PERSONA-template.md": {
-      "filePath": "skills/bmad-agent-wondercraft/assets/PERSONA-template.md",
-      "contentHash": "24aeb07062a2f39636a29bfc6c5df7d7712c04f94030cec172a38d92cc9e356c",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 35,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-agent-wondercraft/SKILL.md": {
-      "filePath": "skills/bmad-agent-wondercraft/SKILL.md",
-      "contentHash": "800843454e95af389f00af36e9811bb16a1dde17a0c6066cd9bda37384def054",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 57,
-      "hasStructuralAnalysis": true
-    },
-    "skills/bmad-create-specialist/SKILL.md": {
-      "filePath": "skills/bmad-create-specialist/SKILL.md",
-      "contentHash": "76f122875d285c97647f5068a16578dded10ade3024cbb6cfdefbedcdfb9f502",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 44,
-      "hasStructuralAnalysis": true
-    },
-    "skills/canva-design/SKILL.md": {
-      "filePath": "skills/canva-design/SKILL.md",
-      "contentHash": "819f9489aba9bf2780401a829bb6b3c9b3225511616a55e03c136b7249edda4d",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 65,
-      "hasStructuralAnalysis": true
-    },
-    "skills/canvas-deployment/SKILL.md": {
-      "filePath": "skills/canvas-deployment/SKILL.md",
-      "contentHash": "346a4132a73be3a49be6b9412cf18857c4581ad16513b13cbb685783028af106",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 46,
-      "hasStructuralAnalysis": true
-    },
-    "skills/compositor/SKILL.md": {
-      "filePath": "skills/compositor/SKILL.md",
-      "contentHash": "fc17e239390e2e5baf567c0da19900829bc9854ef96e4262386e980a3ea85dde",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 39,
-      "hasStructuralAnalysis": true
-    },
-    "skills/elevenlabs-audio/SKILL.md": {
-      "filePath": "skills/elevenlabs-audio/SKILL.md",
-      "contentHash": "df39fb8b26852410e313558536008b7a430d96f53c3f44bd827a1ad9efb79292",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 53,
-      "hasStructuralAnalysis": true
-    },
     "skills/gamma_api_mastery/__init__.py": {
       "filePath": "skills/gamma_api_mastery/__init__.py",
       "contentHash": "a926ec9bacd04adfa73abec3f14ebc6b51ba3aa9af9059a929bedf9a0611c965",
@@ -65388,86 +66015,6 @@
       "totalLines": 3,
       "hasStructuralAnalysis": true
     },
-    "skills/gamma-api-mastery/SKILL.md": {
-      "filePath": "skills/gamma-api-mastery/SKILL.md",
-      "contentHash": "55c7abd6935222752423f5a232a257c9dfb84149cd0c6880a6622a7045601073",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 84,
-      "hasStructuralAnalysis": true
-    },
-    "skills/kling-video/SKILL.md": {
-      "filePath": "skills/kling-video/SKILL.md",
-      "contentHash": "f16aef40bf06e63f45f5baa374f6968fd9758476967b968aafc8ca0ff4f36dbc",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 86,
-      "hasStructuralAnalysis": true
-    },
-    "skills/pre-flight-check/SKILL.md": {
-      "filePath": "skills/pre-flight-check/SKILL.md",
-      "contentHash": "4e36afe862b7e99c546275172f04f84365084381452d517145c83445afa61fd0",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 73,
-      "hasStructuralAnalysis": true
-    },
-    "skills/production-coordination/SKILL.md": {
-      "filePath": "skills/production-coordination/SKILL.md",
-      "contentHash": "4fd9ed495c5664eeb3a06f89ba9665173965e4461866417911b7212f482c77a2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 54,
-      "hasStructuralAnalysis": true
-    },
-    "skills/quality-control/SKILL.md": {
-      "filePath": "skills/quality-control/SKILL.md",
-      "contentHash": "59831b5ae4ce0a84731090b7c5aeeb147ea29b793f1ad836f38e439382e8391e",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 35,
-      "hasStructuralAnalysis": true
-    },
-    "skills/qualtrics-assessment/SKILL.md": {
-      "filePath": "skills/qualtrics-assessment/SKILL.md",
-      "contentHash": "1f6da4371ff3954a76fd3d87c97a3755ce82dc7b50b368cb3445eb342ac9e3f9",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 48,
-      "hasStructuralAnalysis": true
-    },
-    "skills/README.md": {
-      "filePath": "skills/README.md",
-      "contentHash": "df6ff85c200d2c7932a09f525953f0cc481c10d623a17f172644a3ebde95c275",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 28,
-      "hasStructuralAnalysis": true
-    },
-    "skills/reports/predictive-workflow/C1-M1-20260329T034147.json": {
-      "filePath": "skills/reports/predictive-workflow/C1-M1-20260329T034147.json",
-      "contentHash": "712bb477d81769675f73a7fa7266bfbdc9af49644d5574e85d49427168141f64",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 26,
-      "hasStructuralAnalysis": true
-    },
     "skills/sensory-bridges/__init__.py": {
       "filePath": "skills/sensory-bridges/__init__.py",
       "contentHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
@@ -65476,56 +66023,6 @@
       "imports": [],
       "exports": [],
       "totalLines": 1,
-      "hasStructuralAnalysis": true
-    },
-    "skills/sensory-bridges/SKILL.md": {
-      "filePath": "skills/sensory-bridges/SKILL.md",
-      "contentHash": "2b33ff3a990fe5a1846102e7e9775b2649d1513ad9b417b561a63bbe5c104416",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 52,
-      "hasStructuralAnalysis": true
-    },
-    "skills/source-wrangler/SKILL.md": {
-      "filePath": "skills/source-wrangler/SKILL.md",
-      "contentHash": "680240e5c0ee5b3ee6a41dcf0e71b6e049d5a9c19a49dc7b91f5498e3c78bf41",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 70,
-      "hasStructuralAnalysis": true
-    },
-    "skills/tech-spec-wrangler/refresh-report-elevenlabs.json": {
-      "filePath": "skills/tech-spec-wrangler/refresh-report-elevenlabs.json",
-      "contentHash": "07b86064bd76ca2083133eddd7495a6cb134baabd6e5e948824567b80dfc4936",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 19,
-      "hasStructuralAnalysis": true
-    },
-    "skills/tech-spec-wrangler/SKILL.md": {
-      "filePath": "skills/tech-spec-wrangler/SKILL.md",
-      "contentHash": "3bfa7f80c4e04c93577c9b8456f408725ef986dd1c3ab57c16b3f8b987d43871",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 31,
-      "hasStructuralAnalysis": true
-    },
-    "skills/woodshed/SKILL.md": {
-      "filePath": "skills/woodshed/SKILL.md",
-      "contentHash": "f339fff4de6ba47bcf44b5ee14b55d7924edc18b9aa6de547d3010924463bea2",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 188,
       "hasStructuralAnalysis": true
     }
   }
