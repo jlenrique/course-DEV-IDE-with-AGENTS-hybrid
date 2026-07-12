@@ -2,7 +2,8 @@
 stepsCompleted: [1, 2, 3]
 inputDocuments:
   - _bmad-output/planning-artifacts/workbook-presentation-support-redesign-2026-07-12.md
-status: draft-pending-party-greenlight
+status: greenlit-with-amendments
+greenlight: party-mode 2026-07-12 (John/PM · Winston/architect · Amelia/dev · Murat/test) — 4/4 GO-WITH-AMENDMENTS; orchestrator concurs; amendments A1–A10 §Green-light amendments are BINDING pre-dev
 prd: _bmad-output/planning-artifacts/workbook-presentation-support-redesign-2026-07-12.md (§13 PRD layer)
 created: 2026-07-12
 ---
@@ -14,6 +15,8 @@ created: 2026-07-12
 Decomposes the presentation-support workbook redesign (design-doc §0–§13, which serves as the PRD per §13) into implementable epics and stories. The workbook is the async **preview + review** scaffold around the weekly presentation (live HAI / recorded HIL); its design-time party judgment is encoded as a **run-time producer + gates + golden exemplars** (no party per run). Requirements source: the design doc §13 PRD layer (FR1–FR17, NFR1–NFR8).
 
 **Governance:** `lesson_plan`-layer producers are **M3-safe** (import `lesson_plan`, never `marcus.orchestrator`). Any diff touching `state/config/pipeline-manifest.yaml::block_mode_trigger_paths` or the pipeline graph order (Epic 38) is **pipeline-lockstep** — party consensus + regime doc at T1. Per sprint governance, this doc is **draft-pending-party-greenlight**: `bmad-party-mode` green-light precedes dev; `bmad-code-review` precedes any story `done`.
+
+> **⛔ Read the `## Green-light amendments` section at the bottom first — it is BINDING and GOVERNS on conflict.** The green-light party (2026-07-12) returned 4/4 GO-WITH-AMENDMENTS; amendments A1–A10 restructure the stories (notably: split 37.2 → 37.2a/37.2b; the true build order is a DAG, not the epic numbering; Epic 38 is graph-topology surgery, not a reorder). The story bodies below are the pre-amendment draft; where they conflict with the amendments, the amendments win.
 
 ## Requirements Inventory
 
@@ -209,6 +212,31 @@ As the learner, I want an eye-grabbing, navigable, provenanced cover, so that th
 - **Given** §12 Part 1 **When** the cover renders **Then** the hero is a **named placeholder slot + deterministic art-brief** derived from the scenario/topics (visibly a placeholder in trials; no fabricated final-art claim); a later Gamma step can swap the image with no layout change.
 - **Given** §12 Part 2 **When** the TOC renders **Then** it is the creative **journey-TOC** (Before you watch → [presentation] → After you watch) with friendly labels, generated deterministically from the §10 section model.
 - **Given** §12 Part 3 **When** provenance renders **Then** it shows the unit/objective binding, SME, run id, date, deck reference, the **G2 citation/fidelity stamp**, and the "how to use with the deck" dual-coding note (absorbing old S0 + S7). Deterministic from run metadata.
+
+---
+
+## Green-light amendments (party-mode 2026-07-12) — BINDING, folded
+
+**Verdict:** 4/4 **GO-WITH-AMENDMENTS** — John (PM), Winston (architect), Amelia (dev), Murat (test); orchestrator concurs. Consensus = approval to proceed once A1–A10 are folded into the story ACs (this section is the fold + the audit record). Operator may override asynchronously.
+
+### MUST amendments (binding pre-dev)
+
+- **A1 — Split the deep-dive; resequence; build the DAG not the numbering.** Split **Story 37.2 → 37.2a** (deep-dive *skeleton*: re-voice/expand from narration, superset-of-VO, bold terms — **no** Ask-A dependency) **+ 37.2b** (enrichment: inline-cited net-new depth from the Ask-A pool + the A2 coverage gate + reject-uncited — **depends on 38.1**). True build order is a DAG: `36 → {37.1, 37.3, 37.4, 37.2a} → 38.1 → 37.2b → 38.3 → 39.1 → 38.2 → 39.2 → 40`. **Sprint-planning ingests the DAG, not the epic numbers.** (John M1, Winston MF-4, Amelia #1)
+- **A2 — Give the binding cite-sources requirement teeth (citation *coverage*, not just resolvability).** G2 (`unsourced_citations == 0`) only checks that citations *which exist* resolve — a load-bearing enriched sentence with **no** citation sails through. Define a machine-detectable **enrichment-sentence class**: any deep-dive sentence **not traceable to the VO/narration source span** MUST carry a resolvable citation → **FAIL gate** (built on the A3 superset-delta). If full coverage-detection proves infeasible, state honestly that coverage is **operator-spot-check + WARN** and stop calling it G2-enforced. (Murat M1, Amelia #2) — **37.2b**
+- **A3 — Define “superset-of-VO” operationally.** Not string-containment (re-voicing transforms the text). Define as a **claim/concept-set** predicate: `VO-claim-set ⊆ deep-dive-claim-set`, with a specified extraction method + false-negative posture. This is also the substrate for A2’s enrichment-delta. (Murat M2) — **37.2a**
+- **A4 — Name the leashed-LLM execution seam + injectable writer contracts.** The terminal producer is pinned **model-free** (mirrors `default_glossary_writer`). Decision: an **in-graph node emits the `PreWorkBrief` / review brief; the terminal producer stays deterministic-consume** (preserving the `_act.py` no-model-client pin). Add named injectable writer contracts, each with a **deterministic stub** (mirror `GlossaryWriter`): `SceneComposer`, `PromiseTransformer`, `DeepDiveWriter`, `CheckWriter`, `ReflectionWriter` — so goldens run offline (NFR3). (Winston MF-1, Amelia #3) — **36.1 / 37.1 ACs**
+- **A5 — Epic 38 is graph-topology + intake-contract surgery, not a reorder.** (i) **Hoist** deep-dive-skeleton production **out of the terminal leaf into an upstream node** that emits the ability-scoped research demand; (ii) **two asks = two named packets, each with its own witnessed digest** — specify the relation to the single-`packet_digest` guarantee and **re-point 39.1 → Ask-A digest, 39.2 → Ask-B digest**; (iii) **segregate 38.3 as an explicitly orchestrator-layer story** (NOT the `lesson_plan` M3-safe blanket), with its own reviewer discipline + lockstep surface. **Epic 38 gets its own party round on the graph shape before any code.** (Winston MF-2/MF-3/MF-5)
+- **A6 — Mode parity (HIL/HAI) needs a story.** Add an explicit **`mode` input + a parity AC** (new **Story 37.6** or folded into 36.4/37.5): render both HIL (recorded) and HAI (live); assert the **mechanism is identical and only the encounter-label copy differs**. (John M2)
+- **A7 — Bookend / self-portrait vs the per-learner non-goal.** The producer emits the **callback prompt/template** referencing the learner’s own beat-② mark — **NOT the value** (per-learner content is a non-goal). **FR3 trimmed** to the single-week instrument + a “keep-this” instruction; the **term-long self-portrait aggregation is deferred** (filed in design-doc §13.2 non-goals). (John M3/M4) — **FR3/FR6, 36.1, 37.1**
+- **A8 — References section owner.** Assign **37.5** to **assemble + dedupe + render** the consolidated References / Further-Reading section (FR12, §10 §10) that inline citations resolve into. (John M5)
+- **A9 — Golden semantics + fixture creation + gate taxonomy.** (i) Golden ACs: **byte-identical** on deterministic beats; **structural shape-pin + gate-assertions** on leashed-LLM beats (explicitly **not** byte-match). (ii) Declare **fixture-creation work**: capture the Part-2 gem into structured fixtures; **ADD a Part-4 adequacy golden + a skill-build fixture + a boundary/ambiguous classifier case**. (iii) Add a **gate-taxonomy table** to each producer’s DoD: *gate → FAIL | WARN → witness (automated | operator spot-check)*. (Amelia #4/#5, Murat M3/M4)
+- **A10 — Make the semantic ACs testable.** 36.2 “no friction the deck cannot pay off” → **testable proxy** (friction `source_ref` resolves to a slide in the promise/payoff set) **+ operator spot-check**; provenance binds the **seed**, so add a **light faithfulness check** that the composed Scene doesn’t drift from its cited seed. (Amelia #6, Murat S4)
+
+### SHOULD amendments (non-blocking, recorded)
+Split the lesson-type detector out of 36.2 (Amelia, Murat M3) · relabel the spoiler-guard as weak-heuristic-WARN + operator spot-check (Murat S1, Amelia) · confirm word-form-numeral coverage in numeric fidelity + add a word-form witness to the Part-2 fixture (Murat S3) · concrete per-learner negative linguistic test on beats 2–4 (Murat S2) · name the lesson-plan **ratification-status** field/seam (Winston SF-1) · one shared adequacy/empty-honesty helper across 36.2/37.2 (Winston SF-4, Amelia) · pull the term-highlight MD→DOCX decision into 39.1 T1 with a plain-bold fallback (Winston SF-3, Amelia).
+
+### Next
+Epic 38 requires a **dedicated graph-shape party round** before its code (A5). Otherwise, with A1–A10 folded, the plan is green-lit for `bmad-sprint-planning` → per-story fresh dev → `bmad-code-review` before `done`.
 
 ---
 

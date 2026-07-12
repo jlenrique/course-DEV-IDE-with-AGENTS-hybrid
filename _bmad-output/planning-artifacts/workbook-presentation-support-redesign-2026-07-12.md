@@ -312,6 +312,7 @@ Formal requirement elements so this design doc drives `bmad-create-epics-and-sto
 - **Gamma illustration generation** (placeholder this pass — §12 Part 1).
 - **PDF render · worksheet fill-in affordances · full semantic claim audit** (deferred braids).
 - **Other workbook types + job aids** (future; this is the *presentation-support* type only).
+- **Term-long friction self-portrait** (cross-week aggregation of the weekly friction marks) — **deferred** (amendment A7): it is cross-week per-learner state, which the producible-not-per-learner rule (NFR4) forbids in the produced artifact. Revisit if/when a per-learner runtime layer exists.
 
 ### 13.3 Users / personas
 - **Primary:** the async adult professional learner (e.g. practicing physician) in **HIL** (fully async, recorded) or **HAI** (hybrid, live) courses.
@@ -320,10 +321,10 @@ Formal requirement elements so this design doc drives `bmad-create-epics-and-sto
 ### 13.4 Functional requirements (FR)
 - **FR1** — Pre-work renders three beats: Scene · Friction Scale · Promise (§3).
 - **FR2** — The Scene is **reverse-engineered** from the SME presentation (extract-not-invent; traceable to slides; harvest SME-authored scenarios first); **lesson-type detection** selects the scene archetype (§4/§5).
-- **FR3** — The **Friction Scale** is the deterministic weekly instrument (rate 0–10 · locate · one line); un-failable; self-closing; aggregates into a term-long self-portrait.
+- **FR3** — The **Friction Scale** is the deterministic weekly instrument (rate 0–10 · locate · one line); un-failable; carries a **"keep this for review"** instruction. *(Amendment A7: scoped to the single-week instrument; the cross-week term-long self-portrait aggregation is a non-goal — §13.2.)*
 - **FR4** — The **Promise** transforms **ratified LOs** into pertinent-ability vows (respect-not-replace; half-rhyme / no-spoiler).
 - **FR5** — Review renders five beats: Bookend · Deep Dive · Check-on-Learning · Door-Ajar · Reflection, each mapped to a watchword (§6).
-- **FR6** — Bookend surfaces the learner's own pre-work friction mark (her pen).
+- **FR6** — Bookend emits a **callback prompt/template** referencing the learner's own beat-② friction mark — **not** the value (per-learner content is a non-goal); the learner re-reads her own ink.
 - **FR7** — Deep Dive = **cited** self-contained read-prose, re-voiced + expanded from narration to the depth-delta, ability-organized, **superset-of-VO**, glossary terms bolded inline; **must cite sources** (binding, §7).
 - **FR8** — Check-on-Learning = **retrieval** self-assessment testing the beat-③ abilities (promise→proof).
 - **FR9** — Door-Ajar = trends / hot-topics (Ask B), scoped tight to abilities/scene, bounded + honest.
