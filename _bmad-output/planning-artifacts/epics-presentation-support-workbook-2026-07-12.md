@@ -240,6 +240,60 @@ Epic 38 requires a **dedicated graph-shape party round** before its code (A5). O
 
 ---
 
+## Epic 38 graph-shape decision (party-mode 2026-07-12) — RATIFIED
+
+**Round:** Winston (architect, decision owner) + Amelia (dev — **BUILDABLE-WITH-CHANGES**); orchestrator concurs. Satisfies amendment A5's "dedicated graph-shape round before Epic-38 code."
+
+**Key finding (Amelia):** A5's "hoist deep-dive-skeleton *out of* the terminal leaf" is a misnomer — the deep-dive prose is **not produced anywhere today** (`_act.py` is a model-free terminal leaf that only consumes `run.json`). The work is purely **additive**; the model-free pin survives by construction.
+
+### Node topology — a terminal "workbook band"
+
+```
+… → 15 (operator handoff; narration + segment manifest on disk)
+   → 07W.1  Pre-work + Deep-Dive SKELETON     [LEASHED · model_config]  SceneComposer·PromiseTransformer·DeepDiveWriter(skeleton) → emits briefs + bolded term set
+   → 07W.2  Ask A — ability-scoped enrichment  [ORCHESTRATOR wiring · model-free]  Tracy+Texas scoped to 07W.1 terms → Ask-A packet
+   → 07W.3  Enrichment + Check + Reflection     [LEASHED · model_config]  DeepDiveWriter(enrich+cite+A2)·CheckWriter·ReflectionWriter
+   → 07W.4  Ask B — hot-topics (LAST)           [ORCHESTRATOR wiring · model-free]  separate late Tracy call → Ask-B packet
+   → 07W    Terminal render leaf — UNCHANGED     [DETERMINISTIC-CONSUME · model-free pin intact]  composes briefs + Ask-A(glossary) + Ask-B(Door-Ajar) → MD+DOCX
+```
+
+- **A4 resolved:** leashed LLM executes **only** in `07W.1` + `07W.3` (in-graph nodes carrying `model_config_ref`). `07W`'s no-model-client invariant is load-bearing and stays untouched. Execution mirrors the `research_wiring` precedent: runner hooks keyed by node id, **mirrored in both walk bodies** with a continuation-walk parity test (the band is reached only on the continuation walk, like `04.55`).
+
+### Three packets · three digests · one witness rule each
+
+| Packet | Node | specialist_id | Consumers |
+|---|---|---|---|
+| Generic research (**unchanged**) | `04.55` | `research_wiring` | irene_intake, spoc_receipt, future_collateral |
+| **Ask-A enrichment pool** (new) | `07W.2` | `ask_a_enrichment` | deep-dive enrich (37.2b) + glossary (39.1) |
+| **Ask-B hot-topics** (new) | `07W.4` | `ask_b_hot_topics` | Door-Ajar / trends (39.2) |
+
+- `research_packet.load_research_packet` is **parameterized by `(specialist_id, node_id)`**; today's `04.55`/`research_wiring` becomes the default (existing consumers untouched). Two digests come **for free** per-load. Add `resolve_for_enrichment_pool` (Ask-A) + `resolve_for_hot_topics` (Ask-B). **39.1 re-points** glossary → Ask-A; **39.2 re-points** trends → Ask-B; **37.2b** reads Ask-A.
+- The "single-digest" guarantee narrows correctly to **one digest per packet, witnessed identically by every consumer of that packet** — shape-pin tests assert each consumer witnesses its *intended* digest (A/B/C).
+
+### Layer boundary (M3 held)
+
+- **lesson_plan (model-free):** `research_packet` generalization + two resolvers; `glossary`/`trends` re-point; pre-work / `review_projection` brief-shapers; the injectable **writer contracts + deterministic stubs** (`SceneComposer`, `PromiseTransformer`, `DeepDiveWriter`, `CheckWriter`, `ReflectionWriter`) — drive offline goldens (NFR3).
+- **orchestrator (not the M3 blanket):** the manifest node band, runner hooks, Tracy+Texas dispatch, and the **live** writer *instantiation* in `07W.1`/`07W.3`. Packets cross the M3 wall **disk-mediated** (same seam as `04.55`).
+
+### Lockstep surface
+
+Tier-2 (new pipeline steps). `pipeline-manifest.yaml` (4 node adds + `07W` re-point) and `production_runner.py` are already trigger paths; **ADD** the new orchestrator wiring module (e.g. `app/marcus/orchestrator/workbook_wiring.py`) and **`app/marcus/lesson_plan/research_packet.py`** (intake contract now load-bearing across 3 consumers) to `block_mode_trigger_paths`. **Pack tier = v4.2-lineage refinement** (terminal-sidecar `sub_phase_of` nodes feeding nothing downstream) — **not** a v4.3 family bump; hold **new learning-event types to zero** this pass. Confirm at T1 with the regime doc.
+
+### Story reshape (folds into A1's DAG)
+
+- **38.0 (NEW) — Two-packet intake contract** (lesson_plan, M3-safe): generalize `research_packet.py`; add both resolvers, each with its own witnessed digest; `04.55` untouched. **Lands first.**
+- **38.3 split (Amelia):** **38.3a** (lesson_plan consume side: readers + AC-pinned **cross-layer string-contract test**, fixture-`run.json`-tested, zero orchestrator diff) + **38.3b** (orchestrator: the 4-node band + `07W` re-point + runner hooks + two-walk parity + live writer instantiation + `block_mode` adds + regime doc at T1). Build 38.3b **with deterministic stubs first** (prove topology offline).
+- **38.1 / 38.2:** fill nodes `07W.2` / `07W.4` (Ask-A / Ask-B Tracy+Texas wiring).
+- **Ownership boundary (resolves the 37.2a-vs-38 ambiguity):** **37.2a authors** the `DeepDiveWriter(skeleton)` contract+stub (lesson_plan); **38.3b instantiates/positions** it in node `07W.1`. Skeleton *creation* = Epic 37; node *positioning* = Epic 38. No `_act.py`/graph collision.
+
+**Runtime node order:** `15 → 07W.1 → 07W.2(A) → 07W.3 → 07W.4(B) → 07W`.
+**Build order (extends A1's DAG):** `38.0 → 38.3b(band w/ stubs) → {36, 37.1, 37.2a, 37.3, 37.4 writers} → 38.3a → 38.1 → 37.2b → 39.1 → 38.2 → 39.2 → 40`.
+
+### Residual risks (flagged, non-blocking)
+Two new live LLM calls in the workbook path (cost/latency; stubs keep goldens offline) · leashed-on-leashed scoping (weak skeleton mis-aims Ask-A — spot-check witness) · three-packet mis-resolution (digest shape-pins guard) · two-walk parity (both walk bodies + parity test) · pack-tier stays in-lineage only if zero new learning events / no operator-surface touch (confirm T1).
+
+---
+
 ## Next gates (sprint governance)
 
 1. **`bmad-party-mode` green-light** of this epic/story breakdown (status flips from `draft-pending-party-greenlight`).
