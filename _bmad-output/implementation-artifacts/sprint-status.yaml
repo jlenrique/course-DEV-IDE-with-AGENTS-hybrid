@@ -1765,11 +1765,11 @@ development_status:
   # Chain: brief (final) -> UX spines (operator-approved) -> architecture spine (final, 19 ADs) -> this epic.
   # Sequence: 35.0 -> 35.1 -> 35.2 -> 35.3 (serial after 35.2) -> 35.5 -> 35.8 (after 35.5) -> 35.7. Lanes: 35.4 || 35.3; 35.6 || 35.5.
   # DoD-over-clock: witness sets non-compressible; stop at last DoD-complete story at the wall.
-  epic-35-operator-hud-v1: in-progress  # 2026-07-11 party-greenlit; goal-directed 4h window 16:30-20:30
+  epic-35-operator-hud-v1: in-progress  # 2026-07-11 party-greenlit; goal REVISED (no deadline) — complete when all 4 remaining stories (35.3/35.5/35.8/35.7) authored+closed
   hud-35-0-tier2-manifest-bump-test-disposition: done  # 2026-07-11 review APPROVE; no-bump per regime determination 2026-06-12; checker exit 0; 100/2/0
   hud-35-1-operator-surface-contract: done  # 2026-07-11 review APPROVE; S1/S2 folded (pause-identity refire, hud-block zero-lie); 108 passed; byte-pin debe6224
   hud-35-2-assembler-runner-emission: done  # 2026-07-11 review CHANGES-REQUIRED folded (MUST tick-start guard + S2 reentered_from semantics + S3 real held-reader smoke); digest paste-chain verified vs live fixture; 585 green
-  hud-35-3-start-path-preflight-heartbeats: in-progress  # 2026-07-11 dispatched post-35.2-close (Opus; runner region now free)
+  hud-35-3-start-path-preflight-heartbeats: done  # 2026-07-11 review APPROVE (no MUST); gate-before-spend + notifier wired + two-walk-safe + real OpenAI/Gamma heartbeats; L3 preflight witness all_green
   hud-35-4-get-only-hud-server: done  # 2026-07-11 review CHANGES-REQUESTED fully folded (MUST-1 raw-identity 409 probe-verified + S2 RFC ETag + S3 env exits + S4 honest placeholder); 33 tests
   hud-35-5-flight-deck-render: in-progress  # 2026-07-11 dispatched (Opus; de-scope ladder engaged; app/hud only, disjoint from 35.3)
   hud-35-6-notifier-watchdog-push: done  # 2026-07-11 review CHANGES-REQUIRED fully folded (M1 episode reset + S1/S2/S3 + N4); 34 tests; REAL ntfy L3 witness wmUW9CnmLm6S re-verified

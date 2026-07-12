@@ -39,6 +39,8 @@ from app.marcus.lesson_plan.collateral_selection import (
 )
 from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
+    PreflightGateFailed,
+    emit_registered_and_terminal_trace,
     recover_production_trial,
     resume_batch_production_trial,
     resume_production_trial,
@@ -330,6 +332,7 @@ def start_trial(
     selection_code: str | None = None,
     picker_events_path: Path | None = None,
     llm_execution_mode: Literal["realtime", "batch"] = "realtime",
+    hud: Literal["on", "off"] = "on",
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     if not input_path.exists():
@@ -528,6 +531,18 @@ def start_trial(
                 operator_id=operator_id,
                 reason="directive_composition_declined",
             )
+            # Amendment 12: a pre-envelope exit leaves the projection at
+            # `registered` with a terminal trace event (the HUD/notifier can
+            # render the cancellation honestly).
+            emit_registered_and_terminal_trace(
+                effective_trial_id,
+                runs_root,
+                corpus_path=input_path,
+                preset=preset,
+                operator_id=operator_id,
+                event="trial-cancelled-at-g0",
+                detail="directive composition declined at G0",
+            )
             print(
                 "directive composition declined; trial halted at G0 with no "
                 "specialist dispatch"
@@ -550,6 +565,17 @@ def start_trial(
         if pick_record is not None:
             _warn_if_pick_dropped_by_edit(directive_path, pick_record["picks"])
         if verdict == "saved-only":
+            # Amendment 12: pre-envelope exit → projection at `registered` +
+            # terminal trace event.
+            emit_registered_and_terminal_trace(
+                effective_trial_id,
+                runs_root,
+                corpus_path=input_path,
+                preset=preset,
+                operator_id=operator_id,
+                event="trial-saved-only",
+                detail="directive saved without running the trial",
+            )
             return {
                 "status": "saved-only",
                 "trial_id": str(effective_trial_id),
@@ -581,6 +607,7 @@ def start_trial(
         # identically (the runner defaults to ComponentSelection.production_default).
         component_selection=component_selection,
         llm_execution_mode=llm_execution_mode,
+        hud=hud,
         **runner_kwargs,
     )
 
@@ -759,7 +786,14 @@ def start_trial_cli(args: argparse.Namespace) -> int:
             ),
             selection_code=getattr(args, "selection_code", None),
             llm_execution_mode=getattr(args, "llm_execution_mode", "realtime"),
+            hud=getattr(args, "hud", "on"),
         )
+    except PreflightGateFailed as exc:
+        # AD-7/AD-11: pre-flight blocked SPOC spawn. The projection is left at
+        # `registered` showing the failed item(s); surface a clear message and
+        # let the operator fix the dependency and re-run start.
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
     except FrontDoorError as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
@@ -1035,6 +1069,17 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         help=(
             "Permit a flagged (partial / not-yet) front-door bundle to run "
             "knowing its honest readiness status. Off by default."
+        ),
+    )
+    start.add_argument(
+        "--hud",
+        choices=["on", "off"],
+        default="on",
+        help=(
+            "Launch the operator HUD server + notifier as start-path children "
+            "(default: on, per AD-7). Pre-flight/heartbeats are runtime-owned "
+            "and run regardless of this flag; only the server/notifier launches "
+            "are gated. Use 'off' to run the pre-flight gate without the HUD."
         ),
     )
     start.add_argument(

@@ -49,7 +49,10 @@ from app.marcus.orchestrator import (
     udac_wiring,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
-from app.marcus.orchestrator.operator_surface_assembler import OperatorSurfaceAssembler
+from app.marcus.orchestrator.operator_surface_assembler import (
+    DEFAULT_HUD_CONFIG_PATH,
+    OperatorSurfaceAssembler,
+)
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
 from app.marcus.orchestrator.research_citation import CitationFidelityError
 from app.marcus.orchestrator.slide_variant_selection import (
@@ -178,6 +181,28 @@ class GateBypassError(RuntimeError):
     """Raised when a production pause-point gate would be silently skipped."""
 
 
+class PreflightGateFailed(RuntimeError):  # noqa: N818 — a gate outcome, named for the event
+    """Start-path pre-flight did not go all-green — SPOC spawn is blocked (AD-7/11).
+
+    Raised from :func:`run_production_trial` BEFORE any specialist dispatch when
+    a pre-flight/heartbeat item is not ``pass``. The registered projection is
+    already persisted showing the failed item(s) plus a terminal trace event;
+    the walk never runs. ``blocking_items`` are the non-soft items that gated
+    the spawn (each a contract ``PreflightItem``).
+    """
+
+    def __init__(self, trial_id: UUID | str, blocking_items: list[Any]) -> None:
+        self.trial_id = trial_id
+        self.blocking_items = blocking_items
+        names = ", ".join(
+            f"{item.name}={item.state}" for item in blocking_items
+        ) or "<none>"
+        super().__init__(
+            f"pre-flight blocked SPOC spawn for trial {trial_id}: {names}. "
+            "Fix the failed dependency and re-run trial start."
+        )
+
+
 def _has_live_openai() -> bool:
     return bool(os.getenv("OPENAI_API_KEY"))
 
@@ -241,6 +266,128 @@ def _emit_operator_surface_steps(
         OperatorSurfaceAssembler(trial_id, runs_root).update_steps(manifest, walk_index)
     except Exception:  # noqa: BLE001 — emission must never break the walk
         LOGGER.exception("operator-surface steps wrapper failed — swallowed")
+
+
+def _append_operator_surface_trace(
+    trial_id: UUID | str, runs_root: Path, event: str, detail: str | None = None
+) -> None:
+    """Append one state-trace event to the projection (AD-16). Never raises."""
+    try:
+        OperatorSurfaceAssembler(trial_id, runs_root).append_trace(event, detail)
+    except Exception:  # noqa: BLE001 — trace append must never break the start path
+        LOGGER.exception("operator-surface trace wrapper failed — swallowed")
+
+
+def emit_registered_and_terminal_trace(
+    trial_id: UUID,
+    runs_root: Path,
+    *,
+    corpus_path: Path,
+    preset: Literal["production", "explore"],
+    operator_id: str,
+    event: str,
+    detail: str | None = None,
+) -> None:
+    """Emit a ``registered`` projection + a terminal trace event (amendment 12).
+
+    Pre-envelope start exits (``cancelled-at-g0`` / ``saved-only``) happen in
+    ``start_trial`` BEFORE ``run_production_trial`` ever persists a projection.
+    Per greenlight amendment 12 those exits leave the projection at
+    ``registered`` with a terminal trace event, so this builds a minimal
+    registered envelope, emits it (establishing the projection), then appends
+    the terminal trace. Idempotent and never raises into the caller.
+    """
+    try:
+        production_envelope = ProductionEnvelope(trial_id=trial_id)
+        envelope = ProductionTrialEnvelope(
+            trial_id=trial_id,
+            preset=preset,
+            corpus_path=corpus_path.as_posix(),
+            operator_id=operator_id,
+            started_at=_now(),
+            status="registered",
+            production_clone_launch_evidence=False,
+            production_clone_launch_evidence_reason="registered-no-specialist-fired",
+            production_envelope=production_envelope,
+        )
+        _emit_operator_surface(envelope, runs_root)
+        _append_operator_surface_trace(trial_id, runs_root, event, detail)
+    except Exception:  # noqa: BLE001 — a pre-envelope exit must never raise here
+        LOGGER.exception(
+            "emit_registered_and_terminal_trace failed for trial %s — swallowed",
+            trial_id,
+        )
+
+
+def _run_start_preflight_gate(
+    trial_id: UUID,
+    run_dir: Path,
+    runs_root: Path,
+    *,
+    hud: Literal["on", "off"],
+    producer_pid: int,
+) -> Any:
+    """Launch the HUD server + notifier (``--hud`` gated) and run pre-flight.
+
+    Returns a ``PreflightResult``. Pre-flight itself is runtime-owned and runs
+    regardless of ``--hud``; only the server + notifier LAUNCHES are gated by
+    the flag (AD-7). A server child that fails to launch (or fails its healthz
+    identity check) surfaces as a pre-flight FAIL, never a raise.
+    """
+    from app.marcus.orchestrator.preflight import (
+        PreflightDeps,
+        launch_hud_server,
+        run_preflight,
+    )
+    from app.models.runtime.operator_surface import PreflightItem, load_hud_config
+
+    config, _parse_status = load_hud_config(DEFAULT_HUD_CONFIG_PATH)
+    port = config.hud_port
+
+    healthz_url: str | None = None
+    expected_launch_nonce: str | None = None
+    healthz_fn = None
+    notifier_alive_fn = None
+    if hud == "on":
+        expected_launch_nonce = uuid4().hex
+        server_proc = launch_hud_server(
+            trial_id=trial_id,
+            run_dir=run_dir,
+            launch_nonce=expected_launch_nonce,
+            port=port,
+            mode="session",
+        )
+        if server_proc is None:
+            # Launch failure → healthz item FAIL, never a raise (AD-7).
+            def healthz_fn() -> PreflightItem:  # type: ignore[misc]
+                return PreflightItem(
+                    name="hud-server-healthz",
+                    state="fail",
+                    output="HUD server child failed to launch",
+                )
+        else:
+            healthz_url = f"http://127.0.0.1:{port}/healthz"
+        try:
+            from app.notify.__main__ import launch_notifier
+
+            notifier_proc = launch_notifier(
+                str(trial_id), str(run_dir), producer_pid=producer_pid
+            )
+            notifier_alive_fn = lambda: notifier_proc.poll() is None  # noqa: E731
+        except Exception:  # noqa: BLE001 — a notifier launch failure is a FAIL item
+            LOGGER.exception("notifier launch failed — recording as pre-flight item")
+
+            def notifier_alive_fn() -> bool:  # type: ignore[misc]
+                return False
+
+    deps = PreflightDeps(
+        healthz_url=healthz_url,
+        healthz_fn=healthz_fn,
+        expected_trial_id=str(trial_id),
+        expected_launch_nonce=expected_launch_nonce,
+        notifier_alive_fn=notifier_alive_fn,
+    )
+    return run_preflight(trial_id, runs_root, deps)
 
 
 def _persist_envelope(envelope: ProductionTrialEnvelope, runs_root: Path) -> Path:
@@ -2647,6 +2794,7 @@ def run_production_trial(
     directive_path: Path | None = None,
     component_selection: ComponentSelection | None = None,
     llm_execution_mode: LlmExecutionMode = "realtime",
+    hud: Literal["on", "off"] = "on",
 ) -> ProductionTrialEnvelope:
     """Register, compose, and start a production trial.
 
@@ -2689,6 +2837,36 @@ def run_production_trial(
     # AD-15: project the composed-manifest identity + two-stage steps map at
     # composition (walk index 0), so the in-flight emit below already carries steps.
     _emit_operator_surface_steps(effective_trial_id, runs_root, manifest, 0)
+
+    # AD-7/AD-8/AD-11 pinned start sequence: with the run dir + registered
+    # projection + steps in place, launch the HUD server child (--hud gated),
+    # launch the notifier, and run pre-flight/heartbeats BEFORE any specialist
+    # dispatch — SPOC spawn is gated on all-green. Pre-flight is runtime-owned
+    # regardless of the --hud flag; only the server/notifier launches are gated.
+    # Offline harness runs (allow_offline_cost_report) skip the live gate: they
+    # carry no keys and are not real clone-launch starts (their status is
+    # already "registered-offline").
+    if not allow_offline_cost_report:
+        _preflight_result = _run_start_preflight_gate(
+            effective_trial_id,
+            composer_run_dir,
+            runs_root,
+            hud=hud,
+            producer_pid=os.getpid(),
+        )
+        if not _preflight_result.all_green:
+            # Abort cleanly BEFORE any specialist dispatch. The projection is
+            # left at `registered` showing the failed pre-flight item(s); append
+            # a terminal trace event; the walk never runs (AD-7/AD-11).
+            blocking = _preflight_result.blocking_items()
+            _append_operator_surface_trace(
+                effective_trial_id,
+                runs_root,
+                "preflight-blocked-spawn",
+                detail="; ".join(f"{i.name}={i.state}" for i in blocking) or None,
+            )
+            raise PreflightGateFailed(effective_trial_id, blocking)
+
     active_gate_ids = production_gate_ids(manifest)
     graph = compile_run_graph(manifest)
     adapter = ProductionDispatchAdapter()
@@ -4100,7 +4278,9 @@ __all__ = [
     "DEFAULT_MANIFEST_PATH",
     "GateBypassError",
     "MissingUpstreamContributionError",
+    "PreflightGateFailed",
     "apply_llm_execution_mode_overlay",
+    "emit_registered_and_terminal_trace",
     "recover_production_trial",
     "resume_batch_production_trial",
     "resume_production_trial",
