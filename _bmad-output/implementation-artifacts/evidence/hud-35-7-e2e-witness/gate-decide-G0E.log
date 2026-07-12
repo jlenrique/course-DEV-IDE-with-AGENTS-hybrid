@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\cli\__main__.py", line 83, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\cli\__main__.py", line 61, in main
+    return gate_main(argv[1:])
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\cli\gate_cli.py", line 133, in main
+    return gate_decide_cli(args)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\cli\gate_cli.py", line 73, in gate_decide_cli
+    response = run_gate_decide(payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\marcus\cli\gate_cli.py", line 16, in run_gate_decide
+    command = resume_from_verdict(verdict)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\juanl\Documents\GitHub\course-DEV-IDE-with-AGENTS-hybrid\app\gates\resume_api.py", line 159, in resume_from_verdict
+    raise GateError(
+app.gates.errors.GateError: card_missing: no DecisionCard registered for trial_id=69338610-23bc-4889-9bfb-fb64f0142a95 gate_id=G0E

@@ -25,3 +25,27 @@ Trial: 69338610-23bc-4889-9bfb-fb64f0142a95 · corpus tejal-c1m1-p4-assessments-
 
 ### Run state at this juncture
 paused-at-error, node 07G, cost ~$0.358. Deliverables NOT produced (blocked pre-motion/voice/workbook by the vision bug). Completed-state + G3/G4/G4A gate witnesses + deliverables render = live-witness DEBT.
+
+## COMPLETED — full lifecycle witnessed live
+
+Run reached **status=completed** (completed_at 2026-07-12T03:41:37, terminal_gate G4A, silent_bypass_events 0, cost $0.60). Recovered past the vision bug (fix 247cf72d), then G3→G4→G4A→completed with all 3 components (deck+motion+workbook; motion/slide-01.mp4 1.3MB on disk; deck gamma-export; workbook_producer ran).
+
+### HUD completed-state witness
+- deliverables section POPULATED (35.9): components{deck,motion,workbook all true}, total_cost_usd 0.599893, 5 export_paths (FR16). Render shows LANDED + deliverables + cost.
+- zero-lie held at completion (projection==run.json). Assembler emitted throughout (seq 0 -> 872).
+
+## Murat 10-item checklist scorecard (orchestrator's honest pre-party read; party ratifies)
+1. Completed + deliverables exist — **PASS** (status completed; motion mp4 + deck export on disk; workbook component true/producer ran).
+2. Pre-flight all items w/ state+latency+confidence; no green-unknown; spawn after all-green — **PASS** (10 items pass; live openai+gamma).
+3. Every gate verdict pasted VERBATIM from the HUD command block accepted first try — **FAIL** (F-E2E-1: gate-class next_action is `gate decide` -> card_missing cross-process; drove via `trial resume`). The HUD's #1 job (paste-to-act) is broken for the gate pause class.
+4. Zero-lie: projection status/index == run.json at each pause — **PASS** (verified G0E, G2B, error, G4A, completed).
+5. Every health tile age-stamped; budget-exceeded -> STALE veil — **FAIL/N-A** (F-E2E-2: health section not emitted mid-walk; no health tiles).
+6. Exactly one notification per event-class; >=1 phone-push receipt — **PARTIAL/DEBT** (notifier launch witnessed via pre-flight item; live push during THIS run not witnessed; 35.6 banked a separate real ntfy receipt).
+7. Server post-cold-load only /projection 200/304, no full reload; disclosure/scroll survive update — **PARTIAL** (200/304 curl-witnessed; DOM-preservation not browser-witnessed — chrome->localhost blocked).
+8. /healthz trial_id+nonce matched flight; no un-induced refuse-to-render — **PASS**.
+9. Unhit pause classes enumerated w/ L3 debt — waiting_for_provider_batch NOT hit (realtime); DEBT: needs a `--llm-execution-mode batch` run (LiteLLM path) to witness it.
+10. Projection snapshots promoted to L2 golden + committed — snapshots saved (G0E/G2B/error/G4A/completed); promotion = follow-up.
+
+**Pause classes witnessed LIVE: 2 of 3** (paused-at-gate ✓, paused-at-error ✓; waiting_for_provider_batch = debt). Gates witnessed: 8 (G0E,G0R,G1,G2B,G2C,G3,G4,G4A).
+
+**Net:** HUD's decision-support CORE proven live (where-am-I, why-stopped, deliverables, zero-lie, server/render, all briefing sections). TWO real defects: F-E2E-1 (gate paste-command non-functional — hits JTBD#1) and F-E2E-2 (ambient instruments empty mid-run). Scoped-verdict question for the party: is this "performed to spec on the witnessed surface" (PASS-with-fixes) given the #1 paste-command is broken for gate pauses?

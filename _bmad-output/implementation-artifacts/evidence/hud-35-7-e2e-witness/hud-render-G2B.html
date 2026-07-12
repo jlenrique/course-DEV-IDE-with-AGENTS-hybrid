@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Operator HUD — 69338610-23bc-4889-9bfb-fb64f0142a95</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { background:#0F172A; }
+body {
+  color:#E2E8F0;
+  font-family:'Segoe UI', system-ui, sans-serif;
+  font-size:14px; font-weight:400; line-height:1.5;
+  min-width:1100px;
+}
+a { color:#94A3B8; text-decoration:underline; text-underline-offset:2px; }
+.mono { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; line-height:1.5; }
+.num  { font-size:16px; font-weight:600; line-height:1.2; letter-spacing:0.01em; font-variant-numeric:tabular-nums; }
+.meta { font-size:12px; font-weight:400; line-height:1.4; color:#64748B; }
+
+/* ---- Zone 1 · annunciator strip (color + shape + symbol; never hue alone) ---- */
+.annunciator {
+  display:flex; align-items:center; gap:12px;
+  padding:12px 16px;
+  font-size:20px; font-weight:700; line-height:1.2; letter-spacing:0.06em;
+  transition: background 300ms ease, color 300ms ease;
+}
+.annunciator .sym { font-size:18px; }
+.ann-nominal   { background:#0B1120; color:#64748B; }
+.ann-completed { background:#0B1120; color:#22C55E; }
+.ann-gate      { background:#FBBF24; color:#1C1403; }
+.ann-warning, .ann-error, .ann-failed { background:#EF4444; color:#FFFFFF; }
+.ann-wait      { background:#A78BFA; color:#1E1633; }
+.ann-feedlost  { background:#FBBF24; color:#1C1403; }
+.ann-idle      { background:#0B1120; color:#64748B; }
+
+/* ---- Zone 2 · identity header ---- */
+.id-header {
+  display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px;
+  padding:10px 16px; border-bottom:1px solid #293548;
+}
+.id-header .trial { color:#94A3B8; }
+.id-header .kv { color:#94A3B8; }
+.id-header .kv b { color:#E2E8F0; font-weight:600; }
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:3px 10px; border-radius:4px;
+  font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+}
+.badge-dim     { background:transparent; border:1px solid #293548; color:#94A3B8; }
+.badge-nominal { background:#166534; color:#BBF7D0; }
+.badge-gate    { background:#FBBF24; color:#1C1403; }
+.badge-error, .badge-failed { background:#EF4444; color:#FFFFFF; }
+.badge-wait    { background:#A78BFA; color:#1E1633; }
+.chip {
+  display:inline-flex; align-items:center; gap:7px;
+  padding:3px 12px; border-radius:9999px;
+  background:#1E293B; border:1px solid #293548;
+  font-size:12px; line-height:1.4; color:#64748B;
+}
+.chip .dot { width:8px; height:8px; border-radius:9999px; border:1px solid #64748B; background:transparent; }
+.chip.on { color:#E2E8F0; border-color:#64748B; }
+.chip.on .dot { background:#E2E8F0; border-color:#E2E8F0; }
+.chip.batch.on .dot { background:#A78BFA; border-color:#A78BFA; }
+.chip.warn { color:#FBBF24; border-color:#FBBF24; }
+.id-right { margin-left:auto; display:flex; gap:16px; align-items:baseline; }
+.freshness .sweep {
+  display:inline-block; width:6px; height:6px; border-radius:9999px;
+  background:#38BDF8; margin-right:5px; animation: hud-sweep 2s ease-in-out infinite;
+}
+@keyframes hud-sweep { 0%,100% { opacity:0.35; } 50% { opacity:1; } }
+
+/* ---- Zone 3 · health strip ---- */
+.health { display:grid; grid-template-columns:repeat(6, 1fr); gap:8px; padding:12px 16px; }
+.tile { background:#1E293B; border:1px solid #293548; border-radius:6px; padding:8px 12px; }
+.tile .lbl { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.tile .val { font-size:16px; font-weight:600; letter-spacing:0.01em; font-variant-numeric:tabular-nums; color:#94A3B8; margin-top:2px; }
+.tile .sub { font-size:12px; color:#64748B; }
+.tile .age { font-size:12px; color:#64748B; margin-top:2px; }
+.conf { font-family:'Cascadia Mono', Consolas, monospace; font-size:11px; color:#64748B; border:1px solid #293548; border-radius:4px; padding:0 4px; }
+.tile.warn { border-color:#FBBF24; }
+.tile.warn .val::after { content:" \26A0"; color:#FBBF24; }
+/* stale veil — dashed amber border, content dimmed to 60%, amber stamp */
+.tile.stale { border:1px dashed #FBBF24; }
+.tile.stale .lbl, .tile.stale .val, .tile.stale .sub, .tile.stale .age { opacity:0.6; }
+.tile .stamp { font-size:12px; line-height:1.4; color:#FBBF24; margin-top:2px; }
+
+/* ---- Zone 4 · main deck ---- */
+.deck { display:grid; grid-template-columns:3fr 2fr; gap:16px; padding:4px 16px 12px; align-items:start; }
+@media (max-width:1100px) { .deck { grid-template-columns:1fr; } }
+
+.map-group { margin-bottom:12px; }
+.map-title { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; padding:6px 2px; border-bottom:1px solid #293548; margin-bottom:4px; }
+.node { border-radius:6px; color:#64748B; }
+.node > summary { display:flex; align-items:center; gap:10px; padding:4px 8px; cursor:pointer; list-style:none; }
+.node > summary::-webkit-details-marker { display:none; }
+.node .mark { width:18px; text-align:center; color:#166534; flex:none; }
+.node .nid { font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; min-width:118px; flex:none; }
+.node .lab { flex:1; }
+.node.idle .mark { color:#64748B; }
+.node-detail { padding:2px 8px 8px 36px; font-size:12.5px; color:#94A3B8; }
+.node-detail .k { color:#64748B; }
+.gatebadge { display:inline-block; padding:0 6px; border-radius:4px; font-family:'Cascadia Mono', Consolas, monospace; font-size:11px; border:1px solid #293548; color:#64748B; }
+.node.active { background:#38BDF8; color:#06263A; }
+.node.active .mark { color:#06263A; }
+.node.active .nid { color:#06263A; font-weight:600; }
+.node.active .gatebadge { border-color:#06263A; color:#06263A; }
+.node.active .dur { font-variant-numeric:tabular-nums; font-weight:600; }
+/* paused gate node — master caution outranks the active-cyan accent */
+.node.gate-paused { background:#FBBF24; color:#1C1403; outline:1px solid #FBBF24; outline-offset:2px; }
+.node.gate-paused .mark { color:#1C1403; }
+.node.gate-paused .nid { color:#1C1403; font-weight:600; }
+.node.gate-paused .gatebadge { border-color:#1C1403; color:#1C1403; }
+.placeholder { padding:14px 12px; border:1px dashed #293548; border-radius:6px; color:#64748B; font-size:13px; }
+.placeholder .mark { margin-right:8px; }
+
+/* specialist chip row (trimmed depth per de-scope ladder: no model/cost) */
+.spec-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; padding-top:10px; border-top:1px solid #293548; }
+.spec { position:relative; border-radius:6px; background:#1E293B; border:1px solid #293548; }
+.spec > summary { width:52px; height:44px; display:flex; align-items:center; justify-content:center; cursor:pointer; list-style:none; font-size:13px; font-weight:600; letter-spacing:0.08em; color:#64748B; }
+.spec > summary::-webkit-details-marker { display:none; }
+.spec .g { position:absolute; top:2px; right:4px; font-size:10px; }
+.spec.done { border-color:#166534; } .spec.done .g { color:#166534; }
+.spec.run  { border-color:#38BDF8; color:#E2E8F0; } .spec.run .g { color:#38BDF8; }
+.spec.warn { border-color:#FBBF24; } .spec.warn .g { color:#FBBF24; }
+.spec.awaiting { border-color:#FBBF24; } .spec.awaiting .g { color:#FBBF24; }
+.spec.idle .g { color:#64748B; }
+.spec-detail { padding:8px 10px; font-size:12px; color:#94A3B8; border-top:1px solid #293548; }
+
+/* right column · briefing cards */
+.brief, .gate-brief, .err-brief, .batch-brief, .land-brief, .board {
+  background:#1E293B; border:1px solid #293548; border-radius:8px; padding:12px 14px;
+}
+.brief      { border-left:3px solid #38BDF8; }
+.gate-brief { border-left:3px solid #FBBF24; }
+.err-brief, .fail-brief  { border-left:3px solid #EF4444; }
+.batch-brief { border-left:3px solid #A78BFA; }
+.land-brief  { border-left:3px solid #166534; }
+.brief > summary { list-style:none; cursor:default; }
+.brief > summary::-webkit-details-marker { display:none; }
+.bt { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#E2E8F0; }
+.gate-brief .bt { color:#FBBF24; }
+.err-brief .bt, .fail-brief .bt { color:#EF4444; }
+.batch-brief .bt { color:#A78BFA; }
+.land-brief .bt { color:#22C55E; }
+.bm { font-size:12px; color:#94A3B8; margin-top:2px; font-variant-numeric:tabular-nums; }
+.fields { margin-top:10px; border-top:1px solid #293548; padding-top:8px; }
+.frow { display:flex; gap:10px; padding:2px 0; font-size:13px; }
+.frow .k { color:#64748B; min-width:120px; flex:none; }
+.frow .v { color:#94A3B8; }
+.frow .v.mono { font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; }
+.prompt { margin-top:8px; padding-top:8px; border-top:1px solid #293548; color:#E2E8F0; }
+.proposal { margin-top:8px; color:#94A3B8; }
+.proposal b { color:#E2E8F0; font-weight:600; }
+.artifacts { margin-top:10px; border-top:1px solid #293548; }
+.artifact { padding:5px 0; border-bottom:1px solid #293548; font-size:12.5px; color:#94A3B8; }
+.artifact .mono { color:#94A3B8; }
+.more { margin-top:6px; }
+.more > summary { cursor:pointer; color:#64748B; font-size:12px; }
+/* decision-card options/evidence caption + completion component chips (35.9) */
+.art-label { margin-top:10px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.components { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+
+/* command block — the next action; no buttons; fully selectable */
+.cmd {
+  margin-top:12px;
+  background:#0B1120; border:1px solid #38BDF8; border-radius:6px;
+  padding:10px 12px;
+  font-family:'Cascadia Mono', Consolas, monospace; font-size:13px; line-height:1.5;
+  color:#E2E8F0; user-select:all; overflow-wrap:anywhere; white-space:pre-wrap;
+}
+.cmd-cap { font-size:12px; color:#64748B; margin-top:10px; }
+
+/* pre-flight board */
+.phase-title { font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; padding-bottom:4px; border-bottom:1px solid #293548; }
+.phase-title + .check { margin-top:4px; }
+.phase2 { margin-top:14px; }
+.check { padding:5px 0; border-bottom:1px solid #29354866; font-size:13px; }
+.check > summary { display:flex; align-items:baseline; gap:10px; cursor:pointer; list-style:none; }
+.check > summary::-webkit-details-marker { display:none; }
+.check:last-child { border-bottom:none; }
+.check .mark { width:16px; text-align:center; flex:none; }
+.check .name { color:#E2E8F0; min-width:118px; flex:none; }
+.check .res { color:#94A3B8; flex:1; }
+.check .dur { font-size:12px; color:#64748B; font-variant-numeric:tabular-nums; white-space:nowrap; }
+.check.pass .mark { color:#22C55E; }
+.check.run  .mark { color:#38BDF8; }
+.check.run  .name { color:#E2E8F0; }
+.check.fail .mark { color:#EF4444; }
+.check.fail .name { color:#EF4444; }
+.check.missed .mark { color:#FBBF24; }
+.check.pend .mark { color:#64748B; }
+.check.pend .name, .check.pend .res { color:#64748B; }
+.check-detail { padding:4px 0 2px 26px; font-family:'Cascadia Mono', Consolas, monospace; font-size:12px; color:#94A3B8; white-space:pre-wrap; }
+.conf-inline { font-family:'Cascadia Mono', Consolas, monospace; font-size:11px; color:#64748B; border:1px solid #293548; border-radius:4px; padding:0 4px; }
+
+/* panel-level states (no-active-run / binding / unrecognized / refuse) */
+.panel-msg { margin:16px; padding:20px 18px; border:1px dashed #293548; border-radius:8px; color:#94A3B8; }
+.panel-msg.refuse { border-color:#EF4444; color:#E2E8F0; }
+.panel-msg .headline { font-size:15px; font-weight:600; letter-spacing:0.04em; color:#E2E8F0; }
+.panel-msg .raw { margin-top:10px; background:#0B1120; border:1px solid #293548; border-radius:6px; padding:10px 12px; font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; color:#94A3B8; white-space:pre-wrap; overflow-x:auto; }
+
+/* ---- Zone 5 · state-trace well ---- */
+.trace { margin:4px 16px 16px; background:#0B1120; border:1px solid #293548; border-radius:6px; color:#94A3B8; }
+.trace > summary { padding:8px 12px; cursor:pointer; list-style:none; font-size:13px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.trace > summary::-webkit-details-marker { display:none; }
+.trace pre { font-family:'Cascadia Mono', Consolas, monospace; font-size:12.5px; line-height:1.5; padding:4px 12px 12px; overflow-x:auto; color:#94A3B8; }
+
+@media (prefers-reduced-motion: reduce) {
+  .annunciator { transition:none; }
+  .freshness .sweep { animation:none; }
+}
+</style>
+</head>
+<body>
+<div id="annunciator"><div class="annunciator ann-gate" role="status" aria-live="polite"><span class="sym">⏸</span><span>PAUSED AT GATE G2B</span></div></div>
+<div id="identity-header"><header class="id-header"><span class="mono trial">69338610-23bc-4889-9bfb-fb64f0142a95</span><span class="kv">lesson <b>course-content/courses/tejal-c1m1-p4-assessments-bridge</b></span><span class="kv">preset <b>production</b></span><span class="badge badge-gate"><span>⏸</span> paused-at-gate</span><span class="chip batch"><span class="dot"></span> BATCH</span><span class="chip"><span class="dot"></span> DETECTIVE</span><span class="chip"><span class="dot"></span> styleguide</span><span class="id-right freshness"><span class="meta"><span class="sweep"></span>snapshot as of 02:25:51</span></span></header></div>
+<div id="health-strip"><section class="health" aria-label="health strip"></section></div>
+<div id="main-deck"><main class="deck"><section class="mapcol"><section aria-label="you-are-here map"><div class="map-group"><div class="map-title">Planning — intake &amp; ratification</div><details id="node-directive-composer" data-step-summary-id="node-directive-composer" class="node done"><summary><span class="mark">✓</span><span class="nid">directive-composer</span><span class="lab">G0 — Directive Composition (Slab 7a / Story 7a.1)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-pre-gate-marcus" data-step-summary-id="node-pre-gate-marcus" class="node done"><summary><span class="mark">✓</span><span class="nid">pre-gate-marcus</span><span class="lab">Pre-Gate Marcus - C1 template-with-slots pre-fill (Slab 7a / Story 7a.3)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-per-slide-subgraph" data-step-summary-id="node-per-slide-subgraph" class="node done"><summary><span class="mark">✓</span><span class="nid">per-slide-subgraph</span><span class="lab">Per-Slide Subgraph Fan-Out (Slab 7a / Story 7a.4)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-html-review-pack-emitter" data-step-summary-id="node-html-review-pack-emitter" class="node done"><summary><span class="mark">✓</span><span class="nid">html-review-pack-emitter</span><span class="lab">HTML Review-Pack Emitter (Slab 7a / Story 7a.4)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-g0-enrichment" data-step-summary-id="node-g0-enrichment" class="node done"><summary><span class="mark">✓</span><span class="nid">g0-enrichment</span><span class="lab">G0 Source-Content Enrichment (Story G0-S2)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-g0-enrichment-gate" data-step-summary-id="node-g0-enrichment-gate" class="node done"><summary><span class="mark">✓</span><span class="nid">g0-enrichment-gate</span><span class="lab">G0 Source-Enrichment Confirm Gate</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-irene-refinement" data-step-summary-id="node-irene-refinement" class="node done"><summary><span class="mark">✓</span><span class="nid">irene-refinement</span><span class="lab">Irene Refinement Loop (Story G0-S3)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-g0-ratify-gate" data-step-summary-id="node-g0-ratify-gate" class="node done"><summary><span class="mark">✓</span><span class="nid">g0-ratify-gate</span><span class="lab">Operator LO Ratify Gate</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07B-gate" data-step-summary-id="node-07B-gate" class="node gate-paused" data-auto-open="urgent" open><summary><span class="mark">⏸</span><span class="nid">07B-gate</span><span class="lab">Variant Selection HIL Gate</span><span class="gatebadge">⏸ G2B</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-11-gate" data-step-summary-id="node-11-gate" class="node idle"><summary><span class="mark">○</span><span class="nid">11-gate</span><span class="lab">Voice Selection HIL Gate</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-11B-gate" data-step-summary-id="node-11B-gate" class="node idle"><summary><span class="mark">○</span><span class="nid">11B-gate</span><span class="lab">Input Package HIL Gate</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details></div><div class="map-group"><div class="map-title">Ratified workflow — 47 nodes · Step 26/47</div><details id="node-01" data-step-summary-id="node-01" class="node done"><summary><span class="mark">✓</span><span class="nid">01</span><span class="lab">Activation + Preflight</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-02" data-step-summary-id="node-02" class="node done"><summary><span class="mark">✓</span><span class="nid">02</span><span class="lab">Source Authority Map</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-02A" data-step-summary-id="node-02A" class="node done"><summary><span class="mark">✓</span><span class="nid">02A</span><span class="lab">Operator Directives</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-03" data-step-summary-id="node-03" class="node done"><summary><span class="mark">✓</span><span class="nid">03</span><span class="lab">Ingestion + Evidence Log</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-04" data-step-summary-id="node-04" class="node done"><summary><span class="mark">✓</span><span class="nid">04</span><span class="lab">Ingestion Quality Gate + Irene Packet</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-04A" data-step-summary-id="node-04A" class="node done"><summary><span class="mark">✓</span><span class="nid">04A</span><span class="lab">Lesson Plan Coauthoring + Scope Lock (Marcus &lt;-&gt; HIL)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-04-5" data-step-summary-id="node-04-5" class="node done"><summary><span class="mark">✓</span><span class="nid">04.5</span><span class="lab">Parent Slide Count Polling</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-04-55" data-step-summary-id="node-04-55" class="node done"><summary><span class="mark">✓</span><span class="nid">04.55</span><span class="lab">Estimator + Run Constants Lock</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-4-75" data-step-summary-id="node-4-75" class="node done"><summary><span class="mark">✓</span><span class="nid">4.75</span><span class="lab">Creative Directive Resolution (CD)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-05" data-step-summary-id="node-05" class="node done"><summary><span class="mark">✓</span><span class="nid">05</span><span class="lab">Irene Pass 1 + Gate 1 Fidelity</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-05B" data-step-summary-id="node-05B" class="node done"><summary><span class="mark">✓</span><span class="nid">05B</span><span class="lab">Cluster Plan G1.5 Gate</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-06" data-step-summary-id="node-06" class="node done"><summary><span class="mark">✓</span><span class="nid">06</span><span class="lab">Pre-Dispatch Package Build</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-6-2" data-step-summary-id="node-6-2" class="node done"><summary><span class="mark">✓</span><span class="nid">6.2</span><span class="lab">Cluster Prompt Engineering (Conditional)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-6-3" data-step-summary-id="node-6-3" class="node done"><summary><span class="mark">✓</span><span class="nid">6.3</span><span class="lab">Cluster Dispatch Sequencing (Conditional)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-06B" data-step-summary-id="node-06B" class="node done"><summary><span class="mark">✓</span><span class="nid">06B</span><span class="lab">Literal-Visual Operator Build</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07" data-step-summary-id="node-07" class="node done"><summary><span class="mark">✓</span><span class="nid">07</span><span class="lab">Gary Dispatch + Export</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-7-5" data-step-summary-id="node-7-5" class="node done"><summary><span class="mark">✓</span><span class="nid">7.5</span><span class="lab">Cluster Coherence G2.5 Gate (Conditional)</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07B" data-step-summary-id="node-07B" class="node done"><summary><span class="mark">✓</span><span class="nid">07B</span><span class="lab">Variant Selection Gate</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07C" data-step-summary-id="node-07C" class="node idle"><summary><span class="mark">○</span><span class="nid">07C</span><span class="lab">Storyboard A + Gate 2 Approval + Winner Authorization</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07D" data-step-summary-id="node-07D" class="node idle"><summary><span class="mark">○</span><span class="nid">07D</span><span class="lab">Gate 2M Motion Designation</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07D-5" data-step-summary-id="node-07D-5" class="node idle"><summary><span class="mark">○</span><span class="nid">07D.5</span><span class="lab">Motion Planning</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07E" data-step-summary-id="node-07E" class="node idle"><summary><span class="mark">○</span><span class="nid">07E</span><span class="lab">Motion Generation / Import</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07F" data-step-summary-id="node-07F" class="node idle"><summary><span class="mark">○</span><span class="nid">07F</span><span class="lab">Motion Gate</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07G" data-step-summary-id="node-07G" class="node idle"><summary><span class="mark">○</span><span class="nid">07G</span><span class="lab">PNG-Grounded Vision Perception</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-08" data-step-summary-id="node-08" class="node idle"><summary><span class="mark">○</span><span class="nid">08</span><span class="lab">Irene Pass 2 + Segment Manifest</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-08B" data-step-summary-id="node-08B" class="node idle"><summary><span class="mark">○</span><span class="nid">08B</span><span class="lab">Storyboard B + HIL Review</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-09" data-step-summary-id="node-09" class="node idle"><summary><span class="mark">○</span><span class="nid">09</span><span class="lab">Gate 3 - Lock Pass 2 Package</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-10" data-step-summary-id="node-10" class="node idle"><summary><span class="mark">○</span><span class="nid">10</span><span class="lab">Fidelity + Quality Pre-Spend</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-11" data-step-summary-id="node-11" class="node idle"><summary><span class="mark">○</span><span class="nid">11</span><span class="lab">ElevenLabs Voice Selection HIL</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-11B" data-step-summary-id="node-11B" class="node idle"><summary><span class="mark">○</span><span class="nid">11B</span><span class="lab">ElevenLabs Input Package HIL</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-12" data-step-summary-id="node-12" class="node idle"><summary><span class="mark">○</span><span class="nid">12</span><span class="lab">ElevenLabs Audio Generation</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-13" data-step-summary-id="node-13" class="node idle"><summary><span class="mark">○</span><span class="nid">13</span><span class="lab">Quinn-R Pre-Composition QA</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-14" data-step-summary-id="node-14" class="node idle"><summary><span class="mark">○</span><span class="nid">14</span><span class="lab">Compositor Assembly Bundle</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-14-5" data-step-summary-id="node-14-5" class="node idle"><summary><span class="mark">○</span><span class="nid">14.5</span><span class="lab">Desmond Run-Scoped Operator Brief</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-15" data-step-summary-id="node-15" class="node idle"><summary><span class="mark">○</span><span class="nid">15</span><span class="lab">Operator Handoff - Descript Ready</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details><details id="node-07W" data-step-summary-id="node-07W" class="node idle"><summary><span class="mark">○</span><span class="nid">07W</span><span class="lab">Companion Workbook Producer</span></summary><div class="node-detail"><div class="frow"><span class="k">locked artifact</span><span class="v mono">no locked artifact yet</span></div></div></details></div></section></section><aside class="ctxcol" aria-label="context panel"><div class="gate-brief"><div class="bt">⏸ Gate G2B</div><div class="bm">as of 02:25:51</div><div class="prompt">Approve the proposed slide variants, or edit to select alternates.</div><div class="fields"><div class="frow"><span class="k">gate focus</span><span class="v mono">variant_selection</span></div></div><div class="art-label">options</div><div class="artifacts"><div class="artifact"><span class="mono">production-runner (07B-gate)</span></div><div class="artifact"><span class="mono">C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/69338610-23bc-4889-9bfb-fb64f0142a95/specialist-summaries/quinn_r-20260712T022524993621Z.md</span></div><div class="artifact"><span class="mono">variant-options</span></div></div><div class="cmd-cap">paste into the Marcus-SPOC surface — digest pre-filled:</div><div class="cmd">gate decide --trial-id 69338610-23bc-4889-9bfb-fb64f0142a95 --gate-id G2B --verb approve --card-id c4df90ff-2036-4ea3-9a9f-10371649b697 --decision-card-digest b2930646f4b1e0ff431914ddaa19147f3ddb81eb5ea82a504a8eab0b2cabaa1e --operator-id juanl</div></div></aside></main></div>
+<div id="state-trace"><details class="trace"><summary>State trace — 0 events · newest last</summary><pre>no events yet</pre></details></div>
+<script>
+(function () {
+  "use strict";
+  var POLL_MS = 3000;
+  var etag = null;
+  var lastZones = {};
+
+  function esc(s) {
+    if (s === null || s === undefined) return "";
+    return String(s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#x27;");
+  }
+  function parseDt(v) {
+    if (!v) return null;
+    var d = new Date(String(v).replace("Z", "+00:00"));
+    return isNaN(d.getTime()) ? null : d;
+  }
+  function clock(v) {
+    var d = parseDt(v);
+    if (!d) return esc(v);
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    // UTC to match the server-side cold-load render (page.py strftimes a UTC
+    // datetime) — kills the cold-load-vs-first-poll clock jump (35.9 fold).
+    return p(d.getUTCHours()) + ":" + p(d.getUTCMinutes()) + ":" + p(d.getUTCSeconds());
+  }
+  function ageStamp(asOf, now) {
+    var a = parseDt(asOf), n = parseDt(now);
+    var c = clock(asOf);
+    if (!a || !n) return c ? "as of " + c : "";
+    return "as of " + c + " · " + Math.floor((n - a) / 1000) + "s ago";
+  }
+
+  var STATUS_SYMBOL = {
+    "registered": "○", "in-flight": "▶", "paused-at-gate": "⏸",
+    "paused-at-error": "⛔", "waiting_for_provider_batch": "⚖",
+    "completed": "✓", "failed": "⛔"
+  };
+  var BADGE = {
+    "registered": "badge-dim", "in-flight": "badge-nominal", "completed": "badge-dim",
+    "paused-at-gate": "badge-gate", "paused-at-error": "badge-error",
+    "waiting_for_provider_batch": "badge-wait", "failed": "badge-failed"
+  };
+  var DONE = ["completed", "complete", "done", "pass", "passed", "ok", "exited", "success"];
+  var ACTIVE = ["active", "running", "in-progress", "in_progress", "current", "walking", "in-flight"];
+
+  function activeEntry(steps) {
+    if (!steps || !steps.entries) return null;
+    for (var i = 0; i < steps.entries.length; i++) {
+      var e = steps.entries[i];
+      if (e && ACTIVE.indexOf(String(e.status || "").toLowerCase()) >= 0) return e;
+    }
+    return null;
+  }
+
+  // ---- annunciator ----
+  function annunciator(d, now) {
+    var env = d.envelope || {}, st = env.status, steps = d.steps;
+    var a = activeEntry(steps), walking = st === "in-flight" && a;
+    var cls = "ann-nominal", sym = "▶", text = "";
+    if (st === "paused-at-gate") { cls = "ann-gate"; sym = "⏸"; text = "PAUSED AT GATE " + esc(env.paused_gate || "?"); }
+    else if (st === "paused-at-error") { cls = "ann-error"; sym = "⛔"; text = "PAUSED AT ERROR — " + esc(env.paused_error_tag || "?"); }
+    else if (st === "waiting_for_provider_batch") { cls = "ann-wait"; sym = "⚖"; text = "PARKED — PROVIDER BATCH " + esc(env.waiting_batch_id || "?"); }
+    else if (st === "failed") { cls = "ann-failed"; sym = "⛔"; text = "FAILED — " + esc(env.paused_error_tag || "run failed"); }
+    else if (st === "completed") { cls = "ann-completed"; sym = "✓"; text = "LANDED — completed " + clock(env.completed_at); }
+    else if (st === "registered") { cls = "ann-nominal"; sym = "○"; text = "REGISTERED — awaiting pre-flight"; }
+    else if (st === "in-flight") {
+      if (walking) { sym = "▶"; text = "IN FLIGHT — " + esc(a.step_id) + " · " + esc(a.label); }
+      else { sym = "◐"; text = "PRE-FLIGHT IN PROGRESS"; }
+    } else { cls = "ann-idle"; sym = "○"; text = "UNRECOGNIZED STATUS '" + esc(st) + "'"; }
+    return '<div class="annunciator ' + cls + '" role="status" aria-live="polite">' +
+      '<span class="sym">' + sym + '</span><span>' + text + "</span></div>";
+  }
+
+  // ---- identity header ----
+  function chip(label, on, batch) {
+    var c = on ? "chip on" : "chip";
+    if (batch) c += " batch";
+    return '<span class="' + c + '"><span class="dot"></span> ' + esc(label) + "</span>";
+  }
+  function identity(d, now) {
+    var id = d.identity || {}, st = (d.envelope || {}).status;
+    var sym = STATUS_SYMBOL[st] || "○", bc = BADGE[st] || "badge-dim";
+    var badge = st ? '<span class="badge ' + bc + '"><span>' + sym + "</span> " + esc(st) + "</span>" : "";
+    var m = d.modalities || {}, mode = String(m.llm_execution_mode || "").toLowerCase();
+    var chips = chip("BATCH", mode.indexOf("batch") >= 0, true) +
+      chip("DETECTIVE", !!m.detective_disposition, false) +
+      chip(m.styleguide || "styleguide", !!m.styleguide, false);
+    var echo = d.notifications_echo || {}, notif = "";
+    if (echo.parse_status && echo.parse_status !== "ok")
+      notif = '<span class="chip warn">⚠ ' + esc(echo.parse_status) + "</span>";
+    return '<header class="id-header">' +
+      '<span class="mono trial">' + esc(id.trial_id) + "</span>" +
+      '<span class="kv">lesson <b>' + esc(id.lesson) + "</b></span>" +
+      '<span class="kv">preset <b>' + esc(id.preset) + "</b></span>" +
+      badge + chips + notif +
+      '<span class="id-right freshness"><span class="meta"><span class="sweep"></span>snapshot ' +
+      esc(ageStamp(d.as_of, now)) + "</span></span></header>";
+  }
+
+  // ---- health strip ----
+  function health(d, now, budget) {
+    var h = d.health, tiles = (h && h.tiles) || [];
+    if (!tiles.length) return '<section class="health" aria-label="health strip"></section>';
+    var out = "";
+    for (var i = 0; i < tiles.length; i++) {
+      var t = tiles[i]; if (!t) continue;
+      var val = esc(t.value) + (t.unit ? " " + esc(t.unit) : "");
+      var thr = String(t.threshold_state || "");
+      var a = parseDt(t.as_of), n = parseDt(now);
+      var secs = (a && n) ? Math.floor((n - a) / 1000) : null;
+      var stale = secs !== null && secs > budget;
+      var cls = "tile" + (thr === "warning" || thr === "breached" ? " warn" : "") + (stale ? " stale" : "");
+      var body = '<div class="lbl">' + esc(t.label) + "</div>" +
+        '<div class="val">' + val + "</div>" +
+        '<div class="sub">' + (t.confidence ? '<span class="conf">' + esc(t.confidence) + "</span>" : "") + "</div>";
+      if (stale) body += '<div class="stamp">⧗ STALE · last good ' + clock(t.as_of) + " (" + secs + "s ago)</div>";
+      else body += '<div class="age">' + esc(ageStamp(t.as_of, now)) + "</div>";
+      out += '<div class="' + cls + '">' + body + "</div>";
+    }
+    return '<section class="health" aria-label="health strip">' + out + "</section>";
+  }
+
+  // ---- map + context ----
+  var STEP_MARK = { "done": "✓", "active": "▶", "gate-paused": "⏸", "idle": "○" };
+  function stepKind(e, active, st) {
+    if (e === active) return st === "paused-at-gate" ? "gate-paused" : "active";
+    if (DONE.indexOf(String(e.status || "").toLowerCase()) >= 0) return "done";
+    return "idle";
+  }
+  function mapNode(e, active, d) {
+    var st = (d.envelope || {}).status, kind = stepKind(e, active, st);
+    var cond = e.conditions || [], block = e.blockers || [];
+    var urgent = e === active || cond.length || block.length;
+    var openAttr = urgent ? " open" : "", auto = urgent ? ' data-auto-open="urgent"' : "";
+    var nid = esc(e.step_id), did = ("node-" + nid).replace(/[. ]/g, "-");
+    var gb = "";
+    if (kind === "gate-paused" && (d.envelope || {}).paused_gate)
+      gb = '<span class="gatebadge">⏸ ' + esc(d.envelope.paused_gate) + "</span>";
+    // Step X/Y on the active walking node — mirrors page.py so the summary
+    // does not vanish on the first poll (35.9 fold).
+    var dur = "";
+    var steps = d.steps || {};
+    if (e === active && st === "in-flight" && steps.walk_index !== undefined && steps.node_count)
+      dur = '<span class="dur">Step ' + esc(steps.walk_index) + "/" + esc(steps.node_count) + "</span>";
+    var locked = e.locked_artifact_summary;
+    var detail = '<div class="frow"><span class="k">locked artifact</span><span class="v mono">' +
+      (locked ? esc(locked) : "no locked artifact yet") + "</span></div>";
+    if (cond.length) detail += '<div class="frow"><span class="k">conditions</span><span class="v">' + esc(cond.join(", ")) + "</span></div>";
+    if (block.length) detail += '<div class="frow"><span class="k">blockers</span><span class="v">' + esc(block.join(", ")) + "</span></div>";
+    return '<details id="' + did + '" data-step-summary-id="' + did + '" class="node ' + kind + '"' + auto + openAttr + ">" +
+      '<summary><span class="mark">' + STEP_MARK[kind] + '</span><span class="nid">' + nid +
+      '</span><span class="lab">' + esc(e.label) + "</span>" + gb + dur + "</summary>" +
+      '<div class="node-detail">' + detail + "</div></details>";
+  }
+  function mapZone(d) {
+    var steps = d.steps;
+    if (!steps) return '<section aria-label="you-are-here map"><div class="map-group">' +
+      '<div class="map-title">Ratified workflow</div><div class="placeholder"><span class="mark">○</span>' +
+      "workflow pends ratification — steps will appear here after G0R</div></div></section>";
+    var active = activeEntry(steps), entries = steps.entries || [];
+    var s1 = [], s2 = [], i;
+    for (i = 0; i < entries.length; i++) { if (entries[i].stage === "stage-1") s1.push(entries[i]); else if (entries[i].stage === "stage-2") s2.push(entries[i]); }
+    var out = '<section aria-label="you-are-here map">';
+    if (s1.length) { out += '<div class="map-group"><div class="map-title">Planning — intake &amp; ratification</div>'; for (i = 0; i < s1.length; i++) out += mapNode(s1[i], active, d); out += "</div>"; }
+    var title = "Ratified workflow" + (steps.node_count ? " — " + esc(steps.node_count) + " nodes" : "");
+    if (steps.walk_index !== undefined && steps.node_count) title += " · Step " + esc(steps.walk_index) + "/" + esc(steps.node_count);
+    if (s2.length) { out += '<div class="map-group"><div class="map-title">' + title + "</div>"; for (i = 0; i < s2.length; i++) out += mapNode(s2[i], active, d); out += "</div>"; }
+    else out += '<div class="map-group"><div class="map-title">Ratified workflow</div><div class="placeholder"><span class="mark">○</span>workflow pends ratification — steps will appear here after G0R</div></div>';
+    return out + "</section>";
+  }
+  var SPEC_GLYPH = { "active": ["run", "▶"], "running": ["run", "▶"], "done": ["done", "✓"], "completed": ["done", "✓"], "degraded": ["warn", "⚠"], "retrying": ["warn", "⚠"], "awaiting": ["awaiting", "⏸"] };
+  function specialists(d) {
+    var s = d.specialists, roster = (s && s.roster) || [];
+    if (!roster.length) return "";
+    var out = "";
+    for (var i = 0; i < roster.length; i++) {
+      var sp = roster[i], g = SPEC_GLYPH[String(sp.status || "").toLowerCase()] || ["idle", "○"];
+      var mono = (String(sp.name || "??").replace(/[^a-zA-Z0-9]/g, "").slice(0, 2) || "??").toUpperCase();
+      out += '<details class="spec ' + g[0] + '"><summary>' + esc(mono) + '<span class="g">' + g[1] + "</span></summary>" +
+        '<div class="spec-detail">' + esc(sp.name) + " · " + esc(sp.status) +
+        '<br>node <span class="mono">' + esc(sp.current_node || "—") + "</span>" +
+        '<br>last <span class="mono">' + esc(sp.last_artifact || "—") + "</span></div></details>";
+    }
+    return '<div class="spec-row" aria-label="specialist roster">' + out + "</div>";
+  }
+  function cmdBlock(cmd, cap) {
+    if (!cmd) return "";
+    return '<div class="cmd-cap">' + esc(cap) + '</div><div class="cmd">' + esc(cmd) + "</div>";
+  }
+  function artifactsBlock(items) {
+    // Collapse beyond the first three — mirrors page.py::_artifacts_block.
+    if (!items || !items.length) return "";
+    var head = items.slice(0, 3), tail = items.slice(3), i, rows = "";
+    for (i = 0; i < head.length; i++) rows += '<div class="artifact"><span class="mono">' + esc(head[i]) + "</span></div>";
+    var out = '<div class="artifacts">' + rows + "</div>";
+    if (tail.length) {
+      var more = "";
+      for (i = 0; i < tail.length; i++) more += '<div class="artifact"><span class="mono">' + esc(tail[i]) + "</span></div>";
+      out += '<details class="more"><summary>+' + tail.length + ' more artifact(s)</summary><div class="artifacts">' + more + "</div></details>";
+    }
+    return out;
+  }
+  function labelledArtifacts(label, items) {
+    if (!items || !items.length) return "";
+    return '<div class="art-label">' + esc(label) + "</div>" + artifactsBlock(items);
+  }
+  function context(d, now) {
+    var env = d.envelope || {}, st = env.status, na = d.next_action || {};
+    var active = activeEntry(d.steps);
+    if (st === "paused-at-gate") {
+      // Decision-card fields ABOVE the command block (35.9), verb-conditional.
+      var dc = d.decision_card || {}, prop = dc.drafted_proposal || null, fields = "";
+      if (dc.gate_focus) fields += '<div class="frow"><span class="k">gate focus</span><span class="v mono">' + esc(dc.gate_focus) + "</span></div>";
+      if (prop) {
+        var confTxt = (prop.confidence !== null && prop.confidence !== undefined) ? " · confidence " + esc(prop.confidence) : "";
+        fields += '<div class="frow"><span class="k">drafted proposal</span><span class="v">' + esc(prop.decision) + confTxt + "</span></div>";
+        if (prop.rationale) fields += '<div class="frow"><span class="k">rationale</span><span class="v">' + esc(prop.rationale) + "</span></div>";
+      }
+      var fieldsHtml = fields ? '<div class="fields">' + fields + "</div>" : "";
+      var prompt = dc.operator_prompt ? esc(dc.operator_prompt) : ("Gate " + esc(env.paused_gate) + " awaits your verdict. Decide via the Marcus-SPOC surface using the command below.");
+      var pick = dc.pick_context || [], evidence = dc.evidence || [];
+      if (!evidence.length) { var lk = active && active.locked_artifact_summary; evidence = lk ? [lk] : []; }
+      var arts = labelledArtifacts("options", pick) + labelledArtifacts("evidence", evidence);
+      return '<div class="gate-brief"><div class="bt">⏸ Gate ' + esc(env.paused_gate) + "</div>" +
+        '<div class="bm">' + esc(ageStamp(env.as_of, now)) + "</div>" +
+        '<div class="prompt">' + prompt + "</div>" +
+        fieldsHtml + arts + cmdBlock(na.command, "paste into the Marcus-SPOC surface — digest pre-filled:") + "</div>";
+    }
+    if (st === "paused-at-error") {
+      var steps = d.steps || {}, em = d.error_message || {};
+      var displayTag = em.tag || env.paused_error_tag;
+      var nodeDisp = esc(active && active.step_id) + " · walk " + esc(steps.walk_index);
+      if (em.node_index !== null && em.node_index !== undefined) nodeDisp += " · node index " + esc(em.node_index);
+      var reenter = (steps.reentered_from !== null && steps.reentered_from !== undefined) ? esc(steps.reentered_from) : "—";
+      var msgHtml = em.message ? '<div class="frow"><span class="k">message</span><span class="v mono">' + esc(em.message) + "</span></div>" : "";
+      return '<div class="err-brief"><div class="bt">⛔ Paused at error</div>' +
+        '<div class="bm">' + esc(ageStamp(env.as_of, now)) + "</div><div class=\"fields\">" +
+        '<div class="frow"><span class="k">error tag</span><span class="v mono">' + esc(displayTag) + "</span></div>" +
+        msgHtml +
+        '<div class="frow"><span class="k">node</span><span class="v mono">' + nodeDisp + "</span></div>" +
+        '<div class="frow"><span class="k">re-entry</span><span class="v mono">' + reenter + "</span></div>" +
+        "</div>" + cmdBlock(na.command, "recover command:") + "</div>";
+    }
+    if (st === "waiting_for_provider_batch") {
+      return '<div class="batch-brief"><div class="bt">⚖ Provider batch parked</div>' +
+        '<div class="bm">batch ' + esc(env.waiting_batch_id) + " · " + esc(ageStamp(env.as_of, now)) + "</div>" +
+        '<div class="prompt">LiteLLM provider batch — resume polls the batch. Nothing is wrong; no verdict is owed.</div>' +
+        cmdBlock(na.command, "resume command:") + "</div>";
+    }
+    if (st === "completed") {
+      // Deliverables from the projection's own section (35.9) — the roster
+      // last_artifact synthesis is DELETED (AD-1 projection-is-sole-input).
+      var deliv = d.deliverables || {}, comps = deliv.components || {}, compChips = "";
+      ["deck", "motion", "workbook"].forEach(function (nm) {
+        if (comps[nm]) compChips += '<span class="chip on"><span class="dot"></span> ' + esc(nm.toUpperCase()) + "</span>";
+      });
+      var compHtml = compChips ? '<div class="components">' + compChips + "</div>" : "";
+      var exports = deliv.export_paths || [], rows = "";
+      for (var i = 0; i < exports.length; i++) rows += '<div class="artifact"><span class="mono">' + esc(exports[i]) + "</span></div>";
+      if (!rows) rows = '<div class="artifact">see run dir for exports</div>';
+      var cost = "";
+      if (deliv.total_cost_usd !== null && deliv.total_cost_usd !== undefined)
+        cost = '<div class="frow"><span class="k">final cost</span><span class="v">$' + esc(deliv.total_cost_usd) + "</span></div>";
+      return '<div class="land-brief"><div class="bt">✓ Landed</div><div class="bm">completed ' + clock(env.completed_at) + "</div>" +
+        compHtml + '<div class="artifacts">' + rows + '</div><div class="fields">' + cost + "</div></div>";
+    }
+    if (st === "failed") {
+      var tail = na.command ? cmdBlock(na.command, "recovery command:") : '<div class="prompt">no automated recovery — see SPOC</div>';
+      return '<div class="fail-brief"><div class="bt">⛔ Failed</div><div class="bm">' + esc(ageStamp(env.as_of, now)) + "</div>" +
+        '<div class="fields"><div class="frow"><span class="k">reason</span><span class="v mono">' + esc(env.paused_error_tag || "run failed") + "</span></div></div>" + tail + "</div>";
+    }
+    if (st === "in-flight" && active) {
+      var steps2 = d.steps || {}, lk = active.locked_artifact_summary;
+      var fields = '<div class="frow"><span class="k">locked artifact</span><span class="v mono">' + (lk ? esc(lk) : "no locked artifact yet") + "</span></div>";
+      return '<details class="brief" open><summary><div class="bt">' + esc(active.step_id) + " · " + esc(active.label) + "</div>" +
+        '<div class="bm">walk index ' + esc(steps2.walk_index) + '</div></summary><div class="fields">' + fields + "</div></details>";
+    }
+    // registered / preflight
+    var pf = d.preflight, items = (pf && pf.items) || [], out = "";
+    var CLS = { "pass": "pass", "running": "run", "fail": "fail", "missed": "missed", "pending": "pend" };
+    var MK = { "pass": "✓", "running": "◐", "fail": "✕", "missed": "⧗", "pending": "○" };
+    for (var j = 0; j < items.length; j++) {
+      var it = items[j], state = String(it.state || "pending");
+      var res = esc(it.output || it.quota_reading || "");
+      if (it.quota_confidence && it.quota_confidence !== "unknown") res += ' · <span class="conf-inline">' + esc(it.quota_confidence) + "</span>";
+      out += '<details class="check ' + (CLS[state] || "pend") + '"><summary><span class="mark">' + (MK[state] || "○") +
+        '</span><span class="name">' + esc(it.name) + '</span><span class="res">' + res +
+        '</span><span class="dur">' + (it.latency_ms != null ? esc(it.latency_ms) + "ms" : "—") + "</span></summary></details>";
+    }
+    if (!out) out = '<div class="check pend"><span class="res">pre-flight pending</span></div>';
+    return '<div class="board"><div class="phase-title">Pre-flight · Readiness</div>' + out + "</div>";
+  }
+  function mainDeck(d, now) {
+    return '<main class="deck"><section class="mapcol">' + mapZone(d) + specialists(d) +
+      '</section><aside class="ctxcol" aria-label="context panel">' + context(d, now) + "</aside></main>";
+  }
+  function trace(d) {
+    var t = d.trace, events = (t && t.events) || [];
+    if (!events.length) return '<details class="trace"><summary>State trace — 0 events · newest last</summary><pre>no events yet</pre></details>';
+    var lines = [];
+    for (var i = 0; i < events.length; i++) {
+      var ev = events[i], line = clock(ev.at) + "  " + esc(ev.event);
+      if (ev.detail) line += " · " + esc(ev.detail);
+      lines.push(line);
+    }
+    return '<details class="trace"><summary>State trace — ' + events.length + " events · newest last</summary><pre>" + lines.join("\n") + "</pre></details>";
+  }
+
+  // ---- zone-scoped replacement (preserve disclosure / scroll / selection) ----
+  function selectionInside(el) {
+    var sel = window.getSelection && window.getSelection();
+    if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return false;
+    return el.contains(sel.anchorNode);
+  }
+  function applyZone(id, htmlStr) {
+    if (lastZones[id] === htmlStr) return;            // unchanged → never touch (keeps selection/scroll)
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (selectionInside(el) && lastZones[id] !== undefined) return;  // hold a live selection
+    var open = {};
+    el.querySelectorAll("details").forEach(function (dEl, i) {
+      open[dEl.getAttribute("data-step-summary-id") || dEl.id || String(i)] = dEl.open;
+    });
+    el.innerHTML = htmlStr;
+    el.querySelectorAll("details").forEach(function (dEl, i) {
+      var key = dEl.getAttribute("data-step-summary-id") || dEl.id || String(i);
+      if (dEl.getAttribute("data-auto-open") === "urgent") { dEl.open = true; return; }
+      if (open[key] !== undefined) dEl.open = open[key];
+    });
+    lastZones[id] = htmlStr;
+  }
+  function setAnnun(cls, text) {
+    var el = document.getElementById("annunciator");
+    if (el) el.innerHTML = '<div class="annunciator ' + cls + '" role="status" aria-live="polite"><span class="sym">•</span><span>' + esc(text) + "</span></div>";
+  }
+  function renderZones(d) {
+    var now = new Date().toISOString();
+    // Health-tile staleness budget from the projection (35.9 fold) rather than
+    // a hardcoded 60, so cold-load and poll agree if the runtime ever sets it.
+    var budget = (d.health_budget_seconds !== null && d.health_budget_seconds !== undefined) ? d.health_budget_seconds : 60;
+    applyZone("annunciator", annunciator(d, now));
+    applyZone("identity-header", identity(d, now));
+    applyZone("health-strip", health(d, now, budget));
+    applyZone("main-deck", mainDeck(d, now));
+    applyZone("state-trace", trace(d));
+  }
+
+  async function poll() {
+    var headers = {};
+    if (etag) headers["If-None-Match"] = etag;
+    var resp;
+    try {
+      resp = await fetch("/projection", { headers: headers, cache: "no-store" });
+    } catch (err) {
+      // Transport failure only — never a render/parse fault.
+      setAnnun("ann-feedlost", "DISCONNECTED" + " · " + err);
+      return;
+    }
+    if (resp.status === 304) return;
+    var newEtag = resp.headers.get("ETag");
+    if (resp.status === 409) {
+      etag = newEtag;
+      var body = await resp.json();
+      setAnnun("ann-warning", "RUN IDENTITY UNCERTAIN — refusing to render (bound " + body.bound + " · found " + body.found + ")");
+      return;
+    }
+    if (resp.status === 404) { setAnnun("ann-idle", "BINDING — awaiting first snapshot"); return; }
+    if (!resp.ok) { setAnnun("ann-feedlost", "HUD FEED LOST — HTTP " + resp.status); return; }
+    var bare = (newEtag || "").replace(/^[Ww]\//, "").replace(/"/g, "");
+    if (bare.startsWith("unrecognized:")) {
+      // Honest state keyed off the ETag — non-JSON / unknown-schema 200s render
+      // UNRECOGNIZED literally, never a parse-throw into the transport branch.
+      var text = await resp.text();
+      etag = newEtag;
+      setAnnun("ann-idle", "UNRECOGNIZED" + " · " + text.slice(0, 200));
+      return;
+    }
+    var data;
+    try {
+      data = await resp.json();
+    } catch (err2) {
+      etag = null;  // render failed: do not cache, retry fresh next poll
+      setAnnun("ann-idle", "UNRECOGNIZED" + " · body did not parse");
+      return;
+    }
+    etag = newEtag;
+    if (!data || !data.envelope || !data.envelope.status) {
+      setAnnun("ann-idle", "UNRECOGNIZED" + " · schema_version " + (data && data.schema_version));
+      return;
+    }
+    renderZones(data);
+  }
+
+  poll();
+  setInterval(poll, POLL_MS);
+})();
+</script>
+</body>
+</html>
