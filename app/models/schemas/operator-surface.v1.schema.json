@@ -1,5 +1,209 @@
 {
   "$defs": {
+    "DecisionCardSection": {
+      "additionalProperties": false,
+      "description": "The active decision card at a gate pause (EXPERIENCE.md \u00a7Projection Demands).\n\nAll fields optional/verb-conditional. ``pick_context`` (variant/voice\noptions) and ``evidence`` are pre-summarized display strings the render\nfeeds straight into the collapse-beyond-3 ``_artifacts_block`` helper.",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "drafted_proposal": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DraftedProposal"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "evidence": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "gate_focus": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Gate Focus"
+        },
+        "operator_prompt": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Operator Prompt"
+        },
+        "pick_context": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Pick Context",
+          "type": "array"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "DecisionCardSection",
+      "type": "object"
+    },
+    "DeliverableComponents": {
+      "additionalProperties": false,
+      "description": "The run's component-selection booleans (``run_summary.yaml``).",
+      "properties": {
+        "deck": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deck"
+        },
+        "motion": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Motion"
+        },
+        "workbook": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Workbook"
+        }
+      },
+      "title": "DeliverableComponents",
+      "type": "object"
+    },
+    "DeliverablesSection": {
+      "additionalProperties": false,
+      "description": "Landed deliverables at completion (EXPERIENCE.md \u00a7Projection Demands).\n\nMINIMAL by design (KEY DECISION 2 waiver): component booleans + total cost\n+ cheaply-resolvable top-level export paths. Rich per-artifact path\nenumeration is the ONE registered fast-follow waiver (dated 2026-07-11,\nstory 35.7) \u2014 do NOT build it here.",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "components": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DeliverableComponents"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "export_paths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Export Paths",
+          "type": "array"
+        },
+        "total_cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Total Cost Usd"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "DeliverablesSection",
+      "type": "object"
+    },
+    "DraftedProposal": {
+      "additionalProperties": false,
+      "description": "The runtime's drafted verdict for a gate (decision-card ``drafted_proposal``).",
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "decision": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decision"
+        },
+        "rationale": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rationale"
+        }
+      },
+      "title": "DraftedProposal",
+      "type": "object"
+    },
     "EnvelopeSection": {
       "additionalProperties": false,
       "description": "Envelope status verbatim (AD-5) + pause metadata.",
@@ -78,6 +282,59 @@
         "status"
       ],
       "title": "EnvelopeSection",
+      "type": "object"
+    },
+    "ErrorMessageSection": {
+      "additionalProperties": false,
+      "description": "The verbatim runtime error at an error pause (``error-pause.json``).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "node_index": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Node Index"
+        },
+        "tag": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Tag"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "ErrorMessageSection",
       "type": "object"
     },
     "HealthReading": {
@@ -825,6 +1082,28 @@
       "title": "As Of",
       "type": "string"
     },
+    "decision_card": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DecisionCardSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "deliverables": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DeliverablesSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "envelope": {
       "$ref": "#/$defs/EnvelopeSection"
     },
@@ -832,6 +1111,17 @@
       "description": "Hash of the run.json content this projection derives from (AD-17).",
       "title": "Envelope Digest",
       "type": "string"
+    },
+    "error_message": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ErrorMessageSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "health": {
       "anyOf": [

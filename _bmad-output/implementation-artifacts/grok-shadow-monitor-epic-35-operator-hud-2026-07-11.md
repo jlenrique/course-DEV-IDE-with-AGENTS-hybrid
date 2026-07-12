@@ -8,6 +8,8 @@ Independent shadow ledger for **Epic 35 (Operator HUD v1 — Flight Deck)** on b
 
 **Poll cadence:** every 15 minutes until the operator stops the monitor.
 
+**Operator directive (2026-07-11 ~20:25):** (A) **Cross-check completion-note / Kanban test claims against actual pytest tails** (venv) — never trust reported numbers alone. Prefer: claimed suite → run same paths → compare pass count + whether cited files are in the close commit. (B) **Adversarial design/spec review** on each poll when new party decisions, story ACs, contract widenings, or stopgaps appear — challenge AD alignment, sequencing, claim-fence risk, and “honest thin” vs silent product lie.
+
 ---
 
 ## Standing Watchpoints (Epic 35)
@@ -15,15 +17,17 @@ Independent shadow ledger for **Epic 35 (Operator HUD v1 — Flight Deck)** on b
 1. **Product boundary.** HUD serves Marcus-SPOC runtime only — not proofing/concierge vehicles.
 2. **Zero-button / zero-lie.** GET-only; projection sole input; unrecognized stays unrecognized; no command composition in the HUD.
 3. **Seven-status completeness.** All seven `ProductionTrialStatus` values render distinctly.
-4. **Party green-light amendments bind.** `_bmad-output/planning-artifacts/epic-35-party-greenlight-2026-07-11.md` amendments 1–14 are acceptance law for story specs and DoD.
-5. **Sequencing pins.** 35.2→35.3 serial (same runner region); 35.8 after 35.5 (`run_hud.py`); 35.3∥35.4 with `server.py` owned by 35.4 only; 35.6∥35.5; any two agents on runner/manifest serialize.
-6. **Tier-2 before first substrate edit.** Story 35.0 + party-ratified manifest bump before `app/hud/**`, assembler, etc.
+4. **Party green-light amendments bind.** `_bmad-output/planning-artifacts/epic-35-party-greenlight-2026-07-11.md` amendments 1–14 (+ KEY DECISION 2 / 35.9) are acceptance law for story specs and DoD.
+5. **Sequencing pins.** 35.2→35.3 serial; **35.9 after 35.5, before 35.8**; 35.8 after render/contract stable (`run_hud.py`); 35.7 last; any two agents on runner/manifest/contract serialize.
+6. **Tier-2 before first substrate edit.** Story 35.0 + party-ratified manifest bump before `app/hud/**`, assembler, etc. **35.9 re-touches trigger paths** — re-read regime at T1.
 7. **Formal ceremony.** Per-story `bmad-dev-story` + regime doc at T1 + `bmad-code-review` before close; no thin 35.7 evidence (DoD-over-clock).
-8. **Kanban honesty.** `sprint-status.yaml` must list Epic 35 / 35.0–35.8 with truthful states once dispatched.
-9. **Durability.** Phase/story artifacts committed+pushed at safety checkpoints (push-cadence policy).
+8. **Kanban honesty.** `sprint-status.yaml` must list Epic 35 / 35.0–35.9 with truthful states once dispatched.
+9. **Durability.** Phase/story artifacts **and the tests cited in DoD** committed+pushed at safety checkpoints.
 10. **Claim fence.** No “HUD performed to spec” without Murat 10-item checklist + scoped-verdict schema (amendment 2); SC5 keep-it-open is L4, not decidable at 35.7.
 11. **No premature app/ edits.** Until 35.0 closes, no production HUD/assembler/notify trees.
 12. **Ambient hygiene.** Do not sweep `runs/*`, `_tmp-regression*`, Meeting Recording, unrelated monitors into Epic 35 commits.
+13. **Evidence verification.** Completion-note / Kanban numeric claims must match monitor-run pytest tails AND files present on the cited close SHA.
+14. **Adversarial design.** New specs/party dispositions challenged for AD-1 (projection sole input), additive-v1 honesty, stopgap lifetime, and claim-fence leakage into 35.7.
 
 ---
 
@@ -482,5 +486,128 @@ Claude terminal: **monthly spend limit hit again** while spawning “Dev story 3
 **Verdict: DEV SUBSTANTIALLY ADVANCED — 35.5 IN REVIEW + CONTRACT PARTY; 35.3 EVIDENCE PRESENT; AWAIT FOLDS + DURABLE CLOSES.**
 
 **Next poll:** ~15m. Expect: review findings / party memo / first close commit(s).
+
+---
+
+### SOP-E35-016 — event + claim-audit poll — 2026-07-11T20:25:45-04:00
+
+**Trigger:** Operator directive to (1) verify completion-note numbers against pytest tails, (2) be more adversarial on design/spec. Also catches closes that landed since SOP-E35-015. Ledger-only write; monitor ran `.venv` pytest read-only.
+
+**HEAD / sync:** `20cd0744` = origin (0/0). Commits since SOP-E35-015:
+1. `6f7df143` — **35.3 CLOSED** (review APPROVE)
+2. `20cd0744` — **35.5 CLOSED** + party KEY DECISION 2 files **35.9** (stories + greenlight + Kanban)
+
+**Board:** 35.0–35.6 done; **35.9 `ready-for-dev`**; 35.8/35.7 backlog. Driver: 35.9 building on Opus.
+
+**Finding resolutions:**
+- **F-E35-0029** partially closed (closes committed) — see **F-E35-0031** for remaining durability hole.
+- **F-E35-0030 CLOSED** — party disposition = new story **35.9** (widen contract + Projection-Demands parity pin); 35.5 labeled stopgap for deliverables-from-`last_artifact`.
+
+---
+
+#### Claim audit (operator directive A)
+
+| Claim source | Claim | Monitor verification | Verdict |
+|---|---|---|---|
+| 35.3 notes | story tests 21 passed | `pytest test_preflight.py test_start_path_sequence.py` → **21 passed** | **MATCH** |
+| 35.3 notes / Kanban | `tests/unit/marcus` 514 passed | `pytest tests/unit/marcus` → **514 passed** (collect 514/517, 3 deselected) | **MATCH** |
+| 35.5 notes | `pytest tests/hud` → 33+29=**62** green | Disk (incl. untracked render tests): **61 passed** | **MISMATCH (−1)** vs notes; Kanban says 61 |
+| 35.5 Kanban | “61 tests” | Disk: 61 passed | MATCH disk / **NOT on close SHA** |
+| 35.5 close `20cd0744` DoD | implies render goldens/units shipped | `git ls-tree 20cd0744 tests/hud/` = only `_helpers`, `conftest`, `test_data`, `test_server_routes`. **Untracked:** `_render_fixtures.py`, `test_render_goldens.py` (23 `test_`), `test_render_units.py` (5 `test_`) | **FAIL** |
+| 35.5 close SHA only | — | `pytest` on tracked `tests/hud/*.py` only → **33 passed** | Origin proves server-route suite only, **not** the golden matrix cited in notes |
+
+**F-E35-0031 [P1] 35.5 closed without committing its render test suite.** Completion notes and Kanban cite ~61 hud tests / golden matrix; those files remain **untracked**. A fresh clone at `20cd0744` only has **33** `tests/hud` passes. This is exactly the fabricated-green class the operator flagged — numbers were true on a dirty tree, false as durable evidence. **Recommendation:** immediate follow-up commit adding the three render test/fixture files (or reopen 35.5 until they land); do not treat 35.5 DoD as durable until then.
+
+**F-E35-0032 [P3] Notes arithmetic drift.** Notes claim 62; live tail and Kanban say 61. Minor, but reinforces “don’t trust the prose count.”
+
+**F-E35-0033 [P3 info]** 35.3 numeric claims **reproduced**. Live witness doc is honest about deferred full trial-start L3 → 35.7.
+
+---
+
+#### Adversarial design/spec (operator directive B)
+
+**KEY DECISION 2 / Story 35.9** (greenlight + `epic-35-stories`):
+- **Good:** names the AD-1 breach (consumer-side `last_artifact` deliverables synthesis); tickets a parity pin the dual-pin never covered; additive optional sections + no version bump argued under AD-4; sequence 35.9→35.8→35.7 keeps claim fence last.
+- **Challenge — F-E35-0034 [P2] Stopgap shipped as `done`.** `page.py` still builds deliverables from `specialists[].last_artifact` (grep confirmed ~L656). Labeled + superseded-by-35.9 is better than silent, but **AD-1 is green-light law now**, not after 35.9. If 35.9 slips, 35.7 must not claim FR16/projection-sole-input without the stopgap called out in the scoped verdict.
+- **Challenge — F-E35-0035 [P2] 35.9 blast radius.** Owns closed 35.1 contract + 35.2 assembler + 35.5 render + new fence — all `block_mode_trigger_paths` candidates. Regime T1 + serialize vs any parallel agent required. “No schema_version bump” needs the byte-pin/parity regenerate discipline explicit in DoD (present) — watch for silent golden edits without lockstep.
+- **Challenge — F-E35-0036 [P2] Kanban sequencing lag on 35.8.** Row still `# strictly after 35.5` while 35.9 is inserted before 35.8. Stories/greenlight say 35.9→35.8; refresh 35.8 comment to `after 35.9` to prevent a premature legacy-retirement open.
+- **Challenge — F-E35-0037 [P3]** Close commit `20cd0744` also banked this Grok shadow ledger (WP12 ambient). Prefer monitor-only or docs commits; not blocking.
+
+**Render design (35.5) adversarial skim:** zone-scoped innerHTML + dual Python/JS renderers = classic drift risk; notes correctly park live JS preservation on 35.7 — keep that claim fence tight. De-scope ladder cuts look amendment-aligned; never-cut command blocks claimed — not re-proved this poll beyond notes.
+
+**Verdict: 35.3 CLOSE CLAIMS HOLD; 35.5 CLOSE IS UNDURABLE ON TEST EVIDENCE (P1); 35.9 SPEC PLAUSIBLE BUT AD-1 STOPGAP + SEQ/REGIME RISKS OPEN; MONITOR CHARTER HARDENED.**
+
+**Next poll:** ~15m. Expect: render-test bank commit and/or 35.9 in-progress substrate.
+
+---
+
+### SOP-E35-017 — 15m poll — 2026-07-11T20:30:11-04:00
+
+**Scope reviewed:** HEAD still `20cd0744` = origin; Kanban; dirty 35.9 contract package; re-ran pytest claim audit; Claude waiting on 35.9 agent. Ledger-only.
+
+**Delta:** No new commits. **F-E35-0031 still OPEN** — render test trio still `??` untracked.
+
+**Claim re-audit (WP13):**
+| Suite | Result |
+|---|---|
+| `tests/hud` tracked-only (close SHA surface) | **33 passed** |
+| `tests/hud` disk incl. untracked render tests | **61 passed** |
+| Closing claim “61 tests” durable on origin? | **NO** |
+
+**35.9 progress (dirty, Kanban still `ready-for-dev`):**
+- `operator_surface.py` + schema JSON + parity test modified (+458 lines) — `DecisionCardSection` / `ErrorMessageSection` / `DeliverablesSection` optional on projection; `schema_version` still `Literal["v1"]`.
+- No assembler/render edits visible yet this poll.
+- Agent mid “Verifying test_opera…” (~7m).
+
+**Adversarial (WP14):**
+- Additive optional sections match KEY DECISION 2 shape so far — good.
+- **F-E35-0036 still OPEN** — 35.8 comment still `after 35.5`.
+- **F-E35-0038 [P2] Epic Kanban header stale.** Still lists remaining as `(35.3/35.5/35.8/35.7)` though 35.3/35.5 are done and **35.9** is the live remaining contract story. Misleading for anyone reading only the epic row.
+- **F-E35-0039 [P2] 35.9 Kanban lag.** Substrate clearly in-progress while row says `ready-for-dev` — flip when next bank lands.
+- Watch: schema +290 without assembler populate yet = half-built contract; do not close 35.9 until emit + render delete-stopgap + parity pin all land together (story DoD).
+
+**Verdict: P1 RENDER-TEST GAP UNFIXED; 35.9 CONTRACT EDIT IN FLIGHT; SEQ/KANBAN HYGIENE STILL LAGGING.**
+
+**Next poll:** ~15m. Expect: 35.9 bank or render-test fix commit; Kanban flips.
+
+---
+
+### SOP-E35-018 — 15m poll — 2026-07-11T20:45:16-04:00
+
+**Scope reviewed:** HEAD still `20cd0744`; 35.9 agent finished with completion notes; full dirty substrate (contract+assembler+render+tests); claim-audit via `.venv` pytest; Claude dispositioning the 2 “pre-existing” failures before review. Ledger-only.
+
+**Commits:** none. Durability lag continues for entire 35.9 bank + still-untracked render suite.
+
+---
+
+#### Claim audit (WP13)
+
+| Claim | Monitor tail | Verdict |
+|---|---|---|
+| 35.9 notes: `pytest tests/unit/models tests/contracts tests/hud tests/unit/marcus/orchestrator` → **981 passed, 1 skipped, 2 failed** | **981 passed, 1 skipped, 2 failed** (same two nodes) | **MATCH** (honest about fails) |
+| Named fails: `test_30_1_zero_test_edits` + `test_transform_registry_lockstep` | Confirmed in summary | **MATCH** |
+| AD-1: deliverables no longer from `last_artifact` synthesis | `page.py` `_ctx_completed` reads `projection.deliverables`; remaining `last_artifact` only on specialist chip (~L480) | **MATCH on dirty tree** (uncommitted) |
+| New parity pin present | `tests/contracts/test_operator_surface_projection_demands_parity.py` exists (untracked) | **present** |
+| Contracts+parity subset | `test_operator_surface_parity` + projection-demands → **111 passed**; assembler unit → **21 passed** earlier poll segment | supportive |
+| **35.5 / F-E35-0031** still | tracked `tests/hud` → **33 passed**; disk → **65 passed** (was 61; +35.9 goldens) | **P1 STILL OPEN** — origin still lacks render tests |
+
+**Adversarial note on the “2 pre-existing” framing:** transform-registry fail looks unrelated (agree). `test_30_1_zero_test_edits` is a **commit-range** pin that will fire because Epic 35 already modified tests on branch — driver terminal now says “one of them is genuinely mine to fix.” Treat notes’ “unrelated to 35.9” as **partially overstated** until disposition lands (allowlist vs fix vs documented waive). Do not let a red L1 hide inside “pre-existing.”
+
+---
+
+#### Design/spec adversarial (WP14)
+
+- **F-E35-0034** progress: stopgap deletion present on dirty tree — closes only when committed + greppable on SHA.
+- Health-budget “fold” = read missing field → default 60 (notes deviation #1). Honest, but **does not implement** the 35.5 SHOULD as a real projection field — ensure review does not claim the SHOULD fully folded.
+- `pick_context`/`evidence` as pre-summarized `list[str]` (deviation #2): bounded display projection — acceptable if review agrees it is not state derivation; watch 35.7 claim language.
+- Parity pin + single 35.7-dated waiver matches KEY DECISION 2 on paper — good fence if the demand→field map is not rubber-stamped (monitor did not re-diff EXPERIENCE.md bullets line-by-line this poll).
+- **F-E35-0031 ∩ 35.9:** notes list `_render_fixtures` / goldens / units as 35.9 test files. Closing 35.9 **without** adding them would repeat the 35.5 evidence hole. Closing **with** them remediates 0031 — prefer that in the close commit.
+- **F-E35-0036 / 0038 / 0039** still OPEN (35.8 “after 35.5”; epic header lists closed stories; 35.9 still `ready-for-dev` while completion notes exist).
+
+**Driver:** 35.9 agent done (~21m); orchestrator checking the two failures before code-review.
+
+**Verdict: 35.9 DEV-COMPLETE ON DISK — AGGREGATE COUNT VERIFIED; 2 REDS NEED HONEST DISPOSITION; RENDER-TEST P1 UNFIXED; AWAIT REVIEW + DURABLE CLOSE THAT BANKS TESTS.**
+
+**Next poll:** ~15m. Expect: failure disposition, code-review, and/or close commit including render tests.
 
 ---

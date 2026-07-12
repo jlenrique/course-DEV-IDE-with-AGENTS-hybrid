@@ -65,3 +65,13 @@ performance review under the scoped-verdict schema (amendment 2) and Murat's 10-
 checklist (amendment 14). DoD-over-clock and no-thin-evidence still bind; the abort/
 continuity criterion (amendment 9) governs the paid run. Sequence from here:
 35.3 (in-flight) + 35.5 (in-flight, parallel) → 35.8 → 35.7.
+
+---
+
+## QUEUED END-OF-SESSION INSTRUCTION (operator, 2026-07-11 ~20:45)
+
+When the active goal completes (all remaining Epic 35 stories authored+closed:
+35.9 → 35.8 → 35.7 E2E small-run + party scoped-verdict review), THEN:
+1. Run the BMAD **session-WRAPUP** protocol (bmad session protocol session wrapup —
+   Step 12 = push; update sprint-status/next-session-start-here/state anchors; close letters).
+2. Then **WAIT** (idle for operator input; do not start new work).

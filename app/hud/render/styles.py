@@ -184,6 +184,9 @@ a { color:#94A3B8; text-decoration:underline; text-underline-offset:2px; }
 .artifact .mono { color:#94A3B8; }
 .more { margin-top:6px; }
 .more > summary { cursor:pointer; color:#64748B; font-size:12px; }
+/* decision-card options/evidence caption + completion component chips (35.9) */
+.art-label { margin-top:10px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
+.components { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
 
 /* command block — the next action; no buttons; fully selectable */
 .cmd {

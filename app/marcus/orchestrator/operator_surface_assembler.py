@@ -25,15 +25,17 @@ The single writer of ``state/config/runs/<trial_id>/operator-surface.json``
 Every public method is wrapped so that no exception ever escapes into the
 runner walk (greenlight amendment 8): failures are logged and swallowed.
 
-Layer rule: this module imports the contract package and stdlib only. The
-CLI-co-located next-action builder is imported **lazily** inside ``emit`` to
-avoid an import cycle with ``app.marcus.cli`` (whose package ``__init__``
-imports ``trial`` → ``production_runner``).
+Layer rule: this module imports the contract package, stdlib, and PyYAML
+(``run_summary.yaml`` is YAML — the contract package already depends on PyYAML)
+only. The CLI-co-located next-action builder is imported **lazily** inside
+``emit`` to avoid an import cycle with ``app.marcus.cli`` (whose package
+``__init__`` imports ``trial`` → ``production_runner``).
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import os
 import threading
@@ -45,8 +47,15 @@ from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+import yaml
+
 from app.models.runtime.operator_surface import (
+    DecisionCardSection,
+    DeliverableComponents,
+    DeliverablesSection,
+    DraftedProposal,
     EnvelopeSection,
+    ErrorMessageSection,
     HealthSection,
     HealthTile,
     IdentitySection,
@@ -70,6 +79,18 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_HUD_CONFIG_PATH = REPO_ROOT / "state" / "config" / "hud-config.yaml"
 
 PROJECTION_FILENAME = "operator-surface.json"
+
+#: Run-dir artifacts the pause/completion emit maps 1:1 into the projection
+#: (Story 35.9). Every read is guarded — a missing/garbage artifact yields a
+#: ``None`` section, never a raise into the walk (greenlight amendment 8).
+ERROR_PAUSE_FILENAME = "error-pause.json"
+RUN_SUMMARY_FILENAME = "run_summary.yaml"
+COST_REPORT_FILENAME = "cost-report.json"
+EXPORTS_DIRNAME = "exports"
+
+#: Bounds so the additive sections cannot reopen the 525KB run.json trap (AD-16).
+_CONTEXT_ENTRY_MAX_CHARS = 240
+_MAX_EXPORT_PATHS = 40
 
 #: Bounded retry for ``os.replace`` under a concurrent open reader (AD-2).
 _REPLACE_RETRIES = 5
@@ -291,6 +312,12 @@ class OperatorSurfaceAssembler:
                     ).model_dump(mode="json"),
                     "notifications_echo": self._ensure_notifications_echo(prev, now),
                     "next_action": self._next_action_dict(envelope, now),
+                    # Story 35.9 — verb-conditional sections mapped 1:1 from the
+                    # run-dir artifacts. Each returns None off its trigger status
+                    # so the field CLEARS on transition (same as next_action).
+                    "decision_card": self._decision_card_dict(envelope, now),
+                    "error_message": self._error_message_dict(envelope, now),
+                    "deliverables": self._deliverables_dict(envelope, now),
                 }
                 return updates
 
@@ -325,6 +352,181 @@ class OperatorSurfaceAssembler:
         return NextActionSection(
             as_of=now, command=command, pause_class=status
         ).model_dump(mode="json")
+
+    # -- Story 35.9: decision-card / error / deliverables (verb-conditional) --
+
+    @staticmethod
+    def _summarize_context_entry(entry: Any) -> str:
+        """One pick_context/evidence entry -> one short display string (1:1).
+
+        Precedence: a concrete artifact ``path`` > voice-option names > a
+        ``kind (node_id)`` tag > the raw value. Bounded so a fat card cannot
+        bloat the projection (AD-16).
+        """
+        text: str
+        if isinstance(entry, dict):
+            path = entry.get("path")
+            voices = entry.get("voices")
+            if isinstance(path, str) and path:
+                text = path
+            elif isinstance(voices, list) and voices:
+                names = [
+                    str(v.get("voice_name"))
+                    for v in voices
+                    if isinstance(v, dict) and v.get("voice_name")
+                ]
+                text = "voice options: " + ", ".join(names) if names else "voice options"
+            else:
+                kind = entry.get("kind")
+                node = entry.get("node_id")
+                if kind and node:
+                    text = f"{kind} ({node})"
+                else:
+                    text = str(kind or node or entry.get("voice_name") or "context")
+        else:
+            text = str(entry)
+        return text[:_CONTEXT_ENTRY_MAX_CHARS]
+
+    def _decision_card_dict(self, envelope: Any, now: datetime) -> dict[str, Any] | None:
+        """Map ``decision-card-{gate}.json`` -> DecisionCardSection at a gate pause."""
+        if envelope.status != "paused-at-gate" or not envelope.paused_gate:
+            return None
+        try:
+            path = self.run_dir / f"decision-card-{envelope.paused_gate}.json"
+            card = json.loads(path.read_text(encoding="utf-8")).get("card")
+            if not isinstance(card, dict):
+                return None
+            proposal = None
+            dp = card.get("drafted_proposal")
+            if isinstance(dp, dict):
+                conf = dp.get("confidence")
+                confidence = (
+                    float(conf)
+                    if isinstance(conf, (int, float)) and 0.0 <= float(conf) <= 1.0
+                    else None
+                )
+                proposal = DraftedProposal(
+                    decision=dp.get("decision"),
+                    confidence=confidence,
+                    rationale=dp.get("rationale"),
+                )
+            pick_context = [
+                self._summarize_context_entry(e)
+                for e in (card.get("pick_context") or [])
+            ]
+            evidence = [
+                self._summarize_context_entry(e) for e in (card.get("evidence") or [])
+            ]
+            return DecisionCardSection(
+                as_of=now,
+                gate_focus=card.get("gate_focus"),
+                operator_prompt=card.get("operator_prompt"),
+                drafted_proposal=proposal,
+                pick_context=pick_context,
+                evidence=evidence,
+            ).model_dump(mode="json")
+        except Exception:  # noqa: BLE001 — a missing/garbage card never sinks emit
+            LOGGER.exception(
+                "decision-card map failed for trial %s (gate=%s) — section omitted",
+                self.trial_id,
+                envelope.paused_gate,
+            )
+            return None
+
+    def _error_message_dict(self, envelope: Any, now: datetime) -> dict[str, Any] | None:
+        """Map ``error-pause.json`` -> ErrorMessageSection at an error pause."""
+        if envelope.status != "paused-at-error":
+            return None
+        try:
+            path = self.run_dir / ERROR_PAUSE_FILENAME
+            data = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                return None
+            raw_index = data.get("node_index")
+            node_index = int(raw_index) if isinstance(raw_index, (int, float)) else None
+            message = data.get("message")
+            return ErrorMessageSection(
+                as_of=now,
+                message=str(message) if message is not None else None,
+                node_index=node_index,
+                tag=data.get("tag"),
+            ).model_dump(mode="json")
+        except Exception:  # noqa: BLE001 — a missing/garbage artifact never sinks emit
+            LOGGER.exception(
+                "error-pause map failed for trial %s — section omitted", self.trial_id
+            )
+            return None
+
+    def _deliverables_dict(self, envelope: Any, now: datetime) -> dict[str, Any] | None:
+        """Map run_summary + cost-report + exports -> DeliverablesSection on completion.
+
+        Each of the three reads is INDEPENDENTLY guarded so a missing cost
+        report never suppresses the component booleans, and vice versa
+        (greenlight amendment 8). MINIMAL export enumeration only (KEY DECISION
+        2 waiver): top-level ``exports/`` entries, not a rich per-artifact walk.
+        """
+        if envelope.status != "completed":
+            return None
+        try:
+            components = self._read_component_selection()
+            total_cost_usd = self._read_total_cost()
+            export_paths = self._read_export_paths()
+            if components is None and total_cost_usd is None and not export_paths:
+                return None
+            return DeliverablesSection(
+                as_of=now,
+                components=components,
+                total_cost_usd=total_cost_usd,
+                export_paths=export_paths,
+            ).model_dump(mode="json")
+        except Exception:  # noqa: BLE001
+            LOGGER.exception(
+                "deliverables map failed for trial %s — section omitted", self.trial_id
+            )
+            return None
+
+    def _read_component_selection(self) -> DeliverableComponents | None:
+        try:
+            raw = yaml.safe_load(
+                (self.run_dir / RUN_SUMMARY_FILENAME).read_text(encoding="utf-8")
+            )
+            sel = raw.get("component_selection") if isinstance(raw, dict) else None
+            if not isinstance(sel, dict):
+                return None
+            return DeliverableComponents(
+                deck=sel.get("deck") if isinstance(sel.get("deck"), bool) else None,
+                motion=sel.get("motion") if isinstance(sel.get("motion"), bool) else None,
+                workbook=(
+                    sel.get("workbook") if isinstance(sel.get("workbook"), bool) else None
+                ),
+            )
+        except Exception:  # noqa: BLE001
+            LOGGER.warning(
+                "run_summary component_selection unreadable for trial %s", self.trial_id
+            )
+            return None
+
+    def _read_total_cost(self) -> float | None:
+        try:
+            data = json.loads(
+                (self.run_dir / COST_REPORT_FILENAME).read_text(encoding="utf-8")
+            )
+            cost = data.get("total_cost_usd") if isinstance(data, dict) else None
+            return float(cost) if isinstance(cost, (int, float)) and cost >= 0 else None
+        except Exception:  # noqa: BLE001
+            LOGGER.warning("cost-report total_cost_usd unreadable for trial %s", self.trial_id)
+            return None
+
+    def _read_export_paths(self) -> list[str]:
+        try:
+            exports = self.run_dir / EXPORTS_DIRNAME
+            if not exports.is_dir():
+                return []
+            names = sorted(p.name for p in exports.iterdir())
+            return [f"{EXPORTS_DIRNAME}/{n}" for n in names[:_MAX_EXPORT_PATHS]]
+        except Exception:  # noqa: BLE001
+            LOGGER.warning("exports enumeration failed for trial %s", self.trial_id)
+            return []
 
     # -- public API: steps section (AD-15) --------------------------------
 

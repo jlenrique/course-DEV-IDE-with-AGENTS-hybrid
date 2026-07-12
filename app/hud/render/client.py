@@ -46,7 +46,9 @@ POLL_JS = r"""
     var d = parseDt(v);
     if (!d) return esc(v);
     function p(n) { return (n < 10 ? "0" : "") + n; }
-    return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+    // UTC to match the server-side cold-load render (page.py strftimes a UTC
+    // datetime) — kills the cold-load-vs-first-poll clock jump (35.9 fold).
+    return p(d.getUTCHours()) + ":" + p(d.getUTCMinutes()) + ":" + p(d.getUTCSeconds());
   }
   function ageStamp(asOf, now) {
     var a = parseDt(asOf), n = parseDt(now);
@@ -161,6 +163,12 @@ POLL_JS = r"""
     var gb = "";
     if (kind === "gate-paused" && (d.envelope || {}).paused_gate)
       gb = '<span class="gatebadge">⏸ ' + esc(d.envelope.paused_gate) + "</span>";
+    // Step X/Y on the active walking node — mirrors page.py so the summary
+    // does not vanish on the first poll (35.9 fold).
+    var dur = "";
+    var steps = d.steps || {};
+    if (e === active && st === "in-flight" && steps.walk_index !== undefined && steps.node_count)
+      dur = '<span class="dur">Step ' + esc(steps.walk_index) + "/" + esc(steps.node_count) + "</span>";
     var locked = e.locked_artifact_summary;
     var detail = '<div class="frow"><span class="k">locked artifact</span><span class="v mono">' +
       (locked ? esc(locked) : "no locked artifact yet") + "</span></div>";
@@ -168,7 +176,7 @@ POLL_JS = r"""
     if (block.length) detail += '<div class="frow"><span class="k">blockers</span><span class="v">' + esc(block.join(", ")) + "</span></div>";
     return '<details id="' + did + '" data-step-summary-id="' + did + '" class="node ' + kind + '"' + auto + openAttr + ">" +
       '<summary><span class="mark">' + STEP_MARK[kind] + '</span><span class="nid">' + nid +
-      '</span><span class="lab">' + esc(e.label) + "</span>" + gb + "</summary>" +
+      '</span><span class="lab">' + esc(e.label) + "</span>" + gb + dur + "</summary>" +
       '<div class="node-detail">' + detail + "</div></details>";
   }
   function mapZone(d) {
@@ -206,23 +214,58 @@ POLL_JS = r"""
     if (!cmd) return "";
     return '<div class="cmd-cap">' + esc(cap) + '</div><div class="cmd">' + esc(cmd) + "</div>";
   }
+  function artifactsBlock(items) {
+    // Collapse beyond the first three — mirrors page.py::_artifacts_block.
+    if (!items || !items.length) return "";
+    var head = items.slice(0, 3), tail = items.slice(3), i, rows = "";
+    for (i = 0; i < head.length; i++) rows += '<div class="artifact"><span class="mono">' + esc(head[i]) + "</span></div>";
+    var out = '<div class="artifacts">' + rows + "</div>";
+    if (tail.length) {
+      var more = "";
+      for (i = 0; i < tail.length; i++) more += '<div class="artifact"><span class="mono">' + esc(tail[i]) + "</span></div>";
+      out += '<details class="more"><summary>+' + tail.length + ' more artifact(s)</summary><div class="artifacts">' + more + "</div></details>";
+    }
+    return out;
+  }
+  function labelledArtifacts(label, items) {
+    if (!items || !items.length) return "";
+    return '<div class="art-label">' + esc(label) + "</div>" + artifactsBlock(items);
+  }
   function context(d, now) {
     var env = d.envelope || {}, st = env.status, na = d.next_action || {};
     var active = activeEntry(d.steps);
     if (st === "paused-at-gate") {
-      var locked = active && active.locked_artifact_summary;
-      var art = locked ? '<div class="artifacts"><div class="artifact"><span class="mono">' + esc(locked) + "</span></div></div>" : "";
+      // Decision-card fields ABOVE the command block (35.9), verb-conditional.
+      var dc = d.decision_card || {}, prop = dc.drafted_proposal || null, fields = "";
+      if (dc.gate_focus) fields += '<div class="frow"><span class="k">gate focus</span><span class="v mono">' + esc(dc.gate_focus) + "</span></div>";
+      if (prop) {
+        var confTxt = (prop.confidence !== null && prop.confidence !== undefined) ? " · confidence " + esc(prop.confidence) : "";
+        fields += '<div class="frow"><span class="k">drafted proposal</span><span class="v">' + esc(prop.decision) + confTxt + "</span></div>";
+        if (prop.rationale) fields += '<div class="frow"><span class="k">rationale</span><span class="v">' + esc(prop.rationale) + "</span></div>";
+      }
+      var fieldsHtml = fields ? '<div class="fields">' + fields + "</div>" : "";
+      var prompt = dc.operator_prompt ? esc(dc.operator_prompt) : ("Gate " + esc(env.paused_gate) + " awaits your verdict. Decide via the Marcus-SPOC surface using the command below.");
+      var pick = dc.pick_context || [], evidence = dc.evidence || [];
+      if (!evidence.length) { var lk = active && active.locked_artifact_summary; evidence = lk ? [lk] : []; }
+      var arts = labelledArtifacts("options", pick) + labelledArtifacts("evidence", evidence);
       return '<div class="gate-brief"><div class="bt">⏸ Gate ' + esc(env.paused_gate) + "</div>" +
         '<div class="bm">' + esc(ageStamp(env.as_of, now)) + "</div>" +
-        '<div class="prompt">Gate ' + esc(env.paused_gate) + " awaits your verdict. Decide via the Marcus-SPOC surface using the command below.</div>" +
-        art + cmdBlock(na.command, "paste into the Marcus-SPOC surface — digest pre-filled:") + "</div>";
+        '<div class="prompt">' + prompt + "</div>" +
+        fieldsHtml + arts + cmdBlock(na.command, "paste into the Marcus-SPOC surface — digest pre-filled:") + "</div>";
     }
     if (st === "paused-at-error") {
-      var steps = d.steps || {};
+      var steps = d.steps || {}, em = d.error_message || {};
+      var displayTag = em.tag || env.paused_error_tag;
+      var nodeDisp = esc(active && active.step_id) + " · walk " + esc(steps.walk_index);
+      if (em.node_index !== null && em.node_index !== undefined) nodeDisp += " · node index " + esc(em.node_index);
+      var reenter = (steps.reentered_from !== null && steps.reentered_from !== undefined) ? esc(steps.reentered_from) : "—";
+      var msgHtml = em.message ? '<div class="frow"><span class="k">message</span><span class="v mono">' + esc(em.message) + "</span></div>" : "";
       return '<div class="err-brief"><div class="bt">⛔ Paused at error</div>' +
         '<div class="bm">' + esc(ageStamp(env.as_of, now)) + "</div><div class=\"fields\">" +
-        '<div class="frow"><span class="k">error tag</span><span class="v mono">' + esc(env.paused_error_tag) + "</span></div>" +
-        '<div class="frow"><span class="k">node</span><span class="v mono">' + esc(active && active.step_id) + " · walk " + esc(steps.walk_index) + "</span></div>" +
+        '<div class="frow"><span class="k">error tag</span><span class="v mono">' + esc(displayTag) + "</span></div>" +
+        msgHtml +
+        '<div class="frow"><span class="k">node</span><span class="v mono">' + nodeDisp + "</span></div>" +
+        '<div class="frow"><span class="k">re-entry</span><span class="v mono">' + reenter + "</span></div>" +
         "</div>" + cmdBlock(na.command, "recover command:") + "</div>";
     }
     if (st === "waiting_for_provider_batch") {
@@ -232,11 +275,21 @@ POLL_JS = r"""
         cmdBlock(na.command, "resume command:") + "</div>";
     }
     if (st === "completed") {
-      var roster = (d.specialists && d.specialists.roster) || [], rows = "";
-      for (var i = 0; i < roster.length; i++) if (roster[i].last_artifact) rows += '<div class="artifact"><span class="mono">' + esc(roster[i].last_artifact) + "</span></div>";
+      // Deliverables from the projection's own section (35.9) — the roster
+      // last_artifact synthesis is DELETED (AD-1 projection-is-sole-input).
+      var deliv = d.deliverables || {}, comps = deliv.components || {}, compChips = "";
+      ["deck", "motion", "workbook"].forEach(function (nm) {
+        if (comps[nm]) compChips += '<span class="chip on"><span class="dot"></span> ' + esc(nm.toUpperCase()) + "</span>";
+      });
+      var compHtml = compChips ? '<div class="components">' + compChips + "</div>" : "";
+      var exports = deliv.export_paths || [], rows = "";
+      for (var i = 0; i < exports.length; i++) rows += '<div class="artifact"><span class="mono">' + esc(exports[i]) + "</span></div>";
       if (!rows) rows = '<div class="artifact">see run dir for exports</div>';
+      var cost = "";
+      if (deliv.total_cost_usd !== null && deliv.total_cost_usd !== undefined)
+        cost = '<div class="frow"><span class="k">final cost</span><span class="v">$' + esc(deliv.total_cost_usd) + "</span></div>";
       return '<div class="land-brief"><div class="bt">✓ Landed</div><div class="bm">completed ' + clock(env.completed_at) + "</div>" +
-        '<div class="artifacts">' + rows + "</div></div>";
+        compHtml + '<div class="artifacts">' + rows + '</div><div class="fields">' + cost + "</div></div>";
     }
     if (st === "failed") {
       var tail = na.command ? cmdBlock(na.command, "recovery command:") : '<div class="prompt">no automated recovery — see SPOC</div>';
@@ -309,9 +362,12 @@ POLL_JS = r"""
   }
   function renderZones(d) {
     var now = new Date().toISOString();
+    // Health-tile staleness budget from the projection (35.9 fold) rather than
+    // a hardcoded 60, so cold-load and poll agree if the runtime ever sets it.
+    var budget = (d.health_budget_seconds !== null && d.health_budget_seconds !== undefined) ? d.health_budget_seconds : 60;
     applyZone("annunciator", annunciator(d, now));
     applyZone("identity-header", identity(d, now));
-    applyZone("health-strip", health(d, now, 60));
+    applyZone("health-strip", health(d, now, budget));
     applyZone("main-deck", mainDeck(d, now));
     applyZone("state-trace", trace(d));
   }

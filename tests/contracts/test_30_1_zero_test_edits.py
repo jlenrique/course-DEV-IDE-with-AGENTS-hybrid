@@ -27,12 +27,12 @@ from pathlib import Path
 
 import pytest
 
-# Rolled forward 2026-07-11 at Epic-35 story 35.0 close (0f3fee72) per the
-# rollforward policy above: 30-2b and the intervening ratified arcs (incl.
-# the 35.0 lockstep-disposition edits to tests/test_run_hud.py and
-# tests/test_progress_map.py) are in-baseline; the allowlists below carry
-# only the in-flight Epic-35 test inventory.
-_PRE_30_1_BASELINE_COMMIT: str = "0f3fee72"
+# Rolled forward 2026-07-11 at Epic-35 story 35.9 close (20cd0744 = 35.5 close)
+# per the rollforward policy above: Epic-35 stories 35.1-35.5 test inventory is
+# now in-baseline; the allowlists below carry only the in-flight 35.9 test
+# footprint (its new parity-pin + the 35.5 render tests that land one commit
+# late here + the two 35.9-modified suites).
+_PRE_30_1_BASELINE_COMMIT: str = "20cd0744"
 _REPO_ROOT: Path = Path(__file__).parent.parent.parent.resolve()
 
 # Allowlist: new test files that are legitimately added in the range
@@ -42,15 +42,19 @@ _REPO_ROOT: Path = Path(__file__).parent.parent.parent.resolve()
 # additions need to appear here.
 _ALLOWED_NEW_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     {
-        # Epic 35 story 35.1 (party green-light
-        # epic-35-party-greenlight-2026-07-11.md; AD-4 dual pins).
-        "tests/unit/models/test_operator_surface_shape_pin.py",
-        "tests/contracts/test_operator_surface_parity.py",
+        # Epic 35 story 35.9 — new §Projection-Demands parity fence
+        # (party KEY DECISION 2).
+        "tests/contracts/test_operator_surface_projection_demands_parity.py",
+        # Epic 35 story 35.5 render tests — created at 35.5 but not staged in
+        # the 20cd0744 close commit; land here (extended by 35.9).
+        "tests/hud/_render_fixtures.py",
+        "tests/hud/test_render_goldens.py",
+        "tests/hud/test_render_units.py",
     }
 )
 
 # Modified-file allowlist: pre-existing test files that are legitimately
-# MODIFIED in the range ``4911fc4..HEAD``. Each entry must name the
+# MODIFIED in the range ``<baseline>..HEAD``. Each entry must name the
 # specific AC or deferred finding that authorizes the edit.
 _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
     {
@@ -58,6 +62,10 @@ _ALLOWED_MODIFIED_PATHS_UNDER_TESTS: frozenset[str] = frozenset(
         # close by the rollforward policy itself (baseline advance +
         # allowlist trim).
         "tests/contracts/test_30_1_zero_test_edits.py",
+        # Epic 35 story 35.9 — contract widening extends the 35.1 parity suite
+        # and the 35.2 assembler suite (party KEY DECISION 2).
+        "tests/contracts/test_operator_surface_parity.py",
+        "tests/unit/marcus/orchestrator/test_operator_surface_assembler.py",
     }
 )
 

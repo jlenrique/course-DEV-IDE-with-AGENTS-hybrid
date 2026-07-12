@@ -19,13 +19,16 @@ feed. NEVER cut: gate/error/batch briefings with inline artifacts + verbatim
 command blocks, deliverables summary, identity-guard states, UNRECOGNIZED.
 
 Contract-fidelity note: the render surfaces exactly what the v1
-``operator-surface`` contract carries. The UX spine's richer "decision card"
-demands (gate_focus / operator_prompt / drafted proposal, verbatim error
-message, discrete deliverables list) are not v1 contract fields, so — by the
-zero-lie rule — the briefings render the fields that DO exist (paused_gate /
-paused_error_tag / next_action.command verbatim / the paused node's
-locked_artifact_summary as the artifact under judgment / specialists'
-last_artifact paths as deliverables). See completion notes.
+``operator-surface`` contract carries. As of Story 35.9 that contract carries
+the UX spine's richer §Projection-Demands sections directly — ``decision_card``
+(gate_focus / operator_prompt / drafted_proposal + confidence / pick_context /
+evidence), ``error_message`` (verbatim message + node/tag), and
+``deliverables`` (component booleans + total cost + export paths). The gate /
+error / completed briefings render those sections when present and degrade
+gracefully (paused_gate / paused_error_tag / next_action.command) when a
+verb-conditional field is absent. The former consumer-side
+``specialists[].last_artifact`` deliverables synthesis is DELETED (AD-1: the
+projection is the sole input; the runtime owns deliverables, not the view).
 """
 
 from __future__ import annotations
@@ -147,7 +150,14 @@ def _view(data: dict[str, Any]) -> dict[str, Any]:
         "now": now,
         "bound_trial_id": data.get("bound_trial_id", ""),
         "mode": data.get("mode", "session"),
-        "health_budget": int(data.get("health_budget_seconds", 60)),
+        # Prefer a projection-carried budget so the cold-load server render and
+        # the client poll agree (35.9 fold); fall back to the data envelope,
+        # then the 60s default.
+        "health_budget": int(
+            proj.get("health_budget_seconds")
+            if isinstance(proj.get("health_budget_seconds"), (int, float))
+            else data.get("health_budget_seconds", 60)
+        ),
     }
 
 
@@ -588,12 +598,60 @@ def _ctx_walking(view: dict[str, Any]) -> str:
     )
 
 
+def _decision_card(view: dict[str, Any]) -> dict[str, Any]:
+    dc = view["proj"].get("decision_card")
+    return dc if isinstance(dc, dict) else {}
+
+
+def _labelled_artifacts(label: str, items: list[str]) -> str:
+    """A captioned collapse-beyond-3 artifacts block (skipped when empty)."""
+    if not items:
+        return ""
+    return f'<div class="art-label">{_esc(label)}</div>{_artifacts_block(items)}'
+
+
 def _ctx_gate(view: dict[str, Any]) -> str:
     env = view["envelope"]
     gate = env.get("paused_gate")
-    a = view["active"] or {}
-    locked = a.get("locked_artifact_summary")
-    artifacts = _artifacts_block([str(locked)] if locked else [])
+    dc = _decision_card(view)
+    focus = dc.get("gate_focus")
+    prompt = dc.get("operator_prompt")
+    proposal = dc.get("drafted_proposal") if isinstance(dc.get("drafted_proposal"), dict) else None
+
+    # Decision-card fields ABOVE the command block (Story 35.9). gate_focus +
+    # operator_prompt + drafted_proposal + confidence, each verb-conditional.
+    fields = ""
+    if focus:
+        fields += (
+            '<div class="frow"><span class="k">gate focus</span>'
+            f'<span class="v mono">{_esc(focus)}</span></div>'
+        )
+    if proposal:
+        conf = proposal.get("confidence")
+        conf_txt = f" · confidence {_esc(conf)}" if conf is not None else ""
+        fields += (
+            '<div class="frow"><span class="k">drafted proposal</span>'
+            f'<span class="v">{_esc(proposal.get("decision"))}{conf_txt}</span></div>'
+        )
+        if proposal.get("rationale"):
+            fields += (
+                '<div class="frow"><span class="k">rationale</span>'
+                f'<span class="v">{_esc(proposal.get("rationale"))}</span></div>'
+            )
+    fields_html = f'<div class="fields">{fields}</div>' if fields else ""
+
+    prompt_text = _esc(prompt) if prompt else (
+        f"Gate {_esc(gate)} awaits your verdict. Decide via the Marcus-SPOC "
+        "surface using the command below."
+    )
+    # pick_context / evidence via the collapse-beyond-3 helper. Fall back to
+    # the paused node's locked artifact only when the card carries no evidence.
+    pick = [str(x) for x in (dc.get("pick_context") or [])]
+    evidence = [str(x) for x in (dc.get("evidence") or [])]
+    if not evidence:
+        locked = (view["active"] or {}).get("locked_artifact_summary")
+        evidence = [str(locked)] if locked else []
+    artifacts = _labelled_artifacts("options", pick) + _labelled_artifacts("evidence", evidence)
     cmd = _command_block(
         _next_action(view).get("command"),
         "paste into the Marcus-SPOC surface — digest pre-filled:",
@@ -602,9 +660,8 @@ def _ctx_gate(view: dict[str, Any]) -> str:
         '<div class="gate-brief">'
         f'<div class="bt">⏸ Gate {_esc(gate)}</div>'
         f'<div class="bm">{_esc(_age_stamp(env.get("as_of"), view["now"]))}</div>'
-        f'<div class="prompt">Gate {_esc(gate)} awaits your verdict. '
-        "Decide via the Marcus-SPOC surface using the command below.</div>"
-        f"{artifacts}{cmd}</div>"
+        f'<div class="prompt">{prompt_text}</div>'
+        f"{fields_html}{artifacts}{cmd}</div>"
     )
 
 
@@ -618,11 +675,31 @@ def _ctx_error(view: dict[str, Any]) -> str:
     node = _esc(a.get("step_id"))
     walk = _esc(steps.get("walk_index"))
     reenter_v = _esc(reenter) if reenter is not None else "—"
+
+    # Verbatim error message (Story 35.9): the error_message section carries the
+    # exact runtime message + node_index + tag; render the message verbatim and
+    # prefer its richer tag/node_index over the envelope fallback when present.
+    em = view["proj"].get("error_message")
+    em = em if isinstance(em, dict) else {}
+    message = em.get("message")
+    display_tag = em.get("tag") or tag
+    node_index = em.get("node_index")
+    node_disp = f"{node} · walk {walk}"
+    if node_index is not None:
+        node_disp += f" · node index {_esc(node_index)}"
+
+    message_html = ""
+    if message:
+        message_html = (
+            '<div class="frow"><span class="k">message</span>'
+            f'<span class="v mono">{_esc(message)}</span></div>'
+        )
     fields = (
         '<div class="frow"><span class="k">error tag</span>'
-        f'<span class="v mono">{_esc(tag)}</span></div>'
+        f'<span class="v mono">{_esc(display_tag)}</span></div>'
+        f"{message_html}"
         '<div class="frow"><span class="k">node</span>'
-        f'<span class="v mono">{node} · walk {walk}</span></div>'
+        f'<span class="v mono">{node_disp}</span></div>'
         '<div class="frow"><span class="k">re-entry</span>'
         f'<span class="v mono">{reenter_v}</span></div>'
     )
@@ -651,31 +728,39 @@ def _ctx_batch(view: dict[str, Any]) -> str:
 
 def _ctx_completed(view: dict[str, Any]) -> str:
     env = view["envelope"]
-    specs = view["proj"].get("specialists")
-    roster = specs.get("roster") if isinstance(specs, dict) else []
-    deliverables = [
-        str(s.get("last_artifact"))
-        for s in (roster or [])
-        if isinstance(s, dict) and s.get("last_artifact")
-    ]
+    # Story 35.9: deliverables come from the projection's own ``deliverables``
+    # section (runtime-owned, AD-1) — the consumer-side specialists[].last_artifact
+    # synthesis is GONE. Discrete export list + component chips + final cost line.
+    deliv = view["proj"].get("deliverables")
+    deliv = deliv if isinstance(deliv, dict) else {}
+
+    components = deliv.get("components") if isinstance(deliv.get("components"), dict) else {}
+    comp_chips = "".join(
+        f'<span class="chip on"><span class="dot"></span> {_esc(name.upper())}</span>'
+        for name in ("deck", "motion", "workbook")
+        if components.get(name)
+    )
+    comp_html = f'<div class="components">{comp_chips}</div>' if comp_chips else ""
+
+    exports = [str(p) for p in (deliv.get("export_paths") or [])]
     rows = "".join(
-        f'<div class="artifact"><span class="mono">{_esc(p)}</span></div>' for p in deliverables
+        f'<div class="artifact"><span class="mono">{_esc(p)}</span></div>' for p in exports
     )
     if not rows:
         rows = '<div class="artifact">see run dir for exports</div>'
+
     cost = ""
-    health = view["proj"].get("health")
-    for tile in (health.get("tiles") if isinstance(health, dict) else []) or []:
-        if isinstance(tile, dict) and str(tile.get("label", "")).lower().startswith("cost"):
-            cost = (
-                '<div class="frow"><span class="k">final cost</span>'
-                f'<span class="v">{_esc(tile.get("value"))}</span></div>'
-            )
-            break
+    total = deliv.get("total_cost_usd")
+    if total is not None:
+        cost = (
+            '<div class="frow"><span class="k">final cost</span>'
+            f'<span class="v">${_esc(total)}</span></div>'
+        )
     return (
         '<div class="land-brief">'
         f'<div class="bt">✓ Landed</div>'
         f'<div class="bm">completed {_clock(env.get("completed_at"))}</div>'
+        f"{comp_html}"
         f'<div class="artifacts">{rows}</div><div class="fields">{cost}</div></div>'
     )
 

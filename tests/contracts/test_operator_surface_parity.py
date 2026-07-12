@@ -26,7 +26,12 @@ from app.models.runtime.operator_surface import (
     PROJECTION_SIZE_LIMIT_BYTES,
     PROJECTION_SIZE_TARGET_BYTES,
     TRACE_RING_CAP,
+    DecisionCardSection,
+    DeliverableComponents,
+    DeliverablesSection,
+    DraftedProposal,
     EnvelopeSection,
+    ErrorMessageSection,
     EventClass,
     HealthReading,
     HealthSection,
@@ -247,6 +252,12 @@ _SECTION_DEFS: list[tuple[type[BaseModel], str]] = [
     (NotificationsEchoSection, "NotificationsEchoSection"),
     (HudConfig, "HudConfig"),
     (NotificationRule, "NotificationRule"),
+    # Story 35.9 additive sections
+    (DecisionCardSection, "DecisionCardSection"),
+    (DraftedProposal, "DraftedProposal"),
+    (ErrorMessageSection, "ErrorMessageSection"),
+    (DeliverablesSection, "DeliverablesSection"),
+    (DeliverableComponents, "DeliverableComponents"),
 ]
 
 
@@ -347,6 +358,82 @@ def test_lenient_reader_roundtrip_from_producer_json() -> None:
     assert result.envelope.status == "paused-at-gate"
     assert result.next_action is not None
     assert result.next_action.command == projection.next_action.command
+
+
+# ---------------------------------------------------------------------------
+# Story 35.9 additive sections — all optional, verb-conditional, round-trip
+# ---------------------------------------------------------------------------
+
+
+def test_new_sections_default_to_none() -> None:
+    """Additive within v1: every existing status builds with the trio absent."""
+    for status in get_args(OperatorSurfaceStatus):
+        proj = build_projection(status)
+        assert proj.decision_card is None
+        assert proj.error_message is None
+        assert proj.deliverables is None
+
+
+def test_decision_card_section_all_inner_fields_optional() -> None:
+    """G1 shape: drafted_proposal + confidence, NO operator_prompt."""
+    card = DecisionCardSection(
+        as_of=BASE_TIME,
+        gate_focus="trial_open",
+        drafted_proposal=DraftedProposal(
+            decision="revise", confidence=0.72, rationale="minor taxonomy issues"
+        ),
+        evidence=["production-runner", "runs/x/texas.md"],
+    )
+    assert card.operator_prompt is None
+    assert card.drafted_proposal.confidence == 0.72
+    assert card.pick_context == []
+    # G4A shape: gate_focus/operator_prompt/pick_context, NO drafted_proposal.
+    voice_card = DecisionCardSection(
+        as_of=BASE_TIME,
+        gate_focus="voice_selection",
+        operator_prompt="Approve the proposed voice, or edit to select an alternate.",
+        pick_context=["production-runner", "Sarah", "Shannon"],
+    )
+    assert voice_card.drafted_proposal is None
+    assert voice_card.evidence == []
+
+
+def test_drafted_proposal_confidence_bounds() -> None:
+    with pytest.raises(ValueError):
+        DraftedProposal(confidence=1.5)
+    with pytest.raises(ValueError):
+        DraftedProposal(confidence=-0.1)
+
+
+def test_error_message_and_deliverables_sections_roundtrip() -> None:
+    proj = build_projection("completed")
+    updated = proj.model_copy(
+        update={
+            "error_message": ErrorMessageSection(
+                as_of=BASE_TIME,
+                message="scope=narration; slide slide-05 narration figures not present",
+                node_index=33,
+                tag="irene.pass2.figure-contradiction",
+            ),
+            "deliverables": DeliverablesSection(
+                as_of=BASE_TIME,
+                components=DeliverableComponents(deck=True, motion=True, workbook=True),
+                total_cost_usd=0.44444605,
+                export_paths=["exports/gary-dispatch-payload.json", "exports/storyboard-A-pack"],
+            ),
+        }
+    )
+    dumped = updated.model_dump(mode="json")
+    restored = OperatorSurfaceProjection.model_validate(dumped)
+    assert restored.error_message.message.startswith("scope=narration")
+    assert restored.error_message.node_index == 33
+    assert restored.deliverables.components.workbook is True
+    assert restored.deliverables.total_cost_usd == 0.44444605
+    assert len(restored.deliverables.export_paths) == 2
+    # lenient reader tolerates the widened document unchanged
+    lenient = read_operator_surface_lenient(updated.model_dump_json())
+    assert isinstance(lenient, OperatorSurfaceProjection)
+    assert lenient.deliverables is not None
 
 
 # ---------------------------------------------------------------------------

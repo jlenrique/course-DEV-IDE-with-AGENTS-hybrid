@@ -103,6 +103,92 @@ def _assembler(tmp_path: Path, trial_id: UUID) -> OperatorSurfaceAssembler:
     )
 
 
+def _write_g1_card(run_dir: Path) -> None:
+    """G1 shape: drafted_proposal + confidence, NO operator_prompt (real fixture)."""
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "decision-card-G1.json").write_text(
+        json.dumps(
+            {
+                "card": {
+                    "gate_focus": "trial_open",
+                    "gate_id": "G1",
+                    "drafted_proposal": {
+                        "confidence": 0.72,
+                        "decision": "revise",
+                        "rationale": "minor taxonomy issues remain",
+                    },
+                    "evidence": [
+                        {"kind": "production-runner", "node_id": "04"},
+                        {"kind": "specialist-summary", "path": "runs/x/texas.md"},
+                    ],
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def _write_g4a_card(run_dir: Path) -> None:
+    """G4A shape: gate_focus/operator_prompt/pick_context, NO drafted_proposal."""
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "decision-card-G4A.json").write_text(
+        json.dumps(
+            {
+                "card": {
+                    "gate_focus": "voice_selection",
+                    "gate_id": "G4A",
+                    "operator_prompt": (
+                        "Approve the proposed voice, or edit to select an alternate."
+                    ),
+                    "pick_context": [
+                        {"kind": "production-runner", "node_id": "11-gate"},
+                        {"kind": "specialist-summary", "path": "runs/x/enrique.md"},
+                        {
+                            "kind": "voice-options",
+                            "voices": [
+                                {"voice_name": "Sarah", "voice_id": "a"},
+                                {"voice_name": "Shannon", "voice_id": "b"},
+                            ],
+                        },
+                    ],
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def _write_error_pause(run_dir: Path) -> None:
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "error-pause.json").write_text(
+        json.dumps(
+            {
+                "message": "scope=narration; slide slide-05 narration figures not present",
+                "node_id": "08",
+                "node_index": 33,
+                "tag": "irene.pass2.figure-contradiction",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+
+def _write_completion_artifacts(run_dir: Path) -> None:
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run_summary.yaml").write_text(
+        "terminal_gate: G4A\n"
+        "component_selection:\n  deck: true\n  motion: true\n  workbook: true\n",
+        encoding="utf-8",
+    )
+    (run_dir / "cost-report.json").write_text(
+        json.dumps({"total_cost_usd": 0.44444605}), encoding="utf-8"
+    )
+    exports = run_dir / "exports"
+    exports.mkdir(parents=True, exist_ok=True)
+    (exports / "gary-dispatch-payload.json").write_text("{}", encoding="utf-8")
+    (exports / "storyboard-A-pack").mkdir(exist_ok=True)
+
+
 # --------------------------------------------------------------------------
 # Registered / minimal emit
 # --------------------------------------------------------------------------
@@ -414,6 +500,148 @@ def test_unrecognized_prior_projection_is_rebuilt(tmp_path: Path) -> None:
     proj = _read(asm)
     assert proj.seq == 0
     assert proj.envelope.status == "registered"
+
+
+# --------------------------------------------------------------------------
+# Story 35.9 — decision_card / error_message / deliverables (verb-conditional)
+# --------------------------------------------------------------------------
+
+
+def test_gate_pause_populates_decision_card_g1_shape(tmp_path: Path) -> None:
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    run_dir = tmp_path / str(tid)
+    _write_g1_card(run_dir)
+
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    asm.emit(_StubEnvelope(tid, "paused-at-gate", paused_gate="G1"))
+    proj = _read(asm)
+    assert proj.decision_card is not None
+    assert proj.decision_card.gate_focus == "trial_open"
+    assert proj.decision_card.operator_prompt is None  # G1 has none
+    assert proj.decision_card.drafted_proposal.decision == "revise"
+    assert proj.decision_card.drafted_proposal.confidence == 0.72
+    assert "runs/x/texas.md" in proj.decision_card.evidence
+    # error_message / deliverables are absent at a gate pause
+    assert proj.error_message is None
+    assert proj.deliverables is None
+
+
+def test_gate_pause_populates_decision_card_g4a_shape(tmp_path: Path) -> None:
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    run_dir = tmp_path / str(tid)
+    _write_g4a_card(run_dir)
+
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    asm.emit(_StubEnvelope(tid, "paused-at-gate", paused_gate="G4A"))
+    proj = _read(asm)
+    assert proj.decision_card is not None
+    assert proj.decision_card.gate_focus == "voice_selection"
+    assert proj.decision_card.operator_prompt.startswith("Approve the proposed voice")
+    assert proj.decision_card.drafted_proposal is None  # G4A has none
+    joined = " | ".join(proj.decision_card.pick_context)
+    assert "runs/x/enrique.md" in joined
+    assert "voice options: Sarah, Shannon" in joined
+
+
+def test_decision_card_clears_on_resume(tmp_path: Path) -> None:
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    run_dir = tmp_path / str(tid)
+    _write_g1_card(run_dir)
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    asm.emit(_StubEnvelope(tid, "paused-at-gate", paused_gate="G1"))
+    assert _read(asm).decision_card is not None
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    assert _read(asm).decision_card is None
+
+
+def test_error_pause_populates_error_message(tmp_path: Path) -> None:
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    run_dir = tmp_path / str(tid)
+    _write_error_pause(run_dir)
+
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    asm.emit(
+        _StubEnvelope(
+            tid, "paused-at-error", paused_error_tag="irene.pass2.figure-contradiction"
+        )
+    )
+    proj = _read(asm)
+    assert proj.error_message is not None
+    assert proj.error_message.message.startswith("scope=narration")
+    assert proj.error_message.node_index == 33
+    assert proj.error_message.tag == "irene.pass2.figure-contradiction"
+    assert proj.decision_card is None
+
+
+def test_completion_populates_deliverables(tmp_path: Path) -> None:
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    run_dir = tmp_path / str(tid)
+    _write_completion_artifacts(run_dir)
+
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    asm.emit(
+        _StubEnvelope(tid, "completed", completed_at=datetime.now(UTC))
+    )
+    proj = _read(asm)
+    assert proj.deliverables is not None
+    assert proj.deliverables.components.deck is True
+    assert proj.deliverables.components.motion is True
+    assert proj.deliverables.components.workbook is True
+    assert proj.deliverables.total_cost_usd == 0.44444605
+    assert "exports/gary-dispatch-payload.json" in proj.deliverables.export_paths
+    assert "exports/storyboard-A-pack" in proj.deliverables.export_paths
+
+
+def test_garbage_decision_card_never_sinks_emit(tmp_path: Path) -> None:
+    """Amendment 8: a corrupt decision-card artifact yields None, emit still writes."""
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    run_dir = tmp_path / str(tid)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "decision-card-G1.json").write_text("{ not valid json", encoding="utf-8")
+
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    assert asm.emit(_StubEnvelope(tid, "paused-at-gate", paused_gate="G1")) is True
+    proj = _read(asm)
+    assert proj.envelope.status == "paused-at-gate"  # envelope still landed
+    assert proj.decision_card is None  # garbage card omitted, not fatal
+
+
+def test_missing_completion_artifacts_yield_no_deliverables(tmp_path: Path) -> None:
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    # no run_summary / cost-report / exports on disk
+    assert asm.emit(_StubEnvelope(tid, "completed", completed_at=datetime.now(UTC))) is True
+    proj = _read(asm)
+    assert proj.envelope.status == "completed"
+    assert proj.deliverables is None
+
+
+def test_partial_completion_artifacts_populate_available_fields(tmp_path: Path) -> None:
+    """Independent guards: a missing cost report never suppresses the booleans."""
+    tid = uuid4()
+    asm = _assembler(tmp_path, tid)
+    run_dir = tmp_path / str(tid)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / "run_summary.yaml").write_text(
+        "component_selection:\n  deck: true\n  motion: false\n  workbook: true\n",
+        encoding="utf-8",
+    )
+    (run_dir / "cost-report.json").write_text("{ corrupt", encoding="utf-8")
+
+    asm.emit(_StubEnvelope(tid, "in-flight"))
+    asm.emit(_StubEnvelope(tid, "completed", completed_at=datetime.now(UTC)))
+    proj = _read(asm)
+    assert proj.deliverables is not None
+    assert proj.deliverables.components.deck is True
+    assert proj.deliverables.components.motion is False
+    assert proj.deliverables.total_cost_usd is None  # corrupt cost report -> None
 
 
 def _now() -> str:

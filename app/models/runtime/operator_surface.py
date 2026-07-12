@@ -453,6 +453,76 @@ class NotificationsEchoSection(_Section):
 
 
 # --------------------------------------------------------------------------
+# Decision-card / error / deliverables sections (Story 35.9 — KEY DECISION 2)
+#
+# Three OPTIONAL sections added ADDITIVELY within v1 (AD-4: new optional
+# fields, NO schema_version bump). Every inner field is optional because the
+# source artifacts are VERB-CONDITIONAL: G1 carries a drafted_proposal +
+# confidence but no operator_prompt; G4A/G2B carry gate_focus / operator_prompt
+# / pick_context but no drafted_proposal. The assembler maps each artifact
+# field 1:1 into these sections at the pause / completion choke-points; a
+# missing/garbage artifact leaves the section absent (None), never a lie.
+# --------------------------------------------------------------------------
+
+
+class DraftedProposal(BaseModel):
+    """The runtime's drafted verdict for a gate (decision-card ``drafted_proposal``)."""
+
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
+    decision: str | None = None
+    confidence: float | None = Field(default=None, ge=0.0, le=1.0)
+    rationale: str | None = None
+
+
+class DecisionCardSection(_Section):
+    """The active decision card at a gate pause (EXPERIENCE.md §Projection Demands).
+
+    All fields optional/verb-conditional. ``pick_context`` (variant/voice
+    options) and ``evidence`` are pre-summarized display strings the render
+    feeds straight into the collapse-beyond-3 ``_artifacts_block`` helper.
+    """
+
+    gate_focus: str | None = None
+    operator_prompt: str | None = None
+    drafted_proposal: DraftedProposal | None = None
+    pick_context: list[str] = Field(default_factory=list)
+    evidence: list[str] = Field(default_factory=list)
+
+
+class ErrorMessageSection(_Section):
+    """The verbatim runtime error at an error pause (``error-pause.json``)."""
+
+    message: str | None = None
+    node_index: int | None = None
+    tag: str | None = None
+
+
+class DeliverableComponents(BaseModel):
+    """The run's component-selection booleans (``run_summary.yaml``)."""
+
+    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+
+    deck: bool | None = None
+    motion: bool | None = None
+    workbook: bool | None = None
+
+
+class DeliverablesSection(_Section):
+    """Landed deliverables at completion (EXPERIENCE.md §Projection Demands).
+
+    MINIMAL by design (KEY DECISION 2 waiver): component booleans + total cost
+    + cheaply-resolvable top-level export paths. Rich per-artifact path
+    enumeration is the ONE registered fast-follow waiver (dated 2026-07-11,
+    story 35.7) — do NOT build it here.
+    """
+
+    components: DeliverableComponents | None = None
+    total_cost_usd: float | None = Field(default=None, ge=0)
+    export_paths: list[str] = Field(default_factory=list)
+
+
+# --------------------------------------------------------------------------
 # Top-level projection
 # --------------------------------------------------------------------------
 
@@ -504,6 +574,12 @@ class OperatorSurfaceProjection(BaseModel):
     specialists: SpecialistsSection | None = None
     modalities: ModalitiesSection | None = None
     trace: TraceSection | None = None
+
+    # Story 35.9 — additive within v1 (AD-4): decision card at a gate pause,
+    # verbatim error at an error pause, landed deliverables at completion.
+    decision_card: DecisionCardSection | None = None
+    error_message: ErrorMessageSection | None = None
+    deliverables: DeliverablesSection | None = None
 
     @field_validator("last_progress_at", "as_of")
     @classmethod
@@ -791,6 +867,11 @@ __all__ = [
     "EventClass",
     "HEALTH_HISTORY_CAP",
     "HUD_CONFIG_DEFAULTS",
+    "DecisionCardSection",
+    "DeliverableComponents",
+    "DeliverablesSection",
+    "DraftedProposal",
+    "ErrorMessageSection",
     "HealthReading",
     "HealthSection",
     "HealthThresholdState",
