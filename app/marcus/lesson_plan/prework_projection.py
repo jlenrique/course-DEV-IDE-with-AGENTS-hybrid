@@ -47,6 +47,10 @@ class SceneBrief(_StrictModel):
     source_refs: tuple[NonBlankStr, ...]
     known_losses: tuple[NonBlankStr, ...]
     marker: NonBlankStr | None
+    lesson_type: Literal["fresh_pain", "bridge_identity", "skill_build"] | None = None
+    archetype: Literal[
+        "external_friction", "introspective_threshold", "difficulty_practice"
+    ] | None = None
 
     @model_validator(mode="after")
     def _honest_availability(self) -> SceneBrief:
@@ -63,6 +67,8 @@ class SceneBrief(_StrictModel):
             for line in self.text.splitlines()
         ):
             raise ValueError("Scene text cannot forge a pre-work beat heading")
+        if (self.lesson_type is None) != (self.archetype is None):
+            raise ValueError("Scene lesson type and archetype must be supplied together")
         return self
 
 
@@ -129,6 +135,17 @@ class SceneComposeRequest(_StrictModel):
     seed_text: NonBlankStr
     source_refs: tuple[NonBlankStr, ...]
     orienting_hint: NonBlankStr | None = None
+    lesson_type: Literal["fresh_pain", "bridge_identity", "skill_build"] | None = None
+    archetype: Literal[
+        "external_friction", "introspective_threshold", "difficulty_practice"
+    ] | None = None
+    payoff_slide_keys: tuple[NonBlankStr, ...] = ()
+
+    @model_validator(mode="after")
+    def _paired_lesson_shape(self) -> SceneComposeRequest:
+        if (self.lesson_type is None) != (self.archetype is None):
+            raise ValueError("lesson type and archetype must be supplied together")
+        return self
 
 
 class PromiseTransformRequest(_StrictModel):

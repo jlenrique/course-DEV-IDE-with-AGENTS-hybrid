@@ -1,0 +1,8 @@
+{
+  "selected_seed_id": "ambiguous-grounded-seed",
+  "classification_status": "ambiguous",
+  "lesson_type": null,
+  "archetype": null,
+  "scene_status": "degraded",
+  "failures": ["scene_lesson_type_ambiguous"]
+}

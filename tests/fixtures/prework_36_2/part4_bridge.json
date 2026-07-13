@@ -1,0 +1,25 @@
+{
+  "seeds": [
+    {
+      "seed_id": "slide-1-champion-bridge",
+      "text": "A champion influences 10% directly and 90% through others while crossing into leadership identity.",
+      "source_ref": "course-content/courses/tejal-c1m1-p4-assessments-bridge/slides/slide-1-summary-bridge-to-module-2.md",
+      "source_kind": "slide_body",
+      "slide_key": "slide-01",
+      "sme_scenario": false
+    }
+  ],
+  "candidate_ids": ["slide-1-champion-bridge"],
+  "lesson_type_evidence": {
+    "fresh_pain": false,
+    "bridge_identity": true,
+    "skill_build": false,
+    "evidence_refs": ["course-content/courses/tejal-c1m1-p4-assessments-bridge/slides/slide-1-summary-bridge-to-module-2.md"]
+  },
+  "payoff_slide_inventory": ["course-content/courses/tejal-c1m1-p4-assessments-bridge/slides/slide-1-summary-bridge-to-module-2.md"],
+  "payoff_slide_keys": ["course-content/courses/tejal-c1m1-p4-assessments-bridge/slides/slide-1-summary-bridge-to-module-2.md"],
+  "requested_coverage": "single_slide",
+  "required_capabilities": ["scene"],
+  "available_coverage": "single_slide",
+  "available_capabilities": ["scene"]
+}

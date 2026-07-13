@@ -6,7 +6,9 @@
       "lesson:segment-1"
     ],
     "known_losses": [],
-    "marker": null
+    "marker": null,
+    "lesson_type": null,
+    "archetype": null
   },
   "friction_scale": {
     "duration_copy": "Take about 20 seconds.",

@@ -1,0 +1,25 @@
+{
+  "seeds": [
+    {
+      "seed_id": "ambiguous-grounded-seed",
+      "text": "A transport delay challenges both current practice and leadership identity.",
+      "source_ref": "dry-fixture:ambiguous#seed-1",
+      "source_kind": "assessment_scenario",
+      "slide_key": null,
+      "sme_scenario": true
+    }
+  ],
+  "candidate_ids": ["ambiguous-grounded-seed"],
+  "lesson_type_evidence": {
+    "fresh_pain": true,
+    "bridge_identity": true,
+    "skill_build": false,
+    "evidence_refs": ["dry-fixture:ambiguous#seed-1"]
+  },
+  "payoff_slide_inventory": ["slide-boundary"],
+  "payoff_slide_keys": ["slide-boundary"],
+  "requested_coverage": "single_slide",
+  "required_capabilities": ["scene"],
+  "available_coverage": "single_slide",
+  "available_capabilities": ["scene"]
+}
