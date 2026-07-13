@@ -48,9 +48,9 @@ class SceneBrief(_StrictModel):
     known_losses: tuple[NonBlankStr, ...]
     marker: NonBlankStr | None
     lesson_type: Literal["fresh_pain", "bridge_identity", "skill_build"] | None = None
-    archetype: Literal[
-        "external_friction", "introspective_threshold", "difficulty_practice"
-    ] | None = None
+    archetype: (
+        Literal["external_friction", "introspective_threshold", "difficulty_practice"] | None
+    ) = None
 
     @model_validator(mode="after")
     def _honest_availability(self) -> SceneBrief:
@@ -92,7 +92,7 @@ class PromiseVow(_StrictModel):
 
     @model_validator(mode="after")
     def _single_markdown_item(self) -> PromiseVow:
-        if "\n" in self.text or "\r" in self.text:
+        if any(separator in self.text for separator in ("\n", "\r", "\u2028", "\u2029")):
             raise ValueError("Promise vow must render as one Markdown list item")
         return self
 
@@ -136,9 +136,9 @@ class SceneComposeRequest(_StrictModel):
     source_refs: tuple[NonBlankStr, ...]
     orienting_hint: NonBlankStr | None = None
     lesson_type: Literal["fresh_pain", "bridge_identity", "skill_build"] | None = None
-    archetype: Literal[
-        "external_friction", "introspective_threshold", "difficulty_practice"
-    ] | None = None
+    archetype: (
+        Literal["external_friction", "introspective_threshold", "difficulty_practice"] | None
+    ) = None
     payoff_slide_keys: tuple[NonBlankStr, ...] = ()
 
     @model_validator(mode="after")
@@ -154,6 +154,7 @@ class PromiseTransformRequest(_StrictModel):
     objectives: tuple[ObjectiveInput, ...]
     scene_context: NonBlankStr | None = None
     friction_context: NonBlankStr | None = None
+    transformation_posture: Literal["pertinent_ability_first_move"]
 
 
 class SceneComposer(Protocol):

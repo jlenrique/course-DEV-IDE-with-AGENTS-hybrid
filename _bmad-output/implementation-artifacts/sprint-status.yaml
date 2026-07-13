@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-12  # Presentation-support workbook Story 36.1 moved to review.
+last_updated: 2026-07-13  # Presentation-support workbook Story 36.3 moved to review.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1786,7 +1786,7 @@ development_status:
   epic-36-prework-producer: backlog  # Pre-work producer (prework_projection.py)
   36-1-prework-contract-frame-friction-scale: done  # 2026-07-13 mandatory 3-layer review + Cora/Audra closure PASS; 6/6 patches resolved; combined 91/91 + Ruff/diff green.
   36-2-scene-extraction-lesson-type-adequacy: done  # 2026-07-13 three-layer review + 8/8 remediation + Cora/Audra closure PASS; final 85/85 combined + Ruff/diff-check green.
-  36-3-promise-transform-ratified-los: backlog
+  36-3-promise-transform-ratified-los: done  # 2026-07-13 three-layer review + 10/10 remediation + Cora/Audra closure PASS; final 122/122 combined + Ruff/diff-check green.
   36-4-wire-prework-part2-golden: backlog
   epic-36-retrospective: optional
   epic-37-review-deep-dive-producer: backlog  # Review + deep-dive producer (review_projection.py)

@@ -203,7 +203,8 @@ def test_result_marker_and_loss_consistency_is_bidirectional(
 def test_request_context_fields_are_optional_and_minimal_requests_validate() -> None:
     scene = SceneComposeRequest(seed_text="seed", source_refs=("ref",))
     promise = PromiseTransformRequest(
-        objectives=(ObjectiveInput(objective_id="LO-1", text="Do it", status="ratified"),)
+        objectives=(ObjectiveInput(objective_id="LO-1", text="Do it", status="ratified"),),
+        transformation_posture="pertinent_ability_first_move",
     )
     assert scene.orienting_hint is None
     assert promise.scene_context is promise.friction_context is None
@@ -347,6 +348,7 @@ def test_protocol_signatures_stubs_spies_and_json_serialization() -> None:
         objectives=(ObjectiveInput(objective_id="LO-1", text="Distinguish", status="ratified"),),
         scene_context="context",
         friction_context="friction",
+        transformation_posture="pertinent_ability_first_move",
     )
     scene = offline_scene_composer(scene_request)
     promise = offline_promise_transformer(promise_request)
