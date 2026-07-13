@@ -1,0 +1,69 @@
+{
+  "bookend": {
+    "beat_id": "bookend",
+    "heading": "Bookend",
+    "watchword": "engagement",
+    "ownership": "learner_written",
+    "status": "unavailable",
+    "prompt": "Your pre-work note is not available here. Continue with the review.",
+    "known_losses": [
+      "prework_authority_unavailable"
+    ],
+    "marker": "review_bookend_unavailable"
+  },
+  "deep_dive": {
+    "beat_id": "deep_dive",
+    "heading": "Deep Dive",
+    "watchword": "depth",
+    "ownership": "lesson_level",
+    "status": "pending",
+    "content": null,
+    "section_shell": "This lesson-level section is pending.",
+    "known_losses": [
+      "deep_dive_not_authored"
+    ]
+  },
+  "check_on_learning": {
+    "beat_id": "check_on_learning",
+    "heading": "Check on Learning",
+    "watchword": "recall",
+    "ownership": "lesson_level",
+    "status": "pending",
+    "content": null,
+    "section_shell": "Questions and answers will appear here.",
+    "known_losses": [
+      "check_not_authored"
+    ]
+  },
+  "door_left_ajar": {
+    "beat_id": "door_left_ajar",
+    "heading": "The Door Left Ajar",
+    "watchword": "engagement",
+    "ownership": "lesson_level",
+    "status": "pending",
+    "content": null,
+    "section_shell": "This lesson-level section is pending.",
+    "known_losses": [
+      "door_left_ajar_not_authored"
+    ]
+  },
+  "closing_reflection": {
+    "beat_id": "closing_reflection",
+    "heading": "Closing Reflection",
+    "watchword": "transfer",
+    "ownership": "learner_written",
+    "status": "pending",
+    "prompt": null,
+    "section_shell": "Write your reflection in this space.",
+    "known_losses": [
+      "reflection_prompt_not_authored"
+    ]
+  },
+  "beat_order": [
+    "bookend",
+    "deep_dive",
+    "check_on_learning",
+    "door_left_ajar",
+    "closing_reflection"
+  ]
+}

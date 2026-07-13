@@ -1789,8 +1789,8 @@ development_status:
   36-3-promise-transform-ratified-los: done  # 2026-07-13 three-layer review + 10/10 remediation + Cora/Audra closure PASS; final 122/122 combined + Ruff/diff-check green.
   36-4-wire-prework-part2-golden: done  # 2026-07-13 three-layer remediation + live causal chain + final ba470ff2 authored MD/DOCX/operator 9/9 PASS; Cora/Audra closure PASS.
   epic-36-retrospective: optional
-  epic-37-review-deep-dive-producer: backlog  # Review + deep-dive producer (review_projection.py)
-  37-1-review-frame-bookend: backlog  # A7: bookend emits callback PROMPT, not learner value
+  epic-37-review-deep-dive-producer: in-progress  # Review + deep-dive producer (review_projection.py)
+  37-1-review-frame-bookend: done  # 2026-07-13 3-layer review + singleton-loss remediation + exact-current closure PASS; 229 passed, 1 skipped; Cora WARN permit.
   37-2a-deep-dive-skeleton: backlog  # A1 split; superset-of-VO operational (A3); NO Ask-A dep
   37-2b-deep-dive-enrichment-cited: backlog  # A1 split; citation-COVERAGE gate (A2); dep 38-0 + 38-1
   37-3-check-on-learning-retrieval: backlog
