@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-13  # Presentation-support workbook Story 36.3 moved to review.
+last_updated: 2026-07-13  # Presentation-support workbook Story 36.4 moved to offline review.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1783,11 +1783,11 @@ development_status:
   # Source: epics-presentation-support-workbook-2026-07-12.md (status greenlit-with-amendments; amendments A1-A10 + RATIFIED Epic-38 graph-shape).
   # BUILD ORDER IS A DAG, NOT EPIC NUMBERING: 38-0 -> 38-3b(stubs) -> {36-*, 37-1, 37-2a, 37-3, 37-4} -> 38-3a -> 38-1 -> 37-2b -> 39-1 -> 38-2 -> 39-2 -> 40-1.
   # Governance: Epic 38 is pipeline-lockstep (Tier-2, v4.2-lineage) + regime-doc at T1; Epic 38 already had its graph-shape party round. Per-story: fresh dev + bmad-code-review before done. All backlog (no story files created yet).
-  epic-36-prework-producer: backlog  # Pre-work producer (prework_projection.py)
+  epic-36-prework-producer: done  # 2026-07-13 all 4 stories closed; final live ba470ff2 machine-primary PASS + digest-bound operator 9/9 PASS; Cora BLOCK/Audra closure PASS.
   36-1-prework-contract-frame-friction-scale: done  # 2026-07-13 mandatory 3-layer review + Cora/Audra closure PASS; 6/6 patches resolved; combined 91/91 + Ruff/diff green.
   36-2-scene-extraction-lesson-type-adequacy: done  # 2026-07-13 three-layer review + 8/8 remediation + Cora/Audra closure PASS; final 85/85 combined + Ruff/diff-check green.
   36-3-promise-transform-ratified-los: done  # 2026-07-13 three-layer review + 10/10 remediation + Cora/Audra closure PASS; final 122/122 combined + Ruff/diff-check green.
-  36-4-wire-prework-part2-golden: backlog
+  36-4-wire-prework-part2-golden: done  # 2026-07-13 three-layer remediation + live causal chain + final ba470ff2 authored MD/DOCX/operator 9/9 PASS; Cora/Audra closure PASS.
   epic-36-retrospective: optional
   epic-37-review-deep-dive-producer: backlog  # Review + deep-dive producer (review_projection.py)
   37-1-review-frame-bookend: backlog  # A7: bookend emits callback PROMPT, not learner value

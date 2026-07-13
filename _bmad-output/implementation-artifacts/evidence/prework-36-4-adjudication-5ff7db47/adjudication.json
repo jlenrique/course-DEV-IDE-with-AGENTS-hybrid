@@ -1,0 +1,28 @@
+{
+  "story": "36.4",
+  "attempt_id": "5ff7db47-62af-48d0-8b67-fa300c04aa4d",
+  "original_verdict_path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-live-20260713T025318Z-5ff7db47/verdict.json",
+  "original_verdict_sha256": "sha256:3545fcc83e15c6badaf3512a61c05e1f831bbcbcf1b95b5df9d34d7b01a9a00e",
+  "machine_transport_render_pass": true,
+  "semantic_acceptance": false,
+  "operator_verdict": "FAIL",
+  "operator_reason": "The authored Scene answered the assessment and invented a diagnosis absent from the setup; machine-green evidence with PENDING operator checks was also incorrectly marked pass=true.",
+  "operator_spot_checks": {
+    "provenance": "FAIL",
+    "actual_payoff": "FAIL",
+    "semantic_faithfulness": "FAIL",
+    "scene_innocence": "FAIL",
+    "no_spoiler": "FAIL",
+    "pertinent_ability": "PASS",
+    "lo_fidelity": "PASS",
+    "half_rhyme": "PASS",
+    "mastery_overclaim": "PASS"
+  },
+  "invented_scene_claim": "leadership gap—unclear cross-department ownership and decision rights",
+  "failures": [
+    "scene_innocence_forbidden_resolution",
+    "scene_innocence_diagnostic_completion",
+    "scene_innocence_invented_claim",
+    "driver_pending_operator_pass_bug"
+  ]
+}

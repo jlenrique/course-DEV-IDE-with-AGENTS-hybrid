@@ -41,7 +41,7 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import ValidationError
@@ -51,12 +51,18 @@ from app.marcus.lesson_plan.glossary_projection import (
     GlossaryArticleBrief,
     glossary_inputs_from_run,
 )
+from app.marcus.lesson_plan.prework_artifact import (
+    WORKBOOK_BRIEF_FILENAME,
+    WorkbookBriefArtifactV1,
+    read_workbook_brief,
+)
+from app.marcus.lesson_plan.prework_projection import PreWorkBrief
+from app.marcus.lesson_plan.produced_asset import ProductionContext
+from app.marcus.lesson_plan.schema import PlanUnit
 from app.marcus.lesson_plan.trends_projection import (
     ResearchTrendsBrief,
     trends_inputs_from_run,
 )
-from app.marcus.lesson_plan.produced_asset import ProductionContext
-from app.marcus.lesson_plan.schema import PlanUnit
 from app.marcus.lesson_plan.workbook_enrichment import (
     lesson_plan_from_run,
     load_enrichment_card,
@@ -327,9 +333,7 @@ def _derive_plan_unit_fields(
         sections = (collateral.get("workbook") or {}).get("sections") or []
         if sections and isinstance(sections[0], dict):
             unit_id = str(
-                sections[0].get("learning_objective_id")
-                or sections[0].get("section_id")
-                or ""
+                sections[0].get("learning_objective_id") or sections[0].get("section_id") or ""
             ).strip()
     unit_id = _sanitize_open_id(unit_id or run_dir.name, fallback=_FALLBACK_UNIT_ID)
 
@@ -390,6 +394,10 @@ class WorkbookInputs:
     glossary_articles: tuple[GlossaryArticleBrief, ...]
     glossary_empty_reason: str | None
     research_trends: ResearchTrendsBrief
+    pre_work: PreWorkBrief | None = None
+    encounter_mode: Literal["recorded", "live"] = "recorded"
+    render_profile: Literal["legacy", "presentation_support"] = "legacy"
+    workbook_brief_receipt: dict[str, object] | None = None
 
 
 def _research_inputs(
@@ -463,6 +471,7 @@ def build_workbook_inputs(
     *,
     config: dict[str, Any] | None = None,
     run_id: str | None = None,
+    validated_brief: WorkbookBriefArtifactV1 | None = None,
 ) -> WorkbookInputs | None:
     """Author the produce() inputs from Irene's collateral blueprint + the run.
 
@@ -472,9 +481,7 @@ def build_workbook_inputs(
     blueprint is absent/unresolvable (D3 fail-loud).
     """
     cfg = config or _load_config()
-    manifest_relpath = str(
-        cfg.get("segment_manifest_relpath", _DEFAULT_SEGMENT_MANIFEST_RELPATH)
-    )
+    manifest_relpath = str(cfg.get("segment_manifest_relpath", _DEFAULT_SEGMENT_MANIFEST_RELPATH))
     corpus_relpath = str(cfg.get("corpus_relpath", _DEFAULT_CORPUS_RELPATH))
     revision = int(cfg.get("lesson_plan_revision", _DEFAULT_LESSON_PLAN_REVISION))
 
@@ -527,9 +534,7 @@ def build_workbook_inputs(
     if card is not None:
         projection = project_enrichment_to_workbook_inputs(card)
         for sec in projection.spec.sections:
-            exercises_by_objective.setdefault(
-                sec.learning_objective_id, []
-            ).extend(sec.exercises)
+            exercises_by_objective.setdefault(sec.learning_objective_id, []).extend(sec.exercises)
         overlay_lo = {lo.objective_id: lo for lo in projection.learning_objectives}
         further_reading = projection.further_reading
         citations = list(projection.citations)
@@ -589,9 +594,7 @@ def build_workbook_inputs(
         source_ref_manifest.setdefault(source_ref, source_hash)
 
     # W2: encyclopedia glossary from shared research packet (same SSOT as W1).
-    glossary_articles, glossary_empty_reason, _glossary_losses = glossary_inputs_from_run(
-        run_dir
-    )
+    glossary_articles, glossary_empty_reason, _glossary_losses = glossary_inputs_from_run(run_dir)
     for article in glossary_articles:
         if article.source_ref and article.source_ref not in source_ref_manifest:
             source_ref_manifest[article.source_ref] = _hash(article.source_ref)
@@ -621,6 +624,8 @@ def build_workbook_inputs(
         revision=revision,
     )
 
+    brief = validated_brief
+
     return WorkbookInputs(
         plan_unit=plan_unit,
         context=context,
@@ -639,6 +644,28 @@ def build_workbook_inputs(
         glossary_articles=glossary_articles,
         glossary_empty_reason=glossary_empty_reason,
         research_trends=research_trends,
+        pre_work=brief.payload.pre_work if brief else None,
+        encounter_mode=brief.payload.encounter_mode if brief else "recorded",
+        render_profile="presentation_support" if brief else "legacy",
+        workbook_brief_receipt=(
+            {
+                "path": WORKBOOK_BRIEF_FILENAME,
+                "payload_digest": brief.payload_digest,
+                "status_summary": {
+                    "scene": brief.payload.pre_work.scene.status,
+                    "promise": brief.payload.pre_work.promise.status,
+                },
+                "warning_summary": list(brief.payload.warnings),
+                "loss_summary": list(brief.payload.known_losses),
+                "scene_receipt": brief.payload.scene_receipt.model_dump(mode="json"),
+                "promise_receipt": brief.payload.promise_receipt.model_dump(mode="json"),
+                "writer_receipts": [
+                    receipt.model_dump(mode="json") for receipt in brief.payload.writer_receipts
+                ],
+            }
+            if brief
+            else None
+        ),
     )
 
 
@@ -672,15 +699,17 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             tag="workbook-producer.run-dir.absent",
         )
     run_id = getattr(state, "run_id", None)
+    brief = _reconcile_workbook_brief_authority(state, run_dir)
     inputs = build_workbook_inputs(
-        run_dir, config=config, run_id=str(run_id) if run_id is not None else None
+        run_dir,
+        config=config,
+        run_id=str(run_id) if run_id is not None else None,
+        validated_brief=brief,
     )
     if inputs is None:
         return None
     output_root = (
-        payload.get("output_root")
-        or config.get("output_root")
-        or DEFAULT_WORKBOOK_OUTPUT_ROOT
+        payload.get("output_root") or config.get("output_root") or DEFAULT_WORKBOOK_OUTPUT_ROOT
     )
     producer = WorkbookProducer(output_root=output_root)
     try:
@@ -702,6 +731,10 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             glossary_articles=inputs.glossary_articles,
             glossary_empty_reason=inputs.glossary_empty_reason,
             research_trends=inputs.research_trends,
+            pre_work=inputs.pre_work,
+            encounter_mode=inputs.encounter_mode,
+            render_profile=inputs.render_profile,
+            workbook_brief_receipt=inputs.workbook_brief_receipt,
             # DP6 (spec landmine): workbook-only diff justifies reuse; do not force
             # a spurious fresh-gamma. Stamp the in-graph run id.
             diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
@@ -718,6 +751,59 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
         ) from exc
 
 
+def _reconcile_workbook_brief_authority(
+    state: RunState, run_dir: Path
+) -> WorkbookBriefArtifactV1 | None:
+    """Require exact contribution authority before activating presentation support."""
+    envelope = state.production_envelope
+    sidecar_exists = (run_dir / WORKBOOK_BRIEF_FILENAME).is_file()
+    if envelope is None:
+        if sidecar_exists:
+            raise WorkbookProducerActError(
+                "workbook brief sidecar has no ProductionEnvelope authority",
+                tag="workbook-brief.authority-missing",
+            )
+        return None
+    legacy = envelope.get_contribution("workbook_brief_stub", node_id="07W.1")
+    real = envelope.get_contribution("workbook_brief", node_id="07W.1")
+    if real is None:
+        if legacy is not None:
+            raise WorkbookProducerActError(
+                "legacy workbook brief requires explicit 07W.1 re-entry",
+                tag="workbook-brief.legacy-reentry-required",
+            )
+        if sidecar_exists:
+            raise WorkbookProducerActError(
+                "workbook brief sidecar has no real contribution authority",
+                tag="workbook-brief.authority-missing",
+            )
+        return None
+    try:
+        artifact = read_workbook_brief(run_dir)
+    except ValueError as exc:
+        raise WorkbookProducerActError(str(exc), tag="workbook-brief.sidecar-invalid") from exc
+    payload = artifact.payload
+    expected = {
+        "artifact_path": WORKBOOK_BRIEF_FILENAME,
+        "payload_digest": artifact.payload_digest,
+        "schema_version": payload.schema_version,
+        "status_summary": {
+            "scene": payload.pre_work.scene.status,
+            "promise": payload.pre_work.promise.status,
+        },
+        "warning_summary": list(payload.warnings),
+        "loss_summary": list(payload.known_losses),
+        "node_id": payload.node_id,
+        "specialist_id": payload.specialist_id,
+    }
+    if real.output != expected:
+        raise WorkbookProducerActError(
+            "workbook brief contribution and sidecar receipt mismatch",
+            tag="workbook-brief.sidecar-mismatch",
+        )
+    return artifact
+
+
 def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
     """Project the sidecar into the JSON-safe refs put on RunState."""
     return {
@@ -728,19 +814,17 @@ def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
         "markdown_path": sidecar.markdown_path,
         "docx_path": sidecar.docx_path,
         "numeric_audit_status": sidecar.numeric_audit.get("status"),
-        "citation_unsourced": sidecar.citation_audit["buckets"][
-            "unsourced_citations"
-        ]["count"],
+        "citation_unsourced": sidecar.citation_audit["buckets"]["unsourced_citations"]["count"],
         "segment_coverage": sidecar.segment_coverage,
         "gamma_reuse_justified_by": sidecar.gamma_reuse_justified_by,
+        "workbook_brief": sidecar.workbook_brief_receipt,
+        "depth_receipt": sidecar.depth_receipt,
     }
 
 
 def act(state: RunState) -> dict[str, Any]:
     if not state.model_resolution_trail:
-        raise RuntimeError(
-            "workbook_producer act invoked before plan; resolution trail is empty"
-        )
+        raise RuntimeError("workbook_producer act invoked before plan; resolution trail is empty")
     last_entry = state.model_resolution_trail[-1]
     payload = decode_envelope_payload(state)
     try:

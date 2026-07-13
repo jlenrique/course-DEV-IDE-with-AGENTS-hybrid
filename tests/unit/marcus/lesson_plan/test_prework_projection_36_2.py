@@ -541,6 +541,67 @@ def test_unicode_alphanumeric_faithfulness_does_not_false_degrade(seed: str, sce
     assert compose_scene_projection(request, _SpyComposer(scene)).scene.status == "authored"
 
 
+def _setup_only_part2_request() -> SceneProjectionRequest:
+    request = _load("part2_gem")
+    selected = select_scene_seed(request)
+    assert selected is not None
+    setup = (
+        "You are an attending physician managing a complex workflow. "
+        "You notice a recurring delay in patient transport."
+    )
+    replacement = selected.model_copy(
+        update={
+            "text": setup,
+            "setup_only": True,
+            "forbidden_resolution_spans": (
+                "What is the most likely barrier preventing you from solving this?",
+                "The absence of a structured innovation process and authority to redesign.",
+            ),
+        }
+    )
+    return request.model_copy(
+        update={
+            "seeds": tuple(
+                replacement if seed.seed_id == selected.seed_id else seed for seed in request.seeds
+            )
+        }
+    )
+
+
+def test_setup_only_scene_rejects_exact_live_leak_and_invented_diagnosis() -> None:
+    leaked = (
+        "As an attending physician managing a complex workflow, you notice a recurring delay "
+        "in patient transport; the most likely barrier is a leadership gap—unclear "
+        "cross-department ownership and decision rights."
+    )
+    result = compose_scene_projection(_setup_only_part2_request(), _SpyComposer(leaked))
+    assert result.scene.status == "degraded"
+    assert "scene_innocence_diagnostic_completion" in result.gate_receipt.failures
+    assert "scene_innocence_invented_claim" not in result.gate_receipt.failures
+
+
+def test_setup_only_near_extractive_scenario_remains_authored() -> None:
+    scene = (
+        "You are an attending physician managing a complex workflow and notice a recurring "
+        "delay in patient transport."
+    )
+    result = compose_scene_projection(_setup_only_part2_request(), _SpyComposer(scene))
+    assert result.scene.status == "authored"
+    assert result.gate_receipt.failures == ()
+
+
+def test_setup_only_harmless_introduced_terms_remain_authored_with_review_evidence() -> None:
+    scene = (
+        "You are an attending physician managing a complex clinical workflow and notice a "
+        "recurring delay in routine patient transport."
+    )
+    result = compose_scene_projection(_setup_only_part2_request(), _SpyComposer(scene))
+    assert result.scene.status == "authored"
+    assert result.gate_receipt.failures == ()
+    assert "scene_invented_terms_operator_check" in result.operator_warnings
+    assert set(result.introduced_terms) >= {"clinical", "routine"}
+
+
 def test_raw_candidate_normalization_excludes_bad_inputs_with_stable_losses() -> None:
     base = _load("skill_build")
     valid = base.seeds[0].model_dump(mode="python")

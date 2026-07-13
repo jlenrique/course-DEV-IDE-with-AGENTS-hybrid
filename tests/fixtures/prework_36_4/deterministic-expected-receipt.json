@@ -1,0 +1,9 @@
+{
+  "schema_version": "workbook-brief.v1",
+  "node_id": "07W.1",
+  "specialist_id": "workbook_brief",
+  "beat_order": ["scene", "friction_scale", "promise"],
+  "lesson_type": "fresh_pain",
+  "archetype": "external_friction",
+  "writer_calls": [1, 1]
+}

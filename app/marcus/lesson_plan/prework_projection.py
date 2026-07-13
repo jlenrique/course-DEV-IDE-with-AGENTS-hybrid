@@ -140,6 +140,7 @@ class SceneComposeRequest(_StrictModel):
         Literal["external_friction", "introspective_threshold", "difficulty_practice"] | None
     ) = None
     payoff_slide_keys: tuple[NonBlankStr, ...] = ()
+    setup_only: bool = False
 
     @model_validator(mode="after")
     def _paired_lesson_shape(self) -> SceneComposeRequest:

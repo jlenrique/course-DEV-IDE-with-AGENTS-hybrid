@@ -1,0 +1,200 @@
+{
+  "story": "36.4",
+  "attempt_id": "ba470ff2-4c0c-44a0-af7b-0f01360d19da",
+  "first_run_stands": true,
+  "pass": null,
+  "recovery_of": "b90fb3f6-8951-4dcc-abff-66036576d89f",
+  "causal_fix": {
+    "base_commit": "dab32211699e6c294d8fb259e9537b6c18653598",
+    "cause": "novel Scene terms were over-promoted from operator-review evidence to an automatic innocence failure",
+    "fix": "exact structured-output invariants, token-derived cost accounting, and preventive recovery spend/evidence guards",
+    "files": [
+      {
+        "path": "app/marcus/lesson_plan/prework_from_run.py",
+        "sha256": "sha256:8c07eb67bacd7a88ab30e5cb04d6ec5712735bc7a09ba4db65b8e06859680fce"
+      },
+      {
+        "path": "app/marcus/lesson_plan/prework_projection.py",
+        "sha256": "sha256:afe195752dbcd8529e6c4fa4130243a69d4ae93f5fb325c3a2129e1fe3e91ad0"
+      },
+      {
+        "path": "app/marcus/lesson_plan/scene_extraction.py",
+        "sha256": "sha256:152b09ab4b635f148d9106b567bcf99d5de20edddae9b60a684f5c6eea09f6fe"
+      },
+      {
+        "path": "app/marcus/orchestrator/workbook_prework_writers.py",
+        "sha256": "sha256:48cc78e2cf44830fad490196c8436d7ca6066278d012ff329e6e02664e4ad094"
+      },
+      {
+        "path": "scripts/utilities/run_prework_36_4_live_evidence.py",
+        "sha256": "sha256:393450ea0e4e4d8c9dcfa1bcac46f9404c18b9c7ba1273858ae46b72e453e6fe"
+      },
+      {
+        "path": "tests/integration/marcus/test_workbook_prework_writers_36_4.py",
+        "sha256": "sha256:8db724648ccb9e98934c8017058005e86bd9b035ddeed50a54b255695f464636"
+      },
+      {
+        "path": "tests/marcus/lesson_plan/test_prework_from_run_36_4.py",
+        "sha256": "sha256:c8d8ece81565cdf03fa799ea6dcad09849cba9fcb55da55bb24fbc1f62b8ecac"
+      },
+      {
+        "path": "tests/scripts/test_run_prework_36_4_live_evidence.py",
+        "sha256": "sha256:bf46a33cfa697d061701d3bd81bbbfc7e4abdc32a6d9f04c3281b5cd33b0ffdf"
+      },
+      {
+        "path": "tests/unit/marcus/lesson_plan/test_prework_projection_36_2.py",
+        "sha256": "sha256:a5d37be2d60fb2192cb2900ea8b9aa1b0590287c5d84d581a7788a92f1ffb428"
+      }
+    ],
+    "manifest_digest": "sha256:e482a346a825ecfd034acbfc456769e3e2be5a7fdce165b230269760644e9121",
+    "prior_failed_verdict": {
+      "path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-live-20260713T031142Z-b90fb3f6/verdict.json",
+      "sha256": "sha256:9ec5ddd2cea9161813af04dc825dddf04023d6ef0ad65514b0bd40cafaacf0be"
+    },
+    "prior_adjudication": {
+      "path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-adjudication-b90fb3f6/adjudication.json",
+      "sha256": "sha256:db8315b5db1cf941bb85bb75e41f052b146d3126e38fb24e76371fe2536b260c"
+    }
+  },
+  "preventive_spend_bound": {
+    "model": "gpt-5",
+    "call_count": 2,
+    "input_token_ceiling_per_call": 32768,
+    "max_completion_tokens_per_call": 4096,
+    "worst_case_usd": 0.16383999999999999,
+    "pricing_source": "runtime/config/openai_pricing.yaml",
+    "pricing_source_sha256": "sha256:01ac90069cc844ac60b923093ae48c143046feacece6d3738928a3d515f03392",
+    "input_bound_method": "UTF-8 payload bytes bound token count; 8192 additional tokens are reserved for system prompts, message framing, and structured-output schemas"
+  },
+  "serialized_input_bytes": {
+    "scene_source": 8840,
+    "promise_authority": 324,
+    "reserved_prompt_schema_overhead_tokens": 8192
+  },
+  "inputs": {
+    "course_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-apc-c1-m1-p2-trends",
+    "run_json_digest": "sha256:eba4510e79929e80be66af9ce9992bad12b61efc71b73738ea06cd0333b31a95",
+    "ratified_los_digest": "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6",
+    "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+    "segment_manifest_digest": "sha256:7b08a2de150c845683f247e89e6e9ea00334a8580d0cb5a15586f8cbdbf6725b",
+    "bundle_extracted_digest": "sha256:6dc4b9d9ce55111797e5fe6d2eec17862c14ead4748c0454a2c9277ae0de2c1b",
+    "clone_manifest_digest": "sha256:884727bdf096866f2672a59d4fc7f866f68249abf97235793e2d6ab748df4a05",
+    "clone_manifest": {
+      "schema_version": "prework-36-4-fresh-clone.v1",
+      "source_label": "production-shaped Story-36.4 live input fixture",
+      "origin_label": "fresh pre-07W.1 clone for adjudicated recovery b90fb3f6",
+      "created_at": "2026-07-13T03:17:45.134897Z",
+      "run_json_digest": "sha256:eba4510e79929e80be66af9ce9992bad12b61efc71b73738ea06cd0333b31a95",
+      "ratified_los_digest": "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6",
+      "segment_manifest_digest": "sha256:7b08a2de150c845683f247e89e6e9ea00334a8580d0cb5a15586f8cbdbf6725b",
+      "bundle_extracted_digest": "sha256:6dc4b9d9ce55111797e5fe6d2eec17862c14ead4748c0454a2c9277ae0de2c1b",
+      "no_real_brief_contribution": true,
+      "no_workbook_brief_sidecar": true
+    },
+    "bound_fresh_output_root": "_bmad-output/artifacts/workbooks-36-4-rerecovery-b90fb3f6"
+  },
+  "operator_spot_checks": {
+    "provenance": "PENDING",
+    "actual_payoff": "PENDING",
+    "semantic_faithfulness": "PENDING",
+    "scene_innocence": "PENDING",
+    "pertinent_ability": "PENDING",
+    "lo_fidelity": "PENDING",
+    "half_rhyme": "PENDING",
+    "mastery_overclaim": "PENDING",
+    "no_spoiler": "PENDING"
+  },
+  "machine_transport_render_pass": true,
+  "primary_part2_acceptance": true,
+  "evidence_status": "pending_operator",
+  "scene_gate_failures": [],
+  "promise_gate_failures": [],
+  "scene_review": {
+    "scene": {
+      "status": "authored",
+      "text": "You are an attending physician managing a complex workflow. You notice a recurring delay in patient transport that slows the workflow and draws your attention during routine operations.",
+      "source_refs": [
+        "assessments/chapter-2-knowledge-check.md#Q5"
+      ],
+      "known_losses": [],
+      "marker": null,
+      "lesson_type": "fresh_pain",
+      "archetype": "external_friction"
+    },
+    "operator_warnings": [
+      "actual_payoff_sufficiency_operator_check",
+      "semantic_faithfulness_operator_check",
+      "scene_invented_terms_operator_check"
+    ],
+    "introduced_terms": [
+      "attention",
+      "draws",
+      "during",
+      "operations",
+      "routine",
+      "slows"
+    ]
+  },
+  "calls": 2,
+  "total_cost_usd": 0.0361625,
+  "max_spend_usd": 0.25,
+  "writer_receipts": [
+    {
+      "writer": "scene",
+      "mode": "live",
+      "calls": 1,
+      "model": "gpt-5",
+      "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+      "request_id": null,
+      "latency_ms": 30594.922699965537,
+      "input_tokens": 632,
+      "output_tokens": 2397,
+      "cost_usd": 0.024759999999999997,
+      "cost_unavailable_reason": null
+    },
+    {
+      "writer": "promise",
+      "mode": "live",
+      "calls": 1,
+      "model": "gpt-5",
+      "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+      "request_id": null,
+      "latency_ms": 11541.661700000986,
+      "input_tokens": 450,
+      "output_tokens": 1084,
+      "cost_usd": 0.0114025,
+      "cost_unavailable_reason": null
+    }
+  ],
+  "artifact_digest": "sha256:a5fefb80599c4bc11fd7c55b81a70ba6b7f35a0388a042b42db4ed6b13ce9016",
+  "contribution": {
+    "artifact_path": "workbook-brief.v1.json",
+    "payload_digest": "sha256:a5fefb80599c4bc11fd7c55b81a70ba6b7f35a0388a042b42db4ed6b13ce9016",
+    "schema_version": "workbook-brief.v1",
+    "status_summary": {
+      "scene": "authored",
+      "promise": "authored"
+    },
+    "warning_summary": [
+      "actual_payoff_sufficiency_operator_check",
+      "semantic_faithfulness_operator_check",
+      "scene_invented_terms_operator_check",
+      "promise_no_spoiler_operator_check",
+      "promise_lo_vs_vow_operator_check",
+      "promise_pertinent_ability_operator_check",
+      "promise_half_rhyme_operator_check",
+      "promise_mastery_overclaim_operator_check"
+    ],
+    "loss_summary": [],
+    "node_id": "07W.1",
+    "specialist_id": "workbook_brief"
+  },
+  "markdown_path": "_bmad-output/artifacts/workbooks-36-4-rerecovery-b90fb3f6/u-intrapreneur-01@1.md",
+  "docx_path": "_bmad-output/artifacts/workbooks-36-4-rerecovery-b90fb3f6/u-intrapreneur-01@1.docx",
+  "assertions": {
+    "beat_order": true,
+    "fr17": true,
+    "md_nonempty": true,
+    "docx_nonempty": true
+  }
+}

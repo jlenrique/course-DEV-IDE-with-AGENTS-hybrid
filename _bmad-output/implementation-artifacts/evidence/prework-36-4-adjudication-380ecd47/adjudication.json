@@ -1,0 +1,25 @@
+{
+  "story": "36.4",
+  "attempt_id": "380ecd47-7491-42ab-a3d8-a68c1afbb078",
+  "original_verdict_path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-live-20260713T023935Z-380ecd47/verdict.json",
+  "original_verdict_sha256": "sha256:8e3bc69b123657b0a0b867d0c5fe5d7058dc512d10f23c99b3da04d7b5c60b45",
+  "machine_transport_render_pass": true,
+  "semantic_acceptance": false,
+  "operator_verdict": "FAIL",
+  "operator_reason": "AC8 Part-2 primary requires an authored Scene with clean faithfulness gates; the honest degraded Scene is product-safe but is not the golden witness.",
+  "operator_spot_checks": {
+    "provenance": "PASS",
+    "actual_payoff": "PASS",
+    "semantic_faithfulness": "FAIL",
+    "pertinent_ability": "PASS",
+    "lo_fidelity": "PASS",
+    "half_rhyme": "PASS",
+    "mastery_overclaim": "PASS",
+    "no_spoiler": "PASS"
+  },
+  "failures": [
+    "scene_faithfulness_overlap",
+    "scene_faithfulness_negator"
+  ],
+  "driver_defect": "driver overaccepted a degraded Scene as the Story-36.4 golden witness"
+}

@@ -1,0 +1,23 @@
+{
+  "story": "36.4",
+  "attempt_id": "12ccd755-592b-45c2-8fd2-b3fbe51df2b9",
+  "first_run_stands": true,
+  "pass": false,
+  "inputs": {
+    "course_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-apc-c1-m1-p2-trends",
+    "run_json_digest": "sha256:eae87f2172d0ebd52e0c18af8af355cbc71ea35e1dcc028683c87dd6f45c3b35",
+    "ratified_los_digest": "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6",
+    "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302"
+  },
+  "operator_spot_checks": {
+    "provenance": "PENDING",
+    "actual_payoff": "PENDING",
+    "semantic_faithfulness": "PENDING",
+    "pertinent_ability": "PENDING",
+    "lo_fidelity": "PENDING",
+    "half_rhyme": "PENDING",
+    "mastery_overclaim": "PENDING",
+    "no_spoiler": "PENDING"
+  },
+  "error": "SpecialistDispatchError: workbook band factory failed at node '07W.1': 1 validation error for SceneBrief\n  Value error, authored Scene cannot carry losses or an unavailable marker [type=value_error, input_value={'status': 'authored', 't...e': 'external_friction'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/value_error"
+}

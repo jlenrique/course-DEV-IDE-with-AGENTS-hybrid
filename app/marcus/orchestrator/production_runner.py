@@ -3250,6 +3250,9 @@ def run_production_trial(
                     production_envelope = workbook_wiring.run_workbook_band_node(
                         node_id=node.id,
                         production_envelope=production_envelope,
+                        runtime_context=workbook_wiring.runtime_context_for_run(
+                            runs_root / str(effective_trial_id), node_id=node.id
+                        ),
                     )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(
@@ -3977,7 +3980,17 @@ def recover_production_trial(
                 "upstream re-entry only — omit the flag to retry the failed node"
             )
         drop_ids = set(node_ids[reenter_index : failed_index + 1])
+        legacy_workbook_stub = (
+            envelope.production_envelope.get_contribution(
+                workbook_wiring.LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID,
+                node_id="07W.1",
+            )
+            if reenter_at_node == "07W.1"
+            else None
+        )
         dropped = envelope.production_envelope.drop_contributions_from_nodes(drop_ids)
+        if legacy_workbook_stub is not None:
+            envelope.production_envelope.add_contribution(legacy_workbook_stub)
         run_state = run_state.model_copy(
             update={"production_envelope": envelope.production_envelope}
         )
@@ -4244,6 +4257,9 @@ def _continue_production_walk(
                     production_envelope = workbook_wiring.run_workbook_band_node(
                         node_id=node.id,
                         production_envelope=production_envelope,
+                        runtime_context=workbook_wiring.runtime_context_for_run(
+                            runs_root / str(trial_id), node_id=node.id
+                        ),
                     )
                 except SpecialistDispatchError as exc:
                     return _pause_at_error(

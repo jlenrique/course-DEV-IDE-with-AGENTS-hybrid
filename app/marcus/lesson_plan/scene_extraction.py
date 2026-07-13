@@ -53,11 +53,17 @@ class SceneSeed(_StrictModel):
     source_kind: SourceKind
     slide_key: LocalNonBlank | None
     sme_scenario: bool
+    setup_only: bool = False
+    forbidden_resolution_spans: tuple[LocalNonBlank, ...] = ()
 
     @model_validator(mode="after")
     def _scenario_flag_matches_source_kind(self) -> SceneSeed:
         if self.sme_scenario and self.source_kind != "assessment_scenario":
             raise ValueError("SME scenario flag requires assessment_scenario source kind")
+        if self.setup_only and (
+            self.source_kind != "assessment_scenario" or not self.forbidden_resolution_spans
+        ):
+            raise ValueError("setup-only seed requires explicit assessment resolution spans")
         return self
 
 
@@ -109,6 +115,14 @@ class SceneGateReceipt(_StrictModel):
     failures: tuple[LocalNonBlank, ...]
 
 
+class SceneFaithfulnessPromptConstraints(_StrictModel):
+    meaningful_seed_anchors: tuple[str, ...]
+    required_shared_count: int
+    minimum_recall: float
+    digit_multiset: tuple[tuple[str, int], ...]
+    negator_multiset: tuple[tuple[str, int], ...]
+
+
 class SceneNormalizationReceipt(_StrictModel):
     seeds: tuple[SceneSeed, ...]
     rejection_losses: tuple[LocalNonBlank, ...]
@@ -122,6 +136,7 @@ class SceneProjectionResult(_StrictModel):
     gate_receipt: SceneGateReceipt
     extraction_losses: tuple[LocalNonBlank, ...]
     operator_warnings: tuple[LocalNonBlank, ...]
+    introduced_terms: tuple[LocalNonBlank, ...] = ()
 
 
 def normalize_scene_candidates(
@@ -291,16 +306,31 @@ def _tokens(text: str) -> tuple[str, ...]:
     return tuple(tokens)
 
 
+def scene_faithfulness_prompt_constraints(seed_text: str) -> SceneFaithfulnessPromptConstraints:
+    """Expose the deterministic gate anchors that an authored Scene must preserve."""
+    tokens = _tokens(seed_text)
+    meaningful = tuple(sorted({token for token in tokens if token not in _STOPWORDS}))
+    return SceneFaithfulnessPromptConstraints(
+        meaningful_seed_anchors=meaningful,
+        required_shared_count=len(meaningful) if len(meaningful) < 2 else 2,
+        minimum_recall=0.30,
+        digit_multiset=tuple(sorted(Counter(token for token in tokens if token.isdigit()).items())),
+        negator_multiset=tuple(
+            sorted(Counter(token for token in tokens if token in _NEGATORS).items())
+        ),
+    )
+
+
 def _faithfulness_failures(seed_text: str, scene_text: str) -> tuple[tuple[str, ...], bool, bool]:
     seed_tokens = _tokens(seed_text)
     scene_tokens = _tokens(scene_text)
-    seed_meaningful = {token for token in seed_tokens if token not in _STOPWORDS}
+    constraints = scene_faithfulness_prompt_constraints(seed_text)
+    seed_meaningful = set(constraints.meaningful_seed_anchors)
     scene_meaningful = {token for token in scene_tokens if token not in _STOPWORDS}
     shared = seed_meaningful & scene_meaningful
-    required_shared = len(seed_meaningful) if len(seed_meaningful) < 2 else 2
     recall = len(shared) / len(seed_meaningful) if seed_meaningful else 0.0
     failures: list[str] = []
-    if len(shared) < required_shared or recall < 0.30:
+    if len(shared) < constraints.required_shared_count or recall < constraints.minimum_recall:
         failures.append("scene_faithfulness_overlap")
 
     seed_digits = Counter(token for token in seed_tokens if token.isdigit())
@@ -323,6 +353,35 @@ def _faithfulness_failures(seed_text: str, scene_text: str) -> tuple[tuple[str, 
     if seed_negators != scene_negators:
         failures.append("scene_faithfulness_negator")
     return tuple(failures), has_word_digit_uncertainty, bool(seed_negators or scene_negators)
+
+
+_INNOCENCE_CONNECTIVES = frozenset({"again", "still", "recurring", "notice", "notices"})
+_DIAGNOSTIC_COMPLETION = re.compile(
+    r"\b(?:barrier|cause|reason|solution|diagnosis)\b.{0,80}\b(?:is|are|was|were)\b",
+    re.IGNORECASE,
+)
+
+
+def _setup_innocence_review(
+    seed: SceneSeed, scene_text: str
+) -> tuple[tuple[str, ...], tuple[str, ...]]:
+    if not seed.setup_only:
+        return (), ()
+    scene_tokens = _tokens(scene_text)
+    scene_meaningful = {token for token in scene_tokens if token not in _STOPWORDS}
+    seed_meaningful = {token for token in _tokens(seed.text) if token not in _STOPWORDS}
+    failures: list[str] = []
+    for forbidden in seed.forbidden_resolution_spans:
+        forbidden_meaningful = {token for token in _tokens(forbidden) if token not in _STOPWORDS}
+        shared = scene_meaningful & forbidden_meaningful
+        recall = len(shared) / len(forbidden_meaningful) if forbidden_meaningful else 0.0
+        if forbidden.casefold() in scene_text.casefold() or recall >= 0.60:
+            failures.append("scene_innocence_forbidden_resolution")
+            break
+    if _DIAGNOSTIC_COMPLETION.search(scene_text):
+        failures.append("scene_innocence_diagnostic_completion")
+    invented = scene_meaningful - seed_meaningful - _INNOCENCE_CONNECTIVES
+    return tuple(dict.fromkeys(failures)), tuple(sorted(invented))
 
 
 def _degraded_scene(
@@ -398,6 +457,7 @@ def compose_scene_projection(
         lesson_type=classification.lesson_type,
         archetype=classification.archetype,
         payoff_slide_keys=request.payoff_slide_keys,
+        setup_only=selected.setup_only,
     )
     returned = composer(formed)
     if not isinstance(returned, SceneBrief):
@@ -423,11 +483,16 @@ def compose_scene_projection(
         "actual_payoff_sufficiency_operator_check",
         "semantic_faithfulness_operator_check",
     ]
+    introduced_terms: tuple[str, ...] = ()
     if not failures and scene.text is not None:
         faithfulness, word_digit_uncertain, has_negation = _faithfulness_failures(
             selected.text, scene.text
         )
         failures.extend(faithfulness)
+        innocence_failures, introduced_terms = _setup_innocence_review(selected, scene.text)
+        failures.extend(innocence_failures)
+        if introduced_terms:
+            warnings.append("scene_invented_terms_operator_check")
         if word_digit_uncertain:
             warnings.append("word_digit_equivalence_operator_check")
         if has_negation:
@@ -443,17 +508,20 @@ def compose_scene_projection(
         gate_receipt=SceneGateReceipt(failures=tuple(failures)),
         extraction_losses=request.extraction_losses,
         operator_warnings=tuple(warnings),
+        introduced_terms=introduced_terms,
     )
 
 
 __all__ = [
     "SCENE_SOURCE_REQUEST_MARKER",
     "SceneGateReceipt",
+    "SceneFaithfulnessPromptConstraints",
     "SceneNormalizationReceipt",
     "SceneProjectionRequest",
     "SceneProjectionResult",
     "SceneSeed",
     "compose_scene_projection",
     "normalize_scene_candidates",
+    "scene_faithfulness_prompt_constraints",
     "select_scene_seed",
 ]

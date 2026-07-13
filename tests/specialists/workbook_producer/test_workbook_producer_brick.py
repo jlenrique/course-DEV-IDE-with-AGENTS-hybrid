@@ -27,7 +27,18 @@ from typing import Any
 
 import pytest
 import yaml
+from docx import Document
 
+from app.marcus.lesson_plan.prework_artifact import WorkbookBriefRuntimeContext
+from app.marcus.lesson_plan.prework_projection import (
+    ObjectiveInput,
+    PromiseProjection,
+    PromiseVow,
+    SceneBrief,
+)
+from app.marcus.lesson_plan.promise_projection import PromiseObjectiveResolution
+from app.marcus.orchestrator import workbook_wiring
+from app.models.runtime.production_trial_envelope import ProductionTrialEnvelope
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
@@ -170,11 +181,7 @@ def output_root() -> Iterator[Path]:
     mkdir/rmtree churn cannot aggravate that pre-existing shared-output-root race.
     """
     target = (
-        REPO_ROOT
-        / "_bmad-output"
-        / "artifacts"
-        / "workbooks-test-s7"
-        / f"_t-{uuid.uuid4().hex}"
+        REPO_ROOT / "_bmad-output" / "artifacts" / "workbooks-test-s7" / f"_t-{uuid.uuid4().hex}"
     )
     target.mkdir(parents=True, exist_ok=True)
     try:
@@ -195,18 +202,14 @@ def _seed_state(payload: dict[str, Any]) -> RunState:
         graph_version="v0.1-stub",
         temperature=0.0,
         model_resolution_trail=[entry],
-        cache_state=CacheState(
-            cache_prefix=json.dumps(payload, sort_keys=True), entries_count=0
-        ),
+        cache_state=CacheState(cache_prefix=json.dumps(payload, sort_keys=True), entries_count=0),
     )
 
 
 # --- Floor 1: in-graph production + NO model client touched -----------------
 
 
-def test_act_emits_real_docx_md_and_produced_asset(
-    tmp_path: Path, output_root: Path
-) -> None:
+def test_act_emits_real_docx_md_and_produced_asset(tmp_path: Path, output_root: Path) -> None:
     run_dir = _make_fixture_run_dir(tmp_path)
     state = _seed_state({"run_dir": str(run_dir), "output_root": str(output_root)})
 
@@ -218,26 +221,108 @@ def test_act_emits_real_docx_md_and_produced_asset(
     assert wb["asset_ref"].startswith("workbook-")
     assert wb["modality_ref"] == "workbook"
     assert wb["fulfills"]
-    assert wb["numeric_audit_status"] in {"PASS", "FAIL", "OK", None} or True  # informational
+    assert wb["numeric_audit_status"] in {"PASS", "FAIL", "OK", None} or True
     assert wb["citation_unsourced"] == 0
-
-    # Real DOCX + MD written to disk under the contained output root.
     docx_path = REPO_ROOT / wb["docx_path"]
     md_path = REPO_ROOT / wb["markdown_path"]
     assert docx_path.is_file(), docx_path
     assert md_path.is_file(), md_path
-    # The DOCX is a real Office Open XML package (zip with the document part).
     assert zipfile.is_zipfile(docx_path)
     with zipfile.ZipFile(docx_path) as zf:
         assert "word/document.xml" in zf.namelist()
-    # The canonical MD carries the workbook structure + every fixture segment.
     md_text = md_path.read_text(encoding="utf-8")
     assert "# Workbook:" in md_text
     for seg in _FIXTURE_SEGMENTS:
         assert f"segment:{seg['segment_id']}" in md_text
-
-    # Resolution trail records the deterministic-produce tag.
     assert update["model_resolution_trail"][-1].reason == "workbook-producer.produced.ok"
+
+
+def test_serialized_07w1_authority_drives_actual_terminal_md_docx(
+    tmp_path: Path, output_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fixtures = REPO_ROOT / "tests" / "fixtures" / "prework_36_4"
+    structured = json.loads((fixtures / "part2-structured-input.json").read_text("utf-8"))
+    expected = json.loads((fixtures / "deterministic-expected-receipt.json").read_text("utf-8"))
+    semantic = json.loads((fixtures / "semantic-assertion-manifest.json").read_text("utf-8"))
+    run_dir = _make_fixture_run_dir(tmp_path)
+    trial = ProductionTrialEnvelope.model_validate_json((run_dir / "run.json").read_text("utf-8"))
+    resolution = PromiseObjectiveResolution(
+        status="authored",
+        objectives=(
+            ObjectiveInput(
+                objective_id="obj-macro-trends",
+                text="Identify the first workflow move.",
+                status="ratified",
+            ),
+        ),
+        authority_variants=("plan_dialogue",),
+        authority_refs=("ratified-los.json#ratified_los/0",),
+    )
+    monkeypatch.setattr(workbook_wiring, "resolve_promise_objectives", lambda _run: resolution)
+
+    def scene_writer(request):
+        return SceneBrief(
+            status="authored",
+            text=request.seed_text,
+            source_refs=request.source_refs,
+            known_losses=(),
+            marker=None,
+            lesson_type=request.lesson_type,
+            archetype=request.archetype,
+        )
+
+    def promise_writer(request):
+        return PromiseProjection(
+            status="authored",
+            vows=tuple(
+                PromiseVow(
+                    objective_id=row.objective_id, text="I can identify the first workflow move."
+                )
+                for row in request.objectives
+            ),
+            known_losses=(),
+            marker=None,
+        )
+
+    context = WorkbookBriefRuntimeContext(
+        run_dir=run_dir,
+        course_source_root=REPO_ROOT / structured["course_source_root"],
+        encounter_mode=structured["encounter_mode"],
+        context_origin="new_start",
+        writer_execution_mode="offline_stub",
+        scene_writer=scene_writer,
+        promise_writer=promise_writer,
+    )
+    production = workbook_wiring.run_workbook_band_node(
+        node_id="07W.1",
+        production_envelope=trial.production_envelope,
+        runtime_context=context,
+    )
+    trial.production_envelope = production
+    (run_dir / "run.json").write_text(trial.model_dump_json(indent=2) + "\n", "utf-8")
+    reloaded = ProductionTrialEnvelope.model_validate_json(
+        (run_dir / "run.json").read_text("utf-8")
+    )
+    state = _seed_state({"run_dir": str(run_dir), "output_root": str(output_root)})
+    state.production_envelope = reloaded.production_envelope
+    update = wb_act.act(state)
+    output = json.loads(update["cache_state"]["cache_prefix"])["workbook"]
+    md_path = REPO_ROOT / output["markdown_path"]
+    docx_path = REPO_ROOT / output["docx_path"]
+    markdown = md_path.read_text("utf-8")
+    paragraphs = [paragraph.text for paragraph in Document(docx_path).paragraphs]
+    titles = {"scene": "Scene", "friction_scale": "Friction Scale", "promise": "Promise"}
+    positions = [markdown.index(f"## {titles[heading]}") for heading in expected["beat_order"]]
+    assert positions == sorted(positions)
+    assert structured["scene_source_ref"] in json.dumps(output["workbook_brief"])
+    assert output["workbook_brief"]["payload_digest"].startswith("sha256:")
+    assert output["depth_receipt"]["status"] == semantic["depth_status"]
+    for forbidden in semantic["fr17_forbidden_headings"]:
+        assert f"## {forbidden}" not in markdown
+        assert forbidden not in paragraphs
+    assert any("patient transport" in paragraph for paragraph in paragraphs)
+    assert any("Rate this friction" in paragraph for paragraph in paragraphs)
+    assert any("first workflow move" in paragraph for paragraph in paragraphs)
 
 
 def test_act_touches_no_model_client(
@@ -256,9 +341,9 @@ def test_act_touches_no_model_client(
 
 
 def test_no_model_client_imports_in_act_module() -> None:
-    source = (
-        REPO_ROOT / "app" / "specialists" / "workbook_producer" / "_act.py"
-    ).read_text(encoding="utf-8")
+    source = (REPO_ROOT / "app" / "specialists" / "workbook_producer" / "_act.py").read_text(
+        encoding="utf-8"
+    )
     assert "make_chat_model" not in source
     assert "ChatOpenAI" not in source
 
@@ -287,9 +372,9 @@ def test_node_calls_real_workbook_producer(tmp_path: Path, output_root: Path) ->
     assert isinstance(sidecar, WorkbookSidecar)
     assert type(sidecar).__module__ == WorkbookProducer.__module__
     # The node constructs the real producer rather than re-deriving the compose path.
-    source = (
-        REPO_ROOT / "app" / "specialists" / "workbook_producer" / "_act.py"
-    ).read_text(encoding="utf-8")
+    source = (REPO_ROOT / "app" / "specialists" / "workbook_producer" / "_act.py").read_text(
+        encoding="utf-8"
+    )
     assert "WorkbookProducer(output_root=" in source
     assert "compose_workbook" not in source  # composition stays in the producer
 
@@ -308,9 +393,7 @@ def test_workbook_deselected_prunes_07w_and_keeps_baseline_byte_identical() -> N
     manifest = load(DEFAULT_RUN_MANIFEST_PATH)
 
     # Full selection (deck+motion+workbook) is the byte-identical no-op.
-    full = compose_manifest(
-        manifest, ComponentSelection(deck=True, motion=True, workbook=True)
-    )
+    full = compose_manifest(manifest, ComponentSelection(deck=True, motion=True, workbook=True))
     assert full is manifest or full == manifest
 
     # Deck-only and deck+motion BOTH prune 07W (workbook deselected).
@@ -320,9 +403,7 @@ def test_workbook_deselected_prunes_07w_and_keeps_baseline_byte_identical() -> N
     assert "07W" not in {n.id for n in deck_motion.nodes}
 
     # deck+motion == baseline (on-disk manifest minus 07W) byte-identically.
-    expected_dm_ids = {n.id for n in manifest.nodes} - {
-        "07W.1", "07W.2", "07W.3", "07W.4", "07W"
-    }
+    expected_dm_ids = {n.id for n in manifest.nodes} - {"07W.1", "07W.2", "07W.3", "07W.4", "07W"}
     assert {n.id for n in deck_motion.nodes} == expected_dm_ids
     # The 15 -> 07W -> __end__ chain collapses to 15 -> __end__ when 07W is pruned.
     dm_edges = {(e.from_node, e.to) for e in deck_motion.edges}
@@ -331,9 +412,7 @@ def test_workbook_deselected_prunes_07w_and_keeps_baseline_byte_identical() -> N
     assert ("15", "__end__") in dm_edges
 
     # Deterministic on repeat (byte-identity).
-    deck_motion_again = compose_manifest(
-        manifest, ComponentSelection(deck=True, motion=True)
-    )
+    deck_motion_again = compose_manifest(manifest, ComponentSelection(deck=True, motion=True))
     assert [n.model_dump() for n in deck_motion.nodes] == [
         n.model_dump() for n in deck_motion_again.nodes
     ]
@@ -349,9 +428,7 @@ def test_workbook_selected_includes_07w_after_handoff() -> None:
     from app.models.state.component_selection import ComponentSelection
 
     manifest = load(DEFAULT_RUN_MANIFEST_PATH)
-    composed = compose_manifest(
-        manifest, ComponentSelection(deck=True, motion=True, workbook=True)
-    )
+    composed = compose_manifest(manifest, ComponentSelection(deck=True, motion=True, workbook=True))
     edges = {(e.from_node, e.to) for e in composed.edges}
     assert ("15", "07W.1") in edges
     assert ("07W.1", "07W.2") in edges
@@ -386,9 +463,7 @@ def test_07w_is_a_real_manifest_node() -> None:
 
 def test_workbook_producer_in_dispatch_registry() -> None:
     registry = yaml.safe_load(
-        (REPO_ROOT / "state" / "config" / "dispatch-registry.yaml").read_text(
-            encoding="utf-8"
-        )
+        (REPO_ROOT / "state" / "config" / "dispatch-registry.yaml").read_text(encoding="utf-8")
     )
     assert (
         registry["specialists"]["workbook_producer"]
@@ -398,9 +473,7 @@ def test_workbook_producer_in_dispatch_registry() -> None:
 
 def test_workbook_producer_wired_in_capability_overlay() -> None:
     overlay = yaml.safe_load(
-        (REPO_ROOT / "state" / "config" / "capability-overlay.yaml").read_text(
-            encoding="utf-8"
-        )
+        (REPO_ROOT / "state" / "config" / "capability-overlay.yaml").read_text(encoding="utf-8")
     )
     entry = overlay["specialists"]["workbook_producer"]
     assert entry["capability_state"] == "wired"

@@ -21,16 +21,9 @@ EVIDENCE = (
     / "s7p2-story-b-syllabus-metadata-20260708T110225"
 )
 HAI_ROOT = (
-    REPO_ROOT
-    / "course-content"
-    / "courses"
-    / "aziz-nazha-hai-510-generative-ai-in-healthcare"
+    REPO_ROOT / "course-content" / "courses" / "aziz-nazha-hai-510-generative-ai-in-healthcare"
 )
-HAI_PROPOSAL = (
-    EVIDENCE
-    / "hai-510"
-    / "module-metadata.yaml"
-)
+HAI_PROPOSAL = EVIDENCE / "hai-510" / "module-metadata.yaml"
 
 
 @pytest.fixture(autouse=True)
@@ -121,6 +114,8 @@ def test_start_trial_ratified_collateral_intent_threads_selection(
             allow_offline_cost_report=True,
             runs_root=tmp_path,
             lesson_plan_collateral_intent_path=intent_path,
+            course_source_root=Path("course-content/courses/tejal-apc-c1-m1-p2-trends"),
+            encounter_mode="recorded",
         )
 
     selection = captured["component_selection"]
@@ -160,17 +155,15 @@ def test_start_trial_ratified_collateral_intent_runs_local_runtime(
         allow_offline_cost_report=True,
         runs_root=tmp_path,
         lesson_plan_collateral_intent_path=intent_path,
+        course_source_root=Path("course-content/courses/tejal-apc-c1-m1-p2-trends"),
+        encounter_mode="recorded",
     )
 
     run_dir = tmp_path / result["trial_id"]
     start_receipt = json.loads((run_dir / "trial-start.json").read_text(encoding="utf-8"))
-    assert start_receipt["lesson_plan_collateral_bundle_id"] == (
-        "narrated-deck-with-workbook"
-    )
+    assert start_receipt["lesson_plan_collateral_bundle_id"] == ("narrated-deck-with-workbook")
     assert start_receipt["lesson_plan_collateral_intent_path"] == intent_path.as_posix()
-    summary = yaml.safe_load(
-        (run_dir / "run_summary.yaml").read_text(encoding="utf-8")
-    )
+    summary = yaml.safe_load((run_dir / "run_summary.yaml").read_text(encoding="utf-8"))
     assert summary["component_selection"] == {
         "deck": True,
         "motion": True,
@@ -217,12 +210,8 @@ def test_start_trial_ratified_input_bundle_intent_runs_local_runtime(
 
     run_dir = tmp_path / result["trial_id"]
     start_receipt = json.loads((run_dir / "trial-start.json").read_text(encoding="utf-8"))
-    assert start_receipt["lesson_plan_collateral_bundle_id"] == (
-        "narrated-deck-with-motion"
-    )
-    summary = yaml.safe_load(
-        (run_dir / "run_summary.yaml").read_text(encoding="utf-8")
-    )
+    assert start_receipt["lesson_plan_collateral_bundle_id"] == ("narrated-deck-with-motion")
+    summary = yaml.safe_load((run_dir / "run_summary.yaml").read_text(encoding="utf-8"))
     assert summary["component_selection"] == {
         "deck": True,
         "motion": True,
@@ -248,8 +237,7 @@ def test_start_trial_unratified_collateral_intent_preserves_manual_selection(
     monkeypatch.setattr("app.marcus.cli.trial.run_production_trial", _spy)
     intent_path = tmp_path / "draft-collateral-intent.yaml"
     intent_path.write_text(
-        "ratification_status: draft\n"
-        "bundle_id: narrated-deck-with-workbook\n",
+        "ratification_status: draft\nbundle_id: narrated-deck-with-workbook\n",
         encoding="utf-8",
     )
     manual = ComponentSelection(deck=True, motion=False, workbook=False)
@@ -304,9 +292,7 @@ def test_start_trial_ratified_intent_conflicts_with_manual_selection_before_run(
             lesson_plan_collateral_intent_path=intent_path,
         )
 
-    assert sorted(path.name for path in tmp_path.iterdir()) == [
-        "ratified-collateral-intent.yaml"
-    ]
+    assert sorted(path.name for path in tmp_path.iterdir()) == ["ratified-collateral-intent.yaml"]
 
 
 def test_trial_start_cli_unratified_intent_preserves_bundle_pick(
@@ -320,8 +306,7 @@ def test_trial_start_cli_unratified_intent_preserves_bundle_pick(
     monkeypatch.setattr("app.marcus.cli.trial._load_env_if_available", lambda: None)
     intent_path = tmp_path / "draft-collateral-intent.yaml"
     intent_path.write_text(
-        "ratification_status: draft\n"
-        "bundle_id: narrated-deck-with-workbook\n",
+        "ratification_status: draft\nbundle_id: narrated-deck-with-workbook\n",
         encoding="utf-8",
     )
 
@@ -350,9 +335,7 @@ def test_trial_start_cli_unratified_intent_preserves_bundle_pick(
     assert exit_code == 0
     payload = json.loads(capsys.readouterr().out)
     summary = yaml.safe_load(
-        (tmp_path / payload["trial_id"] / "run_summary.yaml").read_text(
-            encoding="utf-8"
-        )
+        (tmp_path / payload["trial_id"] / "run_summary.yaml").read_text(encoding="utf-8")
     )
     assert summary["component_selection"] == {
         "deck": True,
@@ -406,6 +389,10 @@ def test_trial_start_cli_ratified_intent_conflicts_with_bundle_before_run(
             "narrated-deck",
             "--lesson-plan-collateral-intent",
             str(intent_path),
+            "--course-source-root",
+            "course-content/courses/tejal-apc-c1-m1-p2-trends",
+            "--encounter-mode",
+            "recorded",
         ]
     )
 
@@ -459,14 +446,16 @@ def test_trial_start_cli_matching_ratified_intent_takes_precedence_over_readines
             "narrated-deck-with-workbook",
             "--lesson-plan-collateral-intent",
             str(intent_path),
+            "--course-source-root",
+            "course-content/courses/tejal-apc-c1-m1-p2-trends",
+            "--encounter-mode",
+            "recorded",
         ]
     )
 
     assert exit_code == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["lesson_plan_collateral_bundle_id"] == (
-        "narrated-deck-with-workbook"
-    )
+    assert payload["lesson_plan_collateral_bundle_id"] == ("narrated-deck-with-workbook")
 
 
 def test_trial_start_cli_rejects_invalid_ratified_collateral_intent(

@@ -9,6 +9,10 @@ from uuid import UUID, uuid4
 import pytest
 import yaml
 
+from app.marcus.lesson_plan.prework_artifact import (
+    WorkbookBriefRuntimeContext,
+    write_runtime_context,
+)
 from app.marcus.orchestrator import workbook_wiring
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
 from app.models.specialist_model_config import SpecialistModelConfig
@@ -19,27 +23,117 @@ def _empty_envelope() -> ProductionEnvelope:
     return ProductionEnvelope(trial_id=uuid4())
 
 
-def test_default_band_executes_exact_truthful_stubs_in_order() -> None:
+def _legacy_context(tmp_path: Path) -> WorkbookBriefRuntimeContext:
+    return WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=None,
+        encounter_mode="recorded",
+        context_origin="legacy_default",
+        writer_execution_mode="offline_stub",
+    )
+
+
+def test_start_walk_reaches_07w1_with_persisted_normalized_context(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.marcus.orchestrator import production_runner
+    from app.models.state.component_selection import ComponentSelection
+
+    trial_id = UUID("82345678-1234-4234-8234-123456789abc")
+    run_dir = tmp_path / str(trial_id)
+    run_dir.mkdir(parents=True)
+    source_root = Path("course-content/courses/tejal-apc-c1-m1-p2-trends").resolve()
+    write_runtime_context(
+        WorkbookBriefRuntimeContext(
+            run_dir=run_dir,
+            course_source_root=source_root,
+            encounter_mode="recorded",
+            context_origin="new_start",
+            writer_execution_mode="offline_stub",
+        )
+    )
+    captured = []
+    real_hook = workbook_wiring.run_workbook_band_node
+
+    class _Adapter:
+        def invoke_specialist(
+            self, *, specialist_id, envelope, node_id=None, cost_usd=0.0, **kwargs
+        ):
+            updated = envelope.model_copy(deep=True)
+            output = (
+                {"lesson_plan": {"plan_units": [{"unit_id": "u1"}]}}
+                if specialist_id == "irene_pass1"
+                else {"specialist_id": specialist_id}
+            )
+            updated.add_contribution(
+                SpecialistContribution.from_output(
+                    specialist_id=specialist_id,
+                    node_id=node_id,
+                    output=output,
+                    model_used="fixture",
+                    cost_usd=cost_usd,
+                )
+            )
+            return updated
+
+    def spy(**kwargs):
+        if kwargs["node_id"] == "07W.1":
+            captured.append(kwargs["runtime_context"])
+        return real_hook(**kwargs)
+
+    monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _Adapter)
+    monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
+    monkeypatch.setenv("MARCUS_RESEARCH_DISPATCH_LIVE", "0")
+    monkeypatch.setattr(production_runner, "production_gate_ids", lambda _manifest: set())
+    monkeypatch.setattr(workbook_wiring, "run_workbook_band_node", spy)
+    result = production_runner.run_production_trial(
+        Path("tests/fixtures/trial_corpus/README.md"),
+        "production",
+        "operator_test",
+        trial_id=trial_id,
+        runs_root=tmp_path,
+        allow_offline_cost_report=True,
+        pause_at_gates=False,
+        max_specialist_calls=100,
+        component_selection=ComponentSelection(deck=True, motion=True, workbook=True),
+        hud="off",
+    )
+    assert result.status == "completed"
+    assert len(captured) == 1
+    context = captured[0]
+    assert (
+        context.run_dir.resolve(),
+        context.course_source_root.resolve(),
+        context.encounter_mode,
+        context.context_origin,
+        context.writer_execution_mode,
+    ) == (run_dir.resolve(), source_root, "recorded", "new_start", "offline_stub")
+    assert (run_dir / "workbook-brief.v1.json").is_file()
+
+
+def test_default_band_executes_real_brief_then_truthful_stubs_in_order(tmp_path: Path) -> None:
     envelope = _empty_envelope()
     for node_id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
         envelope = workbook_wiring.run_workbook_band_node(
-            node_id=node_id, production_envelope=envelope
+            node_id=node_id,
+            production_envelope=envelope,
+            runtime_context=_legacy_context(tmp_path) if node_id == "07W.1" else None,
         )
 
     assert [(item.node_id, item.specialist_id) for item in envelope.contributions] == [
-        ("07W.1", "workbook_brief_stub"),
+        ("07W.1", "workbook_brief"),
         ("07W.2", "ask_a_enrichment"),
         ("07W.3", "workbook_review_stub"),
         ("07W.4", "ask_b_hot_topics"),
     ]
+    assert envelope.contributions[0].model_used == "workbook-brief-offline"
     assert all(
-        item.model_used == "deterministic-workbook-band-stub"
-        for item in envelope.contributions
+        item.model_used == "deterministic-workbook-band-stub" for item in envelope.contributions[1:]
     )
-    assert envelope.contributions[0].output == {
-        "stub_status": "not_yet_wired",
-        "brief_payload": {},
-        "known_losses": ["semantic_writers_not_yet_wired"],
+    assert envelope.contributions[0].output["schema_version"] == "workbook-brief.v1"
+    assert envelope.contributions[0].output["status_summary"] == {
+        "scene": "unavailable",
+        "promise": "unavailable",
     }
     assert envelope.contributions[1].output == {
         "research_entries": [],
@@ -65,16 +159,14 @@ def test_factory_is_not_called_when_exact_coordinate_exists() -> None:
         calls.append(node_id)
         return {"spy": True}
 
-    factories: dict[str, Callable[[str, ProductionEnvelope], dict[str, object]]] = {
-        "07W.1": spy
-    }
+    factories: dict[str, Callable[[str, ProductionEnvelope], dict[str, object]]] = {"07W.3": spy}
     envelope = workbook_wiring.run_workbook_band_node(
-        node_id="07W.1", production_envelope=_empty_envelope(), factories=factories
+        node_id="07W.3", production_envelope=_empty_envelope(), factories=factories
     )
     repeated = workbook_wiring.run_workbook_band_node(
-        node_id="07W.1", production_envelope=envelope, factories=factories
+        node_id="07W.3", production_envelope=envelope, factories=factories
     )
-    assert calls == ["07W.1"]
+    assert calls == ["07W.3"]
     assert repeated is envelope
 
 
@@ -90,6 +182,8 @@ def test_partial_resume_only_calls_missing_nodes() -> None:
         node_id="07W.1", production_envelope=_empty_envelope(), factories=factories
     )
     for node_id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
+        if node_id == "07W.1":
+            continue
         envelope = workbook_wiring.run_workbook_band_node(
             node_id=node_id, production_envelope=envelope, factories=factories
         )
@@ -112,6 +206,8 @@ def test_serialized_partial_resume_only_invokes_missing_factories() -> None:
     reloaded = ProductionEnvelope.model_validate_json(envelope.model_dump_json())
     calls.clear()
     for node_id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
+        if node_id == "07W.1":
+            continue
         reloaded = workbook_wiring.run_workbook_band_node(
             node_id=node_id, production_envelope=reloaded, factories=factories
         )
@@ -121,8 +217,10 @@ def test_serialized_partial_resume_only_invokes_missing_factories() -> None:
 @pytest.mark.parametrize(
     ("factory", "tag"),
     [
-        (lambda _n, _e: (_ for _ in ()).throw(RuntimeError("boom")),
-         "workbook.band.factory-failed"),
+        (
+            lambda _n, _e: (_ for _ in ()).throw(RuntimeError("boom")),
+            "workbook.band.factory-failed",
+        ),
         (lambda _n, _e: ["not-a-dict"], "workbook.band.invalid-output"),
         (lambda _n, _e: {"bad": object()}, "workbook.band.invalid-output"),
     ],
@@ -140,7 +238,8 @@ def test_factory_failures_are_tagged(factory: object, tag: str) -> None:
 def test_invalid_context_is_tagged() -> None:
     with pytest.raises(SpecialistDispatchError) as caught:
         workbook_wiring.run_workbook_band_node(
-            node_id="07W.1", production_envelope=object()  # type: ignore[arg-type]
+            node_id="07W.1",
+            production_envelope=object(),  # type: ignore[arg-type]
         )
     assert caught.value.tag == "workbook.band.invalid-context"
 
@@ -159,8 +258,11 @@ def test_manifest_band_and_model_config_are_pinned() -> None:
     order = [node["id"] for node in raw["nodes"]]
     assert order[-5:] == ["07W.1", "07W.2", "07W.3", "07W.4", "07W"]
     expected_after = {
-        "07W.1": "15", "07W.2": "07W.1", "07W.3": "07W.2",
-        "07W.4": "07W.3", "07W": "07W.4",
+        "07W.1": "15",
+        "07W.2": "07W.1",
+        "07W.3": "07W.2",
+        "07W.4": "07W.3",
+        "07W": "07W.4",
     }
     for node_id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
         node = nodes[node_id]
@@ -171,9 +273,7 @@ def test_manifest_band_and_model_config_are_pinned() -> None:
         assert node["insertion_after"] == expected_after[node_id]
     config = SpecialistModelConfig.model_validate(
         yaml.safe_load(
-            Path("app/marcus/orchestrator/workbook_writer_model_config.yaml").read_text(
-                "utf-8"
-            )
+            Path("app/marcus/orchestrator/workbook_writer_model_config.yaml").read_text("utf-8")
         )
     )
     assert config.model_dump() == {
@@ -213,6 +313,7 @@ def test_real_start_then_continuation_reaches_band_in_order(
 
     trial_id = UUID("72345678-1234-4234-8234-123456789abc")
     calls: list[str] = []
+    contexts: list[WorkbookBriefRuntimeContext] = []
     real_hook = workbook_wiring.run_workbook_band_node
 
     class _Adapter:
@@ -243,6 +344,10 @@ def test_real_start_then_continuation_reaches_band_in_order(
 
     def _spy(**kwargs: object) -> ProductionEnvelope:
         calls.append(str(kwargs["node_id"]))
+        if kwargs["node_id"] == "07W.1" and isinstance(
+            kwargs.get("runtime_context"), WorkbookBriefRuntimeContext
+        ):
+            contexts.append(kwargs["runtime_context"])
         if failure_tag == "workbook.band.invalid-context":
             return real_hook(
                 node_id=str(kwargs["node_id"]),
@@ -265,9 +370,7 @@ def test_real_start_then_continuation_reaches_band_in_order(
     monkeypatch.setattr(
         production_runner,
         "_run_start_preflight_gate",
-        lambda *_args, **_kwargs: SimpleNamespace(
-            all_green=True, blocking_items=lambda: []
-        ),
+        lambda *_args, **_kwargs: SimpleNamespace(all_green=True, blocking_items=lambda: []),
     )
     monkeypatch.setattr(workbook_wiring, "run_workbook_band_node", _spy)
 
@@ -278,13 +381,22 @@ def test_real_start_then_continuation_reaches_band_in_order(
         trial_id=trial_id,
         runs_root=tmp_path,
         max_specialist_calls=100,
-        component_selection=ComponentSelection(
-            deck=True, motion=True, workbook=True
-        ),
+        component_selection=ComponentSelection(deck=True, motion=True, workbook=True),
         hud="off",
     )
     assert started.paused_gate == "G1"
     assert calls == []
+    source_root = Path("course-content/courses/tejal-apc-c1-m1-p2-trends").resolve()
+    run_dir = tmp_path / str(trial_id)
+    write_runtime_context(
+        WorkbookBriefRuntimeContext(
+            run_dir=run_dir,
+            course_source_root=source_root,
+            encounter_mode="recorded",
+            context_origin="new_start",
+            writer_execution_mode="offline_stub",
+        )
+    )
 
     card_payload = json.loads(
         (tmp_path / str(trial_id) / "decision-card-G1.json").read_text("utf-8")
@@ -318,9 +430,7 @@ def test_real_start_then_continuation_reaches_band_in_order(
         gate_id = resumed.paused_gate
         assert gate_id is not None
         payload = json.loads(
-            (tmp_path / str(trial_id) / f"decision-card-{gate_id}.json").read_text(
-                "utf-8"
-            )
+            (tmp_path / str(trial_id) / f"decision-card-{gate_id}.json").read_text("utf-8")
         )
         resumed = production_runner.resume_production_trial(
             trial_id=trial_id,
@@ -338,18 +448,29 @@ def test_real_start_then_continuation_reaches_band_in_order(
     if failure_tag is not None:
         assert resumed.status == "paused-at-error"
         assert calls == ["07W.1"]
-        error_pause = json.loads(
-            (tmp_path / str(trial_id) / "error-pause.json").read_text("utf-8")
-        )
+        error_pause = json.loads((tmp_path / str(trial_id) / "error-pause.json").read_text("utf-8"))
         assert error_pause["node_id"] == "07W.1"
         assert error_pause["tag"] == failure_tag
-        assert resumed.production_envelope.get_contribution(
-            workbook_wiring.WORKBOOK_BRIEF_SPECIALIST_ID, node_id="07W.1"
-        ) is None
+        assert (
+            resumed.production_envelope.get_contribution(
+                workbook_wiring.WORKBOOK_BRIEF_SPECIALIST_ID, node_id="07W.1"
+            )
+            is None
+        )
         return
     assert resumed.status == "completed", resumed.model_dump(mode="json")
     assert calls == list(workbook_wiring.WORKBOOK_BAND_NODE_IDS)
+    assert len(contexts) == 1
+    context = contexts[0]
+    assert (
+        context.run_dir.resolve(),
+        context.course_source_root.resolve(),
+        context.encounter_mode,
+        context.context_origin,
+        context.writer_execution_mode,
+    ) == (run_dir.resolve(), source_root, "recorded", "new_start", "offline_stub")
+    assert (run_dir / "workbook-brief.v1.json").is_file()
     for node_id, specialist_id in workbook_wiring.WORKBOOK_BAND_SPECIALIST_IDS.items():
-        assert resumed.production_envelope.get_contribution(
-            specialist_id, node_id=node_id
-        ) is not None
+        assert (
+            resumed.production_envelope.get_contribution(specialist_id, node_id=node_id) is not None
+        )

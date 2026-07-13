@@ -1,0 +1,36 @@
+{
+  "story": "36.4",
+  "attempt_id": "ba470ff2-4c0c-44a0-af7b-0f01360d19da",
+  "original_verdict_path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-live-20260713T031924Z-ba470ff2/verdict.json",
+  "original_verdict_sha256": "sha256:ed509d1959d730f830bbc58e99b49d3644d7f286502866d81176e16f8f5795eb",
+  "machine_transport_render_pass": true,
+  "semantic_acceptance": true,
+  "operator_verdict": "PASS",
+  "operator_reasons": [
+    "Independent review A found the authored Scene source-faithful, setup-only, innocent of the answer, and paid off by the presentation without overclaim.",
+    "Independent review B found the Promise faithful to the ratified objectives, pertinent, half-rhymed, non-spoiling, and free of mastery inflation."
+  ],
+  "operator_spot_checks": {
+    "provenance": "PASS",
+    "actual_payoff": "PASS",
+    "semantic_faithfulness": "PASS",
+    "scene_innocence": "PASS",
+    "pertinent_ability": "PASS",
+    "lo_fidelity": "PASS",
+    "half_rhyme": "PASS",
+    "mastery_overclaim": "PASS",
+    "no_spoiler": "PASS"
+  },
+  "docx_evidence": {
+    "path": "_bmad-output/artifacts/workbooks-36-4-rerecovery-b90fb3f6/u-intrapreneur-01@1.docx",
+    "structural_checks": "PASS",
+    "evidence": [
+      "DOCX exists and is non-empty",
+      "paragraph structure was parsed",
+      "Scene, Friction Scale, and Promise order was asserted",
+      "FR17 prohibited transcript/figure payload was absent"
+    ],
+    "visual_render_claimed": false,
+    "visual_render_limitation": "LibreOffice soffice was unavailable; no visual page-render claim is made."
+  }
+}
