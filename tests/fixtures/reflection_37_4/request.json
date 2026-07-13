@@ -1,0 +1,39 @@
+{
+  "lesson_ref": "part-2",
+  "prework": {
+    "beat_order": ["scene", "friction_scale", "promise"],
+    "friction_scale": {
+      "duration_copy": "Take about 20 seconds.",
+      "high_anchor": "10 — repeatedly blocks the work.",
+      "honest_line_prompt": "Write one honest line.",
+      "locate_prompt": "Locate where it shows up.",
+      "low_anchor": "0 — present, but not getting in the way.",
+      "rating_prompt": "Rate this friction from 0 to 10.",
+      "review_hook": "Keep this mark and line for review after the presentation."
+    },
+    "promise": {
+      "known_losses": [], "marker": null, "status": "authored",
+      "vows": [
+        {"objective_id": "ability-a", "text": "Name the 3 recurring causes"},
+        {"objective_id": "ability-b", "text": "See the score pattern without re-rating it"}
+      ]
+    },
+    "provenance": {"known_losses": [], "source_refs": ["lesson:slide-2"]},
+    "scene": {
+      "archetype": null, "known_losses": [], "lesson_type": null, "marker": null,
+      "source_refs": ["lesson:slide-2"], "status": "authored", "text": "A grounded scene."
+    }
+  },
+  "promise": {
+    "authority_refs": ["ratified#0", "ratified#1"],
+    "gate_receipt": {"failures": []},
+    "operator_warnings": [],
+    "projection": {
+      "known_losses": [], "marker": null, "status": "authored",
+      "vows": [
+        {"objective_id": "ability-a", "text": "Name the 3 recurring causes"},
+        {"objective_id": "ability-b", "text": "See the score pattern without re-rating it"}
+      ]
+    }
+  }
+}

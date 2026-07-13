@@ -40,6 +40,22 @@ from app.marcus.lesson_plan.deep_dive_projection import (
     offline_deep_dive_writer as offline_deep_dive_skeleton_writer,
 )
 from app.marcus.lesson_plan.prework_projection import PreWorkBrief
+from app.marcus.lesson_plan.reflection_projection import (
+    ClosingReflectionWriter,
+    ReflectionAbilityCue,
+    ReflectionAbilityFocus,
+    ReflectionGateReceipt,
+    ReflectionRequest,
+    ReflectionResult,
+    ReflectionWriterCandidate,
+    ShiftedQuestionClauses,
+    ShiftedQuestionPrompt,
+    compose_closing_reflection,
+    offline_closing_reflection_writer,
+    prework_callback_digest,
+    reflection_authority_digest,
+    reflection_candidate_digest,
+)
 
 ReviewStatus = Literal["ready", "pending", "unavailable"]
 Ownership = Literal["learner_written", "lesson_level"]
@@ -319,13 +335,23 @@ __all__ = [
     "DeepDiveSkeletonWriterResult",
     "DeepDiveWriterCandidate",
     "ReflectionWriter",
+    "ClosingReflectionWriter",
+    "ReflectionAbilityCue",
+    "ReflectionAbilityFocus",
+    "ReflectionGateReceipt",
+    "ReflectionRequest",
+    "ReflectionResult",
+    "ReflectionWriterCandidate",
     "ReviewBrief",
     "ReviewWriterRequest",
     "ReviewWriterResult",
     "RetrievalCheckItem",
+    "ShiftedQuestionClauses",
+    "ShiftedQuestionPrompt",
     "build_review_brief",
     "compose_deep_dive_skeleton",
     "compose_check_on_learning",
+    "compose_closing_reflection",
     "check_authority_digest",
     "check_candidate_digest",
     "deep_dive_authority_digest",
@@ -334,5 +360,9 @@ __all__ = [
     "offline_deep_dive_writer",
     "offline_deep_dive_skeleton_writer",
     "offline_reflection_writer",
+    "offline_closing_reflection_writer",
+    "prework_callback_digest",
+    "reflection_authority_digest",
+    "reflection_candidate_digest",
     "render_review_markdown",
 ]

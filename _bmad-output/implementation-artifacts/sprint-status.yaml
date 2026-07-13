@@ -1,5 +1,5 @@
 # generated: 2026-03-25
-# last_updated: 2026-04-29 Slab 7a Epic close (all 8 stories done: 7a.1 â†’ 7a.2 â†’ 7a.6 â†’ 7a.3 â†’ 7a.4 â†’ 7a.5 â†’ 7a.7 â†’ 7a.8 via Path 1 â€” 7a.8 closed now, BS-2 operator ceremony deferred to post-close; SG-1/SG-2/SG-3 aggregated structurally enforced by 7a.8 parity suite; slab-7a-retrospective authored; trial-2 substrate readiness UNBLOCKED for operator).
+# last_updated: 2026-07-13 Story 37.4 exact-current closure (Blind/Edge/Acceptance PASS; 449 focused, 936 dependency, 24 topology/manifest; Cora warn/permit).
 # 2026-04-26 Story 5a.5 close (M5 fixed-roster 6-agent verdict recorded as SHIP-CONDITIONAL, operator ratified 5a.3 cascade/pricing, upstream-state frozen-reference marker written, 2026-05-03 conditional-window follow-on filed, slab-5a-retrospective authored, and migration-master-status mapped to shipped while the named window remains open.)
 # 2026-04-27 update: Slab 6.0 substrate-ratification waypoint recorded Ã¢â‚¬â€  operator dual-gate gate-2 cleared (`pytest tests/composition/ -q --tb=short` -> 17 passed in 1.21s); story remains `review` pending bmad-code-review triage per CLAUDE.md Ã‚Â§3; dispatch at `_bmad-output/implementation-artifacts/codex-handoff-slab-6-0-code-review.md`.
 # project: course-DEV-IDE-with-AGENTS
@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-13  # Presentation-support workbook Story 37.2a moved to review.
+last_updated: 2026-07-13  # Story 37.4 exact-current Blind/Edge/Acceptance closure PASS; Cora warn/permit.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1794,7 +1794,7 @@ development_status:
   37-2a-deep-dive-skeleton: done  # 2026-07-13 3-layer review + 3 remediation rounds; exact-current closure PASS; 219 passed; Cora WARN permit.
   37-2b-deep-dive-enrichment-cited: backlog  # A1 split; citation-COVERAGE gate (A2); dep 38-0 + 38-1
   37-3-check-on-learning-retrieval: done  # Exact-current closure: 371 focused + 565 dependency + 67 topology; Blind/Edge/Acceptance PASS; Cora warn/permit.
-  37-4-closing-reflection-shifted-question: backlog
+  37-4-closing-reflection-shifted-question: done  # 2026-07-13 exact-current Blind/Edge/Acceptance PASS; 449 focused + 936 dependency + 24 topology; strict warnings/Ruff/diff clean; Cora warn/permit.
   37-5-wire-review-golden-references: backlog  # A8: assemble+dedupe+render References section (FR12)
   37-6-mode-parity-hil-hai: backlog  # A6 (new): mode input + HIL/HAI parity AC
   epic-37-retrospective: optional
