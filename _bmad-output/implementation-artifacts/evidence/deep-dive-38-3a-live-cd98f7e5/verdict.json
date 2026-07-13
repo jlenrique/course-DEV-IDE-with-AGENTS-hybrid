@@ -1,0 +1,753 @@
+{
+  "attempt_id": "cd98f7e5-d89d-4a4c-ad22-83a584ac0617",
+  "bold_terms": [
+    "structural",
+    "burnout",
+    "leadership",
+    "autonomy",
+    "bureaucratic",
+    "management"
+  ],
+  "checks": {
+    "authored_skeleton": true,
+    "completed_journal": true,
+    "deep_dive_32k_bound": true,
+    "exactly_one_provider_call": true,
+    "failed_evidence_preserved_after": true,
+    "fresh_nested_trial_identity": true,
+    "nonempty_terms": true,
+    "passing_gate": true,
+    "prework_preserved": true,
+    "ready_demand": true,
+    "terminal_reconciled": true,
+    "zero_recall_replay": true
+  },
+  "completed_at": "2026-07-13T11:24:46.335362+00:00",
+  "deep_dive_status": "authored",
+  "demand": {
+    "abilities": [
+      {
+        "ability_id": "part2-lo-001",
+        "text": "I will distinguish workflow symptoms from system-design causes and identify a first leadership move."
+      }
+    ],
+    "bold_terms": [
+      {
+        "term": "structural"
+      },
+      {
+        "term": "burnout"
+      },
+      {
+        "term": "leadership"
+      },
+      {
+        "term": "autonomy"
+      },
+      {
+        "term": "bureaucratic"
+      },
+      {
+        "term": "management"
+      }
+    ],
+    "demand_digest": "sha256:1d9557640682c654a61467c3c840d52c603cd892e8389d76b68ae8ae6c403dbe",
+    "known_losses": [],
+    "node_id": "07W.1",
+    "schema_version": "ask-a-research-demand.v1",
+    "skeleton_authority_digest": "sha256:fd2b89e3aa7e56e677433f8980229c0992f53b722d4f182a209c7b130a96de1e",
+    "skeleton_candidate_digest": "sha256:9625ae12f36d1cd807936131e4c6cfa58e704c5ad9e2497b708c74431dff5e55",
+    "source_claim_refs": [
+      "claim:vo:seg-01",
+      "claim:vo:seg-02",
+      "claim:vo:seg-05",
+      "claim:delta:slide-01",
+      "claim:delta:slide-02",
+      "claim:delta:slide-05"
+    ],
+    "specialist_id": "workbook_brief",
+    "status": "ready",
+    "workbook_brief_payload_digest": "sha256:5288419e0064f0abec832a77241e7ee4bb340172209d009b369482cd0a284386"
+  },
+  "failed_evidence_preservation_before": {
+    "deep-dive-38-3a-live-7ed48f8a/run/workbook-deep-dive-call.v1.json": {
+      "sha256": "1dafe2196a97a2262dd59c3d8d802ea93be6a7ee1ab11f77748ae9a2f857768a",
+      "size": 7123
+    },
+    "deep-dive-38-3a-live-7ed48f8a/verdict.json": {
+      "sha256": "d46681f0402c8f9d280a933f9584773dade6b5a7d84880ae3fd324c2d10ca5cb",
+      "size": 1872
+    },
+    "deep-dive-38-3a-live-b6fc76ea/run/workbook-deep-dive-call.v1.json": {
+      "sha256": "212d48f9dfcf0ac9f769d11571036eaa4e0c097cbdd6d917f0f687a602da4dcf",
+      "size": 7105
+    },
+    "deep-dive-38-3a-live-b6fc76ea/verdict.json": {
+      "sha256": "acb3e3f98f26c3563412f1a49f9c73ca0913594a4b1c3bb52de8059536bd801f",
+      "size": 9408
+    }
+  },
+  "first_run_stands": true,
+  "gate_failures": [],
+  "gate_status": "pass",
+  "journal": {
+    "authority": {
+      "abilities": [
+        {
+          "ability_id": "part2-lo-001",
+          "text": "I will distinguish workflow symptoms from system-design causes and identify a first leadership move."
+        }
+      ],
+      "lesson_ref": "exports/segment-manifest-storyboard-b.yaml",
+      "source_claims": [
+        {
+          "claim_id": "claim:vo:seg-01",
+          "role": "vo",
+          "source_span_refs": [
+            "vo:seg-01"
+          ],
+          "text": "Two structural forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+        },
+        {
+          "claim_id": "claim:vo:seg-02",
+          "role": "vo",
+          "source_span_refs": [
+            "vo:seg-02"
+          ],
+          "text": "A system under strain shows up at the bedside as exhaustion; burnout is a system-design problem, not a resilience failure."
+        },
+        {
+          "claim_id": "claim:vo:seg-05",
+          "role": "vo",
+          "source_span_refs": [
+            "vo:seg-05"
+          ],
+          "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician leadership gap."
+        },
+        {
+          "claim_id": "claim:delta:slide-01",
+          "role": "source_supported_delta",
+          "source_span_refs": [
+            "delta:slide-01"
+          ],
+          "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+        },
+        {
+          "claim_id": "claim:delta:slide-02",
+          "role": "source_supported_delta",
+          "source_span_refs": [
+            "delta:slide-02"
+          ],
+          "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+        },
+        {
+          "claim_id": "claim:delta:slide-05",
+          "role": "source_supported_delta",
+          "source_span_refs": [
+            "delta:slide-05"
+          ],
+          "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that management and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+        }
+      ],
+      "source_spans": [
+        {
+          "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-01/narration_text",
+          "span_id": "vo:seg-01",
+          "text": "Two structural forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+        },
+        {
+          "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-02/narration_text",
+          "span_id": "vo:seg-02",
+          "text": "A system under strain shows up at the bedside as exhaustion; burnout is a system-design problem, not a resilience failure."
+        },
+        {
+          "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-05/narration_text",
+          "span_id": "vo:seg-05",
+          "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician leadership gap."
+        },
+        {
+          "source_ref": "slides/slide-1-the-economic-structural-reality.md#Narration (Speaker Notes)",
+          "span_id": "delta:slide-01",
+          "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+        },
+        {
+          "source_ref": "slides/slide-2-the-human-cost-system-waste-burnout.md#Narration (Speaker Notes)",
+          "span_id": "delta:slide-02",
+          "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+        },
+        {
+          "source_ref": "slides/slide-5-the-leadership-gap.md#Narration (Speaker Notes)",
+          "span_id": "delta:slide-05",
+          "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that management and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+        }
+      ]
+    },
+    "authority_digest": "sha256:fd2b89e3aa7e56e677433f8980229c0992f53b722d4f182a209c7b130a96de1e",
+    "candidate": {
+      "bold_terms": [
+        {
+          "term": "structural"
+        },
+        {
+          "term": "burnout"
+        },
+        {
+          "term": "leadership"
+        },
+        {
+          "term": "autonomy"
+        },
+        {
+          "term": "bureaucratic"
+        },
+        {
+          "term": "management"
+        }
+      ],
+      "known_losses": [],
+      "marker": null,
+      "sections": [
+        {
+          "ability_id": "part2-lo-001",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:vo:seg-01",
+              "source_claim_refs": [
+                "claim:vo:seg-01"
+              ],
+              "source_span_refs": [
+                "vo:seg-01"
+              ],
+              "text": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+            },
+            {
+              "skeleton_claim_id": "sk:vo:seg-02",
+              "source_claim_refs": [
+                "claim:vo:seg-02"
+              ],
+              "source_span_refs": [
+                "vo:seg-02"
+              ],
+              "text": "A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure."
+            },
+            {
+              "skeleton_claim_id": "sk:vo:seg-05",
+              "source_claim_refs": [
+                "claim:vo:seg-05"
+              ],
+              "source_span_refs": [
+                "vo:seg-05"
+              ],
+              "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap."
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-01",
+              "source_claim_refs": [
+                "claim:delta:slide-01"
+              ],
+              "source_span_refs": [
+                "delta:slide-01"
+              ],
+              "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-02",
+              "source_claim_refs": [
+                "claim:delta:slide-02"
+              ],
+              "source_span_refs": [
+                "delta:slide-02"
+              ],
+              "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-05",
+              "source_claim_refs": [
+                "claim:delta:slide-05"
+              ],
+              "source_span_refs": [
+                "delta:slide-05"
+              ],
+              "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+            }
+          ],
+          "prose": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems. A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure. The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap. \"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\" \"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\" \"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+        }
+      ],
+      "status": "authored"
+    },
+    "candidate_digest": "sha256:9625ae12f36d1cd807936131e4c6cfa58e704c5ad9e2497b708c74431dff5e55",
+    "idempotency_key": "sha256:8a5cd8811aa6bf06ee90c93733784ef441af1638226fafb42159dcb933745b79",
+    "model_config_digest": "sha256:676faca379fc2da624912d3e10a6955e12d7a74d683eb6676c0d15659e77945a",
+    "normalized_provider_payload_digest": "sha256:7aa84a266a903530ad9c82deb407f2ba8f5fe288b0b0c236e292983495fd035f",
+    "provider_contract_mode": "raw-json-schema",
+    "provider_normalizations": [],
+    "provider_normalizer_version": "deep-dive-provider-normalizer.v1",
+    "provider_receipt": {
+      "calls": 1,
+      "cost_unavailable_reason": null,
+      "cost_usd": 0.07045000000000001,
+      "idempotency_key": "sha256:8a5cd8811aa6bf06ee90c93733784ef441af1638226fafb42159dcb933745b79",
+      "input_tokens": 3488,
+      "latency_ms": 58447.26990000345,
+      "mode": "live",
+      "model": "gpt-5",
+      "model_config_digest": "sha256:676faca379fc2da624912d3e10a6955e12d7a74d683eb6676c0d15659e77945a",
+      "output_tokens": 6609,
+      "prior_payload_digest": "sha256:bbbd7c922768fc2dfe20a1d266c7f8b508d87023f2fcc30ba124a5fdf03f3207",
+      "request_id": null,
+      "schema_version": "deep-dive-execution-receipt.v1",
+      "writer": "deep_dive"
+    },
+    "provider_schema_digest": "sha256:cdd41e5904373235b9b9f01419156a68d67474d8dbee86d6736345f9ca155375",
+    "raw_provider_payload": {
+      "bold_terms": [
+        {
+          "term": "structural"
+        },
+        {
+          "term": "burnout"
+        },
+        {
+          "term": "leadership"
+        },
+        {
+          "term": "autonomy"
+        },
+        {
+          "term": "bureaucratic"
+        },
+        {
+          "term": "management"
+        }
+      ],
+      "known_losses": [],
+      "marker": null,
+      "sections": [
+        {
+          "ability_id": "part2-lo-001",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:vo:seg-01",
+              "source_claim_refs": [
+                "claim:vo:seg-01"
+              ],
+              "source_span_refs": [
+                "vo:seg-01"
+              ],
+              "text": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+            },
+            {
+              "skeleton_claim_id": "sk:vo:seg-02",
+              "source_claim_refs": [
+                "claim:vo:seg-02"
+              ],
+              "source_span_refs": [
+                "vo:seg-02"
+              ],
+              "text": "A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure."
+            },
+            {
+              "skeleton_claim_id": "sk:vo:seg-05",
+              "source_claim_refs": [
+                "claim:vo:seg-05"
+              ],
+              "source_span_refs": [
+                "vo:seg-05"
+              ],
+              "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap."
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-01",
+              "source_claim_refs": [
+                "claim:delta:slide-01"
+              ],
+              "source_span_refs": [
+                "delta:slide-01"
+              ],
+              "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-02",
+              "source_claim_refs": [
+                "claim:delta:slide-02"
+              ],
+              "source_span_refs": [
+                "delta:slide-02"
+              ],
+              "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-05",
+              "source_claim_refs": [
+                "claim:delta:slide-05"
+              ],
+              "source_span_refs": [
+                "delta:slide-05"
+              ],
+              "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+            }
+          ],
+          "prose": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems. A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure. The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap. \"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\" \"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\" \"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+        }
+      ],
+      "status": "authored"
+    },
+    "raw_provider_payload_digest": "sha256:7aa84a266a903530ad9c82deb407f2ba8f5fe288b0b0c236e292983495fd035f",
+    "result": {
+      "authority": {
+        "abilities": [
+          {
+            "ability_id": "part2-lo-001",
+            "text": "I will distinguish workflow symptoms from system-design causes and identify a first leadership move."
+          }
+        ],
+        "lesson_ref": "exports/segment-manifest-storyboard-b.yaml",
+        "source_claims": [
+          {
+            "claim_id": "claim:vo:seg-01",
+            "role": "vo",
+            "source_span_refs": [
+              "vo:seg-01"
+            ],
+            "text": "Two structural forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+          },
+          {
+            "claim_id": "claim:vo:seg-02",
+            "role": "vo",
+            "source_span_refs": [
+              "vo:seg-02"
+            ],
+            "text": "A system under strain shows up at the bedside as exhaustion; burnout is a system-design problem, not a resilience failure."
+          },
+          {
+            "claim_id": "claim:vo:seg-05",
+            "role": "vo",
+            "source_span_refs": [
+              "vo:seg-05"
+            ],
+            "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician leadership gap."
+          },
+          {
+            "claim_id": "claim:delta:slide-01",
+            "role": "source_supported_delta",
+            "source_span_refs": [
+              "delta:slide-01"
+            ],
+            "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+          },
+          {
+            "claim_id": "claim:delta:slide-02",
+            "role": "source_supported_delta",
+            "source_span_refs": [
+              "delta:slide-02"
+            ],
+            "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+          },
+          {
+            "claim_id": "claim:delta:slide-05",
+            "role": "source_supported_delta",
+            "source_span_refs": [
+              "delta:slide-05"
+            ],
+            "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that management and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+          }
+        ],
+        "source_spans": [
+          {
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-01/narration_text",
+            "span_id": "vo:seg-01",
+            "text": "Two structural forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+          },
+          {
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-02/narration_text",
+            "span_id": "vo:seg-02",
+            "text": "A system under strain shows up at the bedside as exhaustion; burnout is a system-design problem, not a resilience failure."
+          },
+          {
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-05/narration_text",
+            "span_id": "vo:seg-05",
+            "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician leadership gap."
+          },
+          {
+            "source_ref": "slides/slide-1-the-economic-structural-reality.md#Narration (Speaker Notes)",
+            "span_id": "delta:slide-01",
+            "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+          },
+          {
+            "source_ref": "slides/slide-2-the-human-cost-system-waste-burnout.md#Narration (Speaker Notes)",
+            "span_id": "delta:slide-02",
+            "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+          },
+          {
+            "source_ref": "slides/slide-5-the-leadership-gap.md#Narration (Speaker Notes)",
+            "span_id": "delta:slide-05",
+            "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that management and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+          }
+        ]
+      },
+      "authority_digest": "sha256:fd2b89e3aa7e56e677433f8980229c0992f53b722d4f182a209c7b130a96de1e",
+      "bold_terms": [
+        {
+          "term": "structural"
+        },
+        {
+          "term": "burnout"
+        },
+        {
+          "term": "leadership"
+        },
+        {
+          "term": "autonomy"
+        },
+        {
+          "term": "bureaucratic"
+        },
+        {
+          "term": "management"
+        }
+      ],
+      "candidate_payload_digest": "sha256:9625ae12f36d1cd807936131e4c6cfa58e704c5ad9e2497b708c74431dff5e55",
+      "candidate_snapshot": {
+        "bold_terms": [
+          {
+            "term": "structural"
+          },
+          {
+            "term": "burnout"
+          },
+          {
+            "term": "leadership"
+          },
+          {
+            "term": "autonomy"
+          },
+          {
+            "term": "bureaucratic"
+          },
+          {
+            "term": "management"
+          }
+        ],
+        "known_losses": [],
+        "marker": null,
+        "sections": [
+          {
+            "ability_id": "part2-lo-001",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:vo:seg-01",
+                "source_claim_refs": [
+                  "claim:vo:seg-01"
+                ],
+                "source_span_refs": [
+                  "vo:seg-01"
+                ],
+                "text": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+              },
+              {
+                "skeleton_claim_id": "sk:vo:seg-02",
+                "source_claim_refs": [
+                  "claim:vo:seg-02"
+                ],
+                "source_span_refs": [
+                  "vo:seg-02"
+                ],
+                "text": "A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure."
+              },
+              {
+                "skeleton_claim_id": "sk:vo:seg-05",
+                "source_claim_refs": [
+                  "claim:vo:seg-05"
+                ],
+                "source_span_refs": [
+                  "vo:seg-05"
+                ],
+                "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap."
+              },
+              {
+                "skeleton_claim_id": "sk:delta:slide-01",
+                "source_claim_refs": [
+                  "claim:delta:slide-01"
+                ],
+                "source_span_refs": [
+                  "delta:slide-01"
+                ],
+                "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+              },
+              {
+                "skeleton_claim_id": "sk:delta:slide-02",
+                "source_claim_refs": [
+                  "claim:delta:slide-02"
+                ],
+                "source_span_refs": [
+                  "delta:slide-02"
+                ],
+                "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+              },
+              {
+                "skeleton_claim_id": "sk:delta:slide-05",
+                "source_claim_refs": [
+                  "claim:delta:slide-05"
+                ],
+                "source_span_refs": [
+                  "delta:slide-05"
+                ],
+                "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+              }
+            ],
+            "prose": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems. A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure. The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap. \"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\" \"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\" \"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+          }
+        ],
+        "status": "authored"
+      },
+      "gate": {
+        "authority_digest": "sha256:fd2b89e3aa7e56e677433f8980229c0992f53b722d4f182a209c7b130a96de1e",
+        "candidate_payload_digest": "sha256:9625ae12f36d1cd807936131e4c6cfa58e704c5ad9e2497b708c74431dff5e55",
+        "covered_vo_claim_ids": [
+          "claim:vo:seg-01",
+          "claim:vo:seg-02",
+          "claim:vo:seg-05"
+        ],
+        "declared_ability_ids": [
+          "part2-lo-001"
+        ],
+        "declared_delta_claim_ids": [
+          "claim:delta:slide-01",
+          "claim:delta:slide-02",
+          "claim:delta:slide-05"
+        ],
+        "declared_span_ids": [
+          "vo:seg-01",
+          "vo:seg-02",
+          "vo:seg-05",
+          "delta:slide-01",
+          "delta:slide-02",
+          "delta:slide-05"
+        ],
+        "declared_vo_claim_ids": [
+          "claim:vo:seg-01",
+          "claim:vo:seg-02",
+          "claim:vo:seg-05"
+        ],
+        "failures": [],
+        "gate_version": "deep-dive-skeleton-gate.v1",
+        "missing_vo_claim_ids": [],
+        "operator_warnings": [
+          "full_semantic_equivalence_non_contradiction_and_depth_require_operator_spot_check"
+        ],
+        "status": "pass",
+        "unknown_ability_refs": [],
+        "unknown_claim_refs": [],
+        "unknown_source_refs": [],
+        "used_delta_claim_ids": [
+          "claim:delta:slide-01",
+          "claim:delta:slide-02",
+          "claim:delta:slide-05"
+        ]
+      },
+      "known_losses": [],
+      "marker": null,
+      "sections": [
+        {
+          "ability_id": "part2-lo-001",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:vo:seg-01",
+              "source_claim_refs": [
+                "claim:vo:seg-01"
+              ],
+              "source_span_refs": [
+                "vo:seg-01"
+              ],
+              "text": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems."
+            },
+            {
+              "skeleton_claim_id": "sk:vo:seg-02",
+              "source_claim_refs": [
+                "claim:vo:seg-02"
+              ],
+              "source_span_refs": [
+                "vo:seg-02"
+              ],
+              "text": "A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure."
+            },
+            {
+              "skeleton_claim_id": "sk:vo:seg-05",
+              "source_claim_refs": [
+                "claim:vo:seg-05"
+              ],
+              "source_span_refs": [
+                "vo:seg-05"
+              ],
+              "text": "The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap."
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-01",
+              "source_claim_refs": [
+                "claim:delta:slide-01"
+              ],
+              "source_span_refs": [
+                "delta:slide-01"
+              ],
+              "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\""
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-02",
+              "source_claim_refs": [
+                "claim:delta:slide-02"
+              ],
+              "source_span_refs": [
+                "delta:slide-02"
+              ],
+              "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\""
+            },
+            {
+              "skeleton_claim_id": "sk:delta:slide-05",
+              "source_claim_refs": [
+                "claim:delta:slide-05"
+              ],
+              "source_span_refs": [
+                "delta:slide-05"
+              ],
+              "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+            }
+          ],
+          "prose": "Two **structural** forces define your operating reality: rising national health expenditure and the consolidation of practice into large systems. A system under strain shows up at the bedside as exhaustion; **burnout** is a system-design problem, not a resilience failure. The case for change rests on the knowledge explosion, clinical AI adoption ahead of oversight, and the physician **leadership** gap. \"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our **autonomy** and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\" \"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is **bureaucratic** tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\" \"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that **management** and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely\u2014they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\""
+        }
+      ],
+      "status": "authored"
+    },
+    "result_digest": "sha256:ae728ffd665a5f46cca6e670dc76d7503d695f2872af78ac1415f58ad5dbfb70",
+    "schema_version": "workbook-deep-dive-call.v1",
+    "state": "completed"
+  },
+  "max_completion_tokens": 32000,
+  "model_config_digest": "sha256:676faca379fc2da624912d3e10a6955e12d7a74d683eb6676c0d15659e77945a",
+  "pass": true,
+  "payload_digest": "sha256:5288419e0064f0abec832a77241e7ee4bb340172209d009b369482cd0a284386",
+  "prior_payload_digest": "sha256:bbbd7c922768fc2dfe20a1d266c7f8b508d87023f2fcc30ba124a5fdf03f3207",
+  "provider_call_limit": 1,
+  "provider_calls": 1,
+  "receipt": {
+    "calls": 1,
+    "cost_unavailable_reason": null,
+    "cost_usd": 0.07045000000000001,
+    "idempotency_key": "sha256:8a5cd8811aa6bf06ee90c93733784ef441af1638226fafb42159dcb933745b79",
+    "input_tokens": 3488,
+    "latency_ms": 58447.26990000345,
+    "mode": "live",
+    "model": "gpt-5",
+    "model_config_digest": "sha256:676faca379fc2da624912d3e10a6955e12d7a74d683eb6676c0d15659e77945a",
+    "output_tokens": 6609,
+    "prior_payload_digest": "sha256:bbbd7c922768fc2dfe20a1d266c7f8b508d87023f2fcc30ba124a5fdf03f3207",
+    "request_id": null,
+    "schema_version": "deep-dive-execution-receipt.v1",
+    "writer": "deep_dive"
+  },
+  "run_dir": "_bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-cd98f7e5/run",
+  "schema_version": "deep-dive-38-3a-live-evidence.v1",
+  "started_at": "2026-07-13T11:23:47.456340+00:00",
+  "story": "38.3a",
+  "trial_id": "929b5907-c2d1-48a2-a245-5fb7c046c10d"
+}

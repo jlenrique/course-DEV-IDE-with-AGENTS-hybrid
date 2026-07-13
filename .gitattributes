@@ -13,3 +13,6 @@ tests/fixtures/**/*.mp4 binary
 # MUST match the hardcoded constant in tests/integration/
 # test_section_02a_to_wrangler_subprocess_roundtrip.py.
 tests/fixtures/integration/section_02a/forensic_directive_*.yaml -text
+
+# Story 38.3a governed live verdicts are immutable SHA-256 evidence.
+_bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-*/verdict.json binary

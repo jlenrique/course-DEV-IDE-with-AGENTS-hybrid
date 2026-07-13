@@ -2,17 +2,39 @@
 
 from __future__ import annotations
 
+import hashlib
 import inspect
 import json
+import os
 from collections.abc import Callable, Mapping
 from pathlib import Path
 from typing import Final, Literal, TypeAlias
 
+from app.marcus.lesson_plan.deep_dive_from_run import (
+    DeepDiveAuthorityInvalidError,
+    DeepDiveAuthorityUnavailableError,
+    build_deep_dive_request,
+)
+from app.marcus.lesson_plan.deep_dive_projection import (
+    DeepDiveSkeletonRequest,
+    DeepDiveSkeletonResult,
+    DeepDiveSkeletonWriterResult,
+    compose_deep_dive_skeleton,
+    deep_dive_authority_digest,
+    offline_deep_dive_writer,
+)
+from app.marcus.lesson_plan.deep_dive_provider_contract import (
+    DEEP_DIVE_PROVIDER_CONTRACT_MODE,
+    DEEP_DIVE_PROVIDER_NORMALIZER_VERSION,
+    normalize_deep_dive_provider_payload,
+)
 from app.marcus.lesson_plan.lesson_type_classifier import (
     LessonTypeClassification,
     LessonTypeEvidence,
 )
 from app.marcus.lesson_plan.prework_artifact import (
+    DEEP_DIVE_JOURNAL_FILENAME,
+    DeepDiveExecutionReceiptV1,
     PromiseAuthoringReceipt,
     SceneAuthoringReceipt,
     WorkbookBriefArtifactV1,
@@ -20,9 +42,13 @@ from app.marcus.lesson_plan.prework_artifact import (
     WorkbookBriefRuntimeContext,
     WriterExecutionReceipt,
     canonical_payload_digest,
+    deep_dive_idempotency_key,
     read_runtime_context,
     read_workbook_brief,
     write_workbook_brief,
+)
+from app.marcus.lesson_plan.prework_artifact import (
+    workbook_brief_contribution_receipt as lesson_plan_workbook_brief_receipt,
 )
 from app.marcus.lesson_plan.prework_from_run import load_part2_scene_source
 from app.marcus.lesson_plan.prework_projection import (
@@ -35,6 +61,7 @@ from app.marcus.lesson_plan.prework_projection import (
     offline_scene_composer,
 )
 from app.marcus.lesson_plan.promise_projection import (
+    PromiseObjectiveResolutionError,
     PromiseProjectionRequest,
     compose_promise_projection,
     resolve_promise_objectives,
@@ -50,6 +77,8 @@ from app.marcus.lesson_plan.scene_extraction import (
     SceneProjectionRequest,
     compose_scene_projection,
 )
+from app.marcus.lesson_plan.workbook_enrichment import RunEnvelopeCorruptError
+from app.marcus.orchestrator.workbook_prework_writers import DeepDiveProviderOutputError
 from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
@@ -68,7 +97,6 @@ WORKBOOK_BAND_NODE_IDS: Final[tuple[str, ...]] = (
     WORKBOOK_REVIEW_NODE_ID,
     ASK_B_HOT_TOPICS_NODE_ID,
 )
-
 WorkbookBandFactory: TypeAlias = Callable[..., dict[str, object]]
 
 WORKBOOK_BAND_SPECIALIST_IDS: Final[dict[str, str]] = {
@@ -77,6 +105,402 @@ WORKBOOK_BAND_SPECIALIST_IDS: Final[dict[str, str]] = {
     WORKBOOK_REVIEW_NODE_ID: WORKBOOK_REVIEW_SPECIALIST_ID,
     ASK_B_HOT_TOPICS_NODE_ID: ASK_B_HOT_TOPICS_SPECIALIST_ID,
 }
+
+
+def _canonical_json(value: object) -> str:
+    return json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
+
+
+def _sha256(value: object) -> str:
+    return "sha256:" + hashlib.sha256(_canonical_json(value).encode("utf-8")).hexdigest()
+
+
+def _atomic_json(path: Path, payload: dict[str, object]) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    if path.is_symlink() or temporary.is_symlink():
+        raise ValueError("Deep Dive journal path may not be a symlink")
+    created = False
+    try:
+        with temporary.open("x", encoding="utf-8", newline="") as handle:
+            created = True
+            handle.write(_canonical_json(payload) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    except Exception:
+        if created and temporary.exists() and not temporary.is_symlink():
+            temporary.unlink()
+        raise
+
+
+def _journal_exists(run_dir: Path, journal_path: Path) -> bool:
+    """Return journal presence only for a regular file contained by its run."""
+    if journal_path.is_symlink():
+        raise SpecialistDispatchError(
+            "Deep Dive journal may not be a symlink",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        )
+    if not journal_path.exists():
+        return False
+    if not journal_path.is_file():
+        raise SpecialistDispatchError(
+            "Deep Dive journal is not a regular file",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        )
+    try:
+        resolved_run = Path(run_dir).resolve(strict=True)
+        resolved_journal = journal_path.resolve(strict=True)
+        resolved_journal.relative_to(resolved_run)
+    except (OSError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            "Deep Dive journal escapes its run root",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        ) from exc
+    return True
+
+
+def _deep_dive_receipt(
+    context: WorkbookBriefRuntimeContext,
+    *,
+    idempotency_key: str,
+    calls: Literal[0, 1],
+    prior_payload_digest: str | None,
+) -> DeepDiveExecutionReceiptV1:
+    writer = context.deep_dive_writer
+    config = getattr(writer, "model_config", None)
+    cost_usd = getattr(writer, "last_cost_usd", None)
+    cost_unavailable_reason = getattr(writer, "last_cost_unavailable_reason", None)
+    if (
+        context.writer_execution_mode == "live"
+        and calls == 1
+        and cost_usd is None
+        and not cost_unavailable_reason
+    ):
+        cost_unavailable_reason = "injected_writer_supplied_no_cost_evidence"
+    return DeepDiveExecutionReceiptV1(
+        mode=context.writer_execution_mode,
+        calls=calls,
+        idempotency_key=idempotency_key,
+        prior_payload_digest=prior_payload_digest,
+        model=getattr(config, "default_model", None),
+        model_config_digest=(
+            getattr(writer, "model_config_digest", None)
+            or "sha256:" + "0" * 64
+        ),
+        request_id=getattr(writer, "last_request_id", None),
+        latency_ms=getattr(writer, "last_latency_ms", None),
+        input_tokens=getattr(writer, "last_input_tokens", None),
+        output_tokens=getattr(writer, "last_output_tokens", None),
+        cost_usd=cost_usd,
+        cost_unavailable_reason=cost_unavailable_reason,
+    )
+
+
+def _provider_evidence(
+    writer: object, candidate: DeepDiveSkeletonWriterResult | None = None
+) -> dict[str, object]:
+    raw = getattr(writer, "last_raw_provider_payload", None)
+    if raw is None and candidate is not None:
+        raw = candidate.model_dump(mode="json")
+    if raw is None:
+        return {}
+    raw = json.loads(_canonical_json(raw))
+    provider_schema = DeepDiveSkeletonWriterResult.model_json_schema()
+    schema_digest = _sha256(provider_schema)
+    observed_schema = getattr(writer, "provider_schema", None)
+    if (
+        observed_schema is not None
+        and json.loads(_canonical_json(observed_schema)) != provider_schema
+    ):
+        raise ValueError("provider schema is not the canonical Deep Dive candidate schema")
+    observed_schema_digest = getattr(writer, "provider_schema_digest", None)
+    if observed_schema_digest is not None and observed_schema_digest != schema_digest:
+        raise ValueError("provider schema digest mismatch")
+    evidence: dict[str, object] = {
+        "provider_contract_mode": DEEP_DIVE_PROVIDER_CONTRACT_MODE,
+        "provider_schema_digest": schema_digest,
+        "provider_normalizer_version": DEEP_DIVE_PROVIDER_NORMALIZER_VERSION,
+        "raw_provider_payload": raw,
+        "raw_provider_payload_digest": _sha256(raw),
+    }
+    normalization_error = getattr(writer, "last_provider_normalization_error", None)
+    if normalization_error:
+        if candidate is not None:
+            raise ValueError("successful candidate cannot carry a normalization error")
+        evidence["provider_normalizations"] = list(
+            getattr(writer, "last_provider_normalizations", ())
+        )
+        evidence["provider_normalization_error"] = normalization_error
+        return evidence
+    normalized, records = normalize_deep_dive_provider_payload(raw)
+    normalized_digest = _sha256(normalized)
+    observed_records = getattr(writer, "last_provider_normalizations", None)
+    observed_normalized_digest = getattr(
+        writer, "last_normalized_provider_payload_digest", None
+    )
+    if observed_records is not None and tuple(observed_records) != records:
+        raise ValueError("provider normalization records mismatch")
+    if (
+        observed_normalized_digest is not None
+        and observed_normalized_digest != normalized_digest
+    ):
+        raise ValueError("provider normalized payload digest mismatch")
+    if candidate is not None and normalized != candidate.model_dump(mode="json"):
+        raise ValueError("provider normalized payload/candidate mismatch")
+    evidence.update(
+        {
+            "provider_normalizations": list(records),
+            "normalized_provider_payload_digest": normalized_digest,
+        }
+    )
+    return evidence
+
+
+def _persist_provider_failure(
+    path: Path,
+    base: dict[str, object],
+    writer: object,
+    exc: Exception,
+) -> None:
+    failed = dict(base)
+    failed.update(_provider_evidence(writer))
+    failed["provider_failure"] = {"type": type(exc).__name__, "message": str(exc)}
+    _atomic_json(path, failed)
+
+
+def _compose_deep_dive(
+    *,
+    request: DeepDiveSkeletonRequest,
+    context: WorkbookBriefRuntimeContext,
+    trial_id: object,
+    prior_payload_digest: str | None = None,
+) -> tuple[DeepDiveSkeletonResult, DeepDiveExecutionReceiptV1]:
+    authority_digest = deep_dive_authority_digest(request)
+    model_config_digest = (
+        getattr(context.deep_dive_writer, "model_config_digest", None)
+        or "sha256:" + "0" * 64
+    )
+    idempotency_key = deep_dive_idempotency_key(
+        trial_id=trial_id,
+        authority_digest=authority_digest,
+        model_config_digest=model_config_digest,
+    )
+    if context.writer_execution_mode == "offline_stub":
+        result = compose_deep_dive_skeleton(request, offline_deep_dive_writer)
+        return result, _deep_dive_receipt(
+            context,
+            idempotency_key=idempotency_key,
+            calls=0,
+            prior_payload_digest=prior_payload_digest,
+        )
+    if context.deep_dive_writer is None:
+        raise SpecialistDispatchError(
+            "live Deep Dive writer is not initialized",
+            tag="workbook-brief.deep-dive-writer-init-failed",
+        )
+    journal_path = context.run_dir / DEEP_DIVE_JOURNAL_FILENAME
+    if _journal_exists(context.run_dir, journal_path):
+        try:
+            journal = json.loads(journal_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            raise SpecialistDispatchError(
+                f"invalid Deep Dive journal: {exc}",
+                tag="workbook-brief.deep-dive-reconciliation-failed",
+            ) from exc
+        if not isinstance(journal, dict):
+            raise SpecialistDispatchError(
+                "Deep Dive journal root must be a mapping",
+                tag="workbook-brief.deep-dive-reconciliation-failed",
+            )
+        if journal.get("state") == "call_in_progress":
+            raise SpecialistDispatchError(
+                "Deep Dive call outcome is ambiguous",
+                tag="workbook-brief.deep-dive-call-ambiguous",
+            )
+        try:
+            if journal.get("state") != "completed":
+                raise ValueError("journal state mismatch")
+            if journal.get("schema_version") != "workbook-deep-dive-call.v1":
+                raise ValueError("journal schema mismatch")
+            if journal.get("idempotency_key") != idempotency_key:
+                raise ValueError("journal idempotency mismatch")
+            if journal.get("model_config_digest") != model_config_digest:
+                raise ValueError("journal model config mismatch")
+            saved_request = DeepDiveSkeletonRequest.model_validate_json(
+                _canonical_json(journal["authority"]), strict=True
+            )
+            raw_provider_payload = journal["raw_provider_payload"]
+            if not isinstance(raw_provider_payload, dict):
+                raise ValueError("journal raw provider payload must be a mapping")
+            if journal.get("raw_provider_payload_digest") != _sha256(raw_provider_payload):
+                raise ValueError("journal raw provider payload digest mismatch")
+            expected_schema_digest = _sha256(
+                DeepDiveSkeletonWriterResult.model_json_schema()
+            )
+            observed_schema_digest = getattr(
+                context.deep_dive_writer, "provider_schema_digest", None
+            )
+            if (
+                observed_schema_digest is not None
+                and observed_schema_digest != expected_schema_digest
+            ):
+                raise ValueError("writer provider schema digest mismatch")
+            if journal.get("provider_schema_digest") != expected_schema_digest:
+                raise ValueError("journal provider schema digest mismatch")
+            if (
+                journal.get("provider_contract_mode")
+                != DEEP_DIVE_PROVIDER_CONTRACT_MODE
+                or journal.get("provider_normalizer_version")
+                != DEEP_DIVE_PROVIDER_NORMALIZER_VERSION
+            ):
+                raise ValueError("journal provider contract identity mismatch")
+            normalized, records = normalize_deep_dive_provider_payload(
+                raw_provider_payload
+            )
+            if journal.get("provider_normalizations") != list(records):
+                raise ValueError("journal provider normalization record mismatch")
+            if journal.get("normalized_provider_payload_digest") != _sha256(normalized):
+                raise ValueError("journal normalized provider payload digest mismatch")
+            candidate = DeepDiveSkeletonWriterResult.model_validate_json(
+                _canonical_json(normalized), strict=True
+            )
+            if candidate.model_dump(mode="json") != journal["candidate"]:
+                raise ValueError("journal normalized candidate snapshot mismatch")
+            saved_result = DeepDiveSkeletonResult.model_validate_json(
+                _canonical_json(journal["result"]), strict=True
+            )
+            replayed = compose_deep_dive_skeleton(saved_request, lambda _: candidate)
+            if saved_request != request or replayed != saved_result:
+                raise ValueError("journal replay mismatch")
+            if journal.get("authority_digest") != authority_digest:
+                raise ValueError("journal authority digest mismatch")
+            if journal.get("candidate_digest") != saved_result.candidate_payload_digest:
+                raise ValueError("journal candidate digest mismatch")
+            if journal.get("result_digest") != _sha256(saved_result.model_dump(mode="json")):
+                raise ValueError("journal result digest mismatch")
+            receipt = DeepDiveExecutionReceiptV1.model_validate(journal["provider_receipt"])
+            expected_model = getattr(
+                getattr(context.deep_dive_writer, "model_config", None),
+                "default_model",
+                None,
+            )
+            if (
+                receipt.mode != "live"
+                or receipt.calls != 1
+                or receipt.idempotency_key != idempotency_key
+                or receipt.model_config_digest != model_config_digest
+                or receipt.prior_payload_digest != prior_payload_digest
+                or receipt.model != expected_model
+            ):
+                raise ValueError("journal receipt mismatch")
+            return saved_result, receipt
+        except (KeyError, TypeError, ValueError) as exc:
+            raise SpecialistDispatchError(
+                f"Deep Dive journal reconciliation failed: {exc}",
+                tag="workbook-brief.deep-dive-reconciliation-failed",
+            ) from exc
+    in_progress: dict[str, object] = {
+        "schema_version": "workbook-deep-dive-call.v1",
+        "state": "call_in_progress",
+        "idempotency_key": idempotency_key,
+        "authority_digest": authority_digest,
+        "model_config_digest": model_config_digest,
+        "authority": request.model_dump(mode="json"),
+    }
+    try:
+        _atomic_json(journal_path, in_progress)
+    except (OSError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive journal write failed: {exc}",
+            tag="workbook-brief.deep-dive-persistence-failed",
+        ) from exc
+    try:
+        raw_candidate = context.deep_dive_writer(request)
+    except DeepDiveProviderOutputError as exc:
+        try:
+            _persist_provider_failure(
+                journal_path, in_progress, context.deep_dive_writer, exc
+            )
+        except (OSError, ValueError) as persistence_exc:
+            raise SpecialistDispatchError(
+                f"Deep Dive failure evidence persistence failed: {persistence_exc}",
+                tag="workbook-brief.deep-dive-persistence-failed",
+            ) from persistence_exc
+        raise SpecialistDispatchError(
+            f"Deep Dive writer output invalid: {exc}",
+            tag="workbook-brief.deep-dive-writer-output-invalid",
+        ) from exc
+    except Exception as exc:
+        try:
+            _persist_provider_failure(
+                journal_path, in_progress, context.deep_dive_writer, exc
+            )
+        except (OSError, ValueError) as persistence_exc:
+            raise SpecialistDispatchError(
+                f"Deep Dive failure evidence persistence failed: {persistence_exc}",
+                tag="workbook-brief.deep-dive-persistence-failed",
+            ) from persistence_exc
+        raise SpecialistDispatchError(
+            f"Deep Dive writer execution failed: {exc}",
+            tag="workbook-brief.deep-dive-writer-execution-failed",
+        ) from exc
+    try:
+        if not isinstance(raw_candidate, DeepDiveSkeletonWriterResult):
+            raise TypeError("writer returned the wrong type")
+        candidate = DeepDiveSkeletonWriterResult.model_validate(raw_candidate.model_dump())
+        result = compose_deep_dive_skeleton(request, lambda _: candidate)
+    except (TypeError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive writer output invalid: {exc}",
+            tag="workbook-brief.deep-dive-writer-output-invalid",
+        ) from exc
+    try:
+        provider_evidence = _provider_evidence(context.deep_dive_writer, candidate)
+    except (TypeError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive provider evidence invalid: {exc}",
+            tag="workbook-brief.deep-dive-writer-output-invalid",
+        ) from exc
+    try:
+        receipt = _deep_dive_receipt(
+            context,
+            idempotency_key=idempotency_key,
+            calls=1,
+            prior_payload_digest=prior_payload_digest,
+        )
+    except (TypeError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive provider receipt invalid: {exc}",
+            tag="workbook-brief.deep-dive-writer-output-invalid",
+        ) from exc
+    completed = {
+        "schema_version": "workbook-deep-dive-call.v1",
+        "state": "completed",
+        "idempotency_key": idempotency_key,
+        "authority_digest": authority_digest,
+        "candidate_digest": result.candidate_payload_digest,
+        "result_digest": _sha256(result.model_dump(mode="json")),
+        "model_config_digest": model_config_digest,
+        "authority": request.model_dump(mode="json"),
+        "candidate": candidate.model_dump(mode="json"),
+        "result": result.model_dump(mode="json"),
+        "provider_receipt": receipt.model_dump(mode="json"),
+        **provider_evidence,
+    }
+    try:
+        _atomic_json(journal_path, completed)
+    except (OSError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive journal completion failed: {exc}",
+            tag="workbook-brief.deep-dive-persistence-failed",
+        ) from exc
+    return result, receipt
 
 
 def _brief_factory(
@@ -176,7 +600,12 @@ def _brief_factory(
             scene_extraction_losses = scene_result.extraction_losses
             scene_introduced_terms = scene_result.introduced_terms
 
-    resolution = resolve_promise_objectives(runtime_context.run_dir)
+    try:
+        resolution = resolve_promise_objectives(runtime_context.run_dir)
+    except (PromiseObjectiveResolutionError, RunEnvelopeCorruptError) as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-authority-invalid"
+        ) from exc
     forbidden = ()
     if source is not None:
         forbidden = source.forbidden_resolution_spans
@@ -225,10 +654,45 @@ def _brief_factory(
         warnings=tuple(dict.fromkeys((*scene_warnings, *promise_result.operator_warnings))),
         known_losses=losses,
     )
+    try:
+        if runtime_context.course_source_root is None:
+            raise DeepDiveAuthorityUnavailableError(
+                "Deep Dive course source authority is absent"
+            )
+        deep_dive_request = build_deep_dive_request(
+            runtime_context.run_dir,
+            runtime_context.course_source_root,
+            promise,
+        )
+        deep_dive_skeleton, deep_dive_receipt = _compose_deep_dive(
+            request=deep_dive_request,
+            context=runtime_context,
+            trial_id=_envelope.trial_id,
+        )
+        payload = payload.model_copy(
+            update={
+                "deep_dive_skeleton": deep_dive_skeleton,
+                "deep_dive_writer_receipt": deep_dive_receipt,
+            }
+        )
+        payload = WorkbookBriefPayloadV1.model_validate(payload.model_dump())
+    except (DeepDiveAuthorityUnavailableError, DeepDiveAuthorityInvalidError) as exc:
+        # Story 37.2a cannot truthfully represent total request-authority
+        # absence. Current executions fail before persistence; only valid
+        # thin authority (for example VO-only/no delta) enters composition.
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-authority-invalid"
+        ) from exc
     artifact = WorkbookBriefArtifactV1(
         payload=payload, payload_digest=canonical_payload_digest(payload)
     )
-    path = write_workbook_brief(runtime_context.run_dir, artifact)
+    try:
+        path = write_workbook_brief(runtime_context.run_dir, artifact)
+    except (OSError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive brief persistence failed: {exc}",
+            tag="workbook-brief.deep-dive-persistence-failed",
+        ) from exc
     assert path.relative_to(runtime_context.run_dir).as_posix() == "workbook-brief.v1.json"
     return workbook_brief_contribution_receipt(artifact)
 
@@ -258,20 +722,7 @@ def _writer_receipt(
 def workbook_brief_contribution_receipt(
     artifact: WorkbookBriefArtifactV1,
 ) -> dict[str, object]:
-    payload = artifact.payload
-    return {
-        "artifact_path": "workbook-brief.v1.json",
-        "payload_digest": artifact.payload_digest,
-        "schema_version": payload.schema_version,
-        "status_summary": {
-            "scene": payload.pre_work.scene.status,
-            "promise": payload.pre_work.promise.status,
-        },
-        "warning_summary": list(payload.warnings),
-        "loss_summary": list(payload.known_losses),
-        "node_id": payload.node_id,
-        "specialist_id": payload.specialist_id,
-    }
+    return lesson_plan_workbook_brief_receipt(artifact)
 
 
 def _ask_a_stub(_node_id: str, _envelope: ProductionEnvelope) -> dict[str, object]:
@@ -311,6 +762,13 @@ def runtime_context_for_run(
 ) -> WorkbookBriefRuntimeContext:
     """Reconstruct persisted context, or identify an honest pre-36.4 run."""
     context_path = Path(run_dir) / "workbook-runtime-context.v1.json"
+    if context_path.is_symlink() or (
+        context_path.exists() and not context_path.is_file()
+    ):
+        raise SpecialistDispatchError(
+            "workbook runtime context coordinate is not a regular file",
+            tag="workbook-brief.context-corrupt",
+        )
     if context_path.is_file():
         try:
             context = read_runtime_context(run_dir)
@@ -318,12 +776,13 @@ def runtime_context_for_run(
             raise SpecialistDispatchError(str(exc), tag="workbook-brief.context-corrupt") from exc
         if context.writer_execution_mode == "live" and node_id == WORKBOOK_BRIEF_NODE_ID:
             from app.marcus.orchestrator.workbook_prework_writers import (  # noqa: PLC0415
+                LiveDeepDiveWriter,
                 LivePromiseTransformer,
                 LiveSceneComposer,
             )
 
             try:
-                return context.model_copy(
+                context = context.model_copy(
                     update={
                         "scene_writer": LiveSceneComposer(),
                         "promise_writer": LivePromiseTransformer(),
@@ -334,6 +793,13 @@ def runtime_context_for_run(
                     f"workbook writer initialization failed: {exc}",
                     tag="workbook-brief.writer-init-failed",
                 ) from exc
+            try:
+                return context.model_copy(update={"deep_dive_writer": LiveDeepDiveWriter()})
+            except Exception as exc:
+                raise SpecialistDispatchError(
+                    f"Deep Dive writer initialization failed: {exc}",
+                    tag="workbook-brief.deep-dive-writer-init-failed",
+                ) from exc
         return context
     return WorkbookBriefRuntimeContext(
         run_dir=Path(run_dir),
@@ -342,6 +808,141 @@ def runtime_context_for_run(
         context_origin="legacy_default",
         writer_execution_mode="offline_stub",
     )
+
+
+def _activated_artifact(
+    *,
+    artifact: WorkbookBriefArtifactV1,
+    production_envelope: ProductionEnvelope,
+    runtime_context: WorkbookBriefRuntimeContext,
+) -> WorkbookBriefArtifactV1:
+    if artifact.payload.deep_dive_skeleton is not None:
+        return artifact
+    if runtime_context.course_source_root is None:
+        raise SpecialistDispatchError(
+            "Deep Dive upgrade requires course source authority",
+            tag="workbook-brief.deep-dive-authority-invalid",
+        )
+    try:
+        request = build_deep_dive_request(
+            runtime_context.run_dir,
+            runtime_context.course_source_root,
+            artifact.payload.pre_work.promise,
+        )
+        skeleton, receipt = _compose_deep_dive(
+            request=request,
+            context=runtime_context,
+            trial_id=production_envelope.trial_id,
+            prior_payload_digest=artifact.payload_digest,
+        )
+        payload = WorkbookBriefPayloadV1.model_validate(
+            artifact.payload.model_copy(
+                update={
+                    "deep_dive_skeleton": skeleton,
+                    "deep_dive_writer_receipt": receipt,
+                }
+            ).model_dump()
+        )
+        upgraded = WorkbookBriefArtifactV1(
+            payload=payload, payload_digest=canonical_payload_digest(payload)
+        )
+        write_workbook_brief(runtime_context.run_dir, upgraded)
+        return upgraded
+    except DeepDiveAuthorityUnavailableError as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-authority-invalid"
+        ) from exc
+    except DeepDiveAuthorityInvalidError as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-authority-invalid"
+        ) from exc
+    except SpecialistDispatchError:
+        raise
+    except (OSError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive brief persistence failed: {exc}",
+            tag="workbook-brief.deep-dive-persistence-failed",
+        ) from exc
+
+
+def _replace_brief_contribution(
+    envelope: ProductionEnvelope,
+    artifact: WorkbookBriefArtifactV1,
+    runtime_context: WorkbookBriefRuntimeContext,
+) -> ProductionEnvelope:
+    updated = envelope.model_copy(deep=True)
+    updated = updated.model_copy(
+        update={
+            "contributions": tuple(
+                contribution
+                for contribution in updated.contributions
+                if not (
+                    contribution.specialist_id == LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID
+                    and contribution.node_id == WORKBOOK_BRIEF_NODE_ID
+                )
+            )
+        }
+    )
+    writer = runtime_context.deep_dive_writer
+    config = getattr(writer, "model_config", None)
+    model_used = (
+        getattr(config, "default_model", None)
+        if runtime_context.writer_execution_mode == "live"
+        else "workbook-brief-offline"
+    ) or "workbook-writer-live"
+    updated.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id=WORKBOOK_BRIEF_SPECIALIST_ID,
+            node_id=WORKBOOK_BRIEF_NODE_ID,
+            output=workbook_brief_contribution_receipt(artifact),
+            model_used=model_used,
+        )
+    )
+    return updated
+
+
+def _reconcile_activated_artifact(
+    *,
+    artifact: WorkbookBriefArtifactV1,
+    production_envelope: ProductionEnvelope,
+    runtime_context: WorkbookBriefRuntimeContext,
+) -> None:
+    if artifact.payload.deep_dive_skeleton is None:
+        raise SpecialistDispatchError(
+            "activated Deep Dive reconciliation requires a skeleton",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        )
+    if runtime_context.course_source_root is None:
+        raise SpecialistDispatchError(
+            "activated Deep Dive reconciliation requires course source authority",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        )
+    try:
+        request = build_deep_dive_request(
+            runtime_context.run_dir,
+            runtime_context.course_source_root,
+            artifact.payload.pre_work.promise,
+        )
+        replayed, replayed_receipt = _compose_deep_dive(
+            request=request,
+            context=runtime_context,
+            trial_id=production_envelope.trial_id,
+            prior_payload_digest=(
+                artifact.payload.deep_dive_writer_receipt.prior_payload_digest
+            ),
+        )
+    except (DeepDiveAuthorityInvalidError, DeepDiveAuthorityUnavailableError) as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-reconciliation-failed"
+        ) from exc
+    if (
+        replayed != artifact.payload.deep_dive_skeleton
+        or replayed_receipt != artifact.payload.deep_dive_writer_receipt
+    ):
+        raise SpecialistDispatchError(
+            "Deep Dive sidecar/journal result or receipt mismatch",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        )
 
 
 def run_workbook_band_node(
@@ -363,7 +964,45 @@ def run_workbook_band_node(
             f"no workbook band factory registered for node {node_id!r}",
             tag="workbook.band.unknown-node",
         )
-    existing = production_envelope.get_contribution(specialist_id, node_id=node_id)
+    if node_id == WORKBOOK_BRIEF_NODE_ID:
+        real_matches = tuple(
+            contribution
+            for contribution in production_envelope.contributions
+            if contribution.specialist_id == WORKBOOK_BRIEF_SPECIALIST_ID
+            and contribution.node_id == WORKBOOK_BRIEF_NODE_ID
+        )
+        legacy_matches = tuple(
+            contribution
+            for contribution in production_envelope.contributions
+            if contribution.specialist_id == "workbook_brief_stub"
+            and contribution.node_id == WORKBOOK_BRIEF_NODE_ID
+        )
+        allowed = {WORKBOOK_BRIEF_SPECIALIST_ID, "workbook_brief_stub"}
+        collisions = tuple(
+            contribution
+            for contribution in production_envelope.contributions
+            if (
+                contribution.node_id == WORKBOOK_BRIEF_NODE_ID
+                and contribution.specialist_id not in allowed
+            )
+            or (
+                contribution.specialist_id in allowed
+                and contribution.node_id != WORKBOOK_BRIEF_NODE_ID
+            )
+        )
+        if (
+            collisions
+            or len(real_matches) > 1
+            or len(legacy_matches) > 1
+            or (real_matches and legacy_matches)
+        ):
+            raise SpecialistDispatchError(
+                "workbook brief coordinate collision",
+                tag="workbook-brief.sidecar-mismatch",
+            )
+        existing = real_matches[0] if real_matches else None
+    else:
+        existing = production_envelope.get_contribution(specialist_id, node_id=node_id)
     if existing is not None:
         if node_id == WORKBOOK_BRIEF_NODE_ID:
             if runtime_context is None:
@@ -376,11 +1015,127 @@ def run_workbook_band_node(
                 raise SpecialistDispatchError(
                     str(exc), tag="workbook-brief.sidecar-invalid"
                 ) from exc
+            expected_receipt = workbook_brief_contribution_receipt(artifact)
+            if existing.output != expected_receipt:
+                if artifact.payload.deep_dive_skeleton is None:
+                    if "deep_dive_summary" not in existing.output:
+                        raise SpecialistDispatchError(
+                            "07W.1 contribution/sidecar mismatch",
+                            tag="workbook-brief.sidecar-mismatch",
+                        )
+                    raise SpecialistDispatchError(
+                        "new workbook contribution/old sidecar digest mismatch",
+                        tag="workbook-brief.deep-dive-split-brain",
+                    )
+                if "deep_dive_summary" in existing.output:
+                    raise SpecialistDispatchError(
+                        "activated Deep Dive contribution/sidecar mismatch",
+                        tag="workbook-brief.deep-dive-reconciliation-failed",
+                    )
+                prior = artifact.payload.deep_dive_writer_receipt.prior_payload_digest
+                if prior != existing.output.get("payload_digest"):
+                    raise SpecialistDispatchError(
+                        "unlinked Deep Dive sidecar/contribution generation",
+                        tag="workbook-brief.deep-dive-split-brain",
+                    )
+                journal_path = runtime_context.run_dir / DEEP_DIVE_JOURNAL_FILENAME
+                if runtime_context.writer_execution_mode != "live" or not _journal_exists(
+                    runtime_context.run_dir, journal_path
+                ):
+                    raise SpecialistDispatchError(
+                        "new sidecar/old contribution requires a completed live journal",
+                        tag="workbook-brief.deep-dive-split-brain",
+                    )
+                if runtime_context.course_source_root is None:
+                    raise SpecialistDispatchError(
+                        "Deep Dive roll-forward requires course source authority",
+                        tag="workbook-brief.deep-dive-reconciliation-failed",
+                    )
+                try:
+                    request = build_deep_dive_request(
+                        runtime_context.run_dir,
+                        runtime_context.course_source_root,
+                        artifact.payload.pre_work.promise,
+                    )
+                    replayed, replayed_receipt = _compose_deep_dive(
+                        request=request,
+                        context=runtime_context,
+                        trial_id=production_envelope.trial_id,
+                        prior_payload_digest=prior,
+                    )
+                except (
+                    DeepDiveAuthorityInvalidError,
+                    DeepDiveAuthorityUnavailableError,
+                ) as exc:
+                    raise SpecialistDispatchError(
+                        str(exc), tag="workbook-brief.deep-dive-reconciliation-failed"
+                    ) from exc
+                if (
+                    replayed != artifact.payload.deep_dive_skeleton
+                    or replayed_receipt != artifact.payload.deep_dive_writer_receipt
+                ):
+                    raise SpecialistDispatchError(
+                        "Deep Dive sidecar/journal result or receipt mismatch",
+                        tag="workbook-brief.deep-dive-reconciliation-failed",
+                    )
+                return _replace_brief_contribution(
+                    production_envelope, artifact, runtime_context
+                )
+            if artifact.payload.deep_dive_skeleton is None:
+                artifact = _activated_artifact(
+                    artifact=artifact,
+                    production_envelope=production_envelope,
+                    runtime_context=runtime_context,
+                )
+                return _replace_brief_contribution(
+                    production_envelope, artifact, runtime_context
+                )
             if existing.output != workbook_brief_contribution_receipt(artifact):
                 raise SpecialistDispatchError(
                     "07W.1 contribution/sidecar mismatch", tag="workbook-brief.sidecar-mismatch"
                 )
+            if artifact.payload.deep_dive_skeleton is not None:
+                _reconcile_activated_artifact(
+                    artifact=artifact,
+                    production_envelope=production_envelope,
+                    runtime_context=runtime_context,
+                )
         return production_envelope
+
+    if node_id == WORKBOOK_BRIEF_NODE_ID and runtime_context is not None:
+        sidecar_path = runtime_context.run_dir / "workbook-brief.v1.json"
+        if sidecar_path.is_symlink():
+            raise SpecialistDispatchError(
+                "workbook brief coordinate is a symlink",
+                tag="workbook-brief.sidecar-invalid",
+            )
+        if sidecar_path.is_file():
+            try:
+                artifact = read_workbook_brief(runtime_context.run_dir)
+            except ValueError as exc:
+                raise SpecialistDispatchError(
+                    str(exc), tag="workbook-brief.sidecar-invalid"
+                ) from exc
+            if artifact.payload.deep_dive_skeleton is not None:
+                journal_path = runtime_context.run_dir / DEEP_DIVE_JOURNAL_FILENAME
+                if not _journal_exists(runtime_context.run_dir, journal_path):
+                    raise SpecialistDispatchError(
+                        "activated sidecar without contribution requires completed journal",
+                        tag="workbook-brief.deep-dive-split-brain",
+                    )
+                _reconcile_activated_artifact(
+                    artifact=artifact,
+                    production_envelope=production_envelope,
+                    runtime_context=runtime_context,
+                )
+                return _replace_brief_contribution(
+                    production_envelope, artifact, runtime_context
+                )
+            if artifact.payload.deep_dive_skeleton is None:
+                raise SpecialistDispatchError(
+                    "legacy-null sidecar requires its matching contribution for upgrade",
+                    tag="workbook-brief.deep-dive-split-brain",
+                )
 
     selected = DEFAULT_WORKBOOK_BAND_FACTORIES if factories is None else factories
     factory = selected.get(node_id)
@@ -426,6 +1181,19 @@ def run_workbook_band_node(
             tag="workbook.band.invalid-output",
         ) from exc
     updated = production_envelope.model_copy(deep=True)
+    if node_id == WORKBOOK_BRIEF_NODE_ID and legacy_matches:
+        updated = updated.model_copy(
+            update={
+                "contributions": tuple(
+                    contribution
+                    for contribution in updated.contributions
+                    if not (
+                        contribution.specialist_id == LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID
+                        and contribution.node_id == WORKBOOK_BRIEF_NODE_ID
+                    )
+                )
+            }
+        )
     model_used = WORKBOOK_BAND_MODEL_MARKER
     if node_id == WORKBOOK_BRIEF_NODE_ID and runtime_context is not None:
         if runtime_context.writer_execution_mode == "live":

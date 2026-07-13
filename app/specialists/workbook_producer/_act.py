@@ -55,6 +55,7 @@ from app.marcus.lesson_plan.prework_artifact import (
     WORKBOOK_BRIEF_FILENAME,
     WorkbookBriefArtifactV1,
     read_workbook_brief,
+    workbook_brief_contribution_receipt,
 )
 from app.marcus.lesson_plan.prework_projection import PreWorkBrief
 from app.marcus.lesson_plan.produced_asset import ProductionContext
@@ -756,7 +757,13 @@ def _reconcile_workbook_brief_authority(
 ) -> WorkbookBriefArtifactV1 | None:
     """Require exact contribution authority before activating presentation support."""
     envelope = state.production_envelope
-    sidecar_exists = (run_dir / WORKBOOK_BRIEF_FILENAME).is_file()
+    brief_path = run_dir / WORKBOOK_BRIEF_FILENAME
+    if brief_path.is_symlink():
+        raise WorkbookProducerActError(
+            "workbook brief coordinate is a symlink",
+            tag="workbook-brief.sidecar-invalid",
+        )
+    sidecar_exists = brief_path.is_file()
     if envelope is None:
         if sidecar_exists:
             raise WorkbookProducerActError(
@@ -764,8 +771,43 @@ def _reconcile_workbook_brief_authority(
                 tag="workbook-brief.authority-missing",
             )
         return None
-    legacy = envelope.get_contribution("workbook_brief_stub", node_id="07W.1")
-    real = envelope.get_contribution("workbook_brief", node_id="07W.1")
+    legacy_matches = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "workbook_brief_stub"
+        and contribution.node_id == "07W.1"
+    )
+    real_matches = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "workbook_brief"
+        and contribution.node_id == "07W.1"
+    )
+    legacy = legacy_matches[0] if legacy_matches else None
+    real = real_matches[0] if real_matches else None
+    allowed = {"workbook_brief", "workbook_brief_stub"}
+    collisions = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if (
+            contribution.node_id == "07W.1"
+            and contribution.specialist_id not in allowed
+        )
+        or (
+            contribution.specialist_id in allowed
+            and contribution.node_id != "07W.1"
+        )
+    )
+    if (
+        collisions
+        or len(legacy_matches) > 1
+        or len(real_matches) > 1
+        or (legacy and real)
+    ):
+        raise WorkbookProducerActError(
+            "workbook brief coordinates are contradictory",
+            tag="workbook-brief.sidecar-mismatch",
+        )
     if real is None:
         if legacy is not None:
             raise WorkbookProducerActError(
@@ -782,20 +824,7 @@ def _reconcile_workbook_brief_authority(
         artifact = read_workbook_brief(run_dir)
     except ValueError as exc:
         raise WorkbookProducerActError(str(exc), tag="workbook-brief.sidecar-invalid") from exc
-    payload = artifact.payload
-    expected = {
-        "artifact_path": WORKBOOK_BRIEF_FILENAME,
-        "payload_digest": artifact.payload_digest,
-        "schema_version": payload.schema_version,
-        "status_summary": {
-            "scene": payload.pre_work.scene.status,
-            "promise": payload.pre_work.promise.status,
-        },
-        "warning_summary": list(payload.warnings),
-        "loss_summary": list(payload.known_losses),
-        "node_id": payload.node_id,
-        "specialist_id": payload.specialist_id,
-    }
+    expected = workbook_brief_contribution_receipt(artifact)
     if real.output != expected:
         raise WorkbookProducerActError(
             "workbook brief contribution and sidecar receipt mismatch",

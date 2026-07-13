@@ -12,6 +12,13 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.marcus.lesson_plan.deep_dive_projection import (
+    DeepDiveSkeletonRequest,
+    DeepDiveSkeletonResult,
+    DeepDiveWriterCandidate,
+    compose_deep_dive_skeleton,
+    offline_deep_dive_writer,
+)
 from app.marcus.lesson_plan.lesson_type_classifier import LessonTypeClassification
 from app.marcus.lesson_plan.prework_projection import (
     PreWorkBrief,
@@ -25,6 +32,8 @@ from app.marcus.lesson_plan.scene_extraction import SceneGateReceipt
 
 WORKBOOK_BRIEF_FILENAME = "workbook-brief.v1.json"
 WORKBOOK_RUNTIME_CONTEXT_FILENAME = "workbook-runtime-context.v1.json"
+DEEP_DIVE_JOURNAL_FILENAME = "workbook-deep-dive-call.v1.json"
+WORKBOOK_BRIEF_NODE_ID = "07W.1"
 
 
 class _Strict(BaseModel):
@@ -65,6 +74,61 @@ class WriterExecutionReceipt(_Strict):
         return self
 
 
+class DeepDiveExecutionReceiptV1(_Strict):
+    schema_version: Literal["deep-dive-execution-receipt.v1"] = (
+        "deep-dive-execution-receipt.v1"
+    )
+    writer: Literal["deep_dive"] = "deep_dive"
+    mode: Literal["offline_stub", "live"]
+    calls: Literal[0, 1]
+    idempotency_key: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+    prior_payload_digest: str | None = Field(
+        default=None, pattern=r"^sha256:[0-9a-f]{64}$"
+    )
+    model: str | None = None
+    model_config_digest: str | None = Field(
+        default=None, pattern=r"^sha256:[0-9a-f]{64}$"
+    )
+    request_id: str | None = None
+    latency_ms: float | None = Field(default=None, ge=0)
+    input_tokens: int | None = Field(default=None, ge=0)
+    output_tokens: int | None = Field(default=None, ge=0)
+    cost_usd: float | None = Field(default=None, ge=0)
+    cost_unavailable_reason: str | None = None
+
+    @model_validator(mode="after")
+    def _cost_posture(self) -> DeepDiveExecutionReceiptV1:
+        if self.cost_usd is not None and self.cost_unavailable_reason is not None:
+            raise ValueError("cost receipt cannot carry both cost and unavailable reason")
+        if (
+            self.mode == "live"
+            and self.calls == 1
+            and self.cost_usd is None
+            and not self.cost_unavailable_reason
+        ):
+            raise ValueError("live writer call without cost requires an explicit reason")
+        return self
+
+
+def deep_dive_idempotency_key(
+    *, trial_id: object, authority_digest: str, model_config_digest: str
+) -> str:
+    payload = {
+        "trial_id": str(trial_id),
+        "node_id": WORKBOOK_BRIEF_NODE_ID,
+        "authority_digest": authority_digest,
+        "model_config_digest": model_config_digest,
+    }
+    canonical = json.dumps(
+        payload,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
+    return "sha256:" + hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
 class SceneAuthoringReceipt(_Strict):
     classification: LessonTypeClassification
     gate: SceneGateReceipt
@@ -97,6 +161,9 @@ class WorkbookBriefRuntimeContext(_Strict):
         default=None, exclude=True
     )
     promise_writer: Callable[[PromiseTransformRequest], PromiseProjection] | None = Field(
+        default=None, exclude=True
+    )
+    deep_dive_writer: Callable[[DeepDiveSkeletonRequest], DeepDiveWriterCandidate] | None = Field(
         default=None, exclude=True
     )
 
@@ -139,7 +206,8 @@ class WorkbookBriefPayloadV1(_Strict):
     writer_receipts: tuple[WriterExecutionReceipt, WriterExecutionReceipt]
     warnings: tuple[str, ...] = ()
     known_losses: tuple[str, ...] = ()
-    deep_dive_skeleton: None = None
+    deep_dive_skeleton: DeepDiveSkeletonResult | None = None
+    deep_dive_writer_receipt: DeepDiveExecutionReceiptV1 | None = None
 
     @model_validator(mode="after")
     def _reconcile(self) -> WorkbookBriefPayloadV1:
@@ -165,6 +233,37 @@ class WorkbookBriefPayloadV1(_Strict):
             raise ValueError("authored Scene requires one writer call")
         if self.pre_work.promise.status == "authored" and self.writer_receipts[1].calls != 1:
             raise ValueError("authored Promise requires one writer call")
+        if (self.deep_dive_skeleton is None) != (self.deep_dive_writer_receipt is None):
+            raise ValueError("Deep Dive skeleton and execution receipt must appear together")
+        if self.deep_dive_skeleton is not None:
+            assert self.deep_dive_writer_receipt is not None
+            if self.deep_dive_writer_receipt.mode != self.writer_execution_mode:
+                raise ValueError(
+                    "Deep Dive receipt mode must equal aggregate execution mode"
+                )
+            expected_calls = 0 if self.writer_execution_mode == "offline_stub" else 1
+            if self.deep_dive_writer_receipt.calls != expected_calls:
+                raise ValueError(
+                    "Deep Dive receipt calls must match aggregate execution mode"
+                )
+            DeepDiveSkeletonResult.model_validate(self.deep_dive_skeleton.model_dump())
+            if (
+                self.writer_execution_mode == "offline_stub"
+                and compose_deep_dive_skeleton(
+                    self.deep_dive_skeleton.authority, offline_deep_dive_writer
+                )
+                != self.deep_dive_skeleton
+            ):
+                raise ValueError("offline Deep Dive skeleton must equal stub replay")
+            expected = tuple(
+                (vow.objective_id, vow.text) for vow in self.pre_work.promise.vows
+            )
+            actual = tuple(
+                (item.ability_id, item.text)
+                for item in self.deep_dive_skeleton.authority.abilities
+            )
+            if actual != expected:
+                raise ValueError("Deep Dive abilities must equal authored Promise vows")
         return self
 
 
@@ -174,20 +273,81 @@ class WorkbookBriefArtifactV1(_Strict):
 
     @model_validator(mode="after")
     def _digest(self) -> WorkbookBriefArtifactV1:
-        if self.payload_digest != canonical_payload_digest(self.payload):
+        if self.payload_digest not in _accepted_payload_digests(self.payload):
             raise ValueError("workbook brief payload digest mismatch")
         return self
 
 
-def canonical_payload_digest(payload: WorkbookBriefPayloadV1) -> str:
+def _canonical_payload_digest(
+    payload: WorkbookBriefPayloadV1, *, omit_empty_introduced_terms: bool
+) -> str:
+    dumped = payload.model_dump(mode="json")
+    if dumped.get("deep_dive_writer_receipt") is None:
+        dumped.pop("deep_dive_writer_receipt", None)
+    if omit_empty_introduced_terms and not dumped["scene_receipt"].get(
+        "introduced_terms"
+    ):
+        dumped["scene_receipt"].pop("introduced_terms", None)
     canonical = json.dumps(
-        payload.model_dump(mode="json"),
+        dumped,
         sort_keys=True,
         separators=(",", ":"),
         ensure_ascii=False,
         allow_nan=False,
     )
     return "sha256:" + hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def canonical_payload_digest(payload: WorkbookBriefPayloadV1) -> str:
+    """Digest current bytes while retaining baseline pre-38.3a field defaults."""
+    return _canonical_payload_digest(payload, omit_empty_introduced_terms=False)
+
+
+def _accepted_payload_digests(payload: WorkbookBriefPayloadV1) -> frozenset[str]:
+    current = canonical_payload_digest(payload)
+    if (
+        payload.deep_dive_skeleton is not None
+        or payload.deep_dive_writer_receipt is not None
+        or payload.scene_receipt.introduced_terms
+    ):
+        return frozenset((current,))
+    # The first real 36.4 fixtures predate ``introduced_terms`` while the
+    # immediate 38.3a baseline serialized its empty default. Read both frozen
+    # legacy-null domains; all newly written artifacts use ``current``.
+    return frozenset(
+        (
+            current,
+            _canonical_payload_digest(payload, omit_empty_introduced_terms=True),
+        )
+    )
+
+
+def workbook_brief_contribution_receipt(
+    artifact: WorkbookBriefArtifactV1,
+) -> dict[str, object]:
+    """Return the exact contribution witness for one validated brief artifact."""
+    payload = artifact.payload
+    receipt: dict[str, object] = {
+        "artifact_path": WORKBOOK_BRIEF_FILENAME,
+        "payload_digest": artifact.payload_digest,
+        "schema_version": payload.schema_version,
+        "status_summary": {
+            "scene": payload.pre_work.scene.status,
+            "promise": payload.pre_work.promise.status,
+        },
+        "warning_summary": list(payload.warnings),
+        "loss_summary": list(payload.known_losses),
+        "node_id": payload.node_id,
+        "specialist_id": payload.specialist_id,
+    }
+    if payload.deep_dive_skeleton is not None:
+        receipt["deep_dive_summary"] = {
+            "status": payload.deep_dive_skeleton.status,
+            "authority_digest": payload.deep_dive_skeleton.authority_digest,
+            "candidate_payload_digest": payload.deep_dive_skeleton.candidate_payload_digest,
+            "execution": payload.deep_dive_writer_receipt.model_dump(mode="json"),
+        }
+    return receipt
 
 
 def write_workbook_brief(run_dir: Path, artifact: WorkbookBriefArtifactV1) -> Path:
@@ -202,6 +362,8 @@ def write_workbook_brief(run_dir: Path, artifact: WorkbookBriefArtifactV1) -> Pa
 
 def read_workbook_brief(run_dir: Path) -> WorkbookBriefArtifactV1:
     path = Path(run_dir) / WORKBOOK_BRIEF_FILENAME
+    if path.is_symlink():
+        raise ValueError(f"invalid workbook brief coordinate/digest at {path}: symlink")
     try:
         return WorkbookBriefArtifactV1.model_validate_json(
             path.read_text(encoding="utf-8"), strict=True
@@ -226,6 +388,8 @@ def write_runtime_context(context: WorkbookBriefRuntimeContext) -> Path:
 
 def read_runtime_context(run_dir: Path) -> WorkbookBriefRuntimeContext:
     path = Path(run_dir) / WORKBOOK_RUNTIME_CONTEXT_FILENAME
+    if path.is_symlink():
+        raise ValueError(f"invalid workbook runtime context at {path}: symlink")
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -291,14 +455,18 @@ def _exclusive_atomic_text(path: Path, text: str) -> None:
 __all__ = [
     "WORKBOOK_BRIEF_FILENAME",
     "WORKBOOK_RUNTIME_CONTEXT_FILENAME",
+    "DEEP_DIVE_JOURNAL_FILENAME",
     "WriterExecutionEvidence",
     "WriterExecutionReceipt",
+    "DeepDiveExecutionReceiptV1",
+    "deep_dive_idempotency_key",
     "SceneAuthoringReceipt",
     "PromiseAuthoringReceipt",
     "WorkbookBriefRuntimeContext",
     "WorkbookBriefPayloadV1",
     "WorkbookBriefArtifactV1",
     "canonical_payload_digest",
+    "workbook_brief_contribution_receipt",
     "read_workbook_brief",
     "write_workbook_brief",
     "write_runtime_context",

@@ -56,7 +56,20 @@ class PromiseWriter:
         )
 
 
+def _write_deep_dive_authority(run_dir: Path) -> None:
+    exports = run_dir / "exports"
+    exports.mkdir()
+    (exports / "segment-manifest-storyboard-b.yaml").write_text(
+        "segments:\n"
+        "  - segment_id: seg-01\n"
+        "    slide_id: slide-01\n"
+        "    narration_text: Healthcare systems expose workflow friction.\n",
+        encoding="utf-8",
+    )
+
+
 def test_part2_real_factory_is_exact_once_and_digest_bound(tmp_path, monkeypatch) -> None:
+    _write_deep_dive_authority(tmp_path)
     resolution = PromiseObjectiveResolution(
         status="authored",
         objectives=(
@@ -110,7 +123,7 @@ def test_part2_real_factory_is_exact_once_and_digest_bound(tmp_path, monkeypatch
     ]
 
 
-def test_missing_source_and_objectives_are_zero_call_honest_unavailable(
+def test_missing_source_and_objectives_fail_before_current_null_write(
     tmp_path, monkeypatch
 ) -> None:
     monkeypatch.setattr(
@@ -135,16 +148,16 @@ def test_missing_source_and_objectives_are_zero_call_honest_unavailable(
         scene_writer=scene,
         promise_writer=promise,
     )
-    workbook_wiring.run_workbook_band_node(
-        node_id="07W.1",
-        production_envelope=ProductionEnvelope(trial_id=uuid4()),
-        runtime_context=context,
-    )
-    artifact = read_workbook_brief(tmp_path)
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=ProductionEnvelope(trial_id=uuid4()),
+            runtime_context=context,
+        )
+    assert caught.value.tag == "workbook-brief.deep-dive-authority-invalid"
     assert scene.calls == promise.calls == 0
-    assert artifact.payload.pre_work.scene.status == "unavailable"
-    assert artifact.payload.pre_work.promise.status == "unavailable"
-    assert tuple(receipt.calls for receipt in artifact.payload.writer_receipts) == (0, 0)
+    assert not (tmp_path / "workbook-brief.v1.json").exists()
+    assert not (tmp_path / "workbook-deep-dive-call.v1.json").exists()
 
 
 @pytest.mark.parametrize(
@@ -163,6 +176,7 @@ def test_missing_source_and_objectives_are_zero_call_honest_unavailable(
 def test_resume_rejects_any_mutated_contribution_receipt(
     tmp_path, monkeypatch, field, value
 ) -> None:
+    _write_deep_dive_authority(tmp_path)
     resolution = PromiseObjectiveResolution(
         status="authored",
         objectives=(

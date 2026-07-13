@@ -13,6 +13,13 @@ from app.marcus.lesson_plan.prework_artifact import (
     WorkbookBriefRuntimeContext,
     write_runtime_context,
 )
+from app.marcus.lesson_plan.prework_projection import (
+    ObjectiveInput,
+    PromiseProjection,
+    PromiseTransformRequest,
+    PromiseVow,
+)
+from app.marcus.lesson_plan.promise_projection import PromiseObjectiveResolution
 from app.marcus.orchestrator import workbook_wiring
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
 from app.models.specialist_model_config import SpecialistModelConfig
@@ -23,13 +30,64 @@ def _empty_envelope() -> ProductionEnvelope:
     return ProductionEnvelope(trial_id=uuid4())
 
 
-def _legacy_context(tmp_path: Path) -> WorkbookBriefRuntimeContext:
+COURSE_SOURCE_ROOT = Path("course-content/courses/tejal-apc-c1-m1-p2-trends").resolve()
+
+
+def _deep_dive_resolution() -> PromiseObjectiveResolution:
+    return PromiseObjectiveResolution(
+        status="authored",
+        objectives=(ObjectiveInput(objective_id="LO-1", text="Choose a move.", status="ratified"),),
+        authority_variants=("plan_dialogue",),
+        authority_refs=("ratified-los.json#ratified_los/0",),
+    )
+
+
+def _authored_promise(request: PromiseTransformRequest) -> PromiseProjection:
+    objectives = request.objectives
+    return PromiseProjection(
+        status="authored",
+        vows=tuple(
+            PromiseVow(objective_id=item.objective_id, text="I can choose a first move.")
+            for item in objectives
+        ),
+        known_losses=(),
+        marker=None,
+    )
+
+
+def _install_persisted_promise_writer(monkeypatch: pytest.MonkeyPatch) -> None:
+    real_context_for_run = workbook_wiring.runtime_context_for_run
+
+    def context_for_run(
+        run_dir: Path, *, node_id: str | None = None
+    ) -> WorkbookBriefRuntimeContext:
+        context = real_context_for_run(run_dir, node_id=node_id)
+        return context.model_copy(update={"promise_writer": _authored_promise})
+
+    monkeypatch.setattr(workbook_wiring, "runtime_context_for_run", context_for_run)
+
+
+def _write_deep_dive_authority(run_dir: Path) -> None:
+    exports = run_dir / "exports"
+    exports.mkdir(parents=True, exist_ok=True)
+    (exports / "segment-manifest-storyboard-b.yaml").write_text(
+        "segments:\n"
+        "  - segment_id: seg-01\n"
+        "    slide_id: slide-01\n"
+        "    narration_text: Healthcare systems expose workflow friction.\n",
+        encoding="utf-8",
+    )
+
+
+def _offline_context(tmp_path: Path) -> WorkbookBriefRuntimeContext:
+    _write_deep_dive_authority(tmp_path)
     return WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
-        course_source_root=None,
+        course_source_root=COURSE_SOURCE_ROOT,
         encounter_mode="recorded",
-        context_origin="legacy_default",
+        context_origin="new_start",
         writer_execution_mode="offline_stub",
+        promise_writer=_authored_promise,
     )
 
 
@@ -42,7 +100,12 @@ def test_start_walk_reaches_07w1_with_persisted_normalized_context(
     trial_id = UUID("82345678-1234-4234-8234-123456789abc")
     run_dir = tmp_path / str(trial_id)
     run_dir.mkdir(parents=True)
-    source_root = Path("course-content/courses/tejal-apc-c1-m1-p2-trends").resolve()
+    source_root = COURSE_SOURCE_ROOT
+    _write_deep_dive_authority(run_dir)
+    monkeypatch.setattr(
+        workbook_wiring, "resolve_promise_objectives", lambda _: _deep_dive_resolution()
+    )
+    _install_persisted_promise_writer(monkeypatch)
     write_runtime_context(
         WorkbookBriefRuntimeContext(
             run_dir=run_dir,
@@ -111,13 +174,18 @@ def test_start_walk_reaches_07w1_with_persisted_normalized_context(
     assert (run_dir / "workbook-brief.v1.json").is_file()
 
 
-def test_default_band_executes_real_brief_then_truthful_stubs_in_order(tmp_path: Path) -> None:
+def test_default_band_executes_real_brief_then_truthful_stubs_in_order(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        workbook_wiring, "resolve_promise_objectives", lambda _: _deep_dive_resolution()
+    )
     envelope = _empty_envelope()
     for node_id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
         envelope = workbook_wiring.run_workbook_band_node(
             node_id=node_id,
             production_envelope=envelope,
-            runtime_context=_legacy_context(tmp_path) if node_id == "07W.1" else None,
+            runtime_context=_offline_context(tmp_path) if node_id == "07W.1" else None,
         )
 
     assert [(item.node_id, item.specialist_id) for item in envelope.contributions] == [
@@ -132,8 +200,8 @@ def test_default_band_executes_real_brief_then_truthful_stubs_in_order(tmp_path:
     )
     assert envelope.contributions[0].output["schema_version"] == "workbook-brief.v1"
     assert envelope.contributions[0].output["status_summary"] == {
-        "scene": "unavailable",
-        "promise": "unavailable",
+        "scene": "degraded",
+        "promise": "authored",
     }
     assert envelope.contributions[1].output == {
         "research_entries": [],
@@ -386,8 +454,13 @@ def test_real_start_then_continuation_reaches_band_in_order(
     )
     assert started.paused_gate == "G1"
     assert calls == []
-    source_root = Path("course-content/courses/tejal-apc-c1-m1-p2-trends").resolve()
+    source_root = COURSE_SOURCE_ROOT
     run_dir = tmp_path / str(trial_id)
+    _write_deep_dive_authority(run_dir)
+    monkeypatch.setattr(
+        workbook_wiring, "resolve_promise_objectives", lambda _: _deep_dive_resolution()
+    )
+    _install_persisted_promise_writer(monkeypatch)
     write_runtime_context(
         WorkbookBriefRuntimeContext(
             run_dir=run_dir,

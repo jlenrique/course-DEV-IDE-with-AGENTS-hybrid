@@ -5,13 +5,28 @@ from __future__ import annotations
 import hashlib
 import json
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
-from typing import Any, Generic, TypeVar
+from typing import Any, Final, Generic, TypeVar
 
 import yaml
 from pydantic import BaseModel
 
+from app.marcus.lesson_plan.deep_dive_projection import (
+    DeepDiveSkeletonRequest,
+    DeepDiveSkeletonWriterResult,
+)
+from app.marcus.lesson_plan.deep_dive_provider_contract import (
+    DEEP_DIVE_PROVIDER_CONTRACT_MODE,
+    DEEP_DIVE_PROVIDER_NORMALIZER_VERSION,
+    normalize_deep_dive_provider_payload,
+)
+from app.marcus.lesson_plan.deep_dive_provider_contract import (
+    canonical_json_mapping as _canonical_json_mapping,
+)
+from app.marcus.lesson_plan.deep_dive_provider_contract import (
+    provider_payload_digest as _payload_digest,
+)
 from app.marcus.lesson_plan.prework_projection import (
     PromiseProjection,
     PromiseTransformRequest,
@@ -24,7 +39,13 @@ from app.models.specialist_model_config import SpecialistModelConfig
 from app.runtime.cascade_config import load_pricing
 
 CONFIG_PATH = Path(__file__).with_name("workbook_writer_model_config.yaml")
+WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS: Final[int] = 32000
+"""Deep-Dive-only ceiling: GPT-5 spends completion budget on hidden reasoning first."""
 T = TypeVar("T", bound=BaseModel)
+
+
+class DeepDiveProviderOutputError(ValueError):
+    """Raw Deep-Dive provider mapping could not enter the strict candidate contract."""
 
 
 def _load_config() -> tuple[SpecialistModelConfig, str]:
@@ -44,8 +65,26 @@ class _StructuredWriter(Generic[T]):
         *,
         chat_factory: Callable[..., ChatModelHandle] = make_chat_model,
         max_completion_tokens: int = 4096,
+        effective_adapter: str | None = None,
+        effective_identity_extra: Mapping[str, object] | None = None,
     ) -> None:
-        config, self.model_config_digest = _load_config()
+        config, base_model_config_digest = _load_config()
+        self.model_config_digest = base_model_config_digest
+        if effective_adapter is not None:
+            identity = {
+                "adapter": effective_adapter,
+                "base_workbook_writer_config_digest": base_model_config_digest,
+                "max_completion_tokens": max_completion_tokens,
+            }
+            identity.update(effective_identity_extra or {})
+            effective = json.dumps(
+                identity,
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            ).encode("utf-8")
+            self.model_config_digest = "sha256:" + hashlib.sha256(effective).hexdigest()
         self.model_config = config
         self._handle = chat_factory(
             config.specialist_id,
@@ -88,19 +127,35 @@ class _StructuredWriter(Generic[T]):
                 raise ValueError(f"structured writer parse failed: {response['parsing_error']}")
             parsed = response.get("parsed")
             raw = response.get("raw")
+        self._record_metadata(raw)
+        if isinstance(parsed, self.output_type):
+            return parsed
+        return self.output_type.model_validate(parsed, strict=True)
+
+    def _record_metadata(self, raw: object) -> None:
         metadata = getattr(raw, "response_metadata", None)
         if isinstance(metadata, dict):
             self.last_request_id = metadata.get("request_id")
-            usage = metadata.get("token_usage") or metadata.get("usage") or {}
+            usage = metadata.get("token_usage")
+            if not isinstance(usage, dict):
+                usage = metadata.get("usage")
+            if not isinstance(usage, dict):
+                usage = {}
             if isinstance(usage, dict):
-                self.last_input_tokens = usage.get("prompt_tokens") or usage.get("input_tokens")
-                self.last_output_tokens = usage.get("completion_tokens") or usage.get(
-                    "output_tokens"
-                )
-                supplied_cost = usage.get("cost_usd") or usage.get("total_cost")
+                self.last_input_tokens = usage.get("prompt_tokens")
+                if self.last_input_tokens is None:
+                    self.last_input_tokens = usage.get("input_tokens")
+                self.last_output_tokens = usage.get("completion_tokens")
+                if self.last_output_tokens is None:
+                    self.last_output_tokens = usage.get("output_tokens")
+                supplied_cost = usage.get("cost_usd")
+                if supplied_cost is None:
+                    supplied_cost = usage.get("total_cost")
                 if supplied_cost is not None:
                     self.last_cost_usd = float(supplied_cost)
-            supplied_cost = metadata.get("cost_usd") or metadata.get("total_cost")
+            supplied_cost = metadata.get("cost_usd")
+            if supplied_cost is None:
+                supplied_cost = metadata.get("total_cost")
             if supplied_cost is not None:
                 self.last_cost_usd = float(supplied_cost)
         if self.last_cost_usd is None:
@@ -119,9 +174,6 @@ class _StructuredWriter(Generic[T]):
                 self.last_cost_unavailable_reason = (
                     "provider_response_supplied_no_token_or_cost_evidence"
                 )
-        if isinstance(parsed, self.output_type):
-            return parsed
-        return self.output_type.model_validate(parsed, strict=True)
 
     def _system_prompt(self, request: BaseModel) -> str:
         return (
@@ -192,4 +244,130 @@ class LivePromiseTransformer(_StructuredWriter[PromiseProjection]):
         )
 
 
-__all__ = ["LiveSceneComposer", "LivePromiseTransformer"]
+class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
+    output_type = DeepDiveSkeletonWriterResult
+    purpose = "DeepDiveSkeletonWriterResult"
+
+    def __init__(
+        self,
+        *,
+        chat_factory: Callable[..., ChatModelHandle] = make_chat_model,
+        max_completion_tokens: int = WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS,
+    ) -> None:
+        self.provider_schema = DeepDiveSkeletonWriterResult.model_json_schema()
+        self.provider_schema_digest = _payload_digest(self.provider_schema)
+        self.last_raw_provider_payload: dict[str, Any] | None = None
+        self.last_raw_provider_payload_digest: str | None = None
+        self.last_provider_normalizations: tuple[str, ...] = ()
+        self.last_normalized_provider_payload_digest: str | None = None
+        self.last_provider_normalization_error: str | None = None
+        super().__init__(
+            chat_factory=chat_factory,
+            max_completion_tokens=max_completion_tokens,
+            effective_adapter="LiveDeepDiveWriter",
+            effective_identity_extra={
+                "provider_contract_mode": DEEP_DIVE_PROVIDER_CONTRACT_MODE,
+                "provider_schema_digest": self.provider_schema_digest,
+                "provider_normalizer_version": DEEP_DIVE_PROVIDER_NORMALIZER_VERSION,
+            },
+        )
+
+    def __call__(self, request: DeepDiveSkeletonRequest) -> DeepDiveSkeletonWriterResult:
+        self.calls_made += 1
+        self.last_raw_provider_payload = None
+        self.last_raw_provider_payload_digest = None
+        self.last_provider_normalizations = ()
+        self.last_normalized_provider_payload_digest = None
+        self.last_provider_normalization_error = None
+        started = time.perf_counter()
+        structured = self._handle.chat.with_structured_output(
+            self.provider_schema, include_raw=True
+        )
+        response: Any = structured.invoke(
+            [
+                ("system", self._system_prompt(request)),
+                (
+                    "human",
+                    json.dumps(
+                        request.model_dump(mode="json"),
+                        sort_keys=True,
+                        ensure_ascii=False,
+                    ),
+                ),
+            ]
+        )
+        self.last_latency_ms = (time.perf_counter() - started) * 1000
+        parsed = response
+        raw_response = response
+        if isinstance(response, dict) and "parsed" in response:
+            if response.get("parsing_error") is not None:
+                raise DeepDiveProviderOutputError(
+                    f"structured writer parse failed: {response['parsing_error']}"
+                )
+            parsed = response.get("parsed")
+            raw_response = response.get("raw")
+        self._record_metadata(raw_response)
+        if not isinstance(parsed, dict):
+            raise DeepDiveProviderOutputError("Deep Dive provider payload must be a mapping")
+        try:
+            raw_payload = _canonical_json_mapping(parsed)
+            self.last_raw_provider_payload = raw_payload
+            self.last_raw_provider_payload_digest = _payload_digest(raw_payload)
+            try:
+                normalized, records = normalize_deep_dive_provider_payload(parsed)
+            except (TypeError, ValueError) as exc:
+                self.last_provider_normalization_error = f"{type(exc).__name__}: {exc}"
+                raise
+            self.last_provider_normalizations = records
+            self.last_normalized_provider_payload_digest = _payload_digest(normalized)
+            return DeepDiveSkeletonWriterResult.model_validate_json(
+                json.dumps(
+                    normalized,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                ),
+                strict=True,
+            )
+        except (TypeError, ValueError) as exc:
+            raise DeepDiveProviderOutputError(str(exc)) from exc
+
+    def _system_prompt(self, request: BaseModel) -> str:
+        assert isinstance(request, DeepDiveSkeletonRequest)
+        has_delta = any(
+            claim.role == "source_supported_delta" for claim in request.source_claims
+        )
+        coverage_instruction = (
+            "Cover every VO claim and at least one source_supported_delta claim. "
+            if has_delta
+            else "Cover every VO claim; no source_supported_delta authority is declared. "
+        )
+        return (
+            "Return exactly one strict DeepDiveSkeletonWriterResult. Author one section for "
+            "each ability in the supplied order. Every claim must cite exactly one declared "
+            "source claim and its exact source span. "
+            + coverage_instruction
+            + "Prose must be exactly the space-joined claim texts. "
+            "Bold only an exact term present in that claim's single source text and list bold "
+            "metadata once in prose order. Preserve all numerals and negations exactly. Never "
+            "invent references, facts, headings, slide deixis, or extra abilities. Authority: "
+            "The safest compliant construction is one skeleton claim per declared source "
+            "claim, in authority order, copying its text verbatim except for wrapping one "
+            "source-present educational term in **double asterisks**; set each skeleton "
+            "claim's source_claim_refs to that claim ID and source_span_refs to its declared "
+            "span IDs. "
+            + json.dumps(request.model_dump(mode="json"), sort_keys=True, ensure_ascii=False)
+        )
+
+
+__all__ = [
+    "WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS",
+    "DEEP_DIVE_PROVIDER_CONTRACT_MODE",
+    "DEEP_DIVE_PROVIDER_NORMALIZER_VERSION",
+    "DeepDiveProviderOutputError",
+    "LiveDeepDiveWriter",
+    "LivePromiseTransformer",
+    "LiveSceneComposer",
+    "normalize_deep_dive_provider_payload",
+]

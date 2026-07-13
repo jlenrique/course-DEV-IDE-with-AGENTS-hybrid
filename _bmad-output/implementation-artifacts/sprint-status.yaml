@@ -1,5 +1,5 @@
 # generated: 2026-03-25
-# last_updated: 2026-07-13 Story 37.4 exact-current closure (Blind/Edge/Acceptance PASS; 449 focused, 936 dependency, 24 topology/manifest; Cora warn/permit).
+# last_updated: 2026-07-13 Story 38.3a in progress; the final party-authorized live attempt passed all 12 checks and exact-current review remediation is underway.
 # 2026-04-26 Story 5a.5 close (M5 fixed-roster 6-agent verdict recorded as SHIP-CONDITIONAL, operator ratified 5a.3 cascade/pricing, upstream-state frozen-reference marker written, 2026-05-03 conditional-window follow-on filed, slab-5a-retrospective authored, and migration-master-status mapped to shipped while the named window remains open.)
 # 2026-04-27 update: Slab 6.0 substrate-ratification waypoint recorded Ã¢â‚¬â€  operator dual-gate gate-2 cleared (`pytest tests/composition/ -q --tb=short` -> 17 passed in 1.21s); story remains `review` pending bmad-code-review triage per CLAUDE.md Ã‚Â§3; dispatch at `_bmad-output/implementation-artifacts/codex-handoff-slab-6-0-code-review.md`.
 # project: course-DEV-IDE-with-AGENTS
@@ -1802,7 +1802,7 @@ development_status:
   38-0-two-packet-intake-contract: done  # 2026-07-12 mandatory 3-layer review closed; 3/3 patches resolved; focused 52/52 + Ruff + diff check green. Full-suite HUD/notifier subprocess hang documented in story.
   38-1-ask-a-enrichment-wiring: backlog  # orchestrator; node 07W.2 (Tracy+Texas scoped to 07W.1 terms)
   38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST)
-  38-3a-research-packet-consume-side: backlog  # lesson_plan; readers + cross-layer string-contract test; fixture-tested
+  38-3a-research-packet-consume-side: done  # 2026-07-13 exact-current Blind/Edge/Acceptance ZERO FINDINGS; 246 passed, 7 skipped; Ruff/diff/18 import contracts green; Cora block-mode lockstep + Audra closure PASS; bounded live PASS and failed-attempt evidence pinned.
   38-3b-graph-topology-band-orchestrator: done  # 2026-07-13 review + party amendment + Cora block-mode/Audra closure PASS; 61 close tests, lockstep 0, Ruff/diff green; motion exact ambient signature carried with no-new-regression proof.
   epic-38-retrospective: required  # governance/substrate change (graph topology + lockstep surface)
   epic-39-glossary-trends-render: backlog
