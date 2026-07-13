@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-13  # Presentation-support workbook Story 36.4 moved to offline review.
+last_updated: 2026-07-13  # Presentation-support workbook Story 37.2a moved to review.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1791,7 +1791,7 @@ development_status:
   epic-36-retrospective: optional
   epic-37-review-deep-dive-producer: in-progress  # Review + deep-dive producer (review_projection.py)
   37-1-review-frame-bookend: done  # 2026-07-13 3-layer review + singleton-loss remediation + exact-current closure PASS; 229 passed, 1 skipped; Cora WARN permit.
-  37-2a-deep-dive-skeleton: backlog  # A1 split; superset-of-VO operational (A3); NO Ask-A dep
+  37-2a-deep-dive-skeleton: done  # 2026-07-13 3-layer review + 3 remediation rounds; exact-current closure PASS; 219 passed; Cora WARN permit.
   37-2b-deep-dive-enrichment-cited: backlog  # A1 split; citation-COVERAGE gate (A2); dep 38-0 + 38-1
   37-3-check-on-learning-retrieval: backlog
   37-4-closing-reflection-shifted-question: backlog

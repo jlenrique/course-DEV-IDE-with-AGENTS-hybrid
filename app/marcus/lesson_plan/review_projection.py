@@ -10,6 +10,20 @@ from typing import Annotated, Literal, Protocol
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, model_validator
 
+from app.marcus.lesson_plan.deep_dive_projection import (
+    DeepDiveSkeletonRequest,
+    DeepDiveSkeletonResult,
+    DeepDiveSkeletonWriterResult,
+    DeepDiveWriterCandidate,
+    compose_deep_dive_skeleton,
+    deep_dive_authority_digest,
+)
+from app.marcus.lesson_plan.deep_dive_projection import (
+    DeepDiveWriter as DeepDiveSkeletonWriter,
+)
+from app.marcus.lesson_plan.deep_dive_projection import (
+    offline_deep_dive_writer as offline_deep_dive_skeleton_writer,
+)
 from app.marcus.lesson_plan.prework_projection import PreWorkBrief
 
 ReviewStatus = Literal["ready", "pending", "unavailable"]
@@ -276,13 +290,21 @@ __all__ = [
     "BookendBeat",
     "CheckWriter",
     "DeepDiveWriter",
+    "DeepDiveSkeletonRequest",
+    "DeepDiveSkeletonResult",
+    "DeepDiveSkeletonWriter",
+    "DeepDiveSkeletonWriterResult",
+    "DeepDiveWriterCandidate",
     "ReflectionWriter",
     "ReviewBrief",
     "ReviewWriterRequest",
     "ReviewWriterResult",
     "build_review_brief",
+    "compose_deep_dive_skeleton",
+    "deep_dive_authority_digest",
     "offline_check_writer",
     "offline_deep_dive_writer",
+    "offline_deep_dive_skeleton_writer",
     "offline_reflection_writer",
     "render_review_markdown",
 ]

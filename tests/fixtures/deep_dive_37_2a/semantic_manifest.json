@@ -1,0 +1,6 @@
+{
+  "gate_version": "deep-dive-skeleton-gate.v1",
+  "automated_fail": ["aggregate_gate_authenticity", "authority_receipt_binding", "candidate_payload_binding", "declared_vo_coverage", "numeric_fidelity", "source_trace", "negation_proxy", "ability_order", "bold_term_parity"],
+  "authored_requires": ["source_supported_delta"],
+  "operator_warn": ["full_semantic_equivalence", "non_contradiction", "depth_quality"]
+}
