@@ -1,0 +1,42 @@
+{
+  "scene": {
+    "status": "authored",
+    "text": "A source-grounded opening scene.",
+    "source_refs": [
+      "lesson:segment-1"
+    ],
+    "known_losses": [],
+    "marker": null
+  },
+  "friction_scale": {
+    "duration_copy": "Take about 20 seconds.",
+    "rating_prompt": "Rate this friction from 0 to 10.",
+    "low_anchor": "0 — present, but not getting in the way.",
+    "high_anchor": "10 — repeatedly blocks the work.",
+    "locate_prompt": "Locate where it shows up.",
+    "honest_line_prompt": "Write one honest line.",
+    "review_hook": "Keep this mark and line for review after the presentation."
+  },
+  "promise": {
+    "status": "authored",
+    "vows": [
+      {
+        "objective_id": "LO-1",
+        "text": "I can distinguish signal from noise."
+      }
+    ],
+    "known_losses": [],
+    "marker": null
+  },
+  "provenance": {
+    "source_refs": [
+      "lesson:segment-1"
+    ],
+    "known_losses": []
+  },
+  "beat_order": [
+    "scene",
+    "friction_scale",
+    "promise"
+  ]
+}

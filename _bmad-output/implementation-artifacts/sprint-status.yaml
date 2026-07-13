@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-12  # Presentation-support workbook Story 38-0 moved to review.
+last_updated: 2026-07-12  # Presentation-support workbook Story 36.1 moved to review.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1784,7 +1784,7 @@ development_status:
   # BUILD ORDER IS A DAG, NOT EPIC NUMBERING: 38-0 -> 38-3b(stubs) -> {36-*, 37-1, 37-2a, 37-3, 37-4} -> 38-3a -> 38-1 -> 37-2b -> 39-1 -> 38-2 -> 39-2 -> 40-1.
   # Governance: Epic 38 is pipeline-lockstep (Tier-2, v4.2-lineage) + regime-doc at T1; Epic 38 already had its graph-shape party round. Per-story: fresh dev + bmad-code-review before done. All backlog (no story files created yet).
   epic-36-prework-producer: backlog  # Pre-work producer (prework_projection.py)
-  36-1-prework-contract-frame-friction-scale: backlog
+  36-1-prework-contract-frame-friction-scale: done  # 2026-07-13 mandatory 3-layer review + Cora/Audra closure PASS; 6/6 patches resolved; combined 91/91 + Ruff/diff green.
   36-2-scene-extraction-lesson-type-adequacy: backlog  # SHOULD: split lesson-type detector out (amendment)
   36-3-promise-transform-ratified-los: backlog
   36-4-wire-prework-part2-golden: backlog
