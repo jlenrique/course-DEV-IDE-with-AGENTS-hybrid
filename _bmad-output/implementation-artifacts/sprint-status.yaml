@@ -1803,7 +1803,7 @@ development_status:
   38-1-ask-a-enrichment-wiring: backlog  # orchestrator; node 07W.2 (Tracy+Texas scoped to 07W.1 terms)
   38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST)
   38-3a-research-packet-consume-side: backlog  # lesson_plan; readers + cross-layer string-contract test; fixture-tested
-  38-3b-graph-topology-band-orchestrator: backlog  # orchestrator; 4-node band + 07W re-point + two-walk parity + LOCKSTEP (Tier-2, regime-doc T1)
+  38-3b-graph-topology-band-orchestrator: done  # 2026-07-13 review + party amendment + Cora block-mode/Audra closure PASS; 61 close tests, lockstep 0, Ruff/diff green; motion exact ambient signature carried with no-new-regression proof.
   epic-38-retrospective: required  # governance/substrate change (graph topology + lockstep surface)
   epic-39-glossary-trends-render: backlog
   39-1-glossary-downstream-render: backlog  # downstream of 37-2a bolded terms; inline-marker + separate section (39.1 T1: MD->DOCX anchor vs plain-bold)

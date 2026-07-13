@@ -1,0 +1,4 @@
+specialist_id: workbook_writer
+default_model: gpt-5
+per_node_overrides: {}
+temperature_default: 0.2

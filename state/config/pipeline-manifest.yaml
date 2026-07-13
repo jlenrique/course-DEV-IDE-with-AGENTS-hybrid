@@ -104,6 +104,10 @@ block_mode_trigger_paths:
   - tests/notify/**
   - app/models/runtime/production_trial_envelope.py
   - app/marcus/orchestrator/production_runner.py
+  # Epic 38 Story 38.3b: terminal workbook-band topology and its neutral packet
+  # coordinates are load-bearing v4.2-lineage orchestration contracts.
+  - app/marcus/orchestrator/workbook_wiring.py
+  - app/marcus/lesson_plan/research_packet.py
 
 nodes:
   - id: "directive-composer"
@@ -1015,6 +1019,62 @@ nodes:
     pack_version: "v4.2"
     rationale: "Section 15 maintains manifest-driven pipeline contract."
 
+  - id: "07W.1"
+    label: "Workbook Brief Orchestration Seam"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: "app/marcus/orchestrator/workbook_writer_model_config.yaml"
+    dependencies: {}
+    gate: false
+    sub_phase_of: "07W"
+    insertion_after: "15"
+    hud_tracked: false
+    pack_section_anchor: null
+    pack_version: "v4.2"
+    rationale: "Future pre-work/deep-dive writer seam; deterministic stub in 38.3b."
+
+  - id: "07W.2"
+    label: "Ask-A Enrichment Orchestration Seam"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    dependencies: {}
+    gate: false
+    sub_phase_of: "07W"
+    insertion_after: "07W.1"
+    hud_tracked: false
+    pack_section_anchor: null
+    pack_version: "v4.2"
+    rationale: "Future Ask-A seam; honest-empty deterministic stub in 38.3b."
+
+  - id: "07W.3"
+    label: "Workbook Review Orchestration Seam"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: "app/marcus/orchestrator/workbook_writer_model_config.yaml"
+    dependencies: {}
+    gate: false
+    sub_phase_of: "07W"
+    insertion_after: "07W.2"
+    hud_tracked: false
+    pack_section_anchor: null
+    pack_version: "v4.2"
+    rationale: "Future enrichment/check/reflection writer seam; deterministic stub in 38.3b."
+
+  - id: "07W.4"
+    label: "Ask-B Hot Topics Orchestration Seam"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    dependencies: {}
+    gate: false
+    sub_phase_of: "07W"
+    insertion_after: "07W.3"
+    hud_tracked: false
+    pack_section_anchor: null
+    pack_version: "v4.2"
+    rationale: "Future Ask-B seam; honest-empty deterministic stub in 38.3b."
+
   - id: "07W"
     label: "Companion Workbook Producer"
     specialist_id: "workbook_producer"
@@ -1031,7 +1091,7 @@ nodes:
       upstream_output: "compositor"
     gate: false
     sub_phase_of: "07"
-    insertion_after: "15"             # terminal sidecar, after operator handoff
+    insertion_after: "07W.4"          # deterministic renderer after orchestration band
     hud_tracked: true
     pack_section_anchor: "7W)"
     pack_version: "v4.2"
@@ -1093,5 +1153,9 @@ edges:
   - {from: "13", to: "14"}
   - {from: "14", to: "14.5"}
   - {from: "14.5", to: "15"}
-  - {from: "15", to: "07W"}
+  - {from: "15", to: "07W.1"}
+  - {from: "07W.1", to: "07W.2"}
+  - {from: "07W.2", to: "07W.3"}
+  - {from: "07W.3", to: "07W.4"}
+  - {from: "07W.4", to: "07W"}
   - {from: "07W", to: __end__}

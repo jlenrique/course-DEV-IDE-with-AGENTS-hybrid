@@ -1641,7 +1641,7 @@ Primary contract references:
 [M→self]
 
 
-Marcus, run the deterministic Companion-Workbook producer as the terminal sidecar (after the operator handoff at 15) when the composed selection includes the `workbook` component.
+Marcus, traverse the HUD-hidden, gate-free workbook orchestration band (`07W.1` → `07W.2` → `07W.3` → `07W.4`) after operator handoff at 15, then run the deterministic Companion-Workbook producer as the terminal sidecar when the composed selection includes the `workbook` component. The four band nodes are honest deterministic placeholders in this lineage; they make no live or semantic-writer claim.
 
 Inputs (read from the CURRENTLY-RUNNING run, not out-of-band):
 - the run's storyboard-B segment manifest (irene Pass-2 / node 08) — the transcript-of-record segments, each mapped to its Gary deck export for the figure embed when present
@@ -1658,7 +1658,7 @@ Governance:
 - the emitted artifacts are an internal producer→sidecar deliverable, not a new learner-facing pack-lineage step, so this node keeps `pack_version: v4.2`; topology changes regenerate only the `v4.2-gen` determinism witness
 
 Downstream:
-- NONE — 07W is a terminal leaf (edges 15 → 07W → __end__). It feeds nothing downstream; deselecting the `workbook` component prunes 07W as a unit and bridges 15 → __end__
+- NONE — 07W is a terminal leaf (edges 15 → 07W.1 → 07W.2 → 07W.3 → 07W.4 → 07W → __end__). It feeds nothing downstream; deselecting the `workbook` component prunes the entire five-node band as a unit and bridges 15 → __end__
 
 Honesty boundary (do NOT over-claim):
 - G1 numeric fidelity is symbol-only (`$`/`%`/`x` tokens); word-form numerals are NOT gated — named gap `braid-workbook-wordform-numeral-gap`

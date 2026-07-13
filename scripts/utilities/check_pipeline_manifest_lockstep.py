@@ -198,7 +198,27 @@ def run_check(
         findings.append({"check": 4, "message": f"Gate mismatch for IDs: {gate_mismatches}"})
 
     # Check 5: insertion consistency
-    manifest_id_set = set(manifest_ids)
+    # Insertion adjacency is graph topology, so pack-excluded orchestration
+    # nodes are valid endpoints even though they are absent from HUD/pack rows.
+    try:
+        manifest_id_set = {
+            node.id.upper() for node in load_graph_manifest(manifest_path).nodes
+        }
+    except Exception as exc:
+        raw_manifest = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+        is_legacy_steps_manifest = (
+            isinstance(raw_manifest, dict)
+            and "steps" in raw_manifest
+            and "nodes" not in raw_manifest
+        )
+        if not is_legacy_steps_manifest:
+            return 2, _trace_payload(
+                checks,
+                [{"check": "structural", "message": str(exc)}],
+                "STRUCTURAL",
+                orchestration_only_nodes,
+            )
+        manifest_id_set = set(manifest_ids)
     insertion_ok = True
     for step in manifest_steps:
         if step.insertion_after and step.insertion_after.upper() not in manifest_id_set:
@@ -253,13 +273,20 @@ def run_check(
     event_subset_ok = True
     if schema_ref and schema_obj is not None:
         schema_types = set(schema_obj.get("event_type_enum", []))
+        explicit_schema_refs = {
+            step.learning_events.schema_ref
+            for step in manifest_steps
+            if step.learning_events.schema_ref is not None
+        }
         declared_types = {
             event_type
             for step in manifest_steps
             if step.learning_events.schema_ref == schema_ref
             for event_type in step.learning_events.event_types
         }
-        if schema_types and not declared_types.issubset(schema_types):
+        if (explicit_schema_refs - {schema_ref}) or (
+            schema_types and not declared_types.issubset(schema_types)
+        ):
             event_subset_ok = False
     checks.append({"check": 8, "name": "event-types-subset", "pass": event_subset_ok})
     if not event_subset_ok:

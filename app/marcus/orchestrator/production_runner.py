@@ -47,6 +47,7 @@ from app.marcus.orchestrator import (
     specialist_summary_writer,
     storyboard_publisher,
     udac_wiring,
+    workbook_wiring,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.operator_surface_assembler import (
@@ -3241,6 +3242,45 @@ def run_production_trial(
                     bundle_dir=bundle_dir,
                 )
 
+            if node.id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
+                # 38.3b: unconditional terminal workbook-band seam. These
+                # deterministic hooks do not depend on credentials, live flags,
+                # or offline-cost mode; later injected factories own that choice.
+                try:
+                    production_envelope = workbook_wiring.run_workbook_band_node(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=workbook_wiring.WORKBOOK_BAND_SPECIALIST_IDS[
+                            node.id
+                        ],
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
             if (
                 node_kind == "orchestration"
                 and node.id in package_builders.BUILDER_NODE_IDS
@@ -4196,6 +4236,44 @@ def _continue_production_walk(
                     directive_path=directive_path,
                     bundle_dir=bundle_dir,
                 )
+
+            if node.id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
+                # 38.3b continuation/recover mirror: same unconditional helper,
+                # exact-coordinate idempotency covers persisted/partial resumes.
+                try:
+                    production_envelope = workbook_wiring.run_workbook_band_node(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=workbook_wiring.WORKBOOK_BAND_SPECIALIST_IDS[
+                            node.id
+                        ],
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
 
             if (
                 node_kind == "orchestration"

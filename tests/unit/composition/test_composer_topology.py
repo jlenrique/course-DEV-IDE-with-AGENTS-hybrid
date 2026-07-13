@@ -101,7 +101,7 @@ def test_workbook_adds_the_real_07w_node_distinct_from_deck_plus_motion() -> Non
         )
     )
     assert dmw != dm
-    assert dmw - dm == {composition.WORKBOOK_NODE_ID}
+    assert dmw - dm == set(composition.WORKBOOK_BAND_NODE_IDS)
     # 07W carries the real producer specialist (dispatch routes to it).
     node_07w = next(n for n in compose_manifest(
         manifest, ComponentSelection(deck=True, motion=True, workbook=True)

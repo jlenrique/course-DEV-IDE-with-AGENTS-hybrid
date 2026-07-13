@@ -320,7 +320,9 @@ def test_workbook_deselected_prunes_07w_and_keeps_baseline_byte_identical() -> N
     assert "07W" not in {n.id for n in deck_motion.nodes}
 
     # deck+motion == baseline (on-disk manifest minus 07W) byte-identically.
-    expected_dm_ids = {n.id for n in manifest.nodes} - {"07W"}
+    expected_dm_ids = {n.id for n in manifest.nodes} - {
+        "07W.1", "07W.2", "07W.3", "07W.4", "07W"
+    }
     assert {n.id for n in deck_motion.nodes} == expected_dm_ids
     # The 15 -> 07W -> __end__ chain collapses to 15 -> __end__ when 07W is pruned.
     dm_edges = {(e.from_node, e.to) for e in deck_motion.edges}
@@ -351,7 +353,11 @@ def test_workbook_selected_includes_07w_after_handoff() -> None:
         manifest, ComponentSelection(deck=True, motion=True, workbook=True)
     )
     edges = {(e.from_node, e.to) for e in composed.edges}
-    assert ("15", "07W") in edges
+    assert ("15", "07W.1") in edges
+    assert ("07W.1", "07W.2") in edges
+    assert ("07W.2", "07W.3") in edges
+    assert ("07W.3", "07W.4") in edges
+    assert ("07W.4", "07W") in edges
     assert ("07W", "__end__") in edges
 
 
@@ -430,7 +436,8 @@ def test_07w_is_a_terminal_leaf() -> None:
     assert out_targets == ["__end__"]
     node_ids = [n["id"] for n in raw["nodes"]]
     assert node_ids[-1] == "07W"  # physically last; renders last in the witness
-    assert ("15", "07W") in edges
+    assert ("15", "07W.1") in edges
+    assert ("07W.4", "07W") in edges
     assert ("15", "__end__") not in edges  # the old direct edge is gone
 
 

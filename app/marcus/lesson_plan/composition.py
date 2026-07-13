@@ -71,10 +71,9 @@ composition is treated as REQUIRED and FAILS CLOSED (``CompositionError`` before
 compile). Widening this set is a governance act, not a runtime convenience."""
 
 WORKBOOK_NODE_ID = "07W"
-"""The REAL manifest node the workbook fragment owns (07W in-graph producer
-brick, composition-catalog B3). Replaces the prior synthetic stub: 07W is now a
-first-class manifest node (specialist_id=workbook_producer) so dispatch routes to
-it; the fragment owns it so deck-only / deck+motion compositions prune it."""
+WORKBOOK_BAND_NODE_IDS = frozenset({"07W.1", "07W.2", "07W.3", "07W.4", "07W"})
+"""The full workbook-owned band: four orchestration seams plus the real 07W
+producer. Deck-only / deck+motion compositions prune all five as one unit."""
 
 _SENTINELS = frozenset({"__start__", "__end__"})
 
@@ -127,12 +126,11 @@ COMPONENT_FRAGMENTS: dict[str, ComponentFragment] = {
     "workbook": ComponentFragment(
         component="workbook",
         modality_refs=("workbook",),
-        manifest_node_ids=frozenset({WORKBOOK_NODE_ID}),
+        manifest_node_ids=WORKBOOK_BAND_NODE_IDS,
         depends_on=("deck",),
-        version="workbook-v1",
-        # 07W is now a REAL manifest node owned by this fragment (no synthetic
-        # stub). insertion/edges live in the manifest (15 -> 07W -> __end__);
-        # deselecting workbook prunes 07W as a unit and bridges 15 -> __end__.
+        version="workbook-v2",
+        # All five nodes are real manifest nodes owned by this fragment.
+        # Deselecting workbook prunes the band and bridges 15 -> __end__.
     ),
 }
 
