@@ -1,0 +1,13 @@
+{
+  "gate_version": "check-on-learning-gate.v1",
+  "fixture_scope": "Part-2 contract fixture only; integrated Part-2/Part-4/skill-build Review rendering belongs to Story 37.5.",
+  "declared_abilities": ["ability-a", "ability-b"],
+  "declared_quantity_unit_tokens": ["mg", "%", "kg", "°C", "mol/L", "mol⁻¹", "m·s⁻²", "kg/m²/day", "m s⁻²", "Ω", "V"],
+  "positive_assertions": [
+    "every Promise vow is covered in Promise order",
+    "prompts require free response from memory and do not copy the answer",
+    "each atomic answer claim resolves to one ability-authorized source claim and its exact spans",
+    "numeric fidelity recognizes only case-sensitive quantity-unit tokens declared by source authority"
+  ],
+  "operator_warn": "full_semantic_answer_correctness_ability_relevance_and_subtle_leakage_require_operator_spot_check"
+}
