@@ -11,7 +11,7 @@ Dev-session orchestration context and cross-session patterns for Cora.
 
 - **Branch:** `codex/workbook-enhanced-epics-36-40`
 - **Session anchor commit:** `a498f9b` (prior SESSION-HANDOFF anchor)
-- **Head:** WRAPUP closeout commit pending at draft time; canonical final state is the top section of `SESSION-HANDOFF.md`.
+- **Head:** `631a9085` main WRAPUP closeout, followed by the final docs-only metadata reconciliation; canonical final state is the top section of `SESSION-HANDOFF.md`.
 - **Outstanding pre-closure findings:** 0 (no story flipped to done during WRAPUP).
 - **Outstanding coherence findings:** 1 inherited high finding (motion creative-directive/motion-gate sequence-document parity; planned workbook run has motion OFF).
 - **Active harmonization run:** `reports/dev-coherence/2026-07-14-1952/` — standard/cluster READY, pipeline lockstep PASS, motion NEEDS REMEDIATION, L2 gated off.

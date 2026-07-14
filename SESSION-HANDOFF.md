@@ -66,7 +66,7 @@ No learner-facing course content was promoted. Governed negative run evidence in
 
 ## Push and branch policy
 
-Working-branch push is mandatory and will close this WRAPUP on `origin/codex/workbook-enhanced-epics-36-40`. Master merge is intentionally skipped: the solo-operator workflow retains this scoped implementation branch until the governed live acceptance arc passes or the operator separately requests consolidation.
+Working-branch push is complete: main closeout commit `631a9085` is durable on `origin/codex/workbook-enhanced-epics-36-40`. This final metadata reconciliation is a docs-only follow-up. Master merge is intentionally skipped: the solo-operator workflow retains this scoped implementation branch until the governed live acceptance arc passes or the operator separately requests consolidation.
 
 ---
 
