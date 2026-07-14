@@ -20440,3 +20440,220 @@ This monitor did not rerun hermetic tests and relies on the visible proof packs/
 - F-R-2946 [P2] Post-append verification observed concurrent non-monitor movement to `57 files changed, 9669 insertions(+), 968 deletions(-)` excluding this monitor ledger, including tracked dirty `_bmad-output/implementation-artifacts/deferred-work.md`.
 
 **Scoreability verdict:** No new active scoreable research slice landed after SOP-R352. Story 38.3a remains dirty/in-progress with Amendment 7 deterministic/static/adversarial readiness, a G2B live-finding economics correction seal, and now a new Amendment 8 tokenizer correction opened from governed trial `399bcd61-7779-4fa0-a592-186c3d4b4045`. That trial is terminal negative evidence: it reached G2C, produced Storyboard A artifacts, preserved matching pre/post input identity, and then paused at error with `success: false`. The prior terminal attempt `b07962e3-08ce-434c-9057-b571bca26b28` remains refused with `engine-call-failed` and `success: false`. No completed passing v2 live attempt is visible, no story done state is visible, and no commit binds the work. The `30850735` counterfactual/frozen-manifest evidence remains explicitly nonpassing remediation/audit support, not runtime acceptance. Story 38.1 remains unscoreable because it is dirty/in-progress, Task 5 and governed live proof remain open, known attempts failed at predecessor `07W.1`, and no completed Ask-A journal/receipt/packet evidence exists. The Texas/Irene/Pass-1/source/wrangler/economics/model/schema/operator-surface/planning-context/processor/production-runner/live-runner/figure-token/generation-lock/retrieval-shape/party-memory churn and broad untracked residue remain unbound and outside scoreability. The old `fc5b05cf` 38.3a one-to-one handoff and older `cd98f7e5` live witness remain fenced historical substrate claims, not current v2 clustered-production readiness. The broad research mini-epic and full Epics 36-40 workbook successor remain unscoreable.
+
+### SOP-R354 - Amendment 8 committed and branch clean; fresh paid live gate still open - 2026-07-14T16:02:51-04:00
+
+**Monitor:** Codex shadow monitor operating read-only except for this ledger append.
+
+**Repo/git state:**
+- Branch is now `codex/workbook-enhanced-epics-36-40...origin/codex/workbook-enhanced-epics-36-40` with no ahead/behind marker visible.
+- `HEAD` is now `68eb712f docs(session): finalize workbook wrapup metadata`.
+- Full `HEAD` is `68eb712fae51d18afc48309971222bfa90371e4d`; upstream resolves to the same commit.
+- No local tracked production/test/story diff is visible before this ledger append; `git diff --shortstat` and the same command excluding this monitor ledger returned no output.
+- `git status --short --branch --untracked-files=no` showed only the branch line before this ledger append.
+- Collapsed `git status --short` shows 241 status lines; expanded `git status --short --untracked-files=all` shows 741 status lines. The remaining residue is untracked and unscoreable.
+
+**BMAD story/gate visibility:**
+- Story `38-3a-research-packet-consume-side` remains `Status: in-progress`.
+- Sprint status is updated for Amendment 8: Story 38.3a Amendment 8 is deterministic/review GREEN after a later frozen negative live witness; Story 38.1 remains in-progress behind the fresh governed paid-run gate.
+- Sprint status says Story 38.3a's shared figure-token correction is deterministic/review GREEN after frozen trial `399bcd61` reached Storyboard A, G2C, and perception before a false Pass-2 contradiction. It says the next session starts with one fresh governed paid workbook attempt and all failed witnesses remain immutable/nonpassing and are never resumed.
+- Story 38.3a records Amendment 8 as binding and says trial `399bcd61-7779-4fa0-a592-186c3d4b4045` passed G2B, produced/published Storyboard A, completed high-confidence vision perception, and safely error-paused at Irene Pass 2 because `$ 5% GDP` was classified as `money-bare:5` while narration emitted `percent:5`.
+- Story 38.3a says Amendment 8 corrected the shared deterministic token class, replayed exact frozen evidence locally, and passed party plus mandatory adversarial review without retrying the run.
+- Story 38.3a shows Amendment 8 tasks checked for live-exposed dollar-prefixed percentage correction, frozen evidence replay, party review, focused/dependency/static verification, and mandatory Blind/Edge/Acceptance review.
+- Story `38-1-ask-a-enrichment-wiring` remains `Status: in-progress`, with Task 5 open.
+- Sprint status now states Story 38.1 deterministic/static implementation is complete, but Task 5 live closure remains open behind Story 38.3a and requires a passing fresh governed paid workbook attempt that reaches `07W.1`/`07W.2`.
+- Sprint status still records Epic 38 in-progress, Story 38.1 in-progress, Story 38.2 backlog, Story 38.3a in-progress, Epic 39 backlog, and Epic 40 backlog.
+- No visible story done state, new Cora closure, new Audra closure, completed passing fresh paid workbook run, or passing governed live verdict appears after SOP-R353.
+
+**Test/gate/liveproof evidence visibility:**
+- This monitor did not run tests, static checks, lint, import-linter, Cora, Audra, or live workflows.
+- Story-visible Amendment 8 evidence now claims deterministic/review GREEN, exact frozen-evidence local replay, party review, and mandatory adversarial review complete. This monitor did not rerun those checks.
+- The workbook-live-HIL evidence directory still contains ten trial directories.
+- HIL attempt `399bcd61-7779-4fa0-a592-186c3d4b4045` remains terminal negative: `status: paused-at-error`, `success: false`, `reason: stopped-paused-at-error`, `gate_actions: 5`, `finished_at: 2026-07-14T18:40:29.122598Z`.
+- HIL attempt `b07962e3-08ce-434c-9057-b571bca26b28` remains terminal negative: `status: refused`, `success: false`, `reason: engine-call-failed`.
+- The other eight HIL attempts remain `paused-at-error` / `success: false`.
+- HIL trial `30850735-dea3-4444-bc7b-513239eae55b` still includes both `amendment-7-counterfactual.json` and `frozen-run-sha256-manifest.v1.json`.
+- No completed Ask-A dispatch, completed Ask-A journal, execution receipt, passing packet hash proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible.
+
+**Selected claim envelope classification:**
+- Current Story 38.3a has moved from dirty/in-progress local work to committed deterministic/review GREEN Amendment 8 state at `68eb712f`, but it remains story-in-progress and live-gated.
+- The current envelope is "committed deterministic/review GREEN after negative live witness; fresh governed paid live acceptance still pending."
+- The `399bcd61` attempt remains useful negative live-discovery evidence, not passing acceptance proof.
+- The `b07962e3` refused attempt remains negative operational evidence, not passing runtime proof.
+- The `30850735` trial remains negative live-discovery evidence only; its counterfactual and frozen manifest support deterministic remediation/audit, not passing runtime proof.
+- Historical Story 38.3a at `fc5b05cf`, the older `cd98f7e5` one-to-one live pass, the Amendment 6 zero-finding seal, the Amendment 7 deterministic/review seal, the G2B correction seal, and the Amendment 8 deterministic/review GREEN state remain fenced substrate/readiness/correction evidence; none establishes current v2/fresh paid live acceptance.
+- Story 38.1 remains a committed/in-progress Ask-A implementation slice blocked behind predecessor liveproof and its own Task 5/live closure.
+- The broad Agentic Research Foundations mini-epic and full Epics 36-40 workbook successor remain unscoreable.
+
+**Residual fencing:**
+- Do not credit Story 38.1 for Ask-A enrichment execution, cited packet production, References, glossary/trends, terminal render, Markdown/DOCX output, full Review assembly, or full graph/runner behavior.
+- Do not credit current Story 38.3a as product-accepted or live-validated until a fresh governed paid workbook attempt actually completes and passes, and until story closure occurs where appropriate.
+- Do not treat the clean synced branch or `68eb712f` commit as story done or live acceptance; the story and sprint status still require a passing fresh governed paid workbook run.
+- Do not treat `399bcd61` Storyboard A publication, G2B passage, G2C approval, output inventory, input-match proof, or frozen replay as passing liveproof; the run is `paused-at-error`, `success: false`, frozen, and not retried.
+- Do not treat the Amendment 8 deterministic/review GREEN state as broad mini-epic scoreability until the fresh live gate passes.
+- Do not treat the `b07962e3` refused attempt as passing liveproof; it is `status: refused`, `success: false`, and `reason: engine-call-failed`.
+- Do not treat the `30850735` counterfactual or frozen 34-file manifest as passing evidence; they support nonpassing remediation/audit only.
+- Do not treat any HIL attempt as passing liveproof, story closure, or Ask-A execution proof.
+- Do not treat untracked generation-lock, Pass-1 authority, Pass-1 exact-span catalog, Pass-1 call journal, Ask-A, slide-authority, witness/helper/preflight/postflight/output-inventory, live-HIL, run residue, counterfactual evidence, frozen-manifest evidence, or `.texas-hardening.lock` files as proof until committed where appropriate and bound by story evidence.
+- Do not promote the old `fc5b05cf` 38.3a close or `cd98f7e5` live witness beyond fenced historical substrate.
+
+**Findings:**
+- F-R-2947 [P1] A new commit landed and is synced with upstream: `68eb712f docs(session): finalize workbook wrapup metadata`.
+- F-R-2948 [P1] Pre-append tracked working tree is clean; excluding this monitor ledger, no local tracked diff is visible.
+- F-R-2949 [P1] Story 38.3a remains `Status: in-progress` despite Amendment 8 deterministic/review GREEN and commit binding.
+- F-R-2950 [P1] Sprint status now says Story 38.3a still needs one fresh governed paid workbook attempt.
+- F-R-2951 [P1] Story 38.1 remains `Status: in-progress`; Task 5 live closure remains open behind Story 38.3a and requires a passing fresh governed paid workbook attempt reaching `07W.1`/`07W.2`.
+- F-R-2952 [P1] All ten observed HIL directories remain nonpassing; no passing governed live verdict is visible.
+- F-R-2953 [P1] HIL attempt `399bcd61-7779-4fa0-a592-186c3d4b4045` remains terminal negative with `status: paused-at-error`, `success: false`.
+- F-R-2954 [P1] HIL attempt `b07962e3-08ce-434c-9057-b571bca26b28` remains terminal negative with `status: refused`, `success: false`.
+- F-R-2955 [P1] No completed Ask-A dispatch, completed Ask-A journal, execution receipt, passing packet hash proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible.
+- F-R-2956 [P1] Collapsed `git status --short` shows 241 status lines; expanded `--untracked-files=all` shows 741 status lines, all residue outside tracked clean state.
+- F-R-2957 [P1] The broad research mini-epic and full workbook successor remain unscoreable.
+- F-R-2958 [P2] The poll shows a cleaner committed state and Amendment 8 deterministic/review progress, but not story closure, passing liveproof, Ask-A execution, or broad scoreability.
+
+**Scoreability verdict:** No new active scoreable research slice landed after SOP-R353. A new synced commit `68eb712f docs(session): finalize workbook wrapup metadata` binds the current clean tracked state, and Story 38.3a now claims Amendment 8 deterministic/review GREEN after replaying the frozen negative `399bcd61` witness and completing party/adversarial review. However, Story 38.3a remains `in-progress`, sprint status says the next session starts with one fresh governed paid workbook attempt, Story 38.1 remains `in-progress` behind that live gate, and all ten observed HIL attempts remain nonpassing. No completed passing fresh paid workbook run, no completed Ask-A journal/receipt/packet proof, no story done state, and no passing live verdict is visible. The old `fc5b05cf` 38.3a one-to-one handoff and older `cd98f7e5` live witness remain fenced historical substrate claims, not current v2/fresh-paid-run readiness. The broad research mini-epic and full Epics 36-40 workbook successor remain unscoreable.
+
+### SOP-R355 - Stable clean commit; no new liveproof after Amendment 8 - 2026-07-14T16:17:52-04:00
+
+**Monitor:** Codex shadow monitor operating read-only except for this ledger append.
+
+**Repo/git state:**
+- Branch remains `codex/workbook-enhanced-epics-36-40...origin/codex/workbook-enhanced-epics-36-40` with no ahead/behind marker visible.
+- `HEAD` remains `68eb712f docs(session): finalize workbook wrapup metadata`.
+- Full `HEAD` remains `68eb712fae51d18afc48309971222bfa90371e4d`; upstream resolves to the same commit.
+- No new commit, branch switch, push, or merge is visible after SOP-R354.
+- Pre-append tracked diff is only this monitor ledger: `git diff --shortstat` reports `1 file changed, 72 insertions(+)`.
+- Excluding this monitor ledger, `git diff --shortstat -- . ':(exclude)_bmad-output/implementation-artifacts/codex-shadow-monitor-agentic-research-foundations-2026-07-10.md'` returned no output.
+- Collapsed `git status --short` shows 242 status lines; expanded `git status --short --untracked-files=all` shows 742 status lines. The extra tracked status line is this monitor ledger; remaining residue is untracked and unscoreable.
+
+**BMAD story/gate visibility:**
+- Story `38-3a-research-packet-consume-side` remains `Status: in-progress`.
+- Sprint status remains on the Amendment 8 wrapup posture: Story 38.3a Amendment 8 is deterministic/review GREEN after a later frozen negative live witness; Story 38.1 remains in-progress behind the fresh governed paid-run gate.
+- Sprint status still says Story 38.3a's shared figure-token correction is deterministic/review GREEN after frozen trial `399bcd61` reached Storyboard A, G2C, and perception before a false Pass-2 contradiction; next session starts with one fresh governed paid workbook attempt.
+- Story 38.3a still marks the Amendment 8 live-finding correction and Amendment 8 party/focused/dependency/static/mandatory Blind/Edge/Acceptance review tasks checked.
+- Story 38.3a still has the final live gate open: "Run focused/dependency/static verification, mandatory BMAD code review, and one fresh governed live 38.1/workbook attempt only after deterministic GREEN" remains unchecked.
+- Story `38-1-ask-a-enrichment-wiring` remains `Status: in-progress`, with Task 5 open.
+- Story 38.1 still says deterministic/static work is complete and exact-current, while live closure remains open because the first-run-stands Tejal attempt stopped at predecessor node `07W.1` and did not reach or disprove the Ask-A seam.
+- Story 38.1 also records that a product correction closed the first live predecessor defect, but live closure remains open at a second `07W.1` authority mismatch before Ask-A dispatch.
+- Sprint status still records Epic 38 in-progress, Story 38.1 in-progress, Story 38.2 backlog, Story 38.3a in-progress, Epic 39 backlog, and Epic 40 backlog.
+- No visible story done state, new Cora closure, new Audra closure, completed passing fresh paid workbook run, or passing governed live verdict appears after SOP-R354.
+
+**Test/gate/liveproof evidence visibility:**
+- This monitor did not run tests, static checks, lint, import-linter, Cora, Audra, or live workflows.
+- Story-visible Amendment 8 evidence still claims deterministic/review GREEN, exact frozen-evidence local replay, party review, and mandatory adversarial review complete. This monitor did not rerun those checks.
+- The workbook-live-HIL evidence directory still contains ten trial directories, all nonpassing.
+- HIL attempt `399bcd61-7779-4fa0-a592-186c3d4b4045` remains terminal negative: `status: paused-at-error`, `success: false`, `reason: stopped-paused-at-error`, `gate_actions: 5`, `finished_at: 2026-07-14T18:40:29.122598Z`.
+- HIL attempt `b07962e3-08ce-434c-9057-b571bca26b28` remains terminal negative: `status: refused`, `success: false`, `reason: engine-call-failed`.
+- The other eight HIL attempts remain `paused-at-error` / `success: false`.
+- HIL trial `30850735-dea3-4444-bc7b-513239eae55b` still includes both `amendment-7-counterfactual.json` and `frozen-run-sha256-manifest.v1.json`.
+- No completed Ask-A dispatch, completed Ask-A journal, execution receipt, passing packet hash proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible.
+
+**Selected claim envelope classification:**
+- Current Story 38.3a remains "committed deterministic/review GREEN after negative live witness; fresh governed paid live acceptance still pending."
+- Current Story 38.1 remains "in-progress Ask-A implementation with deterministic/static work complete; live Task 5 open behind `07W.1`/`07W.2` fresh paid run proof."
+- The `399bcd61` attempt remains useful negative live-discovery evidence, not passing acceptance proof.
+- The `b07962e3` refused attempt remains negative operational evidence, not passing runtime proof.
+- The `30850735` trial remains negative live-discovery evidence only; its counterfactual and frozen manifest support deterministic remediation/audit, not passing runtime proof.
+- Historical Story 38.3a at `fc5b05cf`, the older `cd98f7e5` one-to-one live pass, the Amendment 6 zero-finding seal, the Amendment 7 deterministic/review seal, the G2B correction seal, and the Amendment 8 deterministic/review GREEN state remain fenced substrate/readiness/correction evidence; none establishes current v2/fresh paid live acceptance.
+- The broad Agentic Research Foundations mini-epic and full Epics 36-40 workbook successor remain unscoreable.
+
+**Residual fencing:**
+- Do not credit Story 38.1 for Ask-A enrichment execution, cited packet production, References, glossary/trends, terminal render, Markdown/DOCX output, full Review assembly, or full graph/runner behavior.
+- Do not credit current Story 38.3a as product-accepted or live-validated until a fresh governed paid workbook attempt actually completes and passes, and until story closure occurs where appropriate.
+- Do not treat the clean synced branch or `68eb712f` commit as story done or live acceptance; the story and sprint status still require a passing fresh governed paid workbook run.
+- Do not treat `399bcd61` Storyboard A publication, G2B passage, G2C approval, output inventory, input-match proof, or frozen replay as passing liveproof; the run is `paused-at-error`, `success: false`, frozen, and not retried.
+- Do not treat the Amendment 8 deterministic/review GREEN state as broad mini-epic scoreability until the fresh live gate passes.
+- Do not treat the `b07962e3` refused attempt as passing liveproof; it is `status: refused`, `success: false`, and `reason: engine-call-failed`.
+- Do not treat the `30850735` counterfactual or frozen 34-file manifest as passing evidence; they support nonpassing remediation/audit only.
+- Do not treat any HIL attempt as passing liveproof, story closure, or Ask-A execution proof.
+- Do not treat untracked generation-lock, Pass-1 authority, Pass-1 exact-span catalog, Pass-1 call journal, Ask-A, slide-authority, witness/helper/preflight/postflight/output-inventory, live-HIL, run residue, counterfactual evidence, frozen-manifest evidence, or `.texas-hardening.lock` files as proof until committed where appropriate and bound by story evidence.
+- Do not promote the old `fc5b05cf` 38.3a close or `cd98f7e5` live witness beyond fenced historical substrate.
+
+**Findings:**
+- F-R-2959 [P1] No new commit landed after `68eb712f`; branch remains synced with origin.
+- F-R-2960 [P1] Excluding this monitor ledger, the tracked working tree remains clean.
+- F-R-2961 [P1] Story 38.3a remains `Status: in-progress` despite committed Amendment 8 deterministic/review GREEN evidence.
+- F-R-2962 [P1] Sprint status still requires one fresh governed paid workbook attempt for Story 38.3a / Story 38.1 live closure.
+- F-R-2963 [P1] Story 38.1 remains `Status: in-progress`; Task 5 live closure remains open and Ask-A has not been reached by a passing live run.
+- F-R-2964 [P1] All ten observed HIL directories remain nonpassing; no passing governed live verdict is visible.
+- F-R-2965 [P1] HIL attempt `399bcd61-7779-4fa0-a592-186c3d4b4045` remains terminal negative with `status: paused-at-error`, `success: false`.
+- F-R-2966 [P1] HIL attempt `b07962e3-08ce-434c-9057-b571bca26b28` remains terminal negative with `status: refused`, `success: false`.
+- F-R-2967 [P1] No completed Ask-A dispatch, completed Ask-A journal, execution receipt, passing packet hash proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible.
+- F-R-2968 [P1] Collapsed `git status --short` shows 242 status lines; expanded `--untracked-files=all` shows 742 status lines.
+- F-R-2969 [P1] The broad research mini-epic and full workbook successor remain unscoreable.
+- F-R-2970 [P2] The poll shows stable clean committed Amendment 8 posture, but not story closure, passing liveproof, Ask-A execution, or broad scoreability.
+
+**Scoreability verdict:** No new active scoreable research slice landed after SOP-R354. The repo remains clean and synced at `68eb712f` except for this monitor ledger, and Story 38.3a still claims Amendment 8 deterministic/review GREEN. However, Story 38.3a remains in-progress with a fresh governed paid workbook attempt still required, Story 38.1 remains in-progress with Task 5 live closure open, all ten observed HIL attempts remain nonpassing, and no completed Ask-A journal/receipt/packet proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible. The broad research mini-epic and full Epics 36-40 workbook successor remain unscoreable.
+
+### SOP-R356 - Clean Amendment 8 posture unchanged; live gate still not scoreable - 2026-07-14T16:32:50-04:00
+
+**Monitor:** Codex shadow monitor operating read-only except for this ledger append.
+
+**Repo/git state:**
+- Branch remains `codex/workbook-enhanced-epics-36-40...origin/codex/workbook-enhanced-epics-36-40` with no ahead/behind marker visible.
+- `HEAD` remains `68eb712f docs(session): finalize workbook wrapup metadata`.
+- Full `HEAD` remains `68eb712fae51d18afc48309971222bfa90371e4d`; upstream resolves to the same commit.
+- No new commit, branch switch, push, or merge is visible after SOP-R355.
+- Pre-append tracked diff remains only this monitor ledger: `git diff --shortstat` reports `1 file changed, 144 insertions(+)`.
+- Excluding this monitor ledger, `git diff --shortstat` returned no output.
+- Collapsed `git status --short` shows 242 status lines; expanded `git status --short --untracked-files=all` shows 742 status lines. The extra tracked status line is this monitor ledger; remaining residue is untracked and unscoreable.
+
+**BMAD story/gate visibility:**
+- Story `38-3a-research-packet-consume-side` remains `Status: in-progress`.
+- Sprint status is unchanged: Story 38.3a Amendment 8 is deterministic/review GREEN after a later frozen negative live witness; Story 38.1 remains in-progress behind the fresh governed paid-run gate.
+- Sprint status still says Story 38.3a's shared figure-token correction is deterministic/review GREEN after frozen trial `399bcd61` reached Storyboard A, G2C, and perception before a false Pass-2 contradiction; next session starts with one fresh governed paid workbook attempt.
+- Story 38.3a still marks the Amendment 8 live-finding correction and Amendment 8 party/focused/dependency/static/mandatory Blind/Edge/Acceptance review tasks checked.
+- Story 38.3a still has the final live gate open: "Run focused/dependency/static verification, mandatory BMAD code review, and one fresh governed live 38.1/workbook attempt only after deterministic GREEN" remains unchecked.
+- Story `38-1-ask-a-enrichment-wiring` remains `Status: in-progress`, with Task 5 open.
+- Story 38.1 still says deterministic/static work is complete and exact-current, while live closure remains open because the first-run-stands Tejal attempt stopped at predecessor node `07W.1` and did not reach or disprove the Ask-A seam.
+- Story 38.1 still records that live closure remains open at a second `07W.1` authority mismatch before Ask-A dispatch.
+- Sprint status still records Epic 38 in-progress, Story 38.1 in-progress, Story 38.2 backlog, Story 38.3a in-progress, Epic 39 backlog, and Epic 40 backlog.
+- No visible story done state, new Cora closure, new Audra closure, completed passing fresh paid workbook run, or passing governed live verdict appears after SOP-R355.
+
+**Test/gate/liveproof evidence visibility:**
+- This monitor did not run tests, static checks, lint, import-linter, Cora, Audra, or live workflows.
+- Story-visible Amendment 8 evidence still claims deterministic/review GREEN, exact frozen-evidence local replay, party review, and mandatory adversarial review complete. This monitor did not rerun those checks.
+- The workbook-live-HIL evidence directory still contains ten trial directories, all nonpassing.
+- HIL attempt `399bcd61-7779-4fa0-a592-186c3d4b4045` remains terminal negative: `status: paused-at-error`, `success: false`, `reason: stopped-paused-at-error`, `gate_actions: 5`, `finished_at: 2026-07-14T18:40:29.122598Z`.
+- HIL attempt `b07962e3-08ce-434c-9057-b571bca26b28` remains terminal negative: `status: refused`, `success: false`, `reason: engine-call-failed`.
+- The other eight HIL attempts remain `paused-at-error` / `success: false`.
+- HIL trial `30850735-dea3-4444-bc7b-513239eae55b` still includes both `amendment-7-counterfactual.json` and `frozen-run-sha256-manifest.v1.json`.
+- No completed Ask-A dispatch, completed Ask-A journal, execution receipt, passing packet hash proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible.
+
+**Selected claim envelope classification:**
+- Current Story 38.3a remains "committed deterministic/review GREEN after negative live witness; fresh governed paid live acceptance still pending."
+- Current Story 38.1 remains "in-progress Ask-A implementation with deterministic/static work complete; live Task 5 open behind `07W.1`/`07W.2` fresh paid run proof."
+- The `399bcd61` attempt remains useful negative live-discovery evidence, not passing acceptance proof.
+- The `b07962e3` refused attempt remains negative operational evidence, not passing runtime proof.
+- The `30850735` trial remains negative live-discovery evidence only; its counterfactual and frozen manifest support deterministic remediation/audit, not passing runtime proof.
+- Historical Story 38.3a at `fc5b05cf`, the older `cd98f7e5` one-to-one live pass, the Amendment 6 zero-finding seal, the Amendment 7 deterministic/review seal, the G2B correction seal, and the Amendment 8 deterministic/review GREEN state remain fenced substrate/readiness/correction evidence; none establishes current v2/fresh paid live acceptance.
+- The broad Agentic Research Foundations mini-epic and full Epics 36-40 workbook successor remain unscoreable.
+
+**Residual fencing:**
+- Do not credit Story 38.1 for Ask-A enrichment execution, cited packet production, References, glossary/trends, terminal render, Markdown/DOCX output, full Review assembly, or full graph/runner behavior.
+- Do not credit current Story 38.3a as product-accepted or live-validated until a fresh governed paid workbook attempt actually completes and passes, and until story closure occurs where appropriate.
+- Do not treat the clean synced branch or `68eb712f` commit as story done or live acceptance; the story and sprint status still require a passing fresh governed paid workbook run.
+- Do not treat `399bcd61` Storyboard A publication, G2B passage, G2C approval, output inventory, input-match proof, or frozen replay as passing liveproof; the run is `paused-at-error`, `success: false`, frozen, and not retried.
+- Do not treat the Amendment 8 deterministic/review GREEN state as broad mini-epic scoreability until the fresh live gate passes.
+- Do not treat the `b07962e3` refused attempt as passing liveproof; it is `status: refused`, `success: false`, and `reason: engine-call-failed`.
+- Do not treat the `30850735` counterfactual or frozen 34-file manifest as passing evidence; they support nonpassing remediation/audit only.
+- Do not treat any HIL attempt as passing liveproof, story closure, or Ask-A execution proof.
+- Do not treat untracked generation-lock, Pass-1 authority, Pass-1 exact-span catalog, Pass-1 call journal, Ask-A, slide-authority, witness/helper/preflight/postflight/output-inventory, live-HIL, run residue, counterfactual evidence, frozen-manifest evidence, or `.texas-hardening.lock` files as proof until committed where appropriate and bound by story evidence.
+- Do not promote the old `fc5b05cf` 38.3a close or `cd98f7e5` live witness beyond fenced historical substrate.
+
+**Findings:**
+- F-R-2971 [P1] No new commit landed after `68eb712f`; branch remains synced with origin.
+- F-R-2972 [P1] Excluding this monitor ledger, the tracked working tree remains clean.
+- F-R-2973 [P1] Story 38.3a remains `Status: in-progress` despite committed Amendment 8 deterministic/review GREEN evidence.
+- F-R-2974 [P1] Story 38.3a's fresh governed live 38.1/workbook gate remains unchecked.
+- F-R-2975 [P1] Sprint status still requires one fresh governed paid workbook attempt for Story 38.3a / Story 38.1 live closure.
+- F-R-2976 [P1] Story 38.1 remains `Status: in-progress`; Task 5 live closure remains open and Ask-A has not been reached by a passing live run.
+- F-R-2977 [P1] All ten observed HIL directories remain nonpassing; no passing governed live verdict is visible.
+- F-R-2978 [P1] HIL attempt `399bcd61-7779-4fa0-a592-186c3d4b4045` remains terminal negative with `status: paused-at-error`, `success: false`.
+- F-R-2979 [P1] HIL attempt `b07962e3-08ce-434c-9057-b571bca26b28` remains terminal negative with `status: refused`, `success: false`.
+- F-R-2980 [P1] No completed Ask-A dispatch, completed Ask-A journal, execution receipt, passing packet hash proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible.
+- F-R-2981 [P1] Collapsed `git status --short` shows 242 status lines; expanded `--untracked-files=all` shows 742 status lines.
+- F-R-2982 [P1] The broad research mini-epic and full workbook successor remain unscoreable.
+- F-R-2983 [P2] The poll shows no movement after SOP-R355 beyond the ledger append; clean committed Amendment 8 posture still lacks story closure, passing liveproof, Ask-A execution, or broad scoreability.
+
+**Scoreability verdict:** No new active scoreable research slice landed after SOP-R355. The repo remains clean and synced at `68eb712f` except for this monitor ledger, Story 38.3a still claims Amendment 8 deterministic/review GREEN, and Story 38.1 remains deterministic/static complete but live-open. The current implementation is still not scoreable against the research mini-epic claim because Story 38.3a remains in-progress with a fresh governed paid workbook attempt still required, Story 38.1 remains in-progress with Task 5 live closure open, all ten observed HIL attempts remain nonpassing, and no completed Ask-A journal/receipt/packet proof, story done state, completed passing fresh paid workbook run, or passing live verdict is visible. The broad research mini-epic and full Epics 36-40 workbook successor remain unscoreable.
