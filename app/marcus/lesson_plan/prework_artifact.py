@@ -85,6 +85,9 @@ class DeepDiveExecutionReceiptV1(_Strict):
     prior_payload_digest: str | None = Field(
         default=None, pattern=r"^sha256:[0-9a-f]{64}$"
     )
+    slide_authority_map_digest: str | None = Field(
+        default=None, pattern=r"^sha256:[0-9a-f]{64}$"
+    )
     model: str | None = None
     model_config_digest: str | None = Field(
         default=None, pattern=r"^sha256:[0-9a-f]{64}$"
@@ -248,6 +251,13 @@ class WorkbookBriefPayloadV1(_Strict):
                 )
             DeepDiveSkeletonResult.model_validate(self.deep_dive_skeleton.model_dump())
             if (
+                self.deep_dive_writer_receipt.slide_authority_map_digest
+                != self.deep_dive_skeleton.authority.slide_authority_map_digest
+            ):
+                raise ValueError(
+                    "Deep Dive receipt map digest must equal request authority"
+                )
+            if (
                 self.writer_execution_mode == "offline_stub"
                 and compose_deep_dive_skeleton(
                     self.deep_dive_skeleton.authority, offline_deep_dive_writer
@@ -284,6 +294,15 @@ def _canonical_payload_digest(
     dumped = payload.model_dump(mode="json")
     if dumped.get("deep_dive_writer_receipt") is None:
         dumped.pop("deep_dive_writer_receipt", None)
+    else:
+        receipt = dumped["deep_dive_writer_receipt"]
+        if receipt.get("slide_authority_map_digest") is None:
+            receipt.pop("slide_authority_map_digest", None)
+    skeleton = dumped.get("deep_dive_skeleton")
+    if skeleton is not None:
+        authority = skeleton.get("authority")
+        if authority is not None and authority.get("slide_authority_map_digest") is None:
+            authority.pop("slide_authority_map_digest", None)
     if omit_empty_introduced_terms and not dumped["scene_receipt"].get(
         "introduced_terms"
     ):

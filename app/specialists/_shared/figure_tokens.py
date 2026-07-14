@@ -10,8 +10,14 @@ import re
 _NUM = r"\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?"
 
 _FIGURE_RE = re.compile(
-    rf"\$\s*(?:{_NUM})(?:\s*(?:trillion|billion)\b|\s*[tb]\b)?"
-    rf"|\b(?:{_NUM})\s*%|\b(?:{_NUM})x\b",
+    # Vision/OCR can concatenate a decorative currency icon with an adjacent
+    # percentage label (for example ``$ 5% GDP``).  The percent suffix is the
+    # stronger unit signal, so recognize the complete hybrid span before the
+    # ordinary money alternative can consume ``$ 5``.  ``+%`` is the same
+    # comparator-bearing percent surface seen in the frozen production slide.
+    rf"(?:\$\s*)?\b(?:{_NUM})\s*\+?\s*%"
+    rf"|\$\s*(?:{_NUM})(?:\s*(?:trillion|billion)\b|\s*[tb]\b)?"
+    rf"|\b(?:{_NUM})x\b",
     re.IGNORECASE,
 )
 
@@ -62,7 +68,7 @@ def _normalize_money(number: float, unit: str | None) -> str:
 
 
 def _normalize_figure(value: str) -> str:
-    token = value.lower().replace(" ", "").replace(",", "")
+    token = re.sub(r"\s+", "", value.lower()).replace(",", "")
     # A token merely ending in %/x or starting with $ is NOT necessarily a
     # figure — e.g. a DOI / retrieval reference like
     # ``retrieval:scite:10.1057/s41599-024-03196-x`` ends in "x" but is not a
@@ -70,6 +76,9 @@ def _normalize_figure(value: str) -> str:
     # an opaque token instead of crashing the numeric-provenance audit
     # (surfaced by the 35.7 re-witness run at node 08 / research supplements).
     try:
+        if token.endswith("%"):
+            percent = token[:-1].removeprefix("$").removesuffix("+")
+            return f"percent:{float(percent):g}"
         if token.startswith("$"):
             match = re.search(r"\d+(?:\.\d+)?", token)
             if match is None:
@@ -82,8 +91,6 @@ def _normalize_figure(value: str) -> str:
             else:
                 unit = None
             return _normalize_money(number, unit)
-        if token.endswith("%"):
-            return f"percent:{float(token[:-1]):g}"
         if token.endswith("x"):
             return f"multiple:{float(token[:-1]):g}"
     except ValueError:

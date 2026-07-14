@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import re
 import unicodedata
 from pathlib import Path
@@ -18,6 +19,11 @@ from app.marcus.lesson_plan.deep_dive_projection import (
     SourceClaim,
 )
 from app.marcus.lesson_plan.prework_projection import PromiseProjection
+from app.marcus.lesson_plan.slide_authority import (
+    SlideAuthorityInvalidError,
+    WorkbookSlideAuthorityMapV1,
+    read_contained_regular_bytes,
+)
 
 MANIFEST_RELATIVE_PATH = Path("exports/segment-manifest-storyboard-b.yaml")
 _SLIDE_NAME = re.compile(r"^slide-(?P<ordinal>[1-9][0-9]*)-.+\.md$")
@@ -143,9 +149,10 @@ def _is_within(path: Path, root: Path) -> bool:
     return True
 
 
-def _speaker_note(path: Path) -> str | None:
+def _speaker_note(path: Path, *, verified_bytes: bytes | None = None) -> str | None:
     try:
-        text = path.read_bytes().decode("utf-8")
+        raw = path.read_bytes() if verified_bytes is None else verified_bytes
+        text = raw.decode("utf-8")
     except (OSError, UnicodeDecodeError) as exc:
         raise DeepDiveAuthorityUnavailableError(
             f"speaker-note source unavailable: {path}"
@@ -230,25 +237,36 @@ def _slide_inventory(course_source_root: Path) -> dict[int, tuple[Path, ...]]:
     }
 
 
-def _load_segments(run_dir: Path) -> list[dict[str, Any]]:
+def _load_segments(
+    run_dir: Path,
+    *,
+    manifest_bytes: bytes | None = None,
+    expected_manifest_digest: str | None = None,
+) -> list[dict[str, Any]]:
     path = Path(run_dir) / MANIFEST_RELATIVE_PATH
-    if path.is_symlink():
-        raise DeepDiveAuthorityInvalidError("segment manifest may not be a symlink")
     try:
-        resolved_run = Path(run_dir).resolve(strict=True)
-        resolved_path = path.resolve(strict=True)
-    except FileNotFoundError as exc:
-        raise DeepDiveAuthorityUnavailableError("segment manifest absent") from exc
-    except OSError as exc:
-        raise DeepDiveAuthorityInvalidError("segment manifest unreadable") from exc
-    if not _is_within(resolved_path, resolved_run):
-        raise DeepDiveAuthorityInvalidError("segment manifest escapes run root")
-    try:
+        source = (
+            read_contained_regular_bytes(
+                Path(run_dir), path, "segment manifest"
+            )
+            if manifest_bytes is None
+            else manifest_bytes
+        )
+        observed_digest = "sha256:" + hashlib.sha256(source).hexdigest()
+        if (
+            expected_manifest_digest is not None
+            and observed_digest != expected_manifest_digest
+        ):
+            raise DeepDiveAuthorityInvalidError(
+                "segment manifest digest disagrees with slide authority map"
+            )
         raw = yaml.load(
-            resolved_path.read_text(encoding="utf-8"),
+            source.decode("utf-8"),
             Loader=_UniqueKeySafeLoader,
         )
-    except (OSError, yaml.YAMLError) as exc:
+    except SlideAuthorityInvalidError as exc:
+        raise DeepDiveAuthorityInvalidError(str(exc)) from exc
+    except (UnicodeDecodeError, yaml.YAMLError) as exc:
         raise DeepDiveAuthorityInvalidError("segment manifest unreadable or invalid") from exc
     if not isinstance(raw, dict) or "segments" not in raw:
         raise DeepDiveAuthorityInvalidError("segment manifest requires a segments container")
@@ -262,10 +280,44 @@ def _load_segments(run_dir: Path) -> list[dict[str, Any]]:
     return segments
 
 
+def load_deep_dive_segments(
+    run_dir: Path, *, manifest_bytes: bytes | None = None
+) -> list[dict[str, Any]]:
+    """Load the exact duplicate-key-free manifest segment authority."""
+    return _load_segments(run_dir, manifest_bytes=manifest_bytes)
+
+
+def _mapped_source_path(
+    course_source_root: Path, *, relative_path: str, expected_digest: str
+) -> tuple[Path, bytes]:
+    root = Path(course_source_root)
+    slides = root / "slides"
+    candidate = root / Path(relative_path)
+    if slides.is_symlink() or not slides.is_dir():
+        raise DeepDiveAuthorityInvalidError("mapped slides root is absent or unsafe")
+    if candidate.is_symlink() or not candidate.is_file():
+        raise DeepDiveAuthorityInvalidError("mapped source slide is absent or unsafe")
+    try:
+        resolved_slides = slides.resolve(strict=True)
+        resolved = candidate.resolve(strict=True)
+        resolved.relative_to(resolved_slides)
+        raw = read_contained_regular_bytes(
+            resolved_slides, candidate, "mapped source slide"
+        )
+    except (OSError, ValueError, SlideAuthorityInvalidError) as exc:
+        raise DeepDiveAuthorityInvalidError("mapped source slide escapes authority") from exc
+    observed = "sha256:" + hashlib.sha256(raw).hexdigest()
+    if observed != expected_digest:
+        raise DeepDiveAuthorityInvalidError("mapped source slide digest mismatch")
+    return candidate, raw
+
+
 def build_deep_dive_request(
     run_dir: Path,
     course_source_root: Path,
     promise: PromiseProjection,
+    authority_map: WorkbookSlideAuthorityMapV1 | None = None,
+    manifest_bytes: bytes | None = None,
 ) -> DeepDiveSkeletonRequest:
     """Build one ordered, closed request from the exact manifest/slides/Promise seam."""
     promise = PromiseProjection.model_validate(promise.model_dump())
@@ -273,14 +325,27 @@ def build_deep_dive_request(
         raise DeepDiveAuthorityUnavailableError(
             "authored Promise ability authority unavailable"
         )
-    segments = _load_segments(run_dir)
-    inventory = _slide_inventory(course_source_root)
+    segments = _load_segments(
+        run_dir,
+        manifest_bytes=manifest_bytes,
+        expected_manifest_digest=(
+            authority_map.manifest_digest if authority_map is not None else None
+        ),
+    )
+    inventory = None if authority_map is not None else _slide_inventory(course_source_root)
+    mapped_rows = authority_map.rows if authority_map is not None else ()
+    if authority_map is not None and len(mapped_rows) != len(segments):
+        raise DeepDiveAuthorityInvalidError(
+            "slide authority map roster does not equal segment manifest"
+        )
     seen_ids: set[str] = set()
     seen_slide_ordinals: set[int] = set()
     vo_spans: list[NarrationSourceSpan] = []
     vo_claims: list[SourceClaim] = []
     deltas: list[tuple[NarrationSourceSpan, SourceClaim]] = []
-    for row in segments:
+    source_groups: dict[str, tuple[Path, bytes | None, list[str]]] = {}
+    verified_sources: dict[tuple[str, str], tuple[Path, bytes]] = {}
+    for index, row in enumerate(segments):
         segment_id = row.get("segment_id")
         narration = row.get("narration_text")
         slide_id = row.get("slide_id")
@@ -318,31 +383,69 @@ def build_deep_dive_request(
                 role="vo",
             )
         )
-        matches = inventory.get(ordinal, ())
-        if len(matches) != 1:
-            raise DeepDiveAuthorityInvalidError(
-                f"slide authority for {slide_id} matched {len(matches)} files"
-            )
-        note = _speaker_note(matches[0])
+        if authority_map is None:
+            assert inventory is not None
+            matches = inventory.get(ordinal, ())
+            if len(matches) != 1:
+                raise DeepDiveAuthorityInvalidError(
+                    f"slide authority for {slide_id} matched {len(matches)} files"
+                )
+            source_path = matches[0]
+            source_bytes = None
+            source_slide_id = slide_id
+        else:
+            mapped = mapped_rows[index]
+            if mapped.final_slide_id != slide_id:
+                raise DeepDiveAuthorityInvalidError(
+                    "slide authority map order/identity disagrees with manifest"
+                )
+            source_key = (mapped.source_path, mapped.source_sha256)
+            verified = verified_sources.get(source_key)
+            if verified is None:
+                verified = _mapped_source_path(
+                    course_source_root,
+                    relative_path=mapped.source_path,
+                    expected_digest=mapped.source_sha256,
+                )
+                verified_sources[source_key] = verified
+            source_path, source_bytes = verified
+            source_slide_id = mapped.source_slide_id
+        group = source_groups.get(source_slide_id)
+        if group is None:
+            source_groups[source_slide_id] = (source_path, source_bytes, [narration])
+        else:
+            if group[0] != source_path or group[1] != source_bytes:
+                raise DeepDiveAuthorityInvalidError(
+                    "one source slide identity resolved to multiple files"
+                )
+            group[2].append(narration)
+
+    for source_slide_id, (
+        source_path,
+        source_bytes,
+        descendant_narration,
+    ) in source_groups.items():
+        note = _speaker_note(source_path, verified_bytes=source_bytes)
         if note is None:
             continue
         normalized_note = _canonical_text(note)
-        normalized_narration = _canonical_text(narration)
+        aggregate_narration = "\n".join(descendant_narration)
+        normalized_narration = _canonical_text(aggregate_narration)
         if (
             normalized_note
             and normalized_narration
             and normalized_note != normalized_narration
-            and bool(_tokens(note) - _tokens(narration))
+            and bool(_tokens(note) - _tokens(aggregate_narration))
         ):
-            delta_id = f"delta:{slide_id}"
-            relative = matches[0].relative_to(course_source_root).as_posix()
+            delta_id = f"delta:{source_slide_id}"
+            relative = source_path.relative_to(course_source_root).as_posix()
             span = NarrationSourceSpan(
                 span_id=delta_id,
                 text=note,
                 source_ref=f"{relative}#Narration (Speaker Notes)",
             )
             claim = SourceClaim(
-                claim_id=f"claim:delta:{slide_id}",
+                claim_id=f"claim:delta:{source_slide_id}",
                 text=note,
                 source_span_refs=(delta_id,),
                 role="source_supported_delta",
@@ -357,6 +460,9 @@ def build_deep_dive_request(
                 DeepDiveAbilityInput(ability_id=vow.objective_id, text=vow.text)
                 for vow in promise.vows
             ),
+            slide_authority_map_digest=(
+                authority_map.map_digest if authority_map is not None else None
+            ),
         )
     except ValueError as exc:
         raise DeepDiveAuthorityInvalidError(f"Deep Dive authority shape invalid: {exc}") from exc
@@ -367,4 +473,5 @@ __all__ = [
     "DeepDiveAuthorityInvalidError",
     "DeepDiveAuthorityUnavailableError",
     "build_deep_dive_request",
+    "load_deep_dive_segments",
 ]

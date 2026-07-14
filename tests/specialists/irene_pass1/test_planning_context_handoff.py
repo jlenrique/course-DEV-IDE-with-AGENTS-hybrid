@@ -17,13 +17,15 @@ import pytest
 from app.marcus.lesson_plan.planning_context import (
     LearningObjectiveBrief,
     PlanningContext,
-    assess_lo_coverage,
     assert_lo_coverage_or_fail,
+    assess_lo_coverage,
 )
 from app.models.state.cache_state import CacheState
 from app.models.state.run_state import RunState
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.irene_pass1 import _act as pass1_act
+from tests._helpers.pass1_bundle import write_primary_slide_bundle
+from tests._helpers.pass1_catalog_response import select_catalog_ids
 
 
 @dataclass
@@ -33,7 +35,10 @@ class _RecordingChat:
 
     def invoke(self, messages: list[dict[str, str]]) -> SimpleNamespace:
         self.calls.append(messages)
-        return SimpleNamespace(content=self.response_text, usage_metadata=None)
+        return SimpleNamespace(
+            content=select_catalog_ids(self.response_text, messages),
+            usage_metadata=None,
+        )
 
 
 @dataclass
@@ -169,8 +174,8 @@ def test_fail_loud_on_empty_plan_units_with_los() -> None:
 def test_act_emits_coverage_receipt_on_partial(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    corpus = "# Corpus\n\nGenerative AI in clinic documentation risks."
-    (bundle / "extracted.md").write_text(corpus, encoding="utf-8")
+    corpus = "# Corpus\n\nGenerative AI in clinic documentation risks.\nanchor one"
+    write_primary_slide_bundle(bundle, corpus)
     # Seed companion files so provenance digests can be computed.
     run_dir = tmp_path / "run-pc-partial"
     run_dir.mkdir()
@@ -247,10 +252,90 @@ def test_act_emits_coverage_receipt_on_partial(tmp_path: Path) -> None:
     assert pass1_act._PLANNING_CONTEXT_SECTION_MARKER in user
 
 
+def test_locked_act_uses_resolved_root_when_payload_omits_runs_root(
+    tmp_path: Path,
+) -> None:
+    run_id = "run-pc-resolved-root"
+    payload_run_id = "payload-run-id-must-not-win"
+    bundle = tmp_path / "bundle-resolved-root"
+    bundle.mkdir()
+    write_primary_slide_bundle(
+        bundle, "# Corpus\n\nGenerative AI clinic use cases.\nanchor one"
+    )
+    run_dir = tmp_path / run_id
+    run_dir.mkdir()
+    ratification = b'{"ratified":true}\n'
+    (run_dir / "planning-ratification.json").write_bytes(ratification)
+    payload = {
+        "mode": "pass-1",
+        "run_id": payload_run_id,
+        "bundle_reference": str(bundle),
+        "planning_context": _planning_context_payload(),
+    }
+    units = [
+        _unit(
+            title="Clinic use cases for generative AI",
+            learning_objective="Identify appropriate generative-AI use cases in clinic",
+        )
+    ]
+    result = pass1_act._act_locked(
+        _state(payload),
+        handle=_RecordingHandle(_response_for_units(units)),
+        model_id="gpt-5.4",
+        payload=payload,
+        run_id=run_id,
+        runs_root=tmp_path,
+    )
+    output = json.loads(result["cache_state"]["cache_prefix"])
+    provenance = output["planning_provenance"]
+    assert provenance == output["lesson_plan"]["planning_provenance"]
+    assert provenance["ratification_path"] == "planning-ratification.json"
+    assert provenance["ratification_digest"] == (
+        "sha256:" + hashlib.sha256(ratification).hexdigest()
+    )
+    assert not (tmp_path / payload_run_id).exists()
+
+
+def test_coverage_failure_uses_resolved_root_when_payload_omits_runs_root(
+    tmp_path: Path,
+) -> None:
+    run_id = "run-pc-ignore-resolved-root"
+    payload_run_id = "payload-ignore-run-id-must-not-win"
+    bundle = tmp_path / "bundle-ignore-resolved-root"
+    bundle.mkdir()
+    write_primary_slide_bundle(bundle, "# Corpus\n\nRocks.\nanchor one")
+    payload = {
+        "mode": "pass-1",
+        "run_id": payload_run_id,
+        "bundle_reference": str(bundle),
+        "planning_context": _planning_context_payload(),
+    }
+    handle = _RecordingHandle(
+        _response_for_units(
+            [_unit(title="Geology intro", learning_objective="Name rock types")]
+        )
+    )
+    with pytest.raises(SpecialistDispatchError, match="totally ignored"):
+        pass1_act._act_locked(
+            _state(payload),
+            handle=handle,
+            model_id="gpt-5.4",
+            payload=payload,
+            run_id=run_id,
+            runs_root=tmp_path,
+        )
+    receipt_path = tmp_path / run_id / "planning-context-coverage.json"
+    assert receipt_path.is_file()
+    assert json.loads(receipt_path.read_text(encoding="utf-8"))["lo_coverage"] == (
+        "absent"
+    )
+    assert not (tmp_path / payload_run_id).exists()
+
+
 def test_absent_path_omits_planning_provenance(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text("# Corpus\n\nCells.", encoding="utf-8")
+    write_primary_slide_bundle(bundle, "# Corpus\n\nCells.\nanchor one")
     handle = _RecordingHandle(_response_for_units([_unit()]))
     result = pass1_act.act(
         _state(
@@ -273,9 +358,8 @@ def test_claim_b_plan_delta_vs_control_hashes(tmp_path: Path) -> None:
     """Claim B: treatment plan with context differs from control without context."""
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text(
-        "# Corpus\n\nClinic generative AI documentation.",
-        encoding="utf-8",
+    write_primary_slide_bundle(
+        bundle, "# Corpus\n\nClinic generative AI documentation.\nanchor one"
     )
     units_control = [_unit(title="Generic intro", learning_objective="Cover basics")]
     units_treatment = [
@@ -339,7 +423,7 @@ def test_claim_b_plan_delta_vs_control_hashes(tmp_path: Path) -> None:
 def test_act_fails_loud_on_total_ignore(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text("# Corpus\n\nRocks.", encoding="utf-8")
+    write_primary_slide_bundle(bundle, "# Corpus\n\nRocks.\nanchor one")
     handle = _RecordingHandle(
         _response_for_units(
             [_unit(title="Geology intro", learning_objective="Name rock types")]
@@ -361,10 +445,41 @@ def test_act_fails_loud_on_total_ignore(tmp_path: Path) -> None:
         )
 
 
+def test_authority_failure_precedes_planning_coverage_persistence(tmp_path: Path) -> None:
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    write_primary_slide_bundle(bundle, "# Corpus\n\nRocks.")
+    candidate = json.loads(_response_for_units([_unit()]))
+    candidate["plan_units"][0].pop("source_refs", None)
+    candidate["plan_units"][0]["source_ref_ids"] = [
+        "span:sha256:" + "f" * 64
+    ]
+    handle = _RecordingHandle(json.dumps(candidate))
+    run_id = "run-authority-before-coverage"
+
+    with pytest.raises(pass1_act.Pass1AuthorityError, match="unknown or stale"):
+        pass1_act.act(
+            _state(
+                {
+                    "mode": "pass-1",
+                    "run_id": run_id,
+                    "runs_root": str(tmp_path),
+                    "bundle_reference": str(bundle),
+                    "planning_context": _planning_context_payload(),
+                }
+            ),
+            handle=handle,
+            model_id="gpt-5.4",
+        )
+
+    assert len(handle.chat.calls) == 1
+    assert not (tmp_path / run_id / "planning-context-coverage.json").exists()
+
+
 def test_absent_path_act_unchanged_no_receipt(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text("# Corpus\n\nCells.", encoding="utf-8")
+    write_primary_slide_bundle(bundle, "# Corpus\n\nCells.\nanchor one")
     handle = _RecordingHandle(_response_for_units([_unit()]))
     result = pass1_act.act(
         _state(
@@ -387,9 +502,8 @@ def test_absent_path_act_unchanged_no_receipt(tmp_path: Path) -> None:
 def test_corpus_bytes_unchanged_after_prompt_assembly(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    corpus_path = bundle / "extracted.md"
     corpus = "# Corpus\n\nImmutable source text for hash pin.\n"
-    corpus_path.write_text(corpus, encoding="utf-8")
+    corpus_path = write_primary_slide_bundle(bundle, corpus)
     before = hashlib.sha256(corpus_path.read_bytes()).hexdigest()
     pass1_act.assemble_pass1_prompt(
         {
@@ -407,7 +521,7 @@ def test_lesson_plan_artifact_still_written(tmp_path: Path) -> None:
     """AC-H6 continuity: lesson_plan artifact path still produced."""
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text("# Corpus\n\nClinic AI.", encoding="utf-8")
+    write_primary_slide_bundle(bundle, "# Corpus\n\nClinic AI.\nanchor one")
     units = [
         _unit(
             title="Clinic use cases for generative AI",

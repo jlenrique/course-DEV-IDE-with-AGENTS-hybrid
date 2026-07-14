@@ -109,3 +109,8 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-empty-companions-smoke.md`
   summary: A nonexistent run_dir (typo'd runs_root/trial_id) at the runner seam returns None silently — ratified framing dropped with no signal, indistinguishable from legitimately-absent companions.
   evidence: Review pass 2026-07-11; planning_context.py ~333-336 treats missing dir as absent-files.
+
+## Deferred from: code review of 38-3a-research-packet-consume-side (2026-07-14)
+
+- [edge] Signed percentage surfaces such as `-5%` currently lose their sign in the shared figure-token neck and can compare as positive percentages. This behavior predates Amendment 8; address as a separate fidelity-hardening slice with explicit signed-number semantics.
+- [edge] Leading-decimal percentage surfaces such as `.5%` currently suffix-match as `5%`. This behavior predates Amendment 8; address with signed/decimal token-boundary hardening rather than broadening the live-run correction.

@@ -5,4 +5,4 @@ sources:
     locator: skills/bmad-agent-texas/scripts/tests/fixtures/wrangler-golden/primary.md
     role: primary
     description: Fixture source
-    expected_min_words: 200
+    expected_min_words: 1

@@ -24,10 +24,12 @@ from app.marcus.lesson_plan.scene_extraction import (
     _faithfulness_failures,
     scene_faithfulness_prompt_constraints,
 )
+from app.marcus.orchestrator import workbook_prework_writers
 from app.marcus.orchestrator.workbook_prework_writers import (
     DEEP_DIVE_PROVIDER_CONTRACT_MODE,
     DEEP_DIVE_PROVIDER_NORMALIZER_VERSION,
     WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS,
+    WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S,
     DeepDiveProviderOutputError,
     LiveDeepDiveWriter,
     LivePromiseTransformer,
@@ -135,21 +137,83 @@ def test_deep_dive_alone_binds_32k_and_effective_config_identity() -> None:
     promise = LivePromiseTransformer(chat_factory=factory)
     deep = LiveDeepDiveWriter(chat_factory=factory)
     overridden = LiveDeepDiveWriter(chat_factory=factory, max_completion_tokens=12345)
+    timeout_overridden = LiveDeepDiveWriter(chat_factory=factory, request_timeout=301.0)
 
     assert WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS == 32000
+    assert WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S == 300.0
     assert [call["max_completion_tokens"] for call in calls] == [
         4096,
         4096,
         32000,
         12345,
+        32000,
     ]
+    assert [call["request_timeout"] for call in calls] == [120.0, 120.0, 300.0, 300.0, 301.0]
+    assert [call["max_retries"] for call in calls] == [0, 0, 0, 0, 0]
     assert scene.model_config_digest == promise.model_config_digest
     assert deep.model_config_digest != scene.model_config_digest
     assert overridden.model_config_digest != deep.model_config_digest
+    assert timeout_overridden.model_config_digest != deep.model_config_digest
     assert calls[2]["system_prompt_hash"] == deep.model_config_digest
     assert calls[3]["system_prompt_hash"] == overridden.model_config_digest
+    assert calls[4]["system_prompt_hash"] == timeout_overridden.model_config_digest
     assert DEEP_DIVE_PROVIDER_CONTRACT_MODE == "raw-json-schema"
     assert DEEP_DIVE_PROVIDER_NORMALIZER_VERSION == "deep-dive-provider-normalizer.v1"
+
+
+def test_writer_retry_posture_is_not_caller_selectable() -> None:
+    def factory(*args, **kwargs):
+        return SimpleNamespace(chat=_Chat({}), entry=None)
+
+    for writer_type in (LiveSceneComposer, LivePromiseTransformer, LiveDeepDiveWriter):
+        with pytest.raises(TypeError, match="max_retries"):
+            writer_type(chat_factory=factory, max_retries=1)
+
+
+@pytest.mark.parametrize(
+    "invalid", [True, 0, -1, 10**1000, float("inf"), float("nan"), "300"]
+)
+def test_deep_dive_rejects_invalid_request_timeout(invalid: object) -> None:
+    with pytest.raises(ValueError, match="positive finite"):
+        LiveDeepDiveWriter(
+            chat_factory=lambda *args, **kwargs: SimpleNamespace(chat=_Chat({}), entry=None),
+            request_timeout=invalid,
+        )
+
+
+def test_equivalent_integer_and_float_timeouts_share_identity() -> None:
+    def factory(*args, **kwargs):
+        return SimpleNamespace(chat=_Chat({}), entry=None)
+
+    integer = LiveDeepDiveWriter(chat_factory=factory, request_timeout=300)
+    floating = LiveDeepDiveWriter(chat_factory=factory, request_timeout=300.0)
+    assert integer.model_config_digest == floating.model_config_digest
+
+
+def test_effective_identity_extras_cannot_shadow_reserved_execution_fields() -> None:
+    def factory(*args, **kwargs):
+        return SimpleNamespace(chat=_Chat({}), entry=None)
+
+    with pytest.raises(ValueError, match="request_timeout"):
+        workbook_prework_writers._StructuredWriter(
+            chat_factory=factory,
+            effective_adapter="test-adapter",
+            effective_identity_extra={"request_timeout": 999.0},
+        )
+
+
+def test_scene_and_promise_retain_completion_budget_override_with_fixed_posture() -> None:
+    calls: list[dict[str, object]] = []
+
+    def factory(*args, **kwargs):
+        calls.append(kwargs)
+        return SimpleNamespace(chat=_Chat({}), entry=None)
+
+    LiveSceneComposer(chat_factory=factory, max_completion_tokens=123)
+    LivePromiseTransformer(chat_factory=factory, max_completion_tokens=456)
+    assert [call["max_completion_tokens"] for call in calls] == [123, 456]
+    assert [call["request_timeout"] for call in calls] == [120.0, 120.0]
+    assert [call["max_retries"] for call in calls] == [0, 0]
 
 
 def test_deep_dive_normalizer_only_removes_safe_exact_duplicate_terms() -> None:

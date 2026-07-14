@@ -21,15 +21,25 @@ These pin (RED-first):
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+from app.marcus.lesson_plan.pass1_source_span_catalog import (
+    build_pass1_source_span_catalog,
+)
+from app.models.pass1_source_section import (
+    Pass1AuthenticatedSourceSection,
+    canonical_extracted_content_digest,
+)
 from app.models.state.cache_state import CacheState
 from app.models.state.run_state import RunState
 from app.specialists.irene_pass1 import _act as pass1_act
+from tests._helpers.pass1_bundle import write_primary_slide_bundle
+from tests._helpers.pass1_catalog_response import select_catalog_ids
 
 # A distinctive value that cannot collide with reference-doc/prompt text.
 _SENTINEL_FLOOR = 424242
@@ -42,7 +52,10 @@ class _RecordingChat:
 
     def invoke(self, messages: list[dict[str, str]]) -> SimpleNamespace:
         self.calls.append(messages)
-        return SimpleNamespace(content=self.response_text, usage_metadata=None)
+        return SimpleNamespace(
+            content=select_catalog_ids(self.response_text, messages),
+            usage_metadata=None,
+        )
 
 
 @dataclass
@@ -74,6 +87,7 @@ def _minimal_response() -> str:
                     "title": "T",
                     "learning_objective": "lo",
                     "scope_decision": "in-scope",
+                    "source_refs": ["anchor one"],
                     "rationale": "r",
                     "cluster_id": "c-u1",
                     "cluster_role": "head",
@@ -124,7 +138,7 @@ def test_strip_does_not_mutate_the_full_payload() -> None:
 def test_act_path_prompt_carries_zero_floor_bytes(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text("# Corpus\n\nSource.", encoding="utf-8")
+    write_primary_slide_bundle(bundle, "# Corpus\n\nSource.\nanchor one")
     handle = _RecordingHandle(_minimal_response())
     pass1_act.act(
         _state(
@@ -166,20 +180,24 @@ def _floored_prior_plan_payload() -> dict:
                 "plan_units": [
                     {
                         "unit_id": "u1",
+                        "scope_decision": "in-scope",
                         "title": "T1",
                         "cluster_id": "c-u1",
                         "cluster_role": "head",
                         "cluster_interstitial_count": 0,
                         "floor_subdivision_index": 0,
+                        "source_ref_ids": ["span:sha256:" + "1" * 64],
                         "source_refs": ["anchor one"],
                     },
                     {
                         "unit_id": "u2",
+                        "scope_decision": "in-scope",
                         "title": "T2",
                         "cluster_id": "c-u1#f1",
                         "cluster_role": "head",
                         "cluster_interstitial_count": 0,
                         "floor_subdivision_index": 1,
+                        "source_ref_ids": ["span:sha256:" + "2" * 64],
                         "source_refs": ["anchor two"],
                     },
                 ]
@@ -197,8 +215,9 @@ def test_visible_payload_scrubs_floor_subdivision_index() -> None:
         assert "floor_subdivision_index" not in text
     # the minted cluster ids are legitimate downstream state and stay visible
     assert "c-u1#f1" in user_msg
-    # anchors (real plan state) stay visible too
-    assert "anchor two" in user_msg
+    # selection IDs stay visible; deterministic projected bytes do not.
+    assert "span:sha256:" + "2" * 64 in user_msg
+    assert "anchor two" not in user_msg
 
 
 def test_scrub_does_not_mutate_the_full_payload() -> None:
@@ -214,9 +233,8 @@ def test_scrub_does_not_mutate_the_full_payload() -> None:
 def test_act_path_prompt_carries_zero_fingerprint_bytes(tmp_path: Path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text(
-        "# Corpus\n\nanchor one\nanchor two", encoding="utf-8"
-    )
+    source_text = "# Corpus\n\nSource.\nanchor one\nanchor two"
+    write_primary_slide_bundle(bundle, source_text)
     handle = _RecordingHandle(_minimal_response())
     payload = _floored_prior_plan_payload()
     payload.update(
@@ -225,6 +243,31 @@ def test_act_path_prompt_carries_zero_fingerprint_bytes(tmp_path: Path) -> None:
             "runs_root": str(tmp_path),
             "bundle_reference": str(bundle),
         }
+    )
+    source_sections = (
+        Pass1AuthenticatedSourceSection(
+            source_id=(
+                "slides/slide-1-primary.md|sha256:"
+                + hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+            ),
+            source_content_digest=(
+                "sha256:" + hashlib.sha256(source_text.encode("utf-8")).hexdigest()
+            ),
+            extracted_content_digest=canonical_extracted_content_digest(source_text),
+            body=source_text,
+        ),
+    )
+    catalog = build_pass1_source_span_catalog(source_sections)
+    entries = {entry.text: entry.span_id for entry in catalog.entries}
+    prior_plan = payload["upstream_output"]["lesson_plan"]
+    prior_plan["source_span_catalog_digest"] = catalog.catalog_digest
+    prior_plan["plan_units"][0]["source_ref_ids"] = [entries["anchor one"]]
+    prior_plan["plan_units"][1]["source_ref_ids"] = [entries["anchor two"]]
+    payload["prior_plan_authority_receipt"] = (
+        pass1_act.validate_pass1_plan_authority(
+            prior_plan,
+            source_sections=source_sections,
+        )
     )
     pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
     assert handle.chat.calls

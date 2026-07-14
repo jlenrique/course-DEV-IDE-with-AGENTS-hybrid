@@ -1,1 +1,11 @@
-{"schema_version":"1.0","run_id":"TEXAS-FIXTURE-001","artifacts":[{"path":"extracted.md","sha256":"abc","size_bytes":80}]}
+{
+  "schema_version": "1.0",
+  "run_id": "TEXAS-FIXTURE-001",
+  "artifacts": [
+    {"path": "extracted.md", "sha256": "ea151554f870246ac488891407d80c3b24a3b65bd1d0d3fa1413e361f964d5f4", "size_bytes": 134},
+    {"path": "metadata.json", "sha256": "f95e499b518901795aa7700859bd1e1c655c3117817940c269f99e24d96ee5c5", "size_bytes": 690},
+    {"path": "extraction-report.yaml", "sha256": "25afb982e8ddbf7243c75349e93494481ee1df404d841e0efcf6d02cfaed0237", "size_bytes": 74},
+    {"path": "ingestion-evidence.md", "sha256": "a3eea21f34edb0125b7dee8e0afc43e2f2250cf714abdb4c0c24a02146780f01", "size_bytes": 46},
+    {"path": "result.yaml", "sha256": "c961f9392fb66b2cf6c6b7ab7f6181e154493f8b2037abe1ba31b620746adc1c", "size_bytes": 177}
+  ]
+}

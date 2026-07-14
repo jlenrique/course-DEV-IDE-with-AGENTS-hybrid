@@ -21,14 +21,24 @@ G0→G2C data plane.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 from uuid import UUID
 
+from app.marcus.lesson_plan.pass1_authority import (
+    Pass1PlanAuthorityError,
+    assert_receipt_matches_plan,
+)
+from app.marcus.lesson_plan.slide_authority import read_contained_regular_bytes
 from app.marcus.orchestrator import enrichment_consumption, g0_enrichment_wiring
 from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
+)
+from app.pass1_generation_lock import (
+    Pass1GenerationLockError,
+    pass1_generation_lock,
 )
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.gary.payload_contract import (
@@ -43,6 +53,16 @@ BUILDER_SPECIALIST_ID = "package_builder"
 GARY_PACKAGE_NODE_ID = "06"
 BUILDER_NODE_IDS: frozenset[str] = frozenset({GARY_PACKAGE_NODE_ID})
 BUILDER_MODEL_MARKER = "deterministic-package-builder"
+CURRENT_BUILDER_MODEL_MARKER = "deterministic-package-builder-authority-v1"
+
+
+def _unique_json_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate authority key: {key}")
+        result[key] = value
+    return result
 
 
 class BuilderInputError(SpecialistDispatchError):
@@ -122,6 +142,25 @@ def build_gary_briefs(
             "cd_directive missing experience_profile; cannot derive slide briefs",
             tag="builder.gary.cd-directive-shape",
         )
+    if not all(isinstance(unit, dict) for unit in plan_units):
+        raise BuilderInputError(
+            "lesson_plan plan_units must all be objects",
+            tag="builder.gary.plan-authority-invalid",
+        )
+    all_unit_ids: list[str] = []
+    for unit in plan_units:
+        unit_id = unit.get("unit_id")
+        if (
+            not isinstance(unit_id, str)
+            or not unit_id
+            or unit_id != unit_id.strip()
+            or unit_id in all_unit_ids
+        ):
+            raise BuilderInputError(
+                "lesson_plan carries blank or duplicate unit authority",
+                tag="builder.gary.plan-authority-invalid",
+            )
+        all_unit_ids.append(unit_id)
     units = [
         unit
         for unit in plan_units
@@ -152,6 +191,15 @@ def build_gary_briefs(
         if raw_fidelity in recognized_fidelity:
             slide["fidelity"] = raw_fidelity
         slides.append(slide)
+
+    expected_refs = [str(unit["unit_id"]) for unit in units]
+    actual_refs = [slide["source_ref"] for slide in slides]
+    slide_ids = [slide["slide_id"] for slide in slides]
+    if actual_refs != expected_refs or len(set(slide_ids)) != len(slide_ids):
+        raise BuilderInputError(
+            "package slide authority is not a unique ordered plan projection",
+            tag="builder.gary.plan-authority-invalid",
+        )
 
     proportions = cd_directive.get("slide_mode_proportions")
     rationale = str(cd_directive.get("creative_rationale") or "").strip()
@@ -205,6 +253,40 @@ def run_builder_node(
     runs_root: Path | None = None,
     trial_id: UUID | str | None = None,
 ) -> ProductionEnvelope:
+    """Execute one package builder under the shared Pass-1 generation lock."""
+    run_dir = (
+        runs_root / str(trial_id)
+        if runs_root is not None and trial_id is not None
+        else None
+    )
+    try:
+        if run_dir is not None and run_dir.is_dir():
+            with pass1_generation_lock(run_dir):
+                return _run_builder_node_locked(
+                    node_id=node_id,
+                    production_envelope=production_envelope,
+                    runs_root=runs_root,
+                    trial_id=trial_id,
+                )
+        return _run_builder_node_locked(
+            node_id=node_id,
+            production_envelope=production_envelope,
+            runs_root=runs_root,
+            trial_id=trial_id,
+        )
+    except Pass1GenerationLockError as exc:
+        raise BuilderInputError(
+            str(exc), tag="builder.gary.plan-authority-invalid"
+        ) from exc
+
+
+def _run_builder_node_locked(
+    *,
+    node_id: str,
+    production_envelope: ProductionEnvelope,
+    runs_root: Path | None = None,
+    trial_id: UUID | str | None = None,
+) -> ProductionEnvelope:
     """Execute the builder registered at ``node_id``; idempotent per node.
 
     Mirrors the walkers' per-node skip rule: a node that already carries
@@ -220,8 +302,9 @@ def run_builder_node(
             f"no package builder registered for manifest node {node_id!r}",
             tag="builder.unknown-node",
         )
-    if production_envelope.get_contribution(BUILDER_SPECIALIST_ID, node_id=node_id) is not None:
-        return production_envelope
+    existing_package = production_envelope.get_contribution(
+        BUILDER_SPECIALIST_ID, node_id=node_id
+    )
 
     irene = production_envelope.latest_for_specialist("irene_pass1")
     cd = production_envelope.latest_for_specialist("cd")
@@ -236,17 +319,111 @@ def run_builder_node(
             tag="builder.gary.upstream-missing",
         )
 
+    lesson_plan = irene.output.get("lesson_plan") or {}
+    authority_receipt = irene.output.get("plan_authority_receipt")
+    authority_receipt_path = irene.output.get("plan_authority_receipt_path")
+    authority_path = (
+        runs_root / str(trial_id) / "irene-pass1.plan-authority.json"
+        if runs_root is not None and trial_id is not None
+        else None
+    )
+    try:
+        persisted_marker = authority_path is not None and (
+            authority_path.exists() or authority_path.is_symlink()
+        )
+        current_markers = (
+            authority_receipt is not None
+            or authority_receipt_path is not None
+            or persisted_marker
+        )
+        current_format = current_markers or (
+            existing_package is not None
+            and existing_package.model_used == CURRENT_BUILDER_MODEL_MARKER
+        )
+        legacy_format = (
+            not current_format
+            and existing_package is not None
+            and existing_package.model_used == BUILDER_MODEL_MARKER
+        )
+        if not current_format and not legacy_format:
+            raise Pass1PlanAuthorityError(
+                "Pass-1 contribution has no current receipt or positive legacy evidence"
+            )
+        if current_format and authority_receipt is None:
+            raise Pass1PlanAuthorityError(
+                "current Pass-1 contribution is missing its authority receipt"
+            )
+        if authority_receipt is not None:
+            assert_receipt_matches_plan(lesson_plan, authority_receipt)
+            if authority_receipt_path is not None and (
+                authority_path is None
+                or Path(str(authority_receipt_path)).resolve()
+                != authority_path.resolve()
+            ):
+                raise Pass1PlanAuthorityError(
+                    "Pass-1 authority receipt path disagrees with run coordinate"
+                )
+            if authority_path is not None:
+                if authority_path.is_symlink() or not authority_path.is_file():
+                    raise Pass1PlanAuthorityError(
+                        "current Pass-1 authority sidecar is missing or unsafe"
+                    )
+                persisted = json.loads(
+                    read_contained_regular_bytes(
+                        authority_path.parent,
+                        authority_path,
+                        "Pass-1 authority sidecar",
+                    ).decode("utf-8"),
+                    object_pairs_hook=_unique_json_object,
+                )
+                if persisted != authority_receipt:
+                    raise Pass1PlanAuthorityError(
+                        "Pass-1 authority sidecar and contribution disagree"
+                    )
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        raise BuilderInputError(
+            f"Pass-1 plan authority validation failed: {exc}",
+            tag="builder.gary.plan-authority-invalid",
+        ) from exc
+
     package = build_gary_briefs(
-        irene.output.get("lesson_plan") or {},
+        lesson_plan,
         cd.output.get("cd_directive") or {},
         enrichment_hint=_deck_enrichment_hint(runs_root, trial_id),
     )
+    if existing_package is not None:
+        if existing_package.output != package:
+            raise BuilderInputError(
+                "existing §06 package disagrees with current authority projection",
+                tag="builder.gary.plan-authority-invalid",
+            )
+        if current_format and existing_package.model_used == BUILDER_MODEL_MARKER:
+            replacement = existing_package.model_copy(
+                update={"model_used": CURRENT_BUILDER_MODEL_MARKER}
+            )
+            contributions = tuple(
+                replacement if row is existing_package else row
+                for row in production_envelope.contributions
+            )
+            return production_envelope.model_copy(
+                update={"contributions": contributions}
+            )
+        if current_format and existing_package.model_used != CURRENT_BUILDER_MODEL_MARKER:
+            raise BuilderInputError(
+                "existing §06 package carries an unknown authority-format marker",
+                tag="builder.gary.plan-authority-invalid",
+            )
+        return production_envelope
     updated = production_envelope.model_copy(deep=True)
     updated.add_contribution(
         SpecialistContribution.from_output(
             specialist_id=BUILDER_SPECIALIST_ID,
             output=package,
-            model_used=BUILDER_MODEL_MARKER,
+            model_used=(
+                CURRENT_BUILDER_MODEL_MARKER
+                if current_format
+                else BUILDER_MODEL_MARKER
+            ),
             node_id=node_id,
         )
     )
@@ -255,6 +432,7 @@ def run_builder_node(
 
 __all__ = [
     "BUILDER_MODEL_MARKER",
+    "CURRENT_BUILDER_MODEL_MARKER",
     "BUILDER_NODE_IDS",
     "BUILDER_SPECIALIST_ID",
     "BuilderInputError",

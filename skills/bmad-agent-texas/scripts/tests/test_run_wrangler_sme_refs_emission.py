@@ -80,6 +80,7 @@ def test_metadata_json_emits_sme_refs_with_source_ref_shape(tmp_path: Path) -> N
             ),
         ],
         "2026-05-22T12:00:00Z",
+        "d" * 64,
     )
 
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
@@ -103,6 +104,28 @@ def test_metadata_json_emits_sme_refs_with_source_ref_shape(tmp_path: Path) -> N
         set(entry) == {"source_id", "path", "content_digest"}
         for entry in metadata["sme_refs"]
     )
+    assert metadata["source_authority"] == [
+        {
+            "source_id": "src-local",
+            "path": "corpus/local.md",
+            "source_content_digest": hashlib.sha256(
+                first_text.encode("utf-8")
+            ).hexdigest(),
+            "extracted_content_digest": hashlib.sha256(
+                first_text.encode("utf-8")
+            ).hexdigest(),
+        },
+        {
+            "source_id": "src-url",
+            "path": None,
+            "source_content_digest": hashlib.sha256(
+                second_text.encode("utf-8")
+            ).hexdigest(),
+            "extracted_content_digest": hashlib.sha256(
+                second_text.encode("utf-8")
+            ).hexdigest(),
+        },
+    ]
 
 
 def test_sme_refs_are_per_source_not_whole_bundle_digest(tmp_path: Path) -> None:
@@ -116,6 +139,7 @@ def test_sme_refs_are_per_source_not_whole_bundle_digest(tmp_path: Path) -> None
         "TEST-34-4-DIGEST",
         [_outcome("src-primary", content_text=source_text)],
         "2026-05-22T12:00:00Z",
+        "d" * 64,
     )
 
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
@@ -123,6 +147,37 @@ def test_sme_refs_are_per_source_not_whole_bundle_digest(tmp_path: Path) -> None
     assert emitted_digest == hashlib.sha256(source_text.encode("utf-8")).hexdigest()
     assert emitted_digest != hashlib.sha256(
         whole_bundle_text.encode("utf-8")
+    ).hexdigest()
+
+
+def test_source_authority_separates_raw_local_text_from_extracted_text(
+    tmp_path: Path,
+) -> None:
+    bundle = tmp_path / "bundle"
+    bundle.mkdir()
+    outcome = _outcome(
+        "src-notion-export",
+        locator="slides/slide-1-notion.md",
+        content_text="# Normalized heading\n",
+    )
+    outcome.authority_text = "\\# Escaped heading\n"
+
+    metadata_path = _runner._write_metadata_json(
+        bundle,
+        "TEST-AUTHORITY",
+        [outcome],
+        "2026-05-22T12:00:00Z",
+        "d" * 64,
+    )
+
+    authority = json.loads(metadata_path.read_text(encoding="utf-8"))[
+        "source_authority"
+    ][0]
+    assert authority["source_content_digest"] == hashlib.sha256(
+        outcome.authority_text.encode("utf-8")
+    ).hexdigest()
+    assert authority["extracted_content_digest"] == hashlib.sha256(
+        outcome.authority_text.strip().encode("utf-8")
     ).hexdigest()
 
 

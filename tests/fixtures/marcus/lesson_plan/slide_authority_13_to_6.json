@@ -1,0 +1,55 @@
+{
+  "manifest_segments": [
+    {"segment_id": "seg-01", "slide_id": "slide-01", "narration_text": "Narration one."},
+    {"segment_id": "seg-02", "slide_id": "slide-02", "narration_text": "Narration two."},
+    {"segment_id": "seg-03", "slide_id": "slide-03", "narration_text": "Narration three."},
+    {"segment_id": "seg-04", "slide_id": "slide-04", "narration_text": "Narration four."},
+    {"segment_id": "seg-05", "slide_id": "slide-05", "narration_text": "Narration five."},
+    {"segment_id": "seg-06", "slide_id": "slide-06", "narration_text": "Narration six."},
+    {"segment_id": "seg-07", "slide_id": "slide-07", "narration_text": "Narration seven."},
+    {"segment_id": "seg-08", "slide_id": "slide-08", "narration_text": "Narration eight."},
+    {"segment_id": "seg-09", "slide_id": "slide-09", "narration_text": "Narration nine."},
+    {"segment_id": "seg-10", "slide_id": "slide-10", "narration_text": "Narration ten."},
+    {"segment_id": "seg-11", "slide_id": "slide-11", "narration_text": "Narration eleven."},
+    {"segment_id": "seg-12", "slide_id": "slide-12", "narration_text": "Narration twelve."},
+    {"segment_id": "seg-13", "slide_id": "slide-13", "narration_text": "Narration thirteen."}
+  ],
+  "plan_units": [
+    {"unit_id": "u01", "scope_decision": "in-scope", "cluster_id": "c-u01", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["anchor-source-1-head"]},
+    {"unit_id": "u02", "scope_decision": "in-scope", "cluster_id": "c-u02", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["anchor-source-2-head"]},
+    {"unit_id": "u03", "scope_decision": "in-scope", "cluster_id": "c-u02", "cluster_role": "interstitial", "parent_slide_id": "u02", "source_refs": ["anchor-source-2-a"]},
+    {"unit_id": "u04", "scope_decision": "in-scope", "cluster_id": "c-u02", "cluster_role": "interstitial", "parent_slide_id": "u02", "source_refs": ["anchor-source-2-b"]},
+    {"unit_id": "u05", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["anchor-source-3-head"]},
+    {"unit_id": "u06", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "interstitial", "parent_slide_id": "u05", "source_refs": ["anchor-source-3-a"]},
+    {"unit_id": "u07", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "interstitial", "parent_slide_id": "u05", "source_refs": ["anchor-source-3-b"]},
+    {"unit_id": "u08", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "interstitial", "parent_slide_id": "u05", "source_refs": ["anchor-source-3-c"]},
+    {"unit_id": "u09", "scope_decision": "in-scope", "cluster_id": "c-u09", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["anchor-source-4-head"]},
+    {"unit_id": "u10", "scope_decision": "in-scope", "cluster_id": "c-u10", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["anchor-source-5-head"]},
+    {"unit_id": "u11", "scope_decision": "in-scope", "cluster_id": "c-u10", "cluster_role": "interstitial", "parent_slide_id": "u10", "source_refs": ["anchor-source-5-a"]},
+    {"unit_id": "u12", "scope_decision": "in-scope", "cluster_id": "c-u10", "cluster_role": "interstitial", "parent_slide_id": "u10", "source_refs": ["anchor-source-5-b"]},
+    {"unit_id": "u13", "scope_decision": "in-scope", "cluster_id": "c-u13", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["anchor-source-6-head"]}
+  ],
+  "package_slides": [
+    {"slide_id": "slide-01", "source_ref": "u01"},
+    {"slide_id": "slide-02", "source_ref": "u02"},
+    {"slide_id": "slide-03", "source_ref": "u03"},
+    {"slide_id": "slide-04", "source_ref": "u04"},
+    {"slide_id": "slide-05", "source_ref": "u05"},
+    {"slide_id": "slide-06", "source_ref": "u06"},
+    {"slide_id": "slide-07", "source_ref": "u07"},
+    {"slide_id": "slide-08", "source_ref": "u08"},
+    {"slide_id": "slide-09", "source_ref": "u09"},
+    {"slide_id": "slide-10", "source_ref": "u10"},
+    {"slide_id": "slide-11", "source_ref": "u11"},
+    {"slide_id": "slide-12", "source_ref": "u12"},
+    {"slide_id": "slide-13", "source_ref": "u13"}
+  ],
+  "source_slides": {
+    "slide-1-one.md": "anchor-source-1-head\n- **Narration (Speaker Notes):** source note one\n",
+    "slide-2-two.md": "anchor-source-2-head\nanchor-source-2-a\nanchor-source-2-b\n- **Narration (Speaker Notes):** source note two\n",
+    "slide-3-three.md": "anchor-source-3-head\nanchor-source-3-a\nanchor-source-3-b\nanchor-source-3-c\n- **Narration (Speaker Notes):** source note three\n",
+    "slide-4-four.md": "anchor-source-4-head\n- **Narration (Speaker Notes):** source note four\n",
+    "slide-5-five.md": "anchor-source-5-head\nanchor-source-5-a\nanchor-source-5-b\n- **Narration (Speaker Notes):** source note five\n",
+    "slide-6-six.md": "anchor-source-6-head\n- **Narration (Speaker Notes):** source note six\n"
+  }
+}

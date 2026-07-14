@@ -30,6 +30,7 @@ CONSUMED_PAYLOAD_KEYS: frozenset[str] = frozenset(
         "mode",
         "pass_phase",
         "planning_context",
+        "prior_plan_authority_receipt",
         "run_id",
         "runs_root",
         "upstream_output",

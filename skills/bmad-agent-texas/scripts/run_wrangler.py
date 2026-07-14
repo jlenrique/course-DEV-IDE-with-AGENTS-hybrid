@@ -35,7 +35,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import re
+import stat
 import sys
+import tempfile
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -81,6 +85,112 @@ _cli_encoding = load_module_from_path(
     "texas_cli_encoding",
     _THIS_DIR / "_cli_encoding.py",
 )
+
+_CANONICAL_SLIDE_REF = re.compile(r"^slides/slide-[1-9][0-9]*-.+\.md$")
+
+
+def _read_stable_regular_bytes(path: Path) -> bytes:
+    """Capture one named regular-file snapshot without following a symlink."""
+    before = path.stat(follow_symlinks=False)
+    if not stat.S_ISREG(before.st_mode):
+        raise OSError("local source is not a regular file")
+    with path.open("rb") as stream:
+        opened_before = os.fstat(stream.fileno())
+        if (
+            not stat.S_ISREG(opened_before.st_mode)
+            or (opened_before.st_dev, opened_before.st_ino)
+            != (before.st_dev, before.st_ino)
+        ):
+            raise OSError("local source changed before extraction")
+        raw = stream.read()
+        stream.seek(0)
+        confirmation = stream.read()
+        if confirmation != raw:
+            raise OSError("local source changed during snapshot")
+        opened_after = os.fstat(stream.fileno())
+    after = path.stat(follow_symlinks=False)
+    identities = {
+        (row.st_dev, row.st_ino, row.st_size, row.st_mtime_ns)
+        for row in (before, opened_before, opened_after, after)
+    }
+    if len(identities) != 1:
+        raise OSError("local source changed during snapshot")
+    return raw
+
+
+def _coordinate_chain(path: Path) -> tuple[tuple[int, int, int, int], ...]:
+    absolute = path.absolute()
+    current = Path(absolute.anchor)
+    coordinates = [current, *(current := current / part for part in absolute.parts[1:])]
+    return tuple(
+        (
+            row.st_dev,
+            row.st_ino,
+            row.st_mode,
+            getattr(row, "st_file_attributes", 0),
+        )
+        for coordinate in coordinates
+        for row in (coordinate.stat(follow_symlinks=False),)
+    )
+
+
+def _target_fingerprint(path: Path) -> tuple[int, int, int, int, int, int, str]:
+    """Bind a local authority target's identity and observable content state."""
+    row = path.stat(follow_symlinks=False)
+    digest = hashlib.sha256(_read_stable_regular_bytes(path)).hexdigest()
+    return (
+        row.st_dev,
+        row.st_ino,
+        row.st_mode,
+        row.st_size,
+        row.st_mtime_ns,
+        row.st_nlink,
+        digest,
+    )
+
+
+def _contains_link_or_reparse(path: Path) -> bool:
+    reparse_flag = getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0)
+    return any(
+        stat.S_ISLNK(mode) or (
+            reparse_flag
+            and attributes & reparse_flag
+        )
+        for _dev, _ino, mode, attributes in _coordinate_chain(path)
+    )
+
+
+def _verify_authority_coordinate(src: dict[str, Any]) -> None:
+    coordinate = src.get("_authority_coordinate")
+    expected = src.get("_authority_coordinate_chain")
+    target = src.get("_authority_target")
+    expected_target = src.get("_authority_target_fingerprint")
+    if coordinate is not None and (
+        not isinstance(coordinate, str)
+        or not isinstance(expected, tuple)
+        or _coordinate_chain(Path(coordinate)) != expected
+    ):
+        raise OSError("source authority coordinate changed after directive load")
+    if target is not None and (
+        not isinstance(target, str)
+        or not isinstance(expected_target, tuple)
+        or _target_fingerprint(Path(target)) != expected_target
+    ):
+        raise OSError("source authority target changed after directive load")
+
+
+def _verify_captured_authority_bytes(src: dict[str, Any], raw: bytes) -> None:
+    """Join the exact parser input bytes to the directive-load authority."""
+    expected = src.get("_authority_target_fingerprint")
+    if expected is None:
+        return
+    if (
+        not isinstance(expected, tuple)
+        or len(expected) != 7
+        or not isinstance(expected[-1], str)
+        or hashlib.sha256(raw).hexdigest() != expected[-1]
+    ):
+        raise OSError("captured source bytes disagree with directive authority")
 
 # Story 26-7 AC-C.2 + code-review finding: fire the guard at import time,
 # not just in main(). If this module is `python -m`-loaded (or imported
@@ -183,6 +293,7 @@ class SourceOutcome:
     content_text: str
     section_title: str
     report: Any  # extraction_validator.ExtractionReport
+    authority_text: str | None = None
     error_kind: str | None = None
     error_detail: str | None = None
 
@@ -349,6 +460,9 @@ def _load_directive(path: Path) -> dict[str, Any]:
         raise DirectiveError(f"Directive YAML failed to parse: {exc}") from exc
     if not isinstance(data, dict):
         raise DirectiveError("Directive root must be a mapping")
+    directive_sha256 = hashlib.sha256(
+        yaml.safe_dump(data, sort_keys=True, allow_unicode=True).encode("utf-8")
+    ).hexdigest()
 
     # Minimum-required shape validation — fail loudly at the door.
     for field in ("run_id", "sources"):
@@ -357,6 +471,15 @@ def _load_directive(path: Path) -> dict[str, Any]:
     sources = data.get("sources")
     if not isinstance(sources, list) or not sources:
         raise DirectiveError("Directive.sources must be a non-empty list")
+    for i, src in enumerate(sources):
+        if isinstance(src, dict):
+            reserved = sorted(
+                key for key in src if isinstance(key, str) and key.startswith("_")
+            )
+            if reserved:
+                raise DirectiveError(
+                    f"sources[{i}] uses reserved internal key(s): {reserved}"
+                )
 
     # Resolve relative local_file locators against the directive's corpus_dir.
     # The composer emits bare filenames (e.g. "lesson.docx") with the absolute
@@ -369,21 +492,48 @@ def _load_directive(path: Path) -> dict[str, Any]:
     corpus_dir = data.get("corpus_dir")
     if isinstance(corpus_dir, str) and corpus_dir.strip():
         corpus_root = Path(corpus_dir)
-        for src in sources:
+        for source_index, src in enumerate(sources):
             if not isinstance(src, dict):
                 continue
             loc = src.get("locator")
             if not isinstance(loc, str) or not loc.strip():
                 continue
             loc_path = Path(loc)
-            if loc_path.is_absolute() or loc_path.is_file():
+            if loc_path.is_absolute() or src.get("provider") not in {
+                "local_file",
+                "md",
+                "pdf",
+                "docx",
+            }:
                 continue
             candidate = corpus_root / loc
-            if candidate.is_file():
-                # Store the resolved absolute path so the rewrite is robust even
-                # when corpus_dir itself is relative (otherwise the locator stays
-                # cwd-dependent — the very failure mode this rewrite fixes).
-                src["locator"] = str(candidate.resolve())
+            try:
+                resolved_root = corpus_root.resolve(strict=True)
+                lexical_root = corpus_root.absolute()
+                lexical_candidate = candidate.absolute()
+                lexical_candidate.relative_to(lexical_root)
+                chain_before = _coordinate_chain(lexical_candidate)
+                if _contains_link_or_reparse(lexical_candidate):
+                    raise ValueError("locator traverses a link or reparse point")
+                resolved_candidate = candidate.resolve(strict=True)
+                resolved_candidate.relative_to(resolved_root)
+                if _coordinate_chain(lexical_candidate) != chain_before:
+                    raise ValueError("locator changed during containment check")
+            except (OSError, RuntimeError, ValueError) as exc:
+                raise DirectiveError(
+                    f"sources[{source_index}].locator escapes corpus_dir or is missing"
+                ) from exc
+            src["_authority_locator"] = loc
+            src["_authority_coordinate"] = str(lexical_candidate)
+            src["_authority_coordinate_chain"] = chain_before
+            src["_authority_target"] = str(resolved_candidate)
+            src["_authority_target_fingerprint"] = _target_fingerprint(
+                resolved_candidate
+            )
+            # Store the resolved absolute path so the rewrite is robust even
+            # when corpus_dir itself is relative (otherwise the locator stays
+            # cwd-dependent — the very failure mode this rewrite fixes).
+            src["locator"] = str(resolved_candidate)
 
     # Per-row shape classification (Story 27-2 AC-B.6).
     per_row_shapes: list[str] = []
@@ -491,6 +641,7 @@ def _load_directive(path: Path) -> dict[str, Any]:
 
     # Annotate directive with its shape for the run() dispatch branch.
     data["_directive_shape"] = directive_shape
+    data["_directive_sha256"] = directive_sha256
     return data
 
 
@@ -894,12 +1045,58 @@ def _wrangle_source(src: dict[str, Any], now: str) -> SourceOutcome:
     ref_id = src["ref_id"]
     provider = src["provider"]
     locator = src["locator"]
+    authority_locator = src.get("_authority_locator", locator)
     role = src["role"]
     description = src.get("description") or locator
     extractor_label = _EXTRACTOR_LABELS.get(provider, "unknown")
 
     try:
-        title, body, rec = _fetch_source(src)
+        _verify_authority_coordinate(src)
+        locator_path = Path(locator)
+        is_local_markdown = (
+            provider in {"local_file", "md"}
+            and locator_path.suffix.lower() in {".md", ".markdown"}
+        )
+        if is_local_markdown:
+            raw = _read_stable_regular_bytes(locator_path)
+            _verify_captured_authority_bytes(src, raw)
+            authority_text = raw.decode("utf-8")
+            extraction_text = authority_text.replace("\r\n", "\n").replace("\r", "\n")
+            title, body, rec = _source_ops.wrangle_local_md(
+                locator_path, raw_text=extraction_text
+            )
+        else:
+            is_local_source = provider in {"local_file", "md", "pdf", "docx"}
+            if is_local_source:
+                # Parse an identity-checked private snapshot. The original may
+                # be edited and restored while a PDF/DOCX parser is running;
+                # parsing the captured bytes prevents that ABA race from
+                # influencing the extracted result.
+                raw = _read_stable_regular_bytes(locator_path)
+                _verify_captured_authority_bytes(src, raw)
+                snapshot_path: Path | None = None
+                try:
+                    with tempfile.NamedTemporaryFile(
+                        mode="wb",
+                        prefix="texas-local-snapshot-",
+                        suffix=locator_path.suffix,
+                        delete=False,
+                    ) as snapshot:
+                        snapshot.write(raw)
+                        snapshot.flush()
+                        os.fsync(snapshot.fileno())
+                        snapshot_path = Path(snapshot.name)
+                    snapshot_src = {**src, "locator": str(snapshot_path)}
+                    title, body, rec = _fetch_source(snapshot_src)
+                    title = locator_path.stem.replace("_", " ")
+                    rec.ref = str(locator_path.resolve())
+                finally:
+                    if snapshot_path is not None:
+                        snapshot_path.unlink(missing_ok=True)
+            else:
+                title, body, rec = _fetch_source(src)
+            authority_text = None
+        _verify_authority_coordinate(src)
     except Exception as exc:
         # Fetch-layer failure (network, file not found, PDF parse error,
         # Notion auth, unicode decode, or unsupported-provider fallback).
@@ -923,7 +1120,7 @@ def _wrangle_source(src: dict[str, Any], now: str) -> SourceOutcome:
         return SourceOutcome(
             ref_id=ref_id,
             provider=provider,
-            locator=locator,
+            locator=authority_locator,
             role=role,
             description=description,
             extractor_used=extractor_label,
@@ -984,7 +1181,7 @@ def _wrangle_source(src: dict[str, Any], now: str) -> SourceOutcome:
     return SourceOutcome(
         ref_id=ref_id,
         provider=provider,
-        locator=locator,
+        locator=authority_locator,
         role=role,
         description=description,
         extractor_used=extractor_label,
@@ -992,6 +1189,7 @@ def _wrangle_source(src: dict[str, Any], now: str) -> SourceOutcome:
         content_text=body,
         section_title=title or description,
         report=report,
+        authority_text=authority_text,
     )
 
 
@@ -1327,7 +1525,14 @@ def _write_extracted_md(
     primaries: list[SourceOutcome],
 ) -> Path:
     """Build and write extracted.md from primary sources only."""
-    sections = [(p.section_title, p.content_text) for p in primaries if p.content_text]
+    sections = [
+        (
+            p.section_title,
+            _extracted_authority_text(p),
+        )
+        for p in primaries
+        if p.authority_text is not None or p.content_text
+    ]
     title = f"Source bundle for {run_id}"
     extracted = _source_ops.build_extracted_markdown(title, sections)
     path = bundle_dir / "extracted.md"
@@ -1335,11 +1540,23 @@ def _write_extracted_md(
     return path
 
 
+def _extracted_authority_text(outcome: SourceOutcome) -> str:
+    """Use raw text only for canonical slide-authority source coordinates."""
+    normalized_locator = outcome.locator.replace("\\", "/")
+    if (
+        outcome.authority_text is not None
+        and _CANONICAL_SLIDE_REF.fullmatch(normalized_locator) is not None
+    ):
+        return outcome.authority_text
+    return outcome.content_text
+
+
 def _write_metadata_json(
     bundle_dir: Path,
     run_id: str,
     outcomes: list[SourceOutcome],
     run_timestamp: str,
+    directive_sha256: str,
 ) -> Path:
     """Write metadata.json with the provenance chain preserved + sme_refs additive."""
     provenance = [
@@ -1349,6 +1566,7 @@ def _write_metadata_json(
             "ref": o.locator,
             "role": o.role,
             "description": o.description,
+            "section_title": o.section_title,
             "extractor_used": o.extractor_used,
             "fetched_at": o.fetched_at,
         }
@@ -1365,11 +1583,37 @@ def _write_metadata_json(
         }
         for o in outcomes
     ]
+    source_authority = [
+        {
+            "source_id": o.ref_id,
+            "path": (
+                o.locator
+                if o.provider in {"local_file", "md", "pdf", "docx"}
+                else None
+            ),
+            "source_content_digest": hashlib.sha256(
+                (o.authority_text if o.authority_text is not None else o.content_text)
+                .replace("\r\n", "\n")
+                .replace("\r", "\n")
+                .encode("utf-8")
+            ).hexdigest(),
+            "extracted_content_digest": hashlib.sha256(
+                _extracted_authority_text(o)
+                .replace("\r\n", "\n")
+                .replace("\r", "\n")
+                .strip()
+                .encode("utf-8")
+            ).hexdigest(),
+        }
+        for o in outcomes
+    ]
     meta = {
         "run_id": run_id,
+        "directive_sha256": directive_sha256,
         "generated_at": run_timestamp,
         "provenance": provenance,
         "sme_refs": sme_refs,
+        "source_authority": source_authority,
         "primary_consumption_path": "extracted.md",
     }
     path = bundle_dir / "metadata.json"
@@ -1674,10 +1918,8 @@ def _write_manifest_json(
     """Write manifest.json listing every artifact with sha256 + size.
 
     Intentionally includes itself-by-omission: manifest.json isn't listed
-    because it's written after the content files. Its sha256 would change
-    every run anyway. result.yaml is also written after manifest.json so
-    it cannot self-hash either; that omission is documented in the delegation
-    contract.
+    because it's written after every content file, including result.yaml.
+    Its sha256 would change every run anyway.
     """
     artifacts = []
     for p in artifact_paths:
@@ -1878,6 +2120,7 @@ def run(directive_path: Path, bundle_dir: Path) -> dict[str, Any]:
     # Story 27-2 AC-B.6: branch on directive shape. `_load_directive`
     # already validated homogeneity and annotated the directive with its shape.
     directive_shape = directive["_directive_shape"]
+    directive_sha256 = directive["_directive_sha256"]
 
     if directive_shape == "retrieval":
         return _run_retrieval_shape(directive, bundle_dir, run_id, run_timestamp)
@@ -1910,7 +2153,9 @@ def run(directive_path: Path, bundle_dir: Path) -> dict[str, Any]:
     # Write artifacts in a specific order so manifest.json indexes all the
     # content-bearing files.
     extracted_path = _write_extracted_md(bundle_dir, run_id, primaries)
-    metadata_path = _write_metadata_json(bundle_dir, run_id, outcomes, run_timestamp)
+    metadata_path = _write_metadata_json(
+        bundle_dir, run_id, outcomes, run_timestamp, directive_sha256
+    )
     extraction_report_path = _write_extraction_report(
         bundle_dir,
         run_id,
@@ -1931,10 +2176,7 @@ def run(directive_path: Path, bundle_dir: Path) -> dict[str, Any]:
         extraction_report_path,
         ingestion_evidence_path,
     ]
-    manifest_path = _write_manifest_json(
-        bundle_dir, run_id, content_artifacts, run_timestamp
-    )
-
+    manifest_path = bundle_dir / "manifest.json"
     all_artifacts = content_artifacts + [manifest_path]
     result_path = _write_result_envelope(
         bundle_dir,
@@ -1944,6 +2186,9 @@ def run(directive_path: Path, bundle_dir: Path) -> dict[str, Any]:
         cross_entries,
         blocking_issues,
         all_artifacts,
+    )
+    _write_manifest_json(
+        bundle_dir, run_id, content_artifacts + [result_path], run_timestamp
     )
 
     # Re-read the written envelope so the in-memory return matches disk exactly.
@@ -1981,7 +2226,11 @@ def _run_retrieval_shape(
     primaries = [o for o in outcomes if o.role == "primary"]
     extracted_path = _write_retrieval_extracted_md(bundle_dir, run_id, primaries)
     metadata_path = _write_retrieval_metadata_json(
-        bundle_dir, run_id, outcomes, run_timestamp
+        bundle_dir,
+        run_id,
+        outcomes,
+        run_timestamp,
+        directive["_directive_sha256"],
     )
     extraction_report_path = _write_extraction_report(
         bundle_dir,
@@ -2003,10 +2252,7 @@ def _run_retrieval_shape(
         extraction_report_path,
         ingestion_evidence_path,
     ]
-    manifest_path = _write_manifest_json(
-        bundle_dir, run_id, content_artifacts, run_timestamp
-    )
-
+    manifest_path = bundle_dir / "manifest.json"
     all_artifacts = content_artifacts + [manifest_path]
     result_path = _write_retrieval_result_envelope(
         bundle_dir,
@@ -2015,6 +2261,9 @@ def _run_retrieval_shape(
         outcomes,
         blocking_issues,
         all_artifacts,
+    )
+    _write_manifest_json(
+        bundle_dir, run_id, content_artifacts + [result_path], run_timestamp
     )
 
     return yaml.safe_load(result_path.read_text(encoding="utf-8"))
@@ -2047,11 +2296,13 @@ def _write_retrieval_metadata_json(
     run_id: str,
     outcomes: list[RetrievalOutcome],
     run_timestamp: str,
+    directive_sha256: str,
 ) -> Path:
     """Retrieval-shape metadata.json — per-dispatch provenance."""
     metadata: dict[str, Any] = {
         "schema_version": "1.1",
         "run_id": run_id,
+        "directive_sha256": directive_sha256,
         "generated_at": run_timestamp,
         "directive_shape": "retrieval",
         "dispatches": [

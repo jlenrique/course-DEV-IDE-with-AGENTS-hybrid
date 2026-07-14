@@ -9,12 +9,13 @@ Dev-session orchestration context and cross-session patterns for Cora.
 
 ## Active Dev-Session Context
 
-- **Branch:** `trial/2026-04-19`
-- **Session anchor commit:** `39a014a` (SESSION-HANDOFF anchor)
-- **Head:** `39a014a` (no commits landed since anchor; session work in BMAD tracking + new artifacts only)
-- **Outstanding pre-closure findings:** 1 (motion structural-walk pack-vs-walk-spec drift, 6 markers — pre-existing, dev-agent Tier-1 path)
-- **Active harmonization run:** `reports/dev-coherence/2026-04-21-0603/` — L1 standard READY; L1 motion NEEDS REMEDIATION (pre-existing); L2 deferred
-- **Intended next anchor task:** operator-led Descript assembly of bundle `apc-c1m1-tejal-20260419b-motion` (out of pack scope) — OR motion-walk drift remediation OR next lesson trial after Irene Pass 2 template scoping
+- **Branch:** `codex/workbook-enhanced-epics-36-40`
+- **Session anchor commit:** `a498f9b` (prior SESSION-HANDOFF anchor)
+- **Head:** WRAPUP closeout commit pending at draft time; canonical final state is the top section of `SESSION-HANDOFF.md`.
+- **Outstanding pre-closure findings:** 0 (no story flipped to done during WRAPUP).
+- **Outstanding coherence findings:** 1 inherited high finding (motion creative-directive/motion-gate sequence-document parity; planned workbook run has motion OFF).
+- **Active harmonization run:** `reports/dev-coherence/2026-07-14-1952/` — standard/cluster READY, pipeline lockstep PASS, motion NEEDS REMEDIATION, L2 gated off.
+- **Intended next anchor task:** launch one already-authorized fresh governed paid Marcus-SPOC workbook run and obtain the live acceptance witness for Stories 38.3a/38.1.
 
 ## Operator Preferences (confirmed 2026-04-17)
 
@@ -31,4 +32,4 @@ Dev-session orchestration context and cross-session patterns for Cora.
 
 ## Most Recent Sessions
 
-(Empty. Populate after first WRAPUP.)
+- **2026-07-14 Class S:** Workbook Epics 36–38 advanced; latest governed run reached Storyboard A/G2C/perception and froze at a product-valid Pass-2 tokenizer defect; Amendment 8 corrected/reviewed; next session begins with a fresh paid governed live run.

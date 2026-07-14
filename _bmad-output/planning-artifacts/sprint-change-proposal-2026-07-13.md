@@ -130,3 +130,152 @@ After deterministic/dependency/static checks and immutable evidence-pin checks p
 ### Amendment 2 approval
 
 Fully spawned party, 2026-07-13: John GO; Winston GO-WITH-AMENDMENTS; Murat GO-WITH-AMENDMENTS; Amelia GO-WITH-AMENDMENTS. Every MUST is folded above, including untrusted-mapping copy semantics, exact safe-entry eligibility, effective schema/normalizer identity, raw-to-normalized journal replay, failure evidence, receipt compatibility, four-file preservation, negative matrix, and fresh identity/call guard. The orchestrating agent concurs. Under repository governance, Amendment 2 is approved without a redundant human hold; no provider call may begin before all deterministic gates pass.
+
+---
+
+## Amendment 3 - Clustered final-to-source slide authority
+
+Status: party-approved-minor-direct-adjustment; Story 38.3a reopened
+
+### 1. Issue Summary
+
+The second Story-38.1 live-validation run, `c8f17a24-9b63-4e10-a5d7-6f2043bc9812`, reached `07W.1` after eight delegated HIL gate actions and failed before any Ask-A dispatch with `workbook-brief.deep-dive-authority-invalid: slide authority for slide-07 matched 0 files`.
+
+The run has six authored source-slide Markdown files but 13 final manifest slides after Irene's cluster expansion. Story 38.3a incorrectly interpreted final presentation ordinals as authored source ordinals. The intended mapping is `[1,2,2,2,3,3,3,3,4,5,5,5,6]`. Existing suffix-based lineage helpers are also unsafe on this live shape: `u05`, `u09`, `u10`, and `u13` are plan-unit identities and would be misread as source ordinals 5, 9, 10, and 13.
+
+Concrete exact authority exists: all 58 persisted Irene `source_refs` anchors are literal, case-sensitive substrings of exactly one of the six declared source-slide files, and every interstitial agrees with its parent source.
+
+### 2. Impact Analysis
+
+- Epic 38 and the dependency DAG remain viable. Story 38.3a is reopened; Story 38.1 remains in-progress and cannot close until the predecessor correction is reviewed and live-proven.
+- No new epic/story, resequencing, graph node, runner-walk, provider family, Ask-A contract, HUD, render, learning event, or envelope-schema change is required.
+- The prior 38.3a close remains historically valid for its one-to-one live substrate, but it did not prove clustered production correctness.
+- PRD intent is strengthened: the correction makes prose-depth authority follow the authored source from which each clustered final slide actually descends. UX is unaffected.
+- The existing 38.1 attempts remain immutable evidence and are not relabeled or resumed.
+
+### 3. Options Evaluated
+
+1. **Direct adjustment - selected.** Reopen 38.3a and add an explicit immutable authority-map carrier derived from exact anchors. Effort medium; risk medium; product scope unchanged.
+2. **Reuse suffix/ordinal/positional lineage.** Rejected: it silently miskeys the live `uNN` shape and can select a wrong but existing file.
+3. **Title or fuzzy-content matching.** Rejected: it weakens authority and makes ambiguity nondeterministic.
+4. **Change Pass-1 schema upstream.** Not required for this correction. A dedicated canonical sidecar supplies explicit source identity without broad upstream migration; a future harmonization is outside this pass.
+5. **Skip source-note deltas and continue VO-only.** Rejected: it would evade a required authority contract and reduce the specified workbook depth.
+
+### 4. Detailed Change Proposal
+
+1. Add pure strict models/resolver in `app.marcus.lesson_plan` for `workbook-slide-authority-map.v1`. The orchestrator extracts exactly one current Irene plan contribution, cross-checks `irene-pass1.lesson-plan.json`, and extracts exactly one node-06 package-builder slides contribution.
+2. Join final manifest slide -> package slide `source_ref` -> plan unit -> source slide using every unit's complete nonblank literal anchor set. Every anchor must occur in exactly one declared slide file and all anchors for a unit must converge. Interstitials must agree with a valid head parent. No suffix, ordinal, order, rank, title, cluster-ID, fuzzy, case-fold, Unicode, whitespace-repair, or first/last-wins fallback.
+3. Before any Deep Dive journal/provider action, exclusively and atomically write `workbook-slide-authority-map.v1.json`. Rows explicitly carry final/unit/source identities, relative source path and byte hash, anchors, and parent/cluster corroboration. Header identity binds schema/resolver version, ordered manifest, plan sidecar/contribution, package slides, relative source inventory/hashes, and ordered rows. Existing sidecars are never overwritten and must fully revalidate.
+4. Bind the map digest into the new request authority domain, journal, idempotency key, receipt, completed replay, upgrade, and split-brain checks. Preserve legacy digest compatibility with an omitted-when-null field, but require a non-null map digest for every new 07W.1 execution.
+5. Preserve all final VO spans in manifest order. Group descendant narration by explicit source slide and compare the source speaker note once against the ordered aggregate; emit at most one source-keyed delta span/claim per unique source slide in first-descendant order.
+6. Fail before provider spend on missing/duplicate/stale/conflicting authority, anchor zero/multi/cross-file matches, invalid parentage, roster/order mismatch, symlink/escape/non-regular paths, source hash drift, sidecar mutation, or map/journal digest mismatch. Use the existing stable error taxonomy.
+7. RED-first coverage includes the serialized live `u01`-`u13` fixture and exact 13-to-6 map; wrong-suffix traps; missing/duplicate/conflicting rows; dangling units/parents; ambiguous/missing anchors; final-07-to-source-3 no-fallback trap even if source slide 7 exists; reordered/reclustered stability; symlink/escape; legacy digest pins; resume under changed map digest; zero writer/journal/brief/contribution on authority failure; exactly one delta per source slide.
+8. After deterministic, dependency, Ruff, import-linter, diff, and BMAD code-review gates pass, authorize one fresh run with a new trial/idempotency lineage and no copied journal/map/brief/contribution. Require exactly one Deep Dive call, one Ask-A/Texas dispatch, completed journals, zero-call replay, and conforming workbook evidence. Any failure returns to governed correction; no retry-to-green.
+
+### 5. Handoff and Success Criteria
+
+Classification: minor direct adjustment to a closed predecessor contract; implementation complexity is medium because replay identity changes.
+
+- Developer: implement resolver, sidecar, request/journal binding, grouped delta semantics, and RED-to-GREEN tests.
+- Murat/test architecture: verify the serialized 13-to-6 trap, no-fallback mutations, zero-call failures, and replay drift rejection.
+- Winston/architecture: verify M3 placement, single-write sidecar authority, compatibility domain, and no graph/provider expansion.
+- John/product: verify the change repairs the Marcus-SPOC product rather than the proofing vehicle and preserves the workbook outcome.
+
+Success requires: exact total 13-to-6 authority; immutable digest-bound replay; no inference fallback; once-per-source delta authority; all deterministic/review gates green; prior attempts immutable; one fresh full live path reaching Ask-A and emitting a conforming workbook; zero-call replay.
+
+### Checklist Disposition and Approval
+
+- Trigger/evidence, epic/future impact, PRD/architecture/UX impact, alternatives, handoff, and success criteria: complete.
+- Selected path: direct adjustment. Rollback, MVP reduction, and scope deferral are not viable.
+- Sprint ledger: Story 38.3a reopened to `in-progress`; Story 38.1 remains `in-progress`; no epic/DAG change.
+- Fully spawned BMAD party reconciliation: John GO-WITH-AMENDMENTS, Winston GO-WITH-AMENDMENTS, Murat GO-WITH-AMENDMENTS; all remaining MUSTs are folded above. The orchestrating agent concurs. Under repository governance, party consensus plus agent concurrence is operator approval; no redundant human checkpoint is required.
+
+---
+
+## Amendment 4 - Full-scale Deep-Dive request timeout
+
+Status: party-approved-minor-direct-adjustment
+
+### Trigger and evidence
+
+Fresh delegated Marcus-SPOC attempt `e08c3fef-eed3-42fa-94d5-f7e58989389e` proved Amendment 3's clustered authority correction live: the 13-final/6-source carrier persisted and validated with map digest `sha256:a080a3b0db00da790982564a86dbc3736f2312babe56b53e2c15ff56e1d560e9`. The full production request then reached `LiveDeepDiveWriter` with 12 VO spans, six grouped source deltas, and 11 Promise abilities. The provider hit the inherited generic 120-second request ceiling and returned `APITimeoutError: Request timed out.` With `max_retries=0`, the runtime correctly paused at `07W.1` under `workbook-brief.deep-dive-writer-execution-failed`; Ask-A and workbook output were not produced.
+
+The failed attempt is frozen. Binding pins include:
+
+- Deep-Dive journal: 25,870 bytes, SHA-256 `9e7798e2dfa874a2dcff800ab1b100252fd6ee630befcb6078a6ee4b3513c2d0`, state `call_in_progress`.
+- Slide-authority carrier: 8,536 bytes, SHA-256 `ac8dde3c50921b60249485f51b6534279dd38685d253d2944fa90b71e97486c5`.
+- Delegated HIL journal: 6,547 bytes, SHA-256 `e037f6f863e29c692e0d21783aa38c950108cbf45ce6cd9cd81250f836640656`.
+- Delegated summary: 804 bytes, SHA-256 `302844af8de5ad1240263e4c47940773b36148834051ca2f38329bcf38af0fd9`.
+
+### Impact and options
+
+- Epic/DAG/PRD/UX/topology/request shape/provider family/Ask-A/render: unchanged.
+- Direct adjustment is viable, low effort, and low-to-medium risk. It restores the intended full-scale production call without multiplying calls.
+- Rollback is not viable because it would restore the disproven ordinal authority behavior.
+- Scope reduction is not viable because the live production request is the specified workload.
+
+### Approved correction
+
+1. Add named `WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S = 300.0`, matching the existing G0 large reasoning-extraction precedent.
+2. Parameterize the shared structured-writer constructor with an effective request timeout that defaults to 120 seconds. Pass 300 only from `LiveDeepDiveWriter`; Scene and Promise remain exactly 120 seconds.
+3. Keep `max_retries=0` for every workbook writer.
+4. Bind the effective request timeout and retry posture into the Deep-Dive effective model-config digest before handle construction, journal identity, and idempotency-key derivation. A timeout change must change execution identity; completed replay must reject drift.
+5. Add RED/GREEN construction and orchestration tests for Deep-Dive 300/zero-retry, Scene/Promise 120/zero-retry, digest/idempotency drift, and the unchanged one-call fail-loud timeout path.
+6. Run focused/dependency/static verification and mandatory adversarial review before live spend.
+7. Preserve the failed run and journal exactly. Never resume, repair, rewrite, delete, or reuse its ambiguous call.
+8. After deterministic and review GREEN, authorize exactly one fresh UUID production-seam attempt under the existing delegated HIL policy. The outer controller retains its four-hour budget, safely above the 300-second provider ceiling. Any failure stops without retry and requires a new party decision.
+
+### Handoff and approval
+
+Classification: minor direct adjustment within Story 38.3a; route to Amelia/developer, followed by Blind/Edge/Acceptance review and the single governed confirmation.
+
+Fully spawned native BMAD party, 2026-07-13: John GO-WITH-AMENDMENTS; Winston GO-WITH-AMENDMENTS; Murat GO-WITH-AMENDMENTS; Amelia GO-WITH-AMENDMENTS. Every MUST is folded above. The orchestrating agent concurs. Under repository governance, Amendment 4 is approved without a redundant human hold.
+
+---
+
+## Amendment 5 - Pass-1 identity and literal-anchor authority
+
+Status: party-approved-with-amendments; no fresh live attempt authorized
+
+### Trigger and evidence
+
+The single Amendment-4 live attempt, `a28aa15a-fc80-46ae-b05a-09ac864829bb`, completed all eight delegated HIL actions, both storyboards, Irene Pass 2, and 11/11 Enrique segments. At `07W.1`, the strict slide-authority resolver stopped before map persistence or Deep-Dive provider dispatch with `workbook-brief.deep-dive-authority-invalid: unit u06 anchor must match exactly one source slide file`.
+
+The failed run proves two upstream authority defects:
+
+1. Temporal and same-plan identity collision: `u06` identified the interstitial `Knowledge Now Outpaces Static Training` under `u05`, then was reused for the head `Part 2 Summary & Knowledge Check`.
+2. Nonliteral source authority: the summary head claimed the anchor `shape the future of care`, while the declared source contains `shaping the future of care`. The other five summary anchors match exactly one source file. The resolver correctly rejected the near match; it must not be weakened.
+
+Frozen evidence pins at stop:
+
+- `runs/a28aa15a-fc80-46ae-b05a-09ac864829bb/error-pause.json`: 581,762 bytes, SHA-256 `4d9bc6f4c1c4ef5f662f6607326402dc741f1e845dd5ec1034f49283cc4fa6bc`.
+- `runs/a28aa15a-fc80-46ae-b05a-09ac864829bb/run.json`: 553,548 bytes, SHA-256 `3935b017d343bfd5c8bcdd1b7998d07ef82238ab74fa5031b6a1df60b90bc50f`.
+- delegated HIL journal: 6,522 bytes, SHA-256 `d40966f13073d815e183a5d94d46d33de192363fe89672cff4c8e23f4e29b091`.
+- delegated HIL summary: 804 bytes, SHA-256 `63101565b9767044650098e939d4d71ca62cd3951b1e1668257fa99904075e2d`.
+- No slide-authority map, Deep-Dive journal, workbook brief, Ask-A journal, or workbook was produced.
+
+### Impact and decision
+
+- This is a Marcus-SPOC production defect surfaced by the live workflow, not a proof-run accommodation.
+- Epic/DAG/PRD/UX/provider/render scope remains unchanged. Story 38.3a and 38.1 remain in progress.
+- A 07W-only repair, fuzzy/stemmed/case-folded matching, first/last-wins identity collapse, or in-place repair of the failed run is rejected.
+- The selected correction moves the existing exact authority contract to the Pass-1 authority-finalization boundary so malformed plans fail before package construction and paid downstream production.
+
+### Approved correction
+
+1. Add one canonical pure Pass-1 authority validator/finalizer and invoke it on every newly dispatched 04A/05/05B result after cluster-floor shaping but before sidecar, learning-event, contribution, or package persistence. Add an earlier duplicate/blank-ID guard before cluster normalization so normalization cannot conceal ambiguity.
+2. Treat `unit_id` as durable run identity. Reject duplicates within a candidate. Across refinement, a retained ID must preserve its exact ordered source-anchor tuple and authority/role identity; removed IDs remain retired and cannot be recycled for different content. Do not silently renumber or repair model output.
+3. Require every in-scope unit to carry nonblank, unique literal anchors. Using the same shared exact matcher as the 07W resolver, every anchor must be a case-sensitive literal substring of exactly one declared source-slide file after newline normalization only, and all anchors for a unit must converge on one file. No fuzzy matching, stemming, punctuation/whitespace repair, anchor dropping, restoration, or paraphrase acceptance.
+4. Project only the validated canonical plan to JSON/Markdown sidecars, locked scope, learning events, contribution output, and package input. Immediately validate package slide IDs/source refs as unique, total, ordered one-to-one projections of the validated in-scope plan-unit identities; never collapse through a dict.
+5. Apply the same checks to newly dispatched and resumed current-format work before downstream execution. Preserve completed legacy runs without in-place migration.
+6. Fail with a stable upstream plan/package-authority tag before persistence/spend. Tests must prove zero package contribution, paid producer call, slide-authority carrier, Deep journal, workbook brief, Ask-A journal, or Ask-A contribution.
+7. Bank sanitized independent fixtures for duplicate `u06` and `shape` versus `shaping`, plus valid control, temporal A-to-B-to-C ID retirement/reuse, malformed parent, zero/multiple/cross-file anchor matches, package drift, resume, purity/no-repair, and exact upstream/downstream classifier parity.
+8. Preserve the entire failed run and evidence exactly; tests use copies under temporary paths and bomb all provider/network factories.
+9. Run focused Pass-1/package/authority/workbook suites, the established deterministic gate, Ruff/static/diff checks, and exact-current adversarial review.
+10. This decision authorizes only deterministic implementation and verification. A fresh live attempt requires a separate post-green party authorization; no retry is currently authorized.
+
+### Handoff and approval
+
+Classification: direct production correction with upstream enforcement; medium implementation risk because identity persists across refinements.
+
+Fully spawned BMAD party, 2026-07-13: John/PM GO-WITH-AMENDMENTS; Winston/architect GO-WITH-AMENDMENTS; Murat/test architect GO-WITH-AMENDMENTS; Amelia/orchestrating developer GO-WITH-AMENDMENTS. The orchestrator resolves the one disagreement in favor of strict rejection: malformed IDs and anchors are never automatically rewritten, restored, or dropped. All accepted MUSTs are folded above. Under repository governance, party consensus plus agent concurrence authorizes the deterministic correction without a redundant human checkpoint, but does not authorize another live run.

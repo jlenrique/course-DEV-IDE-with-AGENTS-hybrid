@@ -1,0 +1,62 @@
+{
+  "schema_version": "ask-a-live-verdict.v1",
+  "story_id": "38.1",
+  "trial_id": "9d2ab3f1-7e6c-4d9a-b835-12c7e8f46031",
+  "attempt": 1,
+  "first_run": true,
+  "passed": false,
+  "terminal_state": "paused-at-error",
+  "terminal_node": "07W.1",
+  "terminal_error_tag": "workbook-brief.deep-dive-authority-invalid",
+  "terminal_error_message": "authored Promise ability authority unavailable",
+  "predecessor_diagnosis": {
+    "promise_resolution_status": "degraded",
+    "known_losses": [
+      "promise_ratified_lo_lineage_unverified"
+    ],
+    "ratified_los_path": "ratified-los.json",
+    "ratified_los_actual_sha256": "a41a942dffeca6f3842cfca17f61a1717e690fd6642a29138c71f789006ffd9e",
+    "lesson_plan_ratified_los_digest": null
+  },
+  "delegated_hil": {
+    "delegate_id": "codex_hil_runner",
+    "gate_actions": 8,
+    "policy_digest": "4205b4dcb2a34846bac0da9f889365eefd22969613aac4e1a4c65e055b9a74a5",
+    "completed_without_operator_keyboard": true
+  },
+  "ask_a": {
+    "reached": false,
+    "dispatcher_invocations": 0,
+    "completed_journal": false,
+    "coverage_associations": [],
+    "evidence_body_hashes": [],
+    "source_hashes": [],
+    "source_ref_doi_checks": [],
+    "credibility_fields": [],
+    "execution_receipt": null,
+    "zero_call_replay_proven": false
+  },
+  "artifact_hashes": {
+    "packet_sha256": null,
+    "ask_a_journal_sha256": null,
+    "envelope_sha256": "2e823c769eed0c9511b3048cb5ebc054c8b0b42202515e13dd33b5f9e0f2e735",
+    "hil_journal_sha256": "367309a88ffe11a96a1be949fd4ffbae685b314514e3ad8cd1fcb5ee4b84be43",
+    "hil_summary_sha256": "967296f1691a2cdcf29a1fce115e53026f6a151b349cc70cdea10c12fa01a0d4"
+  },
+  "reload_equality": {
+    "checked": true,
+    "equal": true
+  },
+  "close_bar": {
+    "dispatcher_invocation_count": false,
+    "completed_journal": false,
+    "coverage_associations": false,
+    "evidence_and_source_hashes": false,
+    "source_ref_and_doi_checks": false,
+    "credibility_fields": false,
+    "execution_receipt": false,
+    "packet_journal_envelope_hashes": false,
+    "reload_equality": true,
+    "zero_call_replay": false
+  }
+}

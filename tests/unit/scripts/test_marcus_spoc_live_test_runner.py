@@ -30,23 +30,18 @@ def _policy(root: Path | None = None, **budget_overrides: int) -> runner.Delegat
             "delegate_id": runner.DELEGATE_ID,
             "approved_by": "Juanl",
             "authority_spec": (
-                "_bmad-output/implementation-artifacts/"
-                "spec-delegated-live-test-hil-runner.md"
+                "_bmad-output/implementation-artifacts/spec-delegated-live-test-hil-runner.md"
             ),
             "scope": {
                 "purpose": "epics-36-40-workbook-live-verification",
                 "epics": [36, 37, 38, 39, 40],
                 "customer_facing_approval": False,
             },
-            "allowed_runs_roots": [
-                str(root / "runs") if root else "runs"
-            ],
-            "allowed_input_roots": [
-                str(root / "corpus") if root else "course-content"
-            ],
-            "allowed_evidence_root": str(root / "evidence") if root else (
-                "_bmad-output/implementation-artifacts/evidence/workbook-live-hil"
-            ),
+            "allowed_runs_roots": [str(root / "runs") if root else "runs"],
+            "allowed_input_roots": [str(root / "corpus") if root else "course-content"],
+            "allowed_evidence_root": str(root / "evidence")
+            if root
+            else ("_bmad-output/implementation-artifacts/evidence/workbook-live-hil"),
             "gate_rules": {
                 "G0E": {"action": "approve"},
                 "G0R": {"action": "approve"},
@@ -103,6 +98,262 @@ def _write_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def test_governed_preflight_identity_retains_reconstructable_per_file_manifest(
+    tmp_path: Path,
+) -> None:
+    app_root = tmp_path / "app"
+    config_root = tmp_path / "state" / "config"
+    input_root = tmp_path / "course"
+    (app_root / "module").mkdir(parents=True)
+    (config_root / "runs" / "prior").mkdir(parents=True)
+    input_root.mkdir()
+    (app_root / "module" / "a.py").write_text("print('a')\n", encoding="utf-8")
+    (config_root / "pipeline.yaml").write_text("version: 1\n", encoding="utf-8")
+    (config_root / "runs" / "prior" / "run.json").write_text("{}\n", encoding="utf-8")
+    (input_root / "slide.md").write_text("Source bytes.\n", encoding="utf-8")
+
+    manifest = runner.build_governed_input_identity(
+        trial_id=TRIAL_ID,
+        roots={"app": app_root, "state-config": config_root, "input": input_root},
+        writable_exclusions={
+            "state/config/runs": config_root / "runs",
+        },
+    )
+
+    paths = [row["path"] for row in manifest["files"]]
+    assert paths == sorted(paths)
+    assert "app/module/a.py" in paths
+    assert "state-config/pipeline.yaml" in paths
+    assert "input/slide.md" in paths
+    assert all("prior/run.json" not in path for path in paths)
+    assert manifest["writable_exclusions"] == [
+        {
+            "label": "state/config/runs",
+            "path": str((config_root / "runs").resolve()),
+            "reason": "declared-run-output-namespace",
+        }
+    ]
+    assert manifest["file_count"] == 3
+    assert manifest["manifest_digest"] == runner._digest(manifest["files"])
+    body = {key: value for key, value in manifest.items() if key != "artifact_digest"}
+    assert manifest["artifact_digest"] == runner._digest(body)
+
+
+def test_governed_preflight_manifest_detects_input_mutation(tmp_path: Path) -> None:
+    root = tmp_path / "input"
+    root.mkdir()
+    source = root / "source.md"
+    source.write_text("before\n", encoding="utf-8")
+    before = runner.build_governed_input_identity(
+        trial_id=TRIAL_ID,
+        roots={"input": root},
+        writable_exclusions={},
+    )
+    source.write_text("after\n", encoding="utf-8")
+    after = runner.build_governed_input_identity(
+        trial_id=TRIAL_ID,
+        roots={"input": root},
+        writable_exclusions={},
+    )
+    assert before["manifest_digest"] != after["manifest_digest"]
+    assert before["files"][0]["sha256"] != after["files"][0]["sha256"]
+
+
+def test_output_inventory_is_separate_from_immutable_input_identity(
+    tmp_path: Path,
+) -> None:
+    run_dir = tmp_path / "runs" / str(TRIAL_ID)
+    run_dir.mkdir(parents=True)
+    (run_dir / "run.json").write_text("{}\n", encoding="utf-8")
+    (run_dir / "workbook.docx").write_bytes(b"docx")
+
+    inventory = runner.build_run_output_inventory(
+        trial_id=TRIAL_ID,
+        run_dir=run_dir,
+    )
+    assert inventory["schema_version"] == "governed-run-output-inventory.v1"
+    assert [row["path"] for row in inventory["files"]] == [
+        "run.json",
+        "workbook.docx",
+    ]
+    assert inventory["inventory_digest"] == runner._digest(inventory["files"])
+
+
+def test_run_outputs_never_mutate_preflight_input_identity(tmp_path: Path) -> None:
+    state_config = tmp_path / "state" / "config"
+    runs_root = state_config / "runs"
+    runs_root.mkdir(parents=True)
+    (state_config / "pipeline.yaml").write_text("version: 1\n", encoding="utf-8")
+    before = runner.build_governed_input_identity(
+        trial_id=TRIAL_ID,
+        roots={"state-config": state_config},
+        writable_exclusions={"state/config/runs": runs_root},
+    )
+
+    run_dir = runs_root / str(TRIAL_ID)
+    run_dir.mkdir()
+    (run_dir / "run.json").write_text("{}\n", encoding="utf-8")
+    (run_dir / "workbook.docx").write_bytes(b"docx")
+    after = runner.build_governed_input_identity(
+        trial_id=TRIAL_ID,
+        roots={"state-config": state_config},
+        writable_exclusions={"state/config/runs": runs_root},
+    )
+    outputs = runner.build_run_output_inventory(trial_id=TRIAL_ID, run_dir=run_dir)
+
+    assert before["files"] == after["files"]
+    assert before["manifest_digest"] == after["manifest_digest"]
+    assert {row["path"] for row in outputs["files"]} == {
+        "run.json",
+        "workbook.docx",
+    }
+
+
+def test_production_default_identity_covers_runtime_policy_and_narrow_trial_output(
+    tmp_path: Path,
+) -> None:
+    external_input = tmp_path / "external-input"
+    external_input.mkdir()
+    policy_path = runner.PROJECT_ROOT / "tests/fixtures/marcus_spoc/workbook_live_hil_policy.json"
+
+    roots, exclusions, bound_files = runner._default_governed_input_roots(
+        trial_id=TRIAL_ID,
+        input_path=external_input,
+        course_source_root=external_input,
+        policy_path=policy_path,
+        authority_spec=(
+            "_bmad-output/implementation-artifacts/spec-delegated-live-test-hil-runner.md"
+        ),
+    )
+
+    assert {"app", "config", "runtime-config", "state-config", "skills"} <= set(roots)
+    assert exclusions == {
+        "state/config/runs/trial": runner.PROJECT_ROOT / "state/config/runs" / str(TRIAL_ID)
+    }
+    assert set(bound_files) == {
+        "live-test-runner",
+        "delegation-authority",
+        "delegation-policy",
+    }
+
+
+def test_missing_trial_exclusion_and_generated_bytecode_are_declared_and_ignored(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "state-config"
+    cache = root / "module" / "__pycache__"
+    cache.mkdir(parents=True)
+    (root / "pipeline.yaml").write_text("version: 1\n", encoding="utf-8")
+    (cache / "module.cpython-312.pyc").write_bytes(b"generated")
+    missing_trial = root / "runs" / str(TRIAL_ID)
+
+    manifest = runner.build_governed_input_identity(
+        trial_id=TRIAL_ID,
+        roots={"state-config": root},
+        writable_exclusions={"state/config/runs/trial": missing_trial},
+    )
+
+    assert [row["path"] for row in manifest["files"]] == ["state-config/pipeline.yaml"]
+    assert manifest["generated_exclusions"][0]["reason"] == ("generated-python-bytecode")
+    assert manifest["writable_exclusions"][0]["path"] == str(missing_trial.resolve())
+
+
+def test_multi_root_output_inventory_includes_primary_and_state_config_trees(
+    tmp_path: Path,
+) -> None:
+    primary = tmp_path / "runs" / str(TRIAL_ID)
+    state_run = tmp_path / "state" / str(TRIAL_ID)
+    primary.mkdir(parents=True)
+    state_run.mkdir(parents=True)
+    (primary / "workbook.docx").write_bytes(b"workbook")
+    (state_run / "specialist-summaries.json").write_text("{}\n", encoding="utf-8")
+
+    inventory = runner.build_run_output_inventory(
+        trial_id=TRIAL_ID,
+        run_dirs={"primary-run": primary, "state-config-run": state_run},
+    )
+
+    assert {row["path"] for row in inventory["files"]} == {
+        "primary-run/workbook.docx",
+        "state-config-run/specialist-summaries.json",
+    }
+
+
+def test_postflight_comparison_persists_exact_input_mutation_diff(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / "course"
+    source.mkdir()
+    source_file = source / "source.md"
+    source_file.write_text("before\n", encoding="utf-8")
+    evidence = tmp_path / "evidence"
+    evidence.mkdir()
+    _path, preflight = runner._write_governed_preflight_identity(
+        trial_id=TRIAL_ID,
+        input_path=source,
+        course_source_root=source,
+        evidence_root=evidence,
+        policy_path=None,
+        authority_spec=(
+            "_bmad-output/implementation-artifacts/spec-delegated-live-test-hil-runner.md"
+        ),
+    )
+    source_file.write_text("after\n", encoding="utf-8")
+
+    comparison_path, matches = runner._write_postflight_input_comparison(
+        trial_id=TRIAL_ID,
+        preflight=preflight,
+        input_path=source,
+        course_source_root=source,
+        evidence_root=evidence,
+        policy_path=None,
+        authority_spec=(
+            "_bmad-output/implementation-artifacts/spec-delegated-live-test-hil-runner.md"
+        ),
+    )
+
+    comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+    assert matches is False
+    assert comparison["status"] == "mismatch"
+    assert comparison["changed"] == ["course-source/source.md"]
+
+
+def test_successful_start_is_refused_when_governed_input_mutates_during_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    runs = tmp_path / "runs"
+    runs.mkdir()
+    source = tmp_path / "corpus"
+    source.mkdir()
+    source_file = source / "source.md"
+    source_file.write_text("before\n", encoding="utf-8")
+    evidence = tmp_path / "evidence"
+    policy = _policy(tmp_path)
+
+    def _mutating_core(**_kwargs):
+        source_file.write_text("after\n", encoding="utf-8")
+        return {"success": True, "status": "completed"}
+
+    monkeypatch.setattr(runner, "_start_and_drive_core", _mutating_core)
+    with pytest.raises(runner.RunnerRefusal, match="governed-input-mutated"):
+        runner.start_and_drive_trial(
+            trial_id=TRIAL_ID,
+            input_path=source,
+            course_source_root=source,
+            encounter_mode="recorded",
+            runs_root=runs,
+            policy=policy,
+            policy_digest=_policy_digest(policy),
+            evidence_root=evidence,
+        )
+    comparison = json.loads(
+        (evidence / str(TRIAL_ID) / runner.POSTFLIGHT_COMPARISON_FILENAME).read_text(
+            encoding="utf-8"
+        )
+    )
+    assert comparison["status"] == "mismatch"
+
+
 def _valid_directive_text(*, run_id: UUID, corpus: Path) -> str:
     return (
         f"run_id: {run_id}\n"
@@ -152,7 +403,9 @@ def _card(gate: str, *, candidates: list[str] | None = None):
                         },
                     ],
                 }
-            ] if choices else [],
+            ]
+            if choices
+            else [],
             operator_prompt="Select one offered variant.",
         )
     if gate == "G4A":
@@ -182,9 +435,7 @@ def _write_state(
     checkpoint = {
         "trial_id": str(TRIAL_ID),
         "gate_id": envelope.paused_gate,
-        "run_state": {
-            "component_selection": {"deck": True, "motion": False, "workbook": workbook}
-        },
+        "run_state": {"component_selection": {"deck": True, "motion": False, "workbook": workbook}},
     }
     _write_json(run_dir / "checkpoint.json", checkpoint)
     _write_json(
@@ -234,9 +485,7 @@ def _drive(
 
     def authoritative_resume(**call_kwargs):
         returned = resume_fn(**call_kwargs)
-        returned = returned.model_copy(
-            update={"corpus_path": (tmp_path / "corpus").as_posix()}
-        )
+        returned = returned.model_copy(update={"corpus_path": (tmp_path / "corpus").as_posix()})
         _write_json(
             runs / str(TRIAL_ID) / "run.json",
             returned.model_dump(mode="json"),
@@ -255,8 +504,7 @@ def _drive(
 
 def test_standing_policy_is_strict_and_identity_bound() -> None:
     policy, digest = runner.load_policy(
-        runner.PROJECT_ROOT
-        / "tests/fixtures/marcus_spoc/workbook_live_hil_policy.json"
+        runner.PROJECT_ROOT / "tests/fixtures/marcus_spoc/workbook_live_hil_policy.json"
     )
     assert policy.delegate_id == "codex_hil_runner"
     assert policy.scope.epics == (36, 37, 38, 39, 40)
@@ -307,12 +555,7 @@ def test_engine_exception_becomes_secret_free_refusal_summary(tmp_path: Path) ->
             resume_fn=explode,
         )
     summary = json.loads(
-        (
-            tmp_path
-            / "evidence"
-            / str(TRIAL_ID)
-            / "summary.json"
-        ).read_text(encoding="utf-8")
+        (tmp_path / "evidence" / str(TRIAL_ID) / "summary.json").read_text(encoding="utf-8")
     )
     assert summary["reason"] == "engine-call-failed"
     assert "must-not-be-journaled" not in json.dumps(summary)
@@ -486,12 +729,8 @@ def test_restart_reconciles_advanced_envelope_without_resubmit(tmp_path: Path) -
     assert reloaded["events"][-1]["kind"] == "submission-reconciled"
 
 
-@pytest.mark.parametrize(
-    "status", ["paused-at-error", "waiting_for_provider_batch", "failed"]
-)
-def test_non_gate_stop_is_never_success(
-    tmp_path: Path, status: str
-) -> None:
+@pytest.mark.parametrize("status", ["paused-at-error", "waiting_for_provider_batch", "failed"])
+def test_non_gate_stop_is_never_success(tmp_path: Path, status: str) -> None:
     calls = []
     summary = _drive(
         tmp_path,
@@ -507,16 +746,71 @@ def test_exclusive_trial_lock_rejects_concurrent_runner(tmp_path: Path) -> None:
     run_dir = tmp_path / str(TRIAL_ID)
     run_dir.mkdir()
     with (
-        runner.exclusive_trial_lock(
-            run_dir, trial_id=TRIAL_ID, policy_digest="a" * 64
-        ),
+        runner.exclusive_trial_lock(run_dir, trial_id=TRIAL_ID, policy_digest="a" * 64),
         pytest.raises(runner.RunnerRefusal, match="trial-lock-held"),
+        runner.exclusive_trial_lock(run_dir, trial_id=TRIAL_ID, policy_digest="a" * 64),
+    ):
+        pytest.fail("second lock entered")
+    assert (run_dir / ".codex-hil-runner.lock").is_file()
+
+
+def test_attach_rebuild_rejects_tampered_preflight_digest(tmp_path: Path) -> None:
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "input.md").write_text("source", encoding="utf-8")
+    preflight = runner.build_governed_input_identity(
+        trial_id=TRIAL_ID,
+        roots={"source": source},
+        writable_exclusions={},
+    )
+    preflight["roots"][0]["path"] = str(tmp_path / "forged")
+
+    with pytest.raises(runner.RunnerRefusal, match="preflight-evidence-invalid"):
+        runner._rebuild_governed_identity_from_preflight(
+            trial_id=TRIAL_ID,
+            preflight=preflight,
+        )
+
+
+def test_persistent_lock_retains_explicit_preflight_origin(tmp_path: Path) -> None:
+    legacy_dir = tmp_path / "legacy"
+    legacy_dir.mkdir()
+    with runner.exclusive_trial_lock(
+        legacy_dir, trial_id=TRIAL_ID, policy_digest="a" * 64
+    ) as required:
+        assert required is False
+    with runner.exclusive_trial_lock(
+        legacy_dir, trial_id=TRIAL_ID, policy_digest="a" * 64
+    ) as required:
+        assert required is False
+
+    current_dir = tmp_path / "current"
+    current_dir.mkdir()
+    with runner.exclusive_trial_lock(
+        current_dir,
+        trial_id=TRIAL_ID,
+        policy_digest="a" * 64,
+        preflight_required=True,
+    ) as required:
+        assert required is True
+    with runner.exclusive_trial_lock(
+        current_dir, trial_id=TRIAL_ID, policy_digest="a" * 64
+    ) as required:
+        assert required is True
+
+
+def test_malformed_persistent_lock_origin_fails_closed(tmp_path: Path) -> None:
+    run_dir = tmp_path / "malformed-origin"
+    run_dir.mkdir()
+    (run_dir / ".codex-hil-runner-origin.json").write_text("{", encoding="utf-8")
+
+    with (
+        pytest.raises(runner.RunnerRefusal),
         runner.exclusive_trial_lock(
             run_dir, trial_id=TRIAL_ID, policy_digest="a" * 64
         ),
     ):
-        pytest.fail("second lock entered")
-    assert not (run_dir / ".codex-hil-runner.lock").exists()
+        pytest.fail("malformed origin must not acquire")
 
 
 def test_symlinked_decision_card_is_refused_before_engine_call(tmp_path: Path) -> None:
@@ -560,9 +854,7 @@ def test_gate_budget_exhaustion_makes_zero_engine_calls(tmp_path: Path) -> None:
     journal = runner.EvidenceJournal(
         trial_id=TRIAL_ID, policy_digest=digest, evidence_root=evidence
     )
-    journal.append(
-        "submission-started", gate_id="G0E", decision_card_digest="b" * 64
-    )
+    journal.append("submission-started", gate_id="G0E", decision_card_digest="b" * 64)
     journal.append(
         "transition-recorded",
         decision_card_digest="b" * 64,
@@ -615,9 +907,7 @@ def test_g0_callback_refuses_wrong_trial_without_dispatch(tmp_path: Path) -> Non
         evidence_root=tmp_path / "evidence",
     )
     directive = run_dir / "directive.yaml"
-    directive.write_text(
-        _valid_directive_text(run_id=uuid4(), corpus=input_path), encoding="utf-8"
-    )
+    directive.write_text(_valid_directive_text(run_id=uuid4(), corpus=input_path), encoding="utf-8")
     callback = runner._directive_confirmation(
         trial_id=TRIAL_ID,
         input_path=input_path,
@@ -649,9 +939,10 @@ def test_start_uses_injected_g0_and_workbook_selection(
             _valid_directive_text(run_id=TRIAL_ID, corpus=corpus),
             encoding="utf-8",
         )
-        assert kwargs["confirm_fn"](
-            directive_path=directive, auto_confirm_directive=False
-        ) == "confirmed"
+        assert (
+            kwargs["confirm_fn"](directive_path=directive, auto_confirm_directive=False)
+            == "confirmed"
+        )
         return {"status": "paused-at-gate"}
 
     monkeypatch.setattr(runner, "start_trial", fake_start)
@@ -745,9 +1036,7 @@ def test_start_failure_is_summarized_without_exception_text(
             policy_digest=_policy_digest(policy),
             evidence_root=evidence,
         )
-    evidence_text = (evidence / str(TRIAL_ID) / "journal.json").read_text(
-        encoding="utf-8"
-    )
+    evidence_text = (evidence / str(TRIAL_ID) / "journal.json").read_text(encoding="utf-8")
     assert "must-not-be-recorded" not in evidence_text
     assert '"reason": "start-failed"' in evidence_text
 
@@ -781,9 +1070,7 @@ def test_attach_requires_delegated_production_trial(
     tmp_path: Path, field: str, value: str, reason: str
 ) -> None:
     runs = tmp_path / "runs"
-    envelope = _envelope("paused-at-gate", gate="G1").model_copy(
-        update={field: value}
-    )
+    envelope = _envelope("paused-at-gate", gate="G1").model_copy(update={field: value})
     _write_state(runs, envelope=envelope, card=_card("G1"))
     calls = []
     policy = _policy(tmp_path)
@@ -880,9 +1167,7 @@ def test_partial_workbook_runtime_context_is_refused(tmp_path: Path) -> None:
         },
     )
     policy = _policy(tmp_path)
-    with pytest.raises(
-        runner.RunnerRefusal, match="workbook-runtime-context-invalid"
-    ):
+    with pytest.raises(runner.RunnerRefusal, match="workbook-runtime-context-invalid"):
         runner.drive_paused_trial(
             trial_id=TRIAL_ID,
             runs_root=runs,
@@ -979,9 +1264,7 @@ def test_deadline_expires_before_submission_journal_and_resume(
             resume_fn=lambda **kwargs: calls.append(kwargs),
             started_at=0.0,
         )
-    journal = json.loads(
-        (tmp_path / "evidence" / str(TRIAL_ID) / "journal.json").read_text()
-    )
+    journal = json.loads((tmp_path / "evidence" / str(TRIAL_ID) / "journal.json").read_text())
     assert calls == []
     assert not any(event["kind"] == "submission-started" for event in journal["events"])
 
@@ -996,9 +1279,7 @@ def test_public_drive_cannot_bypass_existing_trial_lock(tmp_path: Path) -> None:
     calls = []
     policy = _policy(tmp_path)
     with (
-        runner.exclusive_trial_lock(
-            run_dir, trial_id=TRIAL_ID, policy_digest="a" * 64
-        ),
+        runner.exclusive_trial_lock(run_dir, trial_id=TRIAL_ID, policy_digest="a" * 64),
         pytest.raises(runner.RunnerRefusal, match="trial-lock-held"),
     ):
         runner.drive_paused_trial(
@@ -1071,9 +1352,7 @@ def test_g0_hashes_and_validates_the_same_single_read_bytes(
         run_dir=run_dir,
         journal=journal,
     )
-    with pytest.raises(
-        runner.RunnerRefusal, match="g0-directive-mutated-during-review"
-    ):
+    with pytest.raises(runner.RunnerRefusal, match="g0-directive-mutated-during-review"):
         callback(directive_path=directive, auto_confirm_directive=False)
     assert reads == 1
     assert journal.events == []
@@ -1160,12 +1439,8 @@ def test_resume_return_must_match_authoritative_run_json(tmp_path: Path) -> None
 
     def split_brain(**kwargs):
         del kwargs
-        returned = _envelope(
-            "completed", gate=None, corpus_path=tmp_path / "corpus"
-        )
-        persisted = _envelope(
-            "failed", gate=None, corpus_path=tmp_path / "corpus"
-        )
+        returned = _envelope("completed", gate=None, corpus_path=tmp_path / "corpus")
+        persisted = _envelope("failed", gate=None, corpus_path=tmp_path / "corpus")
         _write_json(run_dir / "run.json", persisted.model_dump(mode="json"))
         return returned
 

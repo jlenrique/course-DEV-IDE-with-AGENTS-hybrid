@@ -89,6 +89,7 @@ PROJECTION_FILENAME = "operator-surface.json"
 ERROR_PAUSE_FILENAME = "error-pause.json"
 RUN_SUMMARY_FILENAME = "run_summary.yaml"
 COST_REPORT_FILENAME = "cost-report.json"
+COST_REPORT_TRANSACTION_FILENAME = "cost-report-transaction.v1.json"
 EXPORTS_DIRNAME = "exports"
 
 #: Bounds so the additive sections cannot reopen the 525KB run.json trap (AD-16).
@@ -511,11 +512,20 @@ class OperatorSurfaceAssembler:
 
     def _read_total_cost(self) -> float | None:
         try:
-            data = json.loads(
-                (self.run_dir / COST_REPORT_FILENAME).read_text(encoding="utf-8")
-            )
-            cost = data.get("total_cost_usd") if isinstance(data, dict) else None
-            return float(cost) if isinstance(cost, (int, float)) and cost >= 0 else None
+            if (self.run_dir / COST_REPORT_TRANSACTION_FILENAME).exists():
+                return None
+            raw_report = (self.run_dir / COST_REPORT_FILENAME).read_text(encoding="utf-8")
+            data = json.loads(raw_report)
+            if (
+                not isinstance(data, dict)
+                or "cost_posture" not in data
+                or "unavailable_attempt_count" not in data
+            ):
+                return None
+            from app.models.runtime import TrialEconomicsReport
+
+            validated = TrialEconomicsReport.model_validate_json(raw_report)
+            return validated.total_cost_usd if validated.cost_posture == "exact" else None
         except Exception:  # noqa: BLE001
             LOGGER.warning("cost-report total_cost_usd unreadable for trial %s", self.trial_id)
             return None

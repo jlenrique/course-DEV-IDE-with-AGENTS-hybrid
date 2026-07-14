@@ -10,6 +10,16 @@ from uuid import UUID
 import pytest
 
 from app.marcus.lesson_plan import research_packet as rp
+from app.marcus.lesson_plan.ask_a_enrichment import (
+    AskAContributionOutputV1,
+    AskAExecutionReceiptV1,
+    AskAKnowledgeEntryV1,
+    AskAResearchIntakeV1,
+    AskARetrievalScopeV1,
+    canonical_digest,
+    evidence_for_body,
+)
+from app.marcus.lesson_plan.deep_dive_projection import DeepDiveAbilityInput
 from app.marcus.lesson_plan.workbook_enrichment import RunEnvelopeCorruptError
 from app.models.runtime.production_envelope import (
     ProductionEnvelope,
@@ -37,11 +47,70 @@ def _valid_entry(**overrides: object) -> dict:
     return base
 
 
+def _valid_ask_a_output() -> dict:
+    query = "ability[lo-1]=Explain model drift | bold_term=Model Drift"
+    scope_raw = {
+        "schema_version": "ask-a-retrieval-scope.v1",
+        "demand_digest": "sha256:" + "a" * 64,
+        "workbook_brief_payload_digest": "sha256:" + "b" * 64,
+        "skeleton_authority_digest": "sha256:" + "c" * 64,
+        "skeleton_candidate_digest": "sha256:" + "d" * 64,
+        "abilities": (DeepDiveAbilityInput(ability_id="lo-1", text="Explain model drift"),),
+        "bold_terms": ("Model Drift",),
+        "source_claim_refs": ("claim-1",),
+        "query": query,
+        "query_digest": canonical_digest(query),
+        "posture": "gap_fill",
+        "provider_config_fingerprint": "sha256:" + "e" * 64,
+        "association_algorithm": "ask-a-association.v1",
+    }
+    scope_raw["scope_digest"] = canonical_digest(scope_raw)
+    scope = AskARetrievalScopeV1.model_validate(scope_raw, strict=True)
+    body = "Model Drift evidence explains model drift."
+    excerpt, truncated, body_hash = evidence_for_body(body)
+    entry = AskAKnowledgeEntryV1(
+        citation_id="ask-a-cite-001",
+        source_ref="retrieval:scite:10.1000/x",
+        provider="scite",
+        source_id="10.1000/x",
+        title="Model Drift",
+        source_hash="sha256:" + "f" * 64,
+        evidence_hierarchy_tier="T4_peer_other",
+        peer_reviewed=True,
+        provider_provenance=("scite",),
+        triangulation_status="single_provider",
+        evidence_excerpt=excerpt,
+        evidence_truncated=truncated,
+        evidence_body_sha256=body_hash,
+        scope_digest=scope.scope_digest,
+        supports_ability_ids=("lo-1",),
+        supports_bold_terms=("Model Drift",),
+        association_algorithm="ask-a-association.v1",
+        matched_ability_tokens={"lo-1": ("model", "drift")},
+        matched_bold_terms=("Model Drift",),
+    )
+    receipt = AskAExecutionReceiptV1.build(
+        scope=scope,
+        dispatcher_invocations=1,
+        provider_iterations=(1,),
+        refinement_logs=(),
+        provider_outcomes=("accepted",),
+        provider_receipts=({"provider": "scite"},),
+    )
+    intake = AskAResearchIntakeV1.build(
+        scope=scope, execution_receipt=receipt, entries=(entry,)
+    )
+    return AskAContributionOutputV1.build_completed(
+        disposition="completed_ready", intake=intake, entries=(entry,), known_losses=()
+    ).model_dump(mode="json")
+
+
 def _write_run(
     run_dir: Path,
     *,
     entries: list[dict] | None = None,
     intake: dict | None = None,
+    producer_losses: object = None,
     include_contribution: bool = True,
 ) -> None:
     trial_id = UUID("12345678-1234-4234-8234-123456789abc")
@@ -52,6 +121,8 @@ def _write_run(
         }
         if intake is not None:
             output["research_intake"] = intake
+        if producer_losses is not None:
+            output["known_losses"] = producer_losses
         contributions.append(
             SpecialistContribution.from_output(
                 specialist_id="research_wiring",
@@ -152,6 +223,33 @@ def test_malformed_entry_known_loss(tmp_path: Path) -> None:
     assert any(loss.startswith("entry_shape_invalid") for loss in packet.known_losses)
 
 
+def test_producer_losses_precede_reader_losses_and_dedupe_first_wins(tmp_path: Path) -> None:
+    _write_run(
+        tmp_path,
+        entries=[{"bad": "row"}],
+        producer_losses=["provider_tier_excluded:0", "entry_shape_invalid:0"],
+    )
+    packet = rp.load_research_packet(tmp_path)
+    assert packet.known_losses == (
+        "provider_tier_excluded:0",
+        "entry_shape_invalid:0",
+        "research_entries_all_invalid",
+    )
+    assert packet.status == "empty"
+
+
+@pytest.mark.parametrize(
+    "losses",
+    [None, "one", {}, [1], [""], ["  "], ["line\nbreak"]],
+)
+def test_malformed_producer_losses_fail_loud(tmp_path: Path, losses: object) -> None:
+    # ``None`` is represented explicitly by building the contribution directly.
+    output = {"research_entries": [_valid_entry()], "known_losses": losses}
+    _write_contributions(tmp_path, [("research_wiring", "04.55", output)])
+    with pytest.raises(rp.ResearchPacketShapeError, match="known_losses"):
+        rp.load_research_packet(tmp_path)
+
+
 def test_corrupt_run_fail_loud(tmp_path: Path) -> None:
     (tmp_path / "run.json").write_text("{nope", encoding="utf-8")
     with pytest.raises(RunEnvelopeCorruptError):
@@ -226,13 +324,13 @@ def test_public_packet_coordinates_are_frozen_and_exported() -> None:
 
 def test_three_packets_select_exact_coordinates_and_witness_digests(tmp_path: Path) -> None:
     generic = _valid_entry(citation_id="generic", source_hash="sha256:generic")
-    ask_a = _valid_entry(citation_id="ask-a", source_hash="sha256:ask-a")
+    ask_a_output = _valid_ask_a_output()
     ask_b = _valid_entry(citation_id="ask-b", source_hash="sha256:ask-b")
     _write_contributions(
         tmp_path,
         [
             ("research_wiring", "04.55", {"research_entries": [generic]}),
-            ("ask_a_enrichment", "07W.2", {"research_entries": [ask_a]}),
+            ("ask_a_enrichment", "07W.2", ask_a_output),
             ("ask_b_hot_topics", "07W.4", {"research_entries": [ask_b]}),
             ("ask_a_enrichment", "collision", {"research_entries": [generic]}),
             ("collision", "07W.2", {"research_entries": [ask_b]}),
@@ -259,12 +357,29 @@ def test_three_packets_select_exact_coordinates_and_witness_digests(tmp_path: Pa
         "07W.4",
     )
     assert default.entries[0]["citation_id"] == "generic"
-    assert enrichment.entries[0]["citation_id"] == "ask-a"
+    assert enrichment.entries[0]["citation_id"] == "ask-a-cite-001"
     assert hot_topics.entries[0]["citation_id"] == "ask-b"
     assert enrichment == rp.resolve_for_enrichment_pool(tmp_path)
     assert len(
         {default.packet_digest, enrichment.packet_digest, hot_topics.packet_digest}
     ) == 3
+
+
+def test_ask_a_present_malformed_contract_fails_loud(tmp_path: Path) -> None:
+    _write_contributions(
+        tmp_path,
+        [("ask_a_enrichment", "07W.2", {"research_entries": [_valid_entry()]})],
+    )
+    with pytest.raises(rp.ResearchPacketShapeError, match="Ask-A"):
+        rp.resolve_for_enrichment_pool(tmp_path)
+
+
+def test_ask_a_strict_completed_packet_resolves_stably(tmp_path: Path) -> None:
+    _write_contributions(tmp_path, [("ask_a_enrichment", "07W.2", _valid_ask_a_output())])
+    first = rp.resolve_for_enrichment_pool(tmp_path, require_usable=True)
+    second = rp.resolve_for_enrichment_pool(tmp_path, require_usable=True)
+    assert first == second
+    assert first.packet_digest == second.packet_digest
 
 
 @pytest.mark.parametrize(
@@ -311,6 +426,10 @@ def test_named_resolvers_require_usable_and_validate_rows(
         tmp_path,
         [(target[0], target[1], {"research_entries": [{"bad": "row"}]})],
     )
+    if resolver is rp.resolve_for_enrichment_pool:
+        with pytest.raises(rp.ResearchPacketShapeError, match="Ask-A"):
+            resolver(tmp_path)  # type: ignore[operator]
+        return
     packet = resolver(tmp_path)  # type: ignore[operator]
     assert packet.status == "empty"
     assert packet.known_losses == (
@@ -332,12 +451,8 @@ def test_non_generic_empty_paths_preserve_requested_coordinates(tmp_path: Path) 
         tmp_path,
         [("ask_a_enrichment", "07W.2", {"not_research_entries": []})],
     )
-    missing_key = rp.resolve_for_enrichment_pool(tmp_path)
-    assert (missing_key.specialist_id, missing_key.node_id) == (
-        "ask_a_enrichment",
-        "07W.2",
-    )
-    assert missing_key.known_losses == ("research_entries_key_absent",)
+    with pytest.raises(rp.ResearchPacketShapeError, match="Ask-A"):
+        rp.resolve_for_enrichment_pool(tmp_path)
 
 
 def test_named_resolvers_fail_loud_for_wrong_container_and_corrupt_run(
@@ -467,10 +582,18 @@ def test_identity_by_state_validation_parity(
         "missing-key": {"other": []},
         "wrong-container": {"research_entries": {"bad": "type"}},
     }
+    if specialist_id == "ask_a_enrichment" and state == "ready":
+        outputs["ready"] = _valid_ask_a_output()
     _write_contributions(
         tmp_path,
         [(specialist_id, node_id, outputs[state])],
     )
+    if specialist_id == "ask_a_enrichment" and state != "ready":
+        with pytest.raises(rp.ResearchPacketShapeError, match="Ask-A"):
+            rp.load_research_packet(
+                tmp_path, specialist_id=specialist_id, node_id=node_id
+            )
+        return
     if state == "wrong-container":
         with pytest.raises(rp.ResearchPacketShapeError, match="must be a list"):
             rp.load_research_packet(

@@ -22,5 +22,7 @@
   "budget_status": {
     "state": "under-budget",
     "over_by_usd": 0.0
-  }
+  },
+  "cost_posture": "exact",
+  "unavailable_attempt_count": 0
 }

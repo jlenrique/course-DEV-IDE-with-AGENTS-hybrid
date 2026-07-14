@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Final, Literal
 
+from app.marcus.lesson_plan.ask_a_enrichment import AskAContributionOutputV1
 from app.marcus.lesson_plan.workbook_enrichment import (
     RunEnvelopeCorruptError,
     load_run_envelope,
@@ -191,6 +192,19 @@ def load_research_packet(
         )
 
     output = contribution.output if isinstance(contribution.output, dict) else {}
+    if (
+        specialist_id == ASK_A_ENRICHMENT_SPECIALIST_ID
+        and node_id == ASK_A_ENRICHMENT_NODE_ID
+    ):
+        try:
+            strict_output = AskAContributionOutputV1.model_validate_json(
+                json.dumps(output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise ResearchPacketShapeError(
+                f"Ask-A contribution contract is invalid: {exc}"
+            ) from exc
+        output = strict_output.model_dump(mode="json")
     raw_entries = output.get(_RESEARCH_ENTRIES_KEY)
     if raw_entries is None:
         return _empty_packet(
@@ -204,13 +218,31 @@ def load_research_packet(
             f"research_entries must be a list, got {type(raw_entries).__name__}"
         )
 
+    producer_losses: list[str] = []
+    if "known_losses" in output:
+        raw_losses = output["known_losses"]
+        if not isinstance(raw_losses, list):
+            raise ResearchPacketShapeError("known_losses must be an ordered list")
+        for index, loss in enumerate(raw_losses):
+            if (
+                not isinstance(loss, str)
+                or not loss.strip()
+                or loss != loss.strip()
+                or any(mark in loss for mark in ("\r", "\n", "\u2028", "\u2029"))
+            ):
+                raise ResearchPacketShapeError(
+                    f"known_losses[{index}] must be a nonblank single-line string"
+                )
+            if loss not in producer_losses:
+                producer_losses.append(loss)
+
     usable: list[dict[str, Any]] = []
-    losses: list[str] = []
+    reader_losses: list[str] = []
     for index, entry in enumerate(raw_entries):
         if _entry_shape_ok(entry):
             usable.append(dict(entry))
         else:
-            losses.append(f"entry_shape_invalid:{index}")
+            reader_losses.append(f"entry_shape_invalid:{index}")
 
     intake = output.get(_RESEARCH_INTAKE_KEY)
     intake_dict = intake if isinstance(intake, dict) else None
@@ -219,15 +251,19 @@ def load_research_packet(
 
     if not usable and not raw_entries:
         status: PacketStatus = "empty"
-        losses.append("research_entries_empty")
+        reader_losses.append("research_entries_empty")
     elif not usable:
         status = "empty"
-        losses.append("research_entries_all_invalid")
-    elif losses:
+        reader_losses.append("research_entries_all_invalid")
+    elif producer_losses or reader_losses:
         status = "degraded"
     else:
         status = "ready"
 
+    losses = list(producer_losses)
+    for loss in reader_losses:
+        if loss not in losses:
+            losses.append(loss)
     payload = {
         "schema_version": SCHEMA_VERSION,
         "status": status,

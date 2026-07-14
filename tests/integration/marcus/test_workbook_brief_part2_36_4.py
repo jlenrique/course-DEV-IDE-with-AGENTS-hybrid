@@ -15,6 +15,7 @@ from app.marcus.lesson_plan.promise_projection import PromiseObjectiveResolution
 from app.marcus.orchestrator import workbook_wiring
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from tests.helpers.workbook_slide_authority import install_single_slide_authority
 
 ROOT = Path("course-content/courses/tejal-apc-c1-m1-p2-trends").resolve()
 FIXTURES = Path("tests/fixtures/prework_36_4")
@@ -91,9 +92,14 @@ def test_part2_real_factory_is_exact_once_and_digest_bound(tmp_path, monkeypatch
         scene_writer=scene,
         promise_writer=promise,
     )
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
     envelope = workbook_wiring.run_workbook_band_node(
         node_id="07W.1",
-        production_envelope=ProductionEnvelope(trial_id=uuid4()),
+        production_envelope=initial,
         runtime_context=context,
     )
     repeated = workbook_wiring.run_workbook_band_node(
@@ -195,12 +201,18 @@ def test_resume_rejects_any_mutated_contribution_receipt(
         scene_writer=SceneWriter(),
         promise_writer=PromiseWriter(),
     )
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
     envelope = workbook_wiring.run_workbook_band_node(
         node_id="07W.1",
-        production_envelope=ProductionEnvelope(trial_id=uuid4()),
+        production_envelope=initial,
         runtime_context=context,
     )
-    original = envelope.contributions[0]
+    original = envelope.get_contribution("workbook_brief", node_id="07W.1")
+    assert original is not None
     output = dict(original.output)
     output[field] = value
     planted = ProductionEnvelope(trial_id=envelope.trial_id)

@@ -43,6 +43,7 @@ from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.workbook_producer import _act as wb_act
+from tests.helpers.workbook_slide_authority import install_manifest_slide_authority
 
 from ._run_fixture import collateral_present, section, write_run_json
 
@@ -293,9 +294,14 @@ def test_serialized_07w1_authority_drives_actual_terminal_md_docx(
         scene_writer=scene_writer,
         promise_writer=promise_writer,
     )
+    current_envelope = install_manifest_slide_authority(
+        trial.production_envelope,
+        run_dir=run_dir,
+        course_source_root=context.course_source_root,
+    )
     production = workbook_wiring.run_workbook_band_node(
         node_id="07W.1",
-        production_envelope=trial.production_envelope,
+        production_envelope=current_envelope,
         runtime_context=context,
     )
     trial.production_envelope = production

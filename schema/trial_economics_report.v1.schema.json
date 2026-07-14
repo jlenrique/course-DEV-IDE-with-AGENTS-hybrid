@@ -54,7 +54,8 @@
           "enum": [
             "no-cap",
             "under-budget",
-            "over-budget-warning"
+            "over-budget-warning",
+            "unknown-cost"
           ],
           "title": "State",
           "type": "string"
@@ -173,6 +174,21 @@
     },
     "budget_status": {
       "$ref": "#/$defs/BudgetStatus"
+    },
+    "cost_posture": {
+      "default": "exact",
+      "enum": [
+        "exact",
+        "known-lower-bound-with-explicit-unavailable-attempts"
+      ],
+      "title": "Cost Posture",
+      "type": "string"
+    },
+    "unavailable_attempt_count": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Unavailable Attempt Count",
+      "type": "integer"
     }
   },
   "required": [

@@ -11,12 +11,15 @@ from __future__ import annotations
 
 import json
 import logging
+from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 from uuid import UUID
 
 import pytest
 import yaml
 
+from app.marcus.lesson_plan.pass1_authority import finalize_plan_authority
 from app.marcus.orchestrator import package_builders, production_runner
 from app.marcus.orchestrator.package_builders import (
     BuilderInputError,
@@ -27,6 +30,7 @@ from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
 )
+from app.pass1_generation_lock import pass1_generation_lock
 from app.specialists.gary.payload_contract import (
     CONSUMED_PAYLOAD_KEYS as GARY_KEYS,
 )
@@ -43,6 +47,26 @@ def _fixture_outputs() -> tuple[dict, dict]:
     raw = json.loads(LEGACY_ENVELOPE_FIXTURE.read_text(encoding="utf-8-sig"))
     by_id = {c["specialist_id"]: c["output"] for c in raw["contributions"]}
     return by_id["irene_pass1"]["lesson_plan"], by_id["cd"]["cd_directive"]
+
+
+def _current_fixture_outputs() -> tuple[dict, dict, dict]:
+    """Promote the historical fixture to the current Pass-1 authority shape."""
+    lesson_plan, cd_directive = _fixture_outputs()
+    current_plan = deepcopy(lesson_plan)
+    source_lines: list[str] = []
+    for index, unit in enumerate(current_plan["plan_units"], start=1):
+        anchor = f"Exact source anchor {index}: {unit['title']}"
+        unit["cluster_role"] = "head"
+        unit["parent_slide_id"] = None
+        unit["source_refs"] = [anchor]
+        source_lines.append(anchor)
+    receipt = finalize_plan_authority(
+        current_plan,
+        source_sections=(
+            ("slides/slide-1-legacy.md", "\n".join(source_lines)),
+        ),
+    )
+    return current_plan, cd_directive, receipt
 
 
 def _scope(unit: dict) -> object:
@@ -97,6 +121,17 @@ def test_build_gary_briefs_fails_loud_on_malformed_inputs() -> None:
     assert excinfo.value.tag == "builder.gary.cd-directive-shape"
 
 
+def test_build_gary_briefs_rejects_duplicate_unit_authority_before_projection() -> None:
+    lesson_plan, cd_directive = _fixture_outputs()
+    malformed = json.loads(json.dumps(lesson_plan))
+    malformed["plan_units"][1]["unit_id"] = malformed["plan_units"][0]["unit_id"]
+
+    with pytest.raises(BuilderInputError) as excinfo:
+        build_gary_briefs(malformed, cd_directive)
+
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+
+
 def test_build_gary_briefs_excludes_ratified_out_of_scope_units() -> None:
     lesson_plan, cd_directive = _fixture_outputs()
     baseline = len(_in_scope_units(lesson_plan))
@@ -110,10 +145,14 @@ def test_build_gary_briefs_excludes_ratified_out_of_scope_units() -> None:
 
 
 def test_run_builder_node_emits_first_class_contribution_and_is_idempotent() -> None:
-    lesson_plan, cd_directive = _fixture_outputs()
+    lesson_plan, cd_directive, receipt = _current_fixture_outputs()
     envelope = ProductionEnvelope(trial_id=TRIAL_ID)
     envelope.add_contribution(
-        _contribution("irene_pass1", {"lesson_plan": lesson_plan}, node_id="04A")
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": lesson_plan, "plan_authority_receipt": receipt},
+            node_id="04A",
+        )
     )
     envelope.add_contribution(
         _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
@@ -121,7 +160,7 @@ def test_run_builder_node_emits_first_class_contribution_and_is_idempotent() -> 
     updated = run_builder_node(node_id="06", production_envelope=envelope)
     package = updated.get_contribution("package_builder", node_id="06")
     assert package is not None
-    assert package.model_used == package_builders.BUILDER_MODEL_MARKER
+    assert package.model_used == package_builders.CURRENT_BUILDER_MODEL_MARKER
     assert set(package.output) <= GARY_KEYS
     # Idempotent per node (resume-safe; mirrors walker skip rule).
     again = run_builder_node(node_id="06", production_envelope=updated)
@@ -133,6 +172,362 @@ def test_run_builder_node_fails_loud_on_missing_upstream() -> None:
     with pytest.raises(BuilderInputError) as excinfo:
         run_builder_node(node_id="06", production_envelope=envelope)
     assert excinfo.value.tag == "builder.gary.upstream-missing"
+
+
+def test_current_authority_receipt_must_match_plan_and_sidecar(
+    tmp_path: Path,
+) -> None:
+    lesson_plan, cd_directive = _fixture_outputs()
+    # This fixture is legacy and lacks literal source inventory, so use an
+    # intentionally small current-format plan for the receipt boundary.
+    current_plan = {
+        "plan_units": [
+            {
+                "unit_id": "u01",
+                "title": "Head",
+                "learning_objective": "Learn",
+                "scope_decision": "in-scope",
+                "cluster_role": "head",
+                "parent_slide_id": None,
+                "source_refs": ["Exact source"],
+            }
+        ]
+    }
+    receipt = finalize_plan_authority(
+        current_plan,
+        source_sections=(("slides/slide-1.md", "Exact source"),),
+    )
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": current_plan, "plan_authority_receipt": receipt},
+            node_id="05B",
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+
+    with pytest.raises(BuilderInputError) as excinfo:
+        run_builder_node(
+            node_id="06",
+            production_envelope=envelope,
+            runs_root=tmp_path,
+            trial_id=TRIAL_ID,
+        )
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+    assert envelope.get_contribution("package_builder", node_id="06") is None
+
+    run_dir = tmp_path / str(TRIAL_ID)
+    run_dir.mkdir()
+    (run_dir / "irene-pass1.plan-authority.json").write_text(
+        json.dumps(receipt), encoding="utf-8"
+    )
+    updated = run_builder_node(
+        node_id="06",
+        production_envelope=envelope,
+        runs_root=tmp_path,
+        trial_id=TRIAL_ID,
+    )
+    assert updated.get_contribution("package_builder", node_id="06") is not None
+
+    (run_dir / "irene-pass1.plan-authority.json").write_text(
+        "{}", encoding="utf-8"
+    )
+    with pytest.raises(BuilderInputError) as resume_exc:
+        run_builder_node(
+            node_id="06",
+            production_envelope=updated,
+            runs_root=tmp_path,
+            trial_id=TRIAL_ID,
+        )
+    assert resume_exc.value.tag == "builder.gary.plan-authority-invalid"
+
+    serialized = json.dumps(receipt, separators=(",", ":"))
+    duplicate = serialized.replace(
+        '"schema_version":"pass1-plan-authority.v1"',
+        '"schema_version":"pass1-plan-authority.v1",'
+        '"schema_version":"pass1-plan-authority.v1"',
+        1,
+    )
+    (run_dir / "irene-pass1.plan-authority.json").write_text(
+        duplicate, encoding="utf-8"
+    )
+    with pytest.raises(BuilderInputError) as duplicate_exc:
+        run_builder_node(
+            node_id="06",
+            production_envelope=updated,
+            runs_root=tmp_path,
+            trial_id=TRIAL_ID,
+        )
+    assert duplicate_exc.value.tag == "builder.gary.plan-authority-invalid"
+
+
+def test_current_format_resume_cannot_downgrade_by_omitting_receipt(
+    tmp_path: Path,
+) -> None:
+    _lesson_plan, cd_directive = _fixture_outputs()
+    current_plan = {
+        "plan_units": [
+            {
+                "unit_id": "u01",
+                "title": "Unvalidated",
+                "learning_objective": "Learn",
+                "cluster_role": "head",
+                "parent_slide_id": None,
+                "source_refs": ["fabricated anchor"],
+            }
+        ]
+    }
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": current_plan},
+            node_id="05B",
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+    run_dir = tmp_path / str(TRIAL_ID)
+    run_dir.mkdir()
+    (run_dir / "irene-pass1.plan-authority.json").write_text(
+        "{}", encoding="utf-8"
+    )
+
+    with pytest.raises(BuilderInputError) as excinfo:
+        run_builder_node(
+            node_id="06",
+            production_envelope=envelope,
+            runs_root=tmp_path,
+            trial_id=TRIAL_ID,
+        )
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+    assert envelope.get_contribution("package_builder", node_id="06") is None
+
+
+def test_current_05b_cannot_downgrade_when_all_authority_markers_are_absent(
+    tmp_path: Path,
+) -> None:
+    _lesson_plan, cd_directive = _fixture_outputs()
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": {"plan_units": []}},
+            node_id="05B",
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+
+    with pytest.raises(BuilderInputError) as excinfo:
+        run_builder_node(
+            node_id="06",
+            production_envelope=envelope,
+            runs_root=tmp_path,
+            trial_id=TRIAL_ID,
+        )
+
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+    assert envelope.get_contribution("package_builder", node_id="06") is None
+
+
+def test_receiptless_current_04a_cannot_mint_a_legacy_package() -> None:
+    lesson_plan, cd_directive = _fixture_outputs()
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1", {"lesson_plan": lesson_plan}, node_id="04A"
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+
+    with pytest.raises(BuilderInputError) as excinfo:
+        run_builder_node(node_id="06", production_envelope=envelope)
+
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+
+
+@pytest.mark.parametrize("legacy_node", ["04A", "05B"])
+def test_completed_legacy_package_remains_idempotent(legacy_node: str) -> None:
+    lesson_plan, cd_directive = _fixture_outputs()
+    package = build_gary_briefs(lesson_plan, cd_directive)
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1", {"lesson_plan": lesson_plan}, node_id=legacy_node
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="package_builder",
+            output=package,
+            node_id="06",
+            model_used=package_builders.BUILDER_MODEL_MARKER,
+        )
+    )
+
+    resumed = run_builder_node(node_id="06", production_envelope=envelope)
+
+    assert resumed == envelope
+
+
+def test_current_reentry_upgrades_matching_legacy_package_marker() -> None:
+    lesson_plan, cd_directive, receipt = _current_fixture_outputs()
+    package = build_gary_briefs(lesson_plan, cd_directive)
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": lesson_plan, "plan_authority_receipt": receipt},
+            node_id="05B",
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="package_builder",
+            output=package,
+            node_id="06",
+            model_used=package_builders.BUILDER_MODEL_MARKER,
+        )
+    )
+
+    resumed = run_builder_node(node_id="06", production_envelope=envelope)
+
+    assert resumed.get_contribution(
+        "package_builder", node_id="06"
+    ).model_used == package_builders.CURRENT_BUILDER_MODEL_MARKER
+
+
+def test_current_reentry_rejects_unknown_package_marker() -> None:
+    lesson_plan, cd_directive, receipt = _current_fixture_outputs()
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": lesson_plan, "plan_authority_receipt": receipt},
+            node_id="05B",
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="package_builder",
+            output=build_gary_briefs(lesson_plan, cd_directive),
+            node_id="06",
+            model_used="unknown-package-format",
+        )
+    )
+
+    with pytest.raises(BuilderInputError) as excinfo:
+        run_builder_node(node_id="06", production_envelope=envelope)
+
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+
+
+def test_current_receipt_path_must_equal_run_coordinate(tmp_path: Path) -> None:
+    lesson_plan, cd_directive, receipt = _current_fixture_outputs()
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {
+                "lesson_plan": lesson_plan,
+                "plan_authority_receipt": receipt,
+                "plan_authority_receipt_path": str(tmp_path / "forged.json"),
+            },
+            node_id="05B",
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+
+    with pytest.raises(BuilderInputError) as excinfo:
+        run_builder_node(
+            node_id="06",
+            production_envelope=envelope,
+            runs_root=tmp_path,
+            trial_id=TRIAL_ID,
+        )
+
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+
+
+def test_package_builder_refuses_overlapping_pass1_generation(tmp_path: Path) -> None:
+    lesson_plan, cd_directive, receipt = _current_fixture_outputs()
+    run_dir = tmp_path / str(TRIAL_ID)
+    run_dir.mkdir()
+    (run_dir / "irene-pass1.plan-authority.json").write_text(
+        json.dumps(receipt), encoding="utf-8"
+    )
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": lesson_plan, "plan_authority_receipt": receipt},
+            node_id="05B",
+        )
+    )
+    envelope.add_contribution(
+        _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
+    )
+
+    with pass1_generation_lock(run_dir), pytest.raises(BuilderInputError) as excinfo:
+        run_builder_node(
+            node_id="06",
+            production_envelope=envelope,
+            runs_root=tmp_path,
+            trial_id=TRIAL_ID,
+        )
+
+    assert excinfo.value.tag == "builder.gary.plan-authority-invalid"
+
+
+def test_irene_refinement_dependency_and_receipt_use_existing_envelope() -> None:
+    plan = {"plan_units": []}
+    receipt = {
+        "schema_version": "pass1-plan-authority.v1",
+        "plan_digest": "sha256:" + "0" * 64,
+        "identities": [],
+        "authority_digest": "sha256:" + "1" * 64,
+    }
+    envelope = ProductionEnvelope(trial_id=TRIAL_ID)
+    envelope.add_contribution(
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": plan, "plan_authority_receipt": receipt},
+            node_id="04A",
+        )
+    )
+    envelope.add_contribution(_contribution("cd", {"cd_directive": {}}, node_id="4.75"))
+
+    dependency = production_runner._default_dependency_map_for(
+        specialist_id="irene_pass1", production_envelope=envelope
+    )
+    payload = production_runner._runner_payload_for_specialist(
+        specialist_id="irene_pass1",
+        directive_path=None,
+        bundle_dir=None,
+        production_envelope=envelope,
+    )
+    assert dependency == {"upstream_output": "irene_pass1"}
+    assert payload == {"prior_plan_authority_receipt": receipt}
+    assert payload["prior_plan_authority_receipt"] is not receipt
 
 
 def test_runner_payload_for_gary_is_runner_context_only(tmp_path: Path) -> None:
@@ -162,10 +557,14 @@ def test_projection_resolves_package_keys_for_gary(tmp_path: Path) -> None:
     # manifest dependency_projections (Winston: projection, not spread).
     from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 
-    lesson_plan, cd_directive = _fixture_outputs()
+    lesson_plan, cd_directive, receipt = _current_fixture_outputs()
     envelope = ProductionEnvelope(trial_id=TRIAL_ID)
     envelope.add_contribution(
-        _contribution("irene_pass1", {"lesson_plan": lesson_plan}, node_id="04A")
+        _contribution(
+            "irene_pass1",
+            {"lesson_plan": lesson_plan, "plan_authority_receipt": receipt},
+            node_id="04A",
+        )
     )
     envelope.add_contribution(
         _contribution("cd", {"cd_directive": cd_directive}, node_id="4.75")
@@ -420,9 +819,12 @@ class _RecordingFakeAdapter:
     """Real-shaped fake: emits fixture-derived outputs and records seams."""
 
     def __init__(self) -> None:
-        lesson_plan, cd_directive = _fixture_outputs()
+        lesson_plan, cd_directive, receipt = _current_fixture_outputs()
         self._outputs = {
-            "irene_pass1": {"lesson_plan": lesson_plan},
+            "irene_pass1": {
+                "lesson_plan": lesson_plan,
+                "plan_authority_receipt": receipt,
+            },
             "cd": {"cd_directive": cd_directive},
             "gary": {"gary_slide_output": [{"slide_id": "slide-01"}], "status": "complete"},
         }
@@ -524,9 +926,20 @@ def test_walker_builds_package_at_06_and_threads_briefs_to_gary(
     monkeypatch.setattr(
         production_runner, "ProductionDispatchAdapter", lambda: adapter
     )
+    monkeypatch.setattr(
+        production_runner,
+        "_run_start_preflight_gate",
+        lambda *_args, **_kwargs: SimpleNamespace(
+            all_green=True, blocking_items=lambda: []
+        ),
+    )
     run_dir = tmp_path / str(TRIAL_ID)
     run_dir.mkdir()
     (run_dir / "directive.yaml").write_text("trial: test\n", encoding="utf-8")
+    (run_dir / "irene-pass1.plan-authority.json").write_text(
+        json.dumps(adapter._outputs["irene_pass1"]["plan_authority_receipt"]),
+        encoding="utf-8",
+    )
 
     envelope = production_runner.run_production_trial(
         CORPUS,

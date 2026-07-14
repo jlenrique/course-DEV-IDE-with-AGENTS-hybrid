@@ -1,0 +1,8 @@
+structural-standard=0
+structural-motion=1
+structural-cluster=0
+pipeline-lockstep=0
+sprint-status-test=0
+hud-progress-tests=0
+lint-imports=0
+git-diff-check=0

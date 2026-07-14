@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import time
 from collections.abc import Callable, Mapping
 from pathlib import Path
@@ -39,8 +40,11 @@ from app.models.specialist_model_config import SpecialistModelConfig
 from app.runtime.cascade_config import load_pricing
 
 CONFIG_PATH = Path(__file__).with_name("workbook_writer_model_config.yaml")
+WORKBOOK_WRITER_REQUEST_TIMEOUT_S: Final[float] = 120.0
 WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS: Final[int] = 32000
 """Deep-Dive-only ceiling: GPT-5 spends completion budget on hidden reasoning first."""
+WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S: Final[float] = 300.0
+"""Deep-Dive-only live request budget for the full production authority packet."""
 T = TypeVar("T", bound=BaseModel)
 
 
@@ -65,9 +69,20 @@ class _StructuredWriter(Generic[T]):
         *,
         chat_factory: Callable[..., ChatModelHandle] = make_chat_model,
         max_completion_tokens: int = 4096,
+        request_timeout: float = WORKBOOK_WRITER_REQUEST_TIMEOUT_S,
         effective_adapter: str | None = None,
         effective_identity_extra: Mapping[str, object] | None = None,
     ) -> None:
+        if isinstance(request_timeout, bool) or not isinstance(
+            request_timeout, (int, float)
+        ):
+            raise ValueError("request_timeout must be a positive finite number")
+        try:
+            request_timeout = float(request_timeout)
+        except OverflowError as exc:
+            raise ValueError("request_timeout must be a positive finite number") from exc
+        if not math.isfinite(request_timeout) or request_timeout <= 0:
+            raise ValueError("request_timeout must be a positive finite number")
         config, base_model_config_digest = _load_config()
         self.model_config_digest = base_model_config_digest
         if effective_adapter is not None:
@@ -75,8 +90,17 @@ class _StructuredWriter(Generic[T]):
                 "adapter": effective_adapter,
                 "base_workbook_writer_config_digest": base_model_config_digest,
                 "max_completion_tokens": max_completion_tokens,
+                "max_retries": 0,
+                "request_timeout": request_timeout,
             }
-            identity.update(effective_identity_extra or {})
+            extras = dict(effective_identity_extra or {})
+            reserved = identity.keys() & extras.keys()
+            if reserved:
+                raise ValueError(
+                    "effective identity extras cannot override reserved keys: "
+                    + ", ".join(sorted(reserved))
+                )
+            identity.update(extras)
             effective = json.dumps(
                 identity,
                 sort_keys=True,
@@ -90,7 +114,7 @@ class _StructuredWriter(Generic[T]):
             config.specialist_id,
             per_call_override=config.default_model,
             temperature=config.temperature_default,
-            request_timeout=120.0,
+            request_timeout=request_timeout,
             max_retries=0,
             max_completion_tokens=max_completion_tokens,
             system_prompt_hash=self.model_config_digest,
@@ -186,6 +210,18 @@ class LiveSceneComposer(_StructuredWriter[SceneBrief]):
     output_type = SceneBrief
     purpose = "SceneBrief"
 
+    def __init__(
+        self,
+        *,
+        chat_factory: Callable[..., ChatModelHandle] = make_chat_model,
+        max_completion_tokens: int = 4096,
+    ) -> None:
+        super().__init__(
+            chat_factory=chat_factory,
+            max_completion_tokens=max_completion_tokens,
+            request_timeout=WORKBOOK_WRITER_REQUEST_TIMEOUT_S,
+        )
+
     def __call__(self, request: SceneComposeRequest) -> SceneBrief:
         return self._invoke(request)
 
@@ -224,6 +260,18 @@ class LivePromiseTransformer(_StructuredWriter[PromiseProjection]):
     output_type = PromiseProjection
     purpose = "PromiseProjection"
 
+    def __init__(
+        self,
+        *,
+        chat_factory: Callable[..., ChatModelHandle] = make_chat_model,
+        max_completion_tokens: int = 4096,
+    ) -> None:
+        super().__init__(
+            chat_factory=chat_factory,
+            max_completion_tokens=max_completion_tokens,
+            request_timeout=WORKBOOK_WRITER_REQUEST_TIMEOUT_S,
+        )
+
     def __call__(self, request: PromiseTransformRequest) -> PromiseProjection:
         return self._invoke(request)
 
@@ -253,6 +301,7 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
         *,
         chat_factory: Callable[..., ChatModelHandle] = make_chat_model,
         max_completion_tokens: int = WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS,
+        request_timeout: float = WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S,
     ) -> None:
         self.provider_schema = DeepDiveSkeletonWriterResult.model_json_schema()
         self.provider_schema_digest = _payload_digest(self.provider_schema)
@@ -264,6 +313,7 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
         super().__init__(
             chat_factory=chat_factory,
             max_completion_tokens=max_completion_tokens,
+            request_timeout=request_timeout,
             effective_adapter="LiveDeepDiveWriter",
             effective_identity_extra={
                 "provider_contract_mode": DEEP_DIVE_PROVIDER_CONTRACT_MODE,
@@ -363,6 +413,7 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
 
 __all__ = [
     "WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS",
+    "WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S",
     "DEEP_DIVE_PROVIDER_CONTRACT_MODE",
     "DEEP_DIVE_PROVIDER_NORMALIZER_VERSION",
     "DeepDiveProviderOutputError",

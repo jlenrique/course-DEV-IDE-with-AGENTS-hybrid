@@ -1153,8 +1153,8 @@ def test_m1_both_hook_sites_read_the_toggle_not_a_literal() -> None:
     assert "dispatch_live=False" not in src, (
         "a literal dispatch_live=False at a hook site means the toggle is dead"
     )
-    assert src.count("dispatch_live=_research_dispatch_live()") == 2, (
-        "both walk sites must read the operator-gated toggle (two-walk parity)"
+    assert src.count("dispatch_live=_research_dispatch_live()") == 4, (
+        "both walk sites and both research seams must read the operator-gated toggle"
     )
 
 

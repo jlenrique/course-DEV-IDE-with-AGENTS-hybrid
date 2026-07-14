@@ -50,6 +50,12 @@ DELEGATE_ID = "codex_hil_runner"
 POLICY_SCHEMA = "marcus-spoc-live-test-delegation.v1"
 JOURNAL_SCHEMA = "marcus-spoc-live-test-hil-journal.v1"
 SUMMARY_SCHEMA = "marcus-spoc-live-test-hil-summary.v1"
+PREFLIGHT_IDENTITY_SCHEMA = "governed-preflight-input-identity.v1"
+OUTPUT_INVENTORY_SCHEMA = "governed-run-output-inventory.v1"
+POSTFLIGHT_COMPARISON_SCHEMA = "governed-input-comparison.v1"
+PREFLIGHT_IDENTITY_FILENAME = "preflight-input-identity.v1.json"
+OUTPUT_INVENTORY_FILENAME = "output-inventory.v1.json"
+POSTFLIGHT_COMPARISON_FILENAME = "postflight-input-comparison.v1.json"
 _SELECTION_FIELDS = {
     "G2B": "slide_variant_selections",
     "G4A": "selected_voice_id",
@@ -160,6 +166,185 @@ def _digest(value: Any) -> str:
 
 def _utc_now() -> str:
     return datetime.now(UTC).isoformat().replace("+00:00", "Z")
+
+
+def _contained_by(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def _stable_file_row(path: Path, *, coordinate: str) -> dict[str, Any]:
+    flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        path_before = path.lstat()
+        if not stat.S_ISREG(path_before.st_mode):
+            raise RunnerRefusal("identity-non-regular-file-refused")
+        descriptor = os.open(path, flags)
+        try:
+            before = os.fstat(descriptor)
+            if not stat.S_ISREG(before.st_mode) or (
+                path_before.st_dev,
+                path_before.st_ino,
+            ) != (before.st_dev, before.st_ino):
+                raise RunnerRefusal("identity-file-mutated-before-read")
+            with os.fdopen(descriptor, "rb", closefd=False) as stream:
+                raw = stream.read()
+                stream.seek(0)
+                repeated = stream.read()
+            after = os.fstat(descriptor)
+            path_after = path.lstat()
+        finally:
+            os.close(descriptor)
+    except OSError as exc:
+        raise RunnerRefusal("identity-file-unreadable") from exc
+    stable_fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns")
+    if any(getattr(before, field) != getattr(after, field) for field in stable_fields) or any(
+        getattr(after, field) != getattr(path_after, field) for field in stable_fields
+    ) or raw != repeated:
+        raise RunnerRefusal("identity-file-mutated-during-read")
+    return {
+        "path": coordinate,
+        "size": len(raw),
+        "sha256": hashlib.sha256(raw).hexdigest(),
+    }
+
+
+def build_governed_input_identity(
+    *,
+    trial_id: UUID,
+    roots: dict[str, Path],
+    writable_exclusions: dict[str, Path],
+    bound_files: dict[str, Path] | None = None,
+) -> dict[str, Any]:
+    """Build a retained, reconstructable per-file immutable-input manifest."""
+    if not roots or any(not label or "/" in label for label in roots):
+        raise RunnerRefusal("identity-root-label-invalid")
+    normalized_roots: dict[str, Path] = {}
+    for label, root in sorted(roots.items()):
+        normalized = _absolute_without_resolving(root)
+        _assert_safe_path(normalized, root=normalized, kind="dir")
+        normalized_roots[label] = normalized
+    exclusions: dict[str, Path] = {}
+    exclusion_rows: list[dict[str, str]] = []
+    for label, exclusion in sorted(writable_exclusions.items()):
+        normalized = _absolute_without_resolving(exclusion)
+        containing_roots = [
+            root for root in normalized_roots.values() if _contained_by(normalized, root)
+        ]
+        if not containing_roots:
+            raise RunnerRefusal("writable-exclusion-outside-identity-roots")
+        _assert_safe_path(normalized, root=containing_roots[0], kind="missing-ok")
+        exclusions[label] = normalized
+        exclusion_rows.append(
+            {
+                "label": label,
+                "path": str(normalized.resolve()),
+                "reason": "declared-run-output-namespace",
+            }
+        )
+    seen: set[Path] = set()
+    files: list[dict[str, Any]] = []
+    for label, root in normalized_roots.items():
+        pending = [root]
+        while pending:
+            directory = pending.pop()
+            try:
+                entries = sorted(os.scandir(directory), key=lambda entry: entry.name)
+            except OSError as exc:
+                raise RunnerRefusal("identity-tree-unreadable") from exc
+            for entry in entries:
+                absolute = _absolute_without_resolving(Path(entry.path))
+                if any(_contained_by(absolute, exclusion) for exclusion in exclusions.values()):
+                    continue
+                if entry.is_symlink() or _is_reparse_point(absolute):
+                    raise RunnerRefusal("identity-tree-link-refused")
+                if entry.name == "__pycache__" or absolute.suffix == ".pyc":
+                    continue
+                if entry.is_dir(follow_symlinks=False):
+                    pending.append(absolute)
+                    continue
+                if not entry.is_file(follow_symlinks=False):
+                    raise RunnerRefusal("identity-non-regular-file-refused")
+                if absolute in seen:
+                    continue
+                seen.add(absolute)
+                relative = absolute.relative_to(root).as_posix()
+                files.append(_stable_file_row(absolute, coordinate=f"{label}/{relative}"))
+    bound_file_rows: list[dict[str, str]] = []
+    for label, path in sorted((bound_files or {}).items()):
+        if not label or "/" in label:
+            raise RunnerRefusal("identity-bound-file-label-invalid")
+        absolute = _absolute_without_resolving(path)
+        _assert_safe_path(absolute, root=absolute.parent, kind="file")
+        files.append(_stable_file_row(absolute, coordinate=f"bound/{label}"))
+        bound_file_rows.append({"label": label, "path": str(absolute.resolve())})
+    files.sort(key=lambda row: row["path"])
+    body: dict[str, Any] = {
+        "schema_version": PREFLIGHT_IDENTITY_SCHEMA,
+        "trial_id": str(trial_id),
+        "roots": [
+            {"label": label, "path": str(root.resolve())}
+            for label, root in normalized_roots.items()
+        ],
+        "writable_exclusions": exclusion_rows,
+        "generated_exclusions": [
+            {
+                "patterns": ["**/__pycache__/**", "**/*.pyc"],
+                "reason": "generated-python-bytecode",
+            }
+        ],
+        "bound_files": bound_file_rows,
+        "files": files,
+        "file_count": len(files),
+        "manifest_digest": _digest(files),
+    }
+    return {**body, "artifact_digest": _digest(body)}
+
+
+def build_run_output_inventory(
+    *,
+    trial_id: UUID,
+    run_dir: Path | None = None,
+    run_dirs: dict[str, Path] | None = None,
+) -> dict[str, Any]:
+    """Inventory production outputs separately from immutable preflight inputs."""
+    if (run_dir is None) == (run_dirs is None):
+        raise RunnerRefusal("output-inventory-root-selection-invalid")
+    selected = {"run": run_dir} if run_dir is not None else dict(run_dirs or {})
+    files: list[dict[str, Any]] = []
+    root_rows: list[dict[str, Any]] = []
+    multi_root = len(selected) > 1
+    for label, candidate in sorted(selected.items()):
+        if not label or "/" in label or candidate is None:
+            raise RunnerRefusal("output-inventory-root-invalid")
+        absolute = _absolute_without_resolving(candidate)
+        if not absolute.exists():
+            root_rows.append({"label": label, "path": str(absolute), "present": False})
+            continue
+        root = _assert_safe_tree(absolute)
+        root_rows.append({"label": label, "path": str(root.resolve()), "present": True})
+        for path in sorted(root.rglob("*"), key=lambda item: item.as_posix()):
+            if not path.is_file():
+                continue
+            relative = path.relative_to(root).as_posix()
+            if relative == ".codex-hil-runner.lock":
+                continue
+            coordinate = f"{label}/{relative}" if multi_root else relative
+            files.append(_stable_file_row(path, coordinate=coordinate))
+    files.sort(key=lambda row: row["path"])
+    body: dict[str, Any] = {
+        "schema_version": OUTPUT_INVENTORY_SCHEMA,
+        "trial_id": str(trial_id),
+        "created_at": _utc_now(),
+        "output_roots": root_rows,
+        "files": files,
+        "file_count": len(files),
+        "inventory_digest": _digest(files),
+    }
+    return {**body, "artifact_digest": _digest(body)}
 
 
 def _is_reparse_point(path: Path) -> bool:
@@ -311,9 +496,24 @@ def _atomic_write_json(path: Path, payload: dict[str, Any], *, root: Path) -> No
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temp, absolute)
+        _fsync_directory(parent)
     finally:
         if temp.exists():
             temp.unlink()
+
+
+def _fsync_directory(path: Path) -> None:
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError:
+        return
+    try:
+        os.fsync(descriptor)
+    except OSError:
+        pass
+    finally:
+        os.close(descriptor)
 
 
 def _write_once_json(path: Path, payload: dict[str, Any], *, root: Path) -> None:
@@ -323,6 +523,190 @@ def _write_once_json(path: Path, payload: dict[str, Any], *, root: Path) -> None
             raise RunnerRefusal("immutable-summary-already-exists")
         return
     _atomic_write_json(path, payload, root=root)
+
+
+def _default_governed_input_roots(
+    *,
+    trial_id: UUID,
+    input_path: Path,
+    course_source_root: Path,
+    policy_path: Path | None,
+    authority_spec: str,
+) -> tuple[dict[str, Path], dict[str, Path], dict[str, Path]]:
+    roots: dict[str, Path] = {
+        "input": input_path,
+        "course-source": course_source_root,
+    }
+    if policy_path is not None:
+        for label, relative in (
+            ("app", "app"),
+            ("config", "config"),
+            ("runtime-config", "runtime/config"),
+            ("state-config", "state/config"),
+            ("skills", "skills"),
+            ("bmad-memory", "_bmad/memory"),
+        ):
+            candidate = PROJECT_ROOT / relative
+            if candidate.is_dir():
+                roots[label] = candidate
+    exclusions: dict[str, Path] = {}
+    state_trial = PROJECT_ROOT / "state" / "config" / "runs" / str(trial_id)
+    if "state-config" in roots:
+        exclusions["state/config/runs/trial"] = state_trial
+    bound_files = {
+        "live-test-runner": Path(__file__),
+        "delegation-authority": PROJECT_ROOT / authority_spec,
+    }
+    if policy_path is not None:
+        bound_files["delegation-policy"] = policy_path
+    return roots, exclusions, bound_files
+
+
+def _write_governed_preflight_identity(
+    *,
+    trial_id: UUID,
+    input_path: Path,
+    course_source_root: Path,
+    evidence_root: Path,
+    policy_path: Path | None,
+    authority_spec: str,
+) -> tuple[Path, dict[str, Any]]:
+    roots, exclusions, bound_files = _default_governed_input_roots(
+        trial_id=trial_id,
+        input_path=input_path,
+        course_source_root=course_source_root,
+        policy_path=policy_path,
+        authority_spec=authority_spec,
+    )
+    payload = build_governed_input_identity(
+        trial_id=trial_id,
+        roots=roots,
+        writable_exclusions=exclusions,
+        bound_files=bound_files,
+    )
+    path = evidence_root / str(trial_id) / PREFLIGHT_IDENTITY_FILENAME
+    _write_once_json(path, payload, root=evidence_root)
+    return path, payload
+
+
+def _write_run_output_inventory(
+    *,
+    trial_id: UUID,
+    run_dir: Path,
+    evidence_root: Path,
+    state_config_run_dir: Path | None,
+) -> Path:
+    run_dirs = {"primary-run": run_dir}
+    if state_config_run_dir is not None:
+        run_dirs["state-config-run"] = state_config_run_dir
+    payload = build_run_output_inventory(
+        trial_id=trial_id,
+        run_dirs=run_dirs,
+    )
+    path = evidence_root / str(trial_id) / OUTPUT_INVENTORY_FILENAME
+    _atomic_write_json(path, payload, root=evidence_root)
+    return path
+
+
+def _write_postflight_input_comparison(
+    *,
+    trial_id: UUID,
+    preflight: dict[str, Any],
+    input_path: Path,
+    course_source_root: Path,
+    evidence_root: Path,
+    policy_path: Path | None,
+    authority_spec: str,
+) -> tuple[Path, bool]:
+    roots, exclusions, bound_files = _default_governed_input_roots(
+        trial_id=trial_id,
+        input_path=input_path,
+        course_source_root=course_source_root,
+        policy_path=policy_path,
+        authority_spec=authority_spec,
+    )
+    postflight = build_governed_input_identity(
+        trial_id=trial_id,
+        roots=roots,
+        writable_exclusions=exclusions,
+        bound_files=bound_files,
+    )
+    return _persist_postflight_comparison(
+        trial_id=trial_id,
+        preflight=preflight,
+        postflight=postflight,
+        evidence_root=evidence_root,
+    )
+
+
+def _persist_postflight_comparison(
+    *,
+    trial_id: UUID,
+    preflight: dict[str, Any],
+    postflight: dict[str, Any],
+    evidence_root: Path,
+) -> tuple[Path, bool]:
+    before_by_path = {row["path"]: row for row in preflight["files"]}
+    after_by_path = {row["path"]: row for row in postflight["files"]}
+    added = sorted(after_by_path.keys() - before_by_path.keys())
+    removed = sorted(before_by_path.keys() - after_by_path.keys())
+    changed = sorted(
+        path
+        for path in before_by_path.keys() & after_by_path.keys()
+        if before_by_path[path] != after_by_path[path]
+    )
+    matches = not (added or removed or changed)
+    body = {
+        "schema_version": POSTFLIGHT_COMPARISON_SCHEMA,
+        "trial_id": str(trial_id),
+        "preflight_artifact_digest": preflight["artifact_digest"],
+        "postflight_artifact_digest": postflight["artifact_digest"],
+        "preflight_manifest_digest": preflight["manifest_digest"],
+        "postflight_manifest_digest": postflight["manifest_digest"],
+        "status": "match" if matches else "mismatch",
+        "added": added,
+        "removed": removed,
+        "changed": changed,
+    }
+    payload = {**body, "artifact_digest": _digest(body)}
+    path = evidence_root / str(trial_id) / POSTFLIGHT_COMPARISON_FILENAME
+    _atomic_write_json(path, payload, root=evidence_root)
+    return path, matches
+
+
+def _rebuild_governed_identity_from_preflight(
+    *, trial_id: UUID, preflight: dict[str, Any]
+) -> dict[str, Any]:
+    try:
+        if (
+            preflight.get("schema_version") != PREFLIGHT_IDENTITY_SCHEMA
+            or preflight.get("trial_id") != str(trial_id)
+        ):
+            raise ValueError
+        body = {key: value for key, value in preflight.items() if key != "artifact_digest"}
+        if (
+            preflight.get("manifest_digest") != _digest(preflight.get("files"))
+            or preflight.get("artifact_digest") != _digest(body)
+        ):
+            raise ValueError
+        roots = {str(row["label"]): Path(str(row["path"])) for row in preflight["roots"]}
+        exclusions = {
+            str(row["label"]): Path(str(row["path"]))
+            for row in preflight["writable_exclusions"]
+        }
+        bound_files = {
+            str(row["label"]): Path(str(row["path"]))
+            for row in preflight["bound_files"]
+        }
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RunnerRefusal("preflight-evidence-invalid") from exc
+    rebuilt = build_governed_input_identity(
+        trial_id=trial_id,
+        roots=roots,
+        writable_exclusions=exclusions,
+        bound_files=bound_files,
+    )
+    return rebuilt
 
 
 class EvidenceJournal:
@@ -428,40 +812,127 @@ class EvidenceJournal:
 
 
 @contextmanager
-def exclusive_trial_lock(run_dir: Path, *, trial_id: UUID, policy_digest: str) -> Iterator[None]:
+def exclusive_trial_lock(
+    run_dir: Path,
+    *,
+    trial_id: UUID,
+    policy_digest: str,
+    preflight_required: bool = False,
+) -> Iterator[bool]:
     lock = run_dir / ".codex-hil-runner.lock"
+    origin = run_dir / ".codex-hil-runner-origin.json"
     _assert_safe_path(run_dir, root=run_dir.parent, kind="dir")
-    if lock.exists() and (lock.is_symlink() or _is_reparse_point(lock)):
-        raise RunnerRefusal("unsafe-trial-lock")
+    if lock.exists() or lock.is_symlink():
+        before = lock.lstat()
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_nlink != 1
+            or _is_reparse_point(lock)
+        ):
+            raise RunnerRefusal("unsafe-trial-lock")
+    flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
-        descriptor = os.open(lock, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    except FileExistsError as exc:
-        raise RunnerRefusal("trial-lock-held") from exc
+        descriptor = os.open(lock, flags, 0o600)
+    except OSError as exc:
+        raise RunnerRefusal("unsafe-trial-lock") from exc
+    stream = os.fdopen(descriptor, "r+b")
+    acquired = False
+    origin_validated = False
     try:
+        opened = os.fstat(stream.fileno())
+        path_state = lock.lstat()
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or opened.st_nlink != 1
+            or (opened.st_dev, opened.st_ino) != (path_state.st_dev, path_state.st_ino)
+        ):
+            raise RunnerRefusal("unsafe-trial-lock")
+        if os.name == "nt":
+            import msvcrt
+
+            stream.seek(0)
+            try:
+                msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+            except (OSError, PermissionError) as exc:
+                raise RunnerRefusal("trial-lock-held") from exc
+        else:
+            import fcntl
+
+            try:
+                fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError as exc:
+                raise RunnerRefusal("trial-lock-held") from exc
+        acquired = True
+        origin_body = {
+            "schema_version": "codex-hil-runner-origin.v1",
+            "trial_id": str(trial_id),
+            "policy_digest": policy_digest,
+            "preflight_required": preflight_required,
+        }
+        if origin.exists() or origin.is_symlink():
+            retained_origin = _read_json(origin, root=run_dir)
+            if (
+                retained_origin.get("schema_version") != "codex-hil-runner-origin.v1"
+                or retained_origin.get("trial_id") != str(trial_id)
+                or retained_origin.get("policy_digest") != policy_digest
+                or not isinstance(retained_origin.get("preflight_required"), bool)
+                or (preflight_required and retained_origin["preflight_required"] is False)
+            ):
+                raise RunnerRefusal("trial-lock-origin-invalid")
+            retained_preflight_required = retained_origin["preflight_required"]
+            origin_body = retained_origin
+        else:
+            _write_once_json(origin, origin_body, root=run_dir)
+            retained_preflight_required = preflight_required
+        origin_validated = True
         body = {
             "trial_id": str(trial_id),
             "delegate_id": DELEGATE_ID,
             "policy_digest": policy_digest,
             "pid": os.getpid(),
             "acquired_at": _utc_now(),
+            "preflight_required": retained_preflight_required,
         }
-        with os.fdopen(descriptor, "w", encoding="utf-8", newline="\n") as handle:
-            json.dump(body, handle, sort_keys=True)
-            handle.write("\n")
-            handle.flush()
-            os.fsync(handle.fileno())
-        yield
+        serialized = (json.dumps(body, sort_keys=True) + "\n").encode("utf-8")
+        stream.seek(0)
+        stream.truncate()
+        stream.write(serialized)
+        stream.flush()
+        os.fsync(stream.fileno())
+        _fsync_directory(run_dir)
+        yield retained_preflight_required
     finally:
         try:
-            current = _read_json(lock, root=run_dir)
-            if (
-                current.get("trial_id") != str(trial_id)
-                or current.get("policy_digest") != policy_digest
-            ):
-                raise RunnerRefusal("trial-lock-mutated")
-            lock.unlink()
-        except FileNotFoundError as exc:
-            raise RunnerRefusal("trial-lock-disappeared") from exc
+            if acquired:
+                try:
+                    stream.seek(0)
+                    current = json.loads(stream.read().decode("utf-8"))
+                    path_state = lock.lstat()
+                    opened = os.fstat(stream.fileno())
+                except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+                    raise RunnerRefusal("trial-lock-mutated") from exc
+                if (
+                    not isinstance(current, dict)
+                    or current.get("trial_id") != str(trial_id)
+                    or current.get("policy_digest") != policy_digest
+                    or (opened.st_dev, opened.st_ino) != (path_state.st_dev, path_state.st_ino)
+                ):
+                    raise RunnerRefusal("trial-lock-mutated")
+                if origin_validated and _read_json(origin, root=run_dir) != origin_body:
+                    raise RunnerRefusal("trial-lock-origin-mutated")
+        finally:
+            try:
+                if acquired and os.name == "nt":
+                    import msvcrt
+
+                    stream.seek(0)
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
+                elif acquired:
+                    import fcntl
+
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
+            finally:
+                stream.close()
 
 
 def _load_envelope(trial_id: UUID, run_dir: Path) -> ProductionTrialEnvelope:
@@ -512,9 +983,7 @@ def _assert_delegated_trial_scope(
         raise RunnerRefusal("trial-preset-out-of-scope")
     if envelope.operator_id != DELEGATE_ID:
         raise RunnerRefusal("trial-operator-not-delegate")
-    corpus = _match_allowed_root(
-        Path(envelope.corpus_path), policy.allowed_input_roots, kind="dir"
-    )
+    corpus = _match_allowed_root(Path(envelope.corpus_path), policy.allowed_input_roots, kind="dir")
     _assert_safe_tree(corpus)
     _assert_workbook_checkpoint(trial_id, run_dir)
     context = _load_canonical_runtime_context(run_dir)
@@ -620,8 +1089,7 @@ def _make_verdict(
                 ):
                     raise RunnerRefusal("missing-or-ambiguous-selection-choices")
                 variant_ids = [
-                    row.get("variant") if isinstance(row, dict) else None
-                    for row in variants
+                    row.get("variant") if isinstance(row, dict) else None for row in variants
                 ]
                 if (
                     any(not isinstance(item, str) or not item.strip() for item in variant_ids)
@@ -643,9 +1111,7 @@ def _make_verdict(
             ):
                 raise RunnerRefusal("missing-or-ambiguous-selection-choices")
             selection_receipt = candidates[0]
-        kwargs.update(
-            verb="select", edit_payload={expected_field: selection_receipt}
-        )
+        kwargs.update(verb="select", edit_payload={expected_field: selection_receipt})
     try:
         return OperatorVerdict(**kwargs), selection_receipt
     except Exception as exc:
@@ -776,10 +1242,7 @@ def _drive_paused_trial_impl(
             run_dir=run_dir,
             policy=policy,
         )
-        if (
-            final_current.status != "paused-at-gate"
-            or final_current.paused_gate != gate_id
-        ):
+        if final_current.status != "paused-at-gate" or final_current.paused_gate != gate_id:
             raise RunnerRefusal("stale-run-state-before-submit")
         _check_deadline(started_at, policy)
         journal.append(
@@ -845,9 +1308,7 @@ def _drive_with_evidence_handling(
             policy_digest=policy_digest,
             evidence_root=evidence_root,
         )
-        actions = sum(
-            event.get("kind") == "submission-started" for event in journal.events
-        )
+        actions = sum(event.get("kind") == "submission-started" for event in journal.events)
         journal.append("runner-refused", reason=exc.code)
         journal.finalize(
             status="refused",
@@ -862,9 +1323,7 @@ def _drive_with_evidence_handling(
             policy_digest=policy_digest,
             evidence_root=evidence_root,
         )
-        actions = sum(
-            event.get("kind") == "submission-started" for event in journal.events
-        )
+        actions = sum(event.get("kind") == "submission-started" for event in journal.events)
         journal.append(
             "runner-refused",
             reason="engine-call-failed",
@@ -889,19 +1348,13 @@ def _validate_public_roots(
         raise RunnerRefusal("parent-traversal-refused")
     if ".." in Path(policy.allowed_evidence_root).parts:
         raise RunnerRefusal("parent-traversal-refused")
-    safe_runs_root = _match_allowed_root(
-        runs_root, policy.allowed_runs_roots, kind="dir"
-    )
-    expected_evidence = _absolute_without_resolving(
-        _policy_path(policy.allowed_evidence_root)
-    )
+    safe_runs_root = _match_allowed_root(runs_root, policy.allowed_runs_roots, kind="dir")
+    expected_evidence = _absolute_without_resolving(_policy_path(policy.allowed_evidence_root))
     candidate_evidence = _absolute_without_resolving(evidence_root)
     if candidate_evidence != expected_evidence:
         raise RunnerRefusal("evidence-root-policy-mismatch")
     # Validate containment and every existing component before creating anything.
-    safe_evidence = _assert_safe_path(
-        candidate_evidence, root=PROJECT_ROOT, kind="missing-ok"
-    )
+    safe_evidence = _assert_safe_path(candidate_evidence, root=PROJECT_ROOT, kind="missing-ok")
     safe_evidence.mkdir(parents=True, exist_ok=True)
     _assert_safe_path(safe_evidence, root=PROJECT_ROOT, kind="dir")
     return safe_runs_root, safe_evidence
@@ -930,21 +1383,80 @@ def drive_paused_trial(
         policy=policy, runs_root=runs_root, evidence_root=evidence_root
     )
     _check_deadline(clock_start, policy)
-    run_dir = _assert_safe_path(
-        safe_runs_root / str(trial_id), root=safe_runs_root, kind="dir"
-    )
+    run_dir = _assert_safe_path(safe_runs_root / str(trial_id), root=safe_runs_root, kind="dir")
     with exclusive_trial_lock(
-        run_dir, trial_id=trial_id, policy_digest=policy_digest
-    ):
-        return _drive_with_evidence_handling(
-            trial_id=trial_id,
-            runs_root=safe_runs_root,
-            policy=policy,
-            policy_digest=policy_digest,
-            evidence_root=safe_evidence,
-            resume_fn=resume_fn,
-            started_at=clock_start,
-        )
+        run_dir,
+        trial_id=trial_id,
+        policy_digest=policy_digest,
+    ) as preflight_required:
+        result: dict[str, Any] | None = None
+        primary_error: BaseException | None = None
+        evidence_errors: list[BaseException] = []
+        preflight_path = safe_evidence / str(trial_id) / PREFLIGHT_IDENTITY_FILENAME
+        preflight: dict[str, Any] | None = None
+        if preflight_path.exists():
+            candidate = _read_json(preflight_path, root=safe_evidence)
+            current = _rebuild_governed_identity_from_preflight(
+                trial_id=trial_id,
+                preflight=candidate,
+            )
+            if current["files"] != candidate["files"]:
+                raise RunnerRefusal("governed-input-mutated-before-attach")
+            preflight = candidate
+        elif preflight_required:
+            raise RunnerRefusal("attach-preflight-evidence-missing")
+        try:
+            result = _drive_with_evidence_handling(
+                trial_id=trial_id,
+                runs_root=safe_runs_root,
+                policy=policy,
+                policy_digest=policy_digest,
+                evidence_root=safe_evidence,
+                resume_fn=resume_fn,
+                started_at=clock_start,
+            )
+        except BaseException as exc:
+            primary_error = exc
+        if preflight is not None:
+            try:
+                postflight = _rebuild_governed_identity_from_preflight(
+                    trial_id=trial_id,
+                    preflight=preflight,
+                )
+                _comparison_path, matches = _persist_postflight_comparison(
+                    trial_id=trial_id,
+                    preflight=preflight,
+                    postflight=postflight,
+                    evidence_root=safe_evidence,
+                )
+                if not matches:
+                    evidence_errors.append(RunnerRefusal("governed-input-mutated-during-run"))
+            except BaseException as exc:
+                evidence_errors.append(exc)
+        try:
+            state_run_dir: Path | None = None
+            if preflight is not None:
+                for row in preflight.get("writable_exclusions", []):
+                    if row.get("label") == "state/config/runs/trial":
+                        state_run_dir = Path(str(row["path"]))
+                        break
+            _write_run_output_inventory(
+                trial_id=trial_id,
+                run_dir=run_dir,
+                evidence_root=safe_evidence,
+                state_config_run_dir=state_run_dir,
+            )
+        except BaseException as exc:
+            evidence_errors.append(exc)
+        if primary_error is not None:
+            for evidence_error in evidence_errors:
+                primary_error.add_note(f"postflight evidence error: {evidence_error}")
+            raise primary_error
+        if evidence_errors:
+            raise RunnerRefusal("postflight-evidence-failed") from evidence_errors[0]
+        if result is None:
+            raise RunnerRefusal("attach-returned-no-summary")
+        return result
 
 
 def _directive_confirmation(
@@ -954,9 +1466,7 @@ def _directive_confirmation(
     run_dir: Path,
     journal: EvidenceJournal,
 ) -> Callable[..., Literal["confirmed"]]:
-    def confirm(
-        *, directive_path: Path, auto_confirm_directive: bool
-    ) -> Literal["confirmed"]:
+    def confirm(*, directive_path: Path, auto_confirm_directive: bool) -> Literal["confirmed"]:
         if auto_confirm_directive:
             raise RunnerRefusal("g0-auto-confirm-bypass-refused")
         safe = _assert_safe_path(directive_path, root=run_dir, kind="file")
@@ -1060,6 +1570,7 @@ def start_and_drive_trial(
     policy: DelegationPolicy,
     policy_digest: str,
     evidence_root: Path,
+    policy_path: Path | None = None,
     started_at: float | None = None,
 ) -> dict[str, Any]:
     """Public start entry: validate all roots, reserve trial, lock, then start."""
@@ -1070,9 +1581,7 @@ def start_and_drive_trial(
     safe_runs_root, safe_evidence = _validate_public_roots(
         policy=policy, runs_root=runs_root, evidence_root=evidence_root
     )
-    safe_input = _match_allowed_root(
-        input_path, policy.allowed_input_roots, kind="dir"
-    )
+    safe_input = _match_allowed_root(input_path, policy.allowed_input_roots, kind="dir")
     safe_course_root = _match_allowed_root(
         course_source_root, policy.allowed_input_roots, kind="dir"
     )
@@ -1080,24 +1589,89 @@ def start_and_drive_trial(
     _assert_safe_tree(safe_course_root)
     _check_deadline(clock_start, policy)
     run_dir = safe_runs_root / str(trial_id)
+    state_run_dir = (
+        PROJECT_ROOT / "state" / "config" / "runs" / str(trial_id)
+        if policy_path is not None
+        else None
+    )
+    if run_dir.exists() or (state_run_dir is not None and state_run_dir.exists()):
+        raise RunnerRefusal("trial-already-exists")
     try:
         run_dir.mkdir()
     except FileExistsError as exc:
         raise RunnerRefusal("trial-already-exists") from exc
+    result: dict[str, Any] | None = None
+    primary_error: BaseException | None = None
+    evidence_errors: list[BaseException] = []
+    inputs_match = False
     with exclusive_trial_lock(
-        run_dir, trial_id=trial_id, policy_digest=policy_digest
+        run_dir,
+        trial_id=trial_id,
+        policy_digest=policy_digest,
+        preflight_required=True,
     ):
-        return _start_and_drive_core(
+        _preflight_path, preflight = _write_governed_preflight_identity(
             trial_id=trial_id,
             input_path=safe_input,
-            runs_root=safe_runs_root,
-            policy=policy,
-            policy_digest=policy_digest,
-            evidence_root=safe_evidence,
             course_source_root=safe_course_root,
-            encounter_mode=encounter_mode,
-            started_at=clock_start,
+            evidence_root=safe_evidence,
+            policy_path=policy_path,
+            authority_spec=policy.authority_spec,
         )
+        persisted_preflight = _read_json(_preflight_path, root=safe_evidence)
+        if persisted_preflight != preflight:
+            raise RunnerRefusal("preflight-evidence-identity-mismatch")
+        try:
+            result = _start_and_drive_core(
+                trial_id=trial_id,
+                input_path=safe_input,
+                runs_root=safe_runs_root,
+                policy=policy,
+                policy_digest=policy_digest,
+                evidence_root=safe_evidence,
+                course_source_root=safe_course_root,
+                encounter_mode=encounter_mode,
+                started_at=clock_start,
+            )
+        except BaseException as exc:
+            primary_error = exc
+
+        if not run_dir.is_dir():
+            evidence_errors.append(RunnerRefusal("output-root-missing"))
+        else:
+            try:
+                _write_run_output_inventory(
+                    trial_id=trial_id,
+                    run_dir=run_dir,
+                    evidence_root=safe_evidence,
+                    state_config_run_dir=state_run_dir,
+                )
+            except BaseException as exc:
+                evidence_errors.append(exc)
+        try:
+            _comparison_path, inputs_match = _write_postflight_input_comparison(
+                trial_id=trial_id,
+                preflight=preflight,
+                input_path=safe_input,
+                course_source_root=safe_course_root,
+                evidence_root=safe_evidence,
+                policy_path=policy_path,
+                authority_spec=policy.authority_spec,
+            )
+        except BaseException as exc:
+            evidence_errors.append(exc)
+
+    if primary_error is not None:
+        for evidence_error in evidence_errors:
+            primary_error.add_note(f"postflight evidence error: {evidence_error}")
+        raise primary_error
+    if evidence_errors:
+        raise RunnerRefusal("postflight-evidence-failed") from evidence_errors[0]
+    if not inputs_match:
+        raise RunnerRefusal("governed-input-mutated-during-run")
+    if result is None:
+        raise RunnerRefusal("start-returned-no-summary")
+    return result
 
 
 def run(
@@ -1127,6 +1701,7 @@ def run(
             policy=policy,
             policy_digest=policy_digest,
             evidence_root=evidence_root,
+            policy_path=policy_path,
             started_at=started_at,
         )
     return drive_paused_trial(

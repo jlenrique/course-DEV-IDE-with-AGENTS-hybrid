@@ -53,10 +53,15 @@ from app.models.runtime.production_envelope import ProductionEnvelope, Specialis
 from app.models.runtime.production_trial_envelope import ProductionTrialEnvelope
 from app.models.state.component_selection import ComponentSelection
 from app.models.state.run_state import RunState
+from app.pass1_generation_lock import pass1_generation_lock
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.workbook_producer._act import (
     WorkbookProducerActError,
     _reconcile_workbook_brief_authority,
+)
+from tests.helpers.workbook_slide_authority import (
+    install_manifest_slide_authority,
+    install_single_slide_authority,
 )
 
 ROOT = Path("course-content/courses/tejal-apc-c1-m1-p2-trends").resolve()
@@ -156,6 +161,452 @@ class AuthoredDeepWriter(DeepWriter):
         return _authored_candidate(request)
 
 
+def test_carrier_failure_precedes_every_workbook_writer_and_side_effect(
+    tmp_path: Path, monkeypatch
+) -> None:
+    class CountingScene(SceneWriter):
+        calls = 0
+
+        def __call__(self, request):
+            self.calls += 1
+            return super().__call__(request)
+
+    class CountingPromise(PromiseWriter):
+        calls = 0
+
+        def __call__(self, request):
+            self.calls += 1
+            return super().__call__(request)
+
+    resolution = PromiseObjectiveResolution(
+        status="authored",
+        objectives=(
+            ObjectiveInput(objective_id="LO-1", text="Choose.", status="ratified"),
+        ),
+        authority_variants=("plan_dialogue",),
+        authority_refs=("ratified-los.json#ratified_los/0",),
+    )
+    monkeypatch.setattr(workbook_wiring, "resolve_promise_objectives", lambda _: resolution)
+    envelope = ProductionEnvelope(trial_id=uuid4())
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="irene_pass1",
+            node_id="05B",
+            output={"lesson_plan": {"plan_units": []}},
+            model_used="fixture",
+        )
+    )
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="package_builder",
+            node_id="06",
+            output={"slides": []},
+            model_used="fixture",
+        )
+    )
+    scene = CountingScene()
+    promise = CountingPromise()
+    deep = DeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        scene_writer=scene,
+        promise_writer=promise,
+        deep_dive_writer=deep,
+    )
+
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1", production_envelope=envelope, runtime_context=context
+        )
+
+    assert caught.value.tag == "workbook-brief.deep-dive-authority-invalid"
+    assert (scene.calls, promise.calls, deep.calls_made) == (0, 0, 0)
+    assert not (tmp_path / "workbook-brief.v1.json").exists()
+    assert not (tmp_path / "workbook-deep-dive-call.v1.json").exists()
+    assert envelope.get_contribution("workbook_brief", node_id="07W.1") is None
+
+
+@pytest.mark.parametrize("mutation", ["carrier", "manifest", "plan-sidecar"])
+def test_authority_is_revalidated_after_prework_before_deep_dive_provider(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation: str
+) -> None:
+    _authority(tmp_path)
+    resolution = PromiseObjectiveResolution(
+        status="authored",
+        objectives=(ObjectiveInput(objective_id="LO-1", text="Choose.", status="ratified"),),
+        authority_variants=("plan_dialogue",),
+        authority_refs=("ratified-los.json#ratified_los/0",),
+    )
+    monkeypatch.setattr(workbook_wiring, "resolve_promise_objectives", lambda _: resolution)
+
+    class MutatingScene(SceneWriter):
+        def __call__(self, request):
+            result = super().__call__(request)
+            if mutation == "carrier":
+                (tmp_path / "workbook-slide-authority-map.v1.json").unlink()
+            elif mutation == "manifest":
+                manifest = tmp_path / "exports" / "segment-manifest-storyboard-b.yaml"
+                manifest.write_text(
+                    manifest.read_text(encoding="utf-8") + "# changed after Scene\n",
+                    encoding="utf-8",
+                )
+            else:
+                sidecar = tmp_path / "irene-pass1.lesson-plan.json"
+                sidecar.write_text(
+                    sidecar.read_text(encoding="utf-8") + " ", encoding="utf-8"
+                )
+            return result
+
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
+    deep = DeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        scene_writer=MutatingScene(),
+        promise_writer=PromiseWriter(),
+        deep_dive_writer=deep,
+    )
+
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=initial,
+            runtime_context=context,
+        )
+    assert caught.value.tag == "workbook-brief.deep-dive-authority-invalid"
+    assert deep.calls_made == 0
+    assert not (tmp_path / "workbook-deep-dive-call.v1.json").exists()
+
+
+def test_dispatch_lock_blocks_deep_dive_spend_and_is_held_during_provider(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _authority(tmp_path)
+    resolution = PromiseObjectiveResolution(
+        status="authored",
+        objectives=(ObjectiveInput(objective_id="LO-1", text="Choose.", status="ratified"),),
+        authority_variants=("plan_dialogue",),
+        authority_refs=("ratified-los.json#ratified_los/0",),
+    )
+    monkeypatch.setattr(workbook_wiring, "resolve_promise_objectives", lambda _: resolution)
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
+    lock_path = tmp_path / ".workbook-slide-authority-map.v1.json.dispatch.lock"
+
+    blocked = DeepWriter()
+    blocked_context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        scene_writer=SceneWriter(),
+        promise_writer=PromiseWriter(),
+        deep_dive_writer=blocked,
+    )
+    with (
+        workbook_wiring._slide_authority_dispatch_lock(tmp_path),
+        pytest.raises(SpecialistDispatchError) as caught,
+    ):
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=initial,
+            runtime_context=blocked_context,
+        )
+    assert caught.value.tag == "workbook-brief.deep-dive-persistence-failed"
+    assert blocked.calls_made == 0
+
+    class LockAwareWriter(DeepWriter):
+        def __call__(self, request):
+            assert lock_path.is_file()
+            return super().__call__(request)
+
+    aware = LockAwareWriter()
+    context = blocked_context.model_copy(update={"deep_dive_writer": aware})
+    workbook_wiring.run_workbook_band_node(
+        node_id="07W.1",
+        production_envelope=initial,
+        runtime_context=context,
+    )
+    assert aware.calls_made == 1
+    assert lock_path.is_file()
+
+
+def test_journal_directory_flush_failure_blocks_provider_spend(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _authority(tmp_path)
+    resolution = PromiseObjectiveResolution(
+        status="authored",
+        objectives=(
+            ObjectiveInput(objective_id="LO-1", text="Choose.", status="ratified"),
+        ),
+        authority_variants=("plan_dialogue",),
+        authority_refs=("ratified-los.json#ratified_los/0",),
+    )
+    monkeypatch.setattr(workbook_wiring, "resolve_promise_objectives", lambda _: resolution)
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
+    writer = DeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        scene_writer=SceneWriter(),
+        promise_writer=PromiseWriter(),
+        deep_dive_writer=writer,
+    )
+
+    def _fail_flush(_path: Path) -> None:
+        raise OSError("directory flush denied")
+
+    monkeypatch.setattr(workbook_wiring, "_fsync_directory", _fail_flush)
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=initial,
+            runtime_context=context,
+        )
+
+    assert caught.value.tag == "workbook-brief.deep-dive-persistence-failed"
+    assert writer.calls_made == 0
+
+
+def test_pass1_generation_lock_blocks_authority_revalidation_and_provider(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _authority(tmp_path)
+    resolution = PromiseObjectiveResolution(
+        status="authored",
+        objectives=(
+            ObjectiveInput(objective_id="LO-1", text="Choose.", status="ratified"),
+        ),
+        authority_variants=("plan_dialogue",),
+        authority_refs=("ratified-los.json#ratified_los/0",),
+    )
+    monkeypatch.setattr(workbook_wiring, "resolve_promise_objectives", lambda _: resolution)
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
+    class _CountingScene(SceneWriter):
+        def __init__(self) -> None:
+            self.calls_made = 0
+
+        def __call__(self, request):
+            self.calls_made += 1
+            return super().__call__(request)
+
+    class _CountingPromise(PromiseWriter):
+        def __init__(self) -> None:
+            self.calls_made = 0
+
+        def __call__(self, request):
+            self.calls_made += 1
+            return super().__call__(request)
+
+    scene = _CountingScene()
+    promise = _CountingPromise()
+    writer = DeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        scene_writer=scene,
+        promise_writer=promise,
+        deep_dive_writer=writer,
+    )
+
+    with pass1_generation_lock(tmp_path), pytest.raises(
+        SpecialistDispatchError
+    ) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=initial,
+            runtime_context=context,
+        )
+
+    assert caught.value.tag == "workbook-brief.deep-dive-persistence-failed"
+    assert scene.calls_made == 0
+    assert promise.calls_made == 0
+    assert writer.calls_made == 0
+
+
+def test_completed_journal_temporary_recovers_over_in_progress_target(
+    tmp_path: Path,
+) -> None:
+    journal_path = tmp_path / "workbook-deep-dive-call.v1.json"
+    temporary = journal_path.with_suffix(journal_path.suffix + ".tmp")
+    identity = {
+        "schema_version": "workbook-deep-dive-call.v1",
+        "idempotency_key": "sha256:" + "1" * 64,
+        "authority_digest": "sha256:" + "2" * 64,
+        "model_config_digest": "sha256:" + "3" * 64,
+        "slide_authority_map_digest": "sha256:" + "4" * 64,
+    }
+    journal_path.write_text(
+        json.dumps({**identity, "state": "call_in_progress"}), encoding="utf-8"
+    )
+    completed = {**identity, "state": "completed", "candidate": {}}
+    temporary.write_text(json.dumps(completed), encoding="utf-8")
+
+    workbook_wiring._recover_journal_temporary(tmp_path, journal_path)
+
+    assert json.loads(journal_path.read_text(encoding="utf-8")) == completed
+    assert not temporary.exists()
+
+
+def test_dispatch_lock_cleanup_failure_uses_stable_persistence_taxonomy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    real_close = workbook_wiring.os.close
+
+    def close_then_fail(descriptor: int) -> None:
+        real_close(descriptor)
+        raise OSError("simulated close failure")
+
+    with monkeypatch.context() as scoped:
+        scoped.setattr(workbook_wiring.os, "close", close_then_fail)
+        with pytest.raises(
+            workbook_wiring.SlideAuthorityPersistenceError,
+            match="cleanup failed",
+        ), workbook_wiring._slide_authority_dispatch_lock(tmp_path):
+                pass
+
+
+def test_dispatch_lock_rejects_hard_link_without_mutating_external_file(
+    tmp_path: Path,
+) -> None:
+    external = tmp_path / "external.txt"
+    external.write_bytes(b"")
+    lock_path = tmp_path / ".workbook-slide-authority-map.v1.json.dispatch.lock"
+    try:
+        workbook_wiring.os.link(external, lock_path)
+    except OSError as exc:
+        pytest.skip(f"host cannot create hard links: {exc}")
+
+    with pytest.raises(
+        workbook_wiring.SlideAuthorityPersistenceError,
+        match="unavailable",
+    ), workbook_wiring._slide_authority_dispatch_lock(tmp_path):
+        pass
+    assert external.read_bytes() == b""
+
+
+def test_new_factory_without_run_json_never_gets_mapless_compatibility(
+    tmp_path: Path,
+) -> None:
+    scene = SceneWriter()
+    promise = PromiseWriter()
+    deep = DeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        scene_writer=scene,
+        promise_writer=promise,
+        deep_dive_writer=deep,
+    )
+
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=ProductionEnvelope(trial_id=uuid4()),
+            runtime_context=context,
+        )
+
+    assert caught.value.tag == "workbook-brief.deep-dive-authority-invalid"
+    assert deep.calls_made == 0
+    assert not (tmp_path / "workbook-brief.v1.json").exists()
+    assert not (tmp_path / "workbook-deep-dive-call.v1.json").exists()
+
+
+def test_slide_authority_digest_binds_journal_receipt_and_zero_call_replay(
+    tmp_path: Path,
+) -> None:
+    map_digest = "sha256:" + "9" * 64
+    request = DeepDiveSkeletonRequest(
+        lesson_ref="exports/segment-manifest-storyboard-b.yaml",
+        source_spans=(
+            NarrationSourceSpan(
+                span_id="vo:seg-01",
+                text="Systems have visible workflow symptoms.",
+                source_ref="exports/segment-manifest-storyboard-b.yaml#segments/seg-01/narration_text",
+            ),
+        ),
+        source_claims=(
+            SourceClaim(
+                claim_id="claim:vo:seg-01",
+                text="Systems have visible workflow symptoms.",
+                source_span_refs=("vo:seg-01",),
+                role="vo",
+            ),
+        ),
+        abilities=(
+            DeepDiveAbilityInput(ability_id="LO-1", text="I can choose a first move."),
+        ),
+        slide_authority_map_digest=map_digest,
+    )
+    writer = DeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        deep_dive_writer=writer,
+    )
+    trial_id = uuid4()
+
+    first, receipt = workbook_wiring._compose_deep_dive(
+        request=request, context=context, trial_id=trial_id
+    )
+    replayed, replay_receipt = workbook_wiring._compose_deep_dive(
+        request=request, context=context, trial_id=trial_id
+    )
+
+    assert replayed == first
+    assert writer.calls_made == 1
+    assert receipt.slide_authority_map_digest == map_digest
+    assert replay_receipt.slide_authority_map_digest == map_digest
+    journal_path = tmp_path / "workbook-deep-dive-call.v1.json"
+    journal = json.loads(journal_path.read_text(encoding="utf-8"))
+    assert journal["slide_authority_map_digest"] == map_digest
+    assert journal["provider_receipt"]["slide_authority_map_digest"] == map_digest
+
+    journal["slide_authority_map_digest"] = "sha256:" + "8" * 64
+    journal_path.write_text(json.dumps(journal), encoding="utf-8")
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring._compose_deep_dive(
+            request=request, context=context, trial_id=trial_id
+        )
+    assert caught.value.tag == "workbook-brief.deep-dive-reconciliation-failed"
+
+
 @pytest.mark.parametrize(
     "error_type", [PromiseObjectiveResolutionError, RunEnvelopeCorruptError]
 )
@@ -236,6 +687,21 @@ def _persist_envelope(
     )
 
 
+def _load_current_legacy_trial(run_dir: Path) -> ProductionTrialEnvelope:
+    trial = ProductionTrialEnvelope.model_validate_json(
+        (run_dir / "run.json").read_text("utf-8")
+    )
+    return trial.model_copy(
+        update={
+            "production_envelope": install_manifest_slide_authority(
+                trial.production_envelope,
+                run_dir=run_dir,
+                course_source_root=ROOT,
+            )
+        }
+    )
+
+
 def test_07w1_live_deep_dive_journals_once_and_resumes_without_recall(
     tmp_path: Path, monkeypatch
 ) -> None:
@@ -258,7 +724,11 @@ def test_07w1_live_deep_dive_journals_once_and_resumes_without_recall(
         promise_writer=PromiseWriter(),
         deep_dive_writer=deep,
     )
-    initial = ProductionEnvelope(trial_id=uuid4())
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
     envelope = workbook_wiring.run_workbook_band_node(
         node_id="07W.1",
         production_envelope=initial,
@@ -305,6 +775,41 @@ def test_07w1_live_deep_dive_journals_once_and_resumes_without_recall(
     assert caught.value.tag == "workbook-brief.deep-dive-reconciliation-failed"
 
 
+@pytest.mark.parametrize("reentry", ["activated", "rollforward"])
+def test_mapped_reentry_requires_existing_carrier_and_never_regenerates_it(
+    tmp_path: Path, reentry: str
+) -> None:
+    shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
+    trial = _load_current_legacy_trial(tmp_path)
+    deep = DeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="operator_migrated",
+        writer_execution_mode="live",
+        deep_dive_writer=deep,
+    )
+    activated = workbook_wiring.run_workbook_band_node(
+        node_id="07W.1",
+        production_envelope=trial.production_envelope,
+        runtime_context=context,
+    )
+    carrier = tmp_path / "workbook-slide-authority-map.v1.json"
+    carrier.unlink()
+    supplied = activated if reentry == "activated" else trial.production_envelope
+
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=supplied,
+            runtime_context=context,
+        )
+    assert caught.value.tag == "workbook-brief.deep-dive-reconciliation-failed"
+    assert deep.calls_made == 1
+    assert not carrier.exists()
+
+
 def test_offline_valid_authority_projects_typed_unavailable_demand(
     tmp_path: Path, monkeypatch
 ) -> None:
@@ -327,9 +832,14 @@ def test_offline_valid_authority_projects_typed_unavailable_demand(
         scene_writer=SceneWriter(),
         promise_writer=PromiseWriter(),
     )
+    initial = install_single_slide_authority(
+        ProductionEnvelope(trial_id=uuid4()),
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
     envelope = workbook_wiring.run_workbook_band_node(
         node_id="07W.1",
-        production_envelope=ProductionEnvelope(trial_id=uuid4()),
+        production_envelope=initial,
         runtime_context=context,
     )
     trial = ProductionTrialEnvelope(
@@ -351,6 +861,32 @@ def test_offline_valid_authority_projects_typed_unavailable_demand(
     assert demand.status == "unavailable"
     assert demand.known_losses == ("deep_dive_skeleton_unavailable",)
 
+    mapped_request = artifact.payload.deep_dive_skeleton.authority.model_copy(
+        update={"slide_authority_map_digest": "sha256:" + "7" * 64}
+    )
+    mapped_skeleton = compose_deep_dive_skeleton(
+        mapped_request,
+        lambda _: DeepDiveSkeletonWriterResult(
+            status="unavailable",
+            sections=(),
+            bold_terms=(),
+            known_losses=("deep_dive_writer_unavailable",),
+            marker=DEEP_DIVE_UNAVAILABLE_MARKER,
+        ),
+    )
+    contradictory_receipt = artifact.payload.deep_dive_writer_receipt.model_copy(
+        update={"slide_authority_map_digest": "sha256:" + "8" * 64}
+    )
+    with pytest.raises(ValueError, match="receipt map digest"):
+        WorkbookBriefPayloadV1.model_validate(
+            artifact.payload.model_copy(
+                update={
+                    "deep_dive_skeleton": mapped_skeleton,
+                    "deep_dive_writer_receipt": contradictory_receipt,
+                }
+            ).model_dump()
+        )
+
 
 def test_targeted_matching_legacy_null_upgrade_preserves_prework_without_scene_promise_recall(
     tmp_path: Path,
@@ -360,6 +896,11 @@ def test_targeted_matching_legacy_null_upgrade_preserves_prework_without_scene_p
         (tmp_path / "run.json").read_text("utf-8")
     )
     before = read_workbook_brief(tmp_path)
+    current = install_manifest_slide_authority(
+        trial.production_envelope,
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
     deep = DeepWriter()
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
@@ -371,13 +912,14 @@ def test_targeted_matching_legacy_null_upgrade_preserves_prework_without_scene_p
     )
     upgraded = workbook_wiring.run_workbook_band_node(
         node_id="07W.1",
-        production_envelope=trial.production_envelope,
+        production_envelope=current,
         runtime_context=context,
     )
     after = read_workbook_brief(tmp_path)
     assert after.payload.pre_work == before.payload.pre_work
     assert after.payload.writer_receipts == before.payload.writer_receipts
     assert after.payload.deep_dive_skeleton is not None
+    assert after.payload.deep_dive_skeleton.authority.slide_authority_map_digest
     assert after.payload.deep_dive_writer_receipt.calls == 1
     assert after.payload.deep_dive_writer_receipt.prior_payload_digest == before.payload_digest
     repeated = workbook_wiring.run_workbook_band_node(
@@ -448,9 +990,7 @@ def test_legacy_null_upgrade_missing_authority_preserves_original_bytes(
 
 def test_serialized_envelope_and_sidecar_project_one_ready_demand(tmp_path: Path) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     deep = AuthoredDeepWriter()
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
@@ -521,9 +1061,7 @@ def test_ready_demand_rejects_cross_trial_and_sidecar_receipt_substitution(
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -771,9 +1309,7 @@ def test_offline_new_sidecar_old_contribution_requires_completed_live_journal(
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     live_context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -808,9 +1344,7 @@ def test_writer_supplied_provider_evidence_must_match_local_recomputation(
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
 
     class ForgedEvidenceWriter(DeepWriter):
         last_provider_normalizations = ("forged-normalization",)
@@ -843,9 +1377,7 @@ def test_successful_candidate_rejects_stale_normalization_error_state(
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
 
     class StaleErrorWriter(DeepWriter):
         last_provider_normalization_error = "TypeError: stale failure"
@@ -898,9 +1430,7 @@ def test_metadata_minimal_injected_writer_gets_honest_receipt_and_stable_failure
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
 
     class MinimalWriter:
         def __call__(self, request):
@@ -925,6 +1455,7 @@ def test_metadata_minimal_injected_writer_gets_honest_receipt_and_stable_failure
 
     shutil.rmtree(tmp_path)
     shutil.copytree(LEGACY_RUN, tmp_path)
+    trial = _load_current_legacy_trial(tmp_path)
 
     class ContradictoryMetadataWriter(MinimalWriter):
         last_cost_usd = 0.01
@@ -946,9 +1477,7 @@ def test_injected_writer_cannot_select_a_noncanonical_provider_schema(
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
 
     class WrongSchemaWriter(DeepWriter):
         provider_schema = {"type": "object"}
@@ -975,9 +1504,7 @@ def test_completed_journal_replay_never_trusts_injected_schema_digest(
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1032,6 +1559,11 @@ def test_successful_07w1_reentry_replaces_lone_legacy_stub(
             model_used="legacy",
         )
     )
+    envelope = install_single_slide_authority(
+        envelope,
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+    )
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1053,9 +1585,7 @@ def test_split_brain_rollforward_without_course_authority_keeps_reconciliation_t
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     live_context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1083,9 +1613,7 @@ def test_split_brain_rollforward_without_course_authority_keeps_reconciliation_t
 
 def test_journal_backed_rollforward_replaces_lone_legacy_stub(tmp_path: Path) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1100,6 +1628,12 @@ def test_journal_backed_rollforward_replaces_lone_legacy_stub(tmp_path: Path) ->
         runtime_context=context,
     )
     legacy_only = ProductionEnvelope(trial_id=trial.trial_id)
+    legacy_only.add_contribution(
+        trial.production_envelope.get_contribution("irene_pass1", node_id="05B")
+    )
+    legacy_only.add_contribution(
+        trial.production_envelope.get_contribution("package_builder", node_id="06")
+    )
     legacy_only.add_contribution(
         SpecialistContribution.from_output(
             specialist_id="workbook_brief_stub",
@@ -1119,9 +1653,7 @@ def test_normalization_failure_journals_available_raw_provider_evidence(
     tmp_path: Path,
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     raw = {
         "status": "authored",
         "sections": [],
@@ -1169,6 +1701,123 @@ def test_normalization_failure_journals_available_raw_provider_evidence(
     assert journal["provider_normalizations"] == []
     assert "JSON list" in journal["provider_normalization_error"]
     assert journal["provider_failure"]["type"] == "DeepDiveProviderOutputError"
+
+
+def test_timeout_failure_is_one_call_fail_loud_and_never_publishes_brief(
+    tmp_path: Path,
+) -> None:
+    shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
+    trial = _load_current_legacy_trial(tmp_path)
+
+    class TimeoutWriter(DeepWriter):
+        def __call__(self, request):
+            self.calls_made += 1
+            raise TimeoutError("provider request timed out")
+
+    def fake_factory(*args, **kwargs):
+        return SimpleNamespace(chat=object(), entry=None)
+
+    writer = TimeoutWriter()
+    writer.model_config_digest = workbook_prework_writers.LiveDeepDiveWriter(
+        chat_factory=fake_factory
+    ).model_config_digest
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="operator_migrated",
+        writer_execution_mode="live",
+        deep_dive_writer=writer,
+    )
+    before = (tmp_path / "workbook-brief.v1.json").read_bytes()
+
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=trial.production_envelope,
+            runtime_context=context,
+        )
+
+    assert caught.value.tag == "workbook-brief.deep-dive-writer-execution-failed"
+    assert writer.calls_made == 1
+    assert (tmp_path / "workbook-brief.v1.json").read_bytes() == before
+    journal = json.loads(
+        (tmp_path / "workbook-deep-dive-call.v1.json").read_text("utf-8")
+    )
+    assert journal["state"] == "call_in_progress"
+    assert journal["provider_failure"] == {
+        "type": "TimeoutError",
+        "message": "provider request timed out",
+    }
+    assert not (tmp_path / "ask-a-research-call.v1.json").exists()
+    assert (
+        trial.production_envelope.get_contribution("ask_a_enrichment", node_id="07W.2")
+        is None
+    )
+
+    failed_journal = (tmp_path / "workbook-deep-dive-call.v1.json").read_bytes()
+    drifted = DeepWriter()
+    drifted.model_config_digest = workbook_prework_writers.LiveDeepDiveWriter(
+        chat_factory=fake_factory,
+        request_timeout=301.0,
+    ).model_config_digest
+    drifted_context = context.model_copy(update={"deep_dive_writer": drifted})
+    with pytest.raises(SpecialistDispatchError) as replay:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=trial.production_envelope,
+            runtime_context=drifted_context,
+        )
+    assert replay.value.tag == "workbook-brief.deep-dive-call-ambiguous"
+    assert drifted.calls_made == 0
+    assert (tmp_path / "workbook-deep-dive-call.v1.json").read_bytes() == failed_journal
+
+
+def test_completed_journal_replay_rejects_deep_dive_timeout_identity_drift(
+    tmp_path: Path,
+) -> None:
+    shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
+    trial = _load_current_legacy_trial(tmp_path)
+    def fake_factory(*args, **kwargs):
+        return SimpleNamespace(chat=object(), entry=None)
+
+    default_identity = workbook_prework_writers.LiveDeepDiveWriter(
+        chat_factory=fake_factory
+    ).model_config_digest
+    drifted_identity = workbook_prework_writers.LiveDeepDiveWriter(
+        chat_factory=fake_factory,
+        request_timeout=301.0,
+    ).model_config_digest
+
+    writer = DeepWriter()
+    writer.model_config_digest = default_identity
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="operator_migrated",
+        writer_execution_mode="live",
+        deep_dive_writer=writer,
+    )
+    activated = workbook_wiring.run_workbook_band_node(
+        node_id="07W.1",
+        production_envelope=trial.production_envelope,
+        runtime_context=context,
+    )
+    drifted = DeepWriter()
+    drifted.model_config_digest = drifted_identity
+    drifted_context = context.model_copy(update={"deep_dive_writer": drifted})
+
+    with pytest.raises(SpecialistDispatchError) as caught:
+        workbook_wiring.run_workbook_band_node(
+            node_id="07W.1",
+            production_envelope=activated,
+            runtime_context=drifted_context,
+        )
+
+    assert default_identity != drifted_identity
+    assert caught.value.tag == "workbook-brief.deep-dive-reconciliation-failed"
+    assert drifted.calls_made == 0
 
 
 def test_unicode_term_variants_survive_workbook_brief_disk_roundtrip(
@@ -1271,9 +1920,7 @@ def test_unicode_term_variants_survive_workbook_brief_disk_roundtrip(
 
 def test_corrupt_journal_state_and_receipt_fail_reconciliation(tmp_path: Path) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1329,9 +1976,7 @@ def test_completed_journal_raw_to_normalized_mutations_fail_independently(
     tmp_path: Path, mutation: str
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1367,9 +2012,7 @@ def test_completed_journal_raw_to_normalized_mutations_fail_independently(
 
 def test_journal_symlink_fails_closed(tmp_path: Path) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1411,9 +2054,7 @@ def test_brief_write_failure_keeps_deep_dive_persistence_tag(
     tmp_path: Path, monkeypatch
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,
@@ -1484,9 +2125,7 @@ def test_activated_summary_mutations_fail_closed(
     tmp_path: Path, field: str, value: object
 ) -> None:
     shutil.copytree(LEGACY_RUN, tmp_path, dirs_exist_ok=True)
-    trial = ProductionTrialEnvelope.model_validate_json(
-        (tmp_path / "run.json").read_text("utf-8")
-    )
+    trial = _load_current_legacy_trial(tmp_path)
     context = WorkbookBriefRuntimeContext(
         run_dir=tmp_path,
         course_source_root=ROOT,

@@ -12,7 +12,7 @@ import re
 from collections.abc import Callable
 from typing import Annotated, Literal, Protocol
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 
 DeepDiveStatus = Literal["authored", "degraded", "unavailable"]
 ClaimRole = Literal["vo", "source_supported_delta"]
@@ -158,6 +158,9 @@ class DeepDiveSkeletonRequest(_StrictModel):
     source_spans: tuple[NarrationSourceSpan, ...]
     source_claims: tuple[SourceClaim, ...]
     abilities: tuple[DeepDiveAbilityInput, ...]
+    slide_authority_map_digest: str | None = Field(
+        default=None, pattern=r"^sha256:[0-9a-f]{64}$"
+    )
 
     @model_validator(mode="after")
     def _closed_authority(self) -> DeepDiveSkeletonRequest:
@@ -269,7 +272,10 @@ def _canonical_digest(payload: object) -> str:
 
 
 def _authority_digest(request: DeepDiveSkeletonRequest) -> str:
-    return _canonical_digest(request.model_dump(mode="json"))
+    payload = request.model_dump(mode="json")
+    if payload.get("slide_authority_map_digest") is None:
+        payload.pop("slide_authority_map_digest", None)
+    return _canonical_digest(payload)
 
 
 def deep_dive_authority_digest(request: DeepDiveSkeletonRequest) -> str:

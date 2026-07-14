@@ -1,0 +1,24 @@
+source: audra
+run_type: deterministic
+invocation_source: cora-route
+anchor: a498f9b476d5fbef744461d2573031ea9b92536d
+scope: full-repo
+workflow: null
+l1_exit_code: 1
+l1_findings:
+  - id: l1-001
+    type: alteration
+    severity: high
+    check: workflow-stage-lockstep
+    ref: state/config/structural-walk/motion.yaml
+    detail: "Motion structural walk remains blocked by the inherited creative-directive/motion-gate sequence-document parity mismatch."
+    evidence_path: evidence/l1-001.md
+l2_run: false
+l2_findings: []
+routes_offered: []
+counts:
+  l1_total: 1
+  l1_by_severity: {low: 0, med: 0, high: 1}
+  l2_total: 0
+  l2_by_severity: {low: 0, med: 0, high: 0}
+duration_seconds: 50

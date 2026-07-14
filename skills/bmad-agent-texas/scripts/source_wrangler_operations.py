@@ -461,7 +461,9 @@ def _load_notion_md_normalizer() -> Any:
     return module
 
 
-def wrangle_local_md(path: str | Path) -> tuple[str, str, SourceRecord]:
+def wrangle_local_md(
+    path: str | Path, *, raw_text: str | None = None
+) -> tuple[str, str, SourceRecord]:
     """Read a local Markdown file and normalize Notion-export artefacts.
 
     Handles Notion's escaped-Markdown export format (``\\#`` → ``#``,
@@ -486,7 +488,7 @@ def wrangle_local_md(path: str | Path) -> tuple[str, str, SourceRecord]:
     if p.suffix.lower() not in (".md", ".markdown"):
         raise ValueError(f"Expected a .md or .markdown file, got: {p}")
 
-    raw = read_text_file(p)
+    raw = read_text_file(p) if raw_text is None else raw_text
     normalizer = _load_notion_md_normalizer()
     body = normalizer.normalize_notion_markdown(raw)
 
@@ -511,6 +513,7 @@ def build_extracted_markdown(
     """sections: (heading, body_markdown_or_text)."""
     lines = [f"# Source bundle: {title}", ""]
     for head, body in sections:
+        body = body.replace("\r\n", "\n").replace("\r", "\n")
         lines.append(f"## {head}")
         lines.append("")
         lines.append(body.strip())

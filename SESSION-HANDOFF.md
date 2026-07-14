@@ -1,3 +1,75 @@
+# Session Handoff — 2026-07-14 (WRAPUP: **Workbook Epics 36–38 advanced; fresh governed paid run is next** — Class S)
+
+**Final class:** S. **Branch:** `codex/workbook-enhanced-epics-36-40`. **Opened as:** S (Presentation-Support Workbook implementation and governed live validation). **Class drift:** none.
+
+## What was completed
+
+1. The Presentation-Support Workbook build advanced materially: Epic 36 is complete; Stories 37.1, 37.2a, 37.3, 37.4, 38.0, and 38.3b are closed; Story 38.3a and Story 38.1 remain active.
+2. Story 38.3a accumulated the production-valid Pass-1 authority, source-span, journal, economics, slide-authority, and live-runner hardening needed for a clustered v2 run. Multiple negative first-run-stands witnesses were preserved rather than retried to green.
+3. Governed trial `399bcd61-7779-4fa0-a592-186c3d4b4045` passed lesson-plan ratification, Storyboard A generation/selection/publication, G2C, and realtime perception, then safely stopped at Irene Pass 2. Root cause was a shared figure-token defect: OCR `$ 5%` was classified as bare money before percent matching.
+4. Amendment 8 corrected dollar-prefixed percentages and the witnessed `+%` comparator form at the shared deterministic parser boundary. Focused verification and independent Blind/Edge/Acceptance review were clean; the frozen negative run was not resumed or mutated.
+5. Story 38.1 Ask-A wiring is deterministic/static complete through Tasks 1–4 and most of Task 5. Live closure remains open because no governed run has yet reached and passed `07W.1 -> 07W.2` with a completed Ask-A journal, usable packet, receipt, reload equality, and zero-call replay.
+6. WRAPUP fixed one current operator-surface omission: `progress_map.py` now labels Epics 36–40. HUD/progress tests pass 43/43.
+
+## Immediate next action
+
+At the beginning of the next working session, run the canonical session START protocol, confirm Class S, load this handoff, and launch **one fresh governed paid Marcus-SPOC workbook run**. This instruction is the operator's explicit authorization; do not pause for a redundant `1` confirmation.
+
+Run posture: fresh trial ID; Tejal source corpus; governed delegated/pinch-hit HIL; recorded encounter; deck ON; workbook ON; realtime LLM and realtime image perception; canonical research dispatch ON; motion/video OFF; HUD OFF; batch perception OFF; Research Detective OFF; first-run-stands; no retry or reuse of a frozen run. The run must pass Amendment 8, reach `07W.1/07W.2`, and produce the Story 38.3a/38.1 live evidence before either story can close.
+
+## Unresolved issues and risks
+
+- Story 38.3a remains `in-progress`: deterministic/review readiness is green, but no current clustered-v2 governed live attempt has passed end to end.
+- Story 38.1 remains `in-progress`: Task 5 live close bar is open; no completed Ask-A dispatch/journal/receipt/packet liveproof exists yet.
+- Trial `399bcd61-7779-4fa0-a592-186c3d4b4045` is useful negative evidence only (`paused-at-error`, `success: false`). Earlier failed/refused attempts remain frozen and nonpassing.
+- The Class S coherence sweep has one inherited high finding: the motion structural walk still reports creative-directive/motion-gate sequence-document parity drift. It is non-causal to this workbook session and does not block the planned run because motion is OFF. Report: `reports/dev-coherence/2026-07-14-1952/`.
+- The knowledge graph / `docs/ONBOARDING.md` is stale by the WRAPUP threshold (well over ten substrate files changed). Regeneration is owed after the live-validation arc is stabilized; it is not a pre-run blocker.
+- Large runtime/artifact residue remains intentionally uncommitted: `runs/*`, generation lock files, `state/runtime/notify/*`, scratch workbook renders, and unrelated Aziz source deconstruction files.
+
+## Key lessons
+
+- A run reaching Storyboard A, G2C, and perception is meaningful progress but is not workbook acceptance; liveproof must reach the workbook band and close its receipts.
+- Shared deterministic authority parsers must preserve semantic token classes before downstream fidelity comparison. Failing closed at Pass 2 correctly exposed the `$ 5%` misclassification.
+- Proofing runs remain discovery vehicles. Every correction in this session was accepted only where it improved the Marcus-SPOC production product.
+- Clock duration does not complete a goal. The 22+ hour effort remained incomplete because the required live acceptance witness did not pass.
+
+## Validation summary
+
+- Step 0a: full-repo Cora/Audra deterministic sweep. Standard and cluster structural walks READY; pipeline-manifest lockstep PASS; sprint-status test 2/2; import-linter 18 kept/0 broken; patch hygiene clean. Motion walk retained one inherited finding, so L2 did not run.
+- Step 0b: skipped — no story flips to `done` during WRAPUP.
+- Step 1: focused workbook/authority/Ask-A/live-runner/HUD matrix **249 passed, 1 skipped**; Ruff clean across **69** changed/new Python files; HUD/progress **43 passed**.
+- Step 3: skipped — implementation phase did not transition.
+- Step 4a: sprint ledger reconciled to Amendment 8 and the open live-run gate; targeted YAML test passed.
+- Step 4b: skipped — no new agent or skill created.
+- Step 5: `docs/project-context.md` updated; `docs/agent-environment.md` unchanged because no MCP/API/tool inventory changed.
+- Step 6: skipped — no course-content staging promotion.
+- Step 9: KG/ONBOARDING regeneration recommended and carried, not run during this live-validation close.
+- Step 11: Class S matches the actual diff; one intentional worktree; scoped branch retained.
+
+## Content creation summary
+
+No learner-facing course content was promoted. Governed negative run evidence includes Storyboard A and intermediate workbook-production artifacts, all fenced as nonpassing discovery evidence.
+
+## Artifact update checklist
+
+- [x] Story 38.3a updated with Amendments and frozen-run evidence
+- [x] Story 38.1 created/updated; live Task 5 remains open
+- [x] `sprint-status.yaml` reconciled and tested
+- [x] deferred ledgers / sprint-change proposals updated
+- [x] Cora/Audra report at `reports/dev-coherence/2026-07-14-1952/`
+- [x] `docs/project-context.md` updated
+- [x] `next-session-start-here.md` rewritten
+- [x] `SESSION-HANDOFF.md` updated (this section)
+- [n/a] `bmm-workflow-status.yaml` — no phase transition
+- [n/a] `docs/agent-environment.md` — no environment inventory change
+- [deferred] KG / `docs/ONBOARDING.md` regeneration
+
+## Push and branch policy
+
+Working-branch push is mandatory and will close this WRAPUP on `origin/codex/workbook-enhanced-epics-36-40`. Master merge is intentionally skipped: the solo-operator workflow retains this scoped implementation branch until the governed live acceptance arc passes or the operator separately requests consolidation.
+
+---
+
 # Session Handoff — 2026-07-12 (WRAPUP: **Presentation-Support Workbook — planned end-to-end** — Class P)
 
 **Final class:** P (Planning). **Branch:** `master` (all commits pushed; origin/master at HEAD `0b7c3534`). **Opened as:** D (git consolidation + KG refresh) then the dominant work was P (workbook redesign planning arc). No substrate/schema/pipeline/runtime/test code touched — no upgrade to S.

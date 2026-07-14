@@ -6,14 +6,23 @@ import hashlib
 import inspect
 import json
 import os
+import stat
 from collections.abc import Callable, Mapping
+from contextlib import contextmanager, suppress
 from pathlib import Path
 from typing import Final, Literal, TypeAlias
 
+if os.name == "nt":
+    import msvcrt
+else:  # pragma: no cover - exercised by non-Windows CI
+    import fcntl
+
 from app.marcus.lesson_plan.deep_dive_from_run import (
+    MANIFEST_RELATIVE_PATH,
     DeepDiveAuthorityInvalidError,
     DeepDiveAuthorityUnavailableError,
     build_deep_dive_request,
+    load_deep_dive_segments,
 )
 from app.marcus.lesson_plan.deep_dive_projection import (
     DeepDiveSkeletonRequest,
@@ -77,11 +86,25 @@ from app.marcus.lesson_plan.scene_extraction import (
     SceneProjectionRequest,
     compose_scene_projection,
 )
+from app.marcus.lesson_plan.slide_authority import (
+    SLIDE_AUTHORITY_FILENAME,
+    SlideAuthorityInvalidError,
+    SlideAuthorityPersistenceError,
+    WorkbookSlideAuthorityMapV1,
+    build_slide_authority_map,
+    read_contained_regular_bytes,
+    read_slide_authority_map,
+    write_or_validate_slide_authority_map,
+)
 from app.marcus.lesson_plan.workbook_enrichment import RunEnvelopeCorruptError
 from app.marcus.orchestrator.workbook_prework_writers import DeepDiveProviderOutputError
 from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
+)
+from app.pass1_generation_lock import (
+    Pass1GenerationLockError,
+    pass1_generation_lock,
 )
 from app.specialists.dispatch_errors import SpecialistDispatchError
 
@@ -121,6 +144,246 @@ def _sha256(value: object) -> str:
     return "sha256:" + hashlib.sha256(_canonical_json(value).encode("utf-8")).hexdigest()
 
 
+def _bytes_sha256(value: bytes) -> str:
+    return "sha256:" + hashlib.sha256(value).hexdigest()
+
+
+def _unique_json_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    result: dict[str, object] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key: {key}")
+        result[key] = value
+    return result
+
+
+def _contained_regular_bytes(root: Path, relative: Path, label: str) -> bytes:
+    path = Path(root) / relative
+    return read_contained_regular_bytes(Path(root), path, label)
+
+
+def _fsync_directory(path: Path) -> None:
+    """Durably order journal and authority directory-entry replacements."""
+    if os.name == "nt":
+        import ctypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        handle = kernel32.CreateFileW(
+            str(path),
+            0x40000000,
+            0x00000007,
+            None,
+            3,
+            0x02000000,
+            None,
+        )
+        if handle == -1:
+            raise OSError(ctypes.get_last_error(), "cannot open run directory")
+        try:
+            if not kernel32.FlushFileBuffers(handle):
+                raise OSError(ctypes.get_last_error(), "cannot flush run directory")
+        finally:
+            kernel32.CloseHandle(handle)
+        return
+    flags = os.O_RDONLY | getattr(os, "O_DIRECTORY", 0)
+    descriptor = os.open(path, flags)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+@contextmanager
+def _slide_authority_dispatch_lock(run_dir: Path):
+    """Serialize authority validation through Deep-Dive journal completion."""
+    lock_path = Path(run_dir) / f".{SLIDE_AUTHORITY_FILENAME}.dispatch.lock"
+    descriptor: int | None = None
+    locked = False
+    try:
+        if lock_path.is_symlink():
+            raise OSError("dispatch lock coordinate may not be a symlink")
+        descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+        opened = os.fstat(descriptor)
+        named = lock_path.stat(follow_symlinks=False)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or not stat.S_ISREG(named.st_mode)
+            or opened.st_nlink != 1
+            or named.st_nlink != 1
+            or (opened.st_dev, opened.st_ino) != (named.st_dev, named.st_ino)
+        ):
+            raise OSError("dispatch lock coordinate is unsafe or changed during open")
+        if opened.st_size == 0:
+            os.write(descriptor, b"\0")
+            os.fsync(descriptor)
+        os.lseek(descriptor, 0, os.SEEK_SET)
+        if os.name == "nt":
+            msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+        else:  # pragma: no cover - exercised by non-Windows CI
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        locked = True
+    except OSError as exc:
+        if descriptor is not None:
+            with suppress(OSError):
+                os.close(descriptor)
+        raise SlideAuthorityPersistenceError(
+            "slide authority dispatch lock is unavailable"
+        ) from exc
+    assert descriptor is not None
+    try:
+        yield
+    finally:
+        cleanup_errors: list[OSError] = []
+        try:
+            os.lseek(descriptor, 0, os.SEEK_SET)
+            if locked and os.name == "nt":
+                msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
+            elif locked:  # pragma: no cover - exercised by non-Windows CI
+                fcntl.flock(descriptor, fcntl.LOCK_UN)
+        except OSError as exc:
+            cleanup_errors.append(exc)
+        try:
+            os.close(descriptor)
+        except OSError as exc:
+            cleanup_errors.append(exc)
+        if cleanup_errors:
+            raise SlideAuthorityPersistenceError(
+                "slide authority dispatch lock cleanup failed"
+            ) from cleanup_errors[0]
+
+
+def _selected_contribution(
+    envelope: ProductionEnvelope, *, specialist_id: str, node_id: str
+) -> SpecialistContribution:
+    matches = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == specialist_id and contribution.node_id == node_id
+    )
+    if len(matches) != 1:
+        raise SlideAuthorityInvalidError(
+            f"{specialist_id}@{node_id} authority matched {len(matches)} contributions"
+        )
+    return matches[0]
+
+
+def _resolve_slide_authority(
+    *,
+    envelope: ProductionEnvelope,
+    runtime_context: WorkbookBriefRuntimeContext,
+    allow_legacy_absence: bool = False,
+    require_existing: bool = False,
+) -> tuple[WorkbookSlideAuthorityMapV1 | None, bytes | None]:
+    """Mint/revalidate the exact final-slide authority before any writer call."""
+    if allow_legacy_absence:
+        carrier = runtime_context.run_dir / SLIDE_AUTHORITY_FILENAME
+        temporary = runtime_context.run_dir / f".{SLIDE_AUTHORITY_FILENAME}.tmp"
+        if carrier.is_symlink() or temporary.is_symlink() or carrier.exists() or temporary.exists():
+            raise SlideAuthorityInvalidError(
+                "pre-map replay conflicts with slide authority carrier state"
+            )
+        return None, None
+    exact_plan = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "irene_pass1" and contribution.node_id == "05B"
+    )
+    exact_package = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "package_builder" and contribution.node_id == "06"
+    )
+    if not exact_plan and not exact_package:
+        raise SlideAuthorityInvalidError(
+            "current execution requires irene_pass1@05B and package_builder@06"
+        )
+    if runtime_context.course_source_root is None:
+        raise SlideAuthorityInvalidError("course source authority is absent")
+    carrier = runtime_context.run_dir / SLIDE_AUTHORITY_FILENAME
+    if require_existing and (carrier.is_symlink() or not carrier.is_file()):
+        raise SlideAuthorityInvalidError(
+            "persisted slide authority map is absent or unsafe"
+        )
+    plan = _selected_contribution(
+        envelope, specialist_id="irene_pass1", node_id="05B"
+    )
+    package = _selected_contribution(
+        envelope, specialist_id="package_builder", node_id="06"
+    )
+    sidecar_bytes = _contained_regular_bytes(
+        runtime_context.run_dir,
+        Path("irene-pass1.lesson-plan.json"),
+        "selected lesson-plan sidecar",
+    )
+    try:
+        sidecar = json.loads(
+            sidecar_bytes.decode("utf-8"), object_pairs_hook=_unique_json_object
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise SlideAuthorityInvalidError("selected lesson-plan sidecar is invalid") from exc
+    selected_plan = plan.output.get("lesson_plan")
+    if not isinstance(sidecar, dict) or sidecar != selected_plan:
+        raise SlideAuthorityInvalidError(
+            "selected lesson-plan sidecar/contribution disagree"
+        )
+    try:
+        from app.marcus.lesson_plan.pass1_authority import (
+            Pass1PlanAuthorityError,
+            assert_receipt_matches_plan,
+            validate_receipt,
+        )
+
+        authority_receipt = plan.output.get("plan_authority_receipt")
+        receipt_bytes = _contained_regular_bytes(
+            runtime_context.run_dir,
+            Path("irene-pass1.plan-authority.json"),
+            "selected plan-authority sidecar",
+        )
+        persisted_receipt = json.loads(
+            receipt_bytes.decode("utf-8"), object_pairs_hook=_unique_json_object
+        )
+        if persisted_receipt != authority_receipt:
+            raise Pass1PlanAuthorityError(
+                "plan-authority sidecar and contribution disagree"
+            )
+        assert_receipt_matches_plan(sidecar, authority_receipt)
+        validated_receipt = validate_receipt(authority_receipt)
+        authorized_source_ids = {
+            row["unit_id"]: row["source_id"]
+            for row in validated_receipt["identities"]
+            if row["active"] and row["source_id"] is not None
+        }
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        raise SlideAuthorityInvalidError(
+            f"Pass-1 source authority is invalid: {exc}"
+        ) from exc
+    plan_units = sidecar.get("plan_units")
+    package_slides = package.output.get("slides")
+    manifest_bytes = _contained_regular_bytes(
+        runtime_context.run_dir, MANIFEST_RELATIVE_PATH, "segment manifest"
+    )
+    segments = load_deep_dive_segments(
+        runtime_context.run_dir, manifest_bytes=manifest_bytes
+    )
+    expected = build_slide_authority_map(
+        manifest_segments=segments,
+        plan_units=plan_units,
+        package_slides=package_slides,
+        authorized_source_ids=authorized_source_ids,
+        course_source_root=runtime_context.course_source_root,
+        manifest_digest=_bytes_sha256(manifest_bytes),
+        plan_sidecar_digest=_bytes_sha256(sidecar_bytes),
+        plan_contribution_digest="sha256:" + plan.output_digest,
+        package_contribution_digest="sha256:" + package.output_digest,
+    )
+    if require_existing:
+        if read_slide_authority_map(runtime_context.run_dir) != expected:
+            raise SlideAuthorityInvalidError("persisted slide authority map is stale")
+    else:
+        write_or_validate_slide_authority_map(runtime_context.run_dir, expected)
+    return expected, manifest_bytes
+
+
 def _atomic_json(path: Path, payload: dict[str, object]) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     if path.is_symlink() or temporary.is_symlink():
@@ -133,9 +396,11 @@ def _atomic_json(path: Path, payload: dict[str, object]) -> None:
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, path)
+        _fsync_directory(path.parent)
     except Exception:
         if created and temporary.exists() and not temporary.is_symlink():
             temporary.unlink()
+            _fsync_directory(path.parent)
         raise
 
 
@@ -165,12 +430,70 @@ def _journal_exists(run_dir: Path, journal_path: Path) -> bool:
     return True
 
 
+def _recover_journal_temporary(run_dir: Path, journal_path: Path) -> None:
+    """Recover only crash-identifiable Deep-Dive journal temporary states."""
+    temporary = journal_path.with_suffix(journal_path.suffix + ".tmp")
+    if temporary.is_symlink():
+        raise SpecialistDispatchError(
+            "Deep Dive journal temporary may not be a symlink",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        )
+    if not temporary.exists():
+        return
+    try:
+        temporary_payload = json.loads(
+            _contained_regular_bytes(
+                run_dir, Path(temporary.name), "Deep Dive journal temporary"
+            ).decode("utf-8"),
+            object_pairs_hook=_unique_json_object,
+        )
+        if not isinstance(temporary_payload, dict):
+            raise ValueError("journal temporary root must be a mapping")
+        if not journal_path.exists():
+            if temporary_payload.get("state") != "call_in_progress":
+                raise ValueError("orphan journal temporary is not pre-dispatch")
+            temporary.unlink()
+            _fsync_directory(run_dir)
+            return
+        target_payload = json.loads(
+            _contained_regular_bytes(
+                run_dir, Path(journal_path.name), "Deep Dive journal"
+            ).decode("utf-8"),
+            object_pairs_hook=_unique_json_object,
+        )
+        identity_keys = (
+            "schema_version",
+            "idempotency_key",
+            "authority_digest",
+            "model_config_digest",
+            "slide_authority_map_digest",
+        )
+        if (
+            not isinstance(target_payload, dict)
+            or target_payload.get("state") != "call_in_progress"
+            or temporary_payload.get("state") not in {"call_in_progress", "completed"}
+            or any(
+                temporary_payload.get(key) != target_payload.get(key)
+                for key in identity_keys
+            )
+        ):
+            raise ValueError("journal temporary disagrees with committed call")
+        os.replace(temporary, journal_path)
+        _fsync_directory(run_dir)
+    except (OSError, UnicodeDecodeError, ValueError) as exc:
+        raise SpecialistDispatchError(
+            f"Deep Dive journal temporary recovery failed: {exc}",
+            tag="workbook-brief.deep-dive-reconciliation-failed",
+        ) from exc
+
+
 def _deep_dive_receipt(
     context: WorkbookBriefRuntimeContext,
     *,
     idempotency_key: str,
     calls: Literal[0, 1],
     prior_payload_digest: str | None,
+    slide_authority_map_digest: str | None,
 ) -> DeepDiveExecutionReceiptV1:
     writer = context.deep_dive_writer
     config = getattr(writer, "model_config", None)
@@ -188,6 +511,7 @@ def _deep_dive_receipt(
         calls=calls,
         idempotency_key=idempotency_key,
         prior_payload_digest=prior_payload_digest,
+        slide_authority_map_digest=slide_authority_map_digest,
         model=getattr(config, "default_model", None),
         model_config_digest=(
             getattr(writer, "model_config_digest", None)
@@ -298,6 +622,7 @@ def _compose_deep_dive(
             idempotency_key=idempotency_key,
             calls=0,
             prior_payload_digest=prior_payload_digest,
+            slide_authority_map_digest=request.slide_authority_map_digest,
         )
     if context.deep_dive_writer is None:
         raise SpecialistDispatchError(
@@ -305,10 +630,18 @@ def _compose_deep_dive(
             tag="workbook-brief.deep-dive-writer-init-failed",
         )
     journal_path = context.run_dir / DEEP_DIVE_JOURNAL_FILENAME
+    _recover_journal_temporary(context.run_dir, journal_path)
     if _journal_exists(context.run_dir, journal_path):
         try:
-            journal = json.loads(journal_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
+            journal = json.loads(
+                _contained_regular_bytes(
+                    context.run_dir,
+                    Path(DEEP_DIVE_JOURNAL_FILENAME),
+                    "Deep Dive journal",
+                ).decode("utf-8"),
+                object_pairs_hook=_unique_json_object,
+            )
+        except (OSError, UnicodeDecodeError, ValueError) as exc:
             raise SpecialistDispatchError(
                 f"invalid Deep Dive journal: {exc}",
                 tag="workbook-brief.deep-dive-reconciliation-failed",
@@ -332,6 +665,11 @@ def _compose_deep_dive(
                 raise ValueError("journal idempotency mismatch")
             if journal.get("model_config_digest") != model_config_digest:
                 raise ValueError("journal model config mismatch")
+            if (
+                journal.get("slide_authority_map_digest")
+                != request.slide_authority_map_digest
+            ):
+                raise ValueError("journal slide authority map mismatch")
             saved_request = DeepDiveSkeletonRequest.model_validate_json(
                 _canonical_json(journal["authority"]), strict=True
             )
@@ -396,6 +734,8 @@ def _compose_deep_dive(
                 or receipt.idempotency_key != idempotency_key
                 or receipt.model_config_digest != model_config_digest
                 or receipt.prior_payload_digest != prior_payload_digest
+                or receipt.slide_authority_map_digest
+                != request.slide_authority_map_digest
                 or receipt.model != expected_model
             ):
                 raise ValueError("journal receipt mismatch")
@@ -411,6 +751,7 @@ def _compose_deep_dive(
         "idempotency_key": idempotency_key,
         "authority_digest": authority_digest,
         "model_config_digest": model_config_digest,
+        "slide_authority_map_digest": request.slide_authority_map_digest,
         "authority": request.model_dump(mode="json"),
     }
     try:
@@ -473,6 +814,7 @@ def _compose_deep_dive(
             idempotency_key=idempotency_key,
             calls=1,
             prior_payload_digest=prior_payload_digest,
+            slide_authority_map_digest=request.slide_authority_map_digest,
         )
     except (TypeError, ValueError) as exc:
         raise SpecialistDispatchError(
@@ -487,6 +829,7 @@ def _compose_deep_dive(
         "candidate_digest": result.candidate_payload_digest,
         "result_digest": _sha256(result.model_dump(mode="json")),
         "model_config_digest": model_config_digest,
+        "slide_authority_map_digest": request.slide_authority_map_digest,
         "authority": request.model_dump(mode="json"),
         "candidate": candidate.model_dump(mode="json"),
         "result": result.model_dump(mode="json"),
@@ -509,7 +852,38 @@ def _brief_factory(
     *,
     runtime_context: WorkbookBriefRuntimeContext,
 ) -> dict[str, object]:
+    """Hold one Pass-1 generation from preflight through all writer effects."""
+    try:
+        with pass1_generation_lock(runtime_context.run_dir):
+            return _brief_factory_locked(
+                _node_id, _envelope, runtime_context=runtime_context
+            )
+    except Pass1GenerationLockError as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-persistence-failed"
+        ) from exc
+
+
+def _brief_factory_locked(
+    _node_id: str,
+    _envelope: ProductionEnvelope,
+    *,
+    runtime_context: WorkbookBriefRuntimeContext,
+) -> dict[str, object]:
     """Author and atomically persist the real 07W.1 handoff."""
+    try:
+        _resolve_slide_authority(
+            envelope=_envelope,
+            runtime_context=runtime_context,
+        )
+    except SlideAuthorityPersistenceError as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-persistence-failed"
+        ) from exc
+    except SlideAuthorityInvalidError as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-authority-invalid"
+        ) from exc
     source = None
     scene_calls = 0
     promise_calls = 0
@@ -659,16 +1033,24 @@ def _brief_factory(
             raise DeepDiveAuthorityUnavailableError(
                 "Deep Dive course source authority is absent"
             )
-        deep_dive_request = build_deep_dive_request(
-            runtime_context.run_dir,
-            runtime_context.course_source_root,
-            promise,
-        )
-        deep_dive_skeleton, deep_dive_receipt = _compose_deep_dive(
-            request=deep_dive_request,
-            context=runtime_context,
-            trial_id=_envelope.trial_id,
-        )
+        with _slide_authority_dispatch_lock(runtime_context.run_dir):
+            slide_authority, manifest_bytes = _resolve_slide_authority(
+                envelope=_envelope,
+                runtime_context=runtime_context,
+                require_existing=True,
+            )
+            deep_dive_request = build_deep_dive_request(
+                runtime_context.run_dir,
+                runtime_context.course_source_root,
+                promise,
+                authority_map=slide_authority,
+                manifest_bytes=manifest_bytes,
+            )
+            deep_dive_skeleton, deep_dive_receipt = _compose_deep_dive(
+                request=deep_dive_request,
+                context=runtime_context,
+                trial_id=_envelope.trial_id,
+            )
         payload = payload.model_copy(
             update={
                 "deep_dive_skeleton": deep_dive_skeleton,
@@ -676,7 +1058,15 @@ def _brief_factory(
             }
         )
         payload = WorkbookBriefPayloadV1.model_validate(payload.model_dump())
-    except (DeepDiveAuthorityUnavailableError, DeepDiveAuthorityInvalidError) as exc:
+    except (SlideAuthorityPersistenceError, Pass1GenerationLockError) as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-persistence-failed"
+        ) from exc
+    except (
+        DeepDiveAuthorityUnavailableError,
+        DeepDiveAuthorityInvalidError,
+        SlideAuthorityInvalidError,
+    ) as exc:
         # Story 37.2a cannot truthfully represent total request-authority
         # absence. Current executions fail before persistence; only valid
         # thin authority (for example VO-only/no delta) enters composition.
@@ -725,12 +1115,22 @@ def workbook_brief_contribution_receipt(
     return lesson_plan_workbook_brief_receipt(artifact)
 
 
-def _ask_a_stub(_node_id: str, _envelope: ProductionEnvelope) -> dict[str, object]:
-    return {
-        "research_entries": [],
-        "stub_status": "not_yet_wired",
-        "known_losses": ["ask_a_not_yet_wired"],
-    }
+def _ask_a_factory(
+    _node_id: str,
+    envelope: ProductionEnvelope,
+    *,
+    runtime_context: WorkbookBriefRuntimeContext,
+    dispatch_live: bool,
+) -> dict[str, object]:
+    from app.marcus.orchestrator.ask_a_research_wiring import (  # noqa: PLC0415
+        run_ask_a_research,
+    )
+
+    return run_ask_a_research(
+        run_dir=runtime_context.run_dir,
+        trial_id=envelope.trial_id,
+        dispatch_live=dispatch_live,
+    ).model_dump(mode="json")
 
 
 def _review_stub(_node_id: str, _envelope: ProductionEnvelope) -> dict[str, object]:
@@ -751,7 +1151,7 @@ def _ask_b_stub(_node_id: str, _envelope: ProductionEnvelope) -> dict[str, objec
 
 DEFAULT_WORKBOOK_BAND_FACTORIES: Final[dict[str, WorkbookBandFactory]] = {
     WORKBOOK_BRIEF_NODE_ID: _brief_factory,
-    ASK_A_ENRICHMENT_NODE_ID: _ask_a_stub,
+    ASK_A_ENRICHMENT_NODE_ID: _ask_a_factory,
     WORKBOOK_REVIEW_NODE_ID: _review_stub,
     ASK_B_HOT_TOPICS_NODE_ID: _ask_b_stub,
 }
@@ -824,17 +1224,26 @@ def _activated_artifact(
             tag="workbook-brief.deep-dive-authority-invalid",
         )
     try:
-        request = build_deep_dive_request(
-            runtime_context.run_dir,
-            runtime_context.course_source_root,
-            artifact.payload.pre_work.promise,
-        )
-        skeleton, receipt = _compose_deep_dive(
-            request=request,
-            context=runtime_context,
-            trial_id=production_envelope.trial_id,
-            prior_payload_digest=artifact.payload_digest,
-        )
+        with pass1_generation_lock(
+            runtime_context.run_dir
+        ), _slide_authority_dispatch_lock(runtime_context.run_dir):
+            slide_authority, manifest_bytes = _resolve_slide_authority(
+                envelope=production_envelope,
+                runtime_context=runtime_context,
+            )
+            request = build_deep_dive_request(
+                runtime_context.run_dir,
+                runtime_context.course_source_root,
+                artifact.payload.pre_work.promise,
+                authority_map=slide_authority,
+                manifest_bytes=manifest_bytes,
+            )
+            skeleton, receipt = _compose_deep_dive(
+                request=request,
+                context=runtime_context,
+                trial_id=production_envelope.trial_id,
+                prior_payload_digest=artifact.payload_digest,
+            )
         payload = WorkbookBriefPayloadV1.model_validate(
             artifact.payload.model_copy(
                 update={
@@ -848,7 +1257,11 @@ def _activated_artifact(
         )
         write_workbook_brief(runtime_context.run_dir, upgraded)
         return upgraded
-    except DeepDiveAuthorityUnavailableError as exc:
+    except (SlideAuthorityPersistenceError, Pass1GenerationLockError) as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-persistence-failed"
+        ) from exc
+    except (DeepDiveAuthorityUnavailableError, SlideAuthorityInvalidError) as exc:
         raise SpecialistDispatchError(
             str(exc), tag="workbook-brief.deep-dive-authority-invalid"
         ) from exc
@@ -918,20 +1331,45 @@ def _reconcile_activated_artifact(
             tag="workbook-brief.deep-dive-reconciliation-failed",
         )
     try:
-        request = build_deep_dive_request(
-            runtime_context.run_dir,
-            runtime_context.course_source_root,
-            artifact.payload.pre_work.promise,
-        )
-        replayed, replayed_receipt = _compose_deep_dive(
-            request=request,
-            context=runtime_context,
-            trial_id=production_envelope.trial_id,
-            prior_payload_digest=(
-                artifact.payload.deep_dive_writer_receipt.prior_payload_digest
-            ),
-        )
-    except (DeepDiveAuthorityInvalidError, DeepDiveAuthorityUnavailableError) as exc:
+        with pass1_generation_lock(
+            runtime_context.run_dir
+        ), _slide_authority_dispatch_lock(runtime_context.run_dir):
+            slide_authority, manifest_bytes = _resolve_slide_authority(
+                envelope=production_envelope,
+                runtime_context=runtime_context,
+                allow_legacy_absence=(
+                    artifact.payload.deep_dive_skeleton.authority.slide_authority_map_digest
+                    is None
+                ),
+                require_existing=(
+                    artifact.payload.deep_dive_skeleton.authority.slide_authority_map_digest
+                    is not None
+                ),
+            )
+            request = build_deep_dive_request(
+                runtime_context.run_dir,
+                runtime_context.course_source_root,
+                artifact.payload.pre_work.promise,
+                authority_map=slide_authority,
+                manifest_bytes=manifest_bytes,
+            )
+            replayed, replayed_receipt = _compose_deep_dive(
+                request=request,
+                context=runtime_context,
+                trial_id=production_envelope.trial_id,
+                prior_payload_digest=(
+                    artifact.payload.deep_dive_writer_receipt.prior_payload_digest
+                ),
+            )
+    except (SlideAuthorityPersistenceError, Pass1GenerationLockError) as exc:
+        raise SpecialistDispatchError(
+            str(exc), tag="workbook-brief.deep-dive-persistence-failed"
+        ) from exc
+    except (
+        DeepDiveAuthorityInvalidError,
+        DeepDiveAuthorityUnavailableError,
+        SlideAuthorityInvalidError,
+    ) as exc:
         raise SpecialistDispatchError(
             str(exc), tag="workbook-brief.deep-dive-reconciliation-failed"
         ) from exc
@@ -951,6 +1389,7 @@ def run_workbook_band_node(
     production_envelope: ProductionEnvelope,
     factories: Mapping[str, WorkbookBandFactory] | None = None,
     runtime_context: WorkbookBriefRuntimeContext | None = None,
+    dispatch_live: bool | None = None,
 ) -> ProductionEnvelope:
     """Run one node, skipping an exact persisted coordinate before its factory."""
     if not isinstance(production_envelope, ProductionEnvelope):
@@ -1003,7 +1442,9 @@ def run_workbook_band_node(
         existing = real_matches[0] if real_matches else None
     else:
         existing = production_envelope.get_contribution(specialist_id, node_id=node_id)
-    if existing is not None:
+    if existing is not None and not (
+        node_id == ASK_A_ENRICHMENT_NODE_ID and factories is None
+    ):
         if node_id == WORKBOOK_BRIEF_NODE_ID:
             if runtime_context is None:
                 raise SpecialistDispatchError(
@@ -1052,20 +1493,45 @@ def run_workbook_band_node(
                         tag="workbook-brief.deep-dive-reconciliation-failed",
                     )
                 try:
-                    request = build_deep_dive_request(
-                        runtime_context.run_dir,
-                        runtime_context.course_source_root,
-                        artifact.payload.pre_work.promise,
-                    )
-                    replayed, replayed_receipt = _compose_deep_dive(
-                        request=request,
-                        context=runtime_context,
-                        trial_id=production_envelope.trial_id,
-                        prior_payload_digest=prior,
-                    )
+                    with pass1_generation_lock(
+                        runtime_context.run_dir
+                    ), _slide_authority_dispatch_lock(runtime_context.run_dir):
+                        slide_authority, manifest_bytes = _resolve_slide_authority(
+                            envelope=production_envelope,
+                            runtime_context=runtime_context,
+                            allow_legacy_absence=(
+                                artifact.payload.deep_dive_skeleton.authority.slide_authority_map_digest
+                                is None
+                            ),
+                            require_existing=(
+                                artifact.payload.deep_dive_skeleton.authority.slide_authority_map_digest
+                                is not None
+                            ),
+                        )
+                        request = build_deep_dive_request(
+                            runtime_context.run_dir,
+                            runtime_context.course_source_root,
+                            artifact.payload.pre_work.promise,
+                            authority_map=slide_authority,
+                            manifest_bytes=manifest_bytes,
+                        )
+                        replayed, replayed_receipt = _compose_deep_dive(
+                            request=request,
+                            context=runtime_context,
+                            trial_id=production_envelope.trial_id,
+                            prior_payload_digest=prior,
+                        )
+                except (
+                    SlideAuthorityPersistenceError,
+                    Pass1GenerationLockError,
+                ) as exc:
+                    raise SpecialistDispatchError(
+                        str(exc), tag="workbook-brief.deep-dive-persistence-failed"
+                    ) from exc
                 except (
                     DeepDiveAuthorityInvalidError,
                     DeepDiveAuthorityUnavailableError,
+                    SlideAuthorityInvalidError,
                 ) as exc:
                     raise SpecialistDispatchError(
                         str(exc), tag="workbook-brief.deep-dive-reconciliation-failed"
@@ -1144,6 +1610,38 @@ def run_workbook_band_node(
             f"no workbook band factory registered for node {node_id!r}",
             tag="workbook.band.unknown-node",
         )
+    prior_ask_a = None
+    if (
+        node_id == ASK_A_ENRICHMENT_NODE_ID
+        and factory is _ask_a_factory
+        and existing is not None
+        and existing.output.get("stub_status") != "not_yet_wired"
+    ):
+        from app.marcus.lesson_plan.ask_a_enrichment import (  # noqa: PLC0415
+            AskAContributionOutputV1,
+        )
+        from app.marcus.orchestrator.ask_a_research_wiring import (  # noqa: PLC0415
+            JOURNAL_FILENAME,
+        )
+
+        try:
+            prior_ask_a = AskAContributionOutputV1.model_validate_json(
+                json.dumps(existing.output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"existing Ask-A output is invalid: {exc}",
+                tag="ask-a.reconciliation-failed",
+            ) from exc
+        if (
+            prior_ask_a.disposition.startswith("completed")
+            and runtime_context is not None
+            and not (runtime_context.run_dir / JOURNAL_FILENAME).exists()
+        ):
+            raise SpecialistDispatchError(
+                "completed Ask-A contribution has no call journal",
+                tag="ask-a.split-brain",
+            )
     try:
         if node_id == WORKBOOK_BRIEF_NODE_ID:
             requires_context = factory is DEFAULT_WORKBOOK_BAND_FACTORIES[node_id]
@@ -1158,6 +1656,18 @@ def run_workbook_band_node(
                 output = factory(node_id, production_envelope, runtime_context=runtime_context)
             else:  # compatibility for injected pre-36.4 test/deterministic factories
                 output = factory(node_id, production_envelope)
+        elif node_id == ASK_A_ENRICHMENT_NODE_ID and factory is _ask_a_factory:
+            if runtime_context is None:
+                raise SpecialistDispatchError(
+                    "07W.2 requires explicit runtime context",
+                    tag="ask-a.runtime-context-missing",
+                )
+            output = factory(
+                node_id,
+                production_envelope,
+                runtime_context=runtime_context,
+                dispatch_live=bool(dispatch_live),
+            )
         else:
             output = factory(node_id, production_envelope)
     except SpecialistDispatchError:
@@ -1194,13 +1704,55 @@ def run_workbook_band_node(
                 )
             }
         )
-    model_used = WORKBOOK_BAND_MODEL_MARKER
+    model_used = (
+        "deterministic-ask-a-research-wiring"
+        if node_id == ASK_A_ENRICHMENT_NODE_ID and factory is _ask_a_factory
+        else WORKBOOK_BAND_MODEL_MARKER
+    )
     if node_id == WORKBOOK_BRIEF_NODE_ID and runtime_context is not None:
         if runtime_context.writer_execution_mode == "live":
             config = getattr(runtime_context.scene_writer, "model_config", None)
             model_used = getattr(config, "default_model", None) or "workbook-writer-live"
         else:
             model_used = "workbook-brief-offline"
+    if (
+        existing is not None
+        and node_id == ASK_A_ENRICHMENT_NODE_ID
+        and factory is _ask_a_factory
+    ):
+        from app.marcus.lesson_plan.ask_a_enrichment import (  # noqa: PLC0415
+            AskAContributionOutputV1,
+        )
+
+        try:
+            resolved = AskAContributionOutputV1.model_validate_json(
+                json.dumps(output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"Ask-A output validation failed: {exc}", tag="ask-a.output-invalid"
+            ) from exc
+        if prior_ask_a is not None and prior_ask_a.disposition.startswith("completed"):
+            if prior_ask_a != resolved:
+                raise SpecialistDispatchError(
+                    "completed Ask-A contribution conflicts with journal replay",
+                    tag="ask-a.split-brain",
+                )
+            return production_envelope
+        if prior_ask_a == resolved:
+            return production_envelope
+        updated = updated.model_copy(
+            update={
+                "contributions": tuple(
+                    item
+                    for item in updated.contributions
+                    if not (
+                        item.specialist_id == ASK_A_ENRICHMENT_SPECIALIST_ID
+                        and item.node_id == ASK_A_ENRICHMENT_NODE_ID
+                    )
+                )
+            }
+        )
     updated.add_contribution(
         SpecialistContribution.from_output(
             specialist_id=specialist_id,
