@@ -31,7 +31,12 @@ from app.marcus.lesson_plan.slide_authority import (
     write_or_validate_slide_authority_map,
 )
 from app.marcus.orchestrator import workbook_wiring
+from app.models.pass1_source_section import (
+    Pass1AuthenticatedSourceSection,
+    canonical_extracted_content_digest,
+)
 from app.models.runtime.production_envelope import ProductionEnvelope, SpecialistContribution
+from tests._helpers.pass1_bundle import write_authenticated_slide_bundle_from_course
 
 FIXTURE = (
     Path(__file__).resolve().parents[3]
@@ -48,6 +53,36 @@ EXPECTED_SOURCE_ORDINALS = (1, 2, 2, 2, 3, 3, 3, 3, 4, 5, 5, 5, 6)
 def _canonical_source_id(course_root: Path, relative_path: str) -> str:
     text = (course_root / relative_path).read_text(encoding="utf-8")
     return f"{relative_path}|{canonical_source_content_digest(text)}"
+
+
+def _authenticated_sections(
+    course_root: Path,
+) -> tuple[Pass1AuthenticatedSourceSection, ...]:
+    """Authenticated sections mirroring the on-disk slides (body == raw text).
+
+    The workbook resolver now matches anchors over Texas-authenticated bodies
+    instead of the raw slide files; in these unit fixtures the two are identical,
+    so building the sections from disk preserves prior resolution behavior while
+    exercising the authenticated-source path.
+    """
+    slides = course_root / "slides"
+    sections: list[Pass1AuthenticatedSourceSection] = []
+    for path in sorted(slides.iterdir(), key=lambda item: item.name):
+        if path.is_symlink() or not path.is_file():
+            continue
+        if not path.name.startswith("slide-") or not path.name.endswith(".md"):
+            continue
+        text = path.read_text(encoding="utf-8")
+        rel = f"slides/{path.name}"
+        sections.append(
+            Pass1AuthenticatedSourceSection(
+                source_id=f"{rel}|{canonical_source_content_digest(text)}",
+                source_content_digest=canonical_source_content_digest(text),
+                extracted_content_digest=canonical_extracted_content_digest(text),
+                body=text,
+            )
+        )
+    return tuple(sections)
 
 
 def _fixture(tmp_path: Path) -> tuple[dict[str, object], Path]:
@@ -87,6 +122,7 @@ def _build(
         package_slides=raw["package_slides"],
         authorized_source_ids=authorized_source_ids,
         course_source_root=course_root,
+        source_sections=_authenticated_sections(course_root),
         manifest_digest=manifest_digest,
         plan_sidecar_digest="sha256:" + "2" * 64,
         plan_contribution_digest="sha256:" + "3" * 64,
@@ -619,6 +655,117 @@ def test_deep_dive_uses_one_manifest_snapshot_and_revalidates_disk_bytes(
         )
 
 
+def test_authenticated_marker_anchor_resolves_against_bundle_not_raw_slides(
+    tmp_path: Path,
+) -> None:
+    """Drift-guard: source_refs carrying Texas ``[evidence: src-NNN]`` markers
+    must resolve against the authenticated bundle bodies, not the raw slides.
+
+    This reproduces the live 07W.1 ``deep-dive-authority-invalid`` pause: the raw
+    slide never contains the marker, so before the fix the workbook resolver
+    (reading raw slides) fails ``anchor must match exactly one source slide
+    file`` while Irene Pass-1 (reading the authenticated body) resolves it
+    cleanly. Reading the same authenticated bodies removes the divergence.
+    """
+    from app.specialists.source_bundle import read_extracted_source_sections
+    from tests._helpers.pass1_bundle import (
+        write_authenticated_slide_bundle_from_course,
+    )
+
+    run_dir = tmp_path / "run"
+    exports = run_dir / "exports"
+    exports.mkdir(parents=True)
+    (exports / "segment-manifest-storyboard-b.yaml").write_text(
+        yaml.safe_dump(
+            {"segments": [{"slide_id": "slide-01"}]}, sort_keys=False
+        ),
+        encoding="utf-8",
+    )
+    course_root = tmp_path / "course"
+    slides = course_root / "slides"
+    slides.mkdir(parents=True)
+    visual_line = (
+        "**Visual Format:** Dual-Axis Data Visualization "
+        "(Clean, high-contrast chart)."
+    )
+    raw_slide = f"# Charts\n{visual_line}\n- **Narration (Speaker Notes):** read it\n"
+    (slides / "slide-1-charts.md").write_text(raw_slide, encoding="utf-8")
+
+    # The bundle body carries the marker the raw slide lacks.
+    write_authenticated_slide_bundle_from_course(
+        run_dir,
+        course_root,
+        marker_lines={"slide-1-charts.md": visual_line},
+    )
+    marker_anchor = f"{visual_line} [evidence: src-006]"
+    assert marker_anchor not in raw_slide  # verbatim in the body, absent from raw
+
+    sections = read_extracted_source_sections(
+        {"bundle_reference": str(run_dir / "bundle")}
+    )
+    assert any(marker_anchor in section.body for section in sections)
+
+    selected_plan = {
+        "plan_units": [
+            {
+                "unit_id": "u01",
+                "scope_decision": "in-scope",
+                "cluster_id": "c-u01",
+                "cluster_role": "head",
+                "parent_slide_id": None,
+                "source_refs": [marker_anchor],
+            }
+        ]
+    }
+    authority_receipt = finalize_plan_authority(
+        selected_plan, source_sections=sections
+    )
+    (run_dir / "irene-pass1.lesson-plan.json").write_text(
+        json.dumps(selected_plan), encoding="utf-8"
+    )
+    (run_dir / "irene-pass1.plan-authority.json").write_text(
+        json.dumps(authority_receipt), encoding="utf-8"
+    )
+    envelope = ProductionEnvelope(trial_id=uuid4())
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="irene_pass1",
+            node_id="05B",
+            output={
+                "lesson_plan": selected_plan,
+                "plan_authority_receipt": authority_receipt,
+            },
+            model_used="fixture",
+        )
+    )
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id="package_builder",
+            node_id="06",
+            output={"slides": [{"slide_id": "slide-01", "source_ref": "u01"}]},
+            model_used="fixture",
+        )
+    )
+    envelope = ProductionEnvelope.model_validate_json(envelope.model_dump_json())
+    context = WorkbookBriefRuntimeContext(
+        run_dir=run_dir,
+        course_source_root=course_root,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="offline_stub",
+    )
+
+    authority, _manifest = workbook_wiring._resolve_slide_authority(
+        envelope=envelope, runtime_context=context
+    )
+
+    assert authority is not None
+    row = authority.rows[0]
+    assert row.unit_id == "u01"
+    assert row.source_slide_id == "slide-1"
+    assert row.matched_anchors == (marker_anchor,)
+
+
 def test_orchestration_mints_map_from_exact_selected_contributions(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -646,6 +793,7 @@ def test_orchestration_mints_map_from_exact_selected_contributions(
     )
     receipt_path = run_dir / "irene-pass1.plan-authority.json"
     receipt_path.write_text(json.dumps(authority_receipt), encoding="utf-8")
+    write_authenticated_slide_bundle_from_course(run_dir, course_root)
     envelope = ProductionEnvelope(trial_id=uuid4())
     envelope.add_contribution(
         SpecialistContribution.from_output(

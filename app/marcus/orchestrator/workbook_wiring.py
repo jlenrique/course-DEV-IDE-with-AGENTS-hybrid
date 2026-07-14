@@ -107,6 +107,10 @@ from app.pass1_generation_lock import (
     pass1_generation_lock,
 )
 from app.specialists.dispatch_errors import SpecialistDispatchError
+from app.specialists.source_bundle import (
+    SourceBundleError,
+    read_extracted_source_sections,
+)
 
 WORKBOOK_BRIEF_NODE_ID: Final[str] = "07W.1"
 WORKBOOK_REVIEW_NODE_ID: Final[str] = "07W.3"
@@ -365,12 +369,26 @@ def _resolve_slide_authority(
     segments = load_deep_dive_segments(
         runtime_context.run_dir, manifest_bytes=manifest_bytes
     )
+    # Anchor resolution must read the SAME Texas-authenticated source bodies that
+    # Irene Pass-1's span catalog/authority receipt were built over — the bundle
+    # persisted at ``<run_dir>/bundle`` — NOT the raw course slides. The raw
+    # slides lack the ``[evidence: src-NNN]`` provenance markers Texas appends,
+    # so matching source_refs against them diverges from Pass-1 (07W.1 drift).
+    try:
+        source_sections = read_extracted_source_sections(
+            {"bundle_reference": str(runtime_context.run_dir / "bundle")}
+        )
+    except SourceBundleError as exc:
+        raise SlideAuthorityInvalidError(
+            f"authenticated source bundle is unavailable for anchor resolution: {exc}"
+        ) from exc
     expected = build_slide_authority_map(
         manifest_segments=segments,
         plan_units=plan_units,
         package_slides=package_slides,
         authorized_source_ids=authorized_source_ids,
         course_source_root=runtime_context.course_source_root,
+        source_sections=source_sections,
         manifest_digest=_bytes_sha256(manifest_bytes),
         plan_sidecar_digest=_bytes_sha256(sidecar_bytes),
         plan_contribution_digest="sha256:" + plan.output_digest,

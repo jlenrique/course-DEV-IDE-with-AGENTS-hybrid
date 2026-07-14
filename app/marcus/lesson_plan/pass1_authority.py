@@ -20,6 +20,7 @@ from app.marcus.lesson_plan.pass1_source_span_catalog import (
 )
 from app.marcus.lesson_plan.slide_authority import (
     SlideAuthorityInvalidError,
+    authenticated_anchor_source_texts,
     resolve_exact_anchor_source,
 )
 from app.models.pass1_source_section import Pass1AuthenticatedSourceSection
@@ -484,9 +485,7 @@ def finalize_plan_authority(
         isinstance(section, Pass1AuthenticatedSourceSection)
         for section in source_sections
     ):
-        source_texts = tuple(
-            (section.source_id, section.body) for section in source_sections
-        )
+        source_texts = authenticated_anchor_source_texts(source_sections)
     elif schema_version == LEGACY_SCHEMA_VERSION and all(
         isinstance(section, tuple)
         and len(section) == 2

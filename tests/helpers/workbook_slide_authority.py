@@ -13,6 +13,9 @@ from app.models.runtime.production_envelope import (
     ProductionEnvelope,
     SpecialistContribution,
 )
+from tests._helpers.pass1_bundle import (
+    write_authenticated_slide_bundle_from_course,
+)
 
 _SOURCE_SLIDE = re.compile(r"slide-(?P<ordinal>[1-9][0-9]*)-.*\.md")
 
@@ -103,6 +106,7 @@ def write_single_slide_plan_sidecar(
         encoding="utf-8",
         newline="",
     )
+    write_authenticated_slide_bundle_from_course(run_dir, course_source_root)
     return lesson_plan, package
 
 
@@ -201,6 +205,7 @@ def install_manifest_slide_authority(
         encoding="utf-8",
         newline="",
     )
+    write_authenticated_slide_bundle_from_course(run_dir, course_source_root)
     updated = envelope.model_copy(deep=True)
     updated.add_contribution(
         SpecialistContribution.from_output(

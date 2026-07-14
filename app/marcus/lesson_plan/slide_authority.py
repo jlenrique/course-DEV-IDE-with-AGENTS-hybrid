@@ -18,6 +18,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from app.models.pass1_source_section import Pass1AuthenticatedSourceSection
+
 SLIDE_AUTHORITY_FILENAME = "workbook-slide-authority-map.v1.json"
 SLIDE_AUTHORITY_RESOLVER_VERSION = "exact-anchor-source-slide.v1"
 _SLIDE_NAME = re.compile(r"^slide-(?P<ordinal>[1-9][0-9]*)-.+\.md$")
@@ -586,6 +588,21 @@ def resolve_exact_anchor_source(
     return matched_sources[0], tuple(anchors)
 
 
+def authenticated_anchor_source_texts(
+    source_sections: tuple[Pass1AuthenticatedSourceSection, ...],
+) -> tuple[tuple[str, str], ...]:
+    """Project the exact ``(source_id, authenticated_body)`` anchor-matching text.
+
+    This is the single accessor both Irene Pass-1's authority receipt
+    (``finalize_plan_authority``) and the workbook slide-authority resolver
+    (``build_slide_authority_map``) feed to ``resolve_exact_anchor_source``.
+    Because both consume the *same* Texas-authenticated section bodies here — the
+    bytes that carry the ``[evidence: src-NNN]`` provenance markers absent from
+    the raw slide files — their anchor semantics cannot drift.
+    """
+    return tuple((section.source_id, section.body) for section in source_sections)
+
+
 def _identity_digest(value: object, label: str) -> str:
     digest = str(value)
     if not _SHA256.fullmatch(digest):
@@ -616,12 +633,27 @@ def build_slide_authority_map(
     package_slides: object,
     authorized_source_ids: object,
     course_source_root: Path,
+    source_sections: tuple[Pass1AuthenticatedSourceSection, ...],
     manifest_digest: str,
     plan_sidecar_digest: str,
     plan_contribution_digest: str,
     package_contribution_digest: str,
 ) -> WorkbookSlideAuthorityMapV1:
-    """Build an explicit authority map from closed, exact persisted inputs."""
+    """Build an explicit authority map from closed, exact persisted inputs.
+
+    ``source_sections`` are the Texas-authenticated per-slide bodies (the same
+    records Irene Pass-1 built its span catalog and authority receipt over).
+    Anchor matching runs over those authenticated bodies, never the raw slide
+    files: ``source_refs`` carry Texas ``[evidence: src-NNN]`` provenance
+    markers that are absent from the raw slides, so matching raw text would
+    diverge from Pass-1 (the 07W.1 ``deep-dive-authority-invalid`` drift). The
+    raw slide inventory is retained only for durable file identity
+    (path/ordinal/sha256) and the source-content cross-check against Pass-1.
+    """
+    if not isinstance(source_sections, tuple) or not source_sections:
+        raise SlideAuthorityInvalidError(
+            "authenticated source sections are required for anchor resolution"
+        )
     if not isinstance(manifest_segments, list) or not manifest_segments:
         raise SlideAuthorityInvalidError("manifest segments must be a nonempty list")
     if not isinstance(plan_units, list) or not plan_units:
@@ -702,17 +734,32 @@ def build_slide_authority_map(
     inventory = _source_inventory(course_source_root)
     inventory_models = tuple(item[0] for item in inventory)
     inventory_by_path = {entry.source_path: entry for entry, _path, _text in inventory}
-    inventory_texts = tuple((entry.source_path, text) for entry, _path, text in inventory)
-    inventory_text_by_path = dict(inventory_texts)
+    inventory_text_by_path = {
+        entry.source_path: text for entry, _path, text in inventory
+    }
+    authenticated_text_by_path: dict[str, str] = {}
+    for source_id, body in authenticated_anchor_source_texts(source_sections):
+        source_path = source_id.split("|", 1)[0]
+        if source_path in authenticated_text_by_path:
+            raise SlideAuthorityInvalidError(
+                "authenticated source sections carry a duplicate source path"
+            )
+        authenticated_text_by_path[source_path] = body
+    anchor_source_texts = tuple(authenticated_text_by_path.items())
     resolved_by_unit: dict[str, SourceSlideInventoryEntryV1] = {}
     anchors_by_unit: dict[str, tuple[str, ...]] = {}
     for unit_id, unit in unit_by_id.items():
         source_path, anchors = resolve_exact_anchor_source(
             unit_id=unit_id,
             raw_anchors=unit.get("source_refs"),
-            source_texts=inventory_texts,
+            source_texts=anchor_source_texts,
         )
-        resolved_by_unit[unit_id] = inventory_by_path[source_path]
+        inventory_entry = inventory_by_path.get(source_path)
+        if inventory_entry is None:
+            raise SlideAuthorityInvalidError(
+                f"unit {unit_id} resolved a source with no raw slide inventory entry"
+            )
+        resolved_by_unit[unit_id] = inventory_entry
         anchors_by_unit[unit_id] = anchors
         expected_source_id = (
             f"{source_path}|"
@@ -807,6 +854,7 @@ __all__ = [
     "SourceSlideInventoryEntryV1",
     "WorkbookSlideAuthorityMapV1",
     "WorkbookSlideAuthorityRowV1",
+    "authenticated_anchor_source_texts",
     "build_slide_authority_map",
     "read_slide_authority_map",
     "read_contained_regular_bytes",
