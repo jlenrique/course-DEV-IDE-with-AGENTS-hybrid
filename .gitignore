@@ -160,3 +160,13 @@ _artifacts/
 course-content/**/*.mp4
 course-content/**/*.mov
 course-content/**/*.m4a
+
+# Transient pipeline run artifacts under runs/. The pipeline writes per-run
+# scratch here (irene-pass1 generation locks, per-run UUID output dirs,
+# compositor assembly scratch). Curated run outputs are either already tracked
+# or added explicitly with `git add -f`; git never ignores already-tracked
+# files, so the committed run dirs (bc8359aa.../, b5cd2bc8.../, cache-harness/)
+# stay tracked. Everything else here is transient and must not clutter status.
+runs/*.generation.lock
+runs/compositor/
+runs/*/
