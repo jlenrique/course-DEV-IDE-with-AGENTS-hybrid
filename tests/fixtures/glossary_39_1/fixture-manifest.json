@@ -1,0 +1,18 @@
+{
+  "fixtures": {
+    "cite-003-ask-a-entry.v1.json": {
+      "pinned_schema_version": "ask-a-knowledge-entry.v1",
+      "sha256": "808b94cd1d935a1dab45b7a079c66e69a45245cc203df83a50ae17edfa488f21"
+    },
+    "w1-packet-rows-8b275e5b.json": {
+      "pinned_schema_version": "ask-a-knowledge-entry.v1",
+      "sha256": "1bc1727d76fb2fedd7f569073f3fd728c81cc7272f582b24dfb047da50e90e83"
+    }
+  },
+  "note": "Digest-bound live-shape fixtures (M2): each fixture DECLARES its derivation transform in-file (verbatim vs synthesized fields) and pins its schema_version; a schema_version bump MUST re-derive the fixture and update this manifest (bump tripwire in tests/unit/marcus/lesson_plan/test_glossary_39_1.py).",
+  "schema_version": "glossary-39-1-fixtures.v1",
+  "source_runs": [
+    "runs/8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+    "runs/a940c5eb-1043-42c1-a2a4-8a6301b6bcf4"
+  ]
+}

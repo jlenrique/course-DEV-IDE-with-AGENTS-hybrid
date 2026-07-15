@@ -16,8 +16,10 @@ sequence:
    enrichment card is a RESOLUTION OVERLAY (exercises, further-reading, answer
    keys, LO statements) layered on top — it may NOT author sections;
 5. read the S6 ``research_entries`` (from ``run.json``) and render them under the
-   G2 citation manifest; W2 also projects encyclopedia glossary articles from the
-   shared research packet (``resolve_for_glossary_writer``); W3 projects
+   G2 citation manifest; W2 (39.1) projects the TERM-KEYED encyclopedia glossary
+   off the 07W.3 review contribution (status-dependent bold-term authority +
+   the digest-verified embedded Ask-A pool rows — the legacy generic-packet
+   glossary path is retired from the deliverable); W3 projects
    research-trends + hot-topics (``resolve_for_trends_projector``);
 6. honor the ``declaration`` discriminant (present+blueprint => produce;
    none/absent => explicit no-op skip);
@@ -56,8 +58,12 @@ from app.marcus.lesson_plan.deep_dive_enrichment import (
     used_pool_rows,
 )
 from app.marcus.lesson_plan.glossary_projection import (
+    GLOSSARY_CAPABILITY_NOTE,
+    GLOSSARY_UNCOVERED_DEGRADED_ENTRY_LINE,
+    GLOSSARY_UNCOVERED_ENTRY_LINE,
     GlossaryArticleBrief,
-    glossary_inputs_from_run,
+    GlossaryProjection,
+    glossary_projection_from_contribution,
 )
 from app.marcus.lesson_plan.prework_artifact import (
     WORKBOOK_BRIEF_FILENAME,
@@ -456,6 +462,9 @@ class WorkbookInputs:
     workbook_brief_receipt: dict[str, object] | None = None
     # 37.2b: the persisted 07W.3 review contribution (deep-dive enrichment leg).
     deep_dive_review: WorkbookReviewContributionV1 | None = None
+    # 39.1: the term-keyed glossary projection (bold-term authority is the
+    # SAME 07W.3 contribution read — one disk read, A-3 hoist).
+    glossary: GlossaryProjection | None = None
 
 
 def _research_inputs(
@@ -678,7 +687,11 @@ def _research_figure_supplements(
         parts.append(reading.title or "")
         parts.append(reading.locator or "")
     for article in glossary_articles:
-        parts.append(" ".join(filter(None, (article.term, article.headline, article.body))))
+        # 39.1 remediation P6: ONLY the headword (== the gate-proven bolded
+        # term) is declared. The article title/headline/body carry pool-row
+        # prose the enrichment gate never checked — a numeral appearing only
+        # there must still fail G1 (see _glossary_figure_supplements).
+        parts.append(article.term)
     if research_trends is not None:
         for claim in research_trends.trends:
             parts.append(claim.claim_text or "")
@@ -687,6 +700,35 @@ def _research_figure_supplements(
             parts.append(topic.topic or "")
             parts.append(topic.rationale or "")
     return _figures("\n".join(parts))
+
+
+def _glossary_figure_supplements(
+    glossary: GlossaryProjection,
+    deep_dive_review: WorkbookReviewContributionV1 | None,
+) -> set[str]:
+    """Glossary B5 supplements — GATE-PROVEN content only (39.1 remediation P6).
+
+    The declaration set is restricted to: (a) the bold-term authority set (the
+    enrichment gate checked bold-term continuity, and the terms already render
+    in the gate-proven Deep Dive prose), (b) the USED pool rows' evidence
+    excerpts (the enrichment gate checked every used row's excerpt against its
+    cited claim), and (c) the fixed glossary template prose. Pool-row TITLES
+    and any UNUSED-row content are NEVER declared: a numeral that appears only
+    in un-gated pool prose rendered into the glossary must still fail G1
+    (pinned: an unused-row title numeral does not enter the supplement set).
+    """
+    parts: list[str] = [
+        GLOSSARY_CAPABILITY_NOTE,
+        GLOSSARY_UNCOVERED_ENTRY_LINE,
+        GLOSSARY_UNCOVERED_DEGRADED_ENTRY_LINE,
+    ]
+    parts.extend(entry.term for entry in glossary.entries)
+    review_result = (
+        deep_dive_review.deep_dive_enrichment if deep_dive_review is not None else None
+    )
+    if review_result is not None and review_result.status == "enriched":
+        parts.extend(row.evidence_excerpt for row in used_pool_rows(review_result))
+    return _figures("\n".join(p for p in parts if p))
 
 
 def _authored_prose_figure_supplements(
@@ -954,11 +996,41 @@ def build_workbook_inputs(
     for source_ref, source_hash in research_manifest.items():
         source_ref_manifest.setdefault(source_ref, source_hash)
 
-    # W2: encyclopedia glossary from shared research packet (same SSOT as W1).
-    glossary_articles, glossary_empty_reason, _glossary_losses = glossary_inputs_from_run(run_dir)
+    # 37.2b/39.1 (A-3 hoist): ONE disk read of the persisted 07W.3 review
+    # contribution serves BOTH the glossary bold-term authority
+    # (status-dependent, AC-A3 W1/A-2) and the deep-dive render/manifest legs
+    # below — never read the artifact twice. P7 (legacy honesty): the load is
+    # PROFILE-AGNOSTIC — a legacy-profile run dir carrying an activated
+    # contribution must never project a factually false "no activated
+    # workbook-review contribution exists" absent-reason. Only the DEEP-DIVE
+    # SECTION render stays presentation-support-gated (the validated brief is
+    # the profile switch); a present-but-invalid activated contribution fails
+    # loud on every profile.
+    deep_dive_review: WorkbookReviewContributionV1 | None
+    try:
+        deep_dive_review = load_workbook_review_contribution(run_dir)
+    except ValueError as exc:
+        raise WorkbookProducerActError(
+            f"workbook review contribution is invalid: {exc}",
+            tag="workbook-review.contribution-invalid",
+        ) from exc
+
+    # W2 (39.1): TERM-KEYED encyclopedia glossary — exactly one entry per
+    # bolded Deep Dive term, entries joined from the digest-verified EMBEDDED
+    # Ask-A pool rows on the contribution (A-3; A5 packet-digest witness rides
+    # the projection). The legacy generic-packet path
+    # (resolve_for_glossary_writer -> _term_from_title) is REMOVED from the
+    # learner deliverable (J-F3). No research dispatch of any kind.
+    glossary = glossary_projection_from_contribution(deep_dive_review)
+    glossary_articles = glossary.covered_articles
+    glossary_empty_reason = glossary.empty_reason
     for article in glossary_articles:
         if article.source_ref and article.source_ref not in source_ref_manifest:
-            source_ref_manifest[article.source_ref] = _hash(article.source_ref)
+            # Prefer the pool row's own content hash so the later deep-dive
+            # used-rows join (R19) agrees instead of warning on disagreement.
+            source_ref_manifest[article.source_ref] = article.source_hash or _hash(
+                article.source_ref
+            )
 
     research_trends = trends_inputs_from_run(run_dir)
     for claim in research_trends.trends:
@@ -1003,18 +1075,9 @@ def build_workbook_inputs(
         brief.payload.pre_work if brief else None,
     )
 
-    # 37.2b: read the persisted 07W.3 review contribution (deep-dive enrichment
-    # leg) off run.json. Presentation-support only (the validated brief IS the
-    # profile switch); a present-but-invalid activated contribution fails loud.
-    deep_dive_review: WorkbookReviewContributionV1 | None = None
+    # 37.2b: the persisted 07W.3 contribution (loaded ONCE above, A-3 hoist)
+    # feeds the G2 structured-side manifest join + the G1 render supplements.
     if brief is not None:
-        try:
-            deep_dive_review = load_workbook_review_contribution(run_dir)
-        except ValueError as exc:
-            raise WorkbookProducerActError(
-                f"workbook review contribution is invalid: {exc}",
-                tag="workbook-review.contribution-invalid",
-            ) from exc
         review_result = deep_dive_review.deep_dive_enrichment if deep_dive_review else None
         if review_result is not None and review_result.status == "enriched":
             # G2 structured side: the used Ask-A rows' source_refs join the
@@ -1031,6 +1094,16 @@ def build_workbook_inputs(
         research_supplements = research_supplements | _figures(
             render_deep_dive_markdown(deep_dive_review)
         )
+
+    # 39.1 (remediation P6): glossary supplements derive ONLY from gate-proven
+    # content — the bold-term authority set (figure-class headwords like
+    # ``25%``), the USED rows' gate-checked evidence excerpts, and the fixed
+    # template prose. Never the full rendered section (pool-row titles /
+    # unused-row prose are un-gated and must still fail G1 if they smuggle a
+    # numeral).
+    research_supplements = research_supplements | _glossary_figure_supplements(
+        glossary, deep_dive_review
+    )
 
     display_title = _derive_display_title(lesson_plan, run_dir)
 
@@ -1052,6 +1125,7 @@ def build_workbook_inputs(
         research_omitted_note=research_omitted_note,
         glossary_articles=glossary_articles,
         glossary_empty_reason=glossary_empty_reason,
+        glossary=glossary,
         research_trends=research_trends,
         research_supplements=research_supplements,
         lo_overlay_loss=lo_overlay_loss,
@@ -1180,6 +1254,7 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             research_omitted_note=inputs.research_omitted_note,
             glossary_articles=inputs.glossary_articles,
             glossary_empty_reason=inputs.glossary_empty_reason,
+            glossary=inputs.glossary,
             research_trends=inputs.research_trends,
             research_supplements=inputs.research_supplements,
             lo_overlay_loss=inputs.lo_overlay_loss,

@@ -1,0 +1,63 @@
+{
+  "derivation": {
+    "rendered_regression_surface": "runs/8b275e5b-ed8a-4720-8217-8ddaca4c6627/exports/workbooks/u01@1.md L178-L190 (a cross-sectional study rendered carrying tier=T1_systematic — the J-F3 mislabel shape)",
+    "source_artifact": "run.json#research_wiring@04.55 research_entries[2] (citation_id cite-003)",
+    "source_run": "runs/8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+    "synthesized_fields": {
+      "association_algorithm": "the ask-a-association.v1 literal",
+      "citation_id": "re-namespaced cite-NNN -> ask-a-cite-NNN (Ask-A citation grammar; the W1 id is not Ask-A namespaced)",
+      "evidence_body_sha256": "sha256 of the synthesized excerpt",
+      "evidence_excerpt": "synthesized from the VERBATIM title (W1 packet rows carry no retrieved excerpt)",
+      "evidence_truncated": "synthesized false",
+      "matched_ability_tokens": "synthesized empty (mirrors supports_ability_ids per the model invariant)",
+      "matched_bold_terms": "mirrors supports_bold_terms (model invariant)",
+      "schema_version": "the ask-a-knowledge-entry.v1 literal (W1 packet rows carry no schema_version)",
+      "scope_digest": "synthesized fixture scope digest sha256('glossary-39-1-fixture-scope') — no live Ask-A scope exists for the 8b275e5b run",
+      "supports_ability_ids": "synthesized empty",
+      "supports_bold_terms": "synthesized ['AI'] so the row is glossary-ELIGIBLE (the regression pin must prove eligible rows still never mangle a headword)"
+    },
+    "tier_label_note": "The T1_systematic label is carried VERBATIM from the real W1 row — it is the upstream MISLABEL under test (J-F3). This story pins RENDER HONESTY only (label verbatim + upstream-label honesty sentence); the label-ACCURACY fix is fenced upstream (deferred entry research-quality-resolvable-doi-yield).",
+    "verbatim_fields": [
+      "source_ref",
+      "provider",
+      "source_id",
+      "title",
+      "source_hash",
+      "evidence_hierarchy_tier",
+      "peer_reviewed",
+      "provider_provenance",
+      "triangulation_status",
+      "reliability_score"
+    ]
+  },
+  "entry": {
+    "association_algorithm": "ask-a-association.v1",
+    "citation_id": "ask-a-cite-003",
+    "evidence_body_sha256": "sha256:b3a9d2e16bb92e21373c2d5f997e3ffce44c9544863a4eeb8cd8d3dd5e516edb",
+    "evidence_excerpt": "Knowledge, attitude and practices regarding use of artificial intelligence for medical writings among doctors of khyber pakhtunkhwa: a cross-sectional study",
+    "evidence_hierarchy_tier": "T1_systematic",
+    "evidence_truncated": false,
+    "matched_ability_tokens": {},
+    "matched_bold_terms": [
+      "AI"
+    ],
+    "peer_reviewed": true,
+    "provider": "scite",
+    "provider_provenance": [
+      "scite"
+    ],
+    "reliability_score": 0.1,
+    "schema_version": "ask-a-knowledge-entry.v1",
+    "scope_digest": "sha256:b0bafaa597ecc51c9c982efe804bac77f5dc34d7db198be7462653692d51e51e",
+    "source_hash": "sha256:7cf8f2e4b68490e718b61faaadb4c5a82187c09e2eab1fc19274a95a8c5f85be",
+    "source_id": "10.1097/ms9.0000000000002953",
+    "source_ref": "retrieval:scite:10.1097/ms9.0000000000002953",
+    "supports_ability_ids": [],
+    "supports_bold_terms": [
+      "AI"
+    ],
+    "title": "Knowledge, attitude and practices regarding use of artificial intelligence for medical writings among doctors of khyber pakhtunkhwa: a cross-sectional study",
+    "triangulation_status": "single_provider"
+  },
+  "schema_version_pin": "ask-a-knowledge-entry.v1"
+}

@@ -556,6 +556,7 @@ def compose_workbook(
     research_omitted_note: str | None = None,
     glossary_articles: Sequence[GlossaryArticleBrief] = (),
     glossary_empty_reason: str | None = None,
+    glossary: Any | None = None,
     research_trends: ResearchTrendsBrief | None = None,
     pre_work: PreWorkBrief | None = None,
     encounter_mode: Literal["recorded", "live"] = "recorded",
@@ -786,19 +787,28 @@ def compose_workbook(
             answer_lines.append("")
     doc.blocks.append((2, "Answer Key", "\n".join(answer_lines).rstrip()))
 
-    # --- W2 Research Glossary (encyclopedia articles from wrangled research).
-    # Produce-time briefs only — not CollateralSpec. Placed after Answer Key and
-    # before References so W3 trends can stack after References later.
-    doc.blocks.append(
-        (
-            2,
-            "Research Glossary",
-            render_glossary_markdown(
-                glossary_articles,
-                empty_reason=glossary_empty_reason,
-            ),
+    # --- W2 Research Glossary. 39.1 (the learner-deliverable path): the
+    # TERM-KEYED projection renders one entry per bolded Deep Dive term with
+    # headword-identity association (AC-A5/A-6) — supplied as ``glossary``.
+    # The _act intake supplies a projection on EVERY profile (legacy included;
+    # its 07W.3 disk read is profile-agnostic — P7 legacy honesty), so a
+    # legacy-profile run with an activated contribution renders real entries,
+    # never a false absent-reason. Only callers that pass ``glossary_articles``
+    # WITHOUT a projection (the frozen W2/W4 evidence scripts) take the
+    # pre-39.1 article render below. Placed after Answer Key and before
+    # References so W3 trends can stack after References later.
+    if glossary is not None:
+        from app.marcus.lesson_plan.glossary_projection import (  # noqa: PLC0415
+            render_glossary_projection_markdown,
         )
-    )
+
+        glossary_body = render_glossary_projection_markdown(glossary)
+    else:
+        glossary_body = render_glossary_markdown(
+            glossary_articles,
+            empty_reason=glossary_empty_reason,
+        )
+    doc.blocks.append((2, "Research Glossary", glossary_body))
 
     # --- S6 References / Further reading (rendered bibliography). Three tiers:
     # (a) per-segment source_ref traceability lines (the thin substrate),
@@ -887,11 +897,32 @@ def compose_workbook(
             render_deep_dive_reference_lines,
         )
 
-        deep_dive_reference_lines = render_deep_dive_reference_lines(deep_dive_review)
-        if deep_dive_reference_lines:
+        deep_dive_reference_lines = list(
+            render_deep_dive_reference_lines(deep_dive_review)
+        )
+        # 39.1 AC-A9 (W2/M1): APPEND glossary-covered rows into the SAME
+        # cited-entries block, deduped by citation_id against the
+        # enrichment-emitted lines (a citation cited by both the deep dive and
+        # a glossary entry appears ONCE). Resolvability floor only — the 37.5
+        # References assemble/dedupe ownership fence stands.
+        glossary_reference_line_items: list[str] = []
+        if glossary is not None:
+            from app.marcus.lesson_plan.glossary_projection import (  # noqa: PLC0415
+                glossary_reference_lines,
+            )
+
+            emitted_ids: tuple[str, ...] = ()
+            review_result = getattr(deep_dive_review, "deep_dive_enrichment", None)
+            if review_result is not None and review_result.status == "enriched":
+                emitted_ids = tuple(review_result.gate.used_citation_ids)
+            glossary_reference_line_items = list(
+                glossary_reference_lines(glossary, exclude_citation_ids=emitted_ids)
+            )
+        if deep_dive_reference_lines or glossary_reference_line_items:
             reference_lines.append("")
             reference_lines.append("#### Deep Dive cited entries (Ask-A, DOI)")
             reference_lines.extend(deep_dive_reference_lines)
+            reference_lines.extend(glossary_reference_line_items)
     doc.blocks.append((2, "References", "\n".join(reference_lines).rstrip()))
 
     # --- W3 Research Trends + hot-topics (after References backmatter).
@@ -1108,6 +1139,7 @@ class WorkbookProducer(ModalityProducer):
         research_omitted_note: str | None = None,
         glossary_articles: Sequence[GlossaryArticleBrief] = (),
         glossary_empty_reason: str | None = None,
+        glossary: Any | None = None,
         research_trends: ResearchTrendsBrief | None = None,
         research_supplements: set[str] | None = None,
         diff_files: Iterable[str] | None = None,
@@ -1148,6 +1180,7 @@ class WorkbookProducer(ModalityProducer):
             research_omitted_note=research_omitted_note,
             glossary_articles=glossary_articles,
             glossary_empty_reason=glossary_empty_reason,
+            glossary=glossary,
             research_trends=research_trends,
             pre_work=pre_work,
             encounter_mode=encounter_mode,
@@ -1177,9 +1210,21 @@ class WorkbookProducer(ModalityProducer):
         # W3 trend/hot-topic source_refs likewise.
         audited_citations = list(citations or [])
         audited_citations.extend({"source_ref": entry.source_ref} for entry in research_entries)
-        audited_citations.extend(
-            {"source_ref": article.source_ref} for article in glossary_articles
-        )
+        # 39.1: the term-keyed projection's COVERED articles ride the same G2
+        # gate (uncovered terms carry NO citation by construction — J-1). When
+        # a projection is supplied it is the single glossary authority (the
+        # ``glossary_articles`` param duplicates its covered articles on the
+        # _act path — do not double-audit).
+        if glossary is not None:
+            audited_citations.extend(
+                {"source_ref": article.source_ref}
+                for entry in glossary.entries
+                for article in entry.articles
+            )
+        else:
+            audited_citations.extend(
+                {"source_ref": article.source_ref} for article in glossary_articles
+            )
         # 37.2b (R7, non-tautological): the deep-dive G2 leg audits the
         # citation ids parsed from the RENDERED markdown (prose side) against
         # the manifest entries built from the contribution's used rows

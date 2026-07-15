@@ -1,4 +1,13 @@
-"""Hermetic RED tests for W2 encyclopedia glossary projection + compose."""
+"""Hermetic RED tests for W2 encyclopedia glossary projection + compose.
+
+39.1 pin flip (enumerated in the story diff): these pins now cover the LEGACY
+generic-packet path ONLY — retained for the frozen W2/W4 evidence scripts and
+legacy compose callers. The learner deliverable is the TERM-KEYED projection
+(``glossary_projection_from_contribution``), pinned in ``test_glossary_39_1.py``
+and ``tests/specialists/workbook_producer/test_glossary_downstream_39_1.py``;
+``test_deliverable_path_no_longer_uses_legacy_glossary_intake`` below pins the
+retirement structurally.
+"""
 
 from __future__ import annotations
 
@@ -171,11 +180,24 @@ def test_default_writer_is_encyclopedia_not_dictionary_gloss() -> None:
     # Winston honesty: capability note remains visible (not silent SME-complete).
     assert GLOSSARY_CAPABILITY_NOTE in article.body
     assert "not a human sme-reviewed" in article.body.lower()
+    # 39.1 AC-A4: the note declares tier labels as upstream machine labels.
+    assert "upstream machine labels" in GLOSSARY_CAPABILITY_NOTE
+    assert "does not verify" in GLOSSARY_CAPABILITY_NOTE
     assert "dictionary gloss" in article.body.lower()
     assert "no study findings are invented" in article.body.lower()
     assert article.source_ref.startswith("retrieval:")
     assert article.evidence_hierarchy_tier == "T4_peer_other"
     assert "scite" in article.provider_provenance
+
+
+def test_deliverable_path_no_longer_uses_legacy_glossary_intake() -> None:
+    """39.1 AC-A1: the legacy generic-packet path is REMOVED from the learner
+    deliverable — ``_act`` binds the term-keyed contribution projection and no
+    longer imports ``glossary_inputs_from_run`` at all."""
+    from app.specialists.workbook_producer import _act as wb_act
+
+    assert not hasattr(wb_act, "glossary_inputs_from_run")
+    assert hasattr(wb_act, "glossary_projection_from_contribution")
 
 
 def test_injectable_writer_replaces_default_body() -> None:
@@ -212,7 +234,9 @@ def test_missing_provenance_skipped_not_fabricated() -> None:
     # Shape-invalid rows never reach project via packet; simulate degraded packet
     # with a row missing provenance that somehow passed (empty list).
     bad["provider_provenance"] = []
-    articles, reason, losses = project_glossary_articles(_packet([bad, _entry(citation_id="cite-002")]))
+    articles, reason, losses = project_glossary_articles(
+        _packet([bad, _entry(citation_id="cite-002")])
+    )
     assert len(articles) == 1
     assert articles[0].citation_id == "cite-002"
     assert any("missing_provenance" in loss for loss in losses)

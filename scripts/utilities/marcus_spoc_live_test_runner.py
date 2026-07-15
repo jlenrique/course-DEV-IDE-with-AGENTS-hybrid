@@ -1240,6 +1240,257 @@ _PRESENTATION_SUPPORT_MD_SENTINEL = "This presentation-support workbook carries"
 _DEEP_DIVE_HEADING = "## Deep Dive"
 _DEEP_DIVE_LOSS_NOTE = "Deep Dive enrichment loss:"
 
+# --- 39.1 glossary conformance clause (same-diff bar extension, plank 5) ---
+_GLOSSARY_HEADING = "## Research Glossary"
+_GLOSSARY_AUTHORITY_ABSENT_REASON = "bold-term authority absent"
+_GLOSSARY_UNCOVERED_LINE = (
+    "Key term from the Deep Dive. No research row in this run's pool covers "
+    "it; no definition is invented."
+)
+# P2 (row d′ truthfulness): the state-accurate lean line for a term that a
+# PRESENT pool row association-covers but degradation forced uncovered.
+_GLOSSARY_UNCOVERED_DEGRADED_LINE = (
+    "Enrichment was degraded this run; a research row associates with this "
+    "term but was not composed."
+)
+_GLOSSARY_COVERAGE_RE = re.compile(
+    r"Research coverage this run: ([0-9]+) of ([0-9]+) terms\."
+)
+_GLOSSARY_ENTRY_HEADING_RE = re.compile(r"^### (.+?)\s*$", re.MULTILINE)
+_GLOSSARY_TIER_RE = re.compile(r"tier=([A-Za-z0-9_]+)")
+# The glossary entry's citation idiom (``**Provenance:** `ask-a-cite-###` …``)
+# is DISTINCT from the References-block idiom (``citation_id: `…```) so the
+# glossary can never satisfy its own row-j resolvability claim.
+_GLOSSARY_PROVENANCE_RE = re.compile(r"\*\*Provenance:\*\* `(ask-a-cite-[0-9]{3})`")
+# P4: EVERY ask-a-cite token in a covered entry's body (any idiom, any line)
+# must attribute to one of that entry's covering citation ids.
+_ASK_A_CITE_TOKEN_RE = re.compile(r"ask-a-cite-[0-9]{3}")
+_REFERENCES_HEADING = "## References"
+_CITED_ENTRIES_BLOCK_HEADING = "#### Deep Dive cited entries"
+
+
+def _md_section_body(text: str, heading: str) -> str | None:
+    """The body of an H2 section (between ``## <heading>`` and the next H2)."""
+    marker = f"\n{heading}\n"
+    start = text.find(marker)
+    if start == -1:
+        return None
+    body_start = start + len(marker)
+    rest = text[body_start:]
+    nxt = rest.find("\n## ")
+    return rest if nxt == -1 else rest[:nxt]
+
+
+def _cited_entries_block(text: str) -> str:
+    """P5 (row j): the ``#### Deep Dive cited entries`` block INSIDE the
+    ``## References`` section — the ONLY surface a covered glossary citation
+    may resolve against (never the glossary's own provenance lines, never a
+    stray line elsewhere in the document)."""
+    references = _md_section_body(text, _REFERENCES_HEADING)
+    if references is None:
+        return ""
+    marker_match = re.search(
+        rf"^{re.escape(_CITED_ENTRIES_BLOCK_HEADING)}.*$", references, re.MULTILINE
+    )
+    if marker_match is None:
+        return ""
+    block = references[marker_match.end() :]
+    nxt = block.find("\n#### ")
+    return block if nxt == -1 else block[:nxt]
+
+
+def _assert_glossary_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
+    """39.1 deliverable bar: glossary conformance, structured-artifact-first.
+
+    Authority comes from the SAME 07W.3 contribution the deep-dive clause
+    revalidates (status-dependent per AC-A3): enriched ⇒ ``result.bold_terms``;
+    non-enriched with a skeleton ⇒ ``result.request.skeleton.bold_terms`` and
+    EVERY entry must be uncovered-honest; no contribution / no result ⇒ the
+    section must be explicitly-empty carrying the literal reason
+    ``bold-term authority absent``. MD floor on presentation-support
+    deliverables: exactly ONE glossary section + ONE coverage line (P9,
+    counted, not first-match), headword-identity association EXACT (order +
+    byte-exact — rejects mangled title-derived headwords, missing entries,
+    orphan entries), reconciled coverage counts (a present authority with zero
+    terms renders the honest "0 of 0" line — P1), uncovered entries carry
+    EXACTLY the one state-accurate honest line and NOTHING else (P2/P3: the
+    degraded-association line when a present pool row associates but
+    degradation forced uncovered, the plain line otherwise; any extra body is
+    a fabricated definition ⇒ REJECT), covered entries cite only pool rows
+    that association-cover the term with the row's tier VERBATIM (negative
+    pin v) and every ask-a-cite token in a covered body attributes to one of
+    that entry's covering citation ids (P4), and every covered citation_id
+    resolves into the cited-entries block INSIDE ``## References`` (matrix
+    row j, P5). A presentation-support MD carrying the glossary section with
+    NO ``run.json`` structured authority is REJECTED (P15 — mirror the R3
+    stray-marker rule; never a silent skip). Test-harness-side only;
+    production runtime is untouched.
+    """
+    text_by_path: dict[Path, str] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        # Platform-newline normalization (write_text translates \n -> \r\n on
+        # Windows); section/heading anchors below are LF-based.
+        text_by_path[path] = text.replace("\r\n", "\n")
+    if not (run_dir / "run.json").is_file():
+        # P15: a presentation-support deliverable carrying a Research Glossary
+        # section with no structured authority behind it is a refusal —
+        # mirror the R3 stray-marker rule, never a silent skip.
+        for text in text_by_path.values():
+            if (
+                _PRESENTATION_SUPPORT_MD_SENTINEL in text
+                and _GLOSSARY_HEADING in text
+            ):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+        return
+    try:
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            load_workbook_review_contribution,
+        )
+
+        contribution = load_workbook_review_contribution(run_dir)
+    except Exception as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    result = contribution.deep_dive_enrichment if contribution is not None else None
+    for text in text_by_path.values():
+        if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+            continue  # legacy-profile deliverable: 39.1 clause does not apply
+        # P9 singularity: exactly ONE glossary section heading (counted).
+        if len(re.findall(rf"(?m)^{re.escape(_GLOSSARY_HEADING)}\s*$", text)) != 1:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        section = _md_section_body(text, _GLOSSARY_HEADING)
+        if section is None:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        if result is None:
+            # Matrix row d: explicitly-empty with the literal reason — and no
+            # entries / citations may masquerade under an absent authority.
+            if (
+                _GLOSSARY_AUTHORITY_ABSENT_REASON not in section
+                or _GLOSSARY_ENTRY_HEADING_RE.search(section)
+                or "ask-a-cite-" in section
+            ):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            continue
+        enriched = result.status == "enriched"
+        expected_terms = [
+            marker.term
+            for marker in (
+                result.bold_terms if enriched else result.request.skeleton.bold_terms
+            )
+        ]
+        rows_by_id = {row.citation_id: row for row in result.request.pool_rows}
+        headwords = _GLOSSARY_ENTRY_HEADING_RE.findall(section)
+        # Headword-identity association: EXACT (missing entry / orphan entry /
+        # mangled title-derived headword / reorder all REJECT).
+        if headwords != expected_terms:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        # P9 singularity: exactly ONE coverage line inside the section
+        # (counted, not first-match). P1: zero terms reconcile as "0 of 0".
+        coverage_matches = _GLOSSARY_COVERAGE_RE.findall(section)
+        if len(coverage_matches) != 1:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        expected_covered = {
+            term
+            for term in expected_terms
+            if enriched
+            and any(term in row.supports_bold_terms for row in rows_by_id.values())
+        }
+        # P2: a degraded (non-enriched) authority forces every term uncovered;
+        # a term a PRESENT pool row association-covers must carry the
+        # state-accurate degraded line, a genuinely-uncovered term the plain
+        # line.
+        degraded_association_terms = (
+            set()
+            if enriched
+            else {
+                term
+                for term in expected_terms
+                if any(term in row.supports_bold_terms for row in rows_by_id.values())
+            }
+        )
+        if (
+            int(coverage_matches[0][0]) != len(expected_covered)
+            or int(coverage_matches[0][1]) != len(expected_terms)
+        ):
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        # Per-entry checks over the section split by ### headings.
+        chunks = _GLOSSARY_ENTRY_HEADING_RE.split(section)
+        # chunks = [lead, term1, body1, term2, body2, ...]
+        entry_bodies = dict(zip(chunks[1::2], chunks[2::2], strict=True))
+        covered_citation_ids: set[str] = set()
+        for term, body in entry_bodies.items():
+            cited = _GLOSSARY_PROVENANCE_RE.findall(body)
+            if term not in expected_covered:
+                # J-1 lean uncovered honesty, STRUCTURAL (P3): the entry body
+                # is EXACTLY the one permitted state-accurate line — nothing
+                # else may ride an uncovered term (no citation / tier /
+                # capability note / appended fabricated definition).
+                expected_line = (
+                    _GLOSSARY_UNCOVERED_DEGRADED_LINE
+                    if term in degraded_association_terms
+                    else _GLOSSARY_UNCOVERED_LINE
+                )
+                body_lines = [line for line in body.splitlines() if line.strip()]
+                if body_lines != [expected_line]:
+                    raise RunnerRefusal(
+                        "workbook-deliverable-nonconforming-despite-completed"
+                    )
+                continue
+            if not cited:
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            for line in body.splitlines():
+                line_ids = _GLOSSARY_PROVENANCE_RE.findall(line)
+                if not line_ids:
+                    continue
+                for citation_id in line_ids:
+                    row = rows_by_id.get(citation_id)
+                    # Citation must resolve to a pool row that association-
+                    # covers THIS term.
+                    if row is None or term not in row.supports_bold_terms:
+                        raise RunnerRefusal(
+                            "workbook-deliverable-nonconforming-despite-completed"
+                        )
+                    # Tier verbatim (negative pin v): the rendered tier token
+                    # on the citation's provenance line equals the row's.
+                    tier_match = _GLOSSARY_TIER_RE.search(line)
+                    if (
+                        tier_match is None
+                        or tier_match.group(1) != row.evidence_hierarchy_tier
+                    ):
+                        raise RunnerRefusal(
+                            "workbook-deliverable-nonconforming-despite-completed"
+                        )
+                    covered_citation_ids.add(citation_id)
+            # P4 attribution sweep: EVERY ask-a-cite token anywhere in THIS
+            # covered entry's body (any idiom, provenance line or prose) must
+            # be one of THIS entry's covering citation ids validated above —
+            # another entry's id does not attribute here.
+            if not set(_ASK_A_CITE_TOKEN_RE.findall(body)) <= set(cited):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+        # Matrix row j (P5): every covered citation_id resolves into the
+        # cited-entries block INSIDE ``## References`` (AC-A9 seam) — the
+        # glossary's own provenance lines must never satisfy their own
+        # resolvability claim, and a reference line outside that block does
+        # not count.
+        reference_ids = set(_ASK_A_REFERENCE_ENTRY_RE.findall(_cited_entries_block(text)))
+        if not covered_citation_ids <= reference_ids:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
 
 def _assert_deep_dive_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
     """37.2b deliverable bar: deep-dive conformance, structured-artifact-first.
@@ -1371,6 +1622,12 @@ def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> Non
     # 37.2b: deep-dive conformance bar (structured artifacts first, then the
     # minimal MD floor) — same-diff extension per protocol plank 5.
     _assert_deep_dive_conformant_markdown(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # 39.1: glossary conformance clause (same-diff extension, plank 5) —
+    # status-dependent bold-term authority, headword-identity association,
+    # uncovered honesty, tier-verbatim, citation resolvability.
+    _assert_glossary_conformant_markdown(
         run_dir, [run_dir / md_by_stem[stem] for stem in paired]
     )
 

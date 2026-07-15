@@ -31,6 +31,7 @@ from tests.helpers.deep_dive_enrichment_37_2b import (
     install_run_json,
     make_request,
 )
+from tests.helpers.glossary_39_1 import swap_glossary_section
 
 
 def _receipt(request, *, mode: str = "live") -> DeepDiveEnrichmentExecutionReceiptV1:
@@ -73,10 +74,23 @@ def _render_conforming_md(contribution_payload: dict) -> str:
         json.dumps(contribution_payload, separators=(",", ":")), strict=True
     )
     base = RENDERED_WORKBOOK_FIXTURE.read_text(encoding="utf-8")
+    # 39.1 same-diff bar extension: the frozen fixture MD carries the PRE-39.1
+    # title-mangled glossary; a conforming deliverable now carries the
+    # term-keyed render for this contribution (the fixture file itself stays
+    # frozen/digest-pinned — the swap is in-memory).
+    base = swap_glossary_section(base, contribution)
     blocks = ["", "## Deep Dive", "", render_deep_dive_markdown(contribution), ""]
     references = render_deep_dive_reference_lines(contribution)
     if references:
-        blocks.extend(["#### Deep Dive cited entries (Ask-A, DOI)", *references, ""])
+        # 39.1 P5 (row-j placement): the cited-entries block lives INSIDE the
+        # ``## References`` section — where the producer emits it and where
+        # the glossary bar witnesses resolvability.
+        cited_block = "\n".join(
+            ["#### Deep Dive cited entries (Ask-A, DOI)", *references, ""]
+        )
+        trends_marker = "\n## Research Trends\n"
+        assert trends_marker in base
+        base = base.replace(trends_marker, f"\n{cited_block}{trends_marker}", 1)
     return base + "\n".join(blocks)
 
 
@@ -128,7 +142,13 @@ def test_legacy_stub_contribution_keeps_prior_bar_unchanged(tmp_path: Path) -> N
         "review_payload": {},
         "known_losses": ["semantic_writers_not_yet_wired"],
     }
-    _run_dir_with(tmp_path, stub, RENDERED_WORKBOOK_FIXTURE.read_text(encoding="utf-8"))
+    # 39.1: a stub contribution loads as None ⇒ the glossary must render the
+    # explicit ``bold-term authority absent`` reason (matrix row d) — the
+    # deep-dive clauses themselves stay unchanged.
+    markdown = swap_glossary_section(
+        RENDERED_WORKBOOK_FIXTURE.read_text(encoding="utf-8"), None
+    )
+    _run_dir_with(tmp_path, stub, markdown)
     _assert_bar(tmp_path)
 
 
@@ -206,8 +226,26 @@ def test_r3_run_json_absent_with_stray_marker_rejects(tmp_path: Path) -> None:
 
 
 def test_r3_run_json_absent_without_markers_passes(tmp_path: Path) -> None:
-    _emit_deliverable(tmp_path, RENDERED_WORKBOOK_FIXTURE.read_text(encoding="utf-8"))
+    """The deep-dive R3 branch itself stays permissive without markers. The MD
+    is legacy-ized in-memory because 39.1 P15 now REJECTS a presentation-
+    support deliverable whose glossary section has no run.json authority —
+    that refusal is pinned separately in test_workbook_deliverable_bar_39_1."""
+    base = RENDERED_WORKBOOK_FIXTURE.read_text(encoding="utf-8").replace(
+        runner._PRESENTATION_SUPPORT_MD_SENTINEL,
+        "This legacy companion workbook carries",
+        1,
+    )
+    _emit_deliverable(tmp_path, base)
     _assert_bar(tmp_path)
+
+
+def test_p15_run_json_absent_presentation_support_glossary_rejects(
+    tmp_path: Path,
+) -> None:
+    """39.1 P15 (mirror R3): the untouched presentation-support fixture MD —
+    marker-free but carrying a glossary section — REFUSES without run.json."""
+    _emit_deliverable(tmp_path, RENDERED_WORKBOOK_FIXTURE.read_text(encoding="utf-8"))
+    _assert_bar_rejects(tmp_path)
 
 
 def test_r3_contribution_absent_with_stray_marker_rejects(tmp_path: Path) -> None:

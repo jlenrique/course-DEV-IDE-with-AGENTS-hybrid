@@ -1,0 +1,187 @@
+{
+  "derivation": {
+    "rendered_regression_surface": "runs/8b275e5b-ed8a-4720-8217-8ddaca4c6627/exports/workbooks/u01@1.md L148-L218 (the real title-mangled glossary headwords)",
+    "source_artifact": "run.json#research_wiring@04.55 research_entries[0..4] (the five real W1 packet rows)",
+    "source_run": "runs/8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+    "synthesized_fields": {
+      "association_algorithm": "the ask-a-association.v1 literal",
+      "citation_id": "re-namespaced cite-NNN -> ask-a-cite-NNN (Ask-A citation grammar; the W1 id is not Ask-A namespaced)",
+      "evidence_body_sha256": "sha256 of the synthesized excerpt",
+      "evidence_excerpt": "synthesized from the VERBATIM title (W1 packet rows carry no retrieved excerpt)",
+      "evidence_truncated": "synthesized false",
+      "matched_ability_tokens": "synthesized empty (mirrors supports_ability_ids per the model invariant)",
+      "matched_bold_terms": "mirrors supports_bold_terms (model invariant)",
+      "schema_version": "the ask-a-knowledge-entry.v1 literal (W1 packet rows carry no schema_version)",
+      "scope_digest": "synthesized fixture scope digest sha256('glossary-39-1-fixture-scope') — no live Ask-A scope exists for the 8b275e5b run",
+      "supports_ability_ids": "synthesized empty",
+      "supports_bold_terms": "synthesized ['AI'] so the row is glossary-ELIGIBLE (the regression pin must prove eligible rows still never mangle a headword)"
+    },
+    "verbatim_fields": [
+      "source_ref",
+      "provider",
+      "source_id",
+      "title",
+      "source_hash",
+      "evidence_hierarchy_tier",
+      "peer_reviewed",
+      "provider_provenance",
+      "triangulation_status",
+      "reliability_score"
+    ]
+  },
+  "entries": [
+    {
+      "association_algorithm": "ask-a-association.v1",
+      "citation_id": "ask-a-cite-001",
+      "evidence_body_sha256": "sha256:c0bd68c34cb6cd8f282a94f6e0b71939e3b7ce0e2b56db878ad2e155ebdb802c",
+      "evidence_excerpt": "An institutional approach to support the conduct and use of health policy and systems research: The Nodal Institute in the Eastern Mediterranean Region",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "evidence_truncated": false,
+      "matched_ability_tokens": {},
+      "matched_bold_terms": [
+        "AI"
+      ],
+      "peer_reviewed": true,
+      "provider": "scite",
+      "provider_provenance": [
+        "scite"
+      ],
+      "reliability_score": 0.25,
+      "schema_version": "ask-a-knowledge-entry.v1",
+      "scope_digest": "sha256:b0bafaa597ecc51c9c982efe804bac77f5dc34d7db198be7462653692d51e51e",
+      "source_hash": "sha256:5751a64998bf2dc71a2a4f470160ff6a6c582c87d0e90fca03dcbc15a703e4b1",
+      "source_id": "10.1186/s12961-015-0032-9",
+      "source_ref": "retrieval:scite:10.1186/s12961-015-0032-9",
+      "supports_ability_ids": [],
+      "supports_bold_terms": [
+        "AI"
+      ],
+      "title": "An institutional approach to support the conduct and use of health policy and systems research: The Nodal Institute in the Eastern Mediterranean Region",
+      "triangulation_status": "single_provider"
+    },
+    {
+      "association_algorithm": "ask-a-association.v1",
+      "citation_id": "ask-a-cite-002",
+      "evidence_body_sha256": "sha256:04b7f9f0dd924e8b0b4129b2bb54444e30fc5f11e9b64d64ce1e27f6246381b7",
+      "evidence_excerpt": "Leaning into Necessary Discomforts: Striving for Clinical Excellence While Maintaining Wellness",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "evidence_truncated": false,
+      "matched_ability_tokens": {},
+      "matched_bold_terms": [
+        "AI"
+      ],
+      "peer_reviewed": true,
+      "provider": "scite",
+      "provider_provenance": [
+        "scite"
+      ],
+      "reliability_score": 0.1,
+      "schema_version": "ask-a-knowledge-entry.v1",
+      "scope_digest": "sha256:b0bafaa597ecc51c9c982efe804bac77f5dc34d7db198be7462653692d51e51e",
+      "source_hash": "sha256:fed3cfbeab1cc65e03d44c5b0b416604d3f3124ea6feaf33b48be976fd0c2be6",
+      "source_id": "10.34197/ats-scholar.2025-0033ps",
+      "source_ref": "retrieval:scite:10.34197/ats-scholar.2025-0033ps",
+      "supports_ability_ids": [],
+      "supports_bold_terms": [
+        "AI"
+      ],
+      "title": "Leaning into Necessary Discomforts: Striving for Clinical Excellence While Maintaining Wellness",
+      "triangulation_status": "single_provider"
+    },
+    {
+      "association_algorithm": "ask-a-association.v1",
+      "citation_id": "ask-a-cite-003",
+      "evidence_body_sha256": "sha256:b3a9d2e16bb92e21373c2d5f997e3ffce44c9544863a4eeb8cd8d3dd5e516edb",
+      "evidence_excerpt": "Knowledge, attitude and practices regarding use of artificial intelligence for medical writings among doctors of khyber pakhtunkhwa: a cross-sectional study",
+      "evidence_hierarchy_tier": "T1_systematic",
+      "evidence_truncated": false,
+      "matched_ability_tokens": {},
+      "matched_bold_terms": [
+        "AI"
+      ],
+      "peer_reviewed": true,
+      "provider": "scite",
+      "provider_provenance": [
+        "scite"
+      ],
+      "reliability_score": 0.1,
+      "schema_version": "ask-a-knowledge-entry.v1",
+      "scope_digest": "sha256:b0bafaa597ecc51c9c982efe804bac77f5dc34d7db198be7462653692d51e51e",
+      "source_hash": "sha256:7cf8f2e4b68490e718b61faaadb4c5a82187c09e2eab1fc19274a95a8c5f85be",
+      "source_id": "10.1097/ms9.0000000000002953",
+      "source_ref": "retrieval:scite:10.1097/ms9.0000000000002953",
+      "supports_ability_ids": [],
+      "supports_bold_terms": [
+        "AI"
+      ],
+      "title": "Knowledge, attitude and practices regarding use of artificial intelligence for medical writings among doctors of khyber pakhtunkhwa: a cross-sectional study",
+      "triangulation_status": "single_provider"
+    },
+    {
+      "association_algorithm": "ask-a-association.v1",
+      "citation_id": "ask-a-cite-004",
+      "evidence_body_sha256": "sha256:4f2fae11c5f914e355368d90f5dd477e543ea158b0d144caf786b30b58cb2f90",
+      "evidence_excerpt": "The GPS for Thinking: How AI Partners Are Reshaping Student Metacognition",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "evidence_truncated": false,
+      "matched_ability_tokens": {},
+      "matched_bold_terms": [
+        "AI"
+      ],
+      "peer_reviewed": true,
+      "provider": "scite",
+      "provider_provenance": [
+        "scite"
+      ],
+      "reliability_score": 0.1,
+      "schema_version": "ask-a-knowledge-entry.v1",
+      "scope_digest": "sha256:b0bafaa597ecc51c9c982efe804bac77f5dc34d7db198be7462653692d51e51e",
+      "source_hash": "sha256:162199bf877b9398307357640e887284f27175267b84df5ee30ac1f888986a4a",
+      "source_id": "10.21203/rs.3.rs-9799303/v1",
+      "source_ref": "retrieval:scite:10.21203/rs.3.rs-9799303/v1",
+      "supports_ability_ids": [],
+      "supports_bold_terms": [
+        "AI"
+      ],
+      "title": "The GPS for Thinking: How AI Partners Are Reshaping Student Metacognition",
+      "triangulation_status": "single_provider"
+    },
+    {
+      "association_algorithm": "ask-a-association.v1",
+      "citation_id": "ask-a-cite-005",
+      "evidence_body_sha256": "sha256:641c7e1dc0fcf6274c41585031bcc23722b7f5e1f5dfba641727e9e41c483b11",
+      "evidence_excerpt": "Developing Healthcare Leaders: Perspectives on Critical Competencies, Current Gaps, and Training Recommendations",
+      "evidence_hierarchy_tier": "T4_peer_other",
+      "evidence_truncated": false,
+      "matched_ability_tokens": {},
+      "matched_bold_terms": [
+        "AI"
+      ],
+      "peer_reviewed": true,
+      "provider": "scite",
+      "provider_provenance": [
+        "scite"
+      ],
+      "reliability_score": 0.1,
+      "schema_version": "ask-a-knowledge-entry.v1",
+      "scope_digest": "sha256:b0bafaa597ecc51c9c982efe804bac77f5dc34d7db198be7462653692d51e51e",
+      "source_hash": "sha256:6aaad6f0bfa1019d1dee1066165d8b60da2c3d8acc4ebd99b2a864a81a11d039",
+      "source_id": "10.7759/cureus.108705",
+      "source_ref": "retrieval:scite:10.7759/cureus.108705",
+      "supports_ability_ids": [],
+      "supports_bold_terms": [
+        "AI"
+      ],
+      "title": "Developing Healthcare Leaders: Perspectives on Critical Competencies, Current Gaps, and Training Recommendations",
+      "triangulation_status": "single_provider"
+    }
+  ],
+  "mangled_headwords": [
+    "institutional approach support conduct use health",
+    "Leaning Necessary Discomforts Striving Clinical Excellence",
+    "Knowledge attitude practices regarding use artificial",
+    "GPS Thinking How AI Partners Are",
+    "Developing Healthcare Leaders Perspectives Critical Competencies"
+  ],
+  "schema_version_pin": "ask-a-knowledge-entry.v1"
+}
