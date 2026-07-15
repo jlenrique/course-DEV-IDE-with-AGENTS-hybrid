@@ -1806,7 +1806,8 @@ development_status:
   epic-38-retrospective: done  # 2026-07-15 partial-by-design (38-2 backlog per ratified DAG); artifact epic-38-retro-2026-07-15.md; J-F2 adjudicated fix-induced-by-design; deferred-inventory consulted (F-E2E-4 struck; Epic-15 + g0-dispatch-live flagged ripe); next per DAG = 37-2b.
   epic-39-glossary-trends-render: backlog  # wave also carries re-homed 38-2 (below) per DAG
   38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST). RE-HOMED to the Epic-39 wave 2026-07-15 (wave-3940-kickoff-party-record; key kept verbatim; FR16 Ask-B leg + FR9 assert at the 39-wave close bar; T1 must cite the ratified Epic-38 graph-shape record).
-  39-1-glossary-downstream-render: backlog  # downstream of 37-2a bolded terms; inline-marker + separate section (39.1 T1: MD->DOCX anchor vs plain-bold)
+  39-1-glossary-downstream-render: backlog  # green-lit 2026-07-15 4/4 GREEN-WITH-AMENDMENTS (spec ready-for-dev; amendments W1/A-2,W2/M1,J-1,W3,M2,M3,J-2,A-1,A-3 folded); SPLIT ratified — Package B lifted to 39-1b (below); downstream of 37-2b bolded terms; dev-open gated on 37-2b close
+  39-1b-exercise-merge-composition: backlog  # split from 39-1 per green-light 2026-07-15; strict-serialized after 39-1; boards run A on suite-green
   39-2-trends-door-ajar: backlog
   epic-39-retrospective: optional
   epic-40-cover: backlog
