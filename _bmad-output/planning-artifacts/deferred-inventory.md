@@ -52,6 +52,7 @@
 - 🟢 **`runner-deliverable-replay-reload-equality`** (07-15 handoff defer): extend the runner verdict beyond presence+conformance to a replay/reload-equality assertion. **Reactivation trigger: next live-test-runner hardening batch.**
 - 🟢 **`g0-locator-shape-contract-at-producer`** (T4 Blind Hunter): the authority join's locator side is unvalidated free text from the enrichment card; the consumer deliberately joins by exact equality (spec W2) — pin corpus-relative posix shape at the G0 producer. **Reactivation trigger: next G0-enrichment touch.**
 - 🟢 **`slide-authority-reader-recursionerror-envelope`** (T4 Edge Case Hunter): pathological deep JSON escapes `read_slide_authority_map`'s failure funnel as RecursionError and would crash every caller. **Reactivation trigger: next slide_authority touch.**
+- 🟢 **`workbook-38-2-ask-b-rehomed`** (D1 ratified 2026-07-15, wave-3940-kickoff-party-record): Story 38-2 re-homed to the Epic-39 wave (key verbatim; FR16 Ask-B leg + FR9 assert at 39-wave close); Epic 38 CLOSED. **This is a disposition RECORD, not deferred work — listed for audit continuity only.**
 - 🟢 **`workbook-off-frozen-lesson-reproof-redesigned-producer`** (closure rider F1 consequence): the Epics 36-40 redesign is live-proven ONLY on the frozen `tejal-apc-c1-m1-p2-trends` lesson; run the redesigned producer on `tejal-c1m1-p3-opportunity` before making off-lesson claims (cross-SME stays Phase-2). **Reactivation trigger: post-close roadmap conversation / before any generalization claim.**
 
 
