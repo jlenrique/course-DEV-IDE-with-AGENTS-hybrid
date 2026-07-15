@@ -242,8 +242,13 @@ def _build_completed(
             losses.append(f"ask_a_row_credibility_excluded:{index}")
             records.append({"index": index, "disposition": "credibility_excluded", "tier": tier})
             continue
+        # Scout MED #3: match associations over the SAME window that is stored
+        # as ``evidence_excerpt`` (body[:2000]) so the shown evidence always
+        # contains the matched term. Matching over the full body would let a
+        # term past the excerpt window be recorded against an excerpt that does
+        # not actually contain it.
         abilities, terms, matched_tokens, matched_terms = match_scope_associations(
-            scope, title=str(raw.get("title") or ""), body=body
+            scope, title=str(raw.get("title") or ""), body=excerpt
         )
         if not abilities and not terms:
             losses.append(f"ask_a_row_scope_unassociated:{index}")

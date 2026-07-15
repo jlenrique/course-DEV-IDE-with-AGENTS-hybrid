@@ -129,6 +129,35 @@ class AskARetrievalScopeV1(_StrictModel):
         return self
 
 
+def derive_scite_query(demand: AskAResearchDemandV1) -> str:
+    """Derive a natural-language, topical scite search intent (B4a).
+
+    The prior implementation passed a pipe-delimited meta-string
+    (``"Ask-A cited enrichment | ability[lo-g0-001]=Understand... | bold_term=..."``)
+    verbatim as the provider ``intent``; on the real corpus that returned no
+    rows because it is not a topical query. Lean the query on the LLM-authored
+    bold-term deep-dive terms (e.g. "burnout", "moral injury", "digital front
+    door"), which carry the topical signal a scholarly index can match.
+
+    Ratified-LO ability text is intentionally *not* folded into the provider
+    query: on real corpora it is boilerplate ("Understand the material
+    introduced by src-001 ...") and would only add noise. Ability semantics
+    remain available for downstream (non-load-bearing) association matching.
+    """
+    seen: set[str] = set()
+    ordered: list[str] = []
+    for marker in demand.bold_terms:
+        term = marker.term.strip()
+        key = normalize_match_text(term)
+        if term and key not in seen:
+            seen.add(key)
+            ordered.append(term)
+    query = ", ".join(ordered)
+    if not query.strip():
+        raise ValueError("Ask-A scope query cannot be derived without bold terms")
+    return query
+
+
 def build_scope(
     demand: AskAResearchDemandV1,
     *,
@@ -137,14 +166,7 @@ def build_scope(
 ) -> AskARetrievalScopeV1:
     if demand.status != "ready":
         raise ValueError("Ask-A scope requires ready demand")
-    query = " | ".join(
-        [
-            "Ask-A cited enrichment",
-            *(f"ability[{a.ability_id}]={a.text}" for a in demand.abilities),
-            *(f"bold_term={t.term}" for t in demand.bold_terms),
-            *(f"claim_ref={ref}" for ref in demand.source_claim_refs),
-        ]
-    )
+    query = derive_scite_query(demand)
     raw: dict[str, Any] = {
         "schema_version": "ask-a-retrieval-scope.v1",
         "demand_digest": demand.demand_digest,
@@ -434,6 +456,7 @@ __all__ = [
     "ability_tokens",
     "build_scope",
     "canonical_digest",
+    "derive_scite_query",
     "evidence_for_body",
     "match_scope_associations",
     "normalize_match_text",

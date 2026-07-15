@@ -675,6 +675,131 @@ def _failed_result_disposition(
     return status, marker, losses
 
 
+def prose_bold_parity_is_valid(proses: tuple[str, ...]) -> bool:
+    """True when section proses satisfy the strict bold-parity rules.
+
+    Exposes the gate's private ``_marked_terms`` decision so an upstream live
+    adapter can distinguish a fragile bold-parity mismatch (route to the safe
+    construction) from a genuine structural defect (fail loud).
+    """
+    try:
+        _marked_terms(proses)
+    except ValueError:
+        return False
+    return True
+
+
+def deep_dive_candidate_would_author(
+    request: DeepDiveSkeletonRequest, candidate: DeepDiveWriterCandidate
+) -> bool:
+    """True when this candidate would yield an authored result under the gate."""
+    request = DeepDiveSkeletonRequest.model_validate(request.model_dump())
+    candidate = DeepDiveSkeletonWriterResult.model_validate(candidate.model_dump())
+    return candidate.status == "authored" and _gate(request, candidate).status == "pass"
+
+
+def _distribute_claims(
+    num_claims: int, num_abilities: int
+) -> tuple[tuple[int, ...], ...]:
+    """Deterministically assign claim indices to abilities, each ability non-empty.
+
+    When claims outnumber abilities the claims are split into contiguous,
+    authority-ordered, as-even-as-possible groups.  When abilities outnumber
+    claims every claim seeds its own ability and the surplus abilities re-use
+    earlier claims so every ability section carries at least one claim and every
+    declared source claim is still covered.
+    """
+    if num_claims <= 0 or num_abilities <= 0:
+        raise ValueError("distribution requires at least one claim and ability")
+    if num_claims >= num_abilities:
+        base, remainder = divmod(num_claims, num_abilities)
+        groups: list[tuple[int, ...]] = []
+        start = 0
+        for index in range(num_abilities):
+            size = base + (1 if index < remainder else 0)
+            groups.append(tuple(range(start, start + size)))
+            start += size
+        return tuple(groups)
+    surplus = [(index % num_claims,) for index in range(num_claims, num_abilities)]
+    return tuple((index,) for index in range(num_claims)) + tuple(surplus)
+
+
+def _safe_bold_wrap(text: str) -> tuple[str, str | None]:
+    """Wrap the first parity-safe source-present word in ``**bold**``.
+
+    Only a wrap that re-parses to exactly one clean term under the gate's own
+    ``_marked_terms`` rules is accepted, so the safe construction can never fail
+    on bold.  Returns the original text and ``None`` when no safe term exists.
+    """
+    for match in re.finditer(r"\b[A-Za-z]{4,}\b", text):
+        term = match.group(0)
+        wrapped = f"{text[: match.start()]}**{term}**{text[match.end() :]}"
+        try:
+            if _marked_terms((wrapped,)) == (term,):
+                return wrapped, term
+        except ValueError:
+            continue
+    return text, None
+
+
+def deterministic_deep_dive_writer(
+    request: DeepDiveSkeletonRequest,
+) -> DeepDiveWriterCandidate:
+    """Safe-construction fallback: build a gate-conforming skeleton from authority.
+
+    One skeleton claim per declared source claim, in declared authority order,
+    copying each claim's text (markdown bold markers removed) and tracing exactly
+    that claim id plus its declared spans.  Claims are distributed across the
+    declared abilities so every ability section carries at least one claim and
+    every source claim is covered; a single deterministic source-present term is
+    bolded when it is provably parity-safe.  The candidate is always authored
+    shaped: whether it *earns* the authored disposition (>=1 delta used, clean
+    read-prose) is decided by the unchanged gate in ``compose_deep_dive_skeleton``.
+    """
+    request = DeepDiveSkeletonRequest.model_validate(request.model_dump())
+    claims = request.source_claims
+    abilities = request.abilities
+    groups = _distribute_claims(len(claims), len(abilities))
+    bold_terms: list[str] = []
+    bolded = False
+    skeleton_index = 0
+    sections: list[DeepDiveAbilitySection] = []
+    for ability, claim_indices in zip(abilities, groups, strict=True):
+        section_claims: list[DeepDiveSkeletonClaim] = []
+        for claim_index in claim_indices:
+            claim = claims[claim_index]
+            stripped = claim.text.replace("**", "")
+            text = stripped if stripped.strip() else claim.text
+            if not bolded:
+                wrapped, term = _safe_bold_wrap(text)
+                if term is not None:
+                    text, bolded = wrapped, True
+                    bold_terms.append(term)
+            section_claims.append(
+                DeepDiveSkeletonClaim(
+                    skeleton_claim_id=f"skeleton-{skeleton_index}",
+                    text=text,
+                    source_claim_refs=(claim.claim_id,),
+                    source_span_refs=claim.source_span_refs,
+                )
+            )
+            skeleton_index += 1
+        sections.append(
+            DeepDiveAbilitySection(
+                ability_id=ability.ability_id,
+                prose=" ".join(item.text for item in section_claims),
+                claims=tuple(section_claims),
+            )
+        )
+    return DeepDiveSkeletonWriterResult(
+        status="authored",
+        sections=tuple(sections),
+        bold_terms=tuple(BoldTermMarker(term=term) for term in bold_terms),
+        known_losses=(),
+        marker=None,
+    )
+
+
 def offline_deep_dive_writer(
     request: DeepDiveSkeletonRequest,
 ) -> DeepDiveWriterCandidate:
@@ -748,5 +873,8 @@ __all__ = [
     "SourceClaim",
     "compose_deep_dive_skeleton",
     "deep_dive_authority_digest",
+    "deep_dive_candidate_would_author",
+    "deterministic_deep_dive_writer",
     "offline_deep_dive_writer",
+    "prose_bold_parity_is_valid",
 ]

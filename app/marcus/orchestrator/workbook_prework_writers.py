@@ -14,8 +14,12 @@ import yaml
 from pydantic import BaseModel
 
 from app.marcus.lesson_plan.deep_dive_projection import (
+    DEEP_DIVE_DEGRADED_MARKER,
     DeepDiveSkeletonRequest,
     DeepDiveSkeletonWriterResult,
+    deep_dive_candidate_would_author,
+    deterministic_deep_dive_writer,
+    prose_bold_parity_is_valid,
 )
 from app.marcus.lesson_plan.deep_dive_provider_contract import (
     DEEP_DIVE_PROVIDER_CONTRACT_MODE,
@@ -292,6 +296,70 @@ class LivePromiseTransformer(_StructuredWriter[PromiseProjection]):
         )
 
 
+def _compact_deep_dive_payload(request: DeepDiveSkeletonRequest) -> dict[str, Any]:
+    """Build a single, de-duplicated model-facing view of the Deep-Dive request.
+
+    Every source claim's text is a verbatim copy of its narration/source span
+    text, so embedding both doubles the largest field and, together with the old
+    system-prompt re-embedding, inflated the request to ~12K tokens. Here the
+    request is expressed once: spans carry the text, and a claim whose text
+    equals its single referenced span points at that span instead of repeating
+    it. The request object, gate, journal authority, and digests are untouched;
+    only the bytes the provider reads change.
+    """
+    span_text = {span.span_id: span.text for span in request.source_spans}
+    claims: list[dict[str, object]] = []
+    for claim in request.source_claims:
+        entry: dict[str, object] = {
+            "claim_id": claim.claim_id,
+            "role": claim.role,
+            "source_span_refs": list(claim.source_span_refs),
+        }
+        if (
+            len(claim.source_span_refs) == 1
+            and span_text.get(claim.source_span_refs[0]) == claim.text
+        ):
+            entry["text_same_as_span"] = claim.source_span_refs[0]
+        else:
+            entry["text"] = claim.text
+        claims.append(entry)
+    return {
+        "lesson_ref": request.lesson_ref,
+        "slide_authority_map_digest": request.slide_authority_map_digest,
+        "source_spans": [
+            {"span_id": span.span_id, "text": span.text, "source_ref": span.source_ref}
+            for span in request.source_spans
+        ],
+        "source_claims": claims,
+        "abilities": [
+            {"ability_id": ability.ability_id, "text": ability.text}
+            for ability in request.abilities
+        ],
+    }
+
+
+def _is_bold_parity_failure(normalized: Mapping[str, Any]) -> bool:
+    """True only when an authored payload fails strict bold-parity on its prose.
+
+    Isolates the fragile bold-marker mismatch from every other structural defect
+    so the safe-construction route never masks a genuine honesty failure.
+    """
+    if normalized.get("status") != "authored":
+        return False
+    sections = normalized.get("sections")
+    if not isinstance(sections, list):
+        return False
+    proses: list[str] = []
+    for section in sections:
+        if not isinstance(section, Mapping):
+            return False
+        prose = section.get("prose")
+        if not isinstance(prose, str):
+            return False
+        proses.append(prose)
+    return not prose_bold_parity_is_valid(tuple(proses))
+
+
 class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
     output_type = DeepDiveSkeletonWriterResult
     purpose = "DeepDiveSkeletonWriterResult"
@@ -310,6 +378,9 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
         self.last_provider_normalizations: tuple[str, ...] = ()
         self.last_normalized_provider_payload_digest: str | None = None
         self.last_provider_normalization_error: str | None = None
+        self.last_fallback_engaged: bool = False
+        self.last_fallback_reason: str | None = None
+        self.last_live_failed_provider_payload: dict[str, Any] | None = None
         super().__init__(
             chat_factory=chat_factory,
             max_completion_tokens=max_completion_tokens,
@@ -329,6 +400,9 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
         self.last_provider_normalizations = ()
         self.last_normalized_provider_payload_digest = None
         self.last_provider_normalization_error = None
+        self.last_fallback_engaged = False
+        self.last_fallback_reason = None
+        self.last_live_failed_provider_payload = None
         started = time.perf_counter()
         structured = self._handle.chat.with_structured_output(
             self.provider_schema, include_raw=True
@@ -339,7 +413,7 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
                 (
                     "human",
                     json.dumps(
-                        request.model_dump(mode="json"),
+                        _compact_deep_dive_payload(request),
                         sort_keys=True,
                         ensure_ascii=False,
                     ),
@@ -370,18 +444,99 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
                 raise
             self.last_provider_normalizations = records
             self.last_normalized_provider_payload_digest = _payload_digest(normalized)
-            return DeepDiveSkeletonWriterResult.model_validate_json(
-                json.dumps(
-                    normalized,
-                    sort_keys=True,
-                    separators=(",", ":"),
-                    ensure_ascii=False,
-                    allow_nan=False,
-                ),
-                strict=True,
-            )
+            try:
+                candidate = DeepDiveSkeletonWriterResult.model_validate_json(
+                    json.dumps(
+                        normalized,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                        ensure_ascii=False,
+                        allow_nan=False,
+                    ),
+                    strict=True,
+                )
+            except (TypeError, ValueError):
+                # B2: a fragile bold-parity mismatch (dense source tokens such as
+                # ``$5.2 trillion`` or ``'Digital Front Door'``) must not hard-pause
+                # 07W.1 when a deterministic safe construction is available. Genuine
+                # structural defects (unsafe markers, extra fields, coercion) keep
+                # failing loud, so honesty invariants for AUTHORED output are intact.
+                if _is_bold_parity_failure(normalized):
+                    return self._degrade_to_safe_construction(
+                        request, raw_payload, reason="bold_parity_degrade"
+                    )
+                raise
         except (TypeError, ValueError) as exc:
             raise DeepDiveProviderOutputError(str(exc)) from exc
+        if deep_dive_candidate_would_author(request, candidate):
+            return candidate
+        # B1: the live candidate validated but does not conform to the skeleton
+        # gate. Prefer a deterministic authored construction when the authority
+        # supports one; otherwise keep the live candidate's honest disposition
+        # (and its live raw evidence) unchanged.
+        fallback = deterministic_deep_dive_writer(request)
+        if deep_dive_candidate_would_author(request, fallback):
+            return self._emit_safe_construction(
+                request, raw_payload, fallback, reason="live_gate_nonauthored"
+            )
+        return candidate
+
+    def _degrade_to_safe_construction(
+        self,
+        request: DeepDiveSkeletonRequest,
+        live_failed_payload: dict[str, Any],
+        *,
+        reason: str,
+    ) -> DeepDiveSkeletonWriterResult:
+        """Route an unvalidatable provider payload to the safe construction.
+
+        Prefers the deterministic authored skeleton when the authority supports
+        one; otherwise emits a clearly typed degraded candidate rather than
+        hard-pausing 07W.1.
+        """
+        fallback = deterministic_deep_dive_writer(request)
+        if deep_dive_candidate_would_author(request, fallback):
+            return self._emit_safe_construction(
+                request, live_failed_payload, fallback, reason=reason
+            )
+        degraded = DeepDiveSkeletonWriterResult(
+            status="degraded",
+            sections=(),
+            bold_terms=(),
+            known_losses=("deep_dive_execution_failed",),
+            marker=DEEP_DIVE_DEGRADED_MARKER,
+        )
+        return self._emit_safe_construction(
+            request, live_failed_payload, degraded, reason=reason
+        )
+
+    def _emit_safe_construction(
+        self,
+        request: DeepDiveSkeletonRequest,
+        live_failed_payload: dict[str, Any] | None,
+        candidate: DeepDiveSkeletonWriterResult,
+        *,
+        reason: str,
+    ) -> DeepDiveSkeletonWriterResult:
+        """Re-anchor provider evidence onto the returned safe construction.
+
+        The provider evidence contract requires the recorded raw payload to
+        normalize back to the returned candidate. The (failed) live payload is
+        preserved on ``last_live_failed_provider_payload`` for telemetry and the
+        fallback is surfaced through ``last_fallback_*`` so callers can attribute
+        the disposition without changing the wiring's evidence invariants.
+        """
+        effective = _canonical_json_mapping(candidate.model_dump(mode="json"))
+        self.last_live_failed_provider_payload = live_failed_payload
+        self.last_raw_provider_payload = effective
+        self.last_raw_provider_payload_digest = _payload_digest(effective)
+        self.last_provider_normalizations = ()
+        self.last_normalized_provider_payload_digest = _payload_digest(effective)
+        self.last_provider_normalization_error = None
+        self.last_fallback_engaged = True
+        self.last_fallback_reason = reason
+        del request
+        return candidate
 
     def _system_prompt(self, request: BaseModel) -> str:
         assert isinstance(request, DeepDiveSkeletonRequest)
@@ -401,13 +556,14 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
             + "Prose must be exactly the space-joined claim texts. "
             "Bold only an exact term present in that claim's single source text and list bold "
             "metadata once in prose order. Preserve all numerals and negations exactly. Never "
-            "invent references, facts, headings, slide deixis, or extra abilities. Authority: "
-            "The safest compliant construction is one skeleton claim per declared source "
-            "claim, in authority order, copying its text verbatim except for wrapping one "
-            "source-present educational term in **double asterisks**; set each skeleton "
+            "invent references, facts, headings, slide deixis, or extra abilities. The user "
+            "message carries the authority packet exactly once; a source_claim with "
+            "\"text_same_as_span\" reuses the named span's text verbatim as its claim text. "
+            "Authority: The safest compliant construction is one skeleton claim per declared "
+            "source claim, in authority order, copying its text verbatim except for wrapping "
+            "one source-present educational term in **double asterisks**; set each skeleton "
             "claim's source_claim_refs to that claim ID and source_span_refs to its declared "
-            "span IDs. "
-            + json.dumps(request.model_dump(mode="json"), sort_keys=True, ensure_ascii=False)
+            "span IDs."
         )
 
 

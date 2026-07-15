@@ -37,9 +37,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
 
@@ -65,6 +66,8 @@ from app.marcus.lesson_plan.trends_projection import (
     trends_inputs_from_run,
 )
 from app.marcus.lesson_plan.workbook_enrichment import (
+    corpus_native_further_reading,
+    corpus_root_from_run,
     lesson_plan_from_run,
     load_enrichment_card,
     project_enrichment_to_workbook_inputs,
@@ -85,11 +88,20 @@ from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+from app.specialists._shared.figure_tokens import _figures
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.workbook_producer.payload_contract import CONSUMED_PAYLOAD_KEYS
 
+logger = logging.getLogger(__name__)
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CONFIG_PATH = REPO_ROOT / "app" / "specialists" / "workbook_producer" / "config.yaml"
+
+# Q1: the ``[evidence: src-NNN]`` markers Irene leaves on a plan unit's
+# ``source_refs`` — the bridge from a collateral plan-unit id (``uNN``) to the
+# enrichment source component (``src-NNN``) and thence its overlay LO
+# (``lo-g0-NNN``).
+_EVIDENCE_SRC_RE = re.compile(r"\[evidence:\s*(src-\d+)\]", re.IGNORECASE)
 
 _DEFAULT_SEGMENT_MANIFEST_RELPATH = "exports/segment-manifest-storyboard-b.yaml"
 _DEFAULT_CORPUS_RELPATH = "bundle/extracted.md"
@@ -395,6 +407,8 @@ class WorkbookInputs:
     glossary_articles: tuple[GlossaryArticleBrief, ...]
     glossary_empty_reason: str | None
     research_trends: ResearchTrendsBrief
+    research_supplements: set[str] = field(default_factory=set)
+    lo_overlay_loss: dict[str, object] | None = None
     pre_work: PreWorkBrief | None = None
     encounter_mode: Literal["recorded", "live"] = "recorded"
     render_profile: Literal["legacy", "presentation_support"] = "legacy"
@@ -465,6 +479,96 @@ def _research_inputs(
         )
     )
     return tuple(entries), manifest, reason, omitted_note
+
+
+def _unit_to_enrichment_lo_map(
+    lesson_plan: dict[str, Any] | None, card: dict[str, Any] | None
+) -> dict[str, str]:
+    """Bridge collateral plan-unit ids (``uNN``) to enrichment LO ids (``lo-g0-NNN``).
+
+    Q1 (LO-id namespace drift): the G0 enrichment overlay is keyed by
+    ``lo-g0-NNN`` (one per enumerated corpus component ``src-NNN``); Irene's
+    collateral binds sections to plan-unit ids ``uNN``. Both reference the SAME
+    source component: a plan unit's ``source_refs`` carry ``[evidence: src-NNN]``
+    markers, and each enrichment ``provisional_lo`` carries a structured
+    ``source_refs[].source_id == src-NNN``. Compose ``uNN -> src-NNN ->
+    lo-g0-NNN`` so ``overlay_lo.get("uNN")`` resolves instead of silently
+    degrading. Returns an empty map when either side is absent — backward
+    compatible: collateral bound DIRECTLY to ``lo-g0-NNN`` still resolves by the
+    unmapped direct key.
+    """
+    if not isinstance(lesson_plan, dict) or not isinstance(card, dict):
+        return {}
+    # src-NNN -> lo-g0-NNN (structured; the first LO binding a src wins, stable).
+    src_to_lo: dict[str, str] = {}
+    for lo in card.get("provisional_los") or []:
+        if not isinstance(lo, dict):
+            continue
+        objective_id = str(lo.get("objective_id") or "")
+        if not objective_id:
+            continue
+        for ref in lo.get("source_refs") or []:
+            if isinstance(ref, dict):
+                source_id = str(ref.get("source_id") or "")
+                if source_id and source_id not in src_to_lo:
+                    src_to_lo[source_id] = objective_id
+    if not src_to_lo:
+        return {}
+    # uNN -> lo-g0-NNN via the plan unit's [evidence: src-NNN] markers.
+    unit_to_lo: dict[str, str] = {}
+    for unit in lesson_plan.get("plan_units") or []:
+        if not isinstance(unit, dict):
+            continue
+        unit_id = str(unit.get("unit_id") or "")
+        if not unit_id or unit_id in unit_to_lo:
+            continue
+        for raw_ref in unit.get("source_refs") or []:
+            matched = False
+            for match in _EVIDENCE_SRC_RE.finditer(str(raw_ref)):
+                lo_id = src_to_lo.get(match.group(1))
+                if lo_id is not None:
+                    unit_to_lo[unit_id] = lo_id
+                    matched = True
+                    break
+            if matched:
+                break
+    return unit_to_lo
+
+
+def _research_figure_supplements(
+    research_entries: tuple[ResearchEntry, ...],
+    further_reading: tuple[FurtherReadingEntry, ...],
+    glossary_articles: tuple[GlossaryArticleBrief, ...],
+    research_trends: ResearchTrendsBrief,
+) -> set[str]:
+    """Normalized figure tokens sourced from the run's research leg (B5).
+
+    The G1 numeric gate audits the FULL workbook body (incl. the W2 glossary, W3
+    trends, and S6 research references) against corpus+narration only. A numeral
+    that legitimately originates from the research leg (a study title's ``$7``, a
+    trend claim's ``30%``) is otherwise flagged ``unsourced_numeric`` and FAILS
+    G1 -> a gate-failed pause. Declare those figures as research supplements so
+    they clear without inflating the source text. Symbol-only (the named
+    word-form gap remains). Tokens are the frozen-neck NORMALIZED forms
+    (``percent:30`` / ``money-trillion:4.5``); ``_normalize_figure`` is idempotent
+    on them, so they match the audit's narration key space verbatim.
+    """
+    parts: list[str] = []
+    for entry in research_entries:
+        parts.append(entry.title or "")
+    for reading in further_reading:
+        parts.append(reading.title or "")
+        parts.append(reading.locator or "")
+    for article in glossary_articles:
+        parts.append(" ".join(filter(None, (article.term, article.headline, article.body))))
+    if research_trends is not None:
+        for claim in research_trends.trends:
+            parts.append(claim.claim_text or "")
+            parts.append(claim.title or "")
+        for topic in research_trends.hot_topics:
+            parts.append(topic.topic or "")
+            parts.append(topic.rationale or "")
+    return _figures("\n".join(parts))
 
 
 def build_workbook_inputs(
@@ -542,6 +646,38 @@ def build_workbook_inputs(
         source_ref_manifest = dict(projection.source_ref_manifest)
         answer_keys = dict(projection.answer_keys)
 
+    # Q1: bridge collateral plan-unit ids (uNN) to enrichment LO ids (lo-g0-NNN)
+    # so the overlay (keyed lo-g0-NNN) resolves against a uNN-bound section. Empty
+    # when either side is absent OR the collateral binds lo-g0 ids directly (then
+    # the unmapped direct-key lookup already resolves).
+    unit_to_lo = _unit_to_enrichment_lo_map(lesson_plan, card)
+
+    def _resolve_overlay_key(objective_id: str) -> str | None:
+        """The overlay key for a bound objective: direct id, else the uNN bridge."""
+        if objective_id in overlay_lo or objective_id in exercises_by_objective:
+            return objective_id
+        return unit_to_lo.get(objective_id)
+
+    # Q2: populate the S6 References channel from corpus-native reference sources
+    # (references/*.md + per-slide **References:** lines) when the run's corpus
+    # carries them. Additive to the enrichment further-reading; de-duplicated by
+    # source_ref; folded into the G2 citation manifest so the rendered references
+    # pass the citation gate. A run whose corpus root is absent (e.g. a fixture)
+    # contributes nothing — backward compatible.
+    corpus_root = corpus_root_from_run(run_dir)
+    if corpus_root is not None:
+        existing_refs = {entry.source_ref for entry in further_reading}
+        corpus_refs = tuple(
+            entry
+            for entry in corpus_native_further_reading(corpus_root)
+            if entry.source_ref not in existing_refs
+        )
+        if corpus_refs:
+            further_reading = further_reading + corpus_refs
+            for entry in corpus_refs:
+                source_ref_manifest.setdefault(entry.source_ref, _hash(entry.title))
+                citations.append({"source_ref": entry.source_ref})
+
     # Sections: collateral is authoritative; overlay exercises (when present)
     # resolve into their HOME section by learning_objective_id.
     #
@@ -557,10 +693,14 @@ def build_workbook_inputs(
     for sec in blueprint.sections:
         oid = sec.learning_objective_id
         bound_objectives.append(oid)
-        overlay_ex = exercises_by_objective.get(oid)
-        if overlay_ex and oid not in overlay_attached:
+        overlay_key = _resolve_overlay_key(oid)
+        overlay_ex = exercises_by_objective.get(overlay_key) if overlay_key else None
+        # Dedup by the OVERLAY key (not the section id): two sections resolving the
+        # SAME overlay LO must not both attach the same exercise objects (that
+        # duplicates exercise_id and crashes assert_unique_collateral_ids).
+        if overlay_ex and overlay_key not in overlay_attached:
             sec = sec.model_copy(update={"exercises": list(overlay_ex)})
-            overlay_attached.add(oid)
+            overlay_attached.add(overlay_key)
         sections.append(sec)
     # Remediation item-6: carry the blueprint's kind through the rebuild (single
     # value today; explicit so a future closed-set growth cannot silently revert).
@@ -570,18 +710,59 @@ def build_workbook_inputs(
     # phantom). Statement/Bloom from the overlay; a bound objective with no
     # overlay resolution degrades with recorded in-workbook provenance (D2).
     distinct_objectives = list(dict.fromkeys(bound_objectives))
-    learning_objectives = tuple(
-        overlay_lo.get(oid)
-        or LearningObjectiveBrief(
-            objective_id=oid,
-            bloom_level=_DEFAULT_LO_BLOOM,
-            statement=(
-                f"(objective statement unresolved for `{oid}` — no enrichment "
-                "overlay resolved this objective on this run)"
-            ),
+    resolved_los: list[LearningObjectiveBrief] = []
+    unresolved_overlay: list[str] = []
+    for oid in distinct_objectives:
+        overlay_key = _resolve_overlay_key(oid)
+        brief = overlay_lo.get(overlay_key) if overlay_key else None
+        if brief is not None:
+            # Re-key the resolved overlay brief onto the collateral's BOUND
+            # objective id (uNN): the S1 no-orphan/no-phantom binding assertion
+            # compares the brief's objective_id against the section bindings, so a
+            # brief still keyed lo-g0-NNN would read as an orphan+phantom pair.
+            if brief.objective_id != oid:
+                brief = LearningObjectiveBrief(
+                    objective_id=oid,
+                    bloom_level=brief.bloom_level,
+                    statement=brief.statement,
+                )
+            resolved_los.append(brief)
+        else:
+            unresolved_overlay.append(oid)
+            resolved_los.append(
+                LearningObjectiveBrief(
+                    objective_id=oid,
+                    bloom_level=_DEFAULT_LO_BLOOM,
+                    statement=(
+                        f"(objective statement unresolved for `{oid}` — no enrichment "
+                        "overlay resolved this objective on this run)"
+                    ),
+                )
+            )
+    learning_objectives = tuple(resolved_los)
+
+    # Q1: RECORD the unresolved-overlay count as a visible loss (never a silent
+    # degrade). Only meaningful when an enrichment card was present (an overlay
+    # was expected); a card-less run degrades every objective by design.
+    lo_overlay_loss: dict[str, object] | None = None
+    if card is not None and unresolved_overlay:
+        logger.warning(
+            "workbook LO overlay: %d of %d bound objective(s) resolved no "
+            "enrichment overlay (unresolved: %s)",
+            len(unresolved_overlay),
+            len(distinct_objectives),
+            unresolved_overlay,
         )
-        for oid in distinct_objectives
-    )
+        lo_overlay_loss = {
+            "unresolved_count": len(unresolved_overlay),
+            "bound_count": len(distinct_objectives),
+            "unresolved_objectives": list(unresolved_overlay),
+            "note": (
+                f"{len(unresolved_overlay)} of {len(distinct_objectives)} learning "
+                "objective(s) resolved no enrichment overlay (statement/Bloom "
+                f"degraded to placeholder): {', '.join(unresolved_overlay)}"
+            ),
+        }
 
     # D4: research entries + their G2 manifest slice (folded into the same
     # manifest; produce() adds the research citations to the G2 audit).
@@ -627,6 +808,12 @@ def build_workbook_inputs(
 
     brief = validated_brief
 
+    # B5: declare research-leg figures so G1 does not flag legitimate research
+    # numerals (W2 glossary / W3 trends / S6 references) as unsourced.
+    research_supplements = _research_figure_supplements(
+        research_entries, further_reading, glossary_articles, research_trends
+    )
+
     return WorkbookInputs(
         plan_unit=plan_unit,
         context=context,
@@ -645,6 +832,8 @@ def build_workbook_inputs(
         glossary_articles=glossary_articles,
         glossary_empty_reason=glossary_empty_reason,
         research_trends=research_trends,
+        research_supplements=research_supplements,
+        lo_overlay_loss=lo_overlay_loss,
         pre_work=brief.payload.pre_work if brief else None,
         encounter_mode=brief.payload.encounter_mode if brief else "recorded",
         render_profile="presentation_support" if brief else "legacy",
@@ -709,9 +898,23 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
     )
     if inputs is None:
         return None
-    output_root = (
-        payload.get("output_root") or config.get("output_root") or DEFAULT_WORKBOOK_OUTPUT_ROOT
-    )
+    # B6: default the deliverable to a TRIAL-SCOPED path under ``<run_dir>/exports``
+    # so the governed run inventory (which scans ``runs/<trial>``) captures + binds
+    # the MD/DOCX to this trial, instead of the shared, unbindable, overwrite-prone
+    # ``_bmad-output/artifacts/workbooks`` root. Precedence: an explicit payload
+    # override wins (orchestrator/replay intent); an operator's genuinely
+    # reconfigured ``config.output_root`` (i.e. NOT the shipped legacy default) is
+    # honored; otherwise the trial-scoped path is the default. The shipped config
+    # value equal to ``DEFAULT_WORKBOOK_OUTPUT_ROOT`` is treated as "not
+    # reconfigured" so the legacy shared root no longer forces a non-trial path.
+    explicit_output_root = payload.get("output_root")
+    configured_output_root = config.get("output_root")
+    if explicit_output_root:
+        output_root: str = str(explicit_output_root)
+    elif configured_output_root and configured_output_root != DEFAULT_WORKBOOK_OUTPUT_ROOT:
+        output_root = str(configured_output_root)
+    else:
+        output_root = str(run_dir / "exports" / "workbooks")
     producer = WorkbookProducer(output_root=output_root)
     try:
         return producer.produce(
@@ -732,6 +935,8 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             glossary_articles=inputs.glossary_articles,
             glossary_empty_reason=inputs.glossary_empty_reason,
             research_trends=inputs.research_trends,
+            research_supplements=inputs.research_supplements,
+            lo_overlay_loss=inputs.lo_overlay_loss,
             pre_work=inputs.pre_work,
             encounter_mode=inputs.encounter_mode,
             render_profile=inputs.render_profile,
@@ -848,6 +1053,7 @@ def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
         "gamma_reuse_justified_by": sidecar.gamma_reuse_justified_by,
         "workbook_brief": sidecar.workbook_brief_receipt,
         "depth_receipt": sidecar.depth_receipt,
+        "lo_overlay_loss": sidecar.lo_overlay_loss,
     }
 
 

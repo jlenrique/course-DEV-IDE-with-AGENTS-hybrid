@@ -82,7 +82,10 @@ def test_scope_preserves_authority_order_and_binds_complete_query() -> None:
     scope = _scope()
     assert [item.ability_id for item in scope.abilities] == ["lo-2", "lo-1"]
     assert scope.bold_terms == ("Model Drift", "Automation Bias")
-    assert all(value in scope.query for value in ("lo-2", "lo-1", "Model Drift", "Automation Bias"))
+    # B4a: query is a topical bold-term intent, not the pipe-delimited meta-string.
+    assert all(term in scope.query for term in ("Model Drift", "Automation Bias"))
+    assert "|" not in scope.query and "ability[" not in scope.query
+    assert "lo-2" not in scope.query and "lo-1" not in scope.query
     assert scope.query_digest == canonical_digest(scope.query)
     assert scope.scope_digest == canonical_digest(
         scope.model_dump(mode="json", exclude={"scope_digest"})

@@ -98,6 +98,8 @@ class DeepDiveExecutionReceiptV1(_Strict):
     output_tokens: int | None = Field(default=None, ge=0)
     cost_usd: float | None = Field(default=None, ge=0)
     cost_unavailable_reason: str | None = None
+    fallback_engaged: bool = False
+    fallback_reason: str | None = None
 
     @model_validator(mode="after")
     def _cost_posture(self) -> DeepDiveExecutionReceiptV1:
@@ -110,6 +112,19 @@ class DeepDiveExecutionReceiptV1(_Strict):
             and not self.cost_unavailable_reason
         ):
             raise ValueError("live writer call without cost requires an explicit reason")
+        return self
+
+    @model_validator(mode="after")
+    def _fallback_posture(self) -> DeepDiveExecutionReceiptV1:
+        # The deterministic safe-construction fallback must never be silent:
+        # when it engaged, the receipt carries an explicit reason; when it did
+        # not, no reason may masquerade as one. This makes the fallback flag the
+        # authoritative provenance signal that reconciles the calls=1/token-cost
+        # evidence against the synthetic (fallback-authored) raw payload.
+        if self.fallback_engaged and not self.fallback_reason:
+            raise ValueError("engaged Deep Dive fallback requires an explicit reason")
+        if not self.fallback_engaged and self.fallback_reason is not None:
+            raise ValueError("Deep Dive fallback reason requires fallback_engaged")
         return self
 
 

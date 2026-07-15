@@ -40,8 +40,10 @@ Discipline notes:
 from __future__ import annotations
 
 import re
+import zipfile
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final, Literal
 
@@ -65,6 +67,21 @@ if TYPE_CHECKING:
 
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 DEFAULT_WORKBOOK_OUTPUT_ROOT: Final[str] = "_bmad-output/artifacts/workbooks"
+
+# B8 (DOCX determinism): python-docx stamps wall-clock mtimes into the OPC zip
+# members and writes ``dcterms:created/modified`` into ``docProps/core.xml``, so
+# two renders of the SAME model produce different bytes (breaking reload-equality
+# once the deliverable is captured trial-scoped). Pin both to a fixed epoch (the
+# zip format's 1980-01-01 minimum) so the rendered DOCX is byte-deterministic.
+_DETERMINISTIC_DOCX_ZIP_DATETIME: Final[tuple[int, int, int, int, int, int]] = (
+    1980,
+    1,
+    1,
+    0,
+    0,
+    0,
+)
+_DETERMINISTIC_DOCX_CORE_DT: Final[datetime] = datetime(1980, 1, 1, tzinfo=UTC)
 
 # Prose-delegation review marker — the honesty guard that "transcript backbone"
 # did NOT collapse into "workbook text" (mirrors BlueprintProducer's
@@ -501,6 +518,7 @@ def compose_workbook(
     pre_work: PreWorkBrief | None = None,
     encounter_mode: Literal["recorded", "live"] = "recorded",
     render_profile: Literal["legacy", "presentation_support"] = "legacy",
+    lo_overlay_loss_note: str | None = None,
 ) -> _ComposedDoc:
     """Compose the canonical workbook model from the spec + transcript backbone.
 
@@ -610,6 +628,11 @@ def compose_workbook(
                 continue
             seen.add(oid)
             objective_lines.append(f"- `{oid}` (served by section `{section.section_id}`)")
+    # Q1: a visible enrichment-overlay loss note (degrade-with-record; never a
+    # silent placeholder swap). Numeral-free + outside the AC-8 narrative blocks.
+    if lo_overlay_loss_note:
+        objective_lines.append("")
+        objective_lines.append(f"> _Enrichment overlay loss: {lo_overlay_loss_note}_")
     doc.blocks.append((2, "Learning Objectives", "\n".join(objective_lines).rstrip()))
 
     # --- S2 Transcript-narrative (the prose-delegation seam + segment backbone) ---
@@ -847,8 +870,39 @@ def render_docx_from_model(doc: _ComposedDoc, output_path: Path) -> None:
         document.add_paragraph(f"Figure — {caption} (source_ref: {source_ref})")
     document.add_heading("Human Review Checkpoint", level=2)
     _render_docx_body(document, IRENE_REVIEW_MARKER)
+    # B8: pin the wall-clock core-property timestamps BEFORE save (removes the
+    # volatile ``dcterms:created/modified`` from ``docProps/core.xml``).
+    document.core_properties.created = _DETERMINISTIC_DOCX_CORE_DT
+    document.core_properties.modified = _DETERMINISTIC_DOCX_CORE_DT
     output_path.parent.mkdir(parents=True, exist_ok=True)
     document.save(str(output_path))
+    # B8: pin the OPC zip member mtimes AFTER save (python-docx stamps wall-clock
+    # into each member via ``zipfile.writestr``) so the bytes are deterministic.
+    _pin_docx_zip_determinism(output_path)
+
+
+def _pin_docx_zip_determinism(path: Path) -> None:
+    """Rewrite the DOCX zip with a fixed member timestamp for byte-determinism.
+
+    python-docx writes each OPC part with ``zipfile.writestr``, which stamps the
+    current wall-clock into the member ``date_time``; two renders of the same
+    model therefore differ byte-for-byte. Rewrite every member with the pinned
+    epoch (preserving member order, names, external attrs, and DEFLATE
+    compression) so reload-equality holds once the deliverable is captured.
+    """
+    with zipfile.ZipFile(path, "r") as zin:
+        members = [
+            (info.filename, info.external_attr, zin.read(info.filename))
+            for info in zin.infolist()
+        ]
+    tmp_path = path.with_name(path.name + ".det.tmp")
+    with zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zout:
+        for filename, external_attr, data in members:
+            member = zipfile.ZipInfo(filename, date_time=_DETERMINISTIC_DOCX_ZIP_DATETIME)
+            member.compress_type = zipfile.ZIP_DEFLATED
+            member.external_attr = external_attr
+            zout.writestr(member, data)
+    tmp_path.replace(path)
 
 
 def _render_docx_body(document: Document, body: str) -> None:
@@ -933,6 +987,10 @@ class WorkbookSidecar:
     deck_no_regression_eligible: bool
     workbook_brief_receipt: dict[str, object] | None = None
     depth_receipt: dict[str, str] | None = None
+    # Q1: visible record of learning objectives whose enrichment overlay did NOT
+    # resolve (statement/Bloom degraded to a placeholder). ``None`` when every
+    # bound objective resolved (no loss to record).
+    lo_overlay_loss: dict[str, object] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -982,6 +1040,7 @@ class WorkbookProducer(ModalityProducer):
         encounter_mode: Literal["recorded", "live"] = "recorded",
         render_profile: Literal["legacy", "presentation_support"] = "legacy",
         workbook_brief_receipt: dict[str, object] | None = None,
+        lo_overlay_loss: dict[str, object] | None = None,
     ) -> WorkbookSidecar:
         """Produce the workbook artifacts on the frozen deck inputs.
 
@@ -1015,6 +1074,9 @@ class WorkbookProducer(ModalityProducer):
             pre_work=pre_work,
             encounter_mode=encounter_mode,
             render_profile=render_profile,
+            lo_overlay_loss_note=(
+                str(lo_overlay_loss.get("note")) if lo_overlay_loss else None
+            ),
         )
         markdown = render_markdown(doc)
 
@@ -1137,6 +1199,7 @@ class WorkbookProducer(ModalityProducer):
                 if render_profile == "presentation_support"
                 else None
             ),
+            lo_overlay_loss=lo_overlay_loss,
         )
 
     @staticmethod

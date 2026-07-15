@@ -524,6 +524,12 @@ def _deep_dive_receipt(
         and not cost_unavailable_reason
     ):
         cost_unavailable_reason = "injected_writer_supplied_no_cost_evidence"
+    # Surface the deterministic safe-construction fallback so post-run evidence
+    # states unambiguously whether the live model authored the skeleton or the
+    # fallback substituted a construction it never produced. The writer resets
+    # these to False/None on every call, so a stale flag cannot leak forward.
+    fallback_engaged = bool(getattr(writer, "last_fallback_engaged", False))
+    fallback_reason = getattr(writer, "last_fallback_reason", None) if fallback_engaged else None
     return DeepDiveExecutionReceiptV1(
         mode=context.writer_execution_mode,
         calls=calls,
@@ -541,6 +547,8 @@ def _deep_dive_receipt(
         output_tokens=getattr(writer, "last_output_tokens", None),
         cost_usd=cost_usd,
         cost_unavailable_reason=cost_unavailable_reason,
+        fallback_engaged=fallback_engaged,
+        fallback_reason=fallback_reason,
     )
 
 
@@ -854,6 +862,21 @@ def _compose_deep_dive(
         "provider_receipt": receipt.model_dump(mode="json"),
         **provider_evidence,
     }
+    # Label the record fallback-derived so a reviewer cannot mistake a
+    # deterministic safe construction for a genuine live-authored result, and
+    # retain the REAL failed live payload rather than discarding it — the raw
+    # provider payload above is the synthetic normalize-target, not what the
+    # model produced.
+    if receipt.fallback_engaged:
+        completed["fallback_engaged"] = True
+        completed["fallback_reason"] = receipt.fallback_reason
+        failed_live_payload = getattr(
+            context.deep_dive_writer, "last_live_failed_provider_payload", None
+        )
+        if failed_live_payload is not None:
+            completed["fallback_live_failed_payload"] = json.loads(
+                _canonical_json(failed_live_payload)
+            )
     try:
         _atomic_json(journal_path, completed)
     except (OSError, ValueError) as exc:
@@ -1348,6 +1371,21 @@ def _reconcile_activated_artifact(
             "activated Deep Dive reconciliation requires course source authority",
             tag="workbook-brief.deep-dive-reconciliation-failed",
         )
+    # B7 (zero-provider-call replay safety): in LIVE mode, assert the completed
+    # Deep Dive journal exists BEFORE the writer re-entry below. If the skeleton is
+    # present but the journal was lost, ``_compose_deep_dive`` would call the
+    # provider on replay (spending + breaking determinism). Fail loud with the same
+    # ``deep-dive-split-brain`` contract the sibling paths use (~1500-1507 /
+    # ~1604-1609). Offline-stub replay is deterministic and calls no provider (and
+    # writes no journal), so the guard is live-mode only.
+    if runtime_context.writer_execution_mode == "live":
+        journal_path = runtime_context.run_dir / DEEP_DIVE_JOURNAL_FILENAME
+        if not _journal_exists(runtime_context.run_dir, journal_path):
+            raise SpecialistDispatchError(
+                "activated Deep Dive reconciliation requires a completed journal "
+                "before writer re-entry",
+                tag="workbook-brief.deep-dive-split-brain",
+            )
     try:
         with pass1_generation_lock(
             runtime_context.run_dir

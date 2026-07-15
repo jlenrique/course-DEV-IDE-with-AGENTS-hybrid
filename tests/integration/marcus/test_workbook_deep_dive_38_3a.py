@@ -21,6 +21,7 @@ from app.marcus.lesson_plan.deep_dive_projection import (
     NarrationSourceSpan,
     SourceClaim,
     compose_deep_dive_skeleton,
+    deterministic_deep_dive_writer,
 )
 from app.marcus.lesson_plan.prework_artifact import (
     DeepDiveExecutionReceiptV1,
@@ -2163,3 +2164,161 @@ def test_activated_summary_mutations_fail_closed(
         workbook_wiring.run_workbook_band_node(
             node_id="07W.1", production_envelope=planted, runtime_context=context
         )
+
+
+# --- MUST-FIX: deterministic safe-construction fallback must be FAIL-LOUD -----
+# The live GPT-5 deep-dive writer degrades to a deterministic skeleton on a
+# valid-but-non-conforming candidate (B1) or a bold-parity slip (B2). The writer
+# re-anchors provider evidence onto the safe construction (so the wiring's
+# ``normalize(raw)==candidate`` invariant holds) but records the substitution on
+# ``last_fallback_*`` and retains the real failed live payload on
+# ``last_live_failed_provider_payload``. These tests pin that the WIRING reads
+# those attributes into the completed journal record AND the execution receipt,
+# so post-run evidence cannot misrepresent a skeleton the model never produced as
+# a genuine live-authored result.
+
+
+def _fallback_probe_request() -> DeepDiveSkeletonRequest:
+    return DeepDiveSkeletonRequest(
+        lesson_ref="exports/segment-manifest.yaml",
+        source_spans=(
+            NarrationSourceSpan(
+                span_id="vo:0",
+                text="Administrative structural waste costs the system dearly.",
+                source_ref="exports/segment-manifest.yaml#segments/seg-0/narration_text",
+            ),
+            NarrationSourceSpan(
+                span_id="delta:0",
+                text="Speaker note: no clinician should face burnout without design support.",
+                source_ref="slides/slide-2.md#Narration (Speaker Notes)",
+            ),
+        ),
+        source_claims=(
+            SourceClaim(
+                claim_id="claim:vo:0",
+                text="Administrative structural waste costs the system dearly.",
+                source_span_refs=("vo:0",),
+                role="vo",
+            ),
+            SourceClaim(
+                claim_id="claim:delta:0",
+                text="Speaker note: no clinician should face burnout without design support.",
+                source_span_refs=("delta:0",),
+                role="source_supported_delta",
+            ),
+        ),
+        abilities=(
+            DeepDiveAbilityInput(ability_id="LO-1", text="I can choose a first move."),
+        ),
+        slide_authority_map_digest="sha256:" + "9" * 64,
+    )
+
+
+class _FallbackDeepWriter(DeepWriter):
+    """Reproduce ``LiveDeepDiveWriter._emit_safe_construction`` post-conditions.
+
+    The real writer re-anchors provider evidence onto a deterministic safe
+    construction while recording the failed live payload and the substitution.
+    Emulating that contract keeps this wiring test deterministic (no live model)
+    while faithfully exercising the attributes the wiring must read.
+    """
+
+    def __init__(self, *, reason: str, failed_payload: dict) -> None:
+        super().__init__()
+        self._reason = reason
+        self._failed_payload = failed_payload
+
+    def __call__(self, request):
+        self.calls_made += 1
+        candidate = deterministic_deep_dive_writer(request)
+        effective = json.loads(
+            json.dumps(candidate.model_dump(mode="json"), sort_keys=True)
+        )
+        self.last_raw_provider_payload = effective
+        self.last_provider_normalizations = ()
+        self.last_normalized_provider_payload_digest = None
+        self.last_provider_normalization_error = None
+        self.last_live_failed_provider_payload = self._failed_payload
+        self.last_fallback_engaged = True
+        self.last_fallback_reason = self._reason
+        return candidate
+
+
+def test_engaged_fallback_receipt_and_journal_are_fail_loud_not_silent(
+    tmp_path: Path,
+) -> None:
+    request = _fallback_probe_request()
+    failed_live_payload = {
+        "status": "degraded",
+        "sections": [],
+        "bold_terms": [],
+        "known_losses": ["deep_dive_writer_unavailable"],
+        "marker": "deep_dive_skeleton_degraded",
+    }
+    writer = _FallbackDeepWriter(
+        reason="live_gate_nonauthored", failed_payload=failed_live_payload
+    )
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        deep_dive_writer=writer,
+    )
+
+    result, receipt = workbook_wiring._compose_deep_dive(
+        request=request, context=context, trial_id=uuid4()
+    )
+
+    # The live model authored nothing; the deterministic fallback did. The
+    # receipt reconciles calls=1 + real token cost against the synthetic raw
+    # payload by making the fallback flag the authoritative provenance signal.
+    assert result.status == "authored"
+    assert receipt.calls == 1
+    assert receipt.cost_usd == 0.001
+    assert receipt.fallback_engaged is True
+    assert receipt.fallback_reason == "live_gate_nonauthored"
+
+    journal = json.loads(
+        (tmp_path / "workbook-deep-dive-call.v1.json").read_text("utf-8")
+    )
+    assert journal["fallback_engaged"] is True
+    assert journal["fallback_reason"] == "live_gate_nonauthored"
+    # The REAL failed live payload is retained (provenance not misrepresented),
+    # distinct from the synthetic normalize-target recorded as raw evidence.
+    assert journal["fallback_live_failed_payload"] == failed_live_payload
+    assert journal["raw_provider_payload"] != failed_live_payload
+    assert journal["provider_receipt"]["fallback_engaged"] is True
+    assert journal["provider_receipt"]["fallback_reason"] == "live_gate_nonauthored"
+
+
+def test_genuine_live_authored_receipt_and_journal_carry_no_fallback_flag(
+    tmp_path: Path,
+) -> None:
+    request = _fallback_probe_request()
+    writer = AuthoredDeepWriter()
+    context = WorkbookBriefRuntimeContext(
+        run_dir=tmp_path,
+        course_source_root=ROOT,
+        encounter_mode="recorded",
+        context_origin="new_start",
+        writer_execution_mode="live",
+        deep_dive_writer=writer,
+    )
+
+    result, receipt = workbook_wiring._compose_deep_dive(
+        request=request, context=context, trial_id=uuid4()
+    )
+
+    assert result.status == "authored"
+    assert receipt.fallback_engaged is False
+    assert receipt.fallback_reason is None
+    journal = json.loads(
+        (tmp_path / "workbook-deep-dive-call.v1.json").read_text("utf-8")
+    )
+    assert "fallback_engaged" not in journal
+    assert "fallback_reason" not in journal
+    assert "fallback_live_failed_payload" not in journal
+    assert journal["provider_receipt"]["fallback_engaged"] is False
+    assert journal["provider_receipt"]["fallback_reason"] is None

@@ -40,6 +40,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -475,12 +476,137 @@ def research_entries_from_run(run_dir: Path) -> list[dict[str, Any]]:
     return list(entries) if isinstance(entries, list) else []
 
 
+# ---------------------------------------------------------------------------
+# Q2 — corpus-native references (references/*.md + per-slide References lines)
+# ---------------------------------------------------------------------------
+#
+# The enrichment further-reading channel yields () when the run's
+# ``citation_resolutions`` are empty, but a references-bearing corpus still
+# carries real references: standalone ``references/*.md`` files (title + URL) and
+# per-slide ``**References:**`` lines (name-only). Read them so the S6 References
+# channel is populated from corpus-native data instead of rendering empty. No
+# fabricated URLs — a name-only reference renders WITHOUT a locator.
+
+_URL_RE = re.compile(r"https?://[^\s)\]]+")
+_SLIDE_REF_RE = re.compile(r"\*\*References:\*\*\s*(.+)")
+_EVIDENCE_TAG_RE = re.compile(r"\[evidence:[^\]]*\]")
+_HEADING_RE = re.compile(r"^\s*#+\s*(.+?)\s*#*\s*$")
+_REF_SLUG_RE = re.compile(r"[^a-z0-9]+")
+
+
+def _first_heading(text: str) -> str | None:
+    for line in text.splitlines():
+        match = _HEADING_RE.match(line)
+        if match:
+            return match.group(1).replace("*", "").strip()
+    return None
+
+
+def _ref_slug(text: str) -> str:
+    return _REF_SLUG_RE.sub("-", text.lower()).strip("-")[:64] or "ref"
+
+
+def corpus_root_from_run(run_dir: Path) -> Path | None:
+    """Read the trial ``corpus_path`` off ``run.json`` -> an existing course root.
+
+    READ-ONLY. Returns ``None`` when the envelope is absent/corrupt or the
+    recorded corpus path does not exist on disk (backward-compatible: a fixture
+    run whose corpus root is absent simply projects no corpus-native references).
+    """
+    artifact = run_dir / _RUN_ENVELOPE_BASENAME
+    if not artifact.is_file():
+        return None
+    from pydantic import ValidationError  # noqa: PLC0415
+
+    from app.models.runtime.production_trial_envelope import (  # noqa: PLC0415
+        ProductionTrialEnvelope,
+    )
+
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(
+            artifact.read_text(encoding="utf-8")
+        )
+    except (ValidationError, ValueError, OSError):
+        return None
+    corpus_path = getattr(trial, "corpus_path", None)
+    if not corpus_path:
+        return None
+    root = Path(str(corpus_path))
+    return root if root.is_dir() else None
+
+
+def corpus_native_further_reading(corpus_root: Path) -> tuple[FurtherReadingEntry, ...]:
+    """Project corpus-native references into further-reading entries (Q2).
+
+    Two tiers, both READ-ONLY over the corpus source files:
+      (a) ``references/*.md`` standalone reference files -> H1 title + first URL
+          locator (the URL-bearing corpus references);
+      (b) per-slide ``**References:**`` lines under ``slides/*.md`` -> one
+          name-only entry per ``;``-separated citation (no fabricated URL).
+
+    De-duplicated by a stable slug; ``[evidence: src-NNN]`` tags are stripped from
+    the rendered name.
+    """
+    entries: list[FurtherReadingEntry] = []
+    seen: set[str] = set()
+
+    refs_dir = corpus_root / "references"
+    if refs_dir.is_dir():
+        for md in sorted(refs_dir.glob("*.md")):
+            try:
+                text = md.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            title = _first_heading(text) or md.stem.replace("-", " ")
+            url_match = _URL_RE.search(text)
+            cid = f"corpus-ref-{md.stem}"
+            if cid in seen:
+                continue
+            seen.add(cid)
+            entries.append(
+                FurtherReadingEntry(
+                    citation_id=cid,
+                    title=title,
+                    source_ref=cid,
+                    locator=url_match.group(0) if url_match else None,
+                )
+            )
+
+    slides_dir = corpus_root / "slides"
+    if slides_dir.is_dir():
+        for md in sorted(slides_dir.glob("*.md")):
+            try:
+                text = md.read_text(encoding="utf-8")
+            except OSError:
+                continue
+            for match in _SLIDE_REF_RE.finditer(text):
+                raw = _EVIDENCE_TAG_RE.sub("", match.group(1))
+                for name in (segment.strip(" .*") for segment in raw.split(";")):
+                    if not name:
+                        continue
+                    cid = f"corpus-ref-{_ref_slug(name)}"
+                    if cid in seen:
+                        continue
+                    seen.add(cid)
+                    entries.append(
+                        FurtherReadingEntry(
+                            citation_id=cid,
+                            title=name,
+                            source_ref=cid,
+                            locator=None,
+                        )
+                    )
+    return tuple(entries)
+
+
 __all__ = [
     "ENRICHMENT_CARD_BASENAME",
     "RunEnvelopeCorruptError",
     "WorkbookEnrichmentProjection",
     "citation_renders_authoritative",
     "collateral_from_run",
+    "corpus_native_further_reading",
+    "corpus_root_from_run",
     "lesson_plan_from_run",
     "load_enrichment_card",
     "load_run_envelope",
