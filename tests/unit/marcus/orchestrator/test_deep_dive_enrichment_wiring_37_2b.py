@@ -15,6 +15,8 @@ from app.marcus.lesson_plan.deep_dive_enrichment import (
     build_workbook_review_contribution,
 )
 from app.marcus.lesson_plan.deep_dive_enrichment_provider_contract import (
+    BOLD_TERMS_REORDERED_RECORD,
+    DEEP_DIVE_ENRICHMENT_PROVIDER_NORMALIZER_VERSION,
     canonical_json_mapping,
     normalize_deep_dive_enrichment_provider_payload,
     provider_payload_digest,
@@ -31,6 +33,7 @@ from app.models.runtime.production_envelope import (
 )
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from tests.helpers.deep_dive_enrichment_37_2b import (
+    FIXTURE_DIR,
     ask_a_output_payload,
     degraded_candidate,
     enriched_candidate,
@@ -763,6 +766,156 @@ def test_r18_live_writer_without_model_config_digest_fails_loud(
     assert caught.value.tag == "workbook-review.enrichment-writer-identity-missing"
     assert writer.calls_made == 0
     assert not (run_dir / DEEP_DIVE_ENRICHMENT_JOURNAL_FILENAME).exists()
+
+
+# ---------------------------------------------------------------------------
+# Provider normalizer v2 — first-appearance bold_terms reorder (probe aa1ddff9)
+# ---------------------------------------------------------------------------
+
+AA1DDFF9_FIXTURE = FIXTURE_DIR / "aa1ddff9-raw-provider-payload.json"
+# ``raw_provider_payload_digest`` frozen in the aa1ddff9 failure journal
+# (evidence/deep-dive-enrichment-37-2b-aa1ddff9) — pins the fixture as a
+# VERBATIM lift of the paid attempt's raw provider payload.
+AA1DDFF9_RAW_DIGEST = (
+    "sha256:1a801e407a1df38384caddab12a9ec3b69656f209abf4bde46c3d7c43cd0e21e"
+)
+
+
+def _aa1ddff9_payload() -> dict[str, Any]:
+    return json.loads(AA1DDFF9_FIXTURE.read_text(encoding="utf-8"))
+
+
+def _validate_normalized(normalized: dict[str, Any]) -> DeepDiveEnrichedWriterResult:
+    return DeepDiveEnrichedWriterResult.model_validate_json(
+        json.dumps(
+            normalized,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        ),
+        strict=True,
+    )
+
+
+def test_normalizer_v2_frozen_aa1ddff9_payload_reorders_and_validates_green() -> None:
+    """The exact frozen aa1ddff9 raw payload (metadata SET == prose markers,
+    ORDER differs) now normalizes to first-appearance order — observably — and
+    enters the strict candidate contract green."""
+    from app.marcus.lesson_plan.deep_dive_enrichment import strip_citation_markers
+    from app.marcus.lesson_plan.deep_dive_projection import _marked_terms
+
+    raw = _aa1ddff9_payload()
+    assert provider_payload_digest(canonical_json_mapping(raw)) == AA1DDFF9_RAW_DIGEST
+    normalized, records = normalize_deep_dive_enrichment_provider_payload(raw)
+    assert records == (BOLD_TERMS_REORDERED_RECORD,)
+    candidate = _validate_normalized(normalized)
+    # Order is now first-appearance (the validator itself enforces this, but
+    # the pin stays explicit); the term SET and entry dicts are untouched.
+    prose_terms = _marked_terms(
+        tuple(strip_citation_markers(s["prose"]) for s in raw["sections"])
+    )
+    assert tuple(term.term for term in candidate.bold_terms) == prose_terms
+    expected_untouched = canonical_json_mapping(raw)
+    assert sorted(
+        json.dumps(entry, sort_keys=True) for entry in normalized["bold_terms"]
+    ) == sorted(
+        json.dumps(entry, sort_keys=True) for entry in expected_untouched["bold_terms"]
+    )
+    assert normalized == {
+        **expected_untouched,
+        "bold_terms": normalized["bold_terms"],
+    }
+    # The frozen metadata order really differed (the probe's red-reject was an
+    # order-only variance, never a set variance).
+    assert normalized["bold_terms"] != expected_untouched["bold_terms"]
+
+
+def test_normalizer_v2_set_mismatch_missing_term_stays_fail_loud() -> None:
+    raw = _aa1ddff9_payload()
+    raw["bold_terms"] = raw["bold_terms"][:-1]  # drop a prose-marked term
+    normalized, records = normalize_deep_dive_enrichment_provider_payload(raw)
+    assert records == ()
+    assert normalized == canonical_json_mapping(raw)  # untouched
+    with pytest.raises(ValueError, match="bold marker/metadata mismatch"):
+        _validate_normalized(normalized)
+
+
+def test_normalizer_v2_set_mismatch_extra_term_stays_fail_loud() -> None:
+    raw = _aa1ddff9_payload()
+    raw["bold_terms"] = [*raw["bold_terms"], {"term": "phantom extra term"}]
+    normalized, records = normalize_deep_dive_enrichment_provider_payload(raw)
+    assert records == ()
+    assert normalized == canonical_json_mapping(raw)  # untouched
+    with pytest.raises(ValueError, match="bold marker/metadata mismatch"):
+        _validate_normalized(normalized)
+
+
+def test_normalizer_v2_non_exact_duplicate_entry_stays_fail_loud() -> None:
+    """A duplicated term arriving in a NON-exact metadata shape (extra field)
+    is not provably unambiguous: no dedup, no reorder, strict contract rejects."""
+    raw = _aa1ddff9_payload()
+    duplicated = dict(raw["bold_terms"][0])
+    duplicated["weight"] = 1
+    raw["bold_terms"] = [*raw["bold_terms"], duplicated]
+    normalized, records = normalize_deep_dive_enrichment_provider_payload(raw)
+    assert records == ()
+    assert normalized == canonical_json_mapping(raw)  # untouched
+    with pytest.raises(ValueError):
+        _validate_normalized(normalized)
+
+
+def test_normalizer_v2_exact_duplicate_composes_dedup_then_reorder() -> None:
+    """An EXACT duplicate bold-term entry is the already-ratified v1 dedup
+    shape; after dedup the remainder is the order-only variance, so both
+    observable normalizations compose (each recorded) and validation is green."""
+    raw = _aa1ddff9_payload()
+    first_term = raw["bold_terms"][0]["term"]
+    raw["bold_terms"] = [*raw["bold_terms"], dict(raw["bold_terms"][0])]
+    normalized, records = normalize_deep_dive_enrichment_provider_payload(raw)
+    assert records == (
+        f"deduplicated_exact_bold_term:{first_term}",
+        BOLD_TERMS_REORDERED_RECORD,
+    )
+    _validate_normalized(normalized)
+
+
+def test_normalizer_v2_already_ordered_payload_records_nothing_byte_stable() -> None:
+    """Idempotence: a first-appearance-ordered payload passes through byte-fair
+    with NO normalization entry (re-normalizing the fixture's own output)."""
+    normalized, records = normalize_deep_dive_enrichment_provider_payload(
+        _aa1ddff9_payload()
+    )
+    assert records == (BOLD_TERMS_REORDERED_RECORD,)
+    renormalized, rerecords = normalize_deep_dive_enrichment_provider_payload(
+        normalized
+    )
+    assert rerecords == ()
+    assert renormalized == normalized
+
+
+def test_normalizer_v2_version_bump_is_pinned() -> None:
+    """Behavior changed (order-variant reorder added): journal identity honesty
+    requires the v2 normalizer version."""
+    assert DEEP_DIVE_ENRICHMENT_PROVIDER_NORMALIZER_VERSION == (
+        "deep-dive-enrichment-provider-normalizer.v2"
+    )
+    assert BOLD_TERMS_REORDERED_RECORD == "bold_terms_reordered_to_first_appearance"
+
+
+def test_system_prompt_pins_first_appearance_bold_metadata_order() -> None:
+    """Defense in depth: the prompt now states the first-appearance metadata
+    order explicitly (normalization stays regardless)."""
+    from app.marcus.orchestrator.workbook_prework_writers import (
+        LiveDeepDiveEnrichmentWriter,
+    )
+
+    writer = LiveDeepDiveEnrichmentWriter(
+        chat_factory=lambda *args, **kwargs: SimpleNamespace(chat=None)
+    )
+    prompt = writer._system_prompt(make_request())
+    assert "first-appearance order" in prompt
+    assert "never in skeleton, importance, or topical order" in prompt
 
 
 def test_runtime_context_for_run_injects_live_enrichment_writer(

@@ -1,9 +1,13 @@
 """Replay the ``workbook-deep-dive-enrichment-call.v1`` (07W.3) witnesses.
 
-Zero-witness rule (Winston D3-1): at founding this family has NO frozen
-witness — its first witness freezes from ``probe-37-2b-deep-dive-enrichment-001``
-on PASS. Until then a normal run SKIPS with the probe named and a STRICT
-pre-flight FAILS: a paid run may not claim replay-green on an unwitnessed path.
+Zero-witness rule (Winston D3-1): the COMPLETED-journal witness for this
+family freezes from ``probe-37-2b-deep-dive-enrichment-001`` on PASS. The
+family's FIRST enrolled witness is the aa1ddff9 FAILED attempt (a failure
+witness is still a witness — classified honestly as a frozen
+``call_in_progress`` failure journal, mirroring the 07W.1 ambiguity-shape
+rows). Until a completed witness lands, a normal run SKIPS with the probe
+named and a STRICT pre-flight FAILS: a paid run may not claim replay-green
+on the completed path off a failure witness alone.
 """
 
 from __future__ import annotations
@@ -46,11 +50,13 @@ def _family_row() -> dict[str, Any]:
 def test_family_is_enrolled_and_witnessed_or_named_pending() -> None:
     row = _family_row()
     enrolled = [w for w in row["witnesses"] if w.get("disposition") == "enrolled"]
-    if not enrolled:
+    completed = [w for w in enrolled if w.get("state") == "completed"]
+    if not completed:
         pending = row.get("pending_first_witness")
-        assert pending, "an unwitnessed family must name its owed probe"
+        assert pending, "a family without a completed witness must name its owed probe"
         skip_or_fail(
-            f"no frozen witness for {FAMILY} yet — first witness owed by probe "
+            f"no COMPLETED witness for {FAMILY} yet — enrolled witnesses are "
+            f"failed-attempt shapes only; first completed witness owed by probe "
             f"{pending} (zero-witness rule: probe -> freeze -> replay -> spend)"
         )
 
@@ -67,8 +73,19 @@ def test_witness_replays_with_zero_provider_calls(row: dict[str, Any]) -> None:
     journal = json.loads(path.read_text(encoding="utf-8"))
     assert journal["schema_version"] == FAMILY
     assert journal["state"] == row["state"]
+    expected_key = row.get("capture", {}).get("idempotency_key")
+    if expected_key:
+        assert journal["idempotency_key"] == expected_key
     if journal["state"] == "call_in_progress":
         assert "result" not in journal
+        # A failed-attempt witness pins its frozen raw evidence when present
+        # (digest identity only — the journal records what happened under ITS
+        # recorded normalizer version; behavior pins live in the unit fixture
+        # tests, never in replay of a frozen failure).
+        if "raw_provider_payload" in journal:
+            assert journal["raw_provider_payload_digest"] == _sha256(
+                journal["raw_provider_payload"]
+            )
         return
     assert (
         journal["provider_contract_mode"]

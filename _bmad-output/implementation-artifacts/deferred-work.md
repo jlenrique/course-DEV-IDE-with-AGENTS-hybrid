@@ -138,3 +138,11 @@
 - source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
   summary: Workbook exercise path variance + answer leakage — 8b275e5b rendered 6 knowledge-check-lifted exercises (vs 13 authored per-unit on a940c5eb) and 2 prompts carry their Correct Answer inline before the Answer Key; adjudicate fix-induced vs live variance at the epic-38 retrospective and file the answer-strip fix (Epic 39 grooming).
   evidence: Closure-party John F2 — direct diff of the two passing runs' rendered workbooks.
+
+- source_spec: `_bmad-output/implementation-artifacts/37-2b-deep-dive-enrichment-cited.md`
+  summary: Scope B5 figure-supplement clearing to the section that proved the figure — today deep-dive (and research/glossary/trends) supplements are a GLOBAL normalized-token set, so a numeral proven cited in one section also clears an identical unsourced numeral anywhere in the workbook body.
+  evidence: T4 Blind Hunter on 37-2b — consistent with the existing B5 design (research titles/trends already union globally), so deferred as a design-level hardening for the next fidelity-audit batch rather than patched piecemeal.
+
+- source_spec: `_bmad-output/implementation-artifacts/37-2b-deep-dive-enrichment-cited.md`
+  summary: Populate excluded_citation_ids from 38.1 — Ask-A records credibility exclusions by raw row index and never mints citation ids for excluded rows, so the gate's excluded-vs-invented distinguishability (amendment M2a) is fixture-only until 38.1 mints ids for excluded rows.
+  evidence: T4 Blind Hunter on 37-2b — upstream 38.1-side enhancement; the gate field + distinguishable row exist and are mutation-tested; production packets carry an empty list today.

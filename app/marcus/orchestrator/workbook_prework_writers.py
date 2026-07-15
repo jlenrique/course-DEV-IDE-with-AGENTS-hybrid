@@ -770,6 +770,10 @@ class LiveDeepDiveEnrichmentWriter(_StructuredWriter[DeepDiveEnrichedWriterResul
             "claim texts. Keep every skeleton bold term exactly; bold a new term "
             "only when it appears verbatim in a cited excerpt, and list bold "
             "metadata once in prose order. "
+            "The bold_terms metadata array MUST list terms in first-appearance "
+            "order — the order each term first appears reading the section "
+            "proses top to bottom — never in skeleton, importance, or topical "
+            "order. "
             + overlay_note
             + (
                 # R1: BOTH decline losses are described, keyed to the pool

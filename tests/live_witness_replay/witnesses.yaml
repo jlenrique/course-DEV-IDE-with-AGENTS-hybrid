@@ -41,10 +41,21 @@ families:
           idempotency_key: sha256:a0ac1ea3e7340f6650fb29fe499bf09b99f8e3b2d4e120925766470bf0de6fb6
   - family: workbook-deep-dive-enrichment-call.v1
     node_id: "07W.3"
-    # Zero-witness rule (Winston D3-1): this path has NO frozen witness yet.
-    # The first witness freezes from probe-37-2b-deep-dive-enrichment-001 on
-    # PASS and enrolls here as a one-line row. Until then, normal runs SKIP
-    # with the probe named; STRICT pre-flight FAILS (probe → freeze → replay
-    # → spend — a paid run may not claim replay-green on this path).
+    # Zero-witness rule (Winston D3-1): the COMPLETED-journal witness for this
+    # path is still owed — it freezes from probe-37-2b-deep-dive-enrichment-001
+    # on PASS. Until then, normal runs SKIP with the probe named; STRICT
+    # pre-flight FAILS (probe → freeze → replay → spend — a paid run may not
+    # claim replay-green on this path). The enrolled row below is the family's
+    # FIRST witness, honestly classified: a FAILED first-run-stands attempt
+    # (journal frozen at call_in_progress with provider_failure recorded — the
+    # validator red-rejected order-variant bold_terms metadata under
+    # normalizer v1; normalizer v2 reorders that exact shape, pinned by the
+    # aa1ddff9 fixture test in test_deep_dive_enrichment_wiring_37_2b.py).
     pending_first_witness: probe-37-2b-deep-dive-enrichment-001
-    witnesses: []
+    witnesses:
+      - id: deep-dive-enrichment-37-2b-aa1ddff9
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-enrichment-37-2b-aa1ddff9/run/workbook-deep-dive-enrichment-call.v1.json
+        state: call_in_progress
+        disposition: enrolled
+        capture:
+          idempotency_key: sha256:509649873f74b0ef84c51b24c5cfd87c1f68c22434f0176240cdc173c161269e

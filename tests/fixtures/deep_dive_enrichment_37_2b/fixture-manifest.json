@@ -1,5 +1,10 @@
 {
   "fixtures": {
+    "aa1ddff9-raw-provider-payload.json": {
+      "note": "raw_provider_payload lifted VERBATIM from the frozen failed probe attempt aa1ddff9 (bold_terms metadata SET equals prose markers, ORDER differs; red-rejected under normalizer v1, reordered green under v2). No schema_version field: this is a raw provider payload, pre-contract.",
+      "sha256": "bd109cb8b063655aea6c36df73ce7153f29b28ddd67c35633ed9ab2cfef789ce",
+      "source_evidence": "_bmad-output/implementation-artifacts/evidence/deep-dive-enrichment-37-2b-aa1ddff9/run/workbook-deep-dive-enrichment-call.v1.json"
+    },
     "ask-a-contribution-output.v1.json": {
       "entry_schema_version": "ask-a-knowledge-entry.v1",
       "pinned_schema_version": "ask-a-contribution-output.v1",
