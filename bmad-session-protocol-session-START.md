@@ -16,7 +16,7 @@ If a user or older note refers to a literal "session xyz" document and no such f
 
 > **⛔ DESIGN GUARDRAIL (operator-stated 2026-06-30; binding):** The **only product goal is the Marcus-SPOC runtime orchestrator** driving a real APP instance. The BMAD-persona Marcus's **"concierge"/exploratory/trial/proofing runs are off-the-books discovery vehicles, NOT a goal** — they may surface real production-codebase defects worth fixing on their own merits, but **we do NOT design or shape the production codebase to make those proofing runs work.** Fix what a proofing run finds only because it improves the product (the SPOC runtime), never to "make the concierge run pass." Full statement in [`CLAUDE.md` §CRITICAL DESIGN GUARDRAIL](CLAUDE.md) + the FRAMING PRINCIPLE banner in [`docs/STATE-OF-THE-APP.md`](docs/STATE-OF-THE-APP.md).
 
-**Architecture:** See [`docs/ONBOARDING.md`](docs/ONBOARDING.md) for the structural mental model (8 layers, 15-step guided tour, derived from a knowledge-graph scan of the codebase). Read this once per fresh agent context.
+**Architecture:** See [`docs/ONBOARDING.md`](docs/ONBOARDING.md) for the structural mental model (8 layers, 14-step guided tour, derived from a knowledge-graph scan of the codebase). Read this once per fresh agent context.
 
 **Repo contract:**
 ```
@@ -53,7 +53,7 @@ The startup protocol **reads** certain files; the WRAPUP protocol **writes** the
 Use this the first time you open this BMAD project in a new tool context. Once confirmed, proceed directly to the Start-of-Session sequence below for all subsequent sessions.
 
 1. Confirm root paths exist: `_bmad/`, `_bmad-output/`, `docs/`, `course-content/staging/`, `course-content/courses/`, `config/content-standards.yaml`, `.env`, and the IDE skill folder (`.cursor/skills/` or `.claude/skills/`). If any path is missing, install or initialize BMAD before continuing.
-2. Read [`docs/ONBOARDING.md`](docs/ONBOARDING.md) (~285 lines) for the architectural mental model + complexity hotspots + 15-step guided tour. This is the fastest cold-start ramp asset; the knowledge-graph scan it derives from is at `.understand-anything/knowledge-graph.json`.
+2. Read [`docs/ONBOARDING.md`](docs/ONBOARDING.md) (~230 lines) for the architectural mental model + complexity hotspots + 14-step guided tour. This is the fastest cold-start ramp asset; the knowledge-graph scan it derives from is at `.understand-anything/knowledge-graph.json`.
 3. If the session involves production orchestration, content production, or APP runs: read [`skills/bmad-agent-marcus/SKILL.md`](skills/bmad-agent-marcus/SKILL.md) and follow its activation sequence (sanctum batch under `_bmad/memory/bmad-agent-marcus/`) before any specialist invocation. Per CLAUDE.md "Marcus first" cold-start rule.
 4. Skim [`docs/agent-environment.md`](docs/agent-environment.md) for the MCP/API/skill inventory, and [`CLAUDE.md`](CLAUDE.md) for project rules (sprint governance, push cadence, deferred-inventory governance).
 5. **Cursor dual-agent-family check (when opening in Cursor):** confirm `.cursor/rules/bmad-dual-agent-families.mdc` is present (alwaysApply). Know which family this session needs:

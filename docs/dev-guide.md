@@ -1,8 +1,8 @@
 # Developer Guide — Architecture, Execution Flow, and Extension Points
 
-## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
+## Current Status - Marcus-SPOC Workbook Production (2026-07-15)
 
-This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), and the TRAIL-trio close (OpenAlex adapter, glossary polish, semantic WARN tripwire, 2026-07-10).
+This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only. This block covers the 2026-07-09 Phase-2 lesson-planning baseline, the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), the TRAIL-trio close (2026-07-10), the Operator HUD arc (Epic 35, 2026-07-11/12), and the Presentation-Support Workbook arc (Epics 36–40, 2026-07-12 → 07-15 — **live gate PASSED**; seam map in the workbook section below).
 
 ### Current Implementation Boundary
 
@@ -12,6 +12,8 @@ This guide is currently anchored on the Marcus-SPOC local runtime. The product i
 - Batch LLM Execution Mode v1 is closed on `dev/batch-mode-2026-07-10` (epic party-CLOSED 4/4, 2026-07-10): opt-in batch transport for vision/07G perception only. The default execution mode remains realtime, and the done-bar is hermetic-only. Seam map in the batch section below.
 - Agentic Research Foundations is promoted/closed on `dev/agentic-research-foundations-2026-07-10` (R0–R7, live evidence packs under `_bmad-output/implementation-artifacts/evidence/research-r*/`): posture-aware detective intents, Scite∩Consensus triangulation, evidence-hierarchy credibility on every research row, Irene anti-fabrication intake, and the R7 hard-pause gate before Pass-2. `MARCUS_RESEARCH_DETECTIVE_LIVE` is **default OFF**; flag-OFF stays bit-identical. Seam map in the research section below.
 - Workbook Research Products is closed (W0–W4, evidence packs `evidence/workbook-w*/`): shared M3-safe research-packet reader, glossary + trends projections, Tejal live arm with MD/DOCX parity. The TRAIL trio (OpenAlex Texas adapter, glossary SME polish with capability note, WARN-only semantic tripwire) is closed under claim fences the same day.
+- Operator HUD Epic 35 is closed on `dev/hud-revival-2026-07-11` (all 10 stories; unanimous party re-verdict; HUD authorized for real operator use): GET-only HUD server + render (`app/hud/`), ntfy notifier + watchdog (`app/notify/`), the `operator-surface.v1` projection contract (`app/models/runtime/operator_surface.py`) with sole-writer emission via `app/marcus/orchestrator/operator_surface_assembler.py` at `_persist_envelope`, parity contract-pinned by `tests/contracts/test_operator_surface_parity.py` + `test_operator_surface_projection_demands_parity.py`.
+- The Presentation-Support Workbook (Epics 36–40, on `codex/workbook-enhanced-epics-36-40`) ran end-to-end for the first time 2026-07-15: governed trial `a940c5eb` completed with a runner-verified workbook. Epic 36 done; Stories 38.1 + 38.3a live-gate-passed, closure pending the LO-overlay bridge fix + party + code review. Seam map in the workbook section below.
 
 ### Current Lesson-Planning Data Path
 
@@ -114,6 +116,26 @@ Retrieval providers (Texas Shape-3, roster authoritative via `run_wrangler.py --
 - Default-ON policy for detective / Consensus / Jefferson is a party decision that has NOT been taken.
 
 Live evidence discipline: each story has a `scripts/utilities/run_research_r{1–7}_live_evidence.py` / `run_workbook_w{1–4}_live_evidence.py` / `run_openalex_live_evidence.py` driver writing a timestamped pack under `_bmad-output/implementation-artifacts/evidence/` with `verdict.json` + `PROOF.md`; first-run-stands, no retry-to-green.
+
+### Presentation-Support Workbook Seams (Epics 36–40, live-gate PASSED 2026-07-15)
+
+The workbook is produced by the terminal **07W band** (graph topology landed in Story 38-3b; pipeline-lockstep governed). One governed live run has completed end-to-end (trial `a940c5eb`, first complete runner-verified workbook). Seam map:
+
+- Band orchestration: `app/marcus/orchestrator/workbook_wiring.py` — resolves the slide-authority map under a dispatch lock, composes the Deep Dive with journaled exactly-once provider dispatch, builds the workbook brief, reconciles activated artifacts into the production envelope.
+- Live 07W.1 semantic writers: `app/marcus/orchestrator/workbook_prework_writers.py` — live writers with deterministic fallback + fail-loud provenance.
+- Ask-A enrichment: `app/marcus/orchestrator/ask_a_research_wiring.py` + `app/marcus/lesson_plan/ask_a_enrichment.py` — exactly-once journaled research dispatch (journal check guards double-spend).
+- Section projections: `app/marcus/lesson_plan/{prework_artifact,prework_projection,scene_extraction,deep_dive_projection,reflection_projection,review_projection,promise_projection,check_on_learning_projection}.py` — deterministic projections over the authenticated run.
+- Pass-1 durable authority: `app/marcus/lesson_plan/pass1_authority.py` (digest-bound receipts), `pass1_call_journal.py` (crash-safe journal), `pass1_source_span_catalog.py`, `slide_authority.py` (+ `app/pass1_generation_lock.py` OS-file-lock serialization). Slide-authority matching anchors on **authenticated Texas bodies, not raw slides** — a shared accessor keeps Pass-1 and the workbook from drifting (07W.1 anchor-drift fix, `8b72acdf`).
+- G0 live LO authoring: `app/marcus/orchestrator/g0_enrichment_wiring.py` — `MARCUS_G0_DISPATCH_LIVE=1` authors real source-grounded LOs (default OFF = deterministic boilerplate); mandates ≥1 grounded LO/file, retry-once-then-fail-loud on zero LOs (`G0EnrichmentParseError`).
+- Producer specialist: `app/specialists/workbook_producer/_act.py` + `graph.py` (node 07W) — consumes Irene collateral authority; enrichment (`workbook_enrichment.py`) is a resolution overlay, not the authority source. ⚠️ **Known #1 defect:** the LO-overlay bridge `_unit_to_enrichment_lo_map` joins plan units to G0 LOs via `[evidence: src-NNN]` markers and resolved 0/6 under live LO variance — the completed workbook rendered LO placeholders; a robust join is the open fix.
+- Quality gate: `app/marcus/lesson_plan/quinn_r_gate.py` + `app/specialists/quinn_r/` — two-branch workbook quality gate.
+- Governed live harness: `scripts/utilities/marcus_spoc_live_test_runner.py` — delegated HIL (does not bypass gates; versioned policy fixture). **Verdict honesty invariant:** the runner asserts a real conformant MD+DOCX workbook exists before granting `success: true`; hold this under any refactor — a completed status without the terminal deliverable must report failure.
+
+Invariants (hold these under any refactor):
+
+- **Specialist state-threading contracts.** Any node added to the walk must be handed the real run dir and must ride the `production_envelope` carrier — both documented (with the workbook-arc incidents that motivated them) in [`docs/dev-guide/how-to-add-a-specialist.md`](dev-guide/how-to-add-a-specialist.md). A silently-defaulted run dir or an un-threaded envelope surfaces as opaque terminal-band errors (`segment-manifest.missing`, silent 07W skip).
+- **First-run-stands.** Governed paid runs use a fresh immutable trial id each time; negative witnesses are frozen, never resumed or retried-to-green (witnesses `399bcd61`, `7dd3e6ed`, `503e54c1`, `4614f21f`, `dfc372b7` preserved under `_bmad-output/implementation-artifacts/evidence/workbook-live-hil/`).
+- **Known deferred:** `production_runner.py` budget-guard (a silent specialist-budget skip of the terminal 07W band can reach `completed` with no workbook — currently caught after-the-fact by the runner's verdict assertion; production-side fix owed via block-mode path), and a deliverable replay / reload-equality assertion in the runner verdict.
 
 ### BMAD Harness v6.10.0 — uv + Windows Notes (2026-07-11)
 
