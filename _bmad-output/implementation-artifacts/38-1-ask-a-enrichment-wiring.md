@@ -4,7 +4,7 @@ baseline_commit: 6ae42a5208bb4a9fcb5bee8668705d6c8b9dd1d7
 
 # Story 38.1: Ask-A enrichment research wiring
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -237,3 +237,16 @@ Codex GPT-5
 - _bmad-output/implementation-artifacts/evidence/workbook-live-hil/c8f17a24-9b63-4e10-a5d7-6f2043bc9812/
 - reports/dev-coherence/2026-07-13-1547/check-pipeline-manifest-lockstep.PASS.yaml
 - tests/integration/marcus/test_braid_s3_research_wiring.py
+
+## Story Closure — 2026-07-15 (party 4/4 CLOSE-WITH-RIDERS)
+
+**Status flipped to done.** Live close bar MET: governed trial `a940c5eb-1043-42c1-a2a4-8a6301b6bcf4`
+(corpus `tejal-apc-c1-m1-p2-trends`, verbatim slug per closure rider F1) reached `status: completed` /
+`success: true` with a completed Ask-A journal (`ask-a-research-call.v1.json`: state=completed,
+1 dispatcher invocation, disposition=completed_ready, 1 real peer-reviewed cited row with
+evidence_body_sha256 + provider provenance, honest uncovered lists). Verification trial
+`8b275e5b-ed8a-4720-8217-8ddaca4c6627` re-proved the seam with the closure fixes aboard.
+Post-hoc `ask-a-live-verdict.v1` emitted for the winning trial at story closure (read-only recompute
+from the frozen journal — closure-party Winston Rider 1). Closure ceremony: 4-seat party
+(Winston/John/Amelia/Murat) unanimous CLOSE-WITH-RIDERS + per-fix Blind/Edge adversarial reviews;
+record at `party-closure-record-38-1-38-3a-2026-07-15.md`.

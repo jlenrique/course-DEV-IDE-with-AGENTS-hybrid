@@ -2,7 +2,7 @@
 title: 'Irene Pass-1: normalize self-referential parent_slide_id on head units (live variance)'
 type: 'bugfix'
 created: '2026-07-15'
-status: 'ready-for-dev'
+status: 'done'
 baseline_commit: '9d4f0593'
 review_loop_iteration: 0
 context:

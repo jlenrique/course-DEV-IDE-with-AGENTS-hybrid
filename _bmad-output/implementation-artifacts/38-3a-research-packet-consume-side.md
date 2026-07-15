@@ -4,7 +4,7 @@ baseline_commit: d43eb53058403c9a2b3d1569044af138ba73ee13
 
 # Story 38.3a: Research-packet consume side and 07W.1 demand handoff
 
-Status: in-progress
+Status: done
 
 ## Story
 
@@ -159,7 +159,7 @@ This amendment supersedes AC2's direct `manifest slide_id -> slides/slide-<same 
 - [x] Include every Irene provider attempt in local economics with known usage/cost or explicit unavailable posture, including post-provider validation failures (Amendment 6)
 - [x] Add reconstructable per-file governed-preflight identity evidence with narrow declared writable exclusions and separate output inventory (Amendment 6)
 - [x] Prove the witnessed near-paraphrase RED plus unknown/duplicate/reordered/stale/cross-source IDs, temporal substitution, crash/ambiguity, concurrency, failed-validation cost, and input-vs-output identity cases (Amendment 6)
-- [ ] Run focused/dependency/static verification, mandatory BMAD code review, and one fresh governed live 38.1/workbook attempt only after deterministic GREEN (Amendment 3)
+- [x] Run focused/dependency/static verification, mandatory BMAD code review, and one fresh governed live 38.1/workbook attempt only after deterministic GREEN (Amendment 3) — satisfied 2026-07-15: deterministic GREEN -> live a940c5eb COMPLETED + verification 8b275e5b COMPLETED; per-fix Blind/Edge reviews + 4-seat closure party
 - [x] Implement Amendment 7 processor v2: strict-first exact one-surplus-final-`}` normalization, no general repair, and fail-loud removal of the current synthetic production fallback
 - [x] Persist and validate the digest-bound v2 processing receipt before downstream semantic gates/publication; prove crash-safe idempotent zero-recall replay and receipt tamper rejection
 - [x] Preserve allowlisted v1 journal audit/economics behavior without runtime upgrade, and bank a labeled offline counterfactual while all frozen-trial bytes/hashes remain unchanged
@@ -837,3 +837,15 @@ GPT-5 Codex
 - 2026-07-14: Closed seven consolidated first-round Amendment-7 findings and reached 326-pass/1-skip focused plus 744-pass/7-skip direct dependency GREEN, clean Ruff/compileall/18-contract import-linter/diff gates, exact 34-file frozen-hash proof, and fresh Blind/Edge/Acceptance `ZERO FINDINGS`. Ready for a new pre-live authorization decision; no provider call occurred.
 - 2026-07-14: The fresh governed v2 run proved all three Irene calls and reached G2B, then exposed fabricated contribution-level Irene cost spans. Replaced them with non-billable node-coordinate markers, preserved zero/partial missing-journal fail-closed behavior, reconciled exact cost from the three journals, and closed two review findings with a fresh three-way zero-finding seal. The failed run remains frozen and was not retried.
 - 2026-07-14: Governed trial `399bcd61-7779-4fa0-a592-186c3d4b4045` advanced through Storyboard A publication and high-confidence perception before a false Pass-2 figure contradiction on perceived `$ 5% GDP`. Amendment 8 corrected the shared deterministic token class, replayed the exact frozen evidence locally, and passed party plus mandatory adversarial review without retrying the run. Signed and leading-decimal percent handling remains separately deferred pre-existing debt.
+
+## Story Closure — 2026-07-15 (party 4/4 CLOSE-WITH-RIDERS)
+
+**Status flipped to done.** Live close bar MET: trial `a940c5eb` (corpus `tejal-apc-c1-m1-p2-trends`)
+completed the first runner-verified workbook (MD+DOCX, honest verdict); verification trial `8b275e5b`
+completed with the two closure fixes aboard and rendered the Learning Objectives section 6/6 REAL
+statements (0 placeholders, no loss callout) via the authority-map join (`9d4f0593`), with the Pass-1
+head-self-parent live-variance normalization (`2147ad4d`) clearing node 04A. Deterministic floors:
+workbook_producer 87 (incl. 23-test LO-bridge module + real-run replay probe) + irene_pass1 323
+(incl. 24-test normalization module) — counts per closure rider R1. Six negative first-run-stands
+witnesses frozen, never resumed (Murat tamper audit clean). Closure ceremony: 4-seat party unanimous
+CLOSE-WITH-RIDERS; riders recorded at `party-closure-record-38-1-38-3a-2026-07-15.md`.

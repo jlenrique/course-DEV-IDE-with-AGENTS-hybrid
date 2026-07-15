@@ -1,0 +1,172 @@
+{
+  "schema_version": "ask-a-live-verdict.v1",
+  "story_id": "38.1",
+  "trial_id": "a940c5eb-1043-42c1-a2a4-8a6301b6bcf4",
+  "attempt": 3,
+  "first_run": true,
+  "passed": true,
+  "terminal_state": "completed",
+  "terminal_node": null,
+  "terminal_error_tag": null,
+  "terminal_error_message": null,
+  "governed_correction_witness": {
+    "ratified_los_sha256": "03e044ff1ff0bb2c795c505418fe9570055139fbce3357a31bdc683411925ffe",
+    "lesson_plan_ratified_los_digest": "sha256:03e044ff1ff0bb2c795c505418fe9570055139fbce3357a31bdc683411925ffe",
+    "digest_match": true,
+    "lesson_plan_sha256": "bef0b5fdd6fddacfa957d5424e310c9ba4ec8d05b912dc02890291f522ee577e"
+  },
+  "predecessor_diagnosis": {
+    "predecessor_trial_id": "c8f17a24-9b63-4e10-a5d7-6f2043bc9812",
+    "predecessor_error_tag": "workbook-brief.deep-dive-authority-invalid",
+    "slide_authority_rows": 8,
+    "unmatched_slide_ids": [],
+    "resolver_version": "exact-anchor-source-slide.v1",
+    "slide_authority_map_sha256": "1068b36d4527e232e347e4464a48f941bc7e2291be9465a86e9ec4186deb7b08",
+    "segment_manifest_digest": "sha256:ac27203dfa5ab871d0947d82e1a32859e11a4a855a193f3b47c52c7ed9bf4847",
+    "map_digest": "sha256:2851338177625b0241411a953e1edfc369efc1e358eeaeb13e2169da4485e8e2"
+  },
+  "delegated_hil": {
+    "delegate_id": "codex_hil_runner",
+    "gate_actions": 8,
+    "policy_digest": "4205b4dcb2a34846bac0da9f889365eefd22969613aac4e1a4c65e055b9a74a5",
+    "completed_without_operator_keyboard": true
+  },
+  "ask_a": {
+    "reached": true,
+    "dispatcher_invocations": 1,
+    "completed_journal": true,
+    "journal_state": "completed",
+    "disposition": "completed_ready",
+    "known_losses": [],
+    "output_digest": "sha256:ffd80d1e111dbb589215a5be01be0fe379f350a0c4c84918de2eaf5a741accaf",
+    "research_entry_count": 1,
+    "coverage_associations": [
+      {
+        "citation_id": "ask-a-cite-001",
+        "association_algorithm": "ask-a-association.v1",
+        "supports_ability_ids": [
+          "lo-g0-001",
+          "lo-g0-003",
+          "lo-g0-005",
+          "lo-g0-006",
+          "lo-g0-007",
+          "lo-g0-008",
+          "lo-g0-010"
+        ],
+        "supports_bold_terms": ["AI"],
+        "matched_bold_terms": ["AI"],
+        "matched_ability_tokens": {
+          "lo-g0-001": ["between", "health"],
+          "lo-g0-003": ["these"],
+          "lo-g0-005": ["healthcare", "its"],
+          "lo-g0-006": ["healthcare"],
+          "lo-g0-007": ["these", "tools", "remains"],
+          "lo-g0-008": ["digital"],
+          "lo-g0-010": ["healthcare", "data"]
+        }
+      }
+    ],
+    "covered_ability_ids": [
+      "lo-g0-001",
+      "lo-g0-003",
+      "lo-g0-005",
+      "lo-g0-006",
+      "lo-g0-007",
+      "lo-g0-008",
+      "lo-g0-010"
+    ],
+    "uncovered_ability_ids": ["lo-g0-002", "lo-g0-004", "lo-g0-009"],
+    "covered_bold_terms": ["AI"],
+    "uncovered_bold_terms": [
+      "spending",
+      "73 days",
+      "25%",
+      "adaptive learning infrastructure",
+      "governance",
+      "$5.2 trillion",
+      "burnout",
+      "digital front door",
+      "67%",
+      "Incremental"
+    ],
+    "evidence_body_hashes": [
+      "sha256:8780573462aa6aaae4f4df5889c7d29f9b0ef190a867a73d6c477905c7436e45"
+    ],
+    "source_hashes": [
+      "sha256:226a05cfaa7069f3d8c771256ceabd44e622fc1fc18f2634adce3b775a32507f"
+    ],
+    "source_ref_doi_checks": [
+      {
+        "citation_id": "ask-a-cite-001",
+        "source_id": "10.5772/intechopen.94054",
+        "source_ref": "retrieval:scite:10.5772/intechopen.94054",
+        "doi_syntax_valid": true,
+        "source_ref_embeds_source_id": true,
+        "provider_metadata_doi_match": true,
+        "doi_network_resolution_checked": false
+      }
+    ],
+    "credibility_fields": [
+      {
+        "citation_id": "ask-a-cite-001",
+        "evidence_hierarchy_tier": "T4_peer_other",
+        "peer_reviewed": true,
+        "reliability_score": null,
+        "provider_provenance": ["scite"],
+        "triangulation_status": "single_provider",
+        "evidence_truncated": false
+      }
+    ],
+    "execution_receipt": {
+      "schema_version": "ask-a-execution-receipt.v1",
+      "dispatcher_invocations": 1,
+      "provider_iterations": [1],
+      "provider_outcomes": ["accepted"],
+      "provider_receipts": [
+        {
+          "acceptance_met": true,
+          "iterations_used": 1,
+          "provider": "scite",
+          "row_count": 1
+        }
+      ],
+      "refinement_logs": [],
+      "receipt_digest": "sha256:78c3424b5677ab469f35b5987dd243fe7a366019e32e406d1ba0a2db1683ee2f"
+    },
+    "zero_call_replay_proven": false
+  },
+  "artifact_hashes": {
+    "packet_sha256": "5af71d68831eb54143439dc0e9191f2ee8e8d9df6e2bc04a40a8487ab91fec26",
+    "ask_a_journal_sha256": "4f4d7849cdfc53154430c7c8120cde3ea71eab8dc6fc873ed976f47de7b7155e",
+    "envelope_sha256": "206e4bf77b9965786a0af600060ac268bfd5d8932bb87b12a8663c25905da60d",
+    "hil_journal_sha256": "a17836abb02fa0c237fadd23fdac71365e1d58c9e92f2b868e5f4698c73c930f",
+    "hil_summary_sha256": "8629af0a9b483e4979e39838a14599004b377bc269ea2a916bc09f70f2f7846e"
+  },
+  "reload_equality": {
+    "checked": true,
+    "equal": true,
+    "method": "read-only recompute: ask-a-research-call.v1.json parsed twice with deep-equality; resolve_for_enrichment_pool(require_usable=True) resolved twice with identical packet_digest; run.json and ask-a journal byte hashes re-verified equal to the frozen output-inventory.v1.json pins"
+  },
+  "close_bar": {
+    "dispatcher_invocation_count": true,
+    "completed_journal": true,
+    "coverage_associations": true,
+    "evidence_and_source_hashes": true,
+    "source_ref_and_doi_checks": true,
+    "credibility_fields": true,
+    "execution_receipt": true,
+    "packet_journal_envelope_hashes": true,
+    "reload_equality": true,
+    "zero_call_replay": false
+  },
+  "notes": [
+    "Post-hoc verdict emitted at Story 38.1 closure per closure-party Winston Rider 1 (party-closure-record-38-1-38-3a-2026-07-15.md): a read-only recompute from the frozen on-disk journal and run envelope of trial a940c5eb-1043-42c1-a2a4-8a6301b6bcf4; zero provider/network calls were made and nothing under runs/ was modified.",
+    "attempt=3: attempt 1 = failing verdict 9d2ab3f1-7e6c-4d9a-b835-12c7e8f46031, attempt 2 = failing verdict c8f17a24-9b63-4e10-a5d7-6f2043bc9812; this is the first (and only) run of this trial id (first_run=true; HIL summary finished_at 2026-07-15T04:03:29Z, status=completed, success=true, run.json status=completed at terminal gate G4A).",
+    "Derivation difference vs failed-attempt verdicts: packet_sha256 is the canonical-JSON packet_digest returned by app.marcus.lesson_plan.research_packet.resolve_for_enrichment_pool(require_usable=True) over the frozen run.json (both prior verdicts carried null because Ask-A was never reached); it is a canonical payload digest, not a raw file-byte hash. envelope_sha256 / ask_a_journal_sha256 / hil_journal_sha256 / hil_summary_sha256 are raw file-byte sha256, matching the prior verdicts' derivation (envelope = runs/<trial>/run.json, empirically confirmed against both prior verdicts).",
+    "Derivation difference: predecessor_diagnosis here diagnoses the RESOLUTION of the attempt-2 failure (slide-07 matched 0 files): this run's workbook-slide-authority-map.v1.json shows 8/8 slides matched with zero unmatched slide ids under resolver exact-anchor-source-slide.v1. governed_correction_witness re-proves the attempt-1 lineage fix on this run's own artifacts: ratified-los.json sha256 equals the lesson plan's planning_provenance.ratified_los_digest.",
+    "zero_call_replay_proven=false: no replay receipt or cached-replay journal field exists in the frozen artifacts, and this read-only recompute did not re-enter the node live (doing so is forbidden here). The zero-call replay property is witnessed deterministically by test_one_dispatch_completed_journal_and_zero_call_replay (AC-2), not by this trial's artifacts; recorded honestly as unproven-from-artifacts, consistent with the template's proof standard.",
+    "doi_network_resolution_checked=false: DOI checks are offline-only (syntax validity, source_ref embedding, and match against the journal's scite provider_metadata.doi); no network resolution was attempted.",
+    "reliability_score=null is the journal's actual recorded value for ask-a-cite-001, not an ungroundable field.",
+    "ask_a carries additive grounded fields beyond the failed-attempt template arrays (journal_state, disposition, known_losses, output_digest, research_entry_count, covered/uncovered ability ids and bold terms): all copied verbatim from the frozen ask-a-research-call.v1.json; the template's arrays were empty on both failures so their element shape was defined here from the journal's own field names."
+  ]
+}

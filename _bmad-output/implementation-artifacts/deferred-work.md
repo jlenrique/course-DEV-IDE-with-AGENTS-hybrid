@@ -126,3 +126,15 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-pass1-head-self-parent-normalize.md`
   summary: Cover the Pass-1 REFINEMENT path against the head-self-parent live-variance tic — _validate_raw_refinement_identity runs BEFORE normalize_clusters, so the same model shape on a plan-refinement pass red-rejects as "changed immutable parent_slide_id"; consider normalizing the raw payload before the identity check (same provably-empty predicate) plus a parse-path seam test through _normalize_decoded_pass1_response.
   evidence: T4 Blind Hunter on the 38-3a normalization diff — _act.py ~L1217 ordering (identity check precedes normalization); not on the governed workbook run's critical path (delegated HIL policy never triggers Pass-1 refinement), so deferred rather than batched.
+
+- source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
+  summary: Fold the LO shippability bar (0 placeholder statements AND no "Enrichment overlay loss" callout) into the runner's `_assert_completed_workbook_deliverable` so it is machine-asserted, not human-verified, at the next 07W touch (closure rider M-R3).
+  evidence: Closure-party Murat — the verdict-honesty check asserts presence + basic conformance only; the J-A bar for trial 8b275e5b was verified by human audit.
+
+- source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
+  summary: BINDING RIDER (M-R2) on the earlier Pass-1 refinement-path defer — the refinement-identity normalization gap must ride into the NEXT Pass-1-touching story's T1 readiness reading, not sit passively in this register.
+  evidence: Closure-party Murat — the same live-model tic that froze witness 5ee9ac39 red-rejects on any plan-refinement pass because _validate_raw_refinement_identity runs before normalize_clusters.
+
+- source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
+  summary: Workbook exercise path variance + answer leakage — 8b275e5b rendered 6 knowledge-check-lifted exercises (vs 13 authored per-unit on a940c5eb) and 2 prompts carry their Correct Answer inline before the Answer Key; adjudicate fix-induced vs live variance at the epic-38 retrospective and file the answer-strip fix (Epic 39 grooming).
+  evidence: Closure-party John F2 — direct diff of the two passing runs' rendered workbooks.

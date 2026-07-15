@@ -1,0 +1,197 @@
+{
+  "artifact_digest": "580965f59e0b41cc0f5b649aa5af1f39038ca4234725d935fb05408d135ddda0",
+  "created_at": "2026-07-15T14:49:21.179688Z",
+  "file_count": 35,
+  "files": [
+    {
+      "path": "primary-run/.codex-hil-runner-origin.json",
+      "sha256": "5e779cfb65a9d2ceb50b5c8854f3017ea062e511bca7508a14bfd5e5f469c61b",
+      "size": 224
+    },
+    {
+      "path": "primary-run/.cost-report.lock",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "path": "primary-run/bundle/.texas-hardening.lock",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "size": 1
+    },
+    {
+      "path": "primary-run/bundle/extracted.md",
+      "sha256": "bc615756c07acfaf2018e55c3140ef798d3cf697953367d9ebe9e9452b13ddc6",
+      "size": 6781
+    },
+    {
+      "path": "primary-run/bundle/extraction-report.yaml",
+      "sha256": "7707ff8ca6491b91157ce63d46d6f6d41f3d23054e0272dd39c1bf89a32d99c8",
+      "size": 12578
+    },
+    {
+      "path": "primary-run/bundle/ingestion-evidence.md",
+      "sha256": "9f317142af109adf1745413925992b3b2218f8b5b367c4ea73c4805649df13c5",
+      "size": 10993
+    },
+    {
+      "path": "primary-run/bundle/manifest.json",
+      "sha256": "76e5f691326fec4eff24ac0428b227dd68a3d22fb0561d2391043d56d08b34b6",
+      "size": 1062
+    },
+    {
+      "path": "primary-run/bundle/metadata.json",
+      "sha256": "a81b8e6f3bb5184d6c57eb467b86b2899116a7c96495f149a0bdd7b468126c3f",
+      "size": 10713
+    },
+    {
+      "path": "primary-run/bundle/result.yaml",
+      "sha256": "b2530db24e48247788c182f5cb3d9301edae2b32442f8d3fd5600b4d2cd4b127",
+      "size": 10609
+    },
+    {
+      "path": "primary-run/checkpoint.json",
+      "sha256": "de0defcc14e55899ce65d3e40ba2ce22d10e676140d4b4b930671fd1d17f886b",
+      "size": 138998
+    },
+    {
+      "path": "primary-run/conversation/G1/0000.json",
+      "sha256": "c7b93a7110cfafebd5e1ceb5d259a92be94e8cf4e4a4749aeebfe35aaf505968",
+      "size": 1459
+    },
+    {
+      "path": "primary-run/cost-report.json",
+      "sha256": "a3dbe36306a1f12eda9da296f2642a27ea0a7099512bf8a7977fea91bbe843d4",
+      "size": 1540
+    },
+    {
+      "path": "primary-run/cost-report.md",
+      "sha256": "52a34820aadb25bcb4603e863fa5b04a8d282bcf3a03cf41c81d87082a9f913a",
+      "size": 1288
+    },
+    {
+      "path": "primary-run/decision-card-G0E.json",
+      "sha256": "c5df12762a5657ec9d688bac8726367dd5627c1b3dc498c72243dae77839d109",
+      "size": 34579
+    },
+    {
+      "path": "primary-run/decision-card-G0R.json",
+      "sha256": "019cecdc353379078f81957c7d2f8b8d29400934f07c37ae971150afe06c5675",
+      "size": 28377
+    },
+    {
+      "path": "primary-run/decision-card-G1.json",
+      "sha256": "03afe5224d17be14096737fb89976dfb2a46f4e191934693b2761ec1af679dab",
+      "size": 1970
+    },
+    {
+      "path": "primary-run/directive.yaml",
+      "sha256": "9b7719f447b61d2fe8c5fa7d77f5a6d5550baa7325fb4edb90c1a8d202097c62",
+      "size": 3761
+    },
+    {
+      "path": "primary-run/error-pause.json",
+      "sha256": "7fba73f7597904fef78d733526a8e391b5b90cfcf1e4c2a083dd454106844ef3",
+      "size": 139164
+    },
+    {
+      "path": "primary-run/g0-enrichment-cache/f1d35112b63232343acee8e98f3436d5ae460e6cb64f8b1727edde02f9dea90d.json",
+      "sha256": "05a347154161a8c76da62a7ea543614935b67d0616e426dfde2ba16ffbffb72e",
+      "size": 97421
+    },
+    {
+      "path": "primary-run/g0-enrichment.json",
+      "sha256": "02ec5dd5b9f72f5c19ea2c2a3bc6548855ad22d5493cf34edd14a98e92dac5ea",
+      "size": 73678
+    },
+    {
+      "path": "primary-run/irene-pass1-call-04A.v1.json",
+      "sha256": "f2d08f1539bfece9112279eb3f86d3688eac2b8588d8c5ac3adb43b5bc30245d",
+      "size": 173880
+    },
+    {
+      "path": "primary-run/irene-pass1-provider-attempts.v1.json",
+      "sha256": "d32370c5e3c63a9d1cd98ff33099f89786eb60d444272e356adfab8741b46265",
+      "size": 1059
+    },
+    {
+      "path": "primary-run/irene-refinement-cache/f1d35112b63232343acee8e98f3436d5ae460e6cb64f8b1727edde02f9dea90d.json",
+      "sha256": "c03ee7247b0bb041ec2f532eea1e973ecff796960833da8bc12971f82677720f",
+      "size": 26812
+    },
+    {
+      "path": "primary-run/irene-refinement.json",
+      "sha256": "a5e3b20127aaf8eed2419d53c37d96cc835f77ed7a0f14518ec0d5ead47dcded",
+      "size": 26262
+    },
+    {
+      "path": "primary-run/model_resolution_trail.json",
+      "sha256": "19b7f1ed6988296e5e4ecb164b93162ca69332498f0a793d13e8758163447875",
+      "size": 350
+    },
+    {
+      "path": "primary-run/operator-surface.json",
+      "sha256": "810556b8d4765f3a7d53b3e26b09c46c09d32b01126e1bbc11c890ab3bc617d7",
+      "size": 20076
+    },
+    {
+      "path": "primary-run/ratified-los.json",
+      "sha256": "7bc24deb1917f0081e62bbb2164b501587feac53d85f506bd5b404468e93e175",
+      "size": 10888
+    },
+    {
+      "path": "primary-run/resume-command.json",
+      "sha256": "1a071a7e39b427f86283824617d2da7ae49f85e9ad653ca3ae4c441fd4f56d39",
+      "size": 138511
+    },
+    {
+      "path": "primary-run/run.json",
+      "sha256": "a9520baeebcbbfabba53601c295d520701b9abb7fed23a0fed76895dc912e4ef",
+      "size": 130511
+    },
+    {
+      "path": "primary-run/run_summary.yaml",
+      "sha256": "edc03ee453a1d2774445b3136873fe59b2e70175e6424c1bd53efaa639745e15",
+      "size": 370
+    },
+    {
+      "path": "primary-run/trace-fixture.json",
+      "sha256": "1d7a9739eb712706780ea30b59f5aa37d720b5fde9b8eff45180ec4dee5e0a34",
+      "size": 2744
+    },
+    {
+      "path": "primary-run/trial-start.json",
+      "sha256": "07cb81121fb18685969d3cd177756519c5b3ded6ff73d7668dd6c3868e54ef64",
+      "size": 1309
+    },
+    {
+      "path": "primary-run/workbook-runtime-context.v1.json",
+      "sha256": "7cadc9d6249d523df09d6e82e594865296ded08c026dcf84c910c0e48d4bb362",
+      "size": 304
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260715T144832993653Z.md",
+      "sha256": "34bbbb7d492936c040a12521ce14b27d3d7631fa0f28ca0f995e34c7d693ca4b",
+      "size": 589
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260715T144835242766Z.md",
+      "sha256": "918e3d03164080a1c0925c2aaf868a133883d395d8c853791df2c153ba58b45f",
+      "size": 589
+    }
+  ],
+  "inventory_digest": "64e42f88e5853b670769460af344ce7290c9946a518760e86ca0f8ea5d4849dd",
+  "output_roots": [
+    {
+      "label": "primary-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\5ee9ac39-347b-485e-bcab-81928f8d4379",
+      "present": true
+    },
+    {
+      "label": "state-config-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\5ee9ac39-347b-485e-bcab-81928f8d4379",
+      "present": true
+    }
+  ],
+  "schema_version": "governed-run-output-inventory.v1",
+  "trial_id": "5ee9ac39-347b-485e-bcab-81928f8d4379"
+}

@@ -1,0 +1,13 @@
+{
+  "added": [],
+  "artifact_digest": "a4e7221fef7837d69ba09435ac3be8afce419dae7e25314013ffd29221e3420f",
+  "changed": [],
+  "postflight_artifact_digest": "9728c837ac41a09bea51565d3c9d58d03caffab4cc9d3dc5e56e4c6642e2a846",
+  "postflight_manifest_digest": "563599559178b76cb20afb4faa77edd032f946151e83b4215e109ef48e0c9720",
+  "preflight_artifact_digest": "9728c837ac41a09bea51565d3c9d58d03caffab4cc9d3dc5e56e4c6642e2a846",
+  "preflight_manifest_digest": "563599559178b76cb20afb4faa77edd032f946151e83b4215e109ef48e0c9720",
+  "removed": [],
+  "schema_version": "governed-input-comparison.v1",
+  "status": "match",
+  "trial_id": "dfc372b7-f04c-414f-8151-457618442b91"
+}
