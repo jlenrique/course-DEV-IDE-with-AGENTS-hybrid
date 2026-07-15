@@ -41,18 +41,22 @@ families:
           idempotency_key: sha256:a0ac1ea3e7340f6650fb29fe499bf09b99f8e3b2d4e120925766470bf0de6fb6
   - family: workbook-deep-dive-enrichment-call.v1
     node_id: "07W.3"
-    # Zero-witness rule (Winston D3-1): the COMPLETED-journal witness for this
-    # path is still owed — it freezes from probe-37-2b-deep-dive-enrichment-001
-    # on PASS. Until then, normal runs SKIP with the probe named; STRICT
-    # pre-flight FAILS (probe → freeze → replay → spend — a paid run may not
-    # claim replay-green on this path). The enrolled row below is the family's
-    # FIRST witness, honestly classified: a FAILED first-run-stands attempt
-    # (journal frozen at call_in_progress with provider_failure recorded — the
-    # validator red-rejected order-variant bold_terms metadata under
-    # normalizer v1; normalizer v2 reorders that exact shape, pinned by the
-    # aa1ddff9 fixture test in test_deep_dive_enrichment_wiring_37_2b.py).
-    pending_first_witness: probe-37-2b-deep-dive-enrichment-001
+    # Zero-witness rule SATISFIED 2026-07-15: probe-37-2b-deep-dive-enrichment-001
+    # attempt 2 (838524b8) PASSED — machine judge pass=true, outcome ENRICHED,
+    # all three named gates green (A2 coverage / AC4 parity+trace / numeric
+    # fidelity), exactly one provider call, zero-recall replay proven, zero
+    # normalizations (the v2 first-appearance-order prompt line held at source).
+    # Attempt 1 (aa1ddff9) stays enrolled as the failed-attempt shape witness
+    # (order-variant bold_terms under normalizer v1; v2 reorders that exact
+    # shape, pinned by the aa1ddff9 fixture test).
     witnesses:
+      - id: deep-dive-enrichment-37-2b-838524b8
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-enrichment-37-2b-838524b8/run/workbook-deep-dive-enrichment-call.v1.json
+        state: completed
+        disposition: enrolled
+        capture:
+          model_config_digest: sha256:adeb7759a5edc554dcb6eb5424d6b6a3d930fd2e0dca058beb36d7f4d0dcfa6b
+          idempotency_key: sha256:2792cf57692aa8e03a7abecfa8e642afd718758dcf11e1bf4109872e68aed7b6
       - id: deep-dive-enrichment-37-2b-aa1ddff9
         path: _bmad-output/implementation-artifacts/evidence/deep-dive-enrichment-37-2b-aa1ddff9/run/workbook-deep-dive-enrichment-call.v1.json
         state: call_in_progress
