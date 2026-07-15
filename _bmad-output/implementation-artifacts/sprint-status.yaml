@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-15  # Stories 38-1 + 38-3a CLOSED (party 4/4 CLOSE-WITH-RIDERS; live a940c5eb + verification 8b275e5b with real LO statements). Epic 38 remaining: 38-2 backlog + REQUIRED epic-38-retrospective; then the post-close roadmap conversation (39/40 sequencing, master consolidation).
+last_updated: 2026-07-15  # Epic-38 retrospective DONE (partial-by-design; artifact epic-38-retro-2026-07-15.md; 5 action items filed). Stories 38-1 + 38-3a CLOSED (party 4/4 CLOSE-WITH-RIDERS; live a940c5eb + verification 8b275e5b with real LO statements). Epic 38 remaining: 38-2 backlog + REQUIRED epic-38-retrospective; then the post-close roadmap conversation (39/40 sequencing, master consolidation).
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1804,7 +1804,7 @@ development_status:
   38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST)
   38-3a-research-packet-consume-side: done  # 2026-07-15 CLOSED party 4/4: a940c5eb first complete workbook + 8b275e5b LO verification (6/6 real statements, 0 placeholders) with LO-bridge authority join (9d4f0593) + Pass-1 head-self-parent normalize (2147ad4d); 6 witnesses frozen; riders in party-closure-record-38-1-38-3a-2026-07-15.md.
   38-3b-graph-topology-band-orchestrator: done  # 2026-07-13 review + party amendment + Cora block-mode/Audra closure PASS; 61 close tests, lockstep 0, Ruff/diff green; motion exact ambient signature carried with no-new-regression proof.
-  epic-38-retrospective: required  # governance/substrate change (graph topology + lockstep surface)
+  epic-38-retrospective: done  # 2026-07-15 partial-by-design (38-2 backlog per ratified DAG); artifact epic-38-retro-2026-07-15.md; J-F2 adjudicated fix-induced-by-design; deferred-inventory consulted (F-E2E-4 struck; Epic-15 + g0-dispatch-live flagged ripe); next per DAG = 37-2b.
   epic-39-glossary-trends-render: backlog
   39-1-glossary-downstream-render: backlog  # downstream of 37-2a bolded terms; inline-marker + separate section (39.1 T1: MD->DOCX anchor vs plain-bold)
   39-2-trends-door-ajar: backlog
@@ -1812,3 +1812,25 @@ development_status:
   epic-40-cover: backlog
   40-1-cover-placeholder-hero-toc-provenance: backlog  # Gamma hero = placeholder + art-brief; TOC + provenance deterministic
   epic-40-retrospective: optional
+
+action_items:
+  - epic: 38
+    action: "Strip 'Correct Answer:' lines from projected quiz exercises in workbook_enrichment._project_exercises (answer_keys is the channel) before Epic-39-line dev opens"
+    owner: "dev agent (quick-dev)"
+    status: open
+  - epic: 38
+    action: "Ratify replace-vs-merge design for overlay exercises vs collateral-authored exercises (J-F2) at the post-close roadmap conversation"
+    owner: "Juanl + party"
+    status: open
+  - epic: 38
+    action: "BINDING: pass1-refinement-path-head-self-parent-normalize rides the next Pass-1-touching story's T1 readiness (M-R2)"
+    owner: "story author + Cora block-mode"
+    status: open
+  - epic: 38
+    action: "Fold LO shippability bar (0 placeholders / no loss callout) into _assert_completed_workbook_deliverable at next 07W touch (M-R3)"
+    owner: "dev agent"
+    status: open
+  - epic: 38
+    action: "Roadmap conversation agenda: 38.2 disposition; next per DAG = 37-2b then 39-1; master consolidation; off-frozen-lesson re-proof (tejal-c1m1-p3-opportunity); cross-SME Phase-2; G0 dispatch-live default (Tier-2); Epic-15 reactivation"
+    owner: "Juanl (schedule); party (facilitate)"
+    status: open
