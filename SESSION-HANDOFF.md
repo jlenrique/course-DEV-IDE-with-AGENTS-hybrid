@@ -14,6 +14,10 @@
 
 1. **39-1b dev** (ready-for-dev; deterministic; strict-serialized) → **governed batch run A** (witnesses all three wave stories; per-story verdict lines; STRICT pre-flight). 2. 38-2 + 39-2 + 40-1 → run B → off-frozen-lesson re-proof finale. 3. Post-wave: dispatch-ladder band-factory; Phase-2 lanes per SOTA (HAI exploration pre-authorized when operator AFK — see memory).
 
+## Run-A readiness (scout, close of session)
+
+Static walk of the full 07W band against frozen artifacts: run A statically GREEN (degraded path bar-conformant; ordering/two-walk persistence verified; witness corpus drift-free vs 838524b8). Pre-dispatch: (1) decide the 07W.3 provider-failure recovery protocol (failure journal permanently pauses the trial today); (2) add the glossary-family replay module/meta-pin. Anticipate one designed-honesty G1 pause class (non-DOI pool-row title numerals in covered glossary bodies). Full findings in next-session-start-here.md.
+
 ## Unresolved issues / risks
 
 - M-R2 BINDING at next Pass-1 touch (refinement-path normalization gap). Deferred register carries: B5 section-scoping, M2a upstream ids, budget-guard, replay-equality, locator contract, RecursionError envelope, band-factory, glossary top-up, bold-term-class curation (J-2: headword-class = operator spot-check at run A).
