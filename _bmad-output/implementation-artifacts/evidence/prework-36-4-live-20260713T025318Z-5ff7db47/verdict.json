@@ -1,0 +1,155 @@
+{
+  "story": "36.4",
+  "attempt_id": "5ff7db47-62af-48d0-8b67-fa300c04aa4d",
+  "first_run_stands": true,
+  "pass": true,
+  "recovery_of": "380ecd47-7491-42ab-a3d8-a68c1afbb078",
+  "causal_fix": {
+    "base_commit": "dab32211699e6c294d8fb259e9537b6c18653598",
+    "cause": "faithfulness constraints absent from the Scene prompt and the driver overaccepted a degraded golden witness",
+    "fix": "exact structured-output invariants, token-derived cost accounting, and preventive recovery spend/evidence guards",
+    "files": [
+      {
+        "path": "app/marcus/lesson_plan/scene_extraction.py",
+        "sha256": "sha256:750952f2172664b61f95477e2974a61629ce0b3298d830eaeb321db5c3852b93"
+      },
+      {
+        "path": "app/marcus/orchestrator/workbook_prework_writers.py",
+        "sha256": "sha256:b4e077d78e8612fee790f6adf3776de8074695dc2d974522620370e67f792954"
+      },
+      {
+        "path": "scripts/utilities/run_prework_36_4_live_evidence.py",
+        "sha256": "sha256:82349e22ad7de19e73360200639f9a5a720620b9731f3b179a1451291612ff26"
+      },
+      {
+        "path": "tests/integration/marcus/test_workbook_prework_writers_36_4.py",
+        "sha256": "sha256:d69647393a48d5403eaf8490c477538c79a6df4eef3a93a7ad8cf09a607737dd"
+      },
+      {
+        "path": "tests/scripts/test_run_prework_36_4_live_evidence.py",
+        "sha256": "sha256:91158d4b128696266cfa1357d5cb045ec8ed96aee1e6a9f74e1b99cc010369f3"
+      }
+    ],
+    "manifest_digest": "sha256:d143c17ab04cf08396604f8330098f706fe4de302ceb5ed8b159d8c5e54ad0dd",
+    "prior_failed_verdict": {
+      "path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-live-20260713T023935Z-380ecd47/verdict.json",
+      "sha256": "sha256:8e3bc69b123657b0a0b867d0c5fe5d7058dc512d10f23c99b3da04d7b5c60b45"
+    },
+    "prior_adjudication": {
+      "path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-adjudication-380ecd47/adjudication.json",
+      "sha256": "sha256:12e267e143f15e0e4796b6299c655075ec84c655dc5231236369d57b35982fe5"
+    }
+  },
+  "preventive_spend_bound": {
+    "model": "gpt-5",
+    "call_count": 2,
+    "input_token_ceiling_per_call": 32768,
+    "max_completion_tokens_per_call": 4096,
+    "worst_case_usd": 0.16383999999999999,
+    "pricing_source": "runtime/config/openai_pricing.yaml",
+    "pricing_source_sha256": "sha256:01ac90069cc844ac60b923093ae48c143046feacece6d3738928a3d515f03392",
+    "input_bound_method": "UTF-8 payload bytes bound token count; 8192 additional tokens are reserved for system prompts, message framing, and structured-output schemas"
+  },
+  "serialized_input_bytes": {
+    "scene_source": 8466,
+    "promise_authority": 324,
+    "reserved_prompt_schema_overhead_tokens": 8192
+  },
+  "inputs": {
+    "course_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-apc-c1-m1-p2-trends",
+    "run_json_digest": "sha256:eba4510e79929e80be66af9ce9992bad12b61efc71b73738ea06cd0333b31a95",
+    "ratified_los_digest": "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6",
+    "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+    "segment_manifest_digest": "sha256:7b08a2de150c845683f247e89e6e9ea00334a8580d0cb5a15586f8cbdbf6725b",
+    "bundle_extracted_digest": "sha256:6dc4b9d9ce55111797e5fe6d2eec17862c14ead4748c0454a2c9277ae0de2c1b",
+    "clone_manifest_digest": "sha256:7111ac485b6290f5c4c05f5c44bdfefaf7a6ac9157e659a1cbd6945c7fa6bcd5",
+    "clone_manifest": {
+      "schema_version": "prework-36-4-fresh-clone.v1",
+      "source_label": "production-shaped Story-36.4 live input fixture",
+      "origin_label": "fresh pre-07W.1 clone for adjudicated recovery 380ecd47",
+      "created_at": "2026-07-13T02:50:22.766089Z",
+      "run_json_digest": "sha256:eba4510e79929e80be66af9ce9992bad12b61efc71b73738ea06cd0333b31a95",
+      "ratified_los_digest": "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6",
+      "segment_manifest_digest": "sha256:7b08a2de150c845683f247e89e6e9ea00334a8580d0cb5a15586f8cbdbf6725b",
+      "bundle_extracted_digest": "sha256:6dc4b9d9ce55111797e5fe6d2eec17862c14ead4748c0454a2c9277ae0de2c1b",
+      "no_real_brief_contribution": true,
+      "no_workbook_brief_sidecar": true
+    },
+    "bound_fresh_output_root": "_bmad-output/artifacts/workbooks-36-4-rerecovery-380ecd47"
+  },
+  "operator_spot_checks": {
+    "provenance": "PENDING",
+    "actual_payoff": "PENDING",
+    "semantic_faithfulness": "PENDING",
+    "pertinent_ability": "PENDING",
+    "lo_fidelity": "PENDING",
+    "half_rhyme": "PENDING",
+    "mastery_overclaim": "PENDING",
+    "no_spoiler": "PENDING"
+  },
+  "machine_transport_render_pass": true,
+  "primary_part2_acceptance": true,
+  "scene_gate_failures": [],
+  "promise_gate_failures": [],
+  "calls": 2,
+  "total_cost_usd": 0.0345525,
+  "max_spend_usd": 0.25,
+  "writer_receipts": [
+    {
+      "writer": "scene",
+      "mode": "live",
+      "calls": 1,
+      "model": "gpt-5",
+      "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+      "request_id": null,
+      "latency_ms": 35526.747199939564,
+      "input_tokens": 655,
+      "output_tokens": 2358,
+      "cost_usd": 0.024398749999999997,
+      "cost_unavailable_reason": null
+    },
+    {
+      "writer": "promise",
+      "mode": "live",
+      "calls": 1,
+      "model": "gpt-5",
+      "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+      "request_id": null,
+      "latency_ms": 11987.352300086059,
+      "input_tokens": 475,
+      "output_tokens": 956,
+      "cost_usd": 0.010153750000000001,
+      "cost_unavailable_reason": null
+    }
+  ],
+  "artifact_digest": "sha256:bbbd7c922768fc2dfe20a1d266c7f8b508d87023f2fcc30ba124a5fdf03f3207",
+  "contribution": {
+    "artifact_path": "workbook-brief.v1.json",
+    "payload_digest": "sha256:bbbd7c922768fc2dfe20a1d266c7f8b508d87023f2fcc30ba124a5fdf03f3207",
+    "schema_version": "workbook-brief.v1",
+    "status_summary": {
+      "scene": "authored",
+      "promise": "authored"
+    },
+    "warning_summary": [
+      "actual_payoff_sufficiency_operator_check",
+      "semantic_faithfulness_operator_check",
+      "promise_no_spoiler_operator_check",
+      "promise_lo_vs_vow_operator_check",
+      "promise_pertinent_ability_operator_check",
+      "promise_half_rhyme_operator_check",
+      "promise_mastery_overclaim_operator_check"
+    ],
+    "loss_summary": [],
+    "node_id": "07W.1",
+    "specialist_id": "workbook_brief"
+  },
+  "markdown_path": "_bmad-output/artifacts/workbooks-36-4-rerecovery-380ecd47/u-intrapreneur-01@1.md",
+  "docx_path": "_bmad-output/artifacts/workbooks-36-4-rerecovery-380ecd47/u-intrapreneur-01@1.docx",
+  "assertions": {
+    "beat_order": true,
+    "fr17": true,
+    "md_nonempty": true,
+    "docx_nonempty": true
+  }
+}

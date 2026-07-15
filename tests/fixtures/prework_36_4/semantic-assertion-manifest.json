@@ -1,0 +1,15 @@
+{
+  "never_byte_golden": ["scene_text", "promise_vow_text"],
+  "required_operator_warnings": [
+    "actual_payoff_sufficiency_operator_check",
+    "semantic_faithfulness_operator_check",
+    "promise_lo_vs_vow_operator_check",
+    "promise_no_spoiler_operator_check"
+  ],
+  "fr17_forbidden_headings": [
+    "Transcript-narrative",
+    "Transcript of Record",
+    "Figures"
+  ],
+  "depth_status": "not_applicable_pre_deep_dive"
+}

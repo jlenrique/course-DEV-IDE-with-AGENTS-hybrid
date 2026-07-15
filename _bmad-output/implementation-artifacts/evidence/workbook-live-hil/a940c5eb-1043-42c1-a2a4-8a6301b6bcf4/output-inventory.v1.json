@@ -1,0 +1,602 @@
+{
+  "artifact_digest": "f609a0065883403116fd38470e3278d36de625648ca43a1beba270b514a23251",
+  "created_at": "2026-07-15T04:03:29.527742Z",
+  "file_count": 116,
+  "files": [
+    {
+      "path": "primary-run/.codex-hil-runner-origin.json",
+      "sha256": "071591d99881d94efa8c1311bdb2e16f218dba5ecc28cce812295a73964f9a46",
+      "size": 224
+    },
+    {
+      "path": "primary-run/.cost-report.lock",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "path": "primary-run/.workbook-slide-authority-map.v1.json.dispatch.lock",
+      "sha256": "6e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d",
+      "size": 1
+    },
+    {
+      "path": "primary-run/ask-a-research-call.v1.json",
+      "sha256": "4f4d7849cdfc53154430c7c8120cde3ea71eab8dc6fc873ed976f47de7b7155e",
+      "size": 20599
+    },
+    {
+      "path": "primary-run/ask-a-research-call.v1.lock",
+      "sha256": "d2c3979770bd1123c7823805e0f7a9ed23032ef3aa4456ee6babca23558aa49c",
+      "size": 72
+    },
+    {
+      "path": "primary-run/bundle/.texas-hardening.lock",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "size": 1
+    },
+    {
+      "path": "primary-run/bundle/extracted.md",
+      "sha256": "07875ae66344e7ae9b7e06b2fe8d9cc0b1295eb16d50976a3a8ec46d10262f46",
+      "size": 6781
+    },
+    {
+      "path": "primary-run/bundle/extraction-report.yaml",
+      "sha256": "15d35c410db25ac26371f37b41669dfbd5dbc97de7fce82a0139cbd817bb0fa4",
+      "size": 12661
+    },
+    {
+      "path": "primary-run/bundle/ingestion-evidence.md",
+      "sha256": "f131f1fd76366dcf5bc578d3ab61c7b6aff044d04b695ba3a5d191e9229b53ef",
+      "size": 11171
+    },
+    {
+      "path": "primary-run/bundle/manifest.json",
+      "sha256": "867cbf63779dc49b061149dab390e489a6305166f94be32a2978d5b99e5ac16d",
+      "size": 1062
+    },
+    {
+      "path": "primary-run/bundle/metadata.json",
+      "sha256": "128eed8dacf23b8accd5a065efcd563ec14d37531cda27826cbc12482a56121e",
+      "size": 10805
+    },
+    {
+      "path": "primary-run/bundle/result.yaml",
+      "sha256": "d4f4a75ed92000282e56487d446f5b9f12d6d40124340142e1bf8dcc55682598",
+      "size": 10702
+    },
+    {
+      "path": "primary-run/checkpoint.json",
+      "sha256": "f9efefcc6dea5cafa7a00c89649efa0db63c30f5e9dc1717ea9e6391a50ab393",
+      "size": 639383
+    },
+    {
+      "path": "primary-run/conversation/G1/0000.json",
+      "sha256": "dbaaed967adf352940b0d43476d95b7f7b64283cb81f61634dc63eb9224cd776",
+      "size": 1296
+    },
+    {
+      "path": "primary-run/cost-report.json",
+      "sha256": "23ad896943dc71e0dec45026b02e71dec1a62318db2e3238a4be98e896f15e38",
+      "size": 3339
+    },
+    {
+      "path": "primary-run/cost-report.md",
+      "sha256": "658a960ead7786ad71d3840863e515652927c11f1cf7bc02a4893571a05299c9",
+      "size": 2034
+    },
+    {
+      "path": "primary-run/decision-card-G0E.json",
+      "sha256": "7aa7a358967575ffd81a95cb4a45e4224909d1a30b679d55e4fff3440088fa81",
+      "size": 34095
+    },
+    {
+      "path": "primary-run/decision-card-G0R.json",
+      "sha256": "cfacc6b7947bf22e18a6319160858376c7482de9a55c9d6d824ea5f686a4f699",
+      "size": 30972
+    },
+    {
+      "path": "primary-run/decision-card-G1.json",
+      "sha256": "bcc45a5ddce06913783dd3b88d9647b2d0890bec2d7bc67577b52de5865bd649",
+      "size": 1873
+    },
+    {
+      "path": "primary-run/decision-card-G2B.json",
+      "sha256": "82efe7836532e1bfffbd84d39351b0ce16f817a3e72870ae67d352d5f57f96f0",
+      "size": 5069
+    },
+    {
+      "path": "primary-run/decision-card-G2C.json",
+      "sha256": "6d50f9e1d7a24f468d222963f01ca1c5eb39d469d1a89990328afbb4ddabad50",
+      "size": 998
+    },
+    {
+      "path": "primary-run/decision-card-G3.json",
+      "sha256": "65b163a70f7be8b8213cbf8cf7788d2dc4628d93162a1051377bd110d0d28f43",
+      "size": 1254
+    },
+    {
+      "path": "primary-run/decision-card-G4.json",
+      "sha256": "3c66ad3fd39de338031160b5614821f38be7312c529f0cd31ea44d4740f8d84e",
+      "size": 2521
+    },
+    {
+      "path": "primary-run/decision-card-G4A.json",
+      "sha256": "488044724e65699b276d9eae44dc57f864e38421f0a6b825b5f89c022eea3d8d",
+      "size": 3980
+    },
+    {
+      "path": "primary-run/directive.yaml",
+      "sha256": "3d707e44a445b461f0a9f81c19e722cf0dcd17282e6e9fb0ab711abd94c17c7b",
+      "size": 3854
+    },
+    {
+      "path": "primary-run/exports/gary-dispatch-payload.json",
+      "sha256": "f669dfd39492854a0943bc97602841d2a56ad71d1200480fb7ad3cee4c9261fa",
+      "size": 8186
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-08.png",
+      "sha256": "857ed6431d2b1a4006abccf94e8fe0c87ec5222261ec64ea246ad9afaebc36b0",
+      "size": 1262727
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/1_The-Economic-and-Structural-Reality.png",
+      "sha256": "5d4bd86b407e6c61b17bbf01e253188e1c16b75700cfc1c871737607ef247f57",
+      "size": 307787
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/2_The-Human-Cost-System-Waste-and-Burnout.png",
+      "sha256": "6e9d710bf215a3244aacbc95476d012c574a37be1422cca30922d8743931f110",
+      "size": 371673
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/3_The-Knowledge-Explosion-and-New-Technologies.png",
+      "sha256": "341b4ee1b7cbe0706f0f4ee1fe754c08704fa7564ff14be84945cc5e1ab99a56",
+      "size": 1504001
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/4_Why-Static-Training-No-Longer-Suffices.png",
+      "sha256": "8976271c5134a8f7594228677b35e94751b2ce6263e7368babb0d28104302ed3",
+      "size": 555299
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/5_Clinical-Innovation-Requires-Safe-Oversight.png",
+      "sha256": "632e1584e3680b8972735bfe69109e7db458f147ffef7748da816901d3179c74",
+      "size": 518663
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/6_The-Consumer-Shift-and-The-Digital-Front-Door.png",
+      "sha256": "e27a05453e184b741cb5ecb4ee3daddf55591eb5ff34b6f0751ac44c22db3d63",
+      "size": 1578397
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/7_The-Leadership-Gap.png",
+      "sha256": "2e9d40b1e56d301b531e62ae0a395953bab41556220bc7f233d84216d26c4646",
+      "size": 529963
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-01.png",
+      "sha256": "5d4bd86b407e6c61b17bbf01e253188e1c16b75700cfc1c871737607ef247f57",
+      "size": 307787
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-02.png",
+      "sha256": "6e9d710bf215a3244aacbc95476d012c574a37be1422cca30922d8743931f110",
+      "size": 371673
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-03.png",
+      "sha256": "341b4ee1b7cbe0706f0f4ee1fe754c08704fa7564ff14be84945cc5e1ab99a56",
+      "size": 1504001
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-04.png",
+      "sha256": "8976271c5134a8f7594228677b35e94751b2ce6263e7368babb0d28104302ed3",
+      "size": 555299
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-05.png",
+      "sha256": "632e1584e3680b8972735bfe69109e7db458f147ffef7748da816901d3179c74",
+      "size": 518663
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-06.png",
+      "sha256": "e27a05453e184b741cb5ecb4ee3daddf55591eb5ff34b6f0751ac44c22db3d63",
+      "size": 1578397
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-07.png",
+      "sha256": "2e9d40b1e56d301b531e62ae0a395953bab41556220bc7f233d84216d26c4646",
+      "size": 529963
+    },
+    {
+      "path": "primary-run/exports/gary/gary_A_creative.png",
+      "sha256": "857ed6431d2b1a4006abccf94e8fe0c87ec5222261ec64ea246ad9afaebc36b0",
+      "size": 1262727
+    },
+    {
+      "path": "primary-run/exports/gary/gary_A_literal.png",
+      "sha256": "8a96e09b96ed39e5e2236699b305b82d8268d97bbe2a729ff038bc2d4d06b752",
+      "size": 5366945
+    },
+    {
+      "path": "primary-run/exports/segment-manifest-storyboard-b.yaml",
+      "sha256": "ac27203dfa5ab871d0947d82e1a32859e11a4a855a193f3b47c52c7ed9bf4847",
+      "size": 7935
+    },
+    {
+      "path": "primary-run/exports/storyboard-A-pack/storyboard/index.html",
+      "sha256": "c410ba54624dcaa5d945297402163b3858a9cb8b0d3487635abfd4dc9defda1d",
+      "size": 55103
+    },
+    {
+      "path": "primary-run/exports/storyboard-A-pack/storyboard/storyboard.json",
+      "sha256": "455f2f3c23aa3cf0ee7853e3e6490c11c139a04c9b1ad330ec381b0f9407ab68",
+      "size": 71783
+    },
+    {
+      "path": "primary-run/exports/storyboard-B-pack/storyboard/index.html",
+      "sha256": "1761f76eb913e7b2ecd725a4fe57a0086842bddb809ba93f4462b63111cbd7a0",
+      "size": 80093
+    },
+    {
+      "path": "primary-run/exports/storyboard-B-pack/storyboard/storyboard.json",
+      "sha256": "8cc86dd598c6b0f85506ce276e9ed854a7efc0b088d2336ada87bde4e6ca2ff7",
+      "size": 92611
+    },
+    {
+      "path": "primary-run/exports/workbooks/u01@1.docx",
+      "sha256": "c94f477a971244e790b99f6fe4a9aed851804fec4b6e83dc16d1ad92aa9db43f",
+      "size": 42515
+    },
+    {
+      "path": "primary-run/exports/workbooks/u01@1.md",
+      "sha256": "d52b76dd4c93b0a2141c4c99b2b5de1e2697cddb828785c283ef0b061d541fa8",
+      "size": 22398
+    },
+    {
+      "path": "primary-run/g0-enrichment-cache/f1d35112b63232343acee8e98f3436d5ae460e6cb64f8b1727edde02f9dea90d.json",
+      "sha256": "ca55d34a573f751f43738171437ed33017b527a856c227f83f8958882ba5b7d4",
+      "size": 96331
+    },
+    {
+      "path": "primary-run/g0-enrichment.json",
+      "sha256": "a6ff6f29b559ec9b1b2902b8879048cdef78efb5bbefa4d6aa4e264b8d7b71a5",
+      "size": 72456
+    },
+    {
+      "path": "primary-run/irene-pass1-call-04A.v1.json",
+      "sha256": "2af2626e52a1f1afb6ee65ffa1d61813da96825d1284ef4665bf7a260bf1ae55",
+      "size": 258895
+    },
+    {
+      "path": "primary-run/irene-pass1-call-05.v1.json",
+      "sha256": "7ee795de08fcd54e8a36ee9e708444749276dec9b0e1aea8c72f5659743b3af8",
+      "size": 334226
+    },
+    {
+      "path": "primary-run/irene-pass1-call-05B.v1.json",
+      "sha256": "e9e3be8a747d5f3a1d9138b37986071725a2b3308ff18221c710ee31bb5251e3",
+      "size": 334228
+    },
+    {
+      "path": "primary-run/irene-pass1-provider-attempts.v1.json",
+      "sha256": "a48a23adc72c0793a74e64d662504410933e5f201f7021ff692b87d789be10e7",
+      "size": 2087
+    },
+    {
+      "path": "primary-run/irene-pass1.lesson-plan.json",
+      "sha256": "bef0b5fdd6fddacfa957d5424e310c9ba4ec8d05b912dc02890291f522ee577e",
+      "size": 27673
+    },
+    {
+      "path": "primary-run/irene-pass1.md",
+      "sha256": "5be6f75f0ad2bddd1dc857fdb192a165d6e7e54af45e1b5697544fca9557aa56",
+      "size": 12988
+    },
+    {
+      "path": "primary-run/irene-pass1.plan-authority.json",
+      "sha256": "79ea0fb65895ab81ba1fa886b31e53b8224bfcf28b1d775fb6fcca136ad04446",
+      "size": 9956
+    },
+    {
+      "path": "primary-run/irene-refinement-cache/f1d35112b63232343acee8e98f3436d5ae460e6cb64f8b1727edde02f9dea90d.json",
+      "sha256": "10cf3a4ce070eeccb7af97c8ae3f2fb38bc5611f98e445070da5c7d4932041cb",
+      "size": 29477
+    },
+    {
+      "path": "primary-run/irene-refinement.json",
+      "sha256": "7493aabdea34d71b9b325f5d95bf62043e502c41146402489ce16cf56c475a0a",
+      "size": 28805
+    },
+    {
+      "path": "primary-run/model_resolution_trail.json",
+      "sha256": "0f4b1072eac7e7d1cdef61d42a16951e8292689dd91c45196fe130e26e16da80",
+      "size": 350
+    },
+    {
+      "path": "primary-run/operator-surface.json",
+      "sha256": "f03fdcaf31f8eec794903c8d679ac8a45701edaacfeb40a83cc50dd220534fab",
+      "size": 27998
+    },
+    {
+      "path": "primary-run/ratified-los.json",
+      "sha256": "03e044ff1ff0bb2c795c505418fe9570055139fbce3357a31bdc683411925ffe",
+      "size": 11392
+    },
+    {
+      "path": "primary-run/resume-command.json",
+      "sha256": "d1cb2d87bf9c4eace2119adc3141df0cb57551f80b88bf600532d27167dabba4",
+      "size": 639136
+    },
+    {
+      "path": "primary-run/run.json",
+      "sha256": "206e4bf77b9965786a0af600060ac268bfd5d8932bb87b12a8663c25905da60d",
+      "size": 665224
+    },
+    {
+      "path": "primary-run/run_summary.yaml",
+      "sha256": "9da65b779fc0a59574e3349ba234fd3bcb7c2ea03b5eb8063a03a4d54ac37ab7",
+      "size": 371
+    },
+    {
+      "path": "primary-run/storyboard-publish-G2C.json",
+      "sha256": "427bda4c15f169e5c9788bdf76496bf94203a82d346fc60bc105da204f702532",
+      "size": 743
+    },
+    {
+      "path": "primary-run/storyboard-publish-G3.json",
+      "sha256": "a88bd7355b153de607ea8a867572e017700556b63811f0916ef4068c05bf43b3",
+      "size": 752
+    },
+    {
+      "path": "primary-run/trace-fixture.json",
+      "sha256": "b94f6eb1e860b5da5c737ac0e0dc616dba5f2f2d4a818796174bc64268e1ab97",
+      "size": 13975
+    },
+    {
+      "path": "primary-run/trial-start.json",
+      "sha256": "e965035c7d763b4562fd615f8cee260880c0d9b66a76bf350be01a4e15ef2840",
+      "size": 1309
+    },
+    {
+      "path": "primary-run/workbook-brief.v1.json",
+      "sha256": "a72aa8028fec3c2e7cd64f3d7e1d0cb62a4153a652e8e888c33bd00e7a696636",
+      "size": 70050
+    },
+    {
+      "path": "primary-run/workbook-deep-dive-call.v1.json",
+      "sha256": "a3e799789785c733e351f48ca83b15da41a33fc55da32a575fe6af32110efdc5",
+      "size": 104652
+    },
+    {
+      "path": "primary-run/workbook-runtime-context.v1.json",
+      "sha256": "7cadc9d6249d523df09d6e82e594865296ded08c026dcf84c910c0e48d4bb362",
+      "size": 304
+    },
+    {
+      "path": "primary-run/workbook-slide-authority-map.v1.json",
+      "sha256": "1068b36d4527e232e347e4464a48f941bc7e2291be9465a86e9ec4186deb7b08",
+      "size": 9203
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-01.mp3",
+      "sha256": "e472e5dcaff44d13eaa4955f5f0135298cca3cacf456c6e57fd052ca4dad9105",
+      "size": 595635
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-02.mp3",
+      "sha256": "501e4109c69a5bd29d8a90b966de41aeeb214d9ce30cb370f0c4083ee4389b2d",
+      "size": 641611
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-03.mp3",
+      "sha256": "f646170e52346e70a69ee6e7943a59e81ef9c5b9223feb7f7bd9d9861cc370dd",
+      "size": 488638
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-04.mp3",
+      "sha256": "275ce5dee25c5a28fcd138eeba5fe1b6fb6047792431e6185d7a24dd825a3b82",
+      "size": 326470
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-05.mp3",
+      "sha256": "25c41f4a74484ef54424827320e5874ec4ea9fde1b297a8030fbf001f23a8d3c",
+      "size": 483204
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-06.mp3",
+      "sha256": "1eb872bb03bd0ff0ab9146dc5b60f35eb42f5065e6c690edb4b3e83b0092ecdc",
+      "size": 589366
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-07.mp3",
+      "sha256": "5aa0da0a7c52e71a9d09b37156856de2fd9edc6872a4da2de877294ec7b9e8ac",
+      "size": 472337
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/audio/seg-08.mp3",
+      "sha256": "2278ce411a455fe7396998235958805cff2629166324d34d80aa2868b709c176",
+      "size": 492399
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-01.vtt",
+      "sha256": "af8c15c7bfa48f11fa7e7238b278ec2dfddd2db5cef5277507dc977a1aa1b8ec",
+      "size": 600
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-02.vtt",
+      "sha256": "c03d84974c5334f9f98309e4c7e5393014e054198abdd90795d25799099a0cbd",
+      "size": 648
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-03.vtt",
+      "sha256": "72084791b9988cdf8d60538dfaf99fe44e2166de548bedf4b608da842c95ae9c",
+      "size": 481
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-04.vtt",
+      "sha256": "5fbc74e71a75ccd20e85302c1d7254dcf89a16eeef204b8169d048c754ec39e7",
+      "size": 389
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-05.vtt",
+      "sha256": "6774bdcb8f8d4e3bca1a9b690a1e5ee8fe482d8a878a6c59bc72ea284aef8518",
+      "size": 485
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-06.vtt",
+      "sha256": "c6cb407ff8378b34438a87ba497d156f331498324f25a5645af38354bd090489",
+      "size": 589
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-07.vtt",
+      "sha256": "98c5f00b613d5e28562e00311910bc95c6b027cfc4aabf31f2fb49425b7f3610",
+      "size": 534
+    },
+    {
+      "path": "state-config-run/enrique-narration/assembly-bundle/captions/seg-08.vtt",
+      "sha256": "4be39937e5d91b9130fe3a56695e6ac923469a0ebbb654c15f44ef267b3a0329",
+      "size": 532
+    },
+    {
+      "path": "state-config-run/enrique-narration/voice-selection/voice-preview-options.json",
+      "sha256": "ffbb45dbc71512dd9ddab7d44ad442b8a8ca5d01497997abf2dc0f1a7342b514",
+      "size": 2066
+    },
+    {
+      "path": "state-config-run/enrique-narration/voice-selection/voice-selection-review.md",
+      "sha256": "e6fe9a56ad0aac290869a949c1ef628883969284f7ff3be907a1e2a8dca9bed8",
+      "size": 1110
+    },
+    {
+      "path": "state-config-run/enrique-narration/voice-selection/voice-selection.json",
+      "sha256": "ac998c34c4316c1b91898664b8120bdd8fbf5386b8e634cea8dc61b8d9b91538",
+      "size": 192
+    },
+    {
+      "path": "state-config-run/fidelity/g0-vera-20260715T034815374887Z.json",
+      "sha256": "cf3c5bc9ca8e7ebab860e1103637d89bab65c674c9597929f442b003b910de50",
+      "size": 1860
+    },
+    {
+      "path": "state-config-run/specialist-summaries/compositor-20260715T040023440292Z.md",
+      "sha256": "52c05e327bec0345b2d0f36b28a2929b049fc947a96b4347a7fa8efbf9f0e10a",
+      "size": 518
+    },
+    {
+      "path": "state-config-run/specialist-summaries/enrique-20260715T035933054715Z.md",
+      "sha256": "be55406fbe11a5e01588ec00d152a67c9e4efde1ba9d35de78a3920a8d1a81ee",
+      "size": 554
+    },
+    {
+      "path": "state-config-run/specialist-summaries/enrique-20260715T035953377539Z.md",
+      "sha256": "3f96a7211c2fa4f96ca863060472645c9333927a9fc319271ce94dea8afedfc3",
+      "size": 554
+    },
+    {
+      "path": "state-config-run/specialist-summaries/enrique-20260715T040023290940Z.md",
+      "sha256": "4e0dc24dee5d39c451d3f0cd8ad71ccbf3a5565cddba4418c3ba5b47ca6479d9",
+      "size": 554
+    },
+    {
+      "path": "state-config-run/specialist-summaries/gary-20260715T034815314104Z.md",
+      "sha256": "9e9e3f9f4ffe7dc3042936ee8ae7f7a18d5e6d74f4784bf5943fd6b6935fd825",
+      "size": 554
+    },
+    {
+      "path": "state-config-run/specialist-summaries/irene-20260715T035727734409Z.md",
+      "sha256": "5199b67e0b1c2f0b22ba7b5101e426e6b3df81349e3e5184a95b71c3c039badf",
+      "size": 530
+    },
+    {
+      "path": "state-config-run/specialist-summaries/irene_pass1-20260715T034310219226Z.md",
+      "sha256": "64032d697ac9af706883b00f91eba9295de64ee53270e065ab1f9ad7726545fd",
+      "size": 558
+    },
+    {
+      "path": "state-config-run/specialist-summaries/irene_pass1-20260715T034356700554Z.md",
+      "sha256": "7b7c19d5cea63be4cb926b8977a5ff99fbf49c4ad68780e1ba0916e1d475c8d2",
+      "size": 558
+    },
+    {
+      "path": "state-config-run/specialist-summaries/irene_pass1-20260715T034418592660Z.md",
+      "sha256": "0faf56e253f40f9f0badcae7fa9626151c335a4a8d1d275b1e223cabd780689a",
+      "size": 558
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260715T034815440620Z.md",
+      "sha256": "0c724c13a683382e5fe5c88b996c8b139a169c1866aa0052bc518a8521aad765",
+      "size": 451
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260715T034815443649Z.md",
+      "sha256": "c64701c47e312a51260d07eb9fe8b4507199837a99f4f5b69b5187de5f9cb858",
+      "size": 579
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260715T035727794068Z.md",
+      "sha256": "73f07a477539c2c18fdbab6a6c1264e379aabbd89477d4b6768a4d6f896eb4d1",
+      "size": 453
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260715T035727797400Z.md",
+      "sha256": "c4517ea70a04e29b0ba1c94b13e245a2768c786f0f50c467e55f28e892fdfcd5",
+      "size": 579
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260715T040023361243Z.md",
+      "sha256": "4a901b2555682e290034e7ad291016a8f32de23492d8928919cfda18390d56d6",
+      "size": 453
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260715T040023364621Z.md",
+      "sha256": "45f58a00feeb335ce98f9ba2d8f890d9b569430e9dc058183c899f6e3bd18406",
+      "size": 579
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260715T034222605895Z.md",
+      "sha256": "33aac609317ab8162ab8563134df126d90a12e1a429c0d979e2fc50700feac56",
+      "size": 589
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260715T034224840044Z.md",
+      "sha256": "16e268801a902353073fe4baf756bfbc87f27116fabd8470b99b20f0d0720f3e",
+      "size": 589
+    },
+    {
+      "path": "state-config-run/specialist-summaries/vera-20260715T034815375891Z.md",
+      "sha256": "9291cb1204c0e7842cd95c91eb6558f3bc3239a1e49fc941a5cf59ed6547a46b",
+      "size": 599
+    },
+    {
+      "path": "state-config-run/specialist-summaries/vera-20260715T034815378913Z.md",
+      "sha256": "d7df72d15f635585b99b6f961139907ed6d7dabcc8f37b3e9a5bd2b514b48287",
+      "size": 567
+    },
+    {
+      "path": "state-config-run/specialist-summaries/vision-20260715T035534552384Z.md",
+      "sha256": "79513ba350db97e3864b38f58a47ff6cd166df0a942593fb596faef148b43c95",
+      "size": 584
+    },
+    {
+      "path": "state-config-run/specialist-summaries/workbook_producer-20260715T040328637901Z.md",
+      "sha256": "6a6d0eedfcecd5d079af08b885d5e7145435f135e983be85037704e7e5d9bbed",
+      "size": 650
+    }
+  ],
+  "inventory_digest": "955d775898eab2497cba27f06817a8dddbb296c876952024fd6b88e74eaf4304",
+  "output_roots": [
+    {
+      "label": "primary-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\a940c5eb-1043-42c1-a2a4-8a6301b6bcf4",
+      "present": true
+    },
+    {
+      "label": "state-config-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\a940c5eb-1043-42c1-a2a4-8a6301b6bcf4",
+      "present": true
+    }
+  ],
+  "schema_version": "governed-run-output-inventory.v1",
+  "trial_id": "a940c5eb-1043-42c1-a2a4-8a6301b6bcf4"
+}

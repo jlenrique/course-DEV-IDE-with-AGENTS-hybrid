@@ -1,3 +1,5 @@
-# Fixture Extraction
+# Source bundle: Texas fixture
 
-This is a deterministic fixture bundle for Texas dispatch tests.
+## Fixture source
+
+This deterministic fixture bundle exercises Texas dispatch and hardening behavior.

@@ -28,10 +28,24 @@ from typing import Any
 
 import pytest
 
+from app.marcus.lesson_plan.pass1_source_span_catalog import (
+    build_pass1_source_span_catalog,
+)
+from app.marcus.lesson_plan.slide_authority import canonical_source_content_digest
+from app.models.pass1_source_section import (
+    Pass1AuthenticatedSourceSection,
+    canonical_extracted_content_digest,
+)
 from app.models.state.cache_state import CacheState
 from app.models.state.run_state import RunState
 from app.specialists.irene_pass1 import _act as pass1_act
 from app.specialists.irene_pass1 import cluster_floor as cf
+from app.specialists.source_bundle import (
+    SourceBundleError,
+    read_extracted_source_with_sections,
+)
+from tests._helpers.pass1_bundle import write_primary_slide_bundle
+from tests._helpers.pass1_catalog_response import select_catalog_ids
 
 FIXTURE_PATH = (
     Path(__file__).resolve().parents[3]
@@ -47,7 +61,10 @@ class _RecordingChat:
 
     def invoke(self, messages: list[dict[str, str]]) -> SimpleNamespace:
         self.calls.append(messages)
-        return SimpleNamespace(content=self.response_text, usage_metadata=None)
+        return SimpleNamespace(
+            content=select_catalog_ids(self.response_text, messages),
+            usage_metadata=None,
+        )
 
 
 @dataclass
@@ -66,6 +83,36 @@ def _state(payload: dict[str, Any]) -> RunState:
         cache_state=CacheState(
             cache_prefix=json.dumps(payload, sort_keys=True), entries_count=0
         ),
+    )
+
+
+def _install_empty_prior_authority(payload: dict[str, Any]) -> None:
+    if "bundle_reference" in payload:
+        _extracted, sections = read_extracted_source_with_sections(payload)
+    else:
+        placeholder = "Legacy-free empty prior authority."
+        digest = canonical_source_content_digest(placeholder)
+        sections = (
+            Pass1AuthenticatedSourceSection(
+                source_id=f"slides/slide-1-placeholder.md|{digest}",
+                source_content_digest=digest,
+                extracted_content_digest=canonical_extracted_content_digest(
+                    placeholder
+                ),
+                body=placeholder,
+            ),
+        )
+    catalog_digest = build_pass1_source_span_catalog(sections).catalog_digest
+    prior_plan = {
+        "source_span_catalog_digest": catalog_digest,
+        "plan_units": [],
+    }
+    payload["upstream_output"] = {"lesson_plan": prior_plan}
+    payload["prior_plan_authority_receipt"] = (
+        pass1_act.validate_pass1_plan_authority(
+            prior_plan,
+            source_sections=sections,
+        )
     )
 
 
@@ -107,6 +154,14 @@ def _response_with_refs() -> str:
     )
 
 
+def _response_with_unknown_ids() -> str:
+    payload = json.loads(_response_with_refs())
+    for index, unit in enumerate(payload["plan_units"], start=1):
+        unit.pop("source_refs", None)
+        unit["source_ref_ids"] = [f"span:sha256:{index:064x}"]
+    return json.dumps(payload)
+
+
 def _corpus_with_anchors() -> str:
     lines = ["# Part 3 corpus (synthetic anchor host)\n"]
     for refs in _REFS_BY_UNIT.values():
@@ -117,7 +172,7 @@ def _corpus_with_anchors() -> str:
 def _creation_payload(tmp_path: Path, floor: int | None) -> dict[str, Any]:
     bundle = tmp_path / "bundle"
     bundle.mkdir(exist_ok=True)
-    (bundle / "extracted.md").write_text(_corpus_with_anchors(), encoding="utf-8")
+    write_primary_slide_bundle(bundle, _corpus_with_anchors())
     payload: dict[str, Any] = {
         "mode": "pass-1",
         "run_id": "run-floor-act",
@@ -171,35 +226,33 @@ def test_refinement_true_shape_resolves_anchors_against_projected_corpus(
     handle = _RecordingHandle(_response_with_refs())
     payload = _creation_payload(tmp_path, floor=8)
     payload["run_id"] = "run-floor-refine-true"
-    payload["upstream_output"] = {"lesson_plan": {"plan_units": []}}
+    _install_empty_prior_authority(payload)
     update = pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
     output = json.loads(update["cache_state"]["cache_prefix"])
     assert cf.count_clusters(output["lesson_plan"]["plan_units"]) == 8
 
 
-def test_refinement_true_shape_unresolvable_anchors_veto(tmp_path: Path) -> None:
-    """R1 companion: because the corpus IS present at 05/05B, anchor
-    resolution stays ACTIVE at refinement — non-resolving carried-forward
-    anchors veto (never a schema-only free pass on the production shape)."""
+def test_refinement_true_shape_unknown_catalog_ids_fail_first(tmp_path: Path) -> None:
+    """A refinement cannot express non-resolving free-text authority anymore."""
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text(
-        "A corpus that contains none of the synthetic anchors.", encoding="utf-8"
+    write_primary_slide_bundle(
+        bundle, "A corpus that contains none of the synthetic anchors."
     )
-    handle = _RecordingHandle(_response_with_refs())
+    handle = _RecordingHandle(_response_with_unknown_ids())
     payload = {
         "mode": "pass-1",
         "run_id": "run-floor-refine-veto",
         "runs_root": str(tmp_path),
         "bundle_reference": str(bundle),
-        "upstream_output": {"lesson_plan": {"plan_units": []}},
         "min_cluster_floor": 8,
     }
-    with pytest.raises(cf.ClusterFloorMismatchError):
+    _install_empty_prior_authority(payload)
+    with pytest.raises(pass1_act.Pass1AuthorityError, match="unknown or stale"):
         pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
 
 
-def test_refinement_degraded_bundleless_fallback_still_honors(tmp_path: Path) -> None:
+def test_refinement_bundleless_shape_fails_before_persistence(tmp_path: Path) -> None:
     """DEGRADED defensive fallback (NOT the production 05/05B shape — see the
     module docstring): a refinement payload with a prior plan but NO resolvable
     bundle_reference. ``extracted_source`` is None and carried-forward anchors
@@ -210,12 +263,14 @@ def test_refinement_degraded_bundleless_fallback_still_honors(tmp_path: Path) ->
         "mode": "pass-1",
         "run_id": "run-floor-refine",
         "runs_root": str(tmp_path),
-        "upstream_output": {"lesson_plan": {"plan_units": []}},
         "min_cluster_floor": 8,
     }
-    update = pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
-    output = json.loads(update["cache_state"]["cache_prefix"])
-    assert cf.count_clusters(output["lesson_plan"]["plan_units"]) == 8
+    _install_empty_prior_authority(payload)
+    with pytest.raises(SourceBundleError) as excinfo:
+        pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
+    assert excinfo.value.tag == "source.bundle.reference-missing"
+    assert handle.chat.calls == []
+    assert not (tmp_path / "run-floor-refine" / "irene-pass1.md").exists()
 
 
 def test_unhonorable_floor_error_pauses_recoverably(tmp_path: Path) -> None:
@@ -231,33 +286,27 @@ def test_unhonorable_floor_error_pauses_recoverably(tmp_path: Path) -> None:
     assert isinstance(excinfo.value, SpecialistDispatchError)
 
 
-def test_parse_fallback_under_bound_floor_gets_distinct_diagnostic(
+def test_invalid_response_fails_before_bound_floor_evaluation(
     tmp_path: Path,
 ) -> None:
-    """R7 — the JSON-parse-failure fallback (one synthetic unit, no
-    source_refs) under a bound floor must NOT masquerade as a generic
-    styleguide-vs-content mismatch: triage needs to see the LLM format
-    failure. Same recoverable error class, DISTINCT tag/message."""
+    """Invalid framing is a response-processing failure, not floor evidence."""
     handle = _RecordingHandle("this is not json at all")
-    with pytest.raises(cf.ClusterFloorMismatchError) as excinfo:
+    with pytest.raises(pass1_act.Pass1AuthorityError, match="structured JSON object"):
         pass1_act.act(
             _state(_creation_payload(tmp_path, floor=8)),
             handle=handle,
             model_id="gpt-5.4",
         )
-    assert excinfo.value.tag == cf.CLUSTER_FLOOR_LLM_FALLBACK_TAG
-    assert "llm-format-fallback" in str(excinfo.value)
 
 
-def test_anchor_resolution_active_at_creation(tmp_path: Path) -> None:
-    """At creation the corpus is present: anchors that do NOT resolve verbatim
-    veto the split (unresolvable -> soft mismatch, never guess-and-split)."""
+def test_unknown_catalog_selection_fails_before_floor_at_creation(tmp_path: Path) -> None:
+    """Unknown authority cannot reach the cluster-floor matching seam."""
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text(
-        "A corpus that contains none of the synthetic anchors.", encoding="utf-8"
+    write_primary_slide_bundle(
+        bundle, "A corpus that contains none of the synthetic anchors."
     )
-    handle = _RecordingHandle(_response_with_refs())
+    handle = _RecordingHandle(_response_with_unknown_ids())
     payload = {
         "mode": "pass-1",
         "run_id": "run-floor-unresolved",
@@ -265,7 +314,7 @@ def test_anchor_resolution_active_at_creation(tmp_path: Path) -> None:
         "bundle_reference": str(bundle),
         "min_cluster_floor": 8,
     }
-    with pytest.raises(cf.ClusterFloorMismatchError):
+    with pytest.raises(pass1_act.Pass1AuthorityError, match="unknown or stale"):
         pass1_act.act(_state(payload), handle=handle, model_id="gpt-5.4")
 
 
@@ -273,10 +322,11 @@ def test_anchor_resolution_active_at_creation(tmp_path: Path) -> None:
 # emission contract (D-3: anchors carry no scripted value/hint)                #
 # --------------------------------------------------------------------------- #
 def test_emission_requests_anchors_and_carry_forward() -> None:
-    instructions = pass1_act._cluster_emission_instructions()
-    assert "source_refs" in instructions
-    assert "VERBATIM" in instructions
-    assert "CARRY" in instructions and "FORWARD" in instructions and "UNCHANGED" in instructions
+    instructions = pass1_act._cluster_emission_instructions(refinement=True)
+    assert "source_ref_ids" in instructions
+    assert "exact spans" in instructions
+    assert "Never emit source_refs" in instructions
+    assert "copy" in instructions and "EXACTLY unchanged" in instructions
 
 
 def test_emission_carries_no_scripted_hint() -> None:

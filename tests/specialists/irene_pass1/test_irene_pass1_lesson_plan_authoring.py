@@ -10,6 +10,8 @@ from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.irene_pass1 import _act as pass1_act
+from tests._helpers.pass1_bundle import write_primary_slide_bundle
+from tests._helpers.pass1_catalog_response import select_catalog_ids
 
 
 @dataclass
@@ -20,7 +22,7 @@ class _FakeChat:
         assert messages[0]["role"] == "system"
         assert "plan_units" in messages[1]["content"]
         return SimpleNamespace(
-            content=self.response_text,
+            content=select_catalog_ids(self.response_text, messages),
             usage_metadata={
                 "input_tokens": 1400,
                 "input_token_details": {"cached_tokens": 1190},
@@ -63,9 +65,7 @@ def test_pass1_act_writes_irene_pass1_markdown(tmp_path) -> None:
     # extracted corpus in sight — provide a real tmp bundle.
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text(
-        "# Corpus\n\nBeta blocker source material.", encoding="utf-8"
-    )
+    write_primary_slide_bundle(bundle, "# Corpus\n\nBeta blocker source material.")
     response = json.dumps(
         {
             "lesson_summary": "Teach beta blocker essentials.",
@@ -75,6 +75,7 @@ def test_pass1_act_writes_irene_pass1_markdown(tmp_path) -> None:
                     "title": "Mechanism",
                     "learning_objective": "Explain beta receptor blockade.",
                     "scope_decision": "in-scope",
+                    "source_refs": ["Beta blocker source material."],
                     "rationale": "Core objective.",
                 }
             ],

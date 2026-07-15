@@ -9,9 +9,9 @@ from uuid import UUID
 import pytest
 import yaml
 
+from app.marcus.lesson_plan.source_assessment import GapSummary, SourceAssessment
 from app.marcus.orchestrator import production_runner
 from app.marcus.orchestrator.production_runner import _runner_payload_for_specialist
-from app.marcus.lesson_plan.source_assessment import GapSummary, SourceAssessment
 from app.specialists.dispatch_errors import SpecialistDispatchError
 
 TRIAL_ID = UUID("abcdef00-1234-4234-8234-abcdef012345")
@@ -224,9 +224,9 @@ def test_empty_object_companions_omit_planning_context_key(tmp_path: Path) -> No
         runs_root=tmp_path,
         trial_id=TRIAL_ID,
     )
-    # No floor + treat-as-absent context → EXACTLY None (empty dict collapses
-    # via ``irene_payload or None``); never a dict carrying an explicit None.
-    assert payload is None
+    # No framing key leaks, while run identity remains available for authority
+    # hashing even when planning_context itself is honestly absent.
+    assert payload == {"runs_root": tmp_path.as_posix(), "run_id": str(TRIAL_ID)}
 
 
 def test_empty_object_companions_with_floor_yield_floor_only_payload(
@@ -250,7 +250,11 @@ def test_empty_object_companions_with_floor_yield_floor_only_payload(
         runs_root=tmp_path,
         trial_id=TRIAL_ID,
     )
-    assert payload == {"min_cluster_floor": 5}
+    assert payload == {
+        "min_cluster_floor": 5,
+        "runs_root": tmp_path.as_posix(),
+        "run_id": str(TRIAL_ID),
+    }
     assert "planning_context" not in payload
 
 

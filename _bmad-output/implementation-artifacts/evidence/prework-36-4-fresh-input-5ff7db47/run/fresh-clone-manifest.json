@@ -1,0 +1,12 @@
+{
+    "schema_version":  "prework-36-4-fresh-clone.v1",
+    "source_label":  "production-shaped Story-36.4 live input fixture",
+    "origin_label":  "fresh pre-07W.1 clone for adjudicated recovery 5ff7db47",
+    "created_at":  "2026-07-13T03:09:57.8437353Z",
+    "run_json_digest":  "sha256:eba4510e79929e80be66af9ce9992bad12b61efc71b73738ea06cd0333b31a95",
+    "ratified_los_digest":  "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6",
+    "segment_manifest_digest":  "sha256:7b08a2de150c845683f247e89e6e9ea00334a8580d0cb5a15586f8cbdbf6725b",
+    "bundle_extracted_digest":  "sha256:6dc4b9d9ce55111797e5fe6d2eec17862c14ead4748c0454a2c9277ae0de2c1b",
+    "no_real_brief_contribution":  true,
+    "no_workbook_brief_sidecar":  true
+}

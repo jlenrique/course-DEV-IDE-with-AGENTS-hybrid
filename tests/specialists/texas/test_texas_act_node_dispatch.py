@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml
 
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
@@ -19,6 +22,20 @@ from app.specialists.texas.retrieval_dispatch import dispatch_retrieval
 
 FIXTURE_ROOT = Path("tests/fixtures/specialists/texas")
 FIXTURE_BUNDLE = FIXTURE_ROOT / "fixture_bundle"
+
+
+def _reseal_manifest(bundle: Path) -> None:
+    manifest_path = bundle / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    for row in manifest["artifacts"]:
+        artifact = bundle / row["path"]
+        if artifact.is_file():
+            raw = artifact.read_bytes()
+            row["sha256"] = hashlib.sha256(raw).hexdigest()
+            row["size_bytes"] = len(raw)
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def _build_state(
@@ -48,11 +65,11 @@ def _build_state(
     )
 
 
-def _envelope_cache_prefix() -> str:
+def _envelope_cache_prefix(bundle_dir: Path = FIXTURE_BUNDLE) -> str:
     return json.dumps(
         {
             "directive_path": str(FIXTURE_ROOT / "fixture_directive.yaml"),
-            "bundle_dir": str(FIXTURE_BUNDLE),
+            "bundle_dir": str(bundle_dir),
         },
         sort_keys=True,
         ensure_ascii=True,
@@ -122,6 +139,8 @@ def test_texas_bundle_parser_branches(
     elif mutation == "non_mapping_yaml":
         (bundle / "result.yaml").write_text("- one\n- two\n", encoding="utf-8")
 
+    _reseal_manifest(bundle)
+
     # Two-sided assertion: parser shape (raises) AND tag attribute matches the
     # expected `bundle.parsed.*` classification (Murat M5 rider).
     with pytest.raises(BundleParseError, match=expected_message) as exc_info:
@@ -142,6 +161,7 @@ def test_texas_bundle_parser_happy_path_returns_ok_tag(tmp_path: Path) -> None:
     ):
         source = FIXTURE_BUNDLE / name
         (bundle / name).write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+    _reseal_manifest(bundle)
     parsed = _load_bundle_outputs(bundle)
     assert parsed["tag"] == "bundle.parsed.ok"
     assert parsed["status"] == "complete"
@@ -197,6 +217,7 @@ def test_texas_act_exit_unknown_raises_dispatch_error_with_tag(
 
 def test_texas_act_exit_10_parses_bundle_as_complete_with_warnings(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     """Exit 10 = complete_with_warnings (wrangler taxonomy) — bundle is KEPT.
 
@@ -205,10 +226,26 @@ def test_texas_act_exit_10_parses_bundle_as_complete_with_warnings(
     no "no-results" status; exit 10 bundles parse exactly like exit 0.
     """
 
+    bundle = tmp_path / "fixture-bundle"
+    shutil.copytree(FIXTURE_BUNDLE, bundle)
+    result = yaml.safe_load((bundle / "result.yaml").read_text(encoding="utf-8"))
+    report = yaml.safe_load(
+        (bundle / "extraction-report.yaml").read_text(encoding="utf-8")
+    )
+    result["status"] = "complete_with_warnings"
+    report["overall_status"] = "complete_with_warnings"
+    (bundle / "result.yaml").write_text(
+        yaml.safe_dump(result, sort_keys=False), encoding="utf-8"
+    )
+    (bundle / "extraction-report.yaml").write_text(
+        yaml.safe_dump(report, sort_keys=False), encoding="utf-8"
+    )
+    _reseal_manifest(bundle)
+
     def _fake_dispatch(**_: Any) -> dict[str, Any]:
         return {
             "status": "dispatched",
-            "bundle_dir": str(FIXTURE_BUNDLE.resolve()),
+            "bundle_dir": str(bundle.resolve()),
             "exit_code": 10,
             "stdout": "",
             "stderr": "",
@@ -218,15 +255,15 @@ def test_texas_act_exit_10_parses_bundle_as_complete_with_warnings(
     monkeypatch.setattr(
         "app.specialists.texas.graph.dispatch_retrieval", _fake_dispatch
     )
-    state = _build_state(cache_prefix=_envelope_cache_prefix())
+    state = _build_state(cache_prefix=_envelope_cache_prefix(bundle))
     update = _act(state)
     output = json.loads(update["cache_state"]["cache_prefix"])
     # Bundle is parsed and referenced, NOT discarded. Pin the ACTUAL parsed
     # status from the bundle's result.yaml (a negative `!= "no-results"`
     # assertion would pass for any garbage status).
     assert output["bundle_reference"]
-    assert output["status"] == "complete"
-    assert output["overall_status"] == "complete"
+    assert output["status"] == "complete_with_warnings"
+    assert output["overall_status"] == "complete_with_warnings"
     assert output["dispatch_exit_code"] == 10
     trail = update["model_resolution_trail"]
     assert trail[-1].reason == "bundle.parsed.ok"
@@ -258,7 +295,7 @@ def test_texas_act_records_bundle_parse_tag_on_partial_bundle(
     monkeypatch.setattr(
         "app.specialists.texas.graph.dispatch_retrieval", _fake_dispatch
     )
-    state = _build_state(cache_prefix=_envelope_cache_prefix())
+    state = _build_state(cache_prefix=_envelope_cache_prefix(partial_bundle))
     with pytest.raises(BundleParseError) as exc_info:
         _act(state)
     assert exc_info.value.tag == "bundle.parsed.missing-key"
@@ -324,6 +361,120 @@ def test_texas_act_rejects_dispatch_receipt_missing_bundle_dir(
     assert exc_info.value.tag == "bundle.parsed.missing-key"
 
 
+@pytest.mark.parametrize("receipt", [None, [], "not-a-receipt"])
+def test_texas_act_rejects_non_mapping_dispatch_receipt(
+    monkeypatch: pytest.MonkeyPatch, receipt: Any
+) -> None:
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval", lambda **_: receipt
+    )
+    state = _build_state(cache_prefix=_envelope_cache_prefix())
+    with pytest.raises(BundleDispatchError, match="must be a mapping") as exc_info:
+        _act(state)
+    assert exc_info.value.tag == "bundle.parsed.wrong-type"
+
+
+def test_texas_act_rejects_nonnumeric_dispatch_exit_code(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval",
+        lambda **_: {"bundle_dir": str(FIXTURE_BUNDLE), "exit_code": "not-a-number"},
+    )
+    state = _build_state(cache_prefix=_envelope_cache_prefix())
+    with pytest.raises(BundleDispatchError, match="must be an integer") as exc_info:
+        _act(state)
+    assert exc_info.value.tag == "bundle.parsed.wrong-type"
+
+
+def test_texas_act_rejects_dispatch_bundle_substitution(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    substituted = tmp_path / "substituted"
+    shutil.copytree(FIXTURE_BUNDLE, substituted)
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval",
+        lambda **_: {"bundle_dir": str(substituted), "exit_code": 0},
+    )
+    state = _build_state(cache_prefix=_envelope_cache_prefix())
+    with pytest.raises(BundleDispatchError, match="substituted") as exc_info:
+        _act(state)
+    assert exc_info.value.tag == "bundle.parsed.provenance-mismatch"
+
+
+def test_texas_act_rejects_missing_dispatch_exit_code(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval",
+        lambda **_: {"bundle_dir": str(FIXTURE_BUNDLE)},
+    )
+    state = _build_state(cache_prefix="{}")
+    with pytest.raises(BundleDispatchError, match="missing exit_code") as exc_info:
+        _act(state)
+    assert exc_info.value.tag == "bundle.parsed.missing-key"
+
+
+def test_texas_act_rejects_exit_code_status_contradiction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval",
+        lambda **_: {"bundle_dir": str(FIXTURE_BUNDLE), "exit_code": 20},
+    )
+    state = _build_state(cache_prefix="{}")
+    with pytest.raises(BundleDispatchError, match="contradicts") as exc_info:
+        _act(state)
+    assert exc_info.value.tag == "bundle.parsed.provenance-mismatch"
+
+
+def test_texas_act_translates_non_utf8_authenticated_extraction(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    bundle = tmp_path / "bundle"
+    shutil.copytree(FIXTURE_BUNDLE, bundle)
+    (bundle / "extracted.md").write_bytes(b"\xff\xfe")
+    _reseal_manifest(bundle)
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval",
+        lambda **_: {"bundle_dir": str(bundle), "exit_code": 0},
+    )
+    state = _build_state(cache_prefix="{}")
+    with pytest.raises(BundleParseError, match="not UTF-8") as exc_info:
+        _act(state)
+    assert exc_info.value.tag == "bundle.parsed.malformed"
+
+
+def test_texas_act_rejects_oversized_numeric_exit_code(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval",
+        lambda **_: {"bundle_dir": str(FIXTURE_BUNDLE), "exit_code": "9" * 5000},
+    )
+    state = _build_state(cache_prefix="{}")
+    with pytest.raises(BundleDispatchError, match="must be an integer") as exc_info:
+        _act(state)
+    assert exc_info.value.tag == "bundle.parsed.wrong-type"
+
+
+def test_exit_status_contradiction_does_not_harden_bundle(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    bundle = tmp_path / "bundle"
+    shutil.copytree(FIXTURE_BUNDLE, bundle)
+    before = {path.name: path.read_bytes() for path in bundle.iterdir()}
+    monkeypatch.setattr(
+        "app.specialists.texas.graph.dispatch_retrieval",
+        lambda **_: {"bundle_dir": str(bundle), "exit_code": 20},
+    )
+    state = _build_state(cache_prefix=_envelope_cache_prefix(bundle))
+    with pytest.raises(BundleDispatchError, match="contradicts"):
+        _act(state)
+    after = {name: (bundle / name).read_bytes() for name in before}
+    assert after == before
+
+
 # ---------------------------------------------------------------------------
 # Happy-path integration — non-vacuous: asserts envelope payload threaded
 # through to dispatch_retrieval.
@@ -332,8 +483,11 @@ def test_texas_act_rejects_dispatch_receipt_missing_bundle_dir(
 
 def test_texas_act_dispatches_and_emits_bundle_reference(
     monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
 ) -> None:
     captured: dict[str, Any] = {}
+    bundle = tmp_path / "fixture-bundle"
+    shutil.copytree(FIXTURE_BUNDLE, bundle)
 
     def _fake_dispatch(
         *,
@@ -348,7 +502,7 @@ def test_texas_act_dispatches_and_emits_bundle_reference(
         captured["bundle_dir"] = bundle_dir
         return {
             "status": "mocked",
-            "bundle_dir": str(FIXTURE_BUNDLE.resolve()),
+            "bundle_dir": str(bundle.resolve()),
             "exit_code": 0,
             "command": None,
         }
@@ -356,7 +510,7 @@ def test_texas_act_dispatches_and_emits_bundle_reference(
     monkeypatch.setattr(
         "app.specialists.texas.graph.dispatch_retrieval", _fake_dispatch
     )
-    state = _build_state(cache_prefix=_envelope_cache_prefix())
+    state = _build_state(cache_prefix=_envelope_cache_prefix(bundle))
     update = _act(state)
     output = json.loads(update["cache_state"]["cache_prefix"])
     assert output["bundle_reference"]
@@ -371,7 +525,7 @@ def test_texas_act_dispatches_and_emits_bundle_reference(
     assert captured["directive_path"] == str(
         FIXTURE_ROOT / "fixture_directive.yaml"
     )
-    assert captured["bundle_dir"] == str(FIXTURE_BUNDLE)
+    assert captured["bundle_dir"] == str(bundle)
 
 
 # ---------------------------------------------------------------------------

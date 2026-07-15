@@ -1,0 +1,65 @@
+{
+  "schema_version": "ask-a-live-verdict.v1",
+  "story_id": "38.1",
+  "trial_id": "c8f17a24-9b63-4e10-a5d7-6f2043bc9812",
+  "attempt": 2,
+  "first_run_after_governed_correction": true,
+  "passed": false,
+  "terminal_state": "paused-at-error",
+  "terminal_node": "07W.1",
+  "terminal_error_tag": "workbook-brief.deep-dive-authority-invalid",
+  "terminal_error_message": "slide authority for slide-07 matched 0 files",
+  "governed_correction_witness": {
+    "ratified_los_sha256": "a41a942dffeca6f3842cfca17f61a1717e690fd6642a29138c71f789006ffd9e",
+    "lesson_plan_ratified_los_digest": "sha256:a41a942dffeca6f3842cfca17f61a1717e690fd6642a29138c71f789006ffd9e",
+    "digest_match": true,
+    "lesson_plan_sha256": "f203cfac641b8004760ea672d623c805e5d4f1841d5a935229ce42173b5ba29a"
+  },
+  "predecessor_diagnosis": {
+    "course_slide_authority_count": 6,
+    "segment_manifest_slide_count": 13,
+    "first_unmatched_slide_id": "slide-07",
+    "segment_manifest_sha256": "cb5d5eb21108f56465f31e1f998964785b212c82e4a8ba9e77afab1b13424aef"
+  },
+  "delegated_hil": {
+    "delegate_id": "codex_hil_runner",
+    "gate_actions": 8,
+    "policy_digest": "4205b4dcb2a34846bac0da9f889365eefd22969613aac4e1a4c65e055b9a74a5",
+    "completed_without_operator_keyboard": true
+  },
+  "ask_a": {
+    "reached": false,
+    "dispatcher_invocations": 0,
+    "completed_journal": false,
+    "coverage_associations": [],
+    "evidence_body_hashes": [],
+    "source_hashes": [],
+    "source_ref_doi_checks": [],
+    "credibility_fields": [],
+    "execution_receipt": null,
+    "zero_call_replay_proven": false
+  },
+  "artifact_hashes": {
+    "packet_sha256": null,
+    "ask_a_journal_sha256": null,
+    "envelope_sha256": "7c7d255e0a38b522a4f4d1179bd3d8a221abc79212d4dbe56d9b426ff57d3861",
+    "hil_journal_sha256": "51b48ba1a66b40d9444fda6de2c8c82e0a5f095f6c177693e2175481d7dc1f36",
+    "hil_summary_sha256": "f783e086208a156eb25d5cf4c35fe45dcbb20a946fcb55adeef9c949379fa58f"
+  },
+  "reload_equality": {
+    "checked": true,
+    "equal": true
+  },
+  "close_bar": {
+    "dispatcher_invocation_count": false,
+    "completed_journal": false,
+    "coverage_associations": false,
+    "evidence_and_source_hashes": false,
+    "source_ref_and_doi_checks": false,
+    "credibility_fields": false,
+    "execution_receipt": false,
+    "packet_journal_envelope_hashes": false,
+    "reload_equality": true,
+    "zero_call_replay": false
+  }
+}

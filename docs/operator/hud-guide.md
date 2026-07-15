@@ -1,37 +1,43 @@
-# Run HUD Guide
+# Operator HUD Guide (Epic 35 runtime HUD)
 
-Generate a snapshot:
+> **Rewritten 2026-07-15.** The legacy static-HTML HUD (`scripts/utilities/run_hud.py --open/--watch`) was **retired at Epic 35 story 35.8** — that module is now a deprecation stub exposing only the `PIPELINE_STEPS` lockstep projection. The operator HUD is now a **runtime-owned, GET-only localhost server** over a per-run projection file. Epic 35 closed 2026-07-12 with a unanimous party re-verdict: the HUD is **authorized for real operator use**.
 
-```bash
-.venv/Scripts/python.exe -m scripts.utilities.run_hud --open
+## How it launches
+
+The HUD launches **automatically with a trial**: `python -m app.marcus.cli trial start ...` starts the HUD server and the notifier as start-path children (`--hud on` is the default; pass `--hud off` to run without them — runtime pre-flight and heartbeats run regardless).
+
+Open it in a browser at:
+
+```
+http://localhost:8791
 ```
 
-Run live regeneration while a trial is active:
+- Port: `HUD_PORT` env var (default `8791`). Mode: `HUD_MODE` (default `session`).
+- The server is **GET-only** and localhost-bound — it can display state but can never mutate a run.
 
-```bash
-.venv/Scripts/python.exe -m scripts.utilities.run_hud --watch 30 --open
-```
+## What it shows
 
-Watch mode rewrites `reports/run-hud.html` every interval. The browser reload timer then shows fresh data because the file on disk changes.
+The HUD renders the run's **operator-surface projection** — `state/config/runs/<trial_id>/operator-surface.json` — written by a single writer (`app/marcus/orchestrator/operator_surface_assembler.py`) every time the runtime persists the envelope. Contract: `operator-surface.v1` (`app/models/runtime/operator_surface.py`; parity contract-pinned in `tests/contracts/`).
 
-## Panels
+Surfaces include: run/status header, the pending **gate card** (with a paste-ready `trial resume` inline-verdict command — all 8 gate classes witnessed paste-driven on the live E2E), specialist roster, event trace, cost/economics, and ambient instrument sections.
 
-- **System Health:** preflight result plus source-health checks from sprint-status and handoff files.
-- **Production Run:** legacy pipeline position and gate results from bundle sidecars.
-- **Dev Cycle:** sprint progress from `_bmad-output/implementation-artifacts/sprint-status.yaml`.
-- **Active Trial:** latest or selected migrated-runtime trial, per-agent cost, trace link, and drift alerts.
-- **Cost Engineering:** cascade preview, pricing preview, last-five-trial median cost, and `MARCUS_TRIAL_BUDGET_USD` soft cap.
-- **M5 Conditional Window:** remaining window posture and open-condition statuses while the window is relevant.
-- **Ad-hoc Mode:** quick command reference plus LangSmith ad-hoc trace availability.
+**No wrong-run fallback exists.** The April failure mode (HUD silently rendering the newest bundle from a different run) was deleted with the legacy reader chain, not bypassed — the HUD reads only the projection of the run that launched it.
 
-## Per-step summaries
+## Notifications
 
-Each Production Run step includes an expandable summary. The summary is derived from existing bundle artifacts, keyed by the manifest step ID and label. It shows the locked artifact source, captured fields when the source has structured metadata, and the artifact freshness timestamp. If the HUD cannot find a known artifact for a step, it says `no locked artifact yet`.
+- Config: `state/config/hud-config.yaml` — per-event-class matrix (`paused_at_gate`, error classes, …) with `enabled` / `sound` / `push` toggles. Unknown keys are rejected; an unreadable file falls back to defaults and the HUD says so ("config unreadable — defaults active").
+- On-HUD toast + sound are the HUD page's channel; phone push goes through the `app/notify/` ntfy notifier (+ watchdog).
+- **Push credentials are never in the YAML** — they live in the `HUD_PUSH_URLS` env var only.
 
-The current step and any step with warnings or blockers auto-expand. Saved collapse state is ignored for current, warning, and blocker steps so urgent states are visible after every refresh. You can manually collapse an urgent step after seeing it, but the next render opens it again while the status remains urgent. Other steps preserve expand/collapse state through browser refresh via `sessionStorage`; the state key is based on each stable step summary ID. Clearing browser session storage resets all non-urgent expansion state to defaults.
+## Acting on a gate
 
-`--watch` remains pull-based: the CLI rewrites `reports/run-hud.html` on the requested interval, and the browser reloads the rewritten file. There is no push event bus.
+The HUD is read-only; verdicts go through the CLI. Copy the paste command from the gate card — it is a `python -m app.marcus.cli trial resume --trial-id <id> ...` inline-verdict invocation — run it in a shell, and watch the HUD update as the walk resumes.
 
-Use `--trial-id <id>` to pin the active-trial panel. Use `--no-adhoc-panel` if you do not want the HUD to query the ad-hoc LangSmith project.
+## Known non-blocking debt (Epic 35 close record)
 
-At a 30 second watch interval, the expected overhead is negligible: filesystem reads, local cost-report parsing, optional Postgres/checkpointer reads as that substrate becomes available, and a cheap LangSmith project query.
+Batch pause-class rendering un-witnessed live; browser DOM/notification witness; L2-golden gate-snapshot. Workbook runs are typically driven by the governed live-test runner with HUD OFF (runner-enforced) — see `docs/admin-guide.md` §Workbook Live Authoring.
+
+## Pointers
+
+- Dev-side substrate map: `docs/dev-guide.md` §Current Status (Epic 35 bullet).
+- Close record: `docs/project-context.md` §2026-07-11 addendum; stories under `_bmad-output/implementation-artifacts/`.

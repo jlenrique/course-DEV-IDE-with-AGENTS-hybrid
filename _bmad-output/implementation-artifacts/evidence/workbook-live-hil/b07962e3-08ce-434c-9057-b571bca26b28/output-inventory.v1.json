@@ -1,0 +1,402 @@
+{
+  "artifact_digest": "bbd489a60718b0033290e6871b80dd2fd4e21aea27de0aabcf607a16e809f93a",
+  "created_at": "2026-07-14T18:01:27.172773Z",
+  "file_count": 76,
+  "files": [
+    {
+      "path": "primary-run/.codex-hil-runner-origin.json",
+      "sha256": "ca9eee8177014058d2a78b6848062ae026dcb50058fe8c5a670ccf6d3afcaa13",
+      "size": 224
+    },
+    {
+      "path": "primary-run/.cost-report.lock",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "path": "primary-run/bundle/.texas-hardening.lock",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "size": 1
+    },
+    {
+      "path": "primary-run/bundle/extracted.md",
+      "sha256": "c1cb5ec4c4ab41ab76076cbf7e9a11d727e6b7b2f79dc8aeb88fee4ef012d522",
+      "size": 6781
+    },
+    {
+      "path": "primary-run/bundle/extraction-report.yaml",
+      "sha256": "410cf387df2cbc4664888e9593b9e05b2677c271160cf8fd33dc3af21c9b5d74",
+      "size": 12864
+    },
+    {
+      "path": "primary-run/bundle/ingestion-evidence.md",
+      "sha256": "0940ccdfa58a9a6c4e739ba5cd7bfcb9c1a3d42f727f1cc041a560969091e6b2",
+      "size": 11567
+    },
+    {
+      "path": "primary-run/bundle/manifest.json",
+      "sha256": "8209134f62f03b796b6b734668e0ad30ff24c07636b4b3351971b9a350582725",
+      "size": 1062
+    },
+    {
+      "path": "primary-run/bundle/metadata.json",
+      "sha256": "4b5f3ee154a3a536e0a00b75a760a25d47c4c11d3cf3ea80d4d658bbc906c9f3",
+      "size": 10998
+    },
+    {
+      "path": "primary-run/bundle/result.yaml",
+      "sha256": "355bdabd122eb44ebe6eaf04e0345226b30a0c4f1a0d00a45eaf4e5e167fd0b6",
+      "size": 10901
+    },
+    {
+      "path": "primary-run/checkpoint.json",
+      "sha256": "6c6c0ceda4aa389b8578928d4490ee60c5bd08d12625f10346e7a1361d5c9746",
+      "size": 596619
+    },
+    {
+      "path": "primary-run/conversation/G1/0000.json",
+      "sha256": "315167def4f4e2bedb6eceba158f0495010662b324de43243ed52aa922b807a0",
+      "size": 1185
+    },
+    {
+      "path": "primary-run/cost-report.json",
+      "sha256": "b3c8493ad069b38cefef95560e0ec4ef1a7e5628c3bc575460f728545f0d3aa0",
+      "size": 1051
+    },
+    {
+      "path": "primary-run/cost-report.md",
+      "sha256": "81aaae58e7fadfa905e61d7815f5bb355bb9561117fdd50b2efd23bb12f81e12",
+      "size": 831
+    },
+    {
+      "path": "primary-run/decision-card-G0E.json",
+      "sha256": "b4579d3acf92cf6625093e00823d6dd66e73670ea825230d2f6300441c2954ee",
+      "size": 19599
+    },
+    {
+      "path": "primary-run/decision-card-G0R.json",
+      "sha256": "d91193a6351d7c6ef0b915812844fd44dbbac8aa786bc750487dd343436b4ef8",
+      "size": 27412
+    },
+    {
+      "path": "primary-run/decision-card-G1.json",
+      "sha256": "65ef60c5ba107e9e0aec4527ec45726f43ddd1215d6102b3e6af7ae56974e0ce",
+      "size": 1851
+    },
+    {
+      "path": "primary-run/decision-card-G2B.json",
+      "sha256": "24cf42d4f1615f81202a0219eccfcb5cb54003863bd0f59715cab25579f78588",
+      "size": 7484
+    },
+    {
+      "path": "primary-run/directive.yaml",
+      "sha256": "e13f003129e6911df795c33c2b2b644babec50ce0e8c2e59cc258e4a91584388",
+      "size": 4056
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/1_The-Human-Cost-System-Waste-and-Burnout.png",
+      "sha256": "4a39fb3844bc4955ce85e83c0c8bb8a992fea32e2d9696fb410f5f76534d22e5",
+      "size": 2286412
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/2_Burnout-as-a-System-Design-Problem.png",
+      "sha256": "504719361cce46891d8bf64c2179c8cc9a6f1611a4d4e6cfada02684bb7572c5",
+      "size": 643531
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/3_The-Knowledge-Explosion-and-New-Technologies.png",
+      "sha256": "30491df0140a49798d6e0dccb4331d6d19c5b72bf40eb2a18cf35fb7d22de48a",
+      "size": 2599455
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/4_Technology-Examples-That-Reshape-Care-and-Training.png",
+      "sha256": "417ac25f5765f4e401c6efd53da28aa7ce89ff2170af0400101570bf3b6f8624",
+      "size": 848246
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/5_The-Consumer-Shift-and-The-Digital-Front-Door.png",
+      "sha256": "2640a6a7fa8a53cc7573b43ac760dbe408809231df0a070f8c48e2dfb3282e24",
+      "size": 717213
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/6_The-Leadership-Gap.png",
+      "sha256": "c555e8f6de1f452a6b225d35f0c3f03864780e8c4825fbd0b02abe648f7316e5",
+      "size": 268571
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/7_Why-Systems-Thinking-Leadership-Matters-Now.png",
+      "sha256": "a0fb93c4acb4cc8aeaf137f193f4b53661d25cb119bae20a0acb855f60a7c277",
+      "size": 264487
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_A-creative_pages/8_Part-2-Summary-and-Knowledge-Check.png",
+      "sha256": "1d7d1fb59184ea1c120c3dc9bf78f36887a194efbb19d7ed5100e0ad3d0e6587",
+      "size": 1570707
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-02.png",
+      "sha256": "4a39fb3844bc4955ce85e83c0c8bb8a992fea32e2d9696fb410f5f76534d22e5",
+      "size": 2286412
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-04.png",
+      "sha256": "504719361cce46891d8bf64c2179c8cc9a6f1611a4d4e6cfada02684bb7572c5",
+      "size": 643531
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-05.png",
+      "sha256": "30491df0140a49798d6e0dccb4331d6d19c5b72bf40eb2a18cf35fb7d22de48a",
+      "size": 2599455
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-08.png",
+      "sha256": "417ac25f5765f4e401c6efd53da28aa7ce89ff2170af0400101570bf3b6f8624",
+      "size": 848246
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-09.png",
+      "sha256": "2640a6a7fa8a53cc7573b43ac760dbe408809231df0a070f8c48e2dfb3282e24",
+      "size": 717213
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-10.png",
+      "sha256": "c555e8f6de1f452a6b225d35f0c3f03864780e8c4825fbd0b02abe648f7316e5",
+      "size": 268571
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-12.png",
+      "sha256": "a0fb93c4acb4cc8aeaf137f193f4b53661d25cb119bae20a0acb855f60a7c277",
+      "size": 264487
+    },
+    {
+      "path": "primary-run/exports/gary/A-creative_slide-13.png",
+      "sha256": "1d7d1fb59184ea1c120c3dc9bf78f36887a194efbb19d7ed5100e0ad3d0e6587",
+      "size": 1570707
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/1_The-Economic-and-Structural-Reality.png",
+      "sha256": "4bf5478baa9b0698d12c955bba153cfdde7c74eb92d68232ae2096ce358c723b",
+      "size": 856934
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/2_Administrative-Waste-and-Human-Cost.png",
+      "sha256": "141652a868d961b2b26af43199e64d7f71aa578c1e061f8fe5db3a07ea568713",
+      "size": 1019817
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/3_Knowledge-Doubling-and-Static-Training-Limits.png",
+      "sha256": "647379623537a744ba85f9b1886adde6b28f64c4e2e6a401d3337fe16d75255f",
+      "size": 529905
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/4_AI-Adoption-Without-Adequate-Oversight-Training.png",
+      "sha256": "940909c90eb602d5e4af3a7c54043f64967c90f8efc7f420be2f0322bd247bcc",
+      "size": 552951
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_A-literal_pages/5_High-Leadership-Interest-Low-Formal-Training.png",
+      "sha256": "57bb02d50a44444a1e0633b21f0d41c74831b42e7b3c522c8d245c180300c272",
+      "size": 1366886
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-01.png",
+      "sha256": "4bf5478baa9b0698d12c955bba153cfdde7c74eb92d68232ae2096ce358c723b",
+      "size": 856934
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-03.png",
+      "sha256": "141652a868d961b2b26af43199e64d7f71aa578c1e061f8fe5db3a07ea568713",
+      "size": 1019817
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-06.png",
+      "sha256": "647379623537a744ba85f9b1886adde6b28f64c4e2e6a401d3337fe16d75255f",
+      "size": 529905
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-07.png",
+      "sha256": "940909c90eb602d5e4af3a7c54043f64967c90f8efc7f420be2f0322bd247bcc",
+      "size": 552951
+    },
+    {
+      "path": "primary-run/exports/gary/A-literal_slide-11.png",
+      "sha256": "57bb02d50a44444a1e0633b21f0d41c74831b42e7b3c522c8d245c180300c272",
+      "size": 1366886
+    },
+    {
+      "path": "primary-run/exports/gary/gary_A_creative.png",
+      "sha256": "24b8ec4666d86334abc8c9ee55b43b60f29e3a44799903729878fb47cd9ea3aa",
+      "size": 9199962
+    },
+    {
+      "path": "primary-run/exports/gary/gary_A_literal.png",
+      "sha256": "15209aaad16d6964d9085c0cc8c0c790e489f11032046523604c1e2ebee77d73",
+      "size": 4327367
+    },
+    {
+      "path": "primary-run/g0-enrichment-cache/67e7bd6cb7602db3c50d1588c1266bddfb7e7c2ebae0621f455e74f91bb30ee1.json",
+      "sha256": "36985d56c64ac0b2f6c98af8e7e20298a7ce23409986a038d0cdc7848ae3a808",
+      "size": 36425
+    },
+    {
+      "path": "primary-run/g0-enrichment.json",
+      "sha256": "68ea00267bf2516fcd079835c2dae59106b840ec0a3d67c5565f5e3d56f1f770",
+      "size": 28427
+    },
+    {
+      "path": "primary-run/irene-pass1-call-04A.v1.json",
+      "sha256": "1e36afc0dfec0de57d7f8fed850a26a13505e75250bc0e4ac1cb2c86d2b8d14b",
+      "size": 289544
+    },
+    {
+      "path": "primary-run/irene-pass1-call-05.v1.json",
+      "sha256": "117c811e1bb28a8c3971ddaa67a2c76be9155433e29a5263a00d7bba25c5fdf8",
+      "size": 390929
+    },
+    {
+      "path": "primary-run/irene-pass1-call-05B.v1.json",
+      "sha256": "0abce0f7ad24de12a24c2896679d655c5d5dee1e80498009407b74dd0cfdb48f",
+      "size": 395101
+    },
+    {
+      "path": "primary-run/irene-pass1.lesson-plan.json",
+      "sha256": "67e991b1fbe5c13a04dc724d9519c5567d74f3272d2e67164f41feb0a553a6f3",
+      "size": 33369
+    },
+    {
+      "path": "primary-run/irene-pass1.md",
+      "sha256": "2ee1a68beedcd4b185dac44bb2f9eb2975443d842c51af2a911d62f4a83a52de",
+      "size": 15334
+    },
+    {
+      "path": "primary-run/irene-pass1.plan-authority.json",
+      "sha256": "274712a812a643576ce01371e650c2c4d56e7bf2cc635cb21f0df858cc024056",
+      "size": 13614
+    },
+    {
+      "path": "primary-run/irene-refinement-cache/67e7bd6cb7602db3c50d1588c1266bddfb7e7c2ebae0621f455e74f91bb30ee1.json",
+      "sha256": "32042361ff39415305517efb395ad5ebf720e94d0a9fbe028de958550e1cb712",
+      "size": 26008
+    },
+    {
+      "path": "primary-run/irene-refinement.json",
+      "sha256": "270907b557d9e4bb3a4cf8c955a574ac9def3d8bb7c2399a28a0d7a2a260d8c0",
+      "size": 25237
+    },
+    {
+      "path": "primary-run/model_resolution_trail.json",
+      "sha256": "e505313f927b4cbaba0ac1c1326d8ebe23cd736062d6b8a5f2fe4097862dc219",
+      "size": 350
+    },
+    {
+      "path": "primary-run/operator-surface.json",
+      "sha256": "e4cdc781e9515e974a978d052e9bd977cbb71b52576c47d9596caa7ebc18d77f",
+      "size": 23525
+    },
+    {
+      "path": "primary-run/ratified-los.json",
+      "sha256": "a41a942dffeca6f3842cfca17f61a1717e690fd6642a29138c71f789006ffd9e",
+      "size": 10444
+    },
+    {
+      "path": "primary-run/resume-command.json",
+      "sha256": "0bbad8aba158174819f2e04ff3a187354aab444f89d69403c189aedda2aaaa9e",
+      "size": 75448
+    },
+    {
+      "path": "primary-run/run.json",
+      "sha256": "fffdfe3d98bc657029fa66dd336d93dbbb48d9201b28f727cc2e9d2089c3f786",
+      "size": 71709
+    },
+    {
+      "path": "primary-run/run_summary.yaml",
+      "sha256": "ed5a2c7922713b1166d3ce95c7e65c08ae7b36816a0fbd13984c63a101ae3dfe",
+      "size": 370
+    },
+    {
+      "path": "primary-run/trace-fixture.json",
+      "sha256": "3e965b634053a867501572a4b310b54bd4e4c18d523509a6a257b6f88e501f3a",
+      "size": 3342
+    },
+    {
+      "path": "primary-run/trial-start.json",
+      "sha256": "608aa714e14784aa27dcf87e581c1ee7bdaa7bae3c34373a0ef1e322ce38357e",
+      "size": 1309
+    },
+    {
+      "path": "primary-run/workbook-runtime-context.v1.json",
+      "sha256": "7cadc9d6249d523df09d6e82e594865296ded08c026dcf84c910c0e48d4bb362",
+      "size": 304
+    },
+    {
+      "path": "state-config-run/fidelity/g0-vera-20260714T180104726724Z.json",
+      "sha256": "fe9a2f67be3cb4d4e852c03c86de0362bb432e0791389af0bebd9a5304e71776",
+      "size": 1860
+    },
+    {
+      "path": "state-config-run/specialist-summaries/gary-20260714T180104653839Z.md",
+      "sha256": "c0a061e83c87ef659bc8537699c3eb37b7c12229a49a7b884ddc95e6d6efe398",
+      "size": 554
+    },
+    {
+      "path": "state-config-run/specialist-summaries/irene_pass1-20260714T175646426145Z.md",
+      "sha256": "23e480ee3b4adef9dad76f9c7b327d734c4f59299e2966164792f4c5294a71c5",
+      "size": 558
+    },
+    {
+      "path": "state-config-run/specialist-summaries/irene_pass1-20260714T175754938629Z.md",
+      "sha256": "88257537e26b781e626637803a5ce067358fa6ed99e942c163a04bc2d9c0e1f2",
+      "size": 558
+    },
+    {
+      "path": "state-config-run/specialist-summaries/irene_pass1-20260714T175836144332Z.md",
+      "sha256": "f5a1602d40b935cb868477ece89b4b08102f22f5b2a1c7c9b5719681fc4f5196",
+      "size": 558
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260714T180104807116Z.md",
+      "sha256": "5c5a4f3fc4a35cc5fc964a437beacab688c3c48c84a2ee4ed3e97b385f75b1be",
+      "size": 451
+    },
+    {
+      "path": "state-config-run/specialist-summaries/quinn_r-20260714T180104810463Z.md",
+      "sha256": "148110becff5cde639ec77a8585f60ff8f4504b531ebe6b3a6ef28e40741e355",
+      "size": 579
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260714T175540744869Z.md",
+      "sha256": "81777c509d750ad35544a92b1e2425ad73f8356b8536e429b5506d782c8456c6",
+      "size": 589
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260714T175543652612Z.md",
+      "sha256": "d3e54f070686ce43d5bd795b03ddc9d00bf1c5bdaf6397f8a5491121632f0532",
+      "size": 589
+    },
+    {
+      "path": "state-config-run/specialist-summaries/vera-20260714T180104727733Z.md",
+      "sha256": "281e0da733629ce4d83463d75ae746b6b9bc17e59e4b0e133c742b79af044ccc",
+      "size": 599
+    },
+    {
+      "path": "state-config-run/specialist-summaries/vera-20260714T180104732961Z.md",
+      "sha256": "045d2db64f5a1302a144c8f21bb72405cce65f3c15a36b4f540e0af4f0dba08c",
+      "size": 567
+    }
+  ],
+  "inventory_digest": "647694e29fc489310c84cdd530f9f2e7916f6c3ce947c7b8b4607580af0cd67d",
+  "output_roots": [
+    {
+      "label": "primary-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\b07962e3-08ce-434c-9057-b571bca26b28",
+      "present": true
+    },
+    {
+      "label": "state-config-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\b07962e3-08ce-434c-9057-b571bca26b28",
+      "present": true
+    }
+  ],
+  "schema_version": "governed-run-output-inventory.v1",
+  "trial_id": "b07962e3-08ce-434c-9057-b571bca26b28"
+}

@@ -1,0 +1,25 @@
+{
+  "seeds": [
+    {
+      "seed_id": "procedure-delay-practice",
+      "text": "Recurring transport delays block discharge work.",
+      "source_ref": "dry-fixture:procedure#practice-1",
+      "source_kind": "slide_body",
+      "slide_key": "slide-practice",
+      "sme_scenario": false
+    }
+  ],
+  "candidate_ids": ["procedure-delay-practice"],
+  "lesson_type_evidence": {
+    "fresh_pain": false,
+    "bridge_identity": false,
+    "skill_build": true,
+    "evidence_refs": ["dry-fixture:procedure#practice-1"]
+  },
+  "payoff_slide_inventory": ["slide-practice"],
+  "payoff_slide_keys": ["slide-practice"],
+  "requested_coverage": "single_slide",
+  "required_capabilities": ["scene"],
+  "available_coverage": "single_slide",
+  "available_capabilities": ["scene"]
+}

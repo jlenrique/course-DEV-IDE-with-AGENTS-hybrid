@@ -18,10 +18,14 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+import pytest
+
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.irene_pass1 import _act as pass1_act
+from tests._helpers.pass1_bundle import write_primary_slide_bundle
+from tests._helpers.pass1_catalog_response import select_catalog_ids
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -37,7 +41,7 @@ class _FakeChat:
         assert messages[0]["role"] == "system"
         assert "plan_units" in messages[1]["content"]
         return SimpleNamespace(
-            content=self.response_text,
+            content=select_catalog_ids(self.response_text, messages),
             usage_metadata={"input_tokens": 1400},
         )
 
@@ -399,15 +403,9 @@ def test_cluster_literal_tuples_match_pass2_canonical_sets() -> None:
 # --------------------------------------------------------------------------- #
 # AC-5 — fallback unit becomes a normalized size-1 cluster                     #
 # --------------------------------------------------------------------------- #
-def test_ac5_fallback_unit_is_size1_cluster() -> None:
-    plan = pass1_act.parse_pass1_response("this is not json at all")
-    units = plan["plan_units"]
-    assert len(units) == 1
-    unit = units[0]
-    assert unit["cluster_role"] == "head"
-    assert unit["cluster_position"] == "establish"
-    assert unit["cluster_id"]
-    assert unit["cluster_interstitial_count"] == 0
+def test_ac5_invalid_framing_fails_before_cluster_normalization() -> None:
+    with pytest.raises(pass1_act.Pass1AuthorityError, match="structured JSON object"):
+        pass1_act.parse_pass1_response("this is not json at all")
 
 
 # --------------------------------------------------------------------------- #
@@ -584,7 +582,7 @@ def test_ac8_cluster_bearing_units_round_trip_to_gary() -> None:
 def test_act_locked_scope_carries_cluster_fields(tmp_path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text("# Corpus\n\nSource.", encoding="utf-8")
+    write_primary_slide_bundle(bundle, "# Corpus\n\nSource.")
     response = json.dumps(
         {
             "lesson_summary": "summary",
@@ -594,6 +592,7 @@ def test_act_locked_scope_carries_cluster_fields(tmp_path) -> None:
                     "title": "Head",
                     "learning_objective": "lo",
                     "scope_decision": "in-scope",
+                    "source_refs": ["Source."],
                     "rationale": "r",
                     "cluster_id": "c-h",
                     "cluster_role": "head",
@@ -606,6 +605,7 @@ def test_act_locked_scope_carries_cluster_fields(tmp_path) -> None:
                     "title": "Inter",
                     "learning_objective": "lo",
                     "scope_decision": "in-scope",
+                    "source_refs": ["Source."],
                     "rationale": "r",
                     "cluster_id": "c-h",
                     "cluster_role": "interstitial",

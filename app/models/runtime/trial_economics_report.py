@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.state._base import enforce_tz_aware
 
@@ -42,7 +42,7 @@ class BudgetStatus(BaseModel):
 
     model_config = ConfigDict(extra="forbid", validate_assignment=True, strict=True)
 
-    state: Literal["no-cap", "under-budget", "over-budget-warning"]
+    state: Literal["no-cap", "under-budget", "over-budget-warning", "unknown-cost"]
     over_by_usd: float = Field(..., ge=0.0)
 
 
@@ -71,6 +71,18 @@ class TrialEconomicsReport(BaseModel):
     langsmith_trace_url: str | None = None
     drift_alerts: list[DriftAlert] = Field(default_factory=list)
     budget_status: BudgetStatus
+    cost_posture: Literal[
+        "exact",
+        "known-lower-bound-with-explicit-unavailable-attempts",
+    ] = "exact"
+    unavailable_attempt_count: int = Field(default=0, ge=0)
+
+    @model_validator(mode="after")
+    def _cost_posture_matches_unavailable_count(self) -> TrialEconomicsReport:
+        exact = self.cost_posture == "exact"
+        if exact != (self.unavailable_attempt_count == 0):
+            raise ValueError("cost posture contradicts unavailable-attempt count")
+        return self
 
     @field_validator("measured_at")
     @classmethod

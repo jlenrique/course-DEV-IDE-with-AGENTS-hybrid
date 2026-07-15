@@ -15,7 +15,7 @@ The startup protocol **reads** certain files; the wrapup protocol **writes** the
 | `docs/agent-environment.md` | Step 1 | Step 5 | MCP / API / tool / skill inventory for agents. |
 | `bmm-workflow-status.yaml` | Step 4 | Step 3 | BMAD phase and workflow transitions. |
 | `sprint-status.yaml` | Step 4 | Step 4a | **Canonical Kanban ledger** — epic/story progression through BMAD workflows. |
-| Guides (user/admin/dev) | Step 4 on-demand | Step 9 | Large stable docs — updated only when content changes. |
+| Guides (user/admin/dev/specialist) | Step 4 on-demand | Step 9 | **Living docs — evolve WITH the app.** Reviewed for currency every Class S session; MUST update when a change (especially a bug / live-run insight) alters how the app is used, operated, developed, or how agents/services/functions integrate. |
 | `reports/dev-coherence/<ts>/` | — | Step 0 (Class S only) | Audit trail for Cora-orchestrated sweeps. |
 
 > **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth (tracked). `next-session-start-here.md` is the local hot-start cache (gitignored). Every risk, blocker, or unresolved finding MUST appear in SESSION-HANDOFF.md (Step 8); next-session-start-here.md mirrors what's needed for the fastest next-session ramp.
@@ -159,7 +159,12 @@ If `next-session-start-here.md` is missing on a fresh clone next session, the ne
 **Skip if none of the following changed this session.**
 
 Touch the smallest required set:
-- **Guides** (`docs/user-guide.md` / `admin-guide.md` / `dev-guide.md`) — update if the session changed something they document (new skill, new API client, new workflow, architecture change).
+- **Guides — living docs that evolve WITH the app.** Review them for currency **every Class S session** (not just "when convenient") and update the smallest required set. The four guide surfaces:
+  - `docs/user-guide.md` — operator-facing behavior/expectations of the product surface.
+  - `docs/admin-guide.md` — operational/runtime knobs and how to run things (e.g. live toggles like `MARCUS_G0_DISPATCH_LIVE=1`, governed live-run posture).
+  - `docs/dev-guide.md` + the `docs/dev-guide/` tree — builder mechanics (new skill, API client, workflow, architecture change).
+  - **Specialist guide** — `docs/dev-guide/how-to-add-a-specialist.md` (+ the `specialist-*.md` family) — how a new specialist is correctly integrated.
+  - **MANDATORY trigger (operator directive 2026-07-15):** when a change — **especially a bug or live-run defect** — reveals how future **agents, services, or functions must be integrated** into the app (dispatch/state-threading contracts, required-output validation, authority / source-of-truth rules, a new runtime knob), update the relevant guide in THIS closeout so the next builder does not rediscover it the hard way. Fold the guide update into the same commit as the fix.
 - **Reuse + pattern artifacts** — `design-patterns.md`, `service-catalog.md`, `course-content/_templates/`, `resources/tool-inventory/`, `reuse-first-protocol.md`.
 - **Structural-walk definitions** — `state/config/structural-walk/standard.yaml` + `motion.yaml` + `docs/structural-walk.md`, only if canonical workflow / gate names / artifact contracts / bundle assets / walk-covered families changed.
 - **Knowledge graph + ONBOARDING.md** — if substantive substrate changes landed (≥10 files in app/scripts/skills/ OR pipeline-manifest/schema/manifest changes OR Epic close), recommend the operator regenerate `.understand-anything/knowledge-graph.json` via `/understand` and re-emit `docs/ONBOARDING.md` via `/understand-anything:understand-onboard`. Staleness anchor: `.understand-anything/meta.json::gitCommitHash` vs HEAD. **Incremental-update gotcha:** the merge step's filename regex only matches `batch-<N>.json` / `batch-<N>-part-<K>.json`, so the carried-over `batch-existing.json` for unchanged files is silently dropped (every unchanged-file node lost) — rename it to a numeric batch (e.g. `batch-9000.json`) before merging, or run `/understand --full`.

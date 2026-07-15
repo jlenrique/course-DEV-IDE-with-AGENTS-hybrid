@@ -109,3 +109,32 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-empty-companions-smoke.md`
   summary: A nonexistent run_dir (typo'd runs_root/trial_id) at the runner seam returns None silently — ratified framing dropped with no signal, indistinguishable from legitimately-absent companions.
   evidence: Review pass 2026-07-11; planning_context.py ~333-336 treats missing dir as absent-files.
+
+## Deferred from: code review of 38-3a-research-packet-consume-side (2026-07-14)
+
+- [edge] Signed percentage surfaces such as `-5%` currently lose their sign in the shared figure-token neck and can compare as positive percentages. This behavior predates Amendment 8; address as a separate fidelity-hardening slice with explicit signed-number semantics.
+- [edge] Leading-decimal percentage surfaces such as `.5%` currently suffix-match as `5%`. This behavior predates Amendment 8; address with signed/decimal token-boundary hardening rather than broadening the live-run correction.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-lo-overlay-bridge-fix.md`
+  summary: Pin the G0 enumeration-provenance locator shape contract at the producer (corpus-relative posix, no case/unicode variance) so the exact-equality authority join has a specified upstream.
+  evidence: T4 Blind Hunter — the join's locator side is unvalidated free text from the enrichment card; the consumer deliberately joins by exact equality (spec W2), so shape discipline belongs at the G0 producer, not the workbook consumer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-lo-overlay-bridge-fix.md`
+  summary: Harden read_slide_authority_map so pathological input (e.g. RecursionError from deeply nested JSON) is funneled into SlideAuthorityInvalidError like the rest of its failure envelope.
+  evidence: T4 Edge Case Hunter — json.loads can raise RecursionError, which escapes the reader's OSError/ValueError catch and would crash every caller (workbook_wiring + the 07W bridge seam); pre-existing reader behavior, not caused by this story.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-pass1-head-self-parent-normalize.md`
+  summary: Cover the Pass-1 REFINEMENT path against the head-self-parent live-variance tic — _validate_raw_refinement_identity runs BEFORE normalize_clusters, so the same model shape on a plan-refinement pass red-rejects as "changed immutable parent_slide_id"; consider normalizing the raw payload before the identity check (same provably-empty predicate) plus a parse-path seam test through _normalize_decoded_pass1_response.
+  evidence: T4 Blind Hunter on the 38-3a normalization diff — _act.py ~L1217 ordering (identity check precedes normalization); not on the governed workbook run's critical path (delegated HIL policy never triggers Pass-1 refinement), so deferred rather than batched.
+
+- source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
+  summary: Fold the LO shippability bar (0 placeholder statements AND no "Enrichment overlay loss" callout) into the runner's `_assert_completed_workbook_deliverable` so it is machine-asserted, not human-verified, at the next 07W touch (closure rider M-R3).
+  evidence: Closure-party Murat — the verdict-honesty check asserts presence + basic conformance only; the J-A bar for trial 8b275e5b was verified by human audit.
+
+- source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
+  summary: BINDING RIDER (M-R2) on the earlier Pass-1 refinement-path defer — the refinement-identity normalization gap must ride into the NEXT Pass-1-touching story's T1 readiness reading, not sit passively in this register.
+  evidence: Closure-party Murat — the same live-model tic that froze witness 5ee9ac39 red-rejects on any plan-refinement pass because _validate_raw_refinement_identity runs before normalize_clusters.
+
+- source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
+  summary: Workbook exercise path variance + answer leakage — 8b275e5b rendered 6 knowledge-check-lifted exercises (vs 13 authored per-unit on a940c5eb) and 2 prompts carry their Correct Answer inline before the Answer Key; adjudicate fix-induced vs live variance at the epic-38 retrospective and file the answer-strip fix (Epic 39 grooming).
+  evidence: Closure-party John F2 — direct diff of the two passing runs' rendered workbooks.

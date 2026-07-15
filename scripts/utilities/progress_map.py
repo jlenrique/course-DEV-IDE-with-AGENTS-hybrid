@@ -173,6 +173,11 @@ WAVE_LABELS: dict[str, str] = {
     "agentic-research-foundations": "Agentic Research Foundations",
     "workbook-research-products": "Workbook Research Products",
     "35-operator-hud-v1": "Operator HUD v1 Flight Deck",
+    "36-prework-producer": "Workbook Pre-work Producer",
+    "37-review-deep-dive-producer": "Workbook Review & Deep Dive Producer",
+    "38-research-asks-graph": "Workbook Research Asks Graph",
+    "39-glossary-trends-render": "Workbook Glossary & Trends Rendering",
+    "40-cover": "Workbook Cover & Final Assembly",
 }
 
 # ---------------------------------------------------------------------------

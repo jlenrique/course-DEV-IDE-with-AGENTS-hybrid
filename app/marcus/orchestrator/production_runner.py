@@ -47,6 +47,7 @@ from app.marcus.orchestrator import (
     specialist_summary_writer,
     storyboard_publisher,
     udac_wiring,
+    workbook_wiring,
 )
 from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.operator_surface_assembler import (
@@ -87,8 +88,16 @@ from app.models.state.cache_state import CacheState
 from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import LlmExecutionMode, RunState
-from app.runtime.cascade_config import ensure_pricing_covers_cascade, load_cascade, load_pricing
-from app.runtime.economics import RUNS_ROOT, measure_trial_cost, record_trial_cost_report
+from app.runtime.cascade_config import (
+    ensure_pricing_covers_cascade,
+    load_cascade,
+    load_pricing,
+)
+from app.runtime.economics import (
+    RUNS_ROOT,
+    measure_trial_cost,
+    record_trial_cost_report,
+)
 from app.runtime.llm_batch.adapter import LiteLlmBatchAdapter
 from app.runtime.llm_batch.cost_report import emit_batch_cost_report_fail_soft
 from app.runtime.llm_batch.errors import WaitingForProviderBatchError
@@ -127,9 +136,7 @@ RESEARCH_DISPATCH_LIVE_ENV = "MARCUS_RESEARCH_DISPATCH_LIVE"
 # whitespace, truthy, unrecognized — defaults to live-ON. Enumerated as a real
 # code contract (mirrors S5's g0_enrichment F-1802 kill-switch model), NOT
 # ``value in TRUTHY`` (which would wrongly stay OFF on the canonical unset run).
-RESEARCH_DISPATCH_LIVE_KILL_SWITCH: frozenset[str] = frozenset(
-    {"0", "false", "no", "off"}
-)
+RESEARCH_DISPATCH_LIVE_KILL_SWITCH: frozenset[str] = frozenset({"0", "false", "no", "off"})
 
 
 def _research_dispatch_live() -> bool:
@@ -194,9 +201,7 @@ class PreflightGateFailed(RuntimeError):  # noqa: N818 — a gate outcome, named
     def __init__(self, trial_id: UUID | str, blocking_items: list[Any]) -> None:
         self.trial_id = trial_id
         self.blocking_items = blocking_items
-        names = ", ".join(
-            f"{item.name}={item.state}" for item in blocking_items
-        ) or "<none>"
+        names = ", ".join(f"{item.name}={item.state}" for item in blocking_items) or "<none>"
         super().__init__(
             f"pre-flight blocked SPOC spawn for trial {trial_id}: {names}. "
             "Fix the failed dependency and re-run trial start."
@@ -231,9 +236,7 @@ def _udac_ratify_gate(gate_code: str | None, trial_id: UUID | str, runs_root: Pa
     """
     if not udac_wiring.udac_active():
         return
-    udac_wiring.record_gate_ratification(
-        gate_code=gate_code, run_dir=_run_dir(trial_id, runs_root)
-    )
+    udac_wiring.record_gate_ratification(gate_code=gate_code, run_dir=_run_dir(trial_id, runs_root))
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
@@ -298,10 +301,24 @@ def _operator_surface_cost_reading(
     raises — returns ``(None, "unknown")`` when nothing is resolvable.
     """
     try:
-        path = runs_root / str(trial_id) / "cost-report.json"
-        if path.is_file():
-            data = json.loads(path.read_text(encoding="utf-8"))
-            cost = data.get("total_cost_usd") if isinstance(data, dict) else None
+        run_dir = runs_root / str(trial_id)
+        path = run_dir / "cost-report.json"
+        transaction = run_dir / "cost-report-transaction.v1.json"
+        if path.is_file() and not transaction.exists():
+            raw_report = path.read_text(encoding="utf-8")
+            data = json.loads(raw_report)
+            if (
+                not isinstance(data, dict)
+                or "cost_posture" not in data
+                or "unavailable_attempt_count" not in data
+            ):
+                return None, "unknown"
+            from app.models.runtime import TrialEconomicsReport
+
+            validated = TrialEconomicsReport.model_validate_json(raw_report)
+            if validated.cost_posture != "exact":
+                return None, "unknown"
+            cost = validated.total_cost_usd
             if isinstance(cost, (int, float)) and cost >= 0:
                 return float(cost), "proxy"
     except Exception:  # noqa: BLE001
@@ -440,9 +457,7 @@ def _operator_surface_modalities(
         elif research_detective_gate.landing_path(run_dir).is_file():
             mod["detective_disposition"] = "awaiting_disposition"
     except Exception:  # noqa: BLE001
-        LOGGER.warning(
-            "operator-surface detective disposition read failed for %s", trial_id
-        )
+        LOGGER.warning("operator-surface detective disposition read failed for %s", trial_id)
     try:
         styleguide, provenance = _operator_surface_styleguide(run_dir / "directive.yaml")
         if styleguide:
@@ -570,9 +585,7 @@ def _run_start_preflight_gate(
         try:
             from app.notify.__main__ import launch_notifier
 
-            notifier_proc = launch_notifier(
-                str(trial_id), str(run_dir), producer_pid=producer_pid
-            )
+            notifier_proc = launch_notifier(str(trial_id), str(run_dir), producer_pid=producer_pid)
             notifier_alive_fn = lambda: notifier_proc.poll() is None  # noqa: E731
         except Exception:  # noqa: BLE001 — a notifier launch failure is a FAIL item
             LOGGER.exception("notifier launch failed — recording as pre-flight item")
@@ -593,9 +606,23 @@ def _run_start_preflight_gate(
 def _persist_envelope(envelope: ProductionTrialEnvelope, runs_root: Path) -> Path:
     path = _run_dir(envelope.trial_id, runs_root) / "run.json"
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(envelope.model_dump_json(indent=2) + "\n", encoding="utf-8")
-    # AD-2: emit the projection AFTER the run.json write (never before; run.json
-    # write semantics are unchanged — same plain write_text, same bytes).
+    temporary = path.with_suffix(".json.tmp")
+    if path.is_symlink() or temporary.is_symlink() or temporary.exists():
+        raise OSError("unsafe or colliding run.json persistence coordinate")
+    created = False
+    try:
+        with temporary.open("x", encoding="utf-8", newline="") as handle:
+            created = True
+            handle.write(envelope.model_dump_json(indent=2) + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+    except Exception:
+        if created and temporary.exists() and not temporary.is_symlink():
+            temporary.unlink()
+        raise
+    # AD-2: emit the projection only AFTER the atomic run.json replacement.
+    # The committed bytes remain model_dump_json(indent=2) plus one newline.
     _emit_operator_surface(envelope, runs_root)
     return path
 
@@ -655,7 +682,18 @@ def _trace_run(
     model_id: str,
     input_tokens: int,
     output_tokens: int,
+    node_id: str | None = None,
+    economics_evidence: str | None = None,
 ) -> SimpleNamespace:
+    metadata = {
+        "trial_id": str(trial_id),
+        "specialist_id": specialist_id,
+        "model_id": model_id,
+    }
+    if node_id is not None:
+        metadata["node_id"] = node_id
+    if economics_evidence is not None:
+        metadata["economics_evidence"] = economics_evidence
     return SimpleNamespace(
         id=str(uuid4()),
         trace_id=str(trial_id),
@@ -664,13 +702,7 @@ def _trace_run(
         prompt_tokens=input_tokens,
         completion_tokens=output_tokens,
         total_tokens=input_tokens + output_tokens,
-        extra={
-            "metadata": {
-                "trial_id": str(trial_id),
-                "specialist_id": specialist_id,
-                "model_id": model_id,
-            }
-        },
+        extra={"metadata": metadata},
         child_runs=[],
     )
 
@@ -680,20 +712,36 @@ def _trace_run_for_contribution(
     trial_id: UUID,
     contribution: SpecialistContribution,
 ) -> SimpleNamespace:
+    """Project a contribution only when the segment trace owns its cost evidence.
+
+    Irene Pass-1 is a multi-call specialist whose real provider attempts are
+    recorded in digest-bound per-call journals. Collapsing each node
+    contribution into one synthetic span invents a second, uncorrelatable cost
+    authority and makes the economics write fail at the next gate.
+    """
+    if contribution.specialist_id == "irene_pass1":
+        return _trace_run(
+            trial_id=trial_id,
+            specialist_id=contribution.specialist_id,
+            model_id=contribution.model_used,
+            input_tokens=0,
+            output_tokens=0,
+            node_id=contribution.node_id,
+            economics_evidence="irene-pass1-journal-authority-marker.v1",
+        )
     usage = contribution.output.get("usage")
     input_tokens = 25
     output_tokens = 10
     if isinstance(usage, dict):
         input_tokens = int(usage.get("input_tokens") or usage.get("prompt_tokens") or 25)
-        output_tokens = int(
-            usage.get("output_tokens") or usage.get("completion_tokens") or 10
-        )
+        output_tokens = int(usage.get("output_tokens") or usage.get("completion_tokens") or 10)
     return _trace_run(
         trial_id=trial_id,
         specialist_id=contribution.specialist_id,
         model_id=contribution.model_used,
         input_tokens=input_tokens,
         output_tokens=output_tokens,
+        node_id=contribution.node_id,
     )
 
 
@@ -764,6 +812,10 @@ def _default_dependency_map_for(
     prior_ids = [item.specialist_id for item in production_envelope.contributions]
     if not prior_ids:
         return {}
+    if specialist_id == "irene_pass1" and "irene_pass1" in prior_ids:
+        # Nodes 05/05B refine Irene's latest plan. Intervening contributions
+        # must not replace that semantic dependency merely by being newer.
+        return {"upstream_output": "irene_pass1"}
     if specialist_id == "cd" and "texas" in prior_ids:
         return {"source_bundle": "texas"}
     return {"upstream_output": prior_ids[-1]}
@@ -872,7 +924,9 @@ def _latest_contribution_output(production_envelope: Any, specialist_id: str) ->
     return latest
 
 
-def _voice_candidates(production_envelope: Any) -> tuple[list[str], list[dict[str, Any]]]:
+def _voice_candidates(
+    production_envelope: Any,
+) -> tuple[list[str], list[dict[str, Any]]]:
     """(voice_id list, structured options) from enrique voice_preview (S0.3 / T4-F6).
 
     Surfaces the real voice options the producer already emitted onto the card —
@@ -904,7 +958,9 @@ def _voice_candidates(production_envelope: Any) -> tuple[list[str], list[dict[st
     return ids, options
 
 
-def _variant_candidates(production_envelope: Any) -> tuple[list[str], list[dict[str, Any]]]:
+def _variant_candidates(
+    production_envelope: Any,
+) -> tuple[list[str], list[dict[str, Any]]]:
     """(variant-id list, per-slide options) from gary_slide_output (S0.3).
 
     Pre-N-dispatch this yields the single dispatch variant; once Gary
@@ -1108,8 +1164,7 @@ def _build_decision_card(
         # PROPOSAL the operator confirms (verb defaults to approve only as the
         # operator's own default-accept, decided by the verdict, not the model).
         enrichment = (
-            g0_enrichment_wiring.load_enrichment_result(_run_dir(trial_id, runs_root))
-            or {}
+            g0_enrichment_wiring.load_enrichment_result(_run_dir(trial_id, runs_root)) or {}
         )
         return G0ECard(
             card_id=common["card_id"],
@@ -1140,8 +1195,7 @@ def _build_decision_card(
         # Deterministic guard: the model NEVER auto-ratifies — the operator verdict
         # advances refined->ratified.
         refinement = (
-            irene_refinement_wiring.load_refinement_result(_run_dir(trial_id, runs_root))
-            or {}
+            irene_refinement_wiring.load_refinement_result(_run_dir(trial_id, runs_root)) or {}
         )
         return G0RCard(
             card_id=common["card_id"],
@@ -1172,7 +1226,13 @@ def _persist_conversation_turn_if_possible(
     runs_root: Path,
 ) -> Path | None:
     draft = getattr(card, "drafted_proposal", {}) or {}
-    required = {"decision", "directive", "rationale", "confidence", "confidence_signals"}
+    required = {
+        "decision",
+        "directive",
+        "rationale",
+        "confidence",
+        "confidence_signals",
+    }
     if not required.issubset(draft):
         return None
     if not (runs_root / str(trial_id) / "directive.yaml").is_file():
@@ -1484,7 +1544,9 @@ def _selected_variant_id_from_run_state(run_state: RunState) -> str | None:
     return selected.strip()
 
 
-def _slide_variant_selections_from_run_state(run_state: RunState) -> dict[str, str] | None:
+def _slide_variant_selections_from_run_state(
+    run_state: RunState,
+) -> dict[str, str] | None:
     raw = run_state.cache_state.cache_prefix if run_state.cache_state else None
     if not raw:
         return None
@@ -1552,8 +1614,7 @@ def _apply_per_slide_variant_selection(
     violations = sorted(slide_id for slide_id, count in by_slide.items() if count != 1)
     if violations:
         raise VariantSelectionError(
-            "per-slide selection must leave exactly one row per slide; "
-            f"violations={violations}"
+            f"per-slide selection must leave exactly one row per slide; violations={violations}"
         )
     missing = sorted(set(variants_by_slide) - set(by_slide))
     if missing:
@@ -1602,8 +1663,7 @@ def _apply_deckwide_variant_selection(
     filtered = [
         row
         for row in rows
-        if isinstance(row, dict)
-        and str(row.get("dispatch_variant") or "A") == selected_variant_id
+        if isinstance(row, dict) and str(row.get("dispatch_variant") or "A") == selected_variant_id
     ]
     if not filtered:
         raise VariantSelectionError(
@@ -1624,8 +1684,7 @@ def _apply_deckwide_variant_selection(
     duplicates = sorted(slide_id for slide_id, count in by_slide.items() if count != 1)
     if duplicates:
         raise VariantSelectionError(
-            "selected variant must leave exactly one row per slide_id; "
-            f"violations={duplicates}"
+            f"selected variant must leave exactly one row per slide_id; violations={duplicates}"
         )
     output = dict(gary.output)
     output["gary_slide_output"] = filtered
@@ -1692,7 +1751,10 @@ def _apply_g0r_ratification(*, run_dir: Path) -> Path | None:
     thin/gap verdict PASSES; an unreachable source or absent adequacy is RED), and
     writes the ratified LOs to ``<run_dir>/ratified-los.json`` as evidence.
     """
-    from app.marcus.lesson_plan.irene_refinement import assert_completeness, ratify_refined_los
+    from app.marcus.lesson_plan.irene_refinement import (
+        assert_completeness,
+        ratify_refined_los,
+    )
 
     result = irene_refinement_wiring.load_refinement_full(run_dir)
     if result is None:
@@ -1741,9 +1803,7 @@ def _record_cost(
     return record_trial_cost_report(str(trial_id), report, runs_root=runs_root)
 
 
-def _merge_artifact_paths(
-    existing: list[Path], *candidates: Path | None
-) -> list[Path]:
+def _merge_artifact_paths(existing: list[Path], *candidates: Path | None) -> list[Path]:
     """Append candidates in order, dropping Nones and duplicates.
 
     Multi-gate pause-and-resume re-emits stable-path artifacts
@@ -1796,9 +1856,7 @@ def apply_llm_execution_mode_overlay(
     if specialist_id != "vision":
         if runner_payload and "llm_execution_mode" in runner_payload:
             return {
-                key: value
-                for key, value in runner_payload.items()
-                if key != "llm_execution_mode"
+                key: value for key, value in runner_payload.items() if key != "llm_execution_mode"
             }
         return runner_payload
     if run_state.llm_execution_mode != "batch":
@@ -1872,14 +1930,10 @@ def _runner_payload_for_specialist(
         return {"gate_id": gate_code}
     if specialist_id == "gary" and runs_root is not None and trial_id is not None:
         run_dir = runs_root / str(trial_id)
-        payload: dict[str, Any] = {
-            "export_dir": (run_dir / "exports" / "gary").as_posix()
-        }
+        payload: dict[str, Any] = {"export_dir": (run_dir / "exports" / "gary").as_posix()}
         # Canonical-arc S3 D4: read-once — settings AND digest come from the
         # SAME directive bytes (the :852-854 sha256 pattern; no TOCTOU).
-        gamma_settings, directive_digest = _gamma_settings_and_digest_from_directive(
-            directive_path
-        )
+        gamma_settings, directive_digest = _gamma_settings_and_digest_from_directive(directive_path)
         if gamma_settings is not None:
             payload["gamma_settings"] = gamma_settings
         # Canonical-arc S3 D1 (F-802 option (i)): CD's committed
@@ -1922,16 +1976,14 @@ def _runner_payload_for_specialist(
             directive_bytes = directive_path.read_bytes()
         except OSError as exc:
             raise SpecialistDispatchError(
-                f"cd directive_projection: directive at {directive_path} is "
-                f"unreadable: {exc}",
+                f"cd directive_projection: directive at {directive_path} is unreadable: {exc}",
                 tag="cd.directive.unreadable",
             ) from exc
         try:
             directive_text = directive_bytes.decode("utf-8")
         except UnicodeDecodeError as exc:
             raise SpecialistDispatchError(
-                f"cd directive_projection: directive at {directive_path} is "
-                f"not valid UTF-8: {exc}",
+                f"cd directive_projection: directive at {directive_path} is not valid UTF-8: {exc}",
                 tag="cd.directive.unreadable",
             ) from exc
         try:
@@ -2026,10 +2078,23 @@ def _runner_payload_for_specialist(
         # Merge runner-context keys (floor + optional planning_context). Never
         # leak explicit None values; absent framing → omit the key entirely.
         irene_payload: dict[str, Any] = {}
+        if production_envelope is not None:
+            prior_irene = production_envelope.latest_for_specialist("irene_pass1")
+            if prior_irene is not None:
+                prior_receipt = prior_irene.output.get("plan_authority_receipt")
+                if prior_receipt is not None:
+                    # Cumulative governance lineage; the plan body still
+                    # arrives through the declared upstream dependency.
+                    irene_payload["prior_plan_authority_receipt"] = copy.deepcopy(prior_receipt)
         floor = _min_cluster_floor_from_directive(directive_path)
         if floor is not None:
             irene_payload["min_cluster_floor"] = floor
         if runs_root is not None and trial_id is not None:
+            # Production authority lineage: Irene's provenance writer needs the
+            # exact run coordinate to digest the already-ratified LO authority.
+            # Both walks call this shared seam with the same values.
+            irene_payload["runs_root"] = Path(runs_root).as_posix()
+            irene_payload["run_id"] = str(trial_id)
             # Lazy import: keep runner free of lesson_plan import cycles at module load.
             from app.marcus.lesson_plan.planning_context import (
                 PlanningContextError,
@@ -2061,6 +2126,26 @@ def _runner_payload_for_specialist(
         if plan_path:
             kira_payload["motion_plan_path"] = plan_path
         return kira_payload
+    # 07W run-dir threading (live-diagnosed trial 503e54c1, paused at 07W with
+    # ``workbook_producer.segment-manifest.missing``). The terminal producer
+    # self-resolves ALL its run-dir-relative inputs (storyboard-B segment
+    # manifest, gary exports/captions, ``bundle/extracted.md`` corpus, workbook
+    # output root) from a single run dir. Absent this key its ``_resolve_run_dir``
+    # falls back to the SHIPPED ``RUNS_ROOT / run_id`` (``state/config/runs``) —
+    # WRONG whenever the trial executes under a non-default ``--runs-root`` (e.g.
+    # ``runs``): it then reads an empty shipped-root dir and fails loud on the
+    # segment manifest that DOES exist under the real run. Thread the ACTUAL run
+    # dir — ``runs_root / trial_id``, the SAME coordinate the workbook band,
+    # storyboard_publisher, and deep-dive resolve — so every read lands under the
+    # run the trial is actually executing in, regardless of ``--runs-root``. The
+    # ``WORKBOOK_RUN_DIR`` env replay/dev override still wins (mirrors kira's
+    # ``KIRA_MOTION_PLAN_PATH``). Fail-loud precondition mirrors kira: a non-run
+    # caller (runs_root/trial_id None) returns None and NEVER re-defaults.
+    if specialist_id == "workbook_producer":
+        if runs_root is None or trial_id is None:
+            return None
+        override = os.environ.get("WORKBOOK_RUN_DIR")
+        return {"run_dir": override or (runs_root / str(trial_id)).as_posix()}
     return None
 
 
@@ -2169,7 +2254,9 @@ def _gamma_settings_and_digest_from_directive(
     return [dict(item) for item in raw if isinstance(item, dict)], digest
 
 
-def _gamma_settings_from_directive(directive_path: Path | None) -> list[dict[str, Any]] | None:
+def _gamma_settings_from_directive(
+    directive_path: Path | None,
+) -> list[dict[str, Any]] | None:
     return _gamma_settings_and_digest_from_directive(directive_path)[0]
 
 
@@ -2362,9 +2449,7 @@ def _invoke_pre_gate_marcus_for_gate(
     artifact_paths: list[Path],
     allow_offline_cost_report: bool,
 ) -> PreFillProposal | None:
-    if not _should_invoke_pre_gate_marcus(
-        allow_offline_cost_report=allow_offline_cost_report
-    ):
+    if not _should_invoke_pre_gate_marcus(allow_offline_cost_report=allow_offline_cost_report):
         return None
     slot_values = _pre_gate_slot_values(
         trial_id=trial_id,
@@ -2459,17 +2544,13 @@ def _pause_at_gate(
         directive_path=directive_path,
         bundle_dir=bundle_dir,
     )
-    decision_path = (
-        _run_dir(trial_id, runs_root) / f"decision-card-{gate_id}.json"
-    )
+    decision_path = _run_dir(trial_id, runs_root) / f"decision-card-{gate_id}.json"
     _write_json(
         decision_path,
         {
             "card": card.model_dump(mode="json"),
             "digest": stored.digest,
-            "issued_at": stored.issued_at.astimezone(UTC)
-            .isoformat()
-            .replace("+00:00", "Z"),
+            "issued_at": stored.issued_at.astimezone(UTC).isoformat().replace("+00:00", "Z"),
             "server_nonce": stored.server_nonce,
             "checkpoint_path": checkpoint.as_posix(),
         },
@@ -2500,9 +2581,7 @@ def _pause_at_gate(
     if trace_root is not None:
         trace_path = _run_dir(trial_id, runs_root) / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
-    langsmith_trace_id = (
-        str(trial_id) if child_runs else envelope.langsmith_trace_id
-    )
+    langsmith_trace_id = str(trial_id) if child_runs else envelope.langsmith_trace_id
     run_summary_path = _emit_run_summary_yaml(
         trial_id=trial_id,
         terminal_gate=gate_id,
@@ -2514,12 +2593,10 @@ def _pause_at_gate(
         selection=run_state.component_selection,
         composed_manifest=manifest,
     )
-    evidence = (
-        _has_production_evidence(
-            graph_step_completed=graph_step_completed,
-            specialist_calls=specialist_calls,
-            allow_offline_cost_report=allow_offline_cost_report,
-        )
+    evidence = _has_production_evidence(
+        graph_step_completed=graph_step_completed,
+        specialist_calls=specialist_calls,
+        allow_offline_cost_report=allow_offline_cost_report,
     )
     envelope = envelope.model_copy(
         update={
@@ -2642,12 +2719,17 @@ def _dispatch_specialist_at_node(
     if specialist_id in {"elevenlabs", "enrique"} and node.dependency_projections:
         operator_voice = _operator_selected_voice(run_state)
         if operator_voice:
-            runner_payload = {**(runner_payload or {}), "selected_voice_id": operator_voice}
+            runner_payload = {
+                **(runner_payload or {}),
+                "selected_voice_id": operator_voice,
+            }
     runner_payload = apply_llm_execution_mode_overlay(
         specialist_id=specialist_id,
         run_state=run_state,
         runner_payload=runner_payload,
     )
+    if specialist_id == "irene_pass1":
+        runner_payload = {**(runner_payload or {}), "manifest_node_id": node.id}
     if runner_payload is not None:
         invoke_kwargs["runner_supplied_payload"] = runner_payload
     production_envelope = _invoke_specialist_with_retry(adapter, invoke_kwargs, node.id)
@@ -2655,9 +2737,7 @@ def _dispatch_specialist_at_node(
     # (needed when recover re-entered at 07 with selections already in run_state).
     if specialist_id == "gary":
         production_envelope = _apply_variant_selection(production_envelope, run_state)
-    run_state = run_state.model_copy(
-        update={"production_envelope": production_envelope}
-    )
+    run_state = run_state.model_copy(update={"production_envelope": production_envelope})
     contribution = production_envelope.get_contribution(specialist_id, node_id=node.id)
     if contribution is not None:
         child_runs.append(
@@ -2771,9 +2851,7 @@ def _pause_at_error(
             "paused_error_tag": error.tag,
             "langsmith_trace_id": langsmith_trace_id,
             "production_clone_launch_evidence": evidence,
-            "production_clone_launch_evidence_reason": (
-                f"paused-at-dispatch-error:{error.tag}"
-            ),
+            "production_clone_launch_evidence_reason": (f"paused-at-dispatch-error:{error.tag}"),
             "production_envelope": production_envelope,
             "cost_report_path": cost_report_path,
             "artifact_paths": _merge_artifact_paths(
@@ -3109,11 +3187,14 @@ def run_production_trial(
     trace_metadata: dict[str, str]
 
     _start_assembler = OperatorSurfaceAssembler(effective_trial_id, runs_root)
-    with _start_assembler.freshness_tick(), _trial_trace_context(
-        trial_id=effective_trial_id,
-        preset=preset,
-        operator_id=operator_id,
-    ) as trace_metadata:
+    with (
+        _start_assembler.freshness_tick(),
+        _trial_trace_context(
+            trial_id=effective_trial_id,
+            preset=preset,
+            operator_id=operator_id,
+        ) as trace_metadata,
+    ):
         for index, node in enumerate(manifest.nodes):
             # AD-15: advance the projected walk index as the loop progresses
             # (a node-lifecycle progress event; bumps progress_seq, AD-10).
@@ -3241,6 +3322,64 @@ def run_production_trial(
                     bundle_dir=bundle_dir,
                 )
 
+            if node.id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
+                # 38.3b: unconditional terminal workbook-band seam. These
+                # deterministic hooks do not depend on credentials, live flags,
+                # or offline-cost mode; later injected factories own that choice.
+                try:
+                    candidate_envelope = workbook_wiring.run_workbook_band_node(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        runtime_context=workbook_wiring.runtime_context_for_run(
+                            runs_root / str(effective_trial_id), node_id=node.id
+                        ),
+                        dispatch_live=_research_dispatch_live(),
+                    )
+                    if candidate_envelope != production_envelope:
+                        candidate_run_state = run_state.model_copy(
+                            update={"production_envelope": candidate_envelope}
+                        )
+                        candidate_outer = envelope.model_copy(
+                            update={"production_envelope": candidate_envelope}
+                        )
+                        try:
+                            _persist_envelope(candidate_outer, runs_root)
+                        except OSError as exc:
+                            raise SpecialistDispatchError(
+                                f"workbook band persistence failed: {exc}",
+                                tag="workbook.band.persistence-failed",
+                            ) from exc
+                        production_envelope = candidate_envelope
+                        run_state = candidate_run_state
+                        envelope = candidate_outer
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=workbook_wiring.WORKBOOK_BAND_SPECIALIST_IDS[node.id],
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
             if (
                 node_kind == "orchestration"
                 and node.id in package_builders.BUILDER_NODE_IDS
@@ -3291,10 +3430,7 @@ def run_production_trial(
                 graph_step_completed = True
                 continue
 
-            if (
-                node_kind == "orchestration"
-                and node.id in research_wiring.RESEARCH_WIRING_NODE_IDS
-            ):
+            if node_kind == "orchestration" and node.id in research_wiring.RESEARCH_WIRING_NODE_IDS:
                 # Braid S3 (option A): the Irene→Tracy→Texas research-wiring hook
                 # fires at the §04.55 plan-lock fanout node. TWO-WALK PARITY
                 # (memory project_production_runner_two_walks): §04.55 sits AFTER
@@ -3501,11 +3637,15 @@ def run_production_trial(
                 graph_step_completed = True
 
     completed_at = _now()
-    trace_root = _trace_root(
-        trial_id=effective_trial_id,
-        metadata=trace_metadata,
-        child_runs=child_runs,
-    ) if child_runs else None
+    trace_root = (
+        _trace_root(
+            trial_id=effective_trial_id,
+            metadata=trace_metadata,
+            child_runs=child_runs,
+        )
+        if child_runs
+        else None
+    )
     cost_report_path = _record_cost(
         trial_id=effective_trial_id,
         runs_root=runs_root,
@@ -3532,12 +3672,10 @@ def run_production_trial(
         trial_id=effective_trial_id,
         child_runs=child_runs,
     )
-    evidence = (
-        _has_production_evidence(
-            graph_step_completed=graph_step_completed,
-            specialist_calls=specialist_calls,
-            allow_offline_cost_report=allow_offline_cost_report,
-        )
+    evidence = _has_production_evidence(
+        graph_step_completed=graph_step_completed,
+        specialist_calls=specialist_calls,
+        allow_offline_cost_report=allow_offline_cost_report,
     )
     reason = "live-specialist-call-recorded" if evidence else "no-live-specialist-call-recorded"
     envelope = envelope.model_copy(
@@ -3585,9 +3723,7 @@ def resume_production_trial(
     # run.json truth after any runner touch. Idempotent + cheap.
     _emit_operator_surface(envelope, runs_root)
     if envelope.status != "paused-at-gate":
-        raise RuntimeError(
-            f"trial {trial_id} is not paused at a gate; status={envelope.status!r}"
-        )
+        raise RuntimeError(f"trial {trial_id} is not paused at a gate; status={envelope.status!r}")
     if envelope.paused_gate != verdict.gate_id:
         raise GateError(
             "checkpoint_gate_mismatch",
@@ -3615,9 +3751,7 @@ def resume_production_trial(
     command = resume_from_verdict(verdict)
     runner = checkpoint.get("runner") or {}
     run_state = RunState.model_validate_json(json.dumps(checkpoint["run_state"]))
-    run_state = run_state.model_copy(
-        update={"production_envelope": envelope.production_envelope}
-    )
+    run_state = run_state.model_copy(update={"production_envelope": envelope.production_envelope})
     run_state = _apply_verdict_to_run_state(run_state, verdict)
     if (
         verdict.gate_id == irene_refinement_wiring.IRENE_REFINEMENT_GATE_CODE
@@ -3654,9 +3788,7 @@ def resume_production_trial(
                 "status": "failed",
                 "completed_at": _now(),
                 "production_clone_launch_evidence_reason": "operator-rejected-at-gate",
-                "artifact_paths": _merge_artifact_paths(
-                    envelope.artifact_paths, run_summary_path
-                ),
+                "artifact_paths": _merge_artifact_paths(envelope.artifact_paths, run_summary_path),
             }
         )
         _persist_envelope(updated, runs_root)
@@ -3668,9 +3800,7 @@ def resume_production_trial(
         if max_specialist_calls is not None
         else int(runner.get("max_specialist_calls") or 1)
     )
-    directive_path = _resolve_resume_directive_path(
-        runner, trial_id=trial_id, runs_root=runs_root
-    )
+    directive_path = _resolve_resume_directive_path(runner, trial_id=trial_id, runs_root=runs_root)
     bundle_dir = _resolve_resume_bundle_dir(
         runner,
         trial_id=trial_id,
@@ -3802,12 +3932,8 @@ def resume_batch_production_trial(
 
     runner = pause.get("runner") or {}
     run_state = RunState.model_validate_json(json.dumps(pause["run_state"]))
-    run_state = run_state.model_copy(
-        update={"production_envelope": envelope.production_envelope}
-    )
-    directive_path = _resolve_resume_directive_path(
-        runner, trial_id=trial_id, runs_root=runs_root
-    )
+    run_state = run_state.model_copy(update={"production_envelope": envelope.production_envelope})
+    directive_path = _resolve_resume_directive_path(runner, trial_id=trial_id, runs_root=runs_root)
     bundle_dir = _resolve_resume_bundle_dir(
         runner,
         trial_id=trial_id,
@@ -3899,12 +4025,8 @@ def recover_production_trial(
         )
     runner = error_pause.get("runner") or {}
     run_state = RunState.model_validate_json(json.dumps(error_pause["run_state"]))
-    run_state = run_state.model_copy(
-        update={"production_envelope": envelope.production_envelope}
-    )
-    directive_path = _resolve_resume_directive_path(
-        runner, trial_id=trial_id, runs_root=runs_root
-    )
+    run_state = run_state.model_copy(update={"production_envelope": envelope.production_envelope})
+    directive_path = _resolve_resume_directive_path(runner, trial_id=trial_id, runs_root=runs_root)
     bundle_dir = _resolve_resume_bundle_dir(
         runner,
         trial_id=trial_id,
@@ -3915,9 +4037,7 @@ def recover_production_trial(
     start_index = failed_index
     non_evidence_reason = "recovered-after-error-pause"
     if reenter_at_node is not None:
-        selection = (
-            run_state.component_selection or ComponentSelection.production_default()
-        )
+        selection = run_state.component_selection or ComponentSelection.production_default()
         manifest = compose_manifest(
             load_manifest(Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)),
             selection,
@@ -3937,7 +4057,17 @@ def recover_production_trial(
                 "upstream re-entry only — omit the flag to retry the failed node"
             )
         drop_ids = set(node_ids[reenter_index : failed_index + 1])
+        legacy_workbook_stub = (
+            envelope.production_envelope.get_contribution(
+                workbook_wiring.LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID,
+                node_id="07W.1",
+            )
+            if reenter_at_node == "07W.1"
+            else None
+        )
         dropped = envelope.production_envelope.drop_contributions_from_nodes(drop_ids)
+        if legacy_workbook_stub is not None:
+            envelope.production_envelope.add_contribution(legacy_workbook_stub)
         run_state = run_state.model_copy(
             update={"production_envelope": envelope.production_envelope}
         )
@@ -3947,9 +4077,7 @@ def recover_production_trial(
         # model_dump_json(indent=2) + "\n" this bypass used to write directly).
         _persist_envelope(envelope, runs_root)
         start_index = reenter_index
-        non_evidence_reason = (
-            f"recovered-reenter-at-node:{reenter_at_node}:dropped={dropped}"
-        )
+        non_evidence_reason = f"recovered-reenter-at-node:{reenter_at_node}:dropped={dropped}"
     return _continue_production_walk(
         trial_id=trial_id,
         envelope=envelope,
@@ -3969,7 +4097,6 @@ def recover_production_trial(
         bundle_dir=bundle_dir,
         non_evidence_reason=non_evidence_reason,
     )
-
 
 
 def _continue_production_walk(
@@ -4048,11 +4175,14 @@ def _continue_production_walk(
         trace_event=("walk-continue", f"resuming at index {start_index}"),
     )
     _continue_assembler = OperatorSurfaceAssembler(trial_id, runs_root)
-    with _continue_assembler.freshness_tick(), _trial_trace_context(
-        trial_id=trial_id,
-        preset=runner.get("preset") or envelope.preset,
-        operator_id=runner.get("operator_id") or envelope.operator_id,
-    ) as trace_metadata:
+    with (
+        _continue_assembler.freshness_tick(),
+        _trial_trace_context(
+            trial_id=trial_id,
+            preset=runner.get("preset") or envelope.preset,
+            operator_id=runner.get("operator_id") or envelope.operator_id,
+        ) as trace_metadata,
+    ):
         for index, node in enumerate(manifest.nodes[start_index:], start=start_index):
             # AD-15: advance the projected walk index as the continuation walk
             # progresses (node-lifecycle progress event; bumps progress_seq).
@@ -4197,6 +4327,63 @@ def _continue_production_walk(
                     bundle_dir=bundle_dir,
                 )
 
+            if node.id in workbook_wiring.WORKBOOK_BAND_NODE_IDS:
+                # 38.3b continuation/recover mirror: same unconditional helper,
+                # exact-coordinate idempotency covers persisted/partial resumes.
+                try:
+                    candidate_envelope = workbook_wiring.run_workbook_band_node(
+                        node_id=node.id,
+                        production_envelope=production_envelope,
+                        runtime_context=workbook_wiring.runtime_context_for_run(
+                            runs_root / str(trial_id), node_id=node.id
+                        ),
+                        dispatch_live=_research_dispatch_live(),
+                    )
+                    if candidate_envelope != production_envelope:
+                        candidate_run_state = run_state.model_copy(
+                            update={"production_envelope": candidate_envelope}
+                        )
+                        candidate_outer = envelope.model_copy(
+                            update={"production_envelope": candidate_envelope}
+                        )
+                        try:
+                            _persist_envelope(candidate_outer, runs_root)
+                        except OSError as exc:
+                            raise SpecialistDispatchError(
+                                f"workbook band persistence failed: {exc}",
+                                tag="workbook.band.persistence-failed",
+                            ) from exc
+                        production_envelope = candidate_envelope
+                        run_state = candidate_run_state
+                        envelope = candidate_outer
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=workbook_wiring.WORKBOOK_BAND_SPECIALIST_IDS[node.id],
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                run_state = run_state.model_copy(
+                    update={"production_envelope": production_envelope}
+                )
+                graph_step_completed = True
+                continue
+
             if (
                 node_kind == "orchestration"
                 and node.id in package_builders.BUILDER_NODE_IDS
@@ -4243,10 +4430,7 @@ def _continue_production_walk(
                 graph_step_completed = True
                 continue
 
-            if (
-                node_kind == "orchestration"
-                and node.id in research_wiring.RESEARCH_WIRING_NODE_IDS
-            ):
+            if node_kind == "orchestration" and node.id in research_wiring.RESEARCH_WIRING_NODE_IDS:
                 # Braid S3 (option A) — CONTINUATION WALK leg. §04.55 plan-lock is
                 # ALWAYS reached via this continuation walk (the start walk stops
                 # at G1, which precedes §04.55), so the research-wiring side-effect
@@ -4400,10 +4584,7 @@ def _continue_production_walk(
                 graph_step_completed = True
                 continue
 
-            if (
-                node_kind == "specialist"
-                and specialist_calls < max_specialist_calls
-            ):
+            if node_kind == "specialist" and specialist_calls < max_specialist_calls:
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying — see start-walker note.
                 if production_envelope.get_contribution(specialist_id, node_id=node.id) is not None:
@@ -4465,9 +4646,7 @@ def _continue_production_walk(
     if trace_root is not None:
         trace_path = run_dir / "trace-fixture.json"
         _write_json(trace_path, _trace_to_json(trace_root))
-    langsmith_trace_id = (
-        str(trial_id) if child_runs else envelope.langsmith_trace_id
-    )
+    langsmith_trace_id = str(trial_id) if child_runs else envelope.langsmith_trace_id
     run_summary_path = _emit_run_summary_yaml(
         trial_id=trial_id,
         # "G4" only as the legacy fallback for walks that crossed no gate at

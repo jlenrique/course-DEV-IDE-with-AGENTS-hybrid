@@ -1165,13 +1165,45 @@ def _live_pre_pass(
         # as-is (it binds its own budget per the T8 contract).
         chat_model_factory = _default_extraction_chat_factory()
     handle = chat_model_factory("marcus")
-    response = handle.chat.invoke([{"role": "user", "content": prompt}])
-    # Control-character-tolerant parse (strict=False) of the live response — a bare
-    # strict json.loads here crashed the whole walk at G0E on a gpt-5 string value
-    # carrying a literal control char (2026-06-29). Raises a CLEAR G0EnrichmentParseError
-    # (never a bare JSONDecodeError, never a silent {}) on a truly-unparseable response.
-    payload = _parse_live_extraction_response(response.content)
-    return _parse_live_payload(payload, enumerated, corpus_dir)
+
+    def _dispatch_once() -> tuple[
+        list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]
+    ]:
+        # Re-issue the SAME live G0 call, then tolerantly parse + file-coverage reconcile.
+        response = handle.chat.invoke([{"role": "user", "content": prompt}])
+        # Control-character-tolerant parse (strict=False) of the live response — a bare
+        # strict json.loads here crashed the whole walk at G0E on a gpt-5 string value
+        # carrying a literal control char (2026-06-29). Raises a CLEAR G0EnrichmentParseError
+        # (never a bare JSONDecodeError, never a silent {}) on a truly-unparseable response.
+        payload = _parse_live_extraction_response(response.content)
+        return _parse_live_payload(payload, enumerated, corpus_dir)
+
+    typed, los, provenance = _dispatch_once()
+    # REQUIRED-OUTPUT VALIDATION RETRY (root-cause fix for the 4614f21f trial: gpt-5
+    # extracted 25 typed components across 11 files but authored ZERO provisional LOs —
+    # an otherwise-valid response that silently cascaded to the cryptic 07W.1 deep-dive
+    # Promise error). A NON-EMPTY corpus (>=1 enumerated file) that yields ZERO usable
+    # provisional LOs is an INVALID G0 output; re-issue the SAME live call ONCE (a bounded
+    # required-output retry — NOT a whole-trial re-run). If the retry STILL yields zero
+    # usable LOs, FAIL LOUD here at G0 so the run stops at the enrichment front door with
+    # a clear, named cause, never limping downstream to the opaque 07W.1 failure.
+    if enumerated and not los:
+        logger.warning(
+            "g0-enrichment live: pre-pass authored 0 provisional learning objectives "
+            "from %d non-empty source file(s) — INVALID G0 output; re-issuing the live "
+            "G0 call ONCE (required-output validation retry, not a whole-trial re-run).",
+            len(enumerated),
+        )
+        typed, los, provenance = _dispatch_once()
+        if not los:
+            raise G0EnrichmentParseError(
+                f"live G0 authored 0 learning objectives from {len(enumerated)} source "
+                "file(s) after one required-output validation retry — the keystone "
+                "enrichment produced no assessable LOs from a NON-EMPTY corpus. Fail loud "
+                "at G0 rather than cascade to the cryptic 07W.1 deep-dive Promise error "
+                "(g0-enrichment.j2 requires >=1 grounded provisional LO per source file)."
+            )
+    return typed, los, provenance
 
 
 def _coerce_component_row(row: dict[str, Any], pid: str, parent_rel: str) -> dict[str, Any]:

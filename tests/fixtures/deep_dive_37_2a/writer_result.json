@@ -1,0 +1,23 @@
+{
+  "status": "authored",
+  "sections": [
+    {
+      "ability_id": "ability-1",
+      "prose": "A workflow symptom can be noticed without yet revealing its system-design cause. A first leadership move follows after distinguishing symptom from cause.",
+      "claims": [
+        {"skeleton_claim_id": "skeleton-1", "text": "A workflow symptom can be noticed without yet revealing its system-design cause.", "source_claim_refs": ["claim-vo-1"], "source_span_refs": ["span-1"]},
+        {"skeleton_claim_id": "skeleton-2", "text": "A first leadership move follows after distinguishing symptom from cause.", "source_claim_refs": ["claim-delta-1"], "source_span_refs": ["span-2"]}
+      ]
+    },
+    {
+      "ability_id": "ability-2",
+      "prose": "Use **two stages** to organize the work.",
+      "claims": [
+        {"skeleton_claim_id": "skeleton-3", "text": "Use **two stages** to organize the work.", "source_claim_refs": ["claim-vo-2"], "source_span_refs": ["span-2"]}
+      ]
+    }
+  ],
+  "bold_terms": [{"term": "two stages"}],
+  "known_losses": [],
+  "marker": null
+}

@@ -20,11 +20,15 @@ from datetime import UTC, datetime
 from types import SimpleNamespace
 from typing import Any
 
+import pytest
+
 from app.marcus.lesson_plan.collateral_spec import CollateralSpec
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.specialists.irene_pass1 import _act as pass1_act
+from tests._helpers.pass1_bundle import write_primary_slide_bundle
+from tests._helpers.pass1_catalog_response import select_catalog_ids
 
 
 # --------------------------------------------------------------------------- #
@@ -35,7 +39,10 @@ class _FakeChat:
     response_text: str
 
     def invoke(self, messages: list[dict[str, str]]) -> SimpleNamespace:
-        return SimpleNamespace(content=self.response_text, usage_metadata={"input_tokens": 1})
+        return SimpleNamespace(
+            content=select_catalog_ids(self.response_text, messages),
+            usage_metadata={"input_tokens": 1},
+        )
 
 
 @dataclass
@@ -110,6 +117,7 @@ def _present_response() -> str:
                     "title": "Head",
                     "learning_objective": "lo",
                     "scope_decision": "in-scope",
+                    "source_refs": ["Source."],
                     "rationale": "r",
                     "cluster_id": "c-u1",
                     "cluster_role": "head",
@@ -295,11 +303,9 @@ def test_ac8_parse_none_block_yields_none_spec() -> None:
     assert spec.declaration == "none"
 
 
-def test_ac8_parse_fallback_unit_path_carries_none_collateral() -> None:
-    plan = pass1_act.parse_pass1_response("this is not json")
-    assert "collateral" in plan
-    spec = CollateralSpec.model_validate(plan["collateral"])
-    assert spec.declaration == "none"
+def test_ac8_invalid_response_fails_before_collateral_defaulting() -> None:
+    with pytest.raises(pass1_act.Pass1AuthorityError, match="structured JSON object"):
+        pass1_act.parse_pass1_response("this is not json")
 
 
 def test_ac8_parse_absent_collateral_key_defaults_to_none() -> None:
@@ -495,7 +501,7 @@ def test_ac9_consumed_payload_keys_unchanged() -> None:
 def test_ac9_act_carries_collateral_into_output(tmp_path) -> None:
     bundle = tmp_path / "bundle"
     bundle.mkdir()
-    (bundle / "extracted.md").write_text("# Corpus\n\nSource.", encoding="utf-8")
+    write_primary_slide_bundle(bundle, "# Corpus\n\nSource.")
     update = pass1_act.act(
         _state(
             {

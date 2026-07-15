@@ -78,10 +78,16 @@ def classify_evidence_hierarchy(row: Any) -> tuple[EvidenceHierarchyTier, bool]:
     if provider in {"scite", "consensus"} and venue:
         return "T4_peer_other", True
     if provider in {"scite", "consensus"}:
-        # Indexed literature providers without venue still prefer peer default
-        # only when DOI-shaped source_id is present; else T8.
-        sid = str(getattr(row, "source_id", "") or "")
-        if sid.lower().startswith("10."):
+        # B4c: scite/consensus are indexed-literature providers — a row they
+        # return is, by construction, an indexed scholarly record. Do not
+        # exclude it purely for a missing venue string. Any non-blank indexed
+        # identifier (DOI ``10.x``, PMID digits, or a provider-native paper id)
+        # qualifies for the peer-literature default; only a row with no usable
+        # identifier at all falls through to T8. (Rows with a blank source_id
+        # are already dropped upstream as ``source_invalid``.) Genuine
+        # low-credibility exclusion for non-indexed providers is untouched.
+        sid = str(getattr(row, "source_id", "") or "").strip()
+        if sid:
             return "T4_peer_other", True
         return "T8_unknown", False
 

@@ -37,11 +37,12 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import ValidationError
@@ -51,13 +52,27 @@ from app.marcus.lesson_plan.glossary_projection import (
     GlossaryArticleBrief,
     glossary_inputs_from_run,
 )
+from app.marcus.lesson_plan.prework_artifact import (
+    WORKBOOK_BRIEF_FILENAME,
+    WorkbookBriefArtifactV1,
+    read_workbook_brief,
+    workbook_brief_contribution_receipt,
+)
+from app.marcus.lesson_plan.prework_projection import PreWorkBrief, render_prework_markdown
+from app.marcus.lesson_plan.produced_asset import ProductionContext
+from app.marcus.lesson_plan.schema import PlanUnit
+from app.marcus.lesson_plan.slide_authority import (
+    SlideAuthorityInvalidError,
+    WorkbookSlideAuthorityMapV1,
+    read_slide_authority_map,
+)
 from app.marcus.lesson_plan.trends_projection import (
     ResearchTrendsBrief,
     trends_inputs_from_run,
 )
-from app.marcus.lesson_plan.produced_asset import ProductionContext
-from app.marcus.lesson_plan.schema import PlanUnit
 from app.marcus.lesson_plan.workbook_enrichment import (
+    corpus_native_further_reading,
+    corpus_root_from_run,
     lesson_plan_from_run,
     load_enrichment_card,
     project_enrichment_to_workbook_inputs,
@@ -74,15 +89,26 @@ from app.marcus.lesson_plan.workbook_producer import (
     WorkbookProducer,
     WorkbookSidecar,
 )
+from app.models.runtime.production_envelope import ProductionEnvelope
+from app.models.runtime.production_trial_envelope import ProductionTrialEnvelope
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+from app.specialists._shared.figure_tokens import _figures
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from app.specialists.workbook_producer.payload_contract import CONSUMED_PAYLOAD_KEYS
 
+logger = logging.getLogger(__name__)
+
 REPO_ROOT = Path(__file__).resolve().parents[3]
 CONFIG_PATH = REPO_ROOT / "app" / "specialists" / "workbook_producer" / "config.yaml"
+
+# Q1: the ``[evidence: src-NNN]`` markers Irene leaves on a plan unit's
+# ``source_refs`` — the bridge from a collateral plan-unit id (``uNN``) to the
+# enrichment source component (``src-NNN``) and thence its overlay LO
+# (``lo-g0-NNN``).
+_EVIDENCE_SRC_RE = re.compile(r"\[evidence:\s*(src-\d+)\]", re.IGNORECASE)
 
 _DEFAULT_SEGMENT_MANIFEST_RELPATH = "exports/segment-manifest-storyboard-b.yaml"
 _DEFAULT_CORPUS_RELPATH = "bundle/extracted.md"
@@ -327,9 +353,7 @@ def _derive_plan_unit_fields(
         sections = (collateral.get("workbook") or {}).get("sections") or []
         if sections and isinstance(sections[0], dict):
             unit_id = str(
-                sections[0].get("learning_objective_id")
-                or sections[0].get("section_id")
-                or ""
+                sections[0].get("learning_objective_id") or sections[0].get("section_id") or ""
             ).strip()
     unit_id = _sanitize_open_id(unit_id or run_dir.name, fallback=_FALLBACK_UNIT_ID)
 
@@ -338,6 +362,32 @@ def _derive_plan_unit_fields(
         event_type = str(lesson_plan.get("lesson_summary") or "").strip()
     event_type = _sanitize_open_id(event_type, fallback=_FALLBACK_EVENT_TYPE)
     return unit_id, event_type
+
+
+# D1b: the DISPLAY title is distinct from the open-id ``event_type`` slug. The
+# H1 / DOCX heading reads a human-readable label (the raw un-slugged
+# ``lesson_summary``, reasonably truncated) instead of the hyphenated 80-char
+# open-id (which produced titles like "Workbook:
+# this-lesson-builds-a-case-for-change-by-moving-from…").
+_DISPLAY_TITLE_MAX = 120
+
+
+def _derive_display_title(lesson_plan: dict[str, Any] | None, run_dir: Path) -> str:
+    """Human-readable workbook title from the run's real ``lesson_summary``.
+
+    Un-slugged (unlike the open-id ``event_type``): whitespace-collapsed and
+    truncated at a word boundary. Degrades to the run name when the run carries
+    no derivable summary.
+    """
+    summary = ""
+    if isinstance(lesson_plan, dict):
+        summary = str(lesson_plan.get("lesson_summary") or "").strip()
+    summary = re.sub(r"\s+", " ", summary).strip()
+    if not summary:
+        return run_dir.name
+    if len(summary) > _DISPLAY_TITLE_MAX:
+        summary = summary[:_DISPLAY_TITLE_MAX].rsplit(" ", 1)[0].rstrip(" ,.;:—-") + "…"
+    return summary
 
 
 def _plan_unit_and_context(
@@ -375,6 +425,7 @@ class WorkbookInputs:
 
     plan_unit: PlanUnit
     context: ProductionContext
+    workbook_title: str
     spec: WorkbookSpec
     segments: tuple[TranscriptSegment, ...]
     source_text: str
@@ -390,6 +441,12 @@ class WorkbookInputs:
     glossary_articles: tuple[GlossaryArticleBrief, ...]
     glossary_empty_reason: str | None
     research_trends: ResearchTrendsBrief
+    research_supplements: set[str] = field(default_factory=set)
+    lo_overlay_loss: dict[str, object] | None = None
+    pre_work: PreWorkBrief | None = None
+    encounter_mode: Literal["recorded", "live"] = "recorded"
+    render_profile: Literal["legacy", "presentation_support"] = "legacy"
+    workbook_brief_receipt: dict[str, object] | None = None
 
 
 def _research_inputs(
@@ -458,11 +515,217 @@ def _research_inputs(
     return tuple(entries), manifest, reason, omitted_note
 
 
+def _normalize_join_path(value: str) -> str:
+    """Posix-normalize a corpus-relative path for exact-equality joins (A3/M4).
+
+    Byte-identical cross-platform: ``replace("\\\\", "/")`` + strip a leading
+    ``./``. Deliberately NOT ``Path(...).as_posix()`` — that is
+    platform-divergent on raw backslashed strings.
+    """
+    normalized = str(value).replace("\\", "/")
+    return normalized.removeprefix("./")
+
+
+def _unit_to_enrichment_lo_map(
+    lesson_plan: dict[str, Any] | None,
+    card: dict[str, Any] | None,
+    authority_map: WorkbookSlideAuthorityMapV1 | None = None,
+) -> dict[str, str]:
+    """Bridge collateral plan-unit ids (``uNN``) to enrichment LO ids (``lo-g0-NNN``).
+
+    Q1 (LO-id namespace drift): the G0 enrichment overlay is keyed by
+    ``lo-g0-NNN`` (one per enumerated corpus component ``src-NNN``); Irene's
+    collateral binds sections to plan-unit ids ``uNN``. Both reference the SAME
+    source component, joined here through one of two bridges:
+
+    - **Authority join (preferred; 38.3a):** when the run's digest-bound
+      slide-authority map is present, each authority row's ``unit_id ->
+      source_path`` joins the G0 card's ``enumeration_provenance`` (``locator ->
+      source_id``) and thence ``src_to_lo`` (``source_id -> objective_id``).
+      Paths on BOTH sides are posix-normalized (``_normalize_join_path``) and
+      compared by exact equality only — no fuzzy matching. STRUCTURAL
+      PRECEDENCE (party W1 MUST-FIX): with a map present the legacy marker loop
+      does NOT run at all — Texas's ``src-NNN`` marker namespace (slides only)
+      and G0's ``src-NNN`` namespace (all corpus files) conflate, so a marker
+      gap-fill can silently attach the WRONG LO. Units the authority join
+      cannot resolve stay unresolved (visible placeholder downstream).
+    - **Legacy marker bridge (fallback):** when the map is absent/invalid, plan
+      units resolve via their ``[evidence: src-NNN]`` ``source_refs`` markers,
+      byte-identical to the pre-38.3a behavior (older runs/fixtures).
+
+    Returns an empty map when either side is absent — backward compatible:
+    collateral bound DIRECTLY to ``lo-g0-NNN`` still resolves by the unmapped
+    direct key.
+    """
+    # The authority branch reads only (map, card); the legacy branch also needs
+    # the lesson plan's units. Gate each branch on ITS OWN inputs (T4 review) —
+    # a non-dict lesson plan must not disable an otherwise-resolvable authority join.
+    if not isinstance(card, dict):
+        return {}
+    if authority_map is None and not isinstance(lesson_plan, dict):
+        return {}
+    # src-NNN -> lo-g0-NNN (structured; the first LO binding a src wins, stable).
+    src_to_lo: dict[str, str] = {}
+    for lo in card.get("provisional_los") or []:
+        if not isinstance(lo, dict):
+            continue
+        objective_id = str(lo.get("objective_id") or "")
+        if not objective_id:
+            continue
+        for ref in lo.get("source_refs") or []:
+            if isinstance(ref, dict):
+                source_id = str(ref.get("source_id") or "")
+                if source_id and source_id not in src_to_lo:
+                    src_to_lo[source_id] = objective_id
+    if not src_to_lo:
+        return {}
+    unit_to_lo: dict[str, str] = {}
+    if authority_map is not None:
+        # Authority join ONLY (structural precedence, party W1): the marker loop
+        # below MUST NOT run in this branch — cross-namespace marker gap-fill can
+        # attach the WRONG LO. Unresolved units stay unresolved (visible
+        # placeholder + lo_overlay_loss downstream).
+        # A poisoned (None) key marks a normalized-locator CONFLICT: two
+        # provenance entries collapsing to one key with different source_ids.
+        # Conflicted keys resolve nothing — visible degrade beats an
+        # ordering-dependent silently-wrong LO (T4 review).
+        locator_to_src: dict[str, str | None] = {}
+        prov = card.get("enumeration_provenance")
+        for entry in prov if isinstance(prov, list) else []:
+            if not isinstance(entry, dict):
+                continue
+            locator = str(entry.get("locator") or "")
+            source_id = str(entry.get("source_id") or "")
+            if locator and source_id:
+                key = _normalize_join_path(locator)
+                if key not in locator_to_src:
+                    locator_to_src[key] = source_id
+                elif locator_to_src[key] != source_id:
+                    locator_to_src[key] = None
+        for row in authority_map.rows:
+            if row.unit_id in unit_to_lo:
+                continue
+            source_id_for_path = locator_to_src.get(_normalize_join_path(row.source_path))
+            if source_id_for_path is None:
+                continue
+            lo_id = src_to_lo.get(source_id_for_path)
+            if lo_id is not None:
+                unit_to_lo[row.unit_id] = lo_id
+        if authority_map.rows and locator_to_src and not unit_to_lo:
+            # Anomaly signal (T4 review): a present map + present provenance that
+            # join to NOTHING is locator/source_path shape drift, not "LOs
+            # genuinely unbound" — every objective will degrade visibly.
+            logger.warning(
+                "workbook LO overlay: authority join produced 0 mappings from "
+                "%d authority row(s) and %d provenance locator(s) — "
+                "locator/source_path shape drift suspected",
+                len(authority_map.rows),
+                len(locator_to_src),
+            )
+        return unit_to_lo
+    # Legacy fallback (map absent/invalid): uNN -> lo-g0-NNN via the plan unit's
+    # [evidence: src-NNN] markers, byte-identical to the pre-38.3a behavior.
+    for unit in lesson_plan.get("plan_units") or []:
+        if not isinstance(unit, dict):
+            continue
+        unit_id = str(unit.get("unit_id") or "")
+        if not unit_id or unit_id in unit_to_lo:
+            continue
+        for raw_ref in unit.get("source_refs") or []:
+            matched = False
+            for match in _EVIDENCE_SRC_RE.finditer(str(raw_ref)):
+                lo_id = src_to_lo.get(match.group(1))
+                if lo_id is not None:
+                    unit_to_lo[unit_id] = lo_id
+                    matched = True
+                    break
+            if matched:
+                break
+    return unit_to_lo
+
+
+def _research_figure_supplements(
+    research_entries: tuple[ResearchEntry, ...],
+    further_reading: tuple[FurtherReadingEntry, ...],
+    glossary_articles: tuple[GlossaryArticleBrief, ...],
+    research_trends: ResearchTrendsBrief,
+) -> set[str]:
+    """Normalized figure tokens sourced from the run's research leg (B5).
+
+    The G1 numeric gate audits the FULL workbook body (incl. the W2 glossary, W3
+    trends, and S6 research references) against corpus+narration only. A numeral
+    that legitimately originates from the research leg (a study title's ``$7``, a
+    trend claim's ``30%``) is otherwise flagged ``unsourced_numeric`` and FAILS
+    G1 -> a gate-failed pause. Declare those figures as research supplements so
+    they clear without inflating the source text. Symbol-only (the named
+    word-form gap remains). Tokens are the frozen-neck NORMALIZED forms
+    (``percent:30`` / ``money-trillion:4.5``); ``_normalize_figure`` is idempotent
+    on them, so they match the audit's narration key space verbatim.
+    """
+    parts: list[str] = []
+    for entry in research_entries:
+        parts.append(entry.title or "")
+    for reading in further_reading:
+        parts.append(reading.title or "")
+        parts.append(reading.locator or "")
+    for article in glossary_articles:
+        parts.append(" ".join(filter(None, (article.term, article.headline, article.body))))
+    if research_trends is not None:
+        for claim in research_trends.trends:
+            parts.append(claim.claim_text or "")
+            parts.append(claim.title or "")
+        for topic in research_trends.hot_topics:
+            parts.append(topic.topic or "")
+            parts.append(topic.rationale or "")
+    return _figures("\n".join(parts))
+
+
+def _authored_prose_figure_supplements(
+    spec: WorkbookSpec,
+    learning_objectives: tuple[LearningObjectiveBrief, ...],
+    answer_keys: dict[str, str],
+    pre_work: PreWorkBrief | None,
+) -> set[str]:
+    """Normalized figure tokens sourced from the run's AUTHORED pedagogy prose.
+
+    The G1 numeric gate audits the FULL rendered workbook body against
+    corpus+narration (plus the B5 research-leg supplements). But those cover only
+    the transcript-derived text — NOT the depth-delta narrative + enrichment LO
+    statements, the collateral exercise/answer-key prose, or the prework
+    Scene/Promise/Friction prose. A symbol-numeral legitimately authored into any
+    of those (e.g. an enrichment LO's ``88%``) but not verbatim in corpus+narration
+    is otherwise flagged ``unsourced_numeric`` and HARD-PAUSES a legitimate
+    workbook. These blocks are UPSTREAM-authored artifacts (Irene's collateral /
+    the enrichment card / the validated prework brief) grounded in the source, not
+    producer fabrications, so their figures are declared as G1 supplements —
+    exactly the same mechanism the research leg uses (B5). This preserves the
+    invariant's intent: a numeral that appears ONLY in producer-composed structural
+    chrome (not corpus, narration, research, or these authored blocks) still fails
+    G1. Symbol-only; the named word-form gap
+    (``braid-workbook-wordform-numeral-gap``) is unchanged.
+    """
+    parts: list[str] = []
+    for section in spec.sections:
+        parts.append(section.title or "")
+        parts.append(section.depth_delta.deferred_depth or "")
+        parts.append(section.narrative_intent or "")
+        for exercise in section.exercises:
+            parts.append(exercise.prompt_intent or "")
+    for lo in learning_objectives:
+        parts.append(lo.statement or "")
+    for worked in answer_keys.values():
+        parts.append(worked or "")
+    if pre_work is not None:
+        parts.append(render_prework_markdown(pre_work))
+    return _figures("\n".join(p for p in parts if p))
+
+
 def build_workbook_inputs(
     run_dir: Path,
     *,
     config: dict[str, Any] | None = None,
     run_id: str | None = None,
+    validated_brief: WorkbookBriefArtifactV1 | None = None,
 ) -> WorkbookInputs | None:
     """Author the produce() inputs from Irene's collateral blueprint + the run.
 
@@ -472,9 +735,7 @@ def build_workbook_inputs(
     blueprint is absent/unresolvable (D3 fail-loud).
     """
     cfg = config or _load_config()
-    manifest_relpath = str(
-        cfg.get("segment_manifest_relpath", _DEFAULT_SEGMENT_MANIFEST_RELPATH)
-    )
+    manifest_relpath = str(cfg.get("segment_manifest_relpath", _DEFAULT_SEGMENT_MANIFEST_RELPATH))
     corpus_relpath = str(cfg.get("corpus_relpath", _DEFAULT_CORPUS_RELPATH))
     revision = int(cfg.get("lesson_plan_revision", _DEFAULT_LESSON_PLAN_REVISION))
 
@@ -527,14 +788,65 @@ def build_workbook_inputs(
     if card is not None:
         projection = project_enrichment_to_workbook_inputs(card)
         for sec in projection.spec.sections:
-            exercises_by_objective.setdefault(
-                sec.learning_objective_id, []
-            ).extend(sec.exercises)
+            exercises_by_objective.setdefault(sec.learning_objective_id, []).extend(sec.exercises)
         overlay_lo = {lo.objective_id: lo for lo in projection.learning_objectives}
         further_reading = projection.further_reading
         citations = list(projection.citations)
         source_ref_manifest = dict(projection.source_ref_manifest)
         answer_keys = dict(projection.answer_keys)
+
+    # Q1 + 38.3a: bridge collateral plan-unit ids (uNN) to enrichment LO ids
+    # (lo-g0-NNN) so the overlay (keyed lo-g0-NNN) resolves against a uNN-bound
+    # section. Preferred bridge: the run's digest-bound slide-authority map
+    # (structural precedence over the legacy marker bridge — party W1). The
+    # reader funnels its read/parse/shape failure envelope (absent file,
+    # corrupt/duplicate-key JSON, containment breach, the map's SELF-digest
+    # mismatch) into SlideAuthorityInvalidError, so catching ONLY that type is
+    # the "map absent" seam (party W3 — a bare ``except Exception`` would
+    # swallow producer bugs). Cross-RUN binding freshness (plan_units_digest vs
+    # the live plan) is NOT re-checked here by design: 07W.1's
+    # write_or_validate_slide_authority_map reconciles the sidecar against the
+    # current run artifacts before this leaf runs (spec W4). Empty map when
+    # either side is absent OR the collateral binds lo-g0 ids directly (then
+    # the unmapped direct-key lookup already resolves).
+    try:
+        authority_map: WorkbookSlideAuthorityMapV1 | None = read_slide_authority_map(run_dir)
+    except SlideAuthorityInvalidError as exc:
+        # Visible downgrade (T4 review): losing the map switches join semantics
+        # to the legacy marker bridge — never do that silently.
+        logger.warning(
+            "workbook LO overlay: slide-authority map unavailable (%s) — "
+            "falling back to the legacy [evidence: src-NNN] marker bridge",
+            exc,
+        )
+        authority_map = None
+    unit_to_lo = _unit_to_enrichment_lo_map(lesson_plan, card, authority_map=authority_map)
+
+    def _resolve_overlay_key(objective_id: str) -> str | None:
+        """The overlay key for a bound objective: direct id, else the uNN bridge."""
+        if objective_id in overlay_lo or objective_id in exercises_by_objective:
+            return objective_id
+        return unit_to_lo.get(objective_id)
+
+    # Q2: populate the S6 References channel from corpus-native reference sources
+    # (references/*.md + per-slide **References:** lines) when the run's corpus
+    # carries them. Additive to the enrichment further-reading; de-duplicated by
+    # source_ref; folded into the G2 citation manifest so the rendered references
+    # pass the citation gate. A run whose corpus root is absent (e.g. a fixture)
+    # contributes nothing — backward compatible.
+    corpus_root = corpus_root_from_run(run_dir)
+    if corpus_root is not None:
+        existing_refs = {entry.source_ref for entry in further_reading}
+        corpus_refs = tuple(
+            entry
+            for entry in corpus_native_further_reading(corpus_root)
+            if entry.source_ref not in existing_refs
+        )
+        if corpus_refs:
+            further_reading = further_reading + corpus_refs
+            for entry in corpus_refs:
+                source_ref_manifest.setdefault(entry.source_ref, _hash(entry.title))
+                citations.append({"source_ref": entry.source_ref})
 
     # Sections: collateral is authoritative; overlay exercises (when present)
     # resolve into their HOME section by learning_objective_id.
@@ -551,10 +863,14 @@ def build_workbook_inputs(
     for sec in blueprint.sections:
         oid = sec.learning_objective_id
         bound_objectives.append(oid)
-        overlay_ex = exercises_by_objective.get(oid)
-        if overlay_ex and oid not in overlay_attached:
+        overlay_key = _resolve_overlay_key(oid)
+        overlay_ex = exercises_by_objective.get(overlay_key) if overlay_key else None
+        # Dedup by the OVERLAY key (not the section id): two sections resolving the
+        # SAME overlay LO must not both attach the same exercise objects (that
+        # duplicates exercise_id and crashes assert_unique_collateral_ids).
+        if overlay_ex and overlay_key not in overlay_attached:
             sec = sec.model_copy(update={"exercises": list(overlay_ex)})
-            overlay_attached.add(oid)
+            overlay_attached.add(overlay_key)
         sections.append(sec)
     # Remediation item-6: carry the blueprint's kind through the rebuild (single
     # value today; explicit so a future closed-set growth cannot silently revert).
@@ -564,18 +880,59 @@ def build_workbook_inputs(
     # phantom). Statement/Bloom from the overlay; a bound objective with no
     # overlay resolution degrades with recorded in-workbook provenance (D2).
     distinct_objectives = list(dict.fromkeys(bound_objectives))
-    learning_objectives = tuple(
-        overlay_lo.get(oid)
-        or LearningObjectiveBrief(
-            objective_id=oid,
-            bloom_level=_DEFAULT_LO_BLOOM,
-            statement=(
-                f"(objective statement unresolved for `{oid}` — no enrichment "
-                "overlay resolved this objective on this run)"
-            ),
+    resolved_los: list[LearningObjectiveBrief] = []
+    unresolved_overlay: list[str] = []
+    for oid in distinct_objectives:
+        overlay_key = _resolve_overlay_key(oid)
+        brief = overlay_lo.get(overlay_key) if overlay_key else None
+        if brief is not None:
+            # Re-key the resolved overlay brief onto the collateral's BOUND
+            # objective id (uNN): the S1 no-orphan/no-phantom binding assertion
+            # compares the brief's objective_id against the section bindings, so a
+            # brief still keyed lo-g0-NNN would read as an orphan+phantom pair.
+            if brief.objective_id != oid:
+                brief = LearningObjectiveBrief(
+                    objective_id=oid,
+                    bloom_level=brief.bloom_level,
+                    statement=brief.statement,
+                )
+            resolved_los.append(brief)
+        else:
+            unresolved_overlay.append(oid)
+            resolved_los.append(
+                LearningObjectiveBrief(
+                    objective_id=oid,
+                    bloom_level=_DEFAULT_LO_BLOOM,
+                    statement=(
+                        f"(objective statement unresolved for `{oid}` — no enrichment "
+                        "overlay resolved this objective on this run)"
+                    ),
+                )
+            )
+    learning_objectives = tuple(resolved_los)
+
+    # Q1: RECORD the unresolved-overlay count as a visible loss (never a silent
+    # degrade). Only meaningful when an enrichment card was present (an overlay
+    # was expected); a card-less run degrades every objective by design.
+    lo_overlay_loss: dict[str, object] | None = None
+    if card is not None and unresolved_overlay:
+        logger.warning(
+            "workbook LO overlay: %d of %d bound objective(s) resolved no "
+            "enrichment overlay (unresolved: %s)",
+            len(unresolved_overlay),
+            len(distinct_objectives),
+            unresolved_overlay,
         )
-        for oid in distinct_objectives
-    )
+        lo_overlay_loss = {
+            "unresolved_count": len(unresolved_overlay),
+            "bound_count": len(distinct_objectives),
+            "unresolved_objectives": list(unresolved_overlay),
+            "note": (
+                f"{len(unresolved_overlay)} of {len(distinct_objectives)} learning "
+                "objective(s) resolved no enrichment overlay (statement/Bloom "
+                f"degraded to placeholder): {', '.join(unresolved_overlay)}"
+            ),
+        }
 
     # D4: research entries + their G2 manifest slice (folded into the same
     # manifest; produce() adds the research citations to the G2 audit).
@@ -589,9 +946,7 @@ def build_workbook_inputs(
         source_ref_manifest.setdefault(source_ref, source_hash)
 
     # W2: encyclopedia glossary from shared research packet (same SSOT as W1).
-    glossary_articles, glossary_empty_reason, _glossary_losses = glossary_inputs_from_run(
-        run_dir
-    )
+    glossary_articles, glossary_empty_reason, _glossary_losses = glossary_inputs_from_run(run_dir)
     for article in glossary_articles:
         if article.source_ref and article.source_ref not in source_ref_manifest:
             source_ref_manifest[article.source_ref] = _hash(article.source_ref)
@@ -621,9 +976,30 @@ def build_workbook_inputs(
         revision=revision,
     )
 
+    brief = validated_brief
+
+    # B5: declare research-leg figures so G1 does not flag legitimate research
+    # numerals (W2 glossary / W3 trends / S6 references) as unsourced.
+    research_supplements = _research_figure_supplements(
+        research_entries, further_reading, glossary_articles, research_trends
+    )
+    # G1 hardening: ALSO declare figures authored into the pedagogy prose blocks
+    # (depth-delta / LO statements / exercises / answer keys / prework) — those are
+    # upstream-authored, source-grounded, and not covered by corpus+narration, so a
+    # legitimate numeral there must not hard-pause the workbook (mirrors B5).
+    research_supplements = research_supplements | _authored_prose_figure_supplements(
+        spec,
+        learning_objectives,
+        answer_keys,
+        brief.payload.pre_work if brief else None,
+    )
+
+    display_title = _derive_display_title(lesson_plan, run_dir)
+
     return WorkbookInputs(
         plan_unit=plan_unit,
         context=context,
+        workbook_title=display_title,
         spec=spec,
         segments=segments,
         source_text=source_text,
@@ -639,6 +1015,30 @@ def build_workbook_inputs(
         glossary_articles=glossary_articles,
         glossary_empty_reason=glossary_empty_reason,
         research_trends=research_trends,
+        research_supplements=research_supplements,
+        lo_overlay_loss=lo_overlay_loss,
+        pre_work=brief.payload.pre_work if brief else None,
+        encounter_mode=brief.payload.encounter_mode if brief else "recorded",
+        render_profile="presentation_support" if brief else "legacy",
+        workbook_brief_receipt=(
+            {
+                "path": WORKBOOK_BRIEF_FILENAME,
+                "payload_digest": brief.payload_digest,
+                "status_summary": {
+                    "scene": brief.payload.pre_work.scene.status,
+                    "promise": brief.payload.pre_work.promise.status,
+                },
+                "warning_summary": list(brief.payload.warnings),
+                "loss_summary": list(brief.payload.known_losses),
+                "scene_receipt": brief.payload.scene_receipt.model_dump(mode="json"),
+                "promise_receipt": brief.payload.promise_receipt.model_dump(mode="json"),
+                "writer_receipts": [
+                    receipt.model_dump(mode="json") for receipt in brief.payload.writer_receipts
+                ],
+            }
+            if brief
+            else None
+        ),
     )
 
 
@@ -672,21 +1072,38 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             tag="workbook-producer.run-dir.absent",
         )
     run_id = getattr(state, "run_id", None)
+    brief = _reconcile_workbook_brief_authority(state, run_dir)
     inputs = build_workbook_inputs(
-        run_dir, config=config, run_id=str(run_id) if run_id is not None else None
+        run_dir,
+        config=config,
+        run_id=str(run_id) if run_id is not None else None,
+        validated_brief=brief,
     )
     if inputs is None:
         return None
-    output_root = (
-        payload.get("output_root")
-        or config.get("output_root")
-        or DEFAULT_WORKBOOK_OUTPUT_ROOT
-    )
+    # B6: default the deliverable to a TRIAL-SCOPED path under ``<run_dir>/exports``
+    # so the governed run inventory (which scans ``runs/<trial>``) captures + binds
+    # the MD/DOCX to this trial, instead of the shared, unbindable, overwrite-prone
+    # ``_bmad-output/artifacts/workbooks`` root. Precedence: an explicit payload
+    # override wins (orchestrator/replay intent); an operator's genuinely
+    # reconfigured ``config.output_root`` (i.e. NOT the shipped legacy default) is
+    # honored; otherwise the trial-scoped path is the default. The shipped config
+    # value equal to ``DEFAULT_WORKBOOK_OUTPUT_ROOT`` is treated as "not
+    # reconfigured" so the legacy shared root no longer forces a non-trial path.
+    explicit_output_root = payload.get("output_root")
+    configured_output_root = config.get("output_root")
+    if explicit_output_root:
+        output_root: str = str(explicit_output_root)
+    elif configured_output_root and configured_output_root != DEFAULT_WORKBOOK_OUTPUT_ROOT:
+        output_root = str(configured_output_root)
+    else:
+        output_root = str(run_dir / "exports" / "workbooks")
     producer = WorkbookProducer(output_root=output_root)
     try:
         return producer.produce(
             inputs.plan_unit,
             inputs.context,
+            workbook_title=inputs.workbook_title,
             spec=inputs.spec,
             segments=inputs.segments,
             source_text=inputs.source_text,
@@ -702,6 +1119,12 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             glossary_articles=inputs.glossary_articles,
             glossary_empty_reason=inputs.glossary_empty_reason,
             research_trends=inputs.research_trends,
+            research_supplements=inputs.research_supplements,
+            lo_overlay_loss=inputs.lo_overlay_loss,
+            pre_work=inputs.pre_work,
+            encounter_mode=inputs.encounter_mode,
+            render_profile=inputs.render_profile,
+            workbook_brief_receipt=inputs.workbook_brief_receipt,
             # DP6 (spec landmine): workbook-only diff justifies reuse; do not force
             # a spurious fresh-gamma. Stamp the in-graph run id.
             diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
@@ -718,6 +1141,117 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
         ) from exc
 
 
+def _load_persisted_production_envelope(run_dir: Path) -> ProductionEnvelope | None:
+    """Load the persisted ``ProductionEnvelope`` from ``<run_dir>/run.json``.
+
+    The dispatch adapter NULLS ``state.production_envelope`` for EVERY specialist
+    (per-component isolation invariant); workbook_producer is the only specialist
+    that reads it (the 07W.1 brief-authority reconcile). But 07W runs AFTER the
+    band nodes 07W.1-07W.4, which persist ``run.json`` (07W self-resolves from the
+    RUN DIR), so the authoritative envelope is re-loadable from disk. Returns
+    ``None`` when ``run.json`` is absent or unreadable so the envelope-absent path
+    still degrades cleanly. Guarded: contained (a child of ``run_dir``) and not a
+    symlink.
+    """
+    run_json = run_dir / "run.json"
+    if run_json.is_symlink() or not run_json.is_file():
+        return None
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(
+            run_json.read_text(encoding="utf-8")
+        )
+    except (OSError, ValueError):
+        return None
+    return trial.production_envelope
+
+
+def _reconcile_workbook_brief_authority(
+    state: RunState, run_dir: Path
+) -> WorkbookBriefArtifactV1 | None:
+    """Require exact contribution authority before activating presentation support."""
+    envelope = state.production_envelope
+    # The dispatch adapter nulls ``production_envelope`` on the isolated RunState;
+    # re-load the persisted authority from the run dir so the 07W brief reconcile
+    # runs its collision/legacy/real logic against the REAL envelope instead of
+    # error-pausing on ``authority-missing``.
+    if envelope is None:
+        envelope = _load_persisted_production_envelope(run_dir)
+    brief_path = run_dir / WORKBOOK_BRIEF_FILENAME
+    if brief_path.is_symlink():
+        raise WorkbookProducerActError(
+            "workbook brief coordinate is a symlink",
+            tag="workbook-brief.sidecar-invalid",
+        )
+    sidecar_exists = brief_path.is_file()
+    if envelope is None:
+        if sidecar_exists:
+            raise WorkbookProducerActError(
+                "workbook brief sidecar has no ProductionEnvelope authority",
+                tag="workbook-brief.authority-missing",
+            )
+        return None
+    legacy_matches = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "workbook_brief_stub"
+        and contribution.node_id == "07W.1"
+    )
+    real_matches = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "workbook_brief"
+        and contribution.node_id == "07W.1"
+    )
+    legacy = legacy_matches[0] if legacy_matches else None
+    real = real_matches[0] if real_matches else None
+    allowed = {"workbook_brief", "workbook_brief_stub"}
+    collisions = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if (
+            contribution.node_id == "07W.1"
+            and contribution.specialist_id not in allowed
+        )
+        or (
+            contribution.specialist_id in allowed
+            and contribution.node_id != "07W.1"
+        )
+    )
+    if (
+        collisions
+        or len(legacy_matches) > 1
+        or len(real_matches) > 1
+        or (legacy and real)
+    ):
+        raise WorkbookProducerActError(
+            "workbook brief coordinates are contradictory",
+            tag="workbook-brief.sidecar-mismatch",
+        )
+    if real is None:
+        if legacy is not None:
+            raise WorkbookProducerActError(
+                "legacy workbook brief requires explicit 07W.1 re-entry",
+                tag="workbook-brief.legacy-reentry-required",
+            )
+        if sidecar_exists:
+            raise WorkbookProducerActError(
+                "workbook brief sidecar has no real contribution authority",
+                tag="workbook-brief.authority-missing",
+            )
+        return None
+    try:
+        artifact = read_workbook_brief(run_dir)
+    except ValueError as exc:
+        raise WorkbookProducerActError(str(exc), tag="workbook-brief.sidecar-invalid") from exc
+    expected = workbook_brief_contribution_receipt(artifact)
+    if real.output != expected:
+        raise WorkbookProducerActError(
+            "workbook brief contribution and sidecar receipt mismatch",
+            tag="workbook-brief.sidecar-mismatch",
+        )
+    return artifact
+
+
 def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
     """Project the sidecar into the JSON-safe refs put on RunState."""
     return {
@@ -728,19 +1262,18 @@ def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
         "markdown_path": sidecar.markdown_path,
         "docx_path": sidecar.docx_path,
         "numeric_audit_status": sidecar.numeric_audit.get("status"),
-        "citation_unsourced": sidecar.citation_audit["buckets"][
-            "unsourced_citations"
-        ]["count"],
+        "citation_unsourced": sidecar.citation_audit["buckets"]["unsourced_citations"]["count"],
         "segment_coverage": sidecar.segment_coverage,
         "gamma_reuse_justified_by": sidecar.gamma_reuse_justified_by,
+        "workbook_brief": sidecar.workbook_brief_receipt,
+        "depth_receipt": sidecar.depth_receipt,
+        "lo_overlay_loss": sidecar.lo_overlay_loss,
     }
 
 
 def act(state: RunState) -> dict[str, Any]:
     if not state.model_resolution_trail:
-        raise RuntimeError(
-            "workbook_producer act invoked before plan; resolution trail is empty"
-        )
+        raise RuntimeError("workbook_producer act invoked before plan; resolution trail is empty")
     last_entry = state.model_resolution_trail[-1]
     payload = decode_envelope_payload(state)
     try:

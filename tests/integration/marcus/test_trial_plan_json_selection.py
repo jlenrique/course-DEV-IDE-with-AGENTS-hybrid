@@ -75,6 +75,8 @@ def test_start_trial_consumes_lesson_plan_json_selection(
             runs_root=tmp_path / "runs",
             lesson_plan_collateral_intent_path=plan_json,
             lesson_plan_collateral_bundle_id="narrated-deck-with-workbook",
+            course_source_root=Path("course-content/courses/tejal-apc-c1-m1-p2-trends"),
+            encounter_mode="recorded",
         )
 
     selection = captured["component_selection"]
@@ -173,9 +175,7 @@ def test_start_trial_sniff_routes_unratified_plan_shape_to_plan_loader(
         json.dumps({"plan_units": [], "ratification_status": "draft"}),
         encoding="utf-8",
     )
-    with pytest.raises(
-        CollateralSelectionError, match="lesson_plan.collateral is required"
-    ):
+    with pytest.raises(CollateralSelectionError, match="lesson_plan.collateral is required"):
         start_trial(
             preset="production",
             input_path=FIXTURE_INPUT,
@@ -215,9 +215,7 @@ def test_start_trial_ratified_stamped_plan_shape_routes_to_intent_loader(
         json.dumps({"plan_units": [], "ratification_status": "ratified"}),
         encoding="utf-8",
     )
-    with pytest.raises(
-        CollateralSelectionError, match="closed ratified intent validation failed"
-    ):
+    with pytest.raises(CollateralSelectionError, match="closed ratified intent validation failed"):
         start_trial(
             preset="production",
             input_path=FIXTURE_INPUT,
@@ -257,9 +255,7 @@ def test_start_trial_wrapper_shape_routes_to_plan_loader(
         json.dumps({"lesson_plan": {"plan_units": []}}),
         encoding="utf-8",
     )
-    with pytest.raises(
-        CollateralSelectionError, match="lesson_plan.collateral is required"
-    ):
+    with pytest.raises(CollateralSelectionError, match="lesson_plan.collateral is required"):
         start_trial(
             preset="production",
             input_path=FIXTURE_INPUT,

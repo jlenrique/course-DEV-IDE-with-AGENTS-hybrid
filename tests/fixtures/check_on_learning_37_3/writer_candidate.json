@@ -1,0 +1,37 @@
+{
+  "status": "authored",
+  "items": [
+    {
+      "item_id": "item-a",
+      "ability_id": "ability-a",
+      "posture": "free_response_from_memory",
+      "prompt": "What distinction would diagnose the recurring delay?",
+      "expected_answer": "Treat the recurring delay as a system-design cause, not an isolated symptom.",
+      "answer_claims": [
+        {
+          "answer_claim_id": "answer-a",
+          "text": "Treat the recurring delay as a system-design cause, not an isolated symptom.",
+          "source_claim_ref": "claim-a",
+          "source_span_refs": ["span-a"]
+        }
+      ]
+    },
+    {
+      "item_id": "item-b",
+      "ability_id": "ability-b",
+      "posture": "free_response_from_memory",
+      "prompt": "What should you do first at the handoff?",
+      "expected_answer": "First, map the handoff before choosing an intervention.",
+      "answer_claims": [
+        {
+          "answer_claim_id": "answer-b",
+          "text": "First, map the handoff before choosing an intervention.",
+          "source_claim_ref": "claim-b",
+          "source_span_refs": ["span-b"]
+        }
+      ]
+    }
+  ],
+  "known_losses": [],
+  "marker": null
+}

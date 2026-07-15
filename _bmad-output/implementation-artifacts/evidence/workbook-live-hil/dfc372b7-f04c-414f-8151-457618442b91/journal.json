@@ -1,0 +1,190 @@
+{
+  "created_at": "2026-07-15T01:59:40.562999Z",
+  "delegate_id": "codex_hil_runner",
+  "events": [
+    {
+      "at": "2026-07-15T02:00:52.319779Z",
+      "directive_digest": "b63efbe016a43c184de273b21d542b1557e76dea6321265e0b3a59741e0a5c93",
+      "directive_path": "directive.yaml",
+      "kind": "g0-directive-confirmed",
+      "sequence": 1
+    },
+    {
+      "at": "2026-07-15T02:04:18.465822Z",
+      "kind": "start-returned",
+      "sequence": 2,
+      "status": "registered-offline"
+    },
+    {
+      "at": "2026-07-15T02:04:18.517586Z",
+      "card_id": "3aff252a-d072-419e-b720-bc5bb3a56d6f",
+      "decision_card_digest": "de77b0f1e1b0be6acf205fd803ce9bd1b8664f59afa4a1f3bc579145c3ee2004",
+      "gate_id": "G0E",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 3,
+      "verb": "approve",
+      "verdict_id": "350d238a-e890-4f49-acc8-311081913164"
+    },
+    {
+      "at": "2026-07-15T02:05:52.346210Z",
+      "decision_card_digest": "de77b0f1e1b0be6acf205fd803ce9bd1b8664f59afa4a1f3bc579145c3ee2004",
+      "kind": "transition-recorded",
+      "resulting_gate": "G0R",
+      "resulting_status": "paused-at-gate",
+      "sequence": 4
+    },
+    {
+      "at": "2026-07-15T02:05:52.369491Z",
+      "card_id": "278add0e-a47b-4774-8115-36fa32f99543",
+      "decision_card_digest": "17fc1a98ed28d413e52d39aee4e9c7dfd807b0394fde532528ec82b5f1722a33",
+      "gate_id": "G0R",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 5,
+      "verb": "approve",
+      "verdict_id": "f57866e8-be28-4125-9c2c-1e568e20a319"
+    },
+    {
+      "at": "2026-07-15T02:06:12.982630Z",
+      "decision_card_digest": "17fc1a98ed28d413e52d39aee4e9c7dfd807b0394fde532528ec82b5f1722a33",
+      "kind": "transition-recorded",
+      "resulting_gate": "G1",
+      "resulting_status": "paused-at-gate",
+      "sequence": 6
+    },
+    {
+      "at": "2026-07-15T02:06:13.009077Z",
+      "card_id": "3ab4fefb-5a3b-4ae1-8213-4939ab4caebf",
+      "decision_card_digest": "f0be56908d60e22a591ef0bef60efab3673a9d67cc5d4178b1dddafbd97791e9",
+      "gate_id": "G1",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 7,
+      "verb": "approve",
+      "verdict_id": "8c459837-784f-4b69-8a7a-5ac1d97e2ea7"
+    },
+    {
+      "at": "2026-07-15T02:12:13.024716Z",
+      "decision_card_digest": "f0be56908d60e22a591ef0bef60efab3673a9d67cc5d4178b1dddafbd97791e9",
+      "kind": "transition-recorded",
+      "resulting_gate": "G2B",
+      "resulting_status": "paused-at-gate",
+      "sequence": 8
+    },
+    {
+      "at": "2026-07-15T02:12:13.069488Z",
+      "card_id": "326c7b3e-635f-482c-a324-001e27f9260e",
+      "decision_card_digest": "1a0e3a1fc65129aea1fe10ab7e9c516587bc2c4df69b1f2a1041b7676c6ad34a",
+      "gate_id": "G2B",
+      "kind": "submission-started",
+      "selection_id": {
+        "slide-01": "A",
+        "slide-02": "A",
+        "slide-03": "A",
+        "slide-04": "A",
+        "slide-05": "A",
+        "slide-06": "A",
+        "slide-07": "A",
+        "slide-08": "A",
+        "slide-09": "A",
+        "slide-10": "A",
+        "slide-11": "A",
+        "slide-12": "A",
+        "slide-13": "A",
+        "slide-14": "A",
+        "slide-15": "A"
+      },
+      "sequence": 9,
+      "verb": "select",
+      "verdict_id": "23b6760a-a3a9-4896-b883-f90594fcc05b"
+    },
+    {
+      "at": "2026-07-15T02:14:02.040219Z",
+      "decision_card_digest": "1a0e3a1fc65129aea1fe10ab7e9c516587bc2c4df69b1f2a1041b7676c6ad34a",
+      "kind": "transition-recorded",
+      "resulting_gate": "G2C",
+      "resulting_status": "paused-at-gate",
+      "sequence": 10
+    },
+    {
+      "at": "2026-07-15T02:14:02.084349Z",
+      "card_id": "e713b79d-a40e-4203-8999-1a454d0d064e",
+      "decision_card_digest": "0b7b811c121fe6c0c8ef6eb62edba57c867c9e6d8162dc3d9e36d9a6f1184ccd",
+      "gate_id": "G2C",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 11,
+      "verb": "approve",
+      "verdict_id": "72fa6116-5815-4588-ac32-3e5f9828ebb2"
+    },
+    {
+      "at": "2026-07-15T02:26:53.047402Z",
+      "decision_card_digest": "0b7b811c121fe6c0c8ef6eb62edba57c867c9e6d8162dc3d9e36d9a6f1184ccd",
+      "kind": "transition-recorded",
+      "resulting_gate": "G3",
+      "resulting_status": "paused-at-gate",
+      "sequence": 12
+    },
+    {
+      "at": "2026-07-15T02:26:53.269096Z",
+      "card_id": "af5f71c8-a43e-424f-ab0d-1b5e532c4e1f",
+      "decision_card_digest": "333bd53a671aa8b5bd9b02e598451af7f2d2b64fe9b368e7d1ea14a745c4c2e9",
+      "gate_id": "G3",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 13,
+      "verb": "approve",
+      "verdict_id": "c99854b9-7380-425c-8e3d-738877d76221"
+    },
+    {
+      "at": "2026-07-15T02:27:25.623235Z",
+      "decision_card_digest": "333bd53a671aa8b5bd9b02e598451af7f2d2b64fe9b368e7d1ea14a745c4c2e9",
+      "kind": "transition-recorded",
+      "resulting_gate": "G4",
+      "resulting_status": "paused-at-gate",
+      "sequence": 14
+    },
+    {
+      "at": "2026-07-15T02:27:25.678879Z",
+      "card_id": "212fbfa0-6b26-4017-8a43-27172aba7807",
+      "decision_card_digest": "861bc331231f0451eb2bc79ec347f31f5f41ffe5bc981a10ff7f9bec38789267",
+      "gate_id": "G4",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 15,
+      "verb": "approve",
+      "verdict_id": "1865290d-4553-4678-b1a3-32dc0efc158e"
+    },
+    {
+      "at": "2026-07-15T02:27:46.546399Z",
+      "decision_card_digest": "861bc331231f0451eb2bc79ec347f31f5f41ffe5bc981a10ff7f9bec38789267",
+      "kind": "transition-recorded",
+      "resulting_gate": "G4A",
+      "resulting_status": "paused-at-gate",
+      "sequence": 16
+    },
+    {
+      "at": "2026-07-15T02:27:46.602343Z",
+      "card_id": "0abf0468-470c-4655-9d22-cd4b9750c17c",
+      "decision_card_digest": "c86ffeacbb81294538548d98c8da9a0efc15df6cfcd034222772d88b0371fb90",
+      "gate_id": "G4A",
+      "kind": "submission-started",
+      "selection_id": "EXAVITQu4vr4xnSDxMaL",
+      "sequence": 17,
+      "verb": "select",
+      "verdict_id": "9651a4b8-e866-4540-85e5-fd48afd5f688"
+    },
+    {
+      "at": "2026-07-15T02:32:16.788417Z",
+      "decision_card_digest": "c86ffeacbb81294538548d98c8da9a0efc15df6cfcd034222772d88b0371fb90",
+      "kind": "transition-recorded",
+      "resulting_gate": null,
+      "resulting_status": "paused-at-error",
+      "sequence": 18
+    }
+  ],
+  "policy_digest": "4205b4dcb2a34846bac0da9f889365eefd22969613aac4e1a4c65e055b9a74a5",
+  "schema_version": "marcus-spoc-live-test-hil-journal.v1",
+  "trial_id": "dfc372b7-f04c-414f-8151-457618442b91"
+}

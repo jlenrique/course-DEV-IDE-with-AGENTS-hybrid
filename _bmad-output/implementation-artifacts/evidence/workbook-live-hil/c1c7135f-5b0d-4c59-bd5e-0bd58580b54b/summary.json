@@ -1,0 +1,13 @@
+{
+  "delegate_id": "codex_hil_runner",
+  "finished_at": "2026-07-14T00:01:18.232351Z",
+  "gate_actions": 3,
+  "journal_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/workbook-live-hil/c1c7135f-5b0d-4c59-bd5e-0bd58580b54b/journal.json",
+  "policy_digest": "4205b4dcb2a34846bac0da9f889365eefd22969613aac4e1a4c65e055b9a74a5",
+  "reason": "stopped-paused-at-error",
+  "schema_version": "marcus-spoc-live-test-hil-summary.v1",
+  "status": "paused-at-error",
+  "success": false,
+  "summary_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/_bmad-output/implementation-artifacts/evidence/workbook-live-hil/c1c7135f-5b0d-4c59-bd5e-0bd58580b54b/summary.json",
+  "trial_id": "c1c7135f-5b0d-4c59-bd5e-0bd58580b54b"
+}

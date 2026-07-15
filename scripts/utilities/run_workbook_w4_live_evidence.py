@@ -258,7 +258,12 @@ def main() -> int:
         "## Research Trends" in md
         and "Hot topics" in md
         and "confidence=" in md
-        and TRENDS_WRITER_REQUIRED_MARKER in md
+        # The writer-required marker lives on the hot-topic rationale FIELD; it is
+        # deliberately stripped from rendered MD/DOCX (learner-facing) — check the field.
+        and any(
+            TRENDS_WRITER_REQUIRED_MARKER in h.rationale
+            for h in trends_brief.hot_topics
+        )
         and trends_brief.usable
     )
     g2_ok = sidecar.citation_audit["buckets"]["unsourced_citations"]["count"] == 0
@@ -292,7 +297,8 @@ def main() -> int:
             "access_mode": "resolve_for_trends_projector / trends_inputs_from_run",
             "artifact": (
                 f"same packet → {len(trends_brief.trends)} trends / "
-                f"{len([h for h in trends_brief.hot_topics if h.confidence != 'unusable'])} hot topics"
+                f"{len([h for h in trends_brief.hot_topics if h.confidence != 'unusable'])}"
+                " hot topics"
             ),
             "packet_digest": trends_packet.packet_digest,
             "witness": "PASS" if trends_ok and same_digest else "FAIL",
@@ -300,7 +306,10 @@ def main() -> int:
         {
             "consumer": "irene_intake",
             "access_mode": "consume_research_entries(packet.entries)",
-            "artifact": f"entries_consumed={intake.entries_consumed}; fabricate_red={fabricate_red}",
+            "artifact": (
+                f"entries_consumed={intake.entries_consumed}; "
+                f"fabricate_red={fabricate_red}"
+            ),
             "packet_digest": packet.packet_digest,
             "witness": "PASS" if intake.entries_consumed > 0 and fabricate_red else "FAIL",
         },
@@ -384,8 +393,8 @@ def main() -> int:
                 "",
                 f"- pass: `{all_pass}`",
                 f"- trial_id: `{trial_id}`",
-                f"- claim: narrow Tejal research→glossary+trends (non-fabricated)",
-                f"- detective: OFF",
+                "- claim: narrow Tejal research→glossary+trends (non-fabricated)",
+                "- detective: OFF",
                 "",
                 "## Murat witnesses",
                 "",

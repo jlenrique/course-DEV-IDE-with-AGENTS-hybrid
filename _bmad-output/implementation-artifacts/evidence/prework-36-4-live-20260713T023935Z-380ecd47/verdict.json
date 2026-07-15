@@ -1,0 +1,131 @@
+{
+  "story": "36.4",
+  "attempt_id": "380ecd47-7491-42ab-a3d8-a68c1afbb078",
+  "first_run_stands": true,
+  "pass": true,
+  "recovery_of": "12ccd755-592b-45c2-8fd2-b3fbe51df2b9",
+  "causal_fix": {
+    "base_commit": "dab32211699e6c294d8fb259e9537b6c18653598",
+    "cause": "SceneBrief provider output mixed authored status with losses and marker",
+    "fix": "exact structured-output invariants, token-derived cost accounting, and preventive recovery spend/evidence guards",
+    "files": [
+      {
+        "path": "app/marcus/orchestrator/workbook_prework_writers.py",
+        "sha256": "sha256:8d1502800f078385965a646d23dccaf0ff63eab1ee8035ec0a557edd22a97b08"
+      },
+      {
+        "path": "scripts/utilities/run_prework_36_4_live_evidence.py",
+        "sha256": "sha256:2d28f29ffeb8b47fec0e68849932e42f0c40294eae5711b4179ceb0185fd6971"
+      },
+      {
+        "path": "tests/integration/marcus/test_workbook_prework_writers_36_4.py",
+        "sha256": "sha256:8cb40b60f7f438371f17323b869ddda9723d4e64af4506d1bf0463fe91f3a488"
+      },
+      {
+        "path": "tests/scripts/test_run_prework_36_4_live_evidence.py",
+        "sha256": "sha256:9f9d17cbdbd2f8abd1d3015c391fb60b8ae56b854469442df0759bbb6c1ce368"
+      }
+    ],
+    "manifest_digest": "sha256:eba013e8465919003ac073e807265d09f8338269de11b3c5e1efcc5a8a928b49",
+    "prior_failed_verdict": {
+      "path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-live-20260713T022531Z-12ccd755/verdict.json",
+      "sha256": "sha256:95f5de089498baf14c31a85c8ebb784fd5f65613e09cfa62bef86c34d117ca4b"
+    }
+  },
+  "preventive_spend_bound": {
+    "model": "gpt-5",
+    "call_count": 2,
+    "input_token_ceiling_per_call": 32768,
+    "max_completion_tokens_per_call": 4096,
+    "worst_case_usd": 0.16383999999999999,
+    "pricing_source": "runtime/config/openai_pricing.yaml",
+    "pricing_source_sha256": "sha256:01ac90069cc844ac60b923093ae48c143046feacece6d3738928a3d515f03392",
+    "input_bound_method": "UTF-8 payload bytes bound token count; 8192 additional tokens are reserved for system prompts, message framing, and structured-output schemas"
+  },
+  "serialized_input_bytes": {
+    "scene_source": 8466,
+    "promise_authority": 324,
+    "reserved_prompt_schema_overhead_tokens": 8192
+  },
+  "inputs": {
+    "course_root": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\course-content\\courses\\tejal-apc-c1-m1-p2-trends",
+    "run_json_digest": "sha256:eae87f2172d0ebd52e0c18af8af355cbc71ea35e1dcc028683c87dd6f45c3b35",
+    "ratified_los_digest": "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6",
+    "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302"
+  },
+  "operator_spot_checks": {
+    "provenance": "PENDING",
+    "actual_payoff": "PENDING",
+    "semantic_faithfulness": "PENDING",
+    "pertinent_ability": "PENDING",
+    "lo_fidelity": "PENDING",
+    "half_rhyme": "PENDING",
+    "mastery_overclaim": "PENDING",
+    "no_spoiler": "PENDING"
+  },
+  "calls": 2,
+  "total_cost_usd": 0.02003625,
+  "max_spend_usd": 0.25,
+  "writer_receipts": [
+    {
+      "writer": "scene",
+      "mode": "live",
+      "calls": 1,
+      "model": "gpt-5",
+      "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+      "request_id": null,
+      "latency_ms": 21528.997800080106,
+      "input_tokens": 528,
+      "output_tokens": 1377,
+      "cost_usd": 0.014429999999999998,
+      "cost_unavailable_reason": null
+    },
+    {
+      "writer": "promise",
+      "mode": "live",
+      "calls": 1,
+      "model": "gpt-5",
+      "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+      "request_id": null,
+      "latency_ms": 6851.314999978058,
+      "input_tokens": 421,
+      "output_tokens": 508,
+      "cost_usd": 0.005606249999999999,
+      "cost_unavailable_reason": null
+    }
+  ],
+  "artifact_digest": "sha256:18ff9bd63ec0af1938e2b8b4e645cd5cbe1ce2b4ae4ba5459b9e7c3fb318717e",
+  "contribution": {
+    "artifact_path": "workbook-brief.v1.json",
+    "payload_digest": "sha256:18ff9bd63ec0af1938e2b8b4e645cd5cbe1ce2b4ae4ba5459b9e7c3fb318717e",
+    "schema_version": "workbook-brief.v1",
+    "status_summary": {
+      "scene": "degraded",
+      "promise": "authored"
+    },
+    "warning_summary": [
+      "actual_payoff_sufficiency_operator_check",
+      "semantic_faithfulness_operator_check",
+      "negation_scope_operator_check",
+      "promise_no_spoiler_operator_check",
+      "promise_lo_vs_vow_operator_check",
+      "promise_pertinent_ability_operator_check",
+      "promise_half_rhyme_operator_check",
+      "promise_mastery_overclaim_operator_check"
+    ],
+    "loss_summary": [
+      "scene_faithfulness_overlap",
+      "scene_faithfulness_negator"
+    ],
+    "node_id": "07W.1",
+    "specialist_id": "workbook_brief"
+  },
+  "markdown_path": "_bmad-output/artifacts/workbooks-36-4-live/u-intrapreneur-01@1.md",
+  "docx_path": "_bmad-output/artifacts/workbooks-36-4-live/u-intrapreneur-01@1.docx",
+  "assertions": {
+    "beat_order": true,
+    "fr17": true,
+    "md_nonempty": true,
+    "docx_nonempty": true
+  }
+}

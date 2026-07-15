@@ -61,3 +61,16 @@ Rules:
   of the named source.
 - A provisional LO MAY carry zero source_refs, but any ref you include must resolve.
 - Do NOT assess source adequacy here (that is a later pass). Emit candidates only.
+
+REQUIRED OUTPUT — `provisional_los` (READ CAREFULLY):
+- You MUST author AT LEAST ONE assessable, source-span-grounded provisional
+  learning objective for EVERY enumerated source file above — that is, `provisional_los`
+  MUST contain >= 1 LO whose `source_refs` cite each of the {{ source_count }} file ids.
+  Every source file is instructional material, so every file affords at least one
+  candidate objective; find it and state it.
+- Each provisional LO `statement` MUST be assessable (a learner could be tested on it)
+  and grounded in a VERBATIM `quoted_span` from the source file it cites.
+- An EMPTY `provisional_los` array (`"provisional_los": []`) is an INVALID response
+  and will be REJECTED. Extracting components but authoring zero learning objectives
+  is a FAILURE — the components alone do not satisfy this pass. NEVER return zero
+  provisional LOs when source files are present above.

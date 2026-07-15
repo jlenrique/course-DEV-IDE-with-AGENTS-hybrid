@@ -11,7 +11,7 @@ import json
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.marcus.lesson_plan.source_assessment import SourceAssessment
 
@@ -151,13 +151,28 @@ class PlanningContextCoverageReceipt(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, validate_assignment=True)
 
     schema_version: Literal["0.1"] = "0.1"
-    context_present: bool = True
+    context_present: Literal[True] = True
     lo_coverage: CoverageStatus
     supported_objective_ids: tuple[str, ...] = Field(default_factory=tuple)
     weak_or_missing_objective_ids: tuple[str, ...] = Field(default_factory=tuple)
     purpose_acknowledged: bool = False
     audience_acknowledged: bool = False
     notes: str = ""
+
+    @model_validator(mode="after")
+    def _coverage_status_matches_objective_sets(self) -> PlanningContextCoverageReceipt:
+        weak = self.weak_or_missing_objective_ids
+        supported = self.supported_objective_ids
+        if self.lo_coverage == "present" and weak:
+            raise ValueError("present LO coverage cannot contain weak or missing objectives")
+        if self.lo_coverage == "partial" and not weak:
+            raise ValueError("partial LO coverage requires weak or missing objectives")
+        if self.lo_coverage == "absent" and (supported or not weak):
+            raise ValueError(
+                "absent LO coverage requires no supported objectives and at least one "
+                "weak or missing objective"
+            )
+        return self
 
 
 def _significant_tokens(text: str) -> set[str]:

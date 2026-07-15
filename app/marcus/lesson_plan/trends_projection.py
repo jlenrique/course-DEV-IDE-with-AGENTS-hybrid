@@ -319,6 +319,24 @@ def trends_inputs_from_run(
     )
 
 
+_INLINE_HTML_COMMENT_RE = re.compile(r"<!--.*?-->")
+
+
+def _strip_inline_comments(text: str) -> str:
+    """Drop inline ``<!-- ... -->`` spans from rendered client-facing prose.
+
+    The ``TRENDS_WRITER_REQUIRED_MARKER`` is retained on the ``HotTopicCallout``
+    ``rationale`` field (the programmatic "a writer must re-voice this" signal that
+    tests / live-evidence harnesses assert against), but it must NEVER reach the
+    rendered MD / DOCX — ``_render_docx_body`` only skips lines that START with
+    ``<!--``, so an INLINE marker leaked verbatim into the client deliverable.
+    Strip inline comment spans (and collapse the doubled whitespace they leave)
+    at render time so the emitted output is clean while the field stays intact
+    (mirrors how the glossary retired ``GLOSSARY-WRITER-REQUIRED`` from its body).
+    """
+    return re.sub(r"\s{2,}", " ", _INLINE_HTML_COMMENT_RE.sub("", text)).strip()
+
+
 def render_trends_markdown(brief: ResearchTrendsBrief) -> str:
     """Render Research Trends section body (without the H2 heading)."""
     lines: list[str] = []
@@ -330,7 +348,7 @@ def render_trends_markdown(brief: ResearchTrendsBrief) -> str:
             lines.append("")
             lines.append("#### Rejected / unusable topics")
             for topic in unusable:
-                lines.append(f"- **{topic.topic}** — {topic.rationale}")
+                lines.append(f"- **{topic.topic}** — {_strip_inline_comments(topic.rationale)}")
         return "\n".join(lines)
 
     lines.append("#### Research trends")
@@ -376,13 +394,14 @@ def render_trends_markdown(brief: ResearchTrendsBrief) -> str:
             cites = ", ".join(f"`{c}`" for c in topic.supporting_citation_ids)
             lines.append(
                 f"- **{topic.topic}** (confidence={topic.confidence}) — "
-                f"{topic.rationale} Supporting: {cites}; source_refs: {refs}."
+                f"{_strip_inline_comments(topic.rationale)} "
+                f"Supporting: {cites}; source_refs: {refs}."
             )
     if unusable_hot:
         lines.append("")
         lines.append("#### Rejected / unusable topics")
         for topic in unusable_hot:
-            lines.append(f"- **{topic.topic}** — {topic.rationale}")
+            lines.append(f"- **{topic.topic}** — {_strip_inline_comments(topic.rationale)}")
     return "\n".join(lines).rstrip()
 
 

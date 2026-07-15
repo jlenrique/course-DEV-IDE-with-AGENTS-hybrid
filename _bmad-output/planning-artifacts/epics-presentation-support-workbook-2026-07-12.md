@@ -36,8 +36,8 @@ See design-doc **§13.4 (FR1–FR17)** and **§13.5 (NFR1–NFR8)**. Not duplica
 | FR7 (Deep Dive cited read-prose) | 37.2 |
 | FR8 (Check-on-Learning retrieval) | 37.3 |
 | FR10 (Reflection shifted-question) | 37.4 |
-| FR16 (two research asks + graph order) | 38.1, 38.2, 38.3 |
-| FR9 (Door-Ajar trends) | 38.2, 39.2 |
+| FR16 (two research asks + graph order) | 38.1, 38.2, 38.3 — *38.2 re-homed to the Epic-39 wave 2026-07-15 (key verbatim); FR16's Ask-B leg asserts at the 39-wave close bar (wave-3940-kickoff-party-record)* |
+| FR9 (Door-Ajar trends) | 38.2, 39.2 — *travels with re-homed 38.2; asserts at the 39-wave close bar* |
 | FR11 (Glossary downstream) | 39.1 |
 | FR12 (References/citations) | 37.2, 39.1 |
 | FR13 (Cover) | 40.1 |

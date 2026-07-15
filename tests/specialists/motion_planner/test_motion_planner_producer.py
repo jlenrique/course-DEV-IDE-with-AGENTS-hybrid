@@ -269,7 +269,11 @@ def test_motion_deselected_prunes_all_four_and_keeps_deck_byte_identical() -> No
     # Deck-default is byte-identical to the B1 baseline (every non-motion node
     # survives unchanged; deck-only composition is deterministic on repeat). 07W is
     # also pruned because the workbook component is deselected here.
-    expected_ids = {n.id for n in manifest.nodes} - MOTION_NODE_IDS - {"07W"}
+    expected_ids = (
+        {n.id for n in manifest.nodes}
+        - MOTION_NODE_IDS
+        - {"07W.1", "07W.2", "07W.3", "07W.4", "07W"}
+    )
     assert deck_ids == expected_ids
     deck_only_again = compose_manifest(manifest, ComponentSelection(deck=True, motion=False))
     assert [n.model_dump() for n in deck_only.nodes] == [

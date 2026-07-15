@@ -1,0 +1,26 @@
+{
+  "story": "36.4",
+  "attempt_id": "b90fb3f6-8951-4dcc-abff-66036576d89f",
+  "original_verdict_path": "_bmad-output/implementation-artifacts/evidence/prework-36-4-live-20260713T031142Z-b90fb3f6/verdict.json",
+  "original_verdict_sha256": "sha256:9ec5ddd2cea9161813af04dc825dddf04023d6ef0ad65514b0bd40cafaacf0be",
+  "machine_transport_render_pass": true,
+  "semantic_acceptance": false,
+  "operator_verdict": "FAIL",
+  "operator_reason": "Machine primary acceptance was false because the Scene was degraded by scene_innocence_invented_claim; the discarded candidate cannot satisfy required Scene semantic and innocence review.",
+  "operator_spot_checks": {
+    "provenance": "PASS",
+    "actual_payoff": "FAIL",
+    "semantic_faithfulness": "FAIL",
+    "scene_innocence": "FAIL",
+    "pertinent_ability": "PASS",
+    "lo_fidelity": "PASS",
+    "half_rhyme": "PASS",
+    "mastery_overclaim": "PASS",
+    "no_spoiler": "FAIL"
+  },
+  "failures": [
+    "primary_part2_acceptance_false",
+    "scene_innocence_invented_claim",
+    "scene_candidate_discarded_unreviewable"
+  ]
+}

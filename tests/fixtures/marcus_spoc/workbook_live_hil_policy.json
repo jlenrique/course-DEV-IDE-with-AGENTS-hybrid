@@ -1,0 +1,50 @@
+{
+  "allowed_evidence_root": "_bmad-output/implementation-artifacts/evidence/workbook-live-hil",
+  "allowed_input_roots": [
+    "course-content",
+    "_bmad-output/implementation-artifacts/evidence"
+  ],
+  "allowed_runs_roots": [
+    "runs"
+  ],
+  "approved_by": "Juanl",
+  "authority_spec": "_bmad-output/implementation-artifacts/spec-delegated-live-test-hil-runner.md",
+  "budgets": {
+    "max_gate_actions": 12,
+    "max_specialist_calls_per_segment": 48,
+    "max_wall_seconds": 14400
+  },
+  "delegate_id": "codex_hil_runner",
+  "gate_rules": {
+    "G0E": {"action": "approve"},
+    "G0R": {"action": "approve"},
+    "G1": {"action": "approve"},
+    "G2B": {
+      "action": "select",
+      "selection_field": "slide_variant_selections",
+      "strategy": "first_offered"
+    },
+    "G2C": {"action": "approve"},
+    "G3": {"action": "approve"},
+    "G4": {"action": "approve"},
+    "G4A": {
+      "action": "select",
+      "selection_field": "selected_voice_id",
+      "strategy": "first_offered"
+    }
+  },
+  "schema_version": "marcus-spoc-live-test-delegation.v1",
+  "scope": {
+    "customer_facing_approval": false,
+    "epics": [36, 37, 38, 39, 40],
+    "purpose": "epics-36-40-workbook-live-verification"
+  },
+  "stop_states": [
+    "paused-at-error",
+    "waiting_for_provider_batch",
+    "failed",
+    "registered",
+    "in-flight"
+  ],
+  "terminal_success_state": "completed"
+}

@@ -1,0 +1,9 @@
+{
+  "ability_focuses": [
+    {"ability_ref": "ability-a", "capability_lens": "name"},
+    {"ability_ref": "ability-b", "capability_lens": "see"}
+  ],
+  "known_losses": [],
+  "marker": null,
+  "status": "authored"
+}

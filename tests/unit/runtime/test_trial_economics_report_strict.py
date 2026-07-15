@@ -85,6 +85,14 @@ def test_trial_economics_report_budget_state_closed() -> None:
         TrialEconomicsReport(**payload)
 
 
+def test_trial_economics_report_cost_posture_is_internally_consistent() -> None:
+    payload = _valid_payload()
+    payload["cost_posture"] = "exact"
+    payload["unavailable_attempt_count"] = 1
+    with pytest.raises(ValidationError, match="cost posture contradicts"):
+        TrialEconomicsReport(**payload)
+
+
 def test_trial_economics_report_round_trip_and_schema_pin() -> None:
     payload = FIXTURE.read_text(encoding="utf-8")
     report = TrialEconomicsReport.model_validate_json(payload)

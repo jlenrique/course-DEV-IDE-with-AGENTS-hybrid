@@ -1,0 +1,16 @@
+{
+  "lesson_ref": "part-2",
+  "source_spans": [
+    {"span_id": "span-1", "text": "Workflow symptoms do not by themselves expose system-design causes.", "source_ref": "deck:part-2:slide-3"},
+    {"span_id": "span-2", "text": "Use two stages: distinguish the symptom, then identify a first leadership move.", "source_ref": "narration:part-2:00:42"}
+  ],
+  "source_claims": [
+    {"claim_id": "claim-vo-1", "text": "Workflow symptoms do not by themselves expose system-design causes.", "source_span_refs": ["span-1"], "role": "vo"},
+    {"claim_id": "claim-vo-2", "text": "Use two stages to organize the work.", "source_span_refs": ["span-2"], "role": "vo"},
+    {"claim_id": "claim-delta-1", "text": "The first leadership move follows after distinguishing symptom from cause.", "source_span_refs": ["span-2"], "role": "source_supported_delta"}
+  ],
+  "abilities": [
+    {"ability_id": "ability-1", "text": "Distinguish workflow symptoms from system-design causes."},
+    {"ability_id": "ability-2", "text": "Identify a first leadership move."}
+  ]
+}

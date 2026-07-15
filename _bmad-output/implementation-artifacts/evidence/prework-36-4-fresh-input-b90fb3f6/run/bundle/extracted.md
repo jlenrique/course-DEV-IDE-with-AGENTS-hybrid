@@ -1,0 +1,1 @@
+U.S. national health expenditure has reached $5.2 trillion. Administrative waste accounts for 25% of spending. The leadership gap shows 67% of physicians want leadership roles while only 18% receive formal business training. Roughly 66% of physicians report using some form of AI in practice.

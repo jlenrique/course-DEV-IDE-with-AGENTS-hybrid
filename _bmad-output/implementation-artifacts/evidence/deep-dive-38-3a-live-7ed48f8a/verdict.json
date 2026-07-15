@@ -1,0 +1,38 @@
+{
+  "attempt_id": "7ed48f8a-0b01-4c80-a068-d2e152a5e8d6",
+  "completed_at": "2026-07-13T11:06:53.746931+00:00",
+  "error": "Deep Dive writer execution failed: Could not parse response content as the length limit was reached - CompletionUsage(completion_tokens=4096, prompt_tokens=3509, total_tokens=7605, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=4096, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))",
+  "error_type": "SpecialistDispatchError",
+  "first_run_stands": true,
+  "journal_path": "run/workbook-deep-dive-call.v1.json",
+  "journal_state": "call_in_progress",
+  "authority_digest": "sha256:fd5e49bc5b33d3d2fbc3b7c5b99ecb27019a034b8ae1a298eda140f1cd1d894b",
+  "idempotency_key": "sha256:de31a3f58b4987fbb87e88df8f72acc04de1e564a454ed6c13e584137027f32f",
+  "latency_ms": 49338.724,
+  "model": "gpt-5",
+  "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+  "request_id": null,
+  "provider_usage": {
+    "completion_tokens": 4096,
+    "prompt_tokens": 3509,
+    "reasoning_tokens": 4096,
+    "total_tokens": 7605
+  },
+  "cost_posture": {
+    "cost_unavailable_reason": "provider exception prevented a normal receipt; value computed from repository pricing and returned token usage",
+    "computed_cost_usd": 0.04534625
+  },
+  "runtime_configuration": {
+    "max_completion_tokens": 4096,
+    "max_retries": 0,
+    "reasoning_effort": null,
+    "request_timeout_seconds": 120.0,
+    "temperature": 0.2
+  },
+  "pass": false,
+  "provider_call_limit": 1,
+  "run_dir": "_bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-7ed48f8a/run",
+  "schema_version": "deep-dive-38-3a-live-evidence.v1",
+  "started_at": "2026-07-13T11:06:04.408207+00:00",
+  "story": "38.3a"
+}

@@ -1,0 +1,76 @@
+{
+  "authority": {
+    "lesson_ref": "part-2",
+    "prework": {
+      "beat_order": ["scene", "friction_scale", "promise"],
+      "friction_scale": {
+        "duration_copy": "Take about 20 seconds.",
+        "high_anchor": "10 — repeatedly blocks the work.",
+        "honest_line_prompt": "Write one honest line.",
+        "locate_prompt": "Locate where it shows up.",
+        "low_anchor": "0 — present, but not getting in the way.",
+        "rating_prompt": "Rate this friction from 0 to 10.",
+        "review_hook": "Keep this mark and line for review after the presentation."
+      },
+      "promise": {
+        "known_losses": [], "marker": null, "status": "authored",
+        "vows": [
+          {"objective_id": "ability-a", "text": "Name the 3 recurring causes"},
+          {"objective_id": "ability-b", "text": "See the score pattern without re-rating it"}
+        ]
+      },
+      "provenance": {"known_losses": [], "source_refs": ["lesson:slide-2"]},
+      "scene": {
+        "archetype": null, "known_losses": [], "lesson_type": null, "marker": null,
+        "source_refs": ["lesson:slide-2"], "status": "authored", "text": "A grounded scene."
+      }
+    },
+    "promise": {
+      "authority_refs": ["ratified#0", "ratified#1"],
+      "gate_receipt": {"failures": []},
+      "operator_warnings": [],
+      "projection": {
+        "known_losses": [], "marker": null, "status": "authored",
+        "vows": [
+          {"objective_id": "ability-a", "text": "Name the 3 recurring causes"},
+          {"objective_id": "ability-b", "text": "See the score pattern without re-rating it"}
+        ]
+      }
+    }
+  },
+  "authority_digest": "sha256:077bedf3f2424816bffeb7ed5e02b606d7e8609190dfea283395d7edc9fce2ad",
+  "candidate_digest": "sha256:46a0760e51d55e9309fd36899e8b8eab40c2d302a6dcb7d105a8e9586e5635f7",
+  "candidate_snapshot": {
+    "ability_focuses": [
+      {"ability_ref": "ability-a", "capability_lens": "name"},
+      {"ability_ref": "ability-b", "capability_lens": "see"}
+    ],
+    "known_losses": [], "marker": null, "status": "authored"
+  },
+  "gate": {
+    "authority_digest": "sha256:077bedf3f2424816bffeb7ed5e02b606d7e8609190dfea283395d7edc9fce2ad",
+    "bound_ability_refs": ["ability-a", "ability-b"],
+    "candidate_digest": "sha256:46a0760e51d55e9309fd36899e8b8eab40c2d302a6dcb7d105a8e9586e5635f7",
+    "declared_ability_refs": ["ability-a", "ability-b"],
+    "failures": [],
+    "operator_warnings": ["reflection_lens_mapping_requires_operator_spot_check"],
+    "pre_gate_disposition": "eligible",
+    "prework_digest": "sha256:53d5de0b956f35dfeb62e2b1b324ea6dc4457cf27bcb07cc1472166b7a25e1ce",
+    "status": "pass"
+  },
+  "known_losses": [],
+  "marker": null,
+  "prework_digest": "sha256:53d5de0b956f35dfeb62e2b1b324ea6dc4457cf27bcb07cc1472166b7a25e1ce",
+  "prompt": {
+    "ability_cues": [
+      {"ability_ref": "ability-a", "capability_lens": "name", "vow_text": "Name the 3 recurring causes"},
+      {"ability_ref": "ability-b", "capability_lens": "see", "vow_text": "See the score pattern without re-rating it"}
+    ],
+    "clauses": {
+      "callback": "Return to the friction mark, location, and honest line you wrote before the presentation.",
+      "capability": "With the lesson abilities above in mind, what can you now name, see, or do about that friction?",
+      "move": "Write one concrete move you will make this week."
+    }
+  },
+  "status": "authored"
+}

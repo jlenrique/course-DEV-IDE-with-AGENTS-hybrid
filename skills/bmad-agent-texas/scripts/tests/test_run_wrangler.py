@@ -50,6 +50,62 @@ _runner = _load_runner()
 # ---------------------------------------------------------------------------
 
 
+def test_authority_target_fingerprint_detects_in_place_binary_mutation(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "source.pdf"
+    target.write_bytes(b"first binary revision")
+    source = {
+        "_authority_coordinate": str(target),
+        "_authority_coordinate_chain": _runner._coordinate_chain(target),
+        "_authority_target": str(target),
+        "_authority_target_fingerprint": _runner._target_fingerprint(target),
+    }
+
+    _runner._verify_authority_coordinate(source)
+    target.write_bytes(b"different binary revision")
+
+    with pytest.raises(OSError, match="authority target changed"):
+        _runner._verify_authority_coordinate(source)
+
+
+def test_authority_target_fingerprint_detects_same_size_restamped_mutation(
+    tmp_path: Path,
+) -> None:
+    target = tmp_path / "source.pdf"
+    target.write_bytes(b"original binary bytes")
+    original_stat = target.stat()
+    source = {
+        "_authority_coordinate": str(target),
+        "_authority_coordinate_chain": _runner._coordinate_chain(target),
+        "_authority_target": str(target),
+        "_authority_target_fingerprint": _runner._target_fingerprint(target),
+    }
+
+    target.write_bytes(b"replaced binary bytes")
+    target.touch()
+    import os
+
+    os.utime(target, ns=(original_stat.st_atime_ns, original_stat.st_mtime_ns))
+
+    with pytest.raises(OSError, match="authority target changed"):
+        _runner._verify_authority_coordinate(source)
+
+
+def test_captured_authority_bytes_reject_aba_substitution(tmp_path: Path) -> None:
+    target = tmp_path / "source.pdf"
+    original = b"original binary bytes"
+    substituted = b"replaced binary bytes"
+    assert len(original) == len(substituted)
+    target.write_bytes(original)
+    source = {
+        "_authority_target_fingerprint": _runner._target_fingerprint(target),
+    }
+
+    with pytest.raises(OSError, match="captured source bytes disagree"):
+        _runner._verify_captured_authority_bytes(source, substituted)
+
+
 def _write_directive(tmp_path: Path, body: dict) -> Path:
     path = tmp_path / "directive.yaml"
     path.write_text(yaml.safe_dump(body, sort_keys=False), encoding="utf-8")
@@ -628,6 +684,10 @@ def test_supplementary_role_recorded_in_provenance_but_not_extracted(tmp_path: P
     metadata = json.loads((bundle / "metadata.json").read_text(encoding="utf-8"))
     provenance_ref_ids = [p["ref_id"] for p in metadata["provenance"]]
     assert "src-002" in provenance_ref_ids
+    assert all(
+        isinstance(row.get("section_title"), str) and row["section_title"]
+        for row in metadata["provenance"]
+    )
 
     # supplementary entry is NOT in extracted.md (title-only section).
     extracted = (bundle / "extracted.md").read_text(encoding="utf-8")

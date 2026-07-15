@@ -1,0 +1,27 @@
+{
+  "label": "NONPASSING/COUNTERFACTUAL",
+  "source_run_id": "30850735-dea3-4444-bc7b-513239eae55b",
+  "source_processor": "irene-pass1-response-processor.v1",
+  "raw_response_digest": "sha256:7373a8cdf0f9d45a5d54d5db1b3f7dd563bfc542a8030176f3de4bc94062c7e2",
+  "counterfactual_processor": "irene-pass1-response-processor.v2",
+  "action": "drop-one-surplus-final-rbrace",
+  "removed_byte": "}",
+  "removed_offset": 18663,
+  "removed_offset_basis": "raw-response-utf8-byte.v1",
+  "processed_candidate_digest": "sha256:83076f532dd4c059f876f9c3028245c520236343c4c8c07c745aed8c3dec0e19",
+  "plan_unit_ids": [
+    "u01",
+    "u02",
+    "u03",
+    "u03i1",
+    "u03i2",
+    "u04",
+    "u05",
+    "u06"
+  ],
+  "source_ref_counts": [5, 6, 5, 3, 4, 5, 6, 6],
+  "collateral_research_goal_count": 5,
+  "collateral_workbook_section_count": 6,
+  "passing_evidence": false,
+  "runtime_upgrade_performed": false
+}

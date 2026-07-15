@@ -1,0 +1,130 @@
+{
+  "schema_version": "production-trial-envelope.v1",
+  "trial_id": "7af0608f-10c8-4b2d-ab6d-d2e2f13ba4ca",
+  "preset": "production",
+  "corpus_path": "course-content/courses/fixture-lesson",
+  "operator_id": "fixture-operator",
+  "started_at": "2026-07-13T02:24:05.311025Z",
+  "completed_at": null,
+  "status": "in-flight",
+  "paused_gate": null,
+  "paused_error_tag": null,
+  "waiting_batch_id": null,
+  "langsmith_trace_id": null,
+  "production_clone_launch_evidence": false,
+  "production_clone_launch_evidence_reason": null,
+  "production_envelope": {
+    "schema_version": "production-envelope.v2",
+    "trial_id": "7af0608f-10c8-4b2d-ab6d-d2e2f13ba4ca",
+    "contributions": [
+      {
+        "specialist_id": "irene_pass1",
+        "contributed_at": "2026-07-13T02:24:05.310024Z",
+        "output": {
+          "lesson_plan": {
+            "lesson_summary": "intrapreneur macro forces case for change",
+            "plan_units": [
+              {
+                "unit_id": "u-intrapreneur-01"
+              }
+            ],
+            "collateral": {
+              "declaration": "present",
+              "workbook": {
+                "sections": [
+                  {
+                    "section_id": "sec-macro",
+                    "learning_objective_id": "obj-macro-trends",
+                    "title": "Macro forces reshaping the operating reality",
+                    "depth_delta": {
+                      "deferred_from_slide": "slide-02",
+                      "deferred_depth": "The system-design reframe deferred off the glance slide: the workarounds clinicians invent to survive administrative friction are precisely the redesignable innovation surface."
+                    },
+                    "exercises": [
+                      {
+                        "exercise_id": "ex-macro-1",
+                        "bloom_level": "analyze",
+                        "prompt_intent": "Analyze administrative friction as a systems signal.",
+                        "answer_key_source_ref": "src-slide-02"
+                      },
+                      {
+                        "exercise_id": "ex-macro-2",
+                        "bloom_level": "understand",
+                        "prompt_intent": "Explain why burnout is a system-design problem.",
+                        "answer_key_source_ref": "src-slide-02"
+                      }
+                    ],
+                    "narrative_intent": "Walk the reader from structural reality to the reframe that administrative friction is a targetable innovation opportunity."
+                  },
+                  {
+                    "section_id": "sec-change",
+                    "learning_objective_id": "obj-root-cause",
+                    "title": "The case for change (root-cause of failure)",
+                    "depth_delta": {
+                      "deferred_from_slide": "slide-05",
+                      "deferred_depth": "Why the leadership gap is a root-cause of systemic failure rather than a motivation deficit: adoption of clinical tooling outruns the governance training that would make it safe."
+                    },
+                    "exercises": [
+                      {
+                        "exercise_id": "ex-change-1",
+                        "bloom_level": "evaluate",
+                        "prompt_intent": "Evaluate a systemic failure via root-cause analysis.",
+                        "answer_key_source_ref": "src-slide-05"
+                      }
+                    ],
+                    "narrative_intent": "Frame each failure as a structural root-cause analysis."
+                  }
+                ]
+              },
+              "research_goals": []
+            },
+            "planning_provenance": {
+              "ratified_los_path": "ratified-los.json",
+              "ratified_los_digest": "sha256:b9c47f9c07ea23a542f22607d248b9d21b130a5699514910acfdda8b0733d9f6"
+            }
+          }
+        },
+        "cost_usd": 0.0,
+        "model_used": "fixture-irene",
+        "output_digest": "f740f3047b5c80c8f1c42b60d2e1163c6a3b8215c3733b0297d72fb05e212f41",
+        "node_id": "03",
+        "attempt": 1,
+        "provenance": "real"
+      },
+      {
+        "specialist_id": "workbook_brief",
+        "contributed_at": "2026-07-13T02:54:06.067467Z",
+        "output": {
+          "artifact_path": "workbook-brief.v1.json",
+          "payload_digest": "sha256:bbbd7c922768fc2dfe20a1d266c7f8b508d87023f2fcc30ba124a5fdf03f3207",
+          "schema_version": "workbook-brief.v1",
+          "status_summary": {
+            "scene": "authored",
+            "promise": "authored"
+          },
+          "warning_summary": [
+            "actual_payoff_sufficiency_operator_check",
+            "semantic_faithfulness_operator_check",
+            "promise_no_spoiler_operator_check",
+            "promise_lo_vs_vow_operator_check",
+            "promise_pertinent_ability_operator_check",
+            "promise_half_rhyme_operator_check",
+            "promise_mastery_overclaim_operator_check"
+          ],
+          "loss_summary": [],
+          "node_id": "07W.1",
+          "specialist_id": "workbook_brief"
+        },
+        "cost_usd": 0.0,
+        "model_used": "gpt-5",
+        "output_digest": "a876f84c6c3b03a7c38c94f204cefe89147c157cb37199a34315094ae82ea653",
+        "node_id": "07W.1",
+        "attempt": 1,
+        "provenance": "real"
+      }
+    ],
+    "fixture_run": false
+  },
+  "cost_report_path": null,
+  "artifact_paths": []
+}

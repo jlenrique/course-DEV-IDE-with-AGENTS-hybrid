@@ -1,5 +1,5 @@
 # generated: 2026-03-25
-# last_updated: 2026-04-29 Slab 7a Epic close (all 8 stories done: 7a.1 â†’ 7a.2 â†’ 7a.6 â†’ 7a.3 â†’ 7a.4 â†’ 7a.5 â†’ 7a.7 â†’ 7a.8 via Path 1 â€” 7a.8 closed now, BS-2 operator ceremony deferred to post-close; SG-1/SG-2/SG-3 aggregated structurally enforced by 7a.8 parity suite; slab-7a-retrospective authored; trial-2 substrate readiness UNBLOCKED for operator).
+# last_updated: 2026-07-14 Story 38.3a Amendment 8 is deterministic/review GREEN after a later frozen negative live witness; Story 38.1 remains in-progress behind the fresh governed paid-run gate.
 # 2026-04-26 Story 5a.5 close (M5 fixed-roster 6-agent verdict recorded as SHIP-CONDITIONAL, operator ratified 5a.3 cascade/pricing, upstream-state frozen-reference marker written, 2026-05-03 conditional-window follow-on filed, slab-5a-retrospective authored, and migration-master-status mapped to shipped while the named window remains open.)
 # 2026-04-27 update: Slab 6.0 substrate-ratification waypoint recorded Ã¢â‚¬â€  operator dual-gate gate-2 cleared (`pytest tests/composition/ -q --tb=short` -> 17 passed in 1.21s); story remains `review` pending bmad-code-review triage per CLAUDE.md Ã‚Â§3; dispatch at `_bmad-output/implementation-artifacts/codex-handoff-slab-6-0-code-review.md`.
 # project: course-DEV-IDE-with-AGENTS
@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-10  # Batch LLM A0+A1+A3 done; next B1 LiteLLM adapter scaffold. Prior chronicle retained in git history / SESSION-HANDOFF.
+last_updated: 2026-07-15  # Wave-39/40 kickoff party 4/4: Epic 38 CLOSED (38-2 re-homed to 39-wave), MERGE ratified for overlay exercises, Paid-Run Economy Protocol bound. Epic-38 retrospective DONE (partial-by-design; artifact epic-38-retro-2026-07-15.md; 5 action items filed). Stories 38-1 + 38-3a CLOSED (party 4/4 CLOSE-WITH-RIDERS; live a940c5eb + verification 8b275e5b with real LO statements). Epic 38 remaining: 38-2 backlog + REQUIRED epic-38-retrospective; then the post-close roadmap conversation (39/40 sequencing, master consolidation).
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1783,32 +1783,54 @@ development_status:
   # Source: epics-presentation-support-workbook-2026-07-12.md (status greenlit-with-amendments; amendments A1-A10 + RATIFIED Epic-38 graph-shape).
   # BUILD ORDER IS A DAG, NOT EPIC NUMBERING: 38-0 -> 38-3b(stubs) -> {36-*, 37-1, 37-2a, 37-3, 37-4} -> 38-3a -> 38-1 -> 37-2b -> 39-1 -> 38-2 -> 39-2 -> 40-1.
   # Governance: Epic 38 is pipeline-lockstep (Tier-2, v4.2-lineage) + regime-doc at T1; Epic 38 already had its graph-shape party round. Per-story: fresh dev + bmad-code-review before done. All backlog (no story files created yet).
-  epic-36-prework-producer: backlog  # Pre-work producer (prework_projection.py)
-  36-1-prework-contract-frame-friction-scale: backlog
-  36-2-scene-extraction-lesson-type-adequacy: backlog  # SHOULD: split lesson-type detector out (amendment)
-  36-3-promise-transform-ratified-los: backlog
-  36-4-wire-prework-part2-golden: backlog
+  epic-36-prework-producer: done  # 2026-07-13 all 4 stories closed; final live ba470ff2 machine-primary PASS + digest-bound operator 9/9 PASS; Cora BLOCK/Audra closure PASS.
+  36-1-prework-contract-frame-friction-scale: done  # 2026-07-13 mandatory 3-layer review + Cora/Audra closure PASS; 6/6 patches resolved; combined 91/91 + Ruff/diff green.
+  36-2-scene-extraction-lesson-type-adequacy: done  # 2026-07-13 three-layer review + 8/8 remediation + Cora/Audra closure PASS; final 85/85 combined + Ruff/diff-check green.
+  36-3-promise-transform-ratified-los: done  # 2026-07-13 three-layer review + 10/10 remediation + Cora/Audra closure PASS; final 122/122 combined + Ruff/diff-check green.
+  36-4-wire-prework-part2-golden: done  # 2026-07-13 three-layer remediation + live causal chain + final ba470ff2 authored MD/DOCX/operator 9/9 PASS; Cora/Audra closure PASS.
   epic-36-retrospective: optional
-  epic-37-review-deep-dive-producer: backlog  # Review + deep-dive producer (review_projection.py)
-  37-1-review-frame-bookend: backlog  # A7: bookend emits callback PROMPT, not learner value
-  37-2a-deep-dive-skeleton: backlog  # A1 split; superset-of-VO operational (A3); NO Ask-A dep
+  epic-37-review-deep-dive-producer: in-progress  # Review + deep-dive producer (review_projection.py)
+  37-1-review-frame-bookend: done  # 2026-07-13 3-layer review + singleton-loss remediation + exact-current closure PASS; 229 passed, 1 skipped; Cora WARN permit.
+  37-2a-deep-dive-skeleton: done  # 2026-07-13 3-layer review + 3 remediation rounds; exact-current closure PASS; 219 passed; Cora WARN permit.
   37-2b-deep-dive-enrichment-cited: backlog  # A1 split; citation-COVERAGE gate (A2); dep 38-0 + 38-1
-  37-3-check-on-learning-retrieval: backlog
-  37-4-closing-reflection-shifted-question: backlog
+  37-3-check-on-learning-retrieval: done  # Exact-current closure: 371 focused + 565 dependency + 67 topology; Blind/Edge/Acceptance PASS; Cora warn/permit.
+  37-4-closing-reflection-shifted-question: done  # 2026-07-13 exact-current Blind/Edge/Acceptance PASS; 449 focused + 936 dependency + 24 topology; strict warnings/Ruff/diff clean; Cora warn/permit.
   37-5-wire-review-golden-references: backlog  # A8: assemble+dedupe+render References section (FR12)
   37-6-mode-parity-hil-hai: backlog  # A6 (new): mode input + HIL/HAI parity AC
   epic-37-retrospective: optional
-  epic-38-research-asks-graph: backlog  # Research asks + graph-topology surgery
-  38-0-two-packet-intake-contract: backlog  # NEW (graph-shape); LANDS FIRST; lesson_plan M3-safe; 3 packets/3 digests
-  38-1-ask-a-enrichment-wiring: backlog  # orchestrator; node 07W.2 (Tracy+Texas scoped to 07W.1 terms)
-  38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST)
-  38-3a-research-packet-consume-side: backlog  # lesson_plan; readers + cross-layer string-contract test; fixture-tested
-  38-3b-graph-topology-band-orchestrator: backlog  # orchestrator; 4-node band + 07W re-point + two-walk parity + LOCKSTEP (Tier-2, regime-doc T1)
-  epic-38-retrospective: required  # governance/substrate change (graph topology + lockstep surface)
-  epic-39-glossary-trends-render: backlog
+  epic-38-research-asks-graph: done  # 2026-07-15 CLOSED: Ask-A + graph reorder delivered (38-0/38-1/38-3a/38-3b done); Ask-B (38-2) RE-HOMED to the Epic-39 wave per ratified DAG (wave-3940-kickoff-party-record-2026-07-15.md) — NOT scope-drop; FR16 Ask-B leg + FR9 travel with the story.
+  38-0-two-packet-intake-contract: done  # 2026-07-12 mandatory 3-layer review closed; 3/3 patches resolved; focused 52/52 + Ruff + diff check green. Full-suite HUD/notifier subprocess hang documented in story.
+  38-1-ask-a-enrichment-wiring: done  # 2026-07-15 CLOSED party 4/4: live gate a940c5eb (completed Ask-A journal, 1 dispatch, cited row) + verification 8b275e5b; post-hoc ask-a-live-verdict.v1 emitted (Winston R1); record party-closure-record-38-1-38-3a-2026-07-15.md.
+  38-3a-research-packet-consume-side: done  # 2026-07-15 CLOSED party 4/4: a940c5eb first complete workbook + 8b275e5b LO verification (6/6 real statements, 0 placeholders) with LO-bridge authority join (9d4f0593) + Pass-1 head-self-parent normalize (2147ad4d); 6 witnesses frozen; riders in party-closure-record-38-1-38-3a-2026-07-15.md.
+  38-3b-graph-topology-band-orchestrator: done  # 2026-07-13 review + party amendment + Cora block-mode/Audra closure PASS; 61 close tests, lockstep 0, Ruff/diff green; motion exact ambient signature carried with no-new-regression proof.
+  epic-38-retrospective: done  # 2026-07-15 partial-by-design (38-2 backlog per ratified DAG); artifact epic-38-retro-2026-07-15.md; J-F2 adjudicated fix-induced-by-design; deferred-inventory consulted (F-E2E-4 struck; Epic-15 + g0-dispatch-live flagged ripe); next per DAG = 37-2b.
+  epic-39-glossary-trends-render: backlog  # wave also carries re-homed 38-2 (below) per DAG
+  38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST). RE-HOMED to the Epic-39 wave 2026-07-15 (wave-3940-kickoff-party-record; key kept verbatim; FR16 Ask-B leg + FR9 assert at the 39-wave close bar; T1 must cite the ratified Epic-38 graph-shape record).
   39-1-glossary-downstream-render: backlog  # downstream of 37-2a bolded terms; inline-marker + separate section (39.1 T1: MD->DOCX anchor vs plain-bold)
   39-2-trends-door-ajar: backlog
   epic-39-retrospective: optional
   epic-40-cover: backlog
   40-1-cover-placeholder-hero-toc-provenance: backlog  # Gamma hero = placeholder + art-brief; TOC + provenance deterministic
   epic-40-retrospective: optional
+
+action_items:
+  - epic: 38
+    action: "Strip 'Correct Answer:' lines from projected quiz exercises in workbook_enrichment._project_exercises (answer_keys is the channel) before Epic-39-line dev opens"
+    owner: "dev agent (quick-dev)"
+    status: open
+  - epic: 38
+    action: "Ratify replace-vs-merge design for overlay exercises vs collateral-authored exercises (J-F2) at the post-close roadmap conversation"
+    owner: "Juanl + party"
+    status: open
+  - epic: 38
+    action: "BINDING: pass1-refinement-path-head-self-parent-normalize rides the next Pass-1-touching story's T1 readiness (M-R2)"
+    owner: "story author + Cora block-mode"
+    status: open
+  - epic: 38
+    action: "Fold LO shippability bar (0 placeholders / no loss callout) into _assert_completed_workbook_deliverable at next 07W touch (M-R3)"
+    owner: "dev agent"
+    status: open
+  - epic: 38
+    action: "Roadmap conversation agenda: 38.2 disposition; next per DAG = 37-2b then 39-1; master consolidation; off-frozen-lesson re-proof (tejal-c1m1-p3-opportunity); cross-SME Phase-2; G0 dispatch-live default (Tier-2); Epic-15 reactivation"
+    owner: "Juanl (schedule); party (facilitate)"
+    status: open

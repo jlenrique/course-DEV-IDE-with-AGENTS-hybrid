@@ -181,7 +181,22 @@ def _write_completion_artifacts(run_dir: Path) -> None:
         encoding="utf-8",
     )
     (run_dir / "cost-report.json").write_text(
-        json.dumps({"total_cost_usd": 0.44444605}), encoding="utf-8"
+        json.dumps(
+            {
+                "trial_id": run_dir.name,
+                "measured_at": "2026-07-14T12:00:00Z",
+                "total_cost_usd": 0.44444605,
+                "per_agent_breakdown": {},
+                "per_model_breakdown": {},
+                "cascade_config_digest": "a" * 64,
+                "pricing_table_digest": "b" * 64,
+                "drift_alerts": [],
+                "budget_status": {"state": "no-cap", "over_by_usd": 0.0},
+                "cost_posture": "exact",
+                "unavailable_attempt_count": 0,
+            }
+        ),
+        encoding="utf-8",
     )
     exports = run_dir / "exports"
     exports.mkdir(parents=True, exist_ok=True)

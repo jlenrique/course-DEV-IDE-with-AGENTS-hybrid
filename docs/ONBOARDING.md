@@ -4,9 +4,9 @@
 
 **Languages:** Python (3.11+), Markdown, YAML, JSON, JavaScript, Shell, PowerShell, SQL
 **Core frameworks:** LangChain, LangGraph, Pydantic v2 (plus httpx, FastAPI/Uvicorn, Pytest in the runtime/tooling layers)
-**Branch (at analysis):** `master`
-**Graph baseline:** commit `fcaca8e7` · **2899 nodes / 5790 edges / 8 layers · 863 files** analyzed (`app/`, `scripts/`, `skills/`)
-**Regenerated:** 2026-07-12 (incremental update at HEAD; covers the Epic 35 Operator HUD revival arc — flight-deck HUD, notify service, operator-surface assembler/projection — merged to master)
+**Branch (at analysis):** `codex/workbook-enhanced-epics-36-40` (⚠️ **not** master — see note)
+**Graph baseline:** commit `b24b2aed` · **2976 nodes / 5917 edges / 8 layers · 884 files** analyzed (`app/`, `scripts/`, `skills/`)
+**Regenerated:** 2026-07-15 (incremental update at HEAD covering the 2026-07-14/15 workbook live-validation arc. ✅ The workbook live gate **PASSED** on 2026-07-15 — trial `a940c5eb` completed a runner-verified workbook. Stories 38.1/38.3a closure is pending the LO-overlay bridge fix; branch not yet merged to master — this graph will be re-run at post-merge master consolidation.)
 
 > This guide is generated from the `/understand` knowledge graph. It is a **map, not the territory** — file summaries are LLM-derived and occasionally reflect one representative symbol in a file. When a summary and the code disagree, the code wins. Re-run `/understand` after significant changes and `/understand-onboard` to refresh this file.
 
@@ -24,13 +24,14 @@ Three design commitments run through everything:
 
 Recent substrate milestones reflected in this graph scan:
 
+- **✅ Presentation-Support Workbook — Epics 36-40 (2026-07-12 → 07-15, on branch `codex/workbook-enhanced-epics-36-40`; live gate PASSED 2026-07-15)** — a generalized workbook-producer chain (`app/specialists/workbook_producer/`, `app/marcus/lesson_plan/workbook_producer.py`, `app/marcus/orchestrator/workbook_wiring.py`) composes learner-workbook sections from the enriched lesson-plan run: prework frame, plus scene / deep-dive / reflection / review / promise / check-on-learning projections (`app/marcus/lesson_plan/{prework_artifact,prework_projection,scene_extraction,deep_dive_projection,reflection_projection,review_projection,promise_projection,check_on_learning_projection}.py`); Ask-A research enrichment wiring (`ask_a_enrichment.py`, `app/marcus/orchestrator/ask_a_research_wiring.py`); a research packet/demand reader (`research_packet.py`, `research_demand.py`); Pass-1 authority / call-journal / source-span-catalog and slide-authority stores (`pass1_authority.py`, `pass1_call_journal.py`, `pass1_source_span_catalog.py`, `slide_authority.py`, `app/pass1_generation_lock.py`); live 07W.1 semantic writers (`app/marcus/orchestrator/workbook_prework_writers.py`); and the **Quinn-R quality gate** (`quinn_r_gate.py`). Verified through a delegated, HIL-preserving live-test runner (`scripts/utilities/marcus_spoc_live_test_runner.py`) whose **verdict is honest** — it asserts a real conformant MD+DOCX workbook exists before granting `success: true`. **Live-gate milestone (2026-07-15):** after a 5-run scout→batch→run arc (07W.1 slide-authority anchor drift → run-dir threading → G0 live-LO reliability → `production_envelope` threading), trial `a940c5eb` reached `status: completed` / `success: true` and emitted the first complete runner-verified workbook (`runs/a940c5eb…/exports/workbooks/u01@1.{md,docx}`). Four negative first-run-stands witnesses are preserved immutable. **Remaining before story closure:** the LO-overlay bridge (`_unit_to_enrichment_lo_map` in `app/specialists/workbook_producer/_act.py`) resolved 0/6 live LOs — the workbook's Learning Objectives section rendered placeholders; the marker-based `uNN ↔ [evidence: src-NNN] ↔ lo-g0-NNN` join is fragile under live LO variance and is the #1 open defect.
 - **Operator HUD Revival — Epic 35 (2026-07-11, merged to master)** — a flight-deck operator HUD surface (`app/hud/` — data sources, server, and `render/` page/client/styles) reads a per-run operator-surface projection assembled by `app/marcus/orchestrator/operator_surface_assembler.py` from the run's `operator-surface.v1` schema (`app/models/schemas/operator-surface.v1.schema.json`, `app/models/runtime/operator_surface.py`), with an `app/notify/` ntfy notification service and `scripts/utilities/hud_data_sources.py` / `run_hud.py` / `progress_map.py` operator tooling. Parity is contract-pinned (`tests/contracts/test_operator_surface_parity.py`, `test_operator_surface_projection_demands_parity.py`) and the emit seam lives in `production_runner.py`.
 - **Agentic Research Foundations (R0–R7, 2026-07-10)** — the research leg grows from "one Scite dispatch" into a governed research runtime: Tracy's posture runtime (`app/specialists/tracy/` — posture dispatch over the research charter), evidence-hierarchy credibility classification (`app/marcus/orchestrator/research_credibility.py`, closed tier set T1 systematic-review → unclassified per `docs/dev-guide/research-evidence-hierarchy.md`), anti-fabrication research intake for specialists (`app/specialists/_shared/research_intake.py`, re-exported to Irene via `app/specialists/irene/retrieval_intake.py` so specialists never import the orchestrator), and the **R7 research-detective hard-pause gate** (`research_detective_gate.py`) that blocks Irene Pass-2 dispatch until an operator disposition receipt lands.
 - **Workbook Research Products (W0–W4, 2026-07-10)** — research-grounded workbook sections: a thin shared research-packet reader over the node-04.55 research contribution (`app/marcus/lesson_plan/research_packet.py`), glossary and trends projections (`glossary_projection.py`, `trends_projection.py`) that turn tier-labeled research rows into encyclopedia-style glossary articles and a grounded `ResearchTrendsBrief`, composed into the workbook by the generalized `workbook_producer` chain with empty-honesty behavior (sections are omitted, never fabricated, when the packet is empty).
 - **Batch LLM Execution Mode v1 (2026-07-10)** — opt-in LiteLLM Batch transport (`app/runtime/llm_batch/`) trading latency for ~50% provider cost on eligible call sites; per-node realtime/batch transport profiles (`llm_execution_config.py`), an A3 eligibility matrix (`llm_batch_eligibility.py`), a vision batch route (`app/specialists/vision/batch_route.py`), and a `WaitingForProviderBatchError` pause/resume seam in the production runner.
 - **Course-source registry (S7 Phase-2)** — `app/marcus/course_source/` makes source material a first-class validated citizen: canonical processed-source layout, deterministic manifest scan + drift detection, SME registry, and syllabus metadata parsers (DOCX/MHTML).
 - **Section 02A composer + G0 poll-surface gate** — `app/composers/section_02a/` classifies corpus files into a typed directive (LLM-driven, SHA256-cached) and `app/gates/section_02a/` guards it with a digest-matched HIL verdict ceremony over cli/http/mcp-stdio transports.
-- **Canonical Production Conversation arc (S0–S6) + S7 workbook generalization** — styleguide picker/CD resolution/Gary parity, G0 enrichment, Tracy/Scite research dispatch, and the generalized `workbook_producer` leg (first composed walk to node 07W on Tejal Part 3) are standing properties of a normal Marcus-SPOC run.
+- **Canonical Production Conversation arc (S0–S6) + S7 workbook generalization** — styleguide picker/CD resolution/Gary parity, G0 enrichment, Tracy/Scite research dispatch, and the generalized `workbook_producer` leg (first composed walk to node 07W on corpus `tejal-apc-c1-m1-p2-trends` (Tejal Part 2)) are standing properties of a normal Marcus-SPOC run.
 
 > ⚠️ **Design guardrail (read before touching production code):** the product goal is the **Marcus-SPOC runtime**. "Concierge"/proofing/trial runs of the BMAD-persona Marcus are **off-the-books discovery vehicles** — fix what they surface only when it genuinely improves the SPOC product, never to make a proofing run pass. See `CLAUDE.md` §"CRITICAL DESIGN GUARDRAIL" and `docs/STATE-OF-THE-APP.md`.
 
@@ -38,18 +39,18 @@ Recent substrate milestones reflected in this graph scan:
 
 ## 2. Architecture Layers
 
-The graph assigns all 863 file-level nodes to eight layers. Roughly top-to-bottom:
+The graph assigns all 887 file-level nodes to eight layers. Roughly top-to-bottom (the 2026-07-15 refresh moved the small `app/*` subsystems out of the root catch-all and into the layers their descriptions name):
 
 | Layer | Nodes | What lives here |
 |---|---:|---|
-| **Marcus Orchestration** | 146 | `app/marcus/` — Marcus-SPOC CLI, trial driver, production runner, dispatch adapter, lesson-plan compilation (incl. drill/quiz/workbook producers + research-packet/glossary/trends projections), course-source registry, styleguide picker/publisher, G0/research/coverage wiring incl. credibility scoring and the R7 detective gate. The layer that *drives* a production run. |
-| **Specialist Agents & Composers** | 184 | `app/specialists/` — per-specialist LangGraph agents (irene, gary, texas, tracy, enrique, vision, wanda, kira, motion_planner, quinn_r, workbook_producer, …) + `_shared` audits/research intake and composer nodes (incl. the Section 02A directive composer). |
-| **Gates & Workflow Substrate** | 39 | `app/gates/`, `app/manifest/`, `app/cora/` — HIL gate decision modules (incl. Section 02A G0 poll surface), pipeline-manifest compiler, Cora block-mode dev-graph enforcement. |
-| **Domain Models** | 170 | `app/models/` — Pydantic v2 domain & runtime-state models + emitted JSON schemas: decision-cards, lesson-plan envelopes, contributions side-cars, collateral specs. |
-| **Runtime & Transport** | 39 | `app/runtime/` (incl. the `llm_batch/` LiteLLM Batch transport package + eligibility/execution config), the new `app/hud/` flight-deck operator HUD, `app/notify/` ntfy service, `app/replay/`, `app/http/`, `app/ledger/`, `app/mcp_server/`, `app/parity/`, `app/audit/` — Postgres checkpointer/retention, resume-and-recover replay, HTTP/MCP transport, parity checks, audit plumbing. |
-| **Operator & Developer Tooling** | 124 | `scripts/` — API clients, content generators, diagnostics, operator utilities, live-proof drivers. |
+| **Marcus Orchestration** | 173 | `app/marcus/` — Marcus-SPOC CLI, trial driver, production runner, dispatch adapter, lesson-plan compilation (incl. drill/quiz/workbook producers + research-packet/glossary/trends projections + the 07W prework/deep-dive/Ask-A families), course-source registry, styleguide picker/publisher (+ `app/styleguide/`), G0/research/coverage wiring incl. credibility scoring and the R7 detective gate. The layer that *drives* a production run. |
+| **Specialist Agents & Composers** | 191 | `app/specialists/` — per-specialist LangGraph agents (irene, gary, texas, tracy, enrique, vision, wanda, kira, motion_planner, quinn_r, workbook_producer, …) + `_shared` audits/research intake, and `app/composers/` (incl. the Section 02A directive composer). |
+| **Gates & Workflow Substrate** | 72 | `app/gates/`, `app/manifest/`, `app/parity/`, `app/cora/`, `app/replay/` — HIL gate decision modules (incl. Section 02A G0 poll surface), pipeline-manifest compiler, parity checks, Cora block-mode dev-graph enforcement, resume-and-recover replay. |
+| **Domain Models** | 171 | `app/models/` — Pydantic v2 domain & runtime-state models + emitted JSON schemas: decision-cards, lesson-plan envelopes, contributions side-cars, collateral specs. |
+| **Runtime & Transport** | 53 | `app/runtime/` (incl. the `llm_batch/` LiteLLM Batch transport package + eligibility/execution config), `app/ledger/` (incl. SQL schema), `app/http/`, `app/mcp_server/`, `app/audit/`, `runtime_server.py` — Postgres checkpointer/retention, HTTP/MCP transport, audit plumbing. |
+| **Operator & Developer Tooling** | 135 | `scripts/` — API clients, content generators, diagnostics, operator utilities, live-proof drivers — plus `app/hud/` flight-deck operator HUD and `app/notify/` ntfy service. |
 | **BMAD Agent Skills** | 88 | `skills/` — operator-facing BMAD agent skill packages (`SKILL.md` persona files, reference contracts) for custom personas Marcus routes to. |
-| **Project Root & Configuration** | 73 | Top-level env templates, git/coverage attributes, `state/` runtime config (incl. `hud-config.yaml`, `pipeline-manifest.yaml`), and tooling artifacts. |
+| **Project Root & Configuration** | 4 | Top-level env template, git/coverage attributes, `.understandignore`. (Note: `docs/`, `tests/`, `state/`, `_bmad-output/`, and `scripts/utilities/` are intentionally outside the graph scan scope — see `.understand-anything/.understandignore`.) |
 
 ---
 
@@ -73,7 +74,13 @@ The graph assigns all 863 file-level nodes to eight layers. Roughly top-to-botto
 
 **Agentic research runtime (R0–R7).** Research is governed, not ad hoc: **Tracy** (`app/specialists/tracy/posture_dispatch.py`) dispatches retrieval under a declared research posture; `research_credibility.py` classifies every retrieved row onto a **closed evidence-hierarchy tier set** (T1 systematic review → unclassified); `research_citation.py` mints cited entries with deterministic `source_ref` provenance; `_shared/research_intake.py` converts wrangled entries into specialist-safe intake with an **anti-fabrication guard** (specialists consume via `irene/retrieval_intake.py` and never import the orchestrator); and the **R7 detective gate** (`research_detective_gate.py`) hard-pauses the walk before Irene Pass-2 until the operator files a disposition receipt (approve/reject/defer per finding).
 
-**Workbook production leg.** `app/specialists/workbook_producer/` + `app/marcus/lesson_plan/workbook_producer.py` compose learner workbooks from Irene collateral specs; enrichment (`workbook_enrichment.py`) is a resolution overlay, not the authority source. Research-grounded sections ride the same chain: `research_packet.py` (W1 shape-pinned reader) feeds `glossary_projection.py` (W2) and `trends_projection.py` (W3), with **empty-honesty** (W4) — an empty research packet omits the sections rather than fabricating content.
+**Workbook production leg (07W band — live-gate PASSED 2026-07-15).** `app/marcus/orchestrator/workbook_wiring.py` is the deterministic orchestration seam for the four-node 07W band; `app/specialists/workbook_producer/` + `app/marcus/lesson_plan/workbook_producer.py` compose learner workbooks from Irene collateral specs; enrichment (`workbook_enrichment.py`) is a resolution overlay, not the authority source. The prework/deep-dive/review/reflection sections are deterministic projections over the authenticated run (`prework_projection.py`, `deep_dive_projection.py`, `review_projection.py`, …) with live 07W.1 semantic writers in `workbook_prework_writers.py`. Research-grounded sections ride the same chain: `research_packet.py` (W1 shape-pinned reader) feeds `glossary_projection.py` (W2) and `trends_projection.py` (W3), with **empty-honesty** (W4) — an empty research packet omits the sections rather than fabricating content. ⚠️ Known open defect: the LO-overlay bridge (`_unit_to_enrichment_lo_map`) joins plan units to G0 LOs via `[evidence: src-NNN]` markers and is fragile under live LO variance (rendered 6/6 placeholders on the first completed run).
+
+**G0 live LO authoring.** `g0_enrichment_wiring.py` + `app/marcus/lesson_plan/g0_enrichment.py` author real, source-grounded learning objectives when `MARCUS_G0_DISPATCH_LIVE=1` (OFF yields deterministic boilerplate). Live authoring is non-deterministic; the wiring mandates ≥1 grounded LO per file and retries once, then **fails loud on zero LOs** rather than proceeding with an empty LO set.
+
+**Specialist state-threading contracts.** Two integration contracts recur when adding a specialist to the walk: the specialist must be handed the **real run dir** (not a default), and it must receive/return state on the **`production_envelope` carrier**. Both were rediscovered the hard way during the workbook arc and are now documented in `docs/dev-guide/how-to-add-a-specialist.md` — read that guide before wiring any new node.
+
+**Runner verdict honesty.** `scripts/utilities/marcus_spoc_live_test_runner.py` (governed live-test runner) asserts the deliverable actually exists and conforms (real MD+DOCX workbook) before granting `success: true` — a run that "completes" without its terminal deliverable is a FAILURE, never a false-green.
 
 **Sanctum-lock.** Specialists that carry curated references (e.g. Texas) assert their references manifest is unchanged and raise a `SanctumLockViolation` on drift.
 
@@ -93,23 +100,22 @@ The graph assigns all 863 file-level nodes to eight layers. Roughly top-to-botto
 
 ## 4. Guided Tour (recommended reading order)
 
-A 15-stop walk from the operator's-eye view inward to the substrate (from the knowledge-graph `tour`):
+A 14-stop walk from the operator's-eye view inward to the substrate (from the knowledge-graph `tour`, refreshed 2026-07-15):
 
-1. **Runtime Platform Overview** — `app/models/README.md`, `app/manifest/README.md`, `app/runtime/README.md`. The three pillars: shared model catalog, manifest compiler, execution substrate.
-2. **Marcus-SPOC CLI and Run Lifecycle** — `app/marcus/cli/__main__.py`, `marcus_spoc.py`, `trial.py`. `python -m app.marcus.cli` argparse tree (trial start/resume/recover/batch, gate, ask, plan-dialogue, plan-ratify); narration layer where the chatting LLM never drives engine state.
-3. **Production Runner: Two Walks** — `app/marcus/orchestrator/production_runner.py`, `gate_runner.py`. Heart of the runtime, highest fan-out file (44 imports); start walk stops at G1, continuation walk handles every later gate.
-4. **Manifest Compiler** — `app/manifest/schema.py`, `loader.py`, `compiler.py`. YAML manifest → frozen `StateGraph`.
-5. **Gates, Verdicts, and the Ledger** — `app/gates/resume_api.py` (fan-in 28), `app/models/state/operator_verdict.py`, `app/ledger/schema.sql::ledger_events`. Operator-trust loop + append-only memory.
-6. **Lesson Plan Model Layer** — `app/marcus/lesson_plan/schema.py` (fan-in 19), `composition.py`, frozen `lesson_plan.v1` schema. The lesson before slides/narration exist.
-7. **Course-Source Registry** — `app/marcus/course_source/`: canonical processed source, manifest scan/drift, SME registry, syllabus metadata, frozen `canonical_asset_record.v0_1` schema.
-8. **Section 02A Composer and G0 Gate** — `app/composers/section_02a/composer.py`, `directive_model.py`, `app/gates/section_02a/poll_surface.py`. First LLM step over the corpus + its digest-guarded HIL gate.
-9. **State Substrate and Specialist Contract** — `app/models/state/_base.py` (fan-in 55, most-depended-upon file), `run_state.py`, `specialist_envelope.py`, `specialist_return.py`, `app/specialists/_scaffold/contract.py`.
-10. **Specialist LangGraph Roster** — `irene/graph.py` (highest specialist fan-out, 17), `gary/graph.py`, `texas/graph.py`, `tracy/graph.py` (research-posture specialist), `enrique/graph.py`. One 9-node scaffold, different act bodies.
-11. **Agentic Research Foundations** *(new)* — `app/marcus/orchestrator/research_wiring.py`, `research_credibility.py`, `research_citation.py`, `research_detective_gate.py`, `app/specialists/_shared/research_intake.py`. Governed research: posture dispatch → tiered credibility → cited entries → anti-fabrication intake → R7 hard-pause disposition gate.
-12. **Workbook and Research Projections** *(new)* — `app/marcus/lesson_plan/research_packet.py`, `glossary_projection.py`, `trends_projection.py`, `workbook_producer.py`, `app/specialists/workbook_producer/graph.py` (node 07W). Research-grounded glossary + trends sections with empty-honesty.
-13. **Persistence, Economics, and Batch Execution** — `app/runtime/checkpointer.py`, `economics.py`, `llm_execution_config.py`, `llm_batch_eligibility.py`, `llm_batch/adapter.py`, `app/specialists/vision/batch_route.py`. Pause Tuesday, resume Thursday; cost accounting; opt-in ~50%-cost batch transport with pause/resume control flow.
-14. **Styleguide Resolution** — `app/styleguide/resolver.py`, `parity.py`, `app/marcus/orchestrator/styleguide_picker.py`. Visual identity resolved, not hard-coded.
-15. **BMAD Agent Skills Layer** — `skills/README.md`, `skills/bmad-agent-marcus/SKILL.md`, `capabilities/registry.yaml`. The human-facing persona layer beside the runtime.
+1. **Marcus-SPOC Operator Surface** — `app/marcus/cli/__main__.py`, `marcus_spoc.py`, `front_door.py`, `facade.py`. `python -m app.marcus.cli` argparse tree (trial/gate/adhoc/plan-dialogue/plan-ratify); the conversational SPOC narrates gates in persona while a deterministic guard ensures the chatting LLM never drives engine state.
+2. **The Deterministic Neck: Manifest Compiler** — `app/manifest/schema.py`, `compiler.py`, `gate_topology.py`. YAML manifest → validated → frozen `StateGraph`; cross-field validators for node ids, entrypoints, edge integrity, gate codes, dependency cycles.
+3. **Production Orchestration Walk** — `app/marcus/orchestrator/production_runner.py` (highest fan-out in the codebase, 49 imports), `workflow_runner.py`, `gate_runner.py`. Trial lifecycle: start / resume / batch-resume / recover. Key gotcha: **two node walks** — the start walk stops at G1; gate-pause side-effects must land in BOTH walks.
+4. **Domain Models & Run State** — `app/models/state/_base.py` (fan-in 58, most-depended-upon file), `run_state.py` (fan-in 44), `specialist_envelope.py`, `specialist_return.py`. The single state aggregate threaded through every node.
+5. **Decision Cards & Operator Verdicts** — `app/models/decision_cards/_base.py`, `g1.py`, `app/models/state/operator_verdict.py`, `app/gates/schema/operator_verdict.v1.schema.json`. Typed per-gate cards (G0–G6); verdicts are frozen value objects with sha256 tamper-evidence.
+6. **HIL Gate Substrate** — `app/gates/resume_api.py` (fan-in 34), `verdict.py`, `party_mode_as_interrupt.py`. Gates as LangGraph interrupts: the graph suspends until a human verdict arrives.
+7. **The 9-Node Specialist Scaffold** — `app/specialists/_scaffold/graph.py`, `state.py`, `contract.py`, `dispatch_errors.py` (fan-in 38). One canonical shape stamped for every specialist, plus machine conformance checks.
+8. **Concrete Specialists: Irene & Gary** — `irene/graph.py` (largest specialist module; VO↔on-screen protected invariant lives here), `irene/payload_contract.py`, `gary/graph.py`, `gary/gamma_dispatch.py`. Two flagship scaffold instantiations.
+9. **Lesson Plan Compilation** — `app/marcus/lesson_plan/schema.py` (fan-in 18), `learning_objective.py`, `planning_context.py`, `coverage_manifest.py`. SOURCE+LOs are KING: where source material becomes a governed plan.
+10. **Workbook Substrate (Epics 36-40)** *(live-gate PASSED 2026-07-15)* — `app/marcus/orchestrator/workbook_wiring.py`, `app/specialists/workbook_producer/_act.py` + `graph.py`, `app/marcus/lesson_plan/workbook_producer.py`, the 07W Jinja2 pack template. The four-node 07W band: slide-authority resolution under dispatch lock, journaled exactly-once Deep Dive dispatch, workbook brief, envelope reconciliation.
+11. **Research, Ask-A & G0 Live Enrichment** — `g0_enrichment_wiring.py`, `app/marcus/lesson_plan/g0_enrichment.py`, `ask_a_research_wiring.py`, `ask_a_enrichment.py`, `research_wiring.py`. Three wired enrichment paths: G0 pre-pass (live LLM extraction + provisional LOs, fail-loud on zero), exactly-once journaled Ask-A dispatch, node-04.55 research bridge.
+12. **Workbook Projections & Quinn-R Gate** — `workbook_enrichment.py`, `prework_projection.py`, `app/marcus/orchestrator/workbook_prework_writers.py` (live 07W.1 semantic writers), `quinn_r_gate.py`, `app/specialists/quinn_r/graph.py`. Enriched knowledge must genuinely shape the deliverable.
+13. **Runtime, Persistence & Ledger** — `app/runtime/checkpointer.py` (AsyncPostgresSaver — gate pauses survive process restarts), `compiled_graph_digest.py`, `app/ledger/emitter.py`, `schema.sql`. Frozen-graph drift detection + append-only operator-decision memory.
+14. **Cora Dev-Graph & Governance** — `app/cora/graph.py`, `block_mode_node.py`, `skills/bmad-agent-cora/SKILL.md`. The sibling dev-graph that governs changes to the pipeline itself (pipeline lockstep regime).
 
 ---
 
@@ -124,7 +130,11 @@ A 15-stop walk from the operator's-eye view inward to the substrate (from the kn
 - `orchestrator/g0_enrichment_wiring.py`, `research_wiring.py`, `coverage_gate_wiring.py` — canonical-walk enrichment + research legs
 - `orchestrator/research_credibility.py`, `research_citation.py`, `research_detective_gate.py` — evidence-tier classification, deterministic citation minting, R7 hard-pause disposition gate
 - `lesson_plan/research_packet.py`, `glossary_projection.py`, `trends_projection.py` — W1 research-packet reader + W2/W3 glossary/trends projections
+- `orchestrator/workbook_wiring.py`, `workbook_prework_writers.py`, `ask_a_research_wiring.py` — 07W band orchestration seam, live 07W.1 semantic writers, exactly-once journaled Ask-A dispatch
 - `lesson_plan/workbook_producer.py`, `workbook_enrichment.py`, `collateral_spec.py` — workbook schema + producer + enrichment overlay
+- `lesson_plan/{prework_artifact,prework_projection,scene_extraction,deep_dive_projection,reflection_projection,review_projection,promise_projection,check_on_learning_projection}.py` — deterministic workbook-section projections over the authenticated run
+- `lesson_plan/pass1_authority.py`, `pass1_call_journal.py`, `pass1_source_span_catalog.py`, `slide_authority.py` — Pass-1 durable authority: digest-bound receipts, crash-safe call journal, source-span catalog, slide-authority store
+- `lesson_plan/quinn_r_gate.py` — Quinn-R two-branch workbook quality gate
 - `lesson_plan/quiz_producer.py`, `quiz_enrichment.py`, `drill_producer.py`, `drill_enrichment.py` — quiz + drill modality producers (same producer/enrichment split as workbook)
 - `lesson_plan/planning_context.py`, `planning_ratification.py` — Irene planning-context handoff + ratified planning decisions
 - `course_source/registry.py`, `canonical_processed_source.py`, `manifest_scan.py`, `manifest_drift.py`, `sme_registry.py`, `syllabus_metadata.py` — course corpus registry (source-of-truth for "SOURCE+LOs are KING")
@@ -175,7 +185,7 @@ A 15-stop walk from the operator's-eye view inward to the substrate (from the kn
 
 ## 6. Complexity Hotspots — approach carefully
 
-The graph flags **135** file-level nodes as `complex`. The ones a new developer is most likely to touch:
+The graph flags **159** file-level nodes as `complex`. The ones a new developer is most likely to touch:
 
 | File | Why it's a hotspot |
 |---|---|
@@ -188,7 +198,10 @@ The graph flags **135** file-level nodes as `complex`. The ones a new developer 
 | `app/manifest/compiler.py` + `schema.py` | Pipeline topology compilation; errors break determinism for the whole run. |
 | `app/marcus/cli/marcus_spoc.py` | Operator surface + deterministic guard (chatting LLM never drives engine). |
 | `app/styleguide/parity.py` | Pure comparator for three-way digest attestation; observability-only but load-bearing for S-flip clock. |
-| `app/specialists/workbook_producer/_act.py` | Generalized workbook adapter (was tejal-hardcoded); consumes Irene collateral authority. |
+| `app/specialists/workbook_producer/_act.py` | Generalized workbook adapter (was tejal-hardcoded); consumes Irene collateral authority. ⚠️ Contains the fragile LO-overlay bridge (`_unit_to_enrichment_lo_map`) — #1 open defect. |
+| `app/marcus/orchestrator/workbook_wiring.py` | 07W-band orchestration seam: slide-authority under dispatch lock, journaled exactly-once Deep Dive dispatch, envelope reconciliation. |
+| `app/marcus/orchestrator/workbook_prework_writers.py` | Live 07W.1 semantic writers — deterministic fallback with fail-loud provenance. |
+| `app/marcus/orchestrator/ask_a_research_wiring.py` | Exactly-once journaled Ask-A research dispatch; a broken journal check double-spends provider calls. |
 | `app/marcus/orchestrator/research_wiring.py` | Node-04.55 Irene→Tracy→Texas research bridge; lands the research contribution the W1–W4 projections read. |
 | `app/marcus/orchestrator/research_detective_gate.py` | R7 hard-pause gate — blocks Irene Pass-2 until operator disposition; a wrong receipt check silently unblocks ungoverned research. |
 | `app/marcus/orchestrator/g0_enrichment_wiring.py` | G0E/G0R canonical enrichment wiring (structure always; live LLM operator-armed). |
@@ -211,4 +224,4 @@ The graph flags **135** file-level nodes as `complex`. The ones a new developer 
 
 ---
 
-*Generated from `.understand-anything/knowledge-graph.json` (commit `fcaca8e7`, 2026-07-12). Regenerate with `/understand` (incremental) or `/understand --full`, then `/understand-onboard`.*
+*Generated from `.understand-anything/knowledge-graph.json` (commit `b24b2aed`, 2026-07-15). Regenerate with `/understand` (incremental) or `/understand --full`, then `/understand-onboard`.*

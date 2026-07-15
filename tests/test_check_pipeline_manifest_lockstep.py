@@ -27,6 +27,16 @@ def test_lockstep_check_structural_on_missing_manifest(tmp_path: Path) -> None:
     assert trace["closure_gate"] == "STRUCTURAL"
 
 
+def test_malformed_graph_manifest_does_not_use_legacy_fallback(tmp_path: Path) -> None:
+    data = yaml.safe_load(DEFAULT_MANIFEST_PATH.read_text(encoding="utf-8"))
+    data["nodes"][0]["gate"] = "definitely-not-a-boolean"
+    manifest_path = tmp_path / "malformed-graph.yaml"
+    manifest_path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    exit_code, trace = run_check(manifest_path, DEFAULT_PACK_PATH, "v4.2")
+    assert exit_code == 2
+    assert trace["closure_gate"] == "STRUCTURAL"
+
+
 def _write_fixture_manifest(tmp_path: Path, schema_ref: str) -> Path:
     data = yaml.safe_load(DEFAULT_MANIFEST_PATH.read_text(encoding="utf-8"))
     data["learning_events"]["schema_ref"] = schema_ref
@@ -71,4 +81,3 @@ def test_red_path_fixtures_fail_correctly_manifest_only(tmp_path: Path) -> None:
     exit_code, trace = run_check(manifest_path, DEFAULT_PACK_PATH, "v4.2")
     assert exit_code == 1, trace
     assert any(finding["check"] in {3, 8} for finding in trace["findings"])
-

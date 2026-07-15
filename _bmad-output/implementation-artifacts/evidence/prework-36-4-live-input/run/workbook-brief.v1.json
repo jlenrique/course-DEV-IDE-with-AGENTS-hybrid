@@ -1,0 +1,148 @@
+{
+  "payload": {
+    "schema_version": "workbook-brief.v1",
+    "node_id": "07W.1",
+    "specialist_id": "workbook_brief",
+    "pre_work": {
+      "scene": {
+        "status": "degraded",
+        "text": null,
+        "source_refs": [
+          "assessments/chapter-2-knowledge-check.md#Q5"
+        ],
+        "known_losses": [
+          "scene_faithfulness_overlap",
+          "scene_faithfulness_negator"
+        ],
+        "marker": "scene_source_request_required",
+        "lesson_type": null,
+        "archetype": null
+      },
+      "friction_scale": {
+        "duration_copy": "Take about 20 seconds.",
+        "rating_prompt": "Rate this friction from 0 to 10.",
+        "low_anchor": "0 — present, but not getting in the way.",
+        "high_anchor": "10 — repeatedly blocks the work.",
+        "locate_prompt": "Locate where it shows up.",
+        "honest_line_prompt": "Write one honest line.",
+        "review_hook": "Keep this mark and line for review after the presentation."
+      },
+      "promise": {
+        "status": "authored",
+        "vows": [
+          {
+            "objective_id": "part2-lo-001",
+            "text": "Distinguish workflow symptoms from system-design causes and identify a first leadership move."
+          }
+        ],
+        "known_losses": [],
+        "marker": null
+      },
+      "provenance": {
+        "source_refs": [
+          "assessments/chapter-2-knowledge-check.md#Q5"
+        ],
+        "known_losses": [
+          "scene_faithfulness_overlap",
+          "scene_faithfulness_negator"
+        ]
+      },
+      "beat_order": [
+        "scene",
+        "friction_scale",
+        "promise"
+      ]
+    },
+    "selected_seed_id": "part2-q5",
+    "selected_seed_ref": "assessments/chapter-2-knowledge-check.md#Q5",
+    "lesson_type": "fresh_pain",
+    "archetype": "external_friction",
+    "promise_authority_refs": [
+      "ratified-los.json#ratified_los/0"
+    ],
+    "encounter_mode": "recorded",
+    "writer_execution_mode": "live",
+    "scene_receipt": {
+      "classification": {
+        "status": "decisive",
+        "lesson_type": "fresh_pain",
+        "archetype": "external_friction",
+        "confidence": 1.0,
+        "evidence_refs": [
+          "assessments/chapter-2-knowledge-check.md#Q5"
+        ]
+      },
+      "gate": {
+        "failures": [
+          "scene_faithfulness_overlap",
+          "scene_faithfulness_negator"
+        ]
+      },
+      "extraction_losses": [],
+      "operator_warnings": [
+        "actual_payoff_sufficiency_operator_check",
+        "semantic_faithfulness_operator_check",
+        "negation_scope_operator_check"
+      ]
+    },
+    "promise_receipt": {
+      "gate": {
+        "failures": []
+      },
+      "authority_refs": [
+        "ratified-los.json#ratified_los/0"
+      ],
+      "operator_warnings": [
+        "promise_no_spoiler_operator_check",
+        "promise_lo_vs_vow_operator_check",
+        "promise_pertinent_ability_operator_check",
+        "promise_half_rhyme_operator_check",
+        "promise_mastery_overclaim_operator_check"
+      ]
+    },
+    "writer_receipts": [
+      {
+        "writer": "scene",
+        "mode": "live",
+        "calls": 1,
+        "model": "gpt-5",
+        "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+        "request_id": null,
+        "latency_ms": 21528.997800080106,
+        "input_tokens": 528,
+        "output_tokens": 1377,
+        "cost_usd": 0.014429999999999998,
+        "cost_unavailable_reason": null
+      },
+      {
+        "writer": "promise",
+        "mode": "live",
+        "calls": 1,
+        "model": "gpt-5",
+        "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+        "request_id": null,
+        "latency_ms": 6851.314999978058,
+        "input_tokens": 421,
+        "output_tokens": 508,
+        "cost_usd": 0.005606249999999999,
+        "cost_unavailable_reason": null
+      }
+    ],
+    "warnings": [
+      "actual_payoff_sufficiency_operator_check",
+      "semantic_faithfulness_operator_check",
+      "negation_scope_operator_check",
+      "promise_no_spoiler_operator_check",
+      "promise_lo_vs_vow_operator_check",
+      "promise_pertinent_ability_operator_check",
+      "promise_half_rhyme_operator_check",
+      "promise_mastery_overclaim_operator_check"
+    ],
+    "known_losses": [
+      "scene_faithfulness_overlap",
+      "scene_faithfulness_negator"
+    ],
+    "deep_dive_skeleton": null
+  },
+  "payload_digest": "sha256:18ff9bd63ec0af1938e2b8b4e645cd5cbe1ce2b4ae4ba5459b9e7c3fb318717e"
+}

@@ -196,6 +196,34 @@ def test_locator_shape_directive_preserves_legacy_path(tmp_path: Path) -> None:
         )
 
 
+def test_local_markdown_authority_and_extraction_share_captured_aba_snapshot(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    source = tmp_path / "primary.md"
+    original = b"\\# Original\n\nExact authority text.\n"
+    source.write_bytes(original)
+
+    def _aba_capture(_path: Path) -> bytes:
+        source.write_text("# Changed\n\nDifferent text.\n", encoding="utf-8")
+        source.write_bytes(original)
+        return original
+
+    monkeypatch.setattr(_runner, "_read_stable_regular_bytes", _aba_capture)
+    outcome = _runner._wrangle_source(
+        {
+            "ref_id": "src-changing-md",
+            "provider": "local_file",
+            "locator": str(source),
+            "role": "primary",
+        },
+        "2026-07-13T00:00:00Z",
+    )
+
+    assert outcome.content_text.startswith("# Original")
+    assert outcome.authority_text == original.decode("utf-8")
+    assert outcome.error_detail is None
+
+
 # ---------------------------------------------------------------------------
 # AC-T.5 Test 3 — malformed-shape directive exits 30
 # ---------------------------------------------------------------------------

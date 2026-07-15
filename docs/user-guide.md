@@ -1,11 +1,13 @@
 # User Guide — Course Content Production System
 
-## Current Status - Marcus-SPOC Lesson Planning (2026-07-10)
+## Current Status - Marcus-SPOC Workbook Production (2026-07-15)
 
-This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline plus the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), and the Workbook Research Products close (W0–W4, 2026-07-10).
+This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline, the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), the Operator HUD (Epic 35, 2026-07-11/12), and the Presentation-Support Workbook first complete run (Epics 36–40, 2026-07-15).
 
 ### What Works Now
 
+- **Learner workbook, end-to-end (first completed run 2026-07-15):** the presentation-support workbook pipeline can now run a governed live trial all the way through and emit a real, verified workbook (Markdown + DOCX) — prework frame, scenes, deep dive, check-on-learning, closing reflection, research glossary/trends when the research packet has content. The run harness only reports success when the workbook actually exists and conforms. **Current caveat:** the Learning Objectives section of the first completed workbook rendered placeholders (a known join defect being fixed); treat workbook output as near-shippable, not yet shippable, until that fix lands.
+- **Operator HUD (Epic 35):** a flight-deck style HUD is authorized for real operator use — live run status, gate cards, roster, and event trace over a per-run projection, with ntfy notifications. See `docs/operator/hud-guide.md`.
 - The durable Phase-2 baseline includes S7 course-source assessment/bundles, the S8 planning-to-selection bridge, the Irene planning-context handoff, and Marcus `plan-ratify` Claim A/B through the live bespoke Irene Pass-1 close at `fa48fb5b`.
 - Operators can ratify planning context for purpose, audience, learning objectives, source assessment, and collateral intent. Irene Pass-1 can receive that context as framing while the source corpus remains the topic authority.
 - The ratified collateral-intent path can drive local W5 composition on the Marcus-SPOC runtime. The active product-gap frontier is automatic `lesson_plan["collateral"]` to `ComponentSelection`, interactive planning dialogue, SME routing, ingestion hardening, and additional collateral projectors.
@@ -15,6 +17,7 @@ This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator
 
 ### What Is Still Fenced
 
+- The workbook's Learning Objectives section currently renders placeholders on live runs (LO-overlay bridge defect — the #1 open fix). Workbook production Stories 38.1/38.3a are live-gate-passed but not yet closed; do not present a generated workbook as a finished deliverable until the LO fix lands and the stories close.
 - Do not treat S8 as open work. New work should build on the bridge rather than replacing the selection contract.
 - Full free-form SPOC planning, Gamma/published-walk claims, HAI/PHS real ingestion, per-SME voice/styleguide routing, projector-family expansion, and workbook prose uplift remain residual or in-flight until committed close evidence says otherwise.
 - The research-detective flag (`MARCUS_RESEARCH_DETECTIVE_LIVE`) stays **default OFF**; promoting it (or the Consensus / Jefferson providers) to default-ON is a party policy decision that has not been taken. Jefferson library live retrieval is fenced behind an available Chrome SSO session (`chrome_running_quit_required`).

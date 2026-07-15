@@ -40,16 +40,19 @@ Discipline notes:
 from __future__ import annotations
 
 import re
+import zipfile
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Final, Literal
 
 import yaml
 from docx import Document
 
 from app.marcus.lesson_plan.collateral_spec import WorkbookSpec
 from app.marcus.lesson_plan.modality_producer import ModalityProducer
+from app.marcus.lesson_plan.prework_projection import PreWorkBrief, render_prework_markdown
 from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
 from app.specialists._shared.source_fidelity_audit import audit_numeric_provenance
@@ -65,12 +68,26 @@ if TYPE_CHECKING:
 REPO_ROOT: Final[Path] = Path(__file__).resolve().parents[3]
 DEFAULT_WORKBOOK_OUTPUT_ROOT: Final[str] = "_bmad-output/artifacts/workbooks"
 
+# B8 (DOCX determinism): python-docx stamps wall-clock mtimes into the OPC zip
+# members and writes ``dcterms:created/modified`` into ``docProps/core.xml``, so
+# two renders of the SAME model produce different bytes (breaking reload-equality
+# once the deliverable is captured trial-scoped). Pin both to a fixed epoch (the
+# zip format's 1980-01-01 minimum) so the rendered DOCX is byte-deterministic.
+_DETERMINISTIC_DOCX_ZIP_DATETIME: Final[tuple[int, int, int, int, int, int]] = (
+    1980,
+    1,
+    1,
+    0,
+    0,
+    0,
+)
+_DETERMINISTIC_DOCX_CORE_DT: Final[datetime] = datetime(1980, 1, 1, tzinfo=UTC)
+
 # Prose-delegation review marker — the honesty guard that "transcript backbone"
 # did NOT collapse into "workbook text" (mirrors BlueprintProducer's
 # IRENE_REVIEW_MARKER discipline).
 REVOICE_REQUIRED_MARKER: Final[str] = (
-    "<!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; "
-    "Irene validates -->"
+    "<!-- REVOICE-REQUIRED: writer (Paige/Sophia) -> self-contained read-prose; Irene validates -->"
 )
 HUMAN_REVIEW_SECTION_HEADING: Final[str] = "## Human Review Checkpoint"
 IRENE_REVIEW_MARKER: Final[str] = "- [ ] Irene workbook review complete"
@@ -146,9 +163,7 @@ def load_transcript_segments(manifest_path: str | Path) -> tuple[TranscriptSegme
     bundle_dir = path.resolve().parent
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict) or "segments" not in data:
-        raise WorkbookScopeError(
-            f"segment manifest {path} missing top-level 'segments' list"
-        )
+        raise WorkbookScopeError(f"segment manifest {path} missing top-level 'segments' list")
     raw_segments = data["segments"]
     if not isinstance(raw_segments, list) or not raw_segments:
         raise WorkbookScopeError(f"segment manifest {path} has no segments")
@@ -403,8 +418,7 @@ def assert_exercise_fidelity(spec: WorkbookSpec) -> None:
                 )
             if not (exercise.answer_key_source_ref or "").strip():
                 raise WorkbookFidelityError(
-                    f"G3: exercise {exercise.exercise_id!r} answer key has no "
-                    "resolvable source_ref"
+                    f"G3: exercise {exercise.exercise_id!r} answer key has no resolvable source_ref"
                 )
 
 
@@ -429,8 +443,7 @@ def assert_learning_objective_bindings(
     orphans = sorted(listed_ids - bound_ids)
     if orphans:
         raise WorkbookFidelityError(
-            "S1: orphan learning objective(s) listed but bound by no section: "
-            f"{orphans!r}"
+            f"S1: orphan learning objective(s) listed but bound by no section: {orphans!r}"
         )
     phantoms = sorted(bound_ids - listed_ids)
     if phantoms:
@@ -493,6 +506,7 @@ def compose_workbook(
     segments: Sequence[TranscriptSegment],
     *,
     prose_revoicer: ProseRevoicer,
+    workbook_title: str | None = None,
     learning_objectives: Sequence[LearningObjectiveBrief] = (),
     answer_keys: Mapping[str, str] | None = None,
     further_reading: Sequence[FurtherReadingEntry] = (),
@@ -502,6 +516,10 @@ def compose_workbook(
     glossary_articles: Sequence[GlossaryArticleBrief] = (),
     glossary_empty_reason: str | None = None,
     research_trends: ResearchTrendsBrief | None = None,
+    pre_work: PreWorkBrief | None = None,
+    encounter_mode: Literal["recorded", "live"] = "recorded",
+    render_profile: Literal["legacy", "presentation_support"] = "legacy",
+    lo_overlay_loss_note: str | None = None,
 ) -> _ComposedDoc:
     """Compose the canonical workbook model from the spec + transcript backbone.
 
@@ -520,11 +538,36 @@ def compose_workbook(
     )
     from app.marcus.lesson_plan.trends_projection import (  # noqa: PLC0415
         ResearchTrendsBrief as _TrendsBrief,
+    )
+    from app.marcus.lesson_plan.trends_projection import (
         render_trends_markdown,
     )
 
     answer_keys = dict(answer_keys or {})
-    doc = _ComposedDoc(title=f"Workbook: {plan_unit.event_type}")
+    # The DISPLAY title is a human-readable label distinct from the open-id
+    # ``event_type`` slug (which reads as a hyphenated 80-char id on the H1).
+    # Fall back to ``event_type`` when no display title is supplied.
+    title_label = (workbook_title or "").strip() or plan_unit.event_type
+    doc = _ComposedDoc(title=f"Workbook: {title_label}")
+
+    if pre_work is not None:
+        label = {
+            "recorded": "Before you watch the recorded presentation",
+            "live": "Before the live presentation",
+        }[encounter_mode]
+        doc.blocks.append((2, "Pre-work", label))
+        rendered = render_prework_markdown(pre_work).rstrip().splitlines()
+        current_heading: str | None = None
+        body: list[str] = []
+        for line in rendered:
+            if line.startswith("## "):
+                if current_heading is not None:
+                    doc.blocks.append((2, current_heading, "\n".join(body).strip()))
+                current_heading, body = line[3:], []
+            else:
+                body.append(line)
+        if current_heading is not None:
+            doc.blocks.append((2, current_heading, "\n".join(body).strip()))
 
     # --- S0 Overview ---
     doc.blocks.append(
@@ -534,19 +577,30 @@ def compose_workbook(
             "\n".join(
                 [
                     f"Unit ID: `{plan_unit.unit_id}`",
-                    f"Fulfills target: "
-                    f"`{plan_unit.unit_id}@{context.lesson_plan_revision}`",
+                    f"Fulfills target: `{plan_unit.unit_id}@{context.lesson_plan_revision}`",
                     "",
-                    "This workbook is the read-in-depth companion to the narrated "
-                    "deck: it carries the transcript, the fuller narrative deferred "
-                    "off the glance-slides, the exercises, and the citations.",
+                    (
+                        "This presentation-support workbook carries pre-work, "
+                        "guided practice, exercises, and citations."
+                        if render_profile == "presentation_support"
+                        else "This workbook is the read-in-depth companion to the narrated "
+                        "deck: it carries the transcript, the fuller narrative deferred "
+                        "off the glance-slides, the exercises, and the citations."
+                    ),
                     "",
-                    "How to use this workbook with the deck: watch the glance-deck "
-                    "for the perception-tuned claim per card, then read here for the "
-                    "deferred depth, check the figures against their sources, work "
-                    "the self-check exercises, and follow the further reading into "
-                    "primary sources. The deck carries the *glance* channel; this "
-                    "workbook carries the *read* channel (dual-coding partners).",
+                    (
+                        "Use this workbook before and alongside the presentation: "
+                        "complete the pre-work, work the self-check exercises, and "
+                        "follow the cited sources. Traceable Deep Dive read-prose "
+                        "arrives in Story 37.2a and is not claimed here."
+                        if render_profile == "presentation_support"
+                        else "How to use this workbook with the deck: watch the "
+                        "glance-deck for the perception-tuned claim per card, then "
+                        "read here for the deferred depth, work the self-check "
+                        "exercises, and follow the further reading into primary "
+                        "sources. The deck carries the *glance* channel; this "
+                        "workbook carries the *read* channel (dual-coding partners)."
+                    ),
                 ]
             ),
         )
@@ -567,8 +621,7 @@ def compose_workbook(
                 else ""
             )
             objective_lines.append(
-                f"- **`{obj.objective_id}`** — _{obj.bloom_level}_: "
-                f"{obj.statement}{serving_note}"
+                f"- **`{obj.objective_id}`** — _{obj.bloom_level}_: {obj.statement}{serving_note}"
             )
     else:
         # Non-regression thin render: derive the distinct objective ids bound by
@@ -579,33 +632,32 @@ def compose_workbook(
             if oid in seen:
                 continue
             seen.add(oid)
-            objective_lines.append(
-                f"- `{oid}` (served by section `{section.section_id}`)"
-            )
-    doc.blocks.append(
-        (2, "Learning Objectives", "\n".join(objective_lines).rstrip())
-    )
+            objective_lines.append(f"- `{oid}` (served by section `{section.section_id}`)")
+    # Q1: a visible enrichment-overlay loss note (degrade-with-record; never a
+    # silent placeholder swap). Numeral-free + outside the AC-8 narrative blocks.
+    if lo_overlay_loss_note:
+        objective_lines.append("")
+        objective_lines.append(f"> _Enrichment overlay loss: {lo_overlay_loss_note}_")
+    doc.blocks.append((2, "Learning Objectives", "\n".join(objective_lines).rstrip()))
 
     # --- S2 Transcript-narrative (the prose-delegation seam + segment backbone) ---
-    transcript_lines: list[str] = []
-    for seg in segments:
-        transcript_lines.append(_segment_anchor(seg.segment_id))
-        transcript_lines.append(f"#### {seg.segment_id}")
-        transcript_lines.append(prose_revoicer(seg.segment_id, seg.narration_text))
-        transcript_lines.append("")
-    doc.blocks.append((2, "Transcript-narrative", "\n".join(transcript_lines).rstrip()))
+    if render_profile == "legacy":
+        transcript_lines: list[str] = []
+        for seg in segments:
+            transcript_lines.append(_segment_anchor(seg.segment_id))
+            transcript_lines.append(f"#### {seg.segment_id}")
+            transcript_lines.append(prose_revoicer(seg.segment_id, seg.narration_text))
+            transcript_lines.append("")
+        doc.blocks.append((2, "Transcript-narrative", "\n".join(transcript_lines).rstrip()))
 
     # --- Section depth-deltas (the dual-coding legitimization of the tight VO) ---
     section_lines: list[str] = []
     for section in spec.sections:
         section_lines.append(f"### {section.title}")
         section_lines.append(
-            f"Objective: `{section.learning_objective_id}` "
-            f"(section `{section.section_id}`)"
+            f"Objective: `{section.learning_objective_id}` (section `{section.section_id}`)"
         )
-        section_lines.append(
-            f"Depth deferred off the slide: {section.depth_delta.deferred_depth}"
-        )
+        section_lines.append(f"Depth deferred off the slide: {section.depth_delta.deferred_depth}")
         if section.narrative_intent:
             section_lines.append(section.narrative_intent)
         section_lines.append("")
@@ -617,14 +669,13 @@ def compose_workbook(
     # verbatim transcript (record) from the re-voiced read-prose (S2), the
     # design's S2/S3 split (§7 gap 2). Excluded from the AC-8 superset (it IS
     # the VO of record, not depth beyond it).
-    record_lines: list[str] = []
-    for seg in segments:
-        record_lines.append(f"#### {seg.segment_id} (verbatim)")
-        record_lines.append(f"> {seg.narration_text.strip()}")
-        record_lines.append("")
-    doc.blocks.append(
-        (2, "Transcript of Record", "\n".join(record_lines).rstrip())
-    )
+    if render_profile == "legacy":
+        record_lines: list[str] = []
+        for seg in segments:
+            record_lines.append(f"#### {seg.segment_id} (verbatim)")
+            record_lines.append(f"> {seg.narration_text.strip()}")
+            record_lines.append("")
+        doc.blocks.append((2, "Transcript of Record", "\n".join(record_lines).rstrip()))
 
     # --- Figures (image + caption + source_ref) ---
     figure_lines: list[str] = []
@@ -632,9 +683,7 @@ def compose_workbook(
         if not seg.visual_file or not seg.visual_references:
             continue
         vref = seg.visual_references[0]
-        caption = str(
-            vref.get("description") or vref.get("element") or seg.segment_id
-        )
+        caption = str(vref.get("description") or vref.get("element") or seg.segment_id)
         source_ref = seg.source_ref
         # MD carries the readable bundle-relative ``![caption](path)`` reference;
         # the DOCX renderer embeds the BUNDLE-resolved absolute path (or skips if
@@ -644,7 +693,10 @@ def compose_workbook(
         figure_lines.append(f"*Figure — {caption}* (source_ref: `{source_ref}`)")
         figure_lines.append("")
         doc.figures.append((seg.visual_file_abs, caption, source_ref))
-    doc.blocks.append((2, "Figures", "\n".join(figure_lines).rstrip()))
+    if render_profile == "legacy":
+        doc.blocks.append((2, "Figures", "\n".join(figure_lines).rstrip()))
+    else:
+        doc.figures.clear()
 
     # --- Exercises (Bloom level + source-grounded answer key) ---
     exercise_lines: list[str] = []
@@ -653,9 +705,7 @@ def compose_workbook(
             exercise_lines.append(f"### Exercise `{exercise.exercise_id}`")
             exercise_lines.append(f"Bloom level: **{exercise.bloom_level}**")
             exercise_lines.append(exercise.prompt_intent)
-            exercise_lines.append(
-                f"Answer key (source_ref: `{exercise.answer_key_source_ref}`)"
-            )
+            exercise_lines.append(f"Answer key (source_ref: `{exercise.answer_key_source_ref}`)")
             exercise_lines.append("")
     doc.blocks.append((2, "Exercises", "\n".join(exercise_lines).rstrip()))
 
@@ -676,9 +726,7 @@ def compose_workbook(
                     "*(worked answer pending writer; grounded by the "
                     f"source_ref below — source_ref: `{exercise.answer_key_source_ref}`)*"
                 )
-            answer_lines.append(
-                f"Answer key source_ref: `{exercise.answer_key_source_ref}`"
-            )
+            answer_lines.append(f"Answer key source_ref: `{exercise.answer_key_source_ref}`")
             answer_lines.append("")
     doc.blocks.append((2, "Answer Key", "\n".join(answer_lines).rstrip()))
 
@@ -704,17 +752,13 @@ def compose_workbook(
     reference_lines = []
     reference_lines.append("#### Segment source-ref trace")
     for seg in segments:
-        reference_lines.append(
-            f"- `{seg.segment_id}` -> source_ref `{seg.source_ref}`"
-        )
+        reference_lines.append(f"- `{seg.segment_id}` -> source_ref `{seg.source_ref}`")
     reference_lines.append("")
     reference_lines.append("#### Cited references & further reading")
     if further_reading:
         for entry in further_reading:
             supports = (
-                f" — supports `{entry.supports_segment_id}`"
-                if entry.supports_segment_id
-                else ""
+                f" — supports `{entry.supports_segment_id}`" if entry.supports_segment_id else ""
             )
             if entry.locator:
                 reference_lines.append(
@@ -726,9 +770,7 @@ def compose_workbook(
                     f"- {entry.title} (source_ref: `{entry.source_ref}`){supports}"
                 )
     else:
-        reference_lines.append(
-            "- *(no corpus-native references supplied for this artifact)*"
-        )
+        reference_lines.append("- *(no corpus-native references supplied for this artifact)*")
     reference_lines.append("")
     reference_lines.append("#### Live-research cited entries (DOI)")
     if research_entries:
@@ -736,9 +778,7 @@ def compose_workbook(
             # F-2604: render supports_segment_id ONLY when present on the entry
             # (never inferred — that is the deferred semantic-audit arc).
             supports = (
-                f" — supports `{entry.supports_segment_id}`"
-                if entry.supports_segment_id
-                else ""
+                f" — supports `{entry.supports_segment_id}`" if entry.supports_segment_id else ""
             )
             credibility = ""
             if entry.evidence_hierarchy_tier:
@@ -792,8 +832,7 @@ def compose_workbook(
             hot_topics=(),
             known_losses=(),
             empty_reason=(
-                "no research-trends brief supplied for this artifact; "
-                "recorded explicitly-empty"
+                "no research-trends brief supplied for this artifact; recorded explicitly-empty"
             ),
         )
     doc.blocks.append((2, "Research Trends", render_trends_markdown(trends_brief)))
@@ -828,23 +867,74 @@ def render_docx_from_model(doc: _ComposedDoc, output_path: Path) -> None:
     for level, heading, body in doc.blocks:
         document.add_heading(heading, level=min(level, 4))
         if body:
-            for para in body.split("\n"):
-                # SF-2: a figure that embeds as a real picture must NOT also leave
-                # the literal ``![caption](path)`` markdown as a visible DOCX
-                # paragraph (doubled / ugly chrome). Drop the raw image syntax;
-                # the embedded picture + the ``*Figure — …*`` caption line carry it.
-                if para.lstrip().startswith("![") and "](" in para:
-                    continue
-                document.add_paragraph(para)
+            _render_docx_body(document, body)
     # Embed figures (AC-7): real image part (word/media/*) + caption + source_ref.
     for fig_path, caption, source_ref in doc.figures:
         if fig_path and Path(fig_path).exists():
             document.add_picture(str(fig_path))
         document.add_paragraph(f"Figure — {caption} (source_ref: {source_ref})")
     document.add_heading("Human Review Checkpoint", level=2)
-    document.add_paragraph(IRENE_REVIEW_MARKER)
+    _render_docx_body(document, IRENE_REVIEW_MARKER)
+    # B8: pin the wall-clock core-property timestamps BEFORE save (removes the
+    # volatile ``dcterms:created/modified`` from ``docProps/core.xml``).
+    document.core_properties.created = _DETERMINISTIC_DOCX_CORE_DT
+    document.core_properties.modified = _DETERMINISTIC_DOCX_CORE_DT
     output_path.parent.mkdir(parents=True, exist_ok=True)
     document.save(str(output_path))
+    # B8: pin the OPC zip member mtimes AFTER save (python-docx stamps wall-clock
+    # into each member via ``zipfile.writestr``) so the bytes are deterministic.
+    _pin_docx_zip_determinism(output_path)
+
+
+def _pin_docx_zip_determinism(path: Path) -> None:
+    """Rewrite the DOCX zip with a fixed member timestamp for byte-determinism.
+
+    python-docx writes each OPC part with ``zipfile.writestr``, which stamps the
+    current wall-clock into the member ``date_time``; two renders of the same
+    model therefore differ byte-for-byte. Rewrite every member with the pinned
+    epoch (preserving member order, names, external attrs, and DEFLATE
+    compression) so reload-equality holds once the deliverable is captured.
+    """
+    with zipfile.ZipFile(path, "r") as zin:
+        members = [
+            (info.filename, info.external_attr, zin.read(info.filename))
+            for info in zin.infolist()
+        ]
+    tmp_path = path.with_name(path.name + ".det.tmp")
+    with zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zout:
+        for filename, external_attr, data in members:
+            member = zipfile.ZipInfo(filename, date_time=_DETERMINISTIC_DOCX_ZIP_DATETIME)
+            member.compress_type = zipfile.ZIP_DEFLATED
+            member.external_attr = external_attr
+            zout.writestr(member, data)
+    tmp_path.replace(path)
+
+
+def _render_docx_body(document: Document, body: str) -> None:
+    """Project canonical Markdown semantics to DOCX paragraphs, not raw tokens."""
+    for raw in body.split("\n"):
+        line = raw.strip()
+        if not line or line.startswith("<!--"):
+            continue
+        if line.startswith("![") and "](" in line:
+            continue
+        heading = re.match(r"^(#{3,4})\s+(.+)$", line)
+        if heading:
+            document.add_heading(heading.group(2), level=min(len(heading.group(1)), 4))
+            continue
+        style = None
+        if line.startswith("- "):
+            style, line = "List Bullet", line[2:]
+        elif line.startswith("> "):
+            line = line[2:]
+        paragraph = document.add_paragraph(style=style)
+        for piece in re.split(r"(\*\*[^*]+\*\*)", line):
+            if not piece:
+                continue
+            if piece.startswith("**") and piece.endswith("**"):
+                paragraph.add_run(piece[2:-2]).bold = True
+            else:
+                paragraph.add_run(piece.replace("`", "").replace("*", ""))
 
 
 # ---------------------------------------------------------------------------
@@ -897,9 +987,15 @@ class WorkbookSidecar:
     docx_path: str
     numeric_audit: dict
     citation_audit: dict
-    segment_coverage: dict[str, bool]
+    segment_coverage: dict[str, bool] | dict[str, object]
     gamma_reuse_justified_by: str | None
     deck_no_regression_eligible: bool
+    workbook_brief_receipt: dict[str, object] | None = None
+    depth_receipt: dict[str, str] | None = None
+    # Q1: visible record of learning objectives whose enrichment overlay did NOT
+    # resolve (statement/Bloom degraded to a placeholder). ``None`` when every
+    # bound objective resolved (no loss to record).
+    lo_overlay_loss: dict[str, object] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -927,6 +1023,7 @@ class WorkbookProducer(ModalityProducer):
         plan_unit: PlanUnit,
         context: ProductionContext,
         *,
+        workbook_title: str | None = None,
         spec: WorkbookSpec,
         segments: Sequence[TranscriptSegment],
         source_text: str,
@@ -945,6 +1042,11 @@ class WorkbookProducer(ModalityProducer):
         research_supplements: set[str] | None = None,
         diff_files: Iterable[str] | None = None,
         reuse_sha: str = "WORKING",
+        pre_work: PreWorkBrief | None = None,
+        encounter_mode: Literal["recorded", "live"] = "recorded",
+        render_profile: Literal["legacy", "presentation_support"] = "legacy",
+        workbook_brief_receipt: dict[str, object] | None = None,
+        lo_overlay_loss: dict[str, object] | None = None,
     ) -> WorkbookSidecar:
         """Produce the workbook artifacts on the frozen deck inputs.
 
@@ -966,6 +1068,7 @@ class WorkbookProducer(ModalityProducer):
             spec,
             segments,
             prose_revoicer=self._prose_revoicer,
+            workbook_title=workbook_title,
             learning_objectives=learning_objectives,
             answer_keys=answer_keys,
             further_reading=further_reading,
@@ -975,6 +1078,12 @@ class WorkbookProducer(ModalityProducer):
             glossary_articles=glossary_articles,
             glossary_empty_reason=glossary_empty_reason,
             research_trends=research_trends,
+            pre_work=pre_work,
+            encounter_mode=encounter_mode,
+            render_profile=render_profile,
+            lo_overlay_loss_note=(
+                str(lo_overlay_loss.get("note")) if lo_overlay_loss else None
+            ),
         )
         markdown = render_markdown(doc)
 
@@ -995,9 +1104,7 @@ class WorkbookProducer(ModalityProducer):
         # articles are under the same gate (provenance retained; no fabricate).
         # W3 trend/hot-topic source_refs likewise.
         audited_citations = list(citations or [])
-        audited_citations.extend(
-            {"source_ref": entry.source_ref} for entry in research_entries
-        )
+        audited_citations.extend({"source_ref": entry.source_ref} for entry in research_entries)
         audited_citations.extend(
             {"source_ref": article.source_ref} for article in glossary_articles
         )
@@ -1021,18 +1128,32 @@ class WorkbookProducer(ModalityProducer):
         # the VO). The comparison is over the NARRATIVE BODY ONLY (depth-delta +
         # re-voiced prose) — structural chrome (headings, "Overview",
         # "References", segment ids) must NOT mask a verbatim-VO body.
-        effective_vo = vo_script_text or "\n".join(
-            seg.narration_text for seg in segments
-        )
+        effective_vo = vo_script_text or "\n".join(seg.narration_text for seg in segments)
         narrative_body = _narrative_body_text(doc)
-        self._assert_workbook_superset_of_vo(narrative_body, effective_vo)
+        if render_profile == "legacy":
+            self._assert_workbook_superset_of_vo(narrative_body, effective_vo)
 
         # --- AC-5: segment coverage map (100% coverage, zero phantom). ---
-        coverage = self._segment_coverage(markdown, segments)
+        coverage: dict[str, bool] | dict[str, object]
+        coverage = (
+            self._segment_coverage(markdown, segments)
+            if render_profile == "legacy"
+            else {
+                "status": "not_applicable_pre_deep_dive",
+                "claim_fence": (
+                    "No transcript-segment completeness claim until Story 37.2a "
+                    "supplies traceable read-prose"
+                ),
+            }
+        )
         # The "no segment dropped" guarantee lives in the PRODUCER, not just the
         # test: every manifest segment must appear in the MD (line-level
         # traceable). Raise if any segment is absent from the deliverable.
-        dropped = [seg_id for seg_id, present in coverage.items() if not present]
+        dropped = (
+            [seg_id for seg_id, present in coverage.items() if not present]
+            if render_profile == "legacy"
+            else []
+        )
         if dropped:
             raise WorkbookFidelityError(
                 f"AC-5: {len(dropped)} transcript segment(s) dropped from the "
@@ -1073,22 +1194,30 @@ class WorkbookProducer(ModalityProducer):
             # A frozen-reuse run is, by construction, ineligible to assert deck
             # no-regression (this story makes no deck-regression claim).
             deck_no_regression_eligible=False,
+            workbook_brief_receipt=workbook_brief_receipt,
+            depth_receipt=(
+                {
+                    "status": "not_applicable_pre_deep_dive",
+                    "claim_fence": (
+                        "No read-prose depth claim until Story 37.2a supplies "
+                        "traceable Deep Dive prose"
+                    ),
+                }
+                if render_profile == "presentation_support"
+                else None
+            ),
+            lo_overlay_loss=lo_overlay_loss,
         )
 
     @staticmethod
-    def _segment_coverage(
-        markdown: str, segments: Sequence[TranscriptSegment]
-    ) -> dict[str, bool]:
+    def _segment_coverage(markdown: str, segments: Sequence[TranscriptSegment]) -> dict[str, bool]:
         """AC-5: build {segment_id: present} + reject phantom anchors."""
         manifest_ids = {seg.segment_id for seg in segments}
         coverage = {
-            seg.segment_id: (_segment_anchor(seg.segment_id) in markdown)
-            for seg in segments
+            seg.segment_id: (_segment_anchor(seg.segment_id) in markdown) for seg in segments
         }
         # Phantom check: every anchor in the MD must be a real manifest id.
-        anchor_re = re.compile(
-            rf"<!--\s*{re.escape(SEGMENT_ANCHOR_PREFIX)}([^\s>]+)\s*-->"
-        )
+        anchor_re = re.compile(rf"<!--\s*{re.escape(SEGMENT_ANCHOR_PREFIX)}([^\s>]+)\s*-->")
         for match in anchor_re.finditer(markdown):
             anchored = match.group(1)
             if anchored not in manifest_ids:

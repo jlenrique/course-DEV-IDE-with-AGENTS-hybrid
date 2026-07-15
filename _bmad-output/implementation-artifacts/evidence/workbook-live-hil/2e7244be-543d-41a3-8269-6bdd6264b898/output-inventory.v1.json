@@ -1,0 +1,187 @@
+{
+  "artifact_digest": "1f945add8379bb20934ebb4b82cdd6b8bd085c637ec09665747b7282fcea53e7",
+  "created_at": "2026-07-14T07:28:14.549559Z",
+  "file_count": 33,
+  "files": [
+    {
+      "path": "primary-run/.codex-hil-runner-origin.json",
+      "sha256": "8d56f31f9d2105d94986056e7bb00200cc0fd81d433e7049e5e7a3401a3b5fb3",
+      "size": 224
+    },
+    {
+      "path": "primary-run/.cost-report.lock",
+      "sha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+      "size": 1
+    },
+    {
+      "path": "primary-run/bundle/.texas-hardening.lock",
+      "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+      "size": 1
+    },
+    {
+      "path": "primary-run/bundle/extracted.md",
+      "sha256": "f9a6a9cd7738c9199bf8f5cdee17a7d123ede9c6b3708c6cb6fe269b2d8f9322",
+      "size": 6781
+    },
+    {
+      "path": "primary-run/bundle/extraction-report.yaml",
+      "sha256": "6ecc4b439d453d0cb8fe533eb815a6b350e5340d363902876aa3676aa5f1917e",
+      "size": 12881
+    },
+    {
+      "path": "primary-run/bundle/ingestion-evidence.md",
+      "sha256": "0bd1b558d5d4209557b0bbaf99c5dac96991e0adf9cdef6ec1ba650343a5ab65",
+      "size": 11533
+    },
+    {
+      "path": "primary-run/bundle/manifest.json",
+      "sha256": "3c3608ac44ea3a8e5f302e84ed9dffde20834d8f32d0ea47c0d6bdf481c77d80",
+      "size": 1062
+    },
+    {
+      "path": "primary-run/bundle/metadata.json",
+      "sha256": "a919a8901567562562bda8b860b142d30278c8b2b5dbdcbf040fda4c26f711ff",
+      "size": 10992
+    },
+    {
+      "path": "primary-run/bundle/result.yaml",
+      "sha256": "00c314d3e0bfbe7176ed12b89251419a6c05e2ec55da9a2b6b277325abdd2b3d",
+      "size": 10915
+    },
+    {
+      "path": "primary-run/checkpoint.json",
+      "sha256": "0f90ecd8e39fa9ea2ddd11a33e44c86fd000a407c965328ee525da4ba1c19427",
+      "size": 75935
+    },
+    {
+      "path": "primary-run/conversation/G1/0000.json",
+      "sha256": "6bfa26330e29740e4639813dce6ef9574e823785783845e3b59cd74356df067e",
+      "size": 1766
+    },
+    {
+      "path": "primary-run/cost-report.json",
+      "sha256": "0d6a5104a1235b8a00d5ad9e0fdcb39a04c05526eedbca651de9c1a9aa9f7a45",
+      "size": 864
+    },
+    {
+      "path": "primary-run/cost-report.md",
+      "sha256": "859218eedd9468292c2bf722fa17c935e353f1975a7f4c17bf35718a3e2e9a38",
+      "size": 789
+    },
+    {
+      "path": "primary-run/decision-card-G0E.json",
+      "sha256": "b63a1ae6b0b00aa1a926c07a30228c1dbdfe860a3e4620403a3d31b1588bf33a",
+      "size": 19599
+    },
+    {
+      "path": "primary-run/decision-card-G0R.json",
+      "sha256": "028435da91c7ed41704cd2f02e5dd5a20103ab9315ff03f0e31caaf62ce3bb84",
+      "size": 27412
+    },
+    {
+      "path": "primary-run/decision-card-G1.json",
+      "sha256": "94b8e8d07bdaa380f36f2827aa67926dc93a0b738d4673f81950db3e331de847",
+      "size": 2152
+    },
+    {
+      "path": "primary-run/directive.yaml",
+      "sha256": "7cfed3a80ee087c2c411068d69074d083521b20cbd3e883507debb8c88d56bdb",
+      "size": 4049
+    },
+    {
+      "path": "primary-run/error-pause.json",
+      "sha256": "fa553e81ee139cb81371aca8ec4e09e13dfb8bb38aabd696636c53fabd673c35",
+      "size": 76118
+    },
+    {
+      "path": "primary-run/g0-enrichment-cache/67e7bd6cb7602db3c50d1588c1266bddfb7e7c2ebae0621f455e74f91bb30ee1.json",
+      "sha256": "b45effc4ac677a40cce51d838a42aed7518c21f20e38a486930da14dce07ae00",
+      "size": 36425
+    },
+    {
+      "path": "primary-run/g0-enrichment.json",
+      "sha256": "ff83db498f372df2128bc6da1ab1525b0e17e4ebca9bce09ecf12a82b6e08d41",
+      "size": 28427
+    },
+    {
+      "path": "primary-run/irene-refinement-cache/67e7bd6cb7602db3c50d1588c1266bddfb7e7c2ebae0621f455e74f91bb30ee1.json",
+      "sha256": "32042361ff39415305517efb395ad5ebf720e94d0a9fbe028de958550e1cb712",
+      "size": 26008
+    },
+    {
+      "path": "primary-run/irene-refinement.json",
+      "sha256": "270907b557d9e4bb3a4cf8c955a574ac9def3d8bb7c2399a28a0d7a2a260d8c0",
+      "size": 25237
+    },
+    {
+      "path": "primary-run/model_resolution_trail.json",
+      "sha256": "1d9dcf93a246d19eeeeb5225b09120161dc5dbcf046dcb4efea0e1947a824c90",
+      "size": 350
+    },
+    {
+      "path": "primary-run/operator-surface.json",
+      "sha256": "5e568c4179b8eb1984b3ded5d29a3f5967dc89eb26fe3afefe172513ddf79326",
+      "size": 20153
+    },
+    {
+      "path": "primary-run/ratified-los.json",
+      "sha256": "a41a942dffeca6f3842cfca17f61a1717e690fd6642a29138c71f789006ffd9e",
+      "size": 10444
+    },
+    {
+      "path": "primary-run/resume-command.json",
+      "sha256": "8b42911fc2ac06a91d68d3bd56f010308e5fa3ffb28403ed6fec8b729b6b79ce",
+      "size": 75448
+    },
+    {
+      "path": "primary-run/run.json",
+      "sha256": "e786326c55149966c1fca9b924b884ce992a8f8932a70aeb1b1e8187995e8567",
+      "size": 71903
+    },
+    {
+      "path": "primary-run/run_summary.yaml",
+      "sha256": "f816e2b673a1cbe524ece0af81b770a0bb16ee7b4c8eb9b8ea48147b2a7b975a",
+      "size": 370
+    },
+    {
+      "path": "primary-run/trace-fixture.json",
+      "sha256": "5783fb0a9f4f0f953920f98fd87c0cab31c3bbcb9ee1c1c29b3e7d3423acfdff",
+      "size": 2660
+    },
+    {
+      "path": "primary-run/trial-start.json",
+      "sha256": "3cc88a34e36a9556532d15b5df0876ed6ea4cf97dfa58e0a107d319f6e316041",
+      "size": 1309
+    },
+    {
+      "path": "primary-run/workbook-runtime-context.v1.json",
+      "sha256": "7cadc9d6249d523df09d6e82e594865296ded08c026dcf84c910c0e48d4bb362",
+      "size": 304
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260714T072755170773Z.md",
+      "sha256": "0a07a3b9919809afccacc9be562e384e19ca7fedf25000921d246ba0f6360535",
+      "size": 589
+    },
+    {
+      "path": "state-config-run/specialist-summaries/texas-20260714T072757795317Z.md",
+      "sha256": "3a59e9e4d3c6962511867b0537a52ff4a1912b4c91f5bc4cb10568ebf85e5850",
+      "size": 589
+    }
+  ],
+  "inventory_digest": "2c622a1848c031fde7f88a4ac54466253e9cf84be2653dd627aabb2fb9180a31",
+  "output_roots": [
+    {
+      "label": "primary-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\2e7244be-543d-41a3-8269-6bdd6264b898",
+      "present": true
+    },
+    {
+      "label": "state-config-run",
+      "path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\state\\config\\runs\\2e7244be-543d-41a3-8269-6bdd6264b898",
+      "present": true
+    }
+  ],
+  "schema_version": "governed-run-output-inventory.v1",
+  "trial_id": "2e7244be-543d-41a3-8269-6bdd6264b898"
+}

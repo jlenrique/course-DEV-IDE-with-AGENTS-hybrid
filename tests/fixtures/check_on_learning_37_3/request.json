@@ -1,0 +1,51 @@
+{
+  "lesson_ref": "part-2",
+  "promise": {
+    "projection": {
+      "status": "authored",
+      "vows": [
+        {"objective_id": "ability-a", "text": "distinguish causes"},
+        {"objective_id": "ability-b", "text": "choose a first move"}
+      ],
+      "known_losses": [],
+      "marker": null
+    },
+    "gate_receipt": {"failures": []},
+    "authority_refs": [
+      "ratified-los.json#ratified_los/0",
+      "ratified-los.json#ratified_los/1"
+    ],
+    "operator_warnings": []
+  },
+  "quantity_unit_tokens": [
+    "mg",
+    "%",
+    "kg",
+    "°C",
+    "mol/L",
+    "mol⁻¹",
+    "m·s⁻²",
+    "kg/m²/day",
+    "m s⁻²",
+    "Ω",
+    "V"
+  ],
+  "source_spans": [
+    {"span_id": "span-a", "text": "source A", "source_ref": "narration#1"},
+    {"span_id": "span-b", "text": "source B", "source_ref": "narration#2"}
+  ],
+  "source_claims": [
+    {
+      "claim_id": "claim-a",
+      "text": "A recurring delay indicates a system-design cause, not an isolated symptom.",
+      "source_span_refs": ["span-a"],
+      "ability_refs": ["ability-a"]
+    },
+    {
+      "claim_id": "claim-b",
+      "text": "The first move is to map the handoff before choosing an intervention.",
+      "source_span_refs": ["span-b"],
+      "ability_refs": ["ability-b"]
+    }
+  ]
+}

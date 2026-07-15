@@ -1,0 +1,52 @@
+lane: L1
+scope: pipeline-lockstep
+timestamp: '2026-07-13T13:15:02.129845+00:00'
+closure_gate: PASS
+orchestration_only_nodes:
+- directive-composer
+- pre-gate-marcus
+- per-slide-subgraph
+- html-review-pack-emitter
+- g0-enrichment
+- g0-enrichment-gate
+- irene-refinement
+- g0-ratify-gate
+- 07B-gate
+- 11-gate
+- 11B-gate
+- 07W.1
+- 07W.2
+- 07W.3
+- 07W.4
+l1_checks_run:
+- check: 1
+  name: set-equality
+  pass: true
+- check: 2
+  name: order-equality
+  pass: true
+- check: 3
+  name: name-equality
+  pass: true
+- check: 4
+  name: gate-bitmap-equality
+  pass: true
+- check: 5
+  name: insertion-consistency
+  pass: true
+- check: 6
+  name: emission-declaration
+  pass: true
+- check: 7
+  name: schema-ref-resolves
+  pass: true
+- check: 8
+  name: event-types-subset
+  pass: true
+- check: 9
+  name: regeneration-determinism
+  pass: true
+- check: 10
+  name: frozen-pack-sha-registry
+  pass: true
+findings: []

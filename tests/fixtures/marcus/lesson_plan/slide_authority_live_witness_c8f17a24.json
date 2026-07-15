@@ -1,0 +1,58 @@
+{
+  "source_run_id": "c8f17a24-9b63-4e10-a5d7-6f2043bc9812",
+  "failure_tag": "workbook-brief.deep-dive-authority-invalid",
+  "captured_map_digest": "sha256:536579300f2d44e9e28e323810570035bfa1693ae7b36db6f90bcaf3b4326c0c",
+  "captured_manifest_digest": "sha256:cb5d5eb21108f56465f31e1f998964785b212c82e4a8ba9e77afab1b13424aef",
+  "captured_plan_sidecar_digest": "sha256:f203cfac641b8004760ea672d623c805e5d4f1841d5a935229ce42173b5ba29a",
+  "captured_plan_contribution_digest": "sha256:1a5642f0738db15ac6a537f2d0329fb3652f8eda7719f8e97cbcb72af8e19e29",
+  "captured_package_contribution_digest": "sha256:aeadf66640bb9053265afec4cc1c02abf8b565fff06597d6543577a06ad98f8c",
+  "captured_source_inventory_digest": "sha256:e4187f3b197dfa81dc86600d0f485e48b97485a25292ca137407e4bdebb71b8d",
+  "expected_fixture_map_digest": "sha256:ccc71e7f7129a972b12ab2bc28f163792db58b05a100abfd9fd2971fe85a9b00",
+  "manifest_segments": [
+    {"segment_id": "seg-01", "slide_id": "slide-01", "narration_text": "Economic and structural reality."},
+    {"segment_id": "seg-02", "slide_id": "slide-02", "narration_text": "System waste and human cost."},
+    {"segment_id": "seg-03", "slide_id": "slide-03", "narration_text": "Administrative waste."},
+    {"segment_id": "seg-04", "slide_id": "slide-04", "narration_text": "Burnout is a system design problem."},
+    {"segment_id": "seg-05", "slide_id": "slide-05", "narration_text": "Knowledge is expanding rapidly."},
+    {"segment_id": "seg-06", "slide_id": "slide-06", "narration_text": "Static training cannot keep pace."},
+    {"segment_id": "seg-07", "slide_id": "slide-07", "narration_text": "AI oversight skills are limited."},
+    {"segment_id": "seg-08", "slide_id": "slide-08", "narration_text": "New tools enable proactive care."},
+    {"segment_id": "seg-09", "slide_id": "slide-09", "narration_text": "Patients expect a digital front door."},
+    {"segment_id": "seg-10", "slide_id": "slide-10", "narration_text": "Physicians want leadership roles."},
+    {"segment_id": "seg-11", "slide_id": "slide-11", "narration_text": "Formal executive training is scarce."},
+    {"segment_id": "seg-12", "slide_id": "slide-12", "narration_text": "Systems leadership is critical."},
+    {"segment_id": "seg-13", "slide_id": "slide-13", "narration_text": "Clinical innovators can lead change."}
+  ],
+  "plan_units": [
+    {"unit_id": "u01", "scope_decision": "in-scope", "cluster_id": "c-u01", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["$5.2 trillion in 2024"]},
+    {"unit_id": "u02", "scope_decision": "in-scope", "cluster_id": "c-u02", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["25% of healthcare spending"]},
+    {"unit_id": "u03", "scope_decision": "in-scope", "cluster_id": "c-u02", "cluster_role": "interstitial", "parent_slide_id": "u02", "source_refs": ["administrative costs and waste"]},
+    {"unit_id": "u04", "scope_decision": "in-scope", "cluster_id": "c-u02", "cluster_role": "interstitial", "parent_slide_id": "u02", "source_refs": ["system design problem"]},
+    {"unit_id": "u05", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["medical knowledge to double"]},
+    {"unit_id": "u06", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "interstitial", "parent_slide_id": "u05", "source_refs": ["73 days"]},
+    {"unit_id": "u07", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "interstitial", "parent_slide_id": "u05", "source_refs": ["66% of physicians"]},
+    {"unit_id": "u08", "scope_decision": "in-scope", "cluster_id": "c-u05", "cluster_role": "interstitial", "parent_slide_id": "u05", "source_refs": ["SMART remote monitoring"]},
+    {"unit_id": "u09", "scope_decision": "in-scope", "cluster_id": "c-u09", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["Digital Front Door"]},
+    {"unit_id": "u10", "scope_decision": "in-scope", "cluster_id": "c-u10", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["67% of practicing physicians"]},
+    {"unit_id": "u11", "scope_decision": "in-scope", "cluster_id": "c-u10", "cluster_role": "interstitial", "parent_slide_id": "u10", "source_refs": ["18% receive executive training"]},
+    {"unit_id": "u12", "scope_decision": "in-scope", "cluster_id": "c-u10", "cluster_role": "interstitial", "parent_slide_id": "u10", "source_refs": ["COVID management and systems"]},
+    {"unit_id": "u13", "scope_decision": "in-scope", "cluster_id": "c-u13", "cluster_role": "head", "parent_slide_id": null, "source_refs": ["incremental adaptation"]}
+  ],
+  "package_slides": [
+    {"slide_id": "slide-01", "source_ref": "u01"}, {"slide_id": "slide-02", "source_ref": "u02"},
+    {"slide_id": "slide-03", "source_ref": "u03"}, {"slide_id": "slide-04", "source_ref": "u04"},
+    {"slide_id": "slide-05", "source_ref": "u05"}, {"slide_id": "slide-06", "source_ref": "u06"},
+    {"slide_id": "slide-07", "source_ref": "u07"}, {"slide_id": "slide-08", "source_ref": "u08"},
+    {"slide_id": "slide-09", "source_ref": "u09"}, {"slide_id": "slide-10", "source_ref": "u10"},
+    {"slide_id": "slide-11", "source_ref": "u11"}, {"slide_id": "slide-12", "source_ref": "u12"},
+    {"slide_id": "slide-13", "source_ref": "u13"}
+  ],
+  "source_slides": {
+    "slide-1-the-economic-structural-reality.md": "Economic structure reached $5.2 trillion in 2024 while practice consolidation accelerated.",
+    "slide-2-the-human-cost-system-waste-burnout.md": "About 25% of healthcare spending goes to administrative costs and waste. Burnout is a system design problem.",
+    "slide-3-the-knowledge-explosion-new-technologies.md": "The time for medical knowledge to double is now 73 days. 66% of physicians use AI. SMART remote monitoring enables proactive care.",
+    "slide-4-the-consumer-shift-the-digital-front-door.md": "Patients expect a Digital Front Door with transparent access and convenient navigation.",
+    "slide-5-the-leadership-gap.md": "67% of practicing physicians seek leadership roles, but only 18% receive executive training. COVID management and systems lessons made the gap clear.",
+    "slide-6-part-2-summary.md": "Complex healthcare needs more than incremental adaptation; clinical innovators must lead change."
+  }
+}

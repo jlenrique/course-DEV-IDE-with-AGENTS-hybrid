@@ -1,1 +1,23 @@
-{"schema_version":"1.0","run_id":"TEXAS-FIXTURE-001"}
+{
+  "schema_version": "1.0",
+  "run_id": "TEXAS-FIXTURE-001",
+  "directive_sha256": "e8fbf2d25b3f41c416e37074cac73f85d332614efc4f9fd7151411e67daf3b56",
+  "generated_at": "2026-07-13T00:00:00Z",
+  "provenance": [
+    {
+      "ref_id": "src-001",
+      "kind": "local_file",
+      "ref": "fixture-source.md",
+      "role": "primary",
+      "section_title": "Fixture source"
+    }
+  ],
+  "source_authority": [
+    {
+      "source_id": "src-001",
+      "path": "fixture-source.md",
+      "source_content_digest": "eb4a863bec8815f45babda4fbd5d2053dfc81f82f1c8dbad260a4dad7ecd60f9",
+      "extracted_content_digest": "eb4a863bec8815f45babda4fbd5d2053dfc81f82f1c8dbad260a4dad7ecd60f9"
+    }
+  ]
+}

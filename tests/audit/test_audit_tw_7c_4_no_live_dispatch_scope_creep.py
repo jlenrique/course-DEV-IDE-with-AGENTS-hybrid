@@ -739,6 +739,12 @@ PERMITTED_PYTHON_DIFFS = {
     # LO dedup, recoverable produce()-gate wrap, DOI-honesty omission, malformed-
     # declaration fail-loud (F-2801), degrade-provenance teeth, kind carry-through.
     "tests/specialists/workbook_producer/test_workbook_s7_remediation.py",
+    # 07W run-dir threading regression (live trial 503e54c1 paused at 07W with
+    # segment-manifest.missing). Deterministic/OFFLINE pin over the dispatch seam
+    # (_runner_payload_for_specialist) threading the real run dir into the 07W
+    # payload run_dir override — NO live dispatch (production_runner.py already
+    # rostered above).
+    "tests/specialists/workbook_producer/test_run_dir_threading_503e54c1.py",
 }
 
 

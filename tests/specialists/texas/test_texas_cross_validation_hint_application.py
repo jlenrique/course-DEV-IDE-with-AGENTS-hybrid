@@ -31,7 +31,7 @@ def test_cross_validation_hints_are_logged(tmp_path: Path, hints: list[str]) -> 
         encoding="utf-8",
     )
     bundle = tmp_path / "bundle"
-    _write_bundle(bundle)
+    _write_bundle(bundle, run_id="hints", directive_path=directive)
     state = _build_state(
         cache_prefix=json.dumps(
             {"directive_path": str(directive), "bundle_dir": str(bundle)}

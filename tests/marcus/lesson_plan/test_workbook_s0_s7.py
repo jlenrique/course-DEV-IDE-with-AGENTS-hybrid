@@ -10,6 +10,7 @@ on the completed B1 run 6a103b6c (gap 7). NO MOCKS — real run + corpus data.
 from __future__ import annotations
 
 from pathlib import Path
+from zipfile import ZipFile
 
 import pytest
 from docx import Document
@@ -19,6 +20,14 @@ from app.marcus.lesson_plan.collateral_spec import (
     Exercise,
     WorkbookSection,
     WorkbookSpec,
+)
+from app.marcus.lesson_plan.prework_projection import (
+    FRICTION_SCALE,
+    PreWorkBrief,
+    PreWorkProvenance,
+    PromiseProjection,
+    PromiseVow,
+    SceneBrief,
 )
 from app.marcus.lesson_plan.produced_asset import ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
@@ -33,14 +42,13 @@ from app.marcus.lesson_plan.workbook_producer import (
     compose_workbook,
     default_prose_revoicer,
     load_transcript_segments,
+    render_docx_from_model,
     render_markdown,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 TEJAL_BUNDLE = (
-    REPO_ROOT
-    / "course-content/staging/tracked/source-bundles"
-    / "apc-c1m1-tejal-20260419b-motion"
+    REPO_ROOT / "course-content/staging/tracked/source-bundles" / "apc-c1m1-tejal-20260419b-motion"
 )
 TEJAL_MANIFEST = TEJAL_BUNDLE / "segment-manifest.yaml"
 TEST_OUTPUT_ROOT = "_bmad-output/artifacts/workbooks-test"
@@ -128,14 +136,114 @@ def _section_body(md: str, heading: str) -> str:
     return rest if nxt == -1 else rest[:nxt]
 
 
+def _prework() -> PreWorkBrief:
+    scene = SceneBrief(
+        status="authored",
+        text="A patient transport delay blocks the work.",
+        source_refs=("assessment#Q5",),
+        known_losses=(),
+        marker=None,
+        lesson_type="fresh_pain",
+        archetype="external_friction",
+    )
+    promise = PromiseProjection(
+        status="authored",
+        vows=(PromiseVow(objective_id="obj-lo2", text="I can identify a first move."),),
+        known_losses=(),
+        marker=None,
+    )
+    return PreWorkBrief(
+        scene=scene,
+        friction_scale=FRICTION_SCALE,
+        promise=promise,
+        provenance=PreWorkProvenance(source_refs=scene.source_refs, known_losses=()),
+    )
+
+
+def test_presentation_support_frontmatter_and_fr17_cut(
+    plan_unit, context, two_obj_spec, segments, tmp_path
+) -> None:
+    doc = compose_workbook(
+        plan_unit,
+        context,
+        two_obj_spec,
+        segments,
+        prose_revoicer=default_prose_revoicer,
+        pre_work=_prework(),
+        encounter_mode="live",
+        render_profile="presentation_support",
+    )
+    md = render_markdown(doc)
+    headings = [heading for _, heading, _ in doc.blocks]
+    assert headings[:4] == ["Pre-work", "Scene", "Friction Scale", "Promise"]
+    assert "Before the live presentation" in md
+    assert "patient transport delay" in md
+    assert "Transcript-narrative" not in headings
+    assert "Transcript of Record" not in headings
+    assert "Figures" not in headings
+    assert doc.figures == []
+    target = tmp_path / "presentation-support.docx"
+    render_docx_from_model(doc, target)
+    parsed = Document(target)
+    paragraphs = [paragraph.text for paragraph in parsed.paragraphs]
+    assert not any("**" in text or text.startswith("- ") for text in paragraphs)
+    assert any(paragraph.style.name == "List Bullet" for paragraph in parsed.paragraphs)
+    assert "Transcript-narrative" not in paragraphs
+    assert "Transcript of Record" not in paragraphs
+    assert "Figures" not in paragraphs
+    with ZipFile(target) as archive:
+        names = archive.namelist()
+        assert not any(name.startswith("word/media/") for name in names)
+        rels = archive.read("word/_rels/document.xml.rels").decode("utf-8")
+        assert "/image" not in rels
+
+
+def test_recorded_live_parity_is_exactly_one_label_in_md_and_docx(
+    plan_unit, context, two_obj_spec, segments, tmp_path
+) -> None:
+    docs = {
+        mode: compose_workbook(
+            plan_unit,
+            context,
+            two_obj_spec,
+            segments,
+            prose_revoicer=default_prose_revoicer,
+            pre_work=_prework(),
+            encounter_mode=mode,
+            render_profile="presentation_support",
+        )
+        for mode in ("recorded", "live")
+    }
+    md_lines = {mode: render_markdown(doc).splitlines() for mode, doc in docs.items()}
+    differences = [
+        (left, right)
+        for left, right in zip(md_lines["recorded"], md_lines["live"], strict=True)
+        if left != right
+    ]
+    assert differences == [
+        ("Before you watch the recorded presentation", "Before the live presentation")
+    ]
+    paragraphs = {}
+    for mode, doc in docs.items():
+        path = tmp_path / f"{mode}.docx"
+        render_docx_from_model(doc, path)
+        paragraphs[mode] = [paragraph.text for paragraph in Document(path).paragraphs]
+    differences = [
+        (left, right)
+        for left, right in zip(paragraphs["recorded"], paragraphs["live"], strict=True)
+        if left != right
+    ]
+    assert differences == [
+        ("Before you watch the recorded presentation", "Before the live presentation")
+    ]
+
+
 # --------------------------------------------------------------------------- #
 # S1 — learning-objectives section (design §7 gap 1)                          #
 # --------------------------------------------------------------------------- #
 
 
-def test_s1_learning_objectives_section_renders(
-    plan_unit, context, two_obj_spec, segments
-) -> None:
+def test_s1_learning_objectives_section_renders(plan_unit, context, two_obj_spec, segments) -> None:
     doc = compose_workbook(
         plan_unit,
         context,
@@ -174,9 +282,7 @@ def test_s1_orphan_objective_rejected(two_obj_spec) -> None:
 
 def test_s1_phantom_binding_rejected(two_obj_spec) -> None:
     # A section binds obj-lo4, but the objectives list omits it -> phantom binding.
-    objs = (
-        LearningObjectiveBrief("obj-lo2", "analyze", "only lo2 stated"),
-    )
+    objs = (LearningObjectiveBrief("obj-lo2", "analyze", "only lo2 stated"),)
     with pytest.raises(WorkbookFidelityError, match="phantom"):
         assert_learning_objective_bindings(two_obj_spec, objs)
 
@@ -246,9 +352,7 @@ def test_s5_answer_key_section_renders_worked_answers(
     assert "src-slide-02" in body  # answer key grounded by its source_ref
 
 
-def test_s5_answer_key_pending_note_when_absent(
-    plan_unit, context, two_obj_spec, segments
-) -> None:
+def test_s5_answer_key_pending_note_when_absent(plan_unit, context, two_obj_spec, segments) -> None:
     doc = compose_workbook(
         plan_unit, context, two_obj_spec, segments, prose_revoicer=default_prose_revoicer
     )

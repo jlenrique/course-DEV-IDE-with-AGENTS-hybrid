@@ -37,6 +37,13 @@ from app.marcus.lesson_plan.collateral_selection import (
     load_lesson_plan_collateral_selection,
     load_selection_from_lesson_plan_json,
 )
+from app.marcus.lesson_plan.prework_artifact import (
+    WORKBOOK_RUNTIME_CONTEXT_FILENAME,
+    WorkbookBriefRuntimeContext,
+    read_runtime_context,
+    validate_course_source_root,
+    write_runtime_context,
+)
 from app.marcus.orchestrator.picker_html_emitter import decode_picker_selection_code
 from app.marcus.orchestrator.production_runner import (
     PreflightGateFailed,
@@ -47,8 +54,13 @@ from app.marcus.orchestrator.production_runner import (
     run_production_trial,
 )
 from app.marcus.orchestrator.styleguide_picker import PickerError
+from app.marcus.orchestrator.workbook_wiring import (
+    LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID,
+    WORKBOOK_BRIEF_SPECIALIST_ID,
+)
 from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
+from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
 
 
@@ -134,8 +146,7 @@ def _edit_directive_in_editor(directive_path: Path) -> None:
         ) from exc
     if exit_code != 0:
         raise EditorUnavailableError(
-            f"editor {editor!r} exited with non-zero code {exit_code}; "
-            f"directive edit aborted"
+            f"editor {editor!r} exited with non-zero code {exit_code}; directive edit aborted"
         )
 
 
@@ -207,8 +218,7 @@ def _confirm_or_edit_directive(
             return "saved-only"
         if choice == "x":
             raise DirectiveDeclinedError(
-                "directive composition declined; trial halted at G0 with no "
-                "specialist dispatch"
+                "directive composition declined; trial halted at G0 with no specialist dispatch"
             )
         print_fn("invalid choice; please enter c, e, s, or x")
 
@@ -251,9 +261,7 @@ def _default_picker_preflight(**kwargs: Any) -> dict[str, Any] | None:
     """
 
     def _is_tty(stream: Any) -> bool:
-        return stream is not None and bool(
-            getattr(stream, "isatty", lambda: False)()
-        )
+        return stream is not None and bool(getattr(stream, "isatty", lambda: False)())
 
     if not (_is_tty(sys.stdin) and _is_tty(sys.stdout)):
         return None
@@ -333,6 +341,8 @@ def start_trial(
     picker_events_path: Path | None = None,
     llm_execution_mode: Literal["realtime", "batch"] = "realtime",
     hud: Literal["on", "off"] = "on",
+    course_source_root: Path | None = None,
+    encounter_mode: Literal["recorded", "live"] | None = None,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     if not input_path.exists():
@@ -417,22 +427,25 @@ def start_trial(
             raw = yaml.safe_load(path.read_text(encoding="utf-8"))
         except (OSError, UnicodeDecodeError, yaml.YAMLError):
             raw = None
-        if isinstance(raw, dict) and (
-            "collateral" in raw
-            or "plan_units" in raw
-            or isinstance(raw.get("lesson_plan"), dict)
-        ) and raw.get("ratification_status") != "ratified":
+        if (
+            isinstance(raw, dict)
+            and (
+                "collateral" in raw
+                or "plan_units" in raw
+                or isinstance(raw.get("lesson_plan"), dict)
+            )
+            and raw.get("ratification_status") != "ratified"
+        ):
             resolved_collateral_selection = load_selection_from_lesson_plan_json(path)
             selection_source_receipt = "plan_collateral"
         else:
             resolved_collateral_selection = load_lesson_plan_collateral_selection(path)
             if resolved_collateral_selection.source == "ratified":
                 selection_source_receipt = "ratified"
-        if (
-            resolved_collateral_selection is not None
-            and resolved_collateral_selection.source
-            in {"ratified", "plan_collateral"}
-        ):
+        if resolved_collateral_selection is not None and resolved_collateral_selection.source in {
+            "ratified",
+            "plan_collateral",
+        }:
             if (
                 component_selection is not None
                 and component_selection != resolved_collateral_selection.selection
@@ -446,6 +459,26 @@ def start_trial(
     lesson_plan_receipt_path = (
         lesson_plan_collateral_receipt_path or lesson_plan_collateral_intent_path
     )
+
+    effective_selection = component_selection or ComponentSelection.production_default()
+    if effective_selection.workbook:
+        if course_source_root is None or encounter_mode is None:
+            raise ValueError(
+                "workbook-selected start requires --course-source-root and --encounter-mode"
+            )
+        source_root = validate_course_source_root(course_source_root)
+        run_dir.mkdir(parents=True, exist_ok=True)
+        write_runtime_context(
+            WorkbookBriefRuntimeContext(
+                run_dir=run_dir,
+                course_source_root=source_root,
+                encounter_mode=encounter_mode,
+                context_origin="new_start",
+                writer_execution_mode="offline_stub" if allow_offline_cost_report else "live",
+            )
+        )
+    elif course_source_root is not None or encounter_mode is not None:
+        raise ValueError("workbook-only options require a workbook-selected composed graph")
 
     # G0 directive composition (Story 7a.1, AC-7.1-A/B/C/J).
     # Composer activates for directory inputs (course-content corpora). File
@@ -543,10 +576,7 @@ def start_trial(
                 event="trial-cancelled-at-g0",
                 detail="directive composition declined at G0",
             )
-            print(
-                "directive composition declined; trial halted at G0 with no "
-                "specialist dispatch"
-            )
+            print("directive composition declined; trial halted at G0 with no specialist dispatch")
             return {
                 "status": "cancelled-at-g0",
                 "trial_id": str(effective_trial_id),
@@ -621,9 +651,7 @@ def start_trial(
 
     result = {
         "status": (
-            envelope.status
-            if envelope.production_clone_launch_evidence
-            else "registered-offline"
+            envelope.status if envelope.production_clone_launch_evidence else "registered-offline"
         ),
         "trial_id": str(effective_trial_id),
         "preset": preset,
@@ -639,9 +667,7 @@ def start_trial(
         "directive_path": directive_path.as_posix() if directive_path else None,
         "directive_digest": directive_digest,
         "lesson_plan_collateral_intent_path": (
-            lesson_plan_receipt_path.as_posix()
-            if lesson_plan_receipt_path
-            else None
+            lesson_plan_receipt_path.as_posix() if lesson_plan_receipt_path else None
         ),
         "lesson_plan_collateral_bundle_id": lesson_plan_bundle_id,
         "lesson_plan_selection_source": selection_source_receipt,
@@ -740,9 +766,7 @@ def _resolve_start_component_selection(args: argparse.Namespace) -> _StartSelect
         if bundle:
             record = get_bundle(bundle)
             if record is None:
-                raise CollateralSelectionError(
-                    f"{bundle!r} is not a bundle in the closed catalog"
-                )
+                raise CollateralSelectionError(f"{bundle!r} is not a bundle in the closed catalog")
             if record.selection != resolved.selection:
                 raise CollateralSelectionError(
                     "lesson-plan collateral selection conflicts with --bundle"
@@ -781,12 +805,14 @@ def start_trial_cli(args: argparse.Namespace) -> int:
             lesson_plan_collateral_receipt_path=(
                 start_selection.lesson_plan_collateral_intent_path
             ),
-            lesson_plan_collateral_bundle_id=(
-                start_selection.lesson_plan_collateral_bundle_id
-            ),
+            lesson_plan_collateral_bundle_id=(start_selection.lesson_plan_collateral_bundle_id),
             selection_code=getattr(args, "selection_code", None),
             llm_execution_mode=getattr(args, "llm_execution_mode", "realtime"),
             hud=getattr(args, "hud", "on"),
+            course_source_root=(
+                Path(args.course_source_root) if getattr(args, "course_source_root", None) else None
+            ),
+            encounter_mode=getattr(args, "encounter_mode", None),
         )
     except PreflightGateFailed as exc:
         # AD-7/AD-11: pre-flight blocked SPOC spawn. The projection is left at
@@ -846,9 +872,7 @@ def resume_trial(
         )
     if verdict is None:
         assert verdict_file is not None  # narrowed by the guard above
-        verdict = OperatorVerdict.model_validate_json(
-            verdict_file.read_text(encoding="utf-8")
-        )
+        verdict = OperatorVerdict.model_validate_json(verdict_file.read_text(encoding="utf-8"))
     if verdict.trial_id != trial_id:
         raise ValueError(
             f"verdict trial_id={verdict.trial_id} does not match --trial-id={trial_id}"
@@ -971,6 +995,8 @@ def recover_trial(
     runs_root: Path = RUNS_ROOT,
     max_specialist_calls: int | None = None,
     reenter_at_node: str | None = None,
+    course_source_root: Path | None = None,
+    encounter_mode: Literal["recorded", "live"] | None = None,
 ) -> dict[str, Any]:
     """Continue an error-paused trial from its failed node (S4 part 2).
 
@@ -982,6 +1008,21 @@ def recover_trial(
     when the fix is before the failed node (Mine-next trust T2).
     """
     _load_env_if_available()
+    migration_requested = course_source_root is not None or encounter_mode is not None
+    if migration_requested:
+        if course_source_root is None or encounter_mode is None:
+            raise ValueError(
+                "legacy workbook migration requires both course_source_root and encounter_mode"
+            )
+        if reenter_at_node not in (None, "07W.1"):
+            raise ValueError("legacy workbook migration requires re-entry at 07W.1")
+        _migrate_legacy_workbook_context(
+            trial_id=trial_id,
+            runs_root=runs_root,
+            course_source_root=course_source_root,
+            encounter_mode=encounter_mode,
+        )
+        reenter_at_node = "07W.1"
     envelope = recover_production_trial(
         trial_id=trial_id,
         runs_root=runs_root,
@@ -1000,6 +1041,7 @@ def recover_trial(
         "production_clone_launch_evidence": envelope.production_clone_launch_evidence,
         "transport_kind": "cli",
         "reenter_at_node": reenter_at_node,
+        "workbook_context_migrated": migration_requested,
     }
     (runs_root / str(trial_id) / "trial-recover.json").write_text(
         json.dumps(result, indent=2, sort_keys=True) + "\n",
@@ -1009,14 +1051,86 @@ def recover_trial(
 
 
 def recover_trial_cli(args: argparse.Namespace) -> int:
-    payload = recover_trial(
-        trial_id=args.trial_id,
-        runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
-        max_specialist_calls=args.max_specialist_calls,
-        reenter_at_node=getattr(args, "reenter_at_node", None),
-    )
+    try:
+        payload = recover_trial(
+            trial_id=args.trial_id,
+            runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
+            max_specialist_calls=args.max_specialist_calls,
+            reenter_at_node=getattr(args, "reenter_at_node", None),
+            course_source_root=(
+                Path(args.course_source_root) if getattr(args, "course_source_root", None) else None
+            ),
+            encounter_mode=getattr(args, "encounter_mode", None),
+        )
+    except (ValueError, RuntimeError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
     print(json.dumps(payload, sort_keys=True))
     return 0
+
+
+def _migrate_legacy_workbook_context(
+    *,
+    trial_id: UUID,
+    runs_root: Path,
+    course_source_root: Path,
+    encounter_mode: Literal["recorded", "live"],
+) -> Path:
+    """Persist the only legal pre-36.4 workbook-context migration."""
+    run_dir = runs_root / str(trial_id)
+    error_pause_path = run_dir / "error-pause.json"
+    run_path = run_dir / "run.json"
+    if not error_pause_path.is_file() or not run_path.is_file():
+        raise ValueError("legacy workbook migration requires a persisted error-paused run")
+    error_pause = json.loads(error_pause_path.read_text(encoding="utf-8"))
+    run_state = RunState.model_validate_json(json.dumps(error_pause.get("run_state")))
+    selection = run_state.component_selection or ComponentSelection.production_default()
+    if not selection.workbook:
+        raise ValueError("legacy workbook migration is invalid for a non-workbook run")
+
+    from app.models.runtime.production_trial_envelope import (  # noqa: PLC0415
+        ProductionTrialEnvelope,
+    )
+
+    envelope = ProductionTrialEnvelope.model_validate_json(run_path.read_text(encoding="utf-8"))
+    if envelope.status != "paused-at-error":
+        raise ValueError("legacy workbook migration requires status=paused-at-error")
+    legacy = envelope.production_envelope.get_contribution(
+        LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID, node_id="07W.1"
+    )
+    real = envelope.production_envelope.get_contribution(
+        WORKBOOK_BRIEF_SPECIALIST_ID, node_id="07W.1"
+    )
+    if legacy is None or real is not None:
+        raise ValueError(
+            "legacy workbook migration requires the legacy 07W.1 stub and no real brief"
+        )
+
+    resolved_root = validate_course_source_root(course_source_root)
+
+    context_path = run_dir / WORKBOOK_RUNTIME_CONTEXT_FILENAME
+    if context_path.is_file():
+        existing = read_runtime_context(run_dir)
+        if existing.context_origin != "operator_migrated":
+            raise ValueError("a real/non-legacy workbook runtime context cannot be migrated")
+        if (
+            existing.course_source_root != resolved_root
+            or existing.encounter_mode != encounter_mode
+        ):
+            raise ValueError("legacy workbook migration conflicts with persisted context")
+        return context_path
+
+    return write_runtime_context(
+        WorkbookBriefRuntimeContext(
+            run_dir=run_dir,
+            course_source_root=resolved_root,
+            encounter_mode=encounter_mode,
+            context_origin="operator_migrated",
+            writer_execution_mode="offline_stub"
+            if bool((error_pause.get("runner") or {}).get("allow_offline_cost_report"))
+            else "live",
+        )
+    )
 
 
 def resume_batch_trial(
@@ -1048,8 +1162,7 @@ def resume_batch_trial(
         "still_waiting": envelope.status == "waiting_for_provider_batch",
     }
     print(
-        f"trial {trial_id} status={envelope.status} "
-        f"waiting_batch_id={envelope.waiting_batch_id}",
+        f"trial {trial_id} status={envelope.status} waiting_batch_id={envelope.waiting_batch_id}",
         file=sys.stderr,
     )
     return result
@@ -1127,6 +1240,17 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "today's default graph (deck+motion). Flagged (not-fully-proven) "
             "bundles are refused unless --allow-unproven-bundle is set."
         ),
+    )
+    start.add_argument(
+        "--course-source-root",
+        required=False,
+        help="Explicit course-content authority root for workbook pre-work.",
+    )
+    start.add_argument(
+        "--encounter-mode",
+        choices=["recorded", "live"],
+        required=False,
+        help="Learner encounter label for a workbook-selected run.",
     )
     start.add_argument(
         "--lesson-plan-collateral-intent",
@@ -1284,6 +1408,17 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "node through the failed index and restart the walk there "
             "(Mine-next trust T2). Default retries the failed node only."
         ),
+    )
+    recover.add_argument(
+        "--course-source-root",
+        required=False,
+        help="Explicit course authority root for a legacy workbook 07W.1 migration.",
+    )
+    recover.add_argument(
+        "--encounter-mode",
+        choices=["recorded", "live"],
+        required=False,
+        help="Encounter label for a legacy workbook 07W.1 migration.",
     )
     resume_batch = subparsers.add_parser(
         "resume-batch",

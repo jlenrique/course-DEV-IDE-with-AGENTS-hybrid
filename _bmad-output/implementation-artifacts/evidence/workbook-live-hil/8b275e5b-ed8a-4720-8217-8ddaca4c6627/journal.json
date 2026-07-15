@@ -1,0 +1,186 @@
+{
+  "created_at": "2026-07-15T15:19:13.800257Z",
+  "delegate_id": "codex_hil_runner",
+  "events": [
+    {
+      "at": "2026-07-15T15:20:29.584116Z",
+      "directive_digest": "dbfc533abc92dd3bd7c161003247deacf2ce2bbf912b08dfd9eb968249c096ce",
+      "directive_path": "directive.yaml",
+      "kind": "g0-directive-confirmed",
+      "sequence": 1
+    },
+    {
+      "at": "2026-07-15T15:23:23.204470Z",
+      "kind": "start-returned",
+      "sequence": 2,
+      "status": "registered-offline"
+    },
+    {
+      "at": "2026-07-15T15:23:23.262591Z",
+      "card_id": "74ac43a4-b0a2-4c57-ae7a-bc7e4e413ef3",
+      "decision_card_digest": "5258a348395dce91e8815f9dd09778a3b792ef4661efd4abab17a7f797d7f72b",
+      "gate_id": "G0E",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 3,
+      "verb": "approve",
+      "verdict_id": "cc7b026b-ddc2-42d5-adf8-ecc13ef8ad8c"
+    },
+    {
+      "at": "2026-07-15T15:25:25.234248Z",
+      "decision_card_digest": "5258a348395dce91e8815f9dd09778a3b792ef4661efd4abab17a7f797d7f72b",
+      "kind": "transition-recorded",
+      "resulting_gate": "G0R",
+      "resulting_status": "paused-at-gate",
+      "sequence": 4
+    },
+    {
+      "at": "2026-07-15T15:25:25.256373Z",
+      "card_id": "ca15271f-f5e5-4bf2-8d6b-9c6a2ed4709b",
+      "decision_card_digest": "23161a4f531a1dbda2844553302df079699f561f96434bbe11b727b03f4e9b03",
+      "gate_id": "G0R",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 5,
+      "verb": "approve",
+      "verdict_id": "f30b1642-1724-49ab-9dff-8230c05cd474"
+    },
+    {
+      "at": "2026-07-15T15:25:42.914402Z",
+      "decision_card_digest": "23161a4f531a1dbda2844553302df079699f561f96434bbe11b727b03f4e9b03",
+      "kind": "transition-recorded",
+      "resulting_gate": "G1",
+      "resulting_status": "paused-at-gate",
+      "sequence": 6
+    },
+    {
+      "at": "2026-07-15T15:25:42.936921Z",
+      "card_id": "60842679-91a3-493d-8e6c-0db2adbb1dc3",
+      "decision_card_digest": "f84d4730eeba506f334c4fc4d4b709d666476e65edc82340dd004e7ce22eeba9",
+      "gate_id": "G1",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 7,
+      "verb": "approve",
+      "verdict_id": "b260e47c-6684-479f-991a-0ba9241c6190"
+    },
+    {
+      "at": "2026-07-15T15:29:49.770369Z",
+      "decision_card_digest": "f84d4730eeba506f334c4fc4d4b709d666476e65edc82340dd004e7ce22eeba9",
+      "kind": "transition-recorded",
+      "resulting_gate": "G2B",
+      "resulting_status": "paused-at-gate",
+      "sequence": 8
+    },
+    {
+      "at": "2026-07-15T15:29:49.811916Z",
+      "card_id": "c8ec5c57-058e-4016-b01c-1c04a8595254",
+      "decision_card_digest": "b7f711548b94f34d993e1598b70e67b90fab90aa76d0acab04abae83a96bba30",
+      "gate_id": "G2B",
+      "kind": "submission-started",
+      "selection_id": {
+        "slide-01": "A",
+        "slide-02": "A",
+        "slide-03": "A",
+        "slide-04": "A",
+        "slide-05": "A",
+        "slide-06": "A",
+        "slide-07": "A",
+        "slide-08": "A",
+        "slide-09": "A",
+        "slide-10": "A",
+        "slide-11": "A"
+      },
+      "sequence": 9,
+      "verb": "select",
+      "verdict_id": "433abb9d-4527-42f5-b6d4-09f2a1ba4ac8"
+    },
+    {
+      "at": "2026-07-15T15:31:58.454172Z",
+      "decision_card_digest": "b7f711548b94f34d993e1598b70e67b90fab90aa76d0acab04abae83a96bba30",
+      "kind": "transition-recorded",
+      "resulting_gate": "G2C",
+      "resulting_status": "paused-at-gate",
+      "sequence": 10
+    },
+    {
+      "at": "2026-07-15T15:31:58.498274Z",
+      "card_id": "5d7e9f43-7b8c-4821-98fd-d0d6d330b1a9",
+      "decision_card_digest": "5a2997468fcbb9fcaa7495938bcd73b6675b1c9849a4e401d3b975d55df46c3c",
+      "gate_id": "G2C",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 11,
+      "verb": "approve",
+      "verdict_id": "70747107-381b-42b6-bb38-2c9474afdce1"
+    },
+    {
+      "at": "2026-07-15T15:45:19.787486Z",
+      "decision_card_digest": "5a2997468fcbb9fcaa7495938bcd73b6675b1c9849a4e401d3b975d55df46c3c",
+      "kind": "transition-recorded",
+      "resulting_gate": "G3",
+      "resulting_status": "paused-at-gate",
+      "sequence": 12
+    },
+    {
+      "at": "2026-07-15T15:45:19.839286Z",
+      "card_id": "4fadb2f2-4cd2-4976-968e-f4eecb6b4237",
+      "decision_card_digest": "5945dd814b1ccc540bd6d12479c0693262328d33fba7e9fa359b9fde6bebb47c",
+      "gate_id": "G3",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 13,
+      "verb": "approve",
+      "verdict_id": "823b5e84-e009-48a5-86d0-6988e5a9125a"
+    },
+    {
+      "at": "2026-07-15T15:45:50.540278Z",
+      "decision_card_digest": "5945dd814b1ccc540bd6d12479c0693262328d33fba7e9fa359b9fde6bebb47c",
+      "kind": "transition-recorded",
+      "resulting_gate": "G4",
+      "resulting_status": "paused-at-gate",
+      "sequence": 14
+    },
+    {
+      "at": "2026-07-15T15:45:50.593516Z",
+      "card_id": "2ca7bfd2-9937-4768-af50-1eb157f92dea",
+      "decision_card_digest": "b117d0a623509b3411617224f2e80f951ffc17e1393849002cee3150663a1329",
+      "gate_id": "G4",
+      "kind": "submission-started",
+      "selection_id": null,
+      "sequence": 15,
+      "verb": "approve",
+      "verdict_id": "f93f2477-928b-45a4-b483-4b7e7ece68e7"
+    },
+    {
+      "at": "2026-07-15T15:46:08.031789Z",
+      "decision_card_digest": "b117d0a623509b3411617224f2e80f951ffc17e1393849002cee3150663a1329",
+      "kind": "transition-recorded",
+      "resulting_gate": "G4A",
+      "resulting_status": "paused-at-gate",
+      "sequence": 16
+    },
+    {
+      "at": "2026-07-15T15:46:08.094290Z",
+      "card_id": "d7ae36a6-c27a-43b6-acd9-4e845411189c",
+      "decision_card_digest": "4224926e7395062c08d7b4e8fa5e7763b866162c0af826e4f6ff56735c537449",
+      "gate_id": "G4A",
+      "kind": "submission-started",
+      "selection_id": "EXAVITQu4vr4xnSDxMaL",
+      "sequence": 17,
+      "verb": "select",
+      "verdict_id": "905eafcd-3163-4add-b826-0dce4454a509"
+    },
+    {
+      "at": "2026-07-15T15:49:48.113641Z",
+      "decision_card_digest": "4224926e7395062c08d7b4e8fa5e7763b866162c0af826e4f6ff56735c537449",
+      "kind": "transition-recorded",
+      "resulting_gate": null,
+      "resulting_status": "completed",
+      "sequence": 18
+    }
+  ],
+  "policy_digest": "4205b4dcb2a34846bac0da9f889365eefd22969613aac4e1a4c65e055b9a74a5",
+  "schema_version": "marcus-spoc-live-test-hil-journal.v1",
+  "trial_id": "8b275e5b-ed8a-4720-8217-8ddaca4c6627"
+}

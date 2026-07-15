@@ -1,0 +1,39 @@
+{
+  "seeds": [
+    {
+      "seed_id": "chapter-2-q5",
+      "text": "A recurring patient transport delay is not an isolated mishap; it blocks discharge work.",
+      "source_ref": "course-content/courses/tejal-apc-c1-m1-p2-trends/assessments/chapter-2-knowledge-check.md#q5",
+      "source_kind": "assessment_scenario",
+      "slide_key": null,
+      "sme_scenario": true
+    },
+    {
+      "seed_id": "generic-narration",
+      "text": "Healthcare leaders encounter system friction.",
+      "source_ref": "course-content/courses/tejal-apc-c1-m1-p2-trends/slides/slide-2-the-human-cost-system-waste-burnout.md",
+      "source_kind": "slide_narration",
+      "slide_key": "slide-02",
+      "sme_scenario": false
+    }
+  ],
+  "candidate_ids": ["generic-narration", "chapter-2-q5"],
+  "lesson_type_evidence": {
+    "fresh_pain": true,
+    "bridge_identity": false,
+    "skill_build": false,
+    "evidence_refs": ["course-content/courses/tejal-apc-c1-m1-p2-trends/assessments/chapter-2-knowledge-check.md#q5"]
+  },
+  "payoff_slide_inventory": [
+    "course-content/courses/tejal-apc-c1-m1-p2-trends/slides/slide-2-the-human-cost-system-waste-burnout.md",
+    "course-content/courses/tejal-apc-c1-m1-p2-trends/slides/slide-5-the-leadership-gap.md"
+  ],
+  "payoff_slide_keys": [
+    "course-content/courses/tejal-apc-c1-m1-p2-trends/slides/slide-2-the-human-cost-system-waste-burnout.md",
+    "course-content/courses/tejal-apc-c1-m1-p2-trends/slides/slide-5-the-leadership-gap.md"
+  ],
+  "requested_coverage": "full_deck",
+  "required_capabilities": ["scene"],
+  "available_coverage": "full_deck",
+  "available_capabilities": ["scene"]
+}

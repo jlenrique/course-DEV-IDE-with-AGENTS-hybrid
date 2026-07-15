@@ -1,3 +1,15 @@
+# Current Context Addendum - 2026-07-14 (session WRAPUP: Workbook Epics 36–38 advanced; live acceptance next)
+
+**Session class:** S. Branch `codex/workbook-enhanced-epics-36-40`.
+
+**Landed/ready at close:** Epic 36 complete; Stories 37.1/37.2a/37.3/37.4 and 38.0/38.3b complete; Story 38.3a and Story 38.1 remain in progress. Clustered-v2 Pass-1 authority/journal/economics/source-span/slide-authority hardening and Ask-A deterministic wiring are implemented and reviewed. Governed trial `399bcd61` passed ratification, Storyboard A, G2C, and realtime perception before safely stopping at Irene Pass 2 on the shared `$ 5%` token-classification defect. Amendment 8 fixes that production-valid parser defect and is deterministic/review green; the frozen run remains nonpassing and was never retried.
+
+**Next:** the first action of the next working session is one operator-authorized fresh governed paid Marcus-SPOC workbook run: Tejal corpus, deck/workbook/research/realtime perception ON; motion/HUD/batch/detective OFF; fresh identity; delegated HIL; first-run-stands. It must reach `07W.1/07W.2` and produce passing Story 38.3a + 38.1 live evidence. Do not mark either story done before that witness.
+
+**Known debt:** inherited motion structural-walk sequence-document parity remains red but is out of the planned motion-OFF run path; KG/ONBOARDING regeneration is owed after the live-validation arc stabilizes. Full close record: `SESSION-HANDOFF.md` top section; coherence report: `reports/dev-coherence/2026-07-14-1952/`.
+
+---
+
 # Current Context Addendum - 2026-07-11 (session WRAPUP: Operator HUD Epic 35 — full arc + live E2E party verdict)
 
 **Session class:** S. Branch `dev/hud-revival-2026-07-11`.
