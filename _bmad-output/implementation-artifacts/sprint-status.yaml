@@ -1817,7 +1817,7 @@ action_items:
   - epic: 38
     action: "Strip 'Correct Answer:' lines from projected quiz exercises in workbook_enrichment._project_exercises (answer_keys is the channel) before Epic-39-line dev opens"
     owner: "dev agent (quick-dev)"
-    status: open
+    status: done  # 2026-07-15: landed + T4-hardened (12 remediation patches, Blind+Edge); 47-test hygiene module incl. real 8b275e5b card replay probe (zero leaks, answers preserved)
   - epic: 38
     action: "Ratify replace-vs-merge design for overlay exercises vs collateral-authored exercises (J-F2) at the post-close roadmap conversation"
     owner: "Juanl + party"
