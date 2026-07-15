@@ -61,6 +61,11 @@ from app.marcus.lesson_plan.prework_artifact import (
 from app.marcus.lesson_plan.prework_projection import PreWorkBrief, render_prework_markdown
 from app.marcus.lesson_plan.produced_asset import ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
+from app.marcus.lesson_plan.slide_authority import (
+    SlideAuthorityInvalidError,
+    WorkbookSlideAuthorityMapV1,
+    read_slide_authority_map,
+)
 from app.marcus.lesson_plan.trends_projection import (
     ResearchTrendsBrief,
     trends_inputs_from_run,
@@ -510,23 +515,54 @@ def _research_inputs(
     return tuple(entries), manifest, reason, omitted_note
 
 
+def _normalize_join_path(value: str) -> str:
+    """Posix-normalize a corpus-relative path for exact-equality joins (A3/M4).
+
+    Byte-identical cross-platform: ``replace("\\\\", "/")`` + strip a leading
+    ``./``. Deliberately NOT ``Path(...).as_posix()`` — that is
+    platform-divergent on raw backslashed strings.
+    """
+    normalized = str(value).replace("\\", "/")
+    return normalized.removeprefix("./")
+
+
 def _unit_to_enrichment_lo_map(
-    lesson_plan: dict[str, Any] | None, card: dict[str, Any] | None
+    lesson_plan: dict[str, Any] | None,
+    card: dict[str, Any] | None,
+    authority_map: WorkbookSlideAuthorityMapV1 | None = None,
 ) -> dict[str, str]:
     """Bridge collateral plan-unit ids (``uNN``) to enrichment LO ids (``lo-g0-NNN``).
 
     Q1 (LO-id namespace drift): the G0 enrichment overlay is keyed by
     ``lo-g0-NNN`` (one per enumerated corpus component ``src-NNN``); Irene's
     collateral binds sections to plan-unit ids ``uNN``. Both reference the SAME
-    source component: a plan unit's ``source_refs`` carry ``[evidence: src-NNN]``
-    markers, and each enrichment ``provisional_lo`` carries a structured
-    ``source_refs[].source_id == src-NNN``. Compose ``uNN -> src-NNN ->
-    lo-g0-NNN`` so ``overlay_lo.get("uNN")`` resolves instead of silently
-    degrading. Returns an empty map when either side is absent — backward
-    compatible: collateral bound DIRECTLY to ``lo-g0-NNN`` still resolves by the
-    unmapped direct key.
+    source component, joined here through one of two bridges:
+
+    - **Authority join (preferred; 38.3a):** when the run's digest-bound
+      slide-authority map is present, each authority row's ``unit_id ->
+      source_path`` joins the G0 card's ``enumeration_provenance`` (``locator ->
+      source_id``) and thence ``src_to_lo`` (``source_id -> objective_id``).
+      Paths on BOTH sides are posix-normalized (``_normalize_join_path``) and
+      compared by exact equality only — no fuzzy matching. STRUCTURAL
+      PRECEDENCE (party W1 MUST-FIX): with a map present the legacy marker loop
+      does NOT run at all — Texas's ``src-NNN`` marker namespace (slides only)
+      and G0's ``src-NNN`` namespace (all corpus files) conflate, so a marker
+      gap-fill can silently attach the WRONG LO. Units the authority join
+      cannot resolve stay unresolved (visible placeholder downstream).
+    - **Legacy marker bridge (fallback):** when the map is absent/invalid, plan
+      units resolve via their ``[evidence: src-NNN]`` ``source_refs`` markers,
+      byte-identical to the pre-38.3a behavior (older runs/fixtures).
+
+    Returns an empty map when either side is absent — backward compatible:
+    collateral bound DIRECTLY to ``lo-g0-NNN`` still resolves by the unmapped
+    direct key.
     """
-    if not isinstance(lesson_plan, dict) or not isinstance(card, dict):
+    # The authority branch reads only (map, card); the legacy branch also needs
+    # the lesson plan's units. Gate each branch on ITS OWN inputs (T4 review) —
+    # a non-dict lesson plan must not disable an otherwise-resolvable authority join.
+    if not isinstance(card, dict):
+        return {}
+    if authority_map is None and not isinstance(lesson_plan, dict):
         return {}
     # src-NNN -> lo-g0-NNN (structured; the first LO binding a src wins, stable).
     src_to_lo: dict[str, str] = {}
@@ -543,8 +579,52 @@ def _unit_to_enrichment_lo_map(
                     src_to_lo[source_id] = objective_id
     if not src_to_lo:
         return {}
-    # uNN -> lo-g0-NNN via the plan unit's [evidence: src-NNN] markers.
     unit_to_lo: dict[str, str] = {}
+    if authority_map is not None:
+        # Authority join ONLY (structural precedence, party W1): the marker loop
+        # below MUST NOT run in this branch — cross-namespace marker gap-fill can
+        # attach the WRONG LO. Unresolved units stay unresolved (visible
+        # placeholder + lo_overlay_loss downstream).
+        # A poisoned (None) key marks a normalized-locator CONFLICT: two
+        # provenance entries collapsing to one key with different source_ids.
+        # Conflicted keys resolve nothing — visible degrade beats an
+        # ordering-dependent silently-wrong LO (T4 review).
+        locator_to_src: dict[str, str | None] = {}
+        prov = card.get("enumeration_provenance")
+        for entry in prov if isinstance(prov, list) else []:
+            if not isinstance(entry, dict):
+                continue
+            locator = str(entry.get("locator") or "")
+            source_id = str(entry.get("source_id") or "")
+            if locator and source_id:
+                key = _normalize_join_path(locator)
+                if key not in locator_to_src:
+                    locator_to_src[key] = source_id
+                elif locator_to_src[key] != source_id:
+                    locator_to_src[key] = None
+        for row in authority_map.rows:
+            if row.unit_id in unit_to_lo:
+                continue
+            source_id_for_path = locator_to_src.get(_normalize_join_path(row.source_path))
+            if source_id_for_path is None:
+                continue
+            lo_id = src_to_lo.get(source_id_for_path)
+            if lo_id is not None:
+                unit_to_lo[row.unit_id] = lo_id
+        if authority_map.rows and locator_to_src and not unit_to_lo:
+            # Anomaly signal (T4 review): a present map + present provenance that
+            # join to NOTHING is locator/source_path shape drift, not "LOs
+            # genuinely unbound" — every objective will degrade visibly.
+            logger.warning(
+                "workbook LO overlay: authority join produced 0 mappings from "
+                "%d authority row(s) and %d provenance locator(s) — "
+                "locator/source_path shape drift suspected",
+                len(authority_map.rows),
+                len(locator_to_src),
+            )
+        return unit_to_lo
+    # Legacy fallback (map absent/invalid): uNN -> lo-g0-NNN via the plan unit's
+    # [evidence: src-NNN] markers, byte-identical to the pre-38.3a behavior.
     for unit in lesson_plan.get("plan_units") or []:
         if not isinstance(unit, dict):
             continue
@@ -715,11 +795,32 @@ def build_workbook_inputs(
         source_ref_manifest = dict(projection.source_ref_manifest)
         answer_keys = dict(projection.answer_keys)
 
-    # Q1: bridge collateral plan-unit ids (uNN) to enrichment LO ids (lo-g0-NNN)
-    # so the overlay (keyed lo-g0-NNN) resolves against a uNN-bound section. Empty
-    # when either side is absent OR the collateral binds lo-g0 ids directly (then
+    # Q1 + 38.3a: bridge collateral plan-unit ids (uNN) to enrichment LO ids
+    # (lo-g0-NNN) so the overlay (keyed lo-g0-NNN) resolves against a uNN-bound
+    # section. Preferred bridge: the run's digest-bound slide-authority map
+    # (structural precedence over the legacy marker bridge — party W1). The
+    # reader funnels its read/parse/shape failure envelope (absent file,
+    # corrupt/duplicate-key JSON, containment breach, the map's SELF-digest
+    # mismatch) into SlideAuthorityInvalidError, so catching ONLY that type is
+    # the "map absent" seam (party W3 — a bare ``except Exception`` would
+    # swallow producer bugs). Cross-RUN binding freshness (plan_units_digest vs
+    # the live plan) is NOT re-checked here by design: 07W.1's
+    # write_or_validate_slide_authority_map reconciles the sidecar against the
+    # current run artifacts before this leaf runs (spec W4). Empty map when
+    # either side is absent OR the collateral binds lo-g0 ids directly (then
     # the unmapped direct-key lookup already resolves).
-    unit_to_lo = _unit_to_enrichment_lo_map(lesson_plan, card)
+    try:
+        authority_map: WorkbookSlideAuthorityMapV1 | None = read_slide_authority_map(run_dir)
+    except SlideAuthorityInvalidError as exc:
+        # Visible downgrade (T4 review): losing the map switches join semantics
+        # to the legacy marker bridge — never do that silently.
+        logger.warning(
+            "workbook LO overlay: slide-authority map unavailable (%s) — "
+            "falling back to the legacy [evidence: src-NNN] marker bridge",
+            exc,
+        )
+        authority_map = None
+    unit_to_lo = _unit_to_enrichment_lo_map(lesson_plan, card, authority_map=authority_map)
 
     def _resolve_overlay_key(objective_id: str) -> str | None:
         """The overlay key for a bound objective: direct id, else the uNN bridge."""

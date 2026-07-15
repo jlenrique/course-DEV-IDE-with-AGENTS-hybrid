@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-14  # Story 38.3a Amendment 8 is deterministic/review GREEN after a later frozen negative live witness; Story 38.1 remains in-progress behind the fresh governed paid-run gate.
+last_updated: 2026-07-15  # LO-overlay bridge fix (spec-38-3a-lo-overlay-bridge-fix) party-green-lit, implemented, T4-reviewed, deterministic green (87 tests); 38-3a moved to review pending the governed live LO-verification run + closure ceremony.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1802,7 +1802,7 @@ development_status:
   38-0-two-packet-intake-contract: done  # 2026-07-12 mandatory 3-layer review closed; 3/3 patches resolved; focused 52/52 + Ruff + diff check green. Full-suite HUD/notifier subprocess hang documented in story.
   38-1-ask-a-enrichment-wiring: in-progress  # 2026-07-15: LIVE GATE PASSED — trial a940c5eb reached 07W.1/07W.2 and COMPLETED a full verified workbook (status=completed, success=true, MD+DOCX emitted + runner-verified). Task 5 live-blocker cleared. Remaining before done: LO-overlay bridge fix (rendered 6/6 placeholders — Q1 uNN<->lo-g0-NNN bridge resolved 0/6) + party green-light + bmad-code-review.
   38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST)
-  38-3a-research-packet-consume-side: in-progress  # 2026-07-15: LIVE GATE PASSED after a 5-run scout->batch->run arc (07W.1 anchor-drift, deep-dive/Ask-A/emission batch, run-dir threading, G0 LO reliability, 07W envelope threading, runner verdict honesty). Trial a940c5eb COMPLETED a verified workbook (MD+DOCX). Prior negative witnesses (399bcd61, 7dd3e6ed, 503e54c1, 4614f21f, dfc372b7) preserved immutable, never resumed. Remaining before done: LO-overlay bridge fix + party green-light + bmad-code-review.
+  38-3a-research-packet-consume-side: review  # 2026-07-15: LIVE GATE PASSED (trial a940c5eb, verified workbook MD+DOCX; negative witnesses immutable). LO-overlay bridge FIXED via authority-map join (spec-38-3a-lo-overlay-bridge-fix: party 4/4 green-light, fresh dev agent, Blind/Edge T4 review, 87 deterministic tests green, run-verified 6/6 expected map). Remaining before done: governed live LO-verification run + party green-light + bmad-code-review closure.
   38-3b-graph-topology-band-orchestrator: done  # 2026-07-13 review + party amendment + Cora block-mode/Audra closure PASS; 61 close tests, lockstep 0, Ruff/diff green; motion exact ambient signature carried with no-new-regression proof.
   epic-38-retrospective: required  # governance/substrate change (graph topology + lockstep surface)
   epic-39-glossary-trends-render: backlog

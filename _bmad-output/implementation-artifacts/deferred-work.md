@@ -114,3 +114,11 @@
 
 - [edge] Signed percentage surfaces such as `-5%` currently lose their sign in the shared figure-token neck and can compare as positive percentages. This behavior predates Amendment 8; address as a separate fidelity-hardening slice with explicit signed-number semantics.
 - [edge] Leading-decimal percentage surfaces such as `.5%` currently suffix-match as `5%`. This behavior predates Amendment 8; address with signed/decimal token-boundary hardening rather than broadening the live-run correction.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-lo-overlay-bridge-fix.md`
+  summary: Pin the G0 enumeration-provenance locator shape contract at the producer (corpus-relative posix, no case/unicode variance) so the exact-equality authority join has a specified upstream.
+  evidence: T4 Blind Hunter — the join's locator side is unvalidated free text from the enrichment card; the consumer deliberately joins by exact equality (spec W2), so shape discipline belongs at the G0 producer, not the workbook consumer.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-lo-overlay-bridge-fix.md`
+  summary: Harden read_slide_authority_map so pathological input (e.g. RecursionError from deeply nested JSON) is funneled into SlideAuthorityInvalidError like the rest of its failure envelope.
+  evidence: T4 Edge Case Hunter — json.loads can raise RecursionError, which escapes the reader's OSError/ValueError catch and would crash every caller (workbook_wiring + the 07W bridge seam); pre-existing reader behavior, not caused by this story.
