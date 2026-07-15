@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import stat
 import sys
 import time
@@ -1233,6 +1234,107 @@ def _assert_conformant_workbook_docx(path: Path) -> None:
         raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed") from exc
 
 
+_ASK_A_CITE_MARKER_RE = re.compile(r"\[(ask-a-cite-[0-9]{3})\]")
+_ASK_A_REFERENCE_ENTRY_RE = re.compile(r"citation_id: `(ask-a-cite-[0-9]{3})`")
+_PRESENTATION_SUPPORT_MD_SENTINEL = "This presentation-support workbook carries"
+_DEEP_DIVE_HEADING = "## Deep Dive"
+_DEEP_DIVE_LOSS_NOTE = "Deep Dive enrichment loss:"
+
+
+def _assert_deep_dive_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
+    """37.2b deliverable bar: deep-dive conformance, structured-artifact-first.
+
+    The 07W.3 contribution + gate receipt from ``run.json`` are the primary
+    assertion surface (Amelia-F2 idiom): the strict contract revalidation
+    (constructed-model gate recompute) rejects phantom-citation and
+    enriched-with-zero-citations mutants before any prose grep. The MD check is
+    the minimal floor: an enriched claim requires the ``## Deep Dive`` heading,
+    at least one inline ``ask-a-cite-`` marker, and every marker resolving to a
+    rendered reference entry; a degraded claim requires the honest typed-loss
+    note and ZERO ``ask-a-cite-`` markers (amendment M4).
+
+    R3: the M4 stray-marker scan runs in EVERY branch — ``run.json`` absent,
+    contribution absent (legacy stub / pre-37.2b), and degraded alike: an
+    inline ``ask-a-cite-`` marker without an activated ENRICHED contribution is
+    always a refusal (a marker can only be minted by cited enrichment).
+    Test-harness-side only; production runtime is untouched.
+    """
+    text_by_path: dict[Path, str] = {}
+    markers_by_path: dict[Path, set[str]] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        text_by_path[path] = text
+        markers_by_path[path] = set(_ASK_A_CITE_MARKER_RE.findall(text))
+
+    def _refuse_any_marker() -> None:
+        if any(markers_by_path.values()):
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            )
+
+    if not (run_dir / "run.json").is_file():
+        _refuse_any_marker()  # R3 branch: run.json absent
+        return
+    try:
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            load_workbook_review_contribution,
+        )
+
+        contribution = load_workbook_review_contribution(run_dir)
+    except Exception as exc:
+        # A present-but-nonconforming activated contribution (phantom citation,
+        # enriched-status-with-zero-citations, digest mismatch) fails strict
+        # revalidation here — reject, never trust the prose.
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    if contribution is None:
+        # R3 branch: legacy stub / pre-37.2b run — the prior bar is otherwise
+        # unchanged, but a stray marker still refuses.
+        _refuse_any_marker()
+        return
+    result = contribution.deep_dive_enrichment
+    enriched = result is not None and result.status == "enriched"
+    if enriched and (
+        result.gate.status != "pass" or not result.gate.used_citation_ids
+    ):
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+    if not enriched:
+        _refuse_any_marker()  # R3 branch: contribution degraded / not authored (M4)
+    for path in md_paths:
+        text = text_by_path[path]
+        markers = markers_by_path[path]
+        if enriched:
+            if _DEEP_DIVE_HEADING not in text or not markers:
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            if not markers <= set(result.gate.used_citation_ids):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            rendered_reference_ids = set(_ASK_A_REFERENCE_ENTRY_RE.findall(text))
+            if not markers <= rendered_reference_ids:
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+        else:
+            # Degraded / not-run: the honest note is mandatory on the
+            # presentation-support deliverable (stray markers already refused
+            # above in every branch).
+            if _PRESENTATION_SUPPORT_MD_SENTINEL in text and (
+                _DEEP_DIVE_HEADING not in text or _DEEP_DIVE_LOSS_NOTE not in text
+            ):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+
+
 def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> None:
     """Kill the ``status == completed`` false-green: prove a real workbook was emitted.
 
@@ -1266,6 +1368,11 @@ def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> Non
     for stem in paired:
         _assert_conformant_workbook_markdown(run_dir / md_by_stem[stem])
         _assert_conformant_workbook_docx(run_dir / docx_by_stem[stem])
+    # 37.2b: deep-dive conformance bar (structured artifacts first, then the
+    # minimal MD floor) — same-diff extension per protocol plank 5.
+    _assert_deep_dive_conformant_markdown(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
 
 
 def _drive_paused_trial_impl(

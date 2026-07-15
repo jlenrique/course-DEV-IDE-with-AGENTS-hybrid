@@ -408,6 +408,47 @@ def audit_citation_fidelity(
     return report
 
 
+_DEEP_DIVE_CITE_MARKER_RE: Final[re.Pattern[str]] = re.compile(
+    r"\[(ask-a-cite-[0-9]{3})\]"
+)
+
+
+def deep_dive_g2_citation_entries(
+    markdown: str, deep_dive_review: Any
+) -> list[dict[str, str]]:
+    """G2 deep-dive leg (37.2b, non-tautological by construction).
+
+    PROSE side: every inline ``[ask-a-cite-###]`` marker parsed from the
+    RENDERED workbook markdown. STRUCTURED side: the citation_id -> source_ref
+    map built from the contribution's USED pool rows. A marker whose id has no
+    used row (prose/structure divergence, a stray marker on a degraded or
+    absent contribution, or a corrupted render) maps to a deliberately
+    unresolvable ref and therefore FAILS ``audit_citation_fidelity``. What this
+    leg does NOT prove: structured used-rows lacking prose markers (row g of
+    the A2 gate owns that direction) and semantic claim<->source support
+    (operator WARN).
+    """
+    rows_by_citation: dict[str, str] = {}
+    if deep_dive_review is not None:
+        result = getattr(deep_dive_review, "deep_dive_enrichment", None)
+        if result is not None and result.status == "enriched":
+            from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+                used_pool_rows,
+            )
+
+            rows_by_citation = {
+                row.citation_id: row.source_ref for row in used_pool_rows(result)
+            }
+    return [
+        {
+            "source_ref": rows_by_citation.get(
+                marker_id, f"deep-dive-citation-unresolved:{marker_id}"
+            )
+        }
+        for marker_id in sorted(set(_DEEP_DIVE_CITE_MARKER_RE.findall(markdown)))
+    ]
+
+
 def assert_exercise_fidelity(spec: WorkbookSpec) -> None:
     """G3: every exercise carries a Bloom level + a present answer-key source_ref."""
     for section in spec.sections:
@@ -520,6 +561,7 @@ def compose_workbook(
     encounter_mode: Literal["recorded", "live"] = "recorded",
     render_profile: Literal["legacy", "presentation_support"] = "legacy",
     lo_overlay_loss_note: str | None = None,
+    deep_dive_review: Any | None = None,
 ) -> _ComposedDoc:
     """Compose the canonical workbook model from the spec + transcript backbone.
 
@@ -590,9 +632,11 @@ def compose_workbook(
                     "",
                     (
                         "Use this workbook before and alongside the presentation: "
-                        "complete the pre-work, work the self-check exercises, and "
-                        "follow the cited sources. Traceable Deep Dive read-prose "
-                        "arrives in Story 37.2a and is not claimed here."
+                        "complete the pre-work, read the Deep Dive, work the "
+                        "self-check exercises, and follow the cited sources. The "
+                        "Deep Dive section carries the traceable read-prose for "
+                        "this lesson; when the run's cited research pool authored "
+                        "enrichment, its sentences cite that pool inline."
                         if render_profile == "presentation_support"
                         else "How to use this workbook with the deck: watch the "
                         "glance-deck for the perception-tuned claim per card, then "
@@ -639,6 +683,18 @@ def compose_workbook(
         objective_lines.append("")
         objective_lines.append(f"> _Enrichment overlay loss: {lo_overlay_loss_note}_")
     doc.blocks.append((2, "Learning Objectives", "\n".join(objective_lines).rstrip()))
+
+    # --- Deep Dive (37.2b): cited, pool-grounded read-prose at the enrichment
+    # seam. Deterministic-consume and model-free: the section renders the
+    # persisted 07W.3 contribution (enriched prose with inline
+    # ``[ask-a-cite-###]`` markers) or the honest typed-loss note — never a
+    # silent absence. Presentation-support profile only.
+    if render_profile == "presentation_support":
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            render_deep_dive_markdown,
+        )
+
+        doc.blocks.append((2, "Deep Dive", render_deep_dive_markdown(deep_dive_review)))
 
     # --- S2 Transcript-narrative (the prose-delegation seam + segment backbone) ---
     if render_profile == "legacy":
@@ -822,6 +878,20 @@ def compose_workbook(
     # provenance (never a bare/broken ``https://doi.org/`` link).
     if research_omitted_note:
         reference_lines.append(f"- *({research_omitted_note})*")
+    # --- 37.2b resolvability floor (A8): every inline ``ask-a-cite-###`` marker
+    # in the Deep Dive prose resolves to a rendered reference entry carrying its
+    # citation_id, DOI, tier, and provenance. Full References assemble/dedupe/
+    # render ownership stays with Story 37.5.
+    if render_profile == "presentation_support":
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            render_deep_dive_reference_lines,
+        )
+
+        deep_dive_reference_lines = render_deep_dive_reference_lines(deep_dive_review)
+        if deep_dive_reference_lines:
+            reference_lines.append("")
+            reference_lines.append("#### Deep Dive cited entries (Ask-A, DOI)")
+            reference_lines.extend(deep_dive_reference_lines)
     doc.blocks.append((2, "References", "\n".join(reference_lines).rstrip()))
 
     # --- W3 Research Trends + hot-topics (after References backmatter).
@@ -1047,6 +1117,7 @@ class WorkbookProducer(ModalityProducer):
         render_profile: Literal["legacy", "presentation_support"] = "legacy",
         workbook_brief_receipt: dict[str, object] | None = None,
         lo_overlay_loss: dict[str, object] | None = None,
+        deep_dive_review: Any | None = None,
     ) -> WorkbookSidecar:
         """Produce the workbook artifacts on the frozen deck inputs.
 
@@ -1084,6 +1155,7 @@ class WorkbookProducer(ModalityProducer):
             lo_overlay_loss_note=(
                 str(lo_overlay_loss.get("note")) if lo_overlay_loss else None
             ),
+            deep_dive_review=deep_dive_review,
         )
         markdown = render_markdown(doc)
 
@@ -1108,6 +1180,18 @@ class WorkbookProducer(ModalityProducer):
         audited_citations.extend(
             {"source_ref": article.source_ref} for article in glossary_articles
         )
+        # 37.2b (R7, non-tautological): the deep-dive G2 leg audits the
+        # citation ids parsed from the RENDERED markdown (prose side) against
+        # the manifest entries built from the contribution's used rows
+        # (structured side, joined in _act.py) — prose/structure divergence
+        # FAILS G2. NOTE the honest scope: a used row whose source_ref simply
+        # rode into the manifest alongside it cannot fail here (both sides
+        # share the used-rows origin); what fails is a rendered marker that no
+        # used row backs, or a manifest entry the render contradicts.
+        if render_profile == "presentation_support":
+            audited_citations.extend(
+                deep_dive_g2_citation_entries(markdown, deep_dive_review)
+            )
         if research_trends is not None:
             for claim in research_trends.trends:
                 if claim.confidence != "unusable" and claim.source_ref:

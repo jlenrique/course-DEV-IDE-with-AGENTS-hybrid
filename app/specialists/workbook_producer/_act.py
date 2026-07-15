@@ -40,6 +40,7 @@ import json
 import logging
 import os
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -48,6 +49,12 @@ import yaml
 from pydantic import ValidationError
 
 from app.marcus.lesson_plan.collateral_spec import CollateralSpec, WorkbookSpec
+from app.marcus.lesson_plan.deep_dive_enrichment import (
+    WorkbookReviewContributionV1,
+    load_workbook_review_contribution,
+    render_deep_dive_markdown,
+    used_pool_rows,
+)
 from app.marcus.lesson_plan.glossary_projection import (
     GlossaryArticleBrief,
     glossary_inputs_from_run,
@@ -447,6 +454,8 @@ class WorkbookInputs:
     encounter_mode: Literal["recorded", "live"] = "recorded"
     render_profile: Literal["legacy", "presentation_support"] = "legacy"
     workbook_brief_receipt: dict[str, object] | None = None
+    # 37.2b: the persisted 07W.3 review contribution (deep-dive enrichment leg).
+    deep_dive_review: WorkbookReviewContributionV1 | None = None
 
 
 def _research_inputs(
@@ -994,6 +1003,35 @@ def build_workbook_inputs(
         brief.payload.pre_work if brief else None,
     )
 
+    # 37.2b: read the persisted 07W.3 review contribution (deep-dive enrichment
+    # leg) off run.json. Presentation-support only (the validated brief IS the
+    # profile switch); a present-but-invalid activated contribution fails loud.
+    deep_dive_review: WorkbookReviewContributionV1 | None = None
+    if brief is not None:
+        try:
+            deep_dive_review = load_workbook_review_contribution(run_dir)
+        except ValueError as exc:
+            raise WorkbookProducerActError(
+                f"workbook review contribution is invalid: {exc}",
+                tag="workbook-review.contribution-invalid",
+            ) from exc
+        review_result = deep_dive_review.deep_dive_enrichment if deep_dive_review else None
+        if review_result is not None and review_result.status == "enriched":
+            # G2 structured side: the used Ask-A rows' source_refs join the
+            # manifest; the producer's deep-dive G2 leg then audits the
+            # citation ids PARSED FROM THE RENDERED MARKDOWN against these
+            # entries (prose-vs-structure divergence fails G2 there — the
+            # manifest join alone proves nothing about the prose).
+            _merge_deep_dive_source_refs(
+                source_ref_manifest, used_pool_rows(review_result)
+            )
+        # G1: Deep Dive prose numerals are gate-proven against their cited
+        # evidence excerpts (enrichment) or verbatim skeleton claims — declare
+        # the rendered section as an authored supplement (B5 idiom).
+        research_supplements = research_supplements | _figures(
+            render_deep_dive_markdown(deep_dive_review)
+        )
+
     display_title = _derive_display_title(lesson_plan, run_dir)
 
     return WorkbookInputs(
@@ -1020,6 +1058,7 @@ def build_workbook_inputs(
         pre_work=brief.payload.pre_work if brief else None,
         encounter_mode=brief.payload.encounter_mode if brief else "recorded",
         render_profile="presentation_support" if brief else "legacy",
+        deep_dive_review=deep_dive_review,
         workbook_brief_receipt=(
             {
                 "path": WORKBOOK_BRIEF_FILENAME,
@@ -1040,6 +1079,29 @@ def build_workbook_inputs(
             else None
         ),
     )
+
+
+def _merge_deep_dive_source_refs(
+    source_ref_manifest: dict[str, str], rows: Iterable[Any]
+) -> None:
+    """Join used Ask-A rows into the G2 manifest (structured side).
+
+    R19: when a deep-dive row's ``source_hash`` DISAGREES with an existing
+    manifest entry for the same ``source_ref``, the disagreement is surfaced
+    via ``logger.warning`` — never a silent ``setdefault``. The earlier
+    (research-leg) entry is retained deterministically either way.
+    """
+    for row in rows:
+        existing_hash = source_ref_manifest.get(row.source_ref)
+        if existing_hash is not None and existing_hash != row.source_hash:
+            logger.warning(
+                "deep-dive manifest hash disagreement for source_ref %s: "
+                "manifest=%s deep_dive=%s (manifest entry retained)",
+                row.source_ref,
+                existing_hash,
+                row.source_hash,
+            )
+        source_ref_manifest.setdefault(row.source_ref, row.source_hash)
 
 
 def _skip_output() -> dict[str, Any]:
@@ -1125,6 +1187,7 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             encounter_mode=inputs.encounter_mode,
             render_profile=inputs.render_profile,
             workbook_brief_receipt=inputs.workbook_brief_receipt,
+            deep_dive_review=inputs.deep_dive_review,
             # DP6 (spec landmine): workbook-only diff justifies reuse; do not force
             # a spurious fresh-gamma. Stamp the in-graph run id.
             diff_files=["app/marcus/lesson_plan/workbook_producer.py"],

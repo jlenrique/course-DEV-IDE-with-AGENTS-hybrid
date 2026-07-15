@@ -13,6 +13,15 @@ from typing import Any, Final, Generic, TypeVar
 import yaml
 from pydantic import BaseModel
 
+from app.marcus.lesson_plan.deep_dive_enrichment import (
+    DeepDiveEnrichedWriterResult,
+    DeepDiveEnrichmentRequestV1,
+)
+from app.marcus.lesson_plan.deep_dive_enrichment_provider_contract import (
+    DEEP_DIVE_ENRICHMENT_PROVIDER_CONTRACT_MODE,
+    DEEP_DIVE_ENRICHMENT_PROVIDER_NORMALIZER_VERSION,
+    normalize_deep_dive_enrichment_provider_payload,
+)
 from app.marcus.lesson_plan.deep_dive_projection import (
     DEEP_DIVE_DEGRADED_MARKER,
     DeepDiveSkeletonRequest,
@@ -567,12 +576,235 @@ class LiveDeepDiveWriter(_StructuredWriter[DeepDiveSkeletonWriterResult]):
         )
 
 
+class DeepDiveEnrichmentProviderOutputError(ValueError):
+    """Raw enrichment provider mapping could not enter the strict candidate contract."""
+
+
+def _compact_enrichment_payload(request: DeepDiveEnrichmentRequestV1) -> dict[str, Any]:
+    """Single, de-duplicated model-facing view of the enrichment request.
+
+    The skeleton sections carry the claims exactly once; pool rows carry only
+    the fields the writer may ground on. Digests, the gate, and journal
+    authority are untouched — only the bytes the provider reads change.
+    """
+    return {
+        "skeleton_sections": [
+            {
+                "ability_id": section.ability_id,
+                "claims": [
+                    {
+                        "skeleton_claim_id": claim.skeleton_claim_id,
+                        "text": claim.text,
+                        "source_claim_refs": list(claim.source_claim_refs),
+                    }
+                    for claim in section.claims
+                ],
+            }
+            for section in request.skeleton.sections
+        ],
+        "skeleton_bold_terms": [term.term for term in request.skeleton.bold_terms],
+        "pool_rows": [
+            {
+                "citation_id": row.citation_id,
+                "title": row.title,
+                "evidence_excerpt": row.evidence_excerpt,
+                "evidence_hierarchy_tier": row.evidence_hierarchy_tier,
+                "supports_ability_ids": list(row.supports_ability_ids),
+                "supports_bold_terms": list(row.supports_bold_terms),
+            }
+            for row in request.pool_rows
+        ],
+        "overlay_covered": request.overlay_covered.model_dump(mode="json"),
+        "pool_status": request.pool_status,
+    }
+
+
+class LiveDeepDiveEnrichmentWriter(_StructuredWriter[DeepDiveEnrichedWriterResult]):
+    """07W.3 cited-enrichment writer (mirror of :class:`LiveDeepDiveWriter`).
+
+    Deliberately carries NO safe-construction fallback: fabricating citations
+    is never safe, and an honest decline (degraded ``pool_unused``) is a
+    first-class model output, not a failure to be papered over.
+    """
+
+    output_type = DeepDiveEnrichedWriterResult
+    purpose = "DeepDiveEnrichedWriterResult"
+
+    def __init__(
+        self,
+        *,
+        chat_factory: Callable[..., ChatModelHandle] = make_chat_model,
+        max_completion_tokens: int = WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS,
+        request_timeout: float = WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S,
+    ) -> None:
+        self.provider_schema = DeepDiveEnrichedWriterResult.model_json_schema()
+        self.provider_schema_digest = _payload_digest(self.provider_schema)
+        self.last_raw_provider_payload: dict[str, Any] | None = None
+        self.last_raw_provider_payload_digest: str | None = None
+        self.last_provider_normalizations: tuple[str, ...] = ()
+        self.last_normalized_provider_payload_digest: str | None = None
+        self.last_provider_normalization_error: str | None = None
+        # R10: on a parse failure (no structured mapping to record) the raw
+        # provider TEXT is captured (bounded downstream) so the failure journal
+        # never persists an empty evidence mapping.
+        self.last_raw_provider_text: str | None = None
+        super().__init__(
+            chat_factory=chat_factory,
+            max_completion_tokens=max_completion_tokens,
+            request_timeout=request_timeout,
+            effective_adapter="LiveDeepDiveEnrichmentWriter",
+            effective_identity_extra={
+                "provider_contract_mode": DEEP_DIVE_ENRICHMENT_PROVIDER_CONTRACT_MODE,
+                "provider_schema_digest": self.provider_schema_digest,
+                "provider_normalizer_version": (
+                    DEEP_DIVE_ENRICHMENT_PROVIDER_NORMALIZER_VERSION
+                ),
+            },
+        )
+
+    def __call__(
+        self, request: DeepDiveEnrichmentRequestV1
+    ) -> DeepDiveEnrichedWriterResult:
+        self.calls_made += 1
+        self.last_raw_provider_payload = None
+        self.last_raw_provider_payload_digest = None
+        self.last_provider_normalizations = ()
+        self.last_normalized_provider_payload_digest = None
+        self.last_provider_normalization_error = None
+        self.last_raw_provider_text = None
+        started = time.perf_counter()
+        structured = self._handle.chat.with_structured_output(
+            self.provider_schema, include_raw=True
+        )
+        response: Any = structured.invoke(
+            [
+                ("system", self._system_prompt(request)),
+                (
+                    "human",
+                    json.dumps(
+                        _compact_enrichment_payload(request),
+                        sort_keys=True,
+                        ensure_ascii=False,
+                    ),
+                ),
+            ]
+        )
+        self.last_latency_ms = (time.perf_counter() - started) * 1000
+        parsed = response
+        raw_response = response
+        if isinstance(response, dict) and "parsed" in response:
+            raw_response = response.get("raw")
+            if response.get("parsing_error") is not None:
+                # R10: preserve the raw provider text so the failure journal
+                # carries real evidence, never an empty mapping.
+                self.last_raw_provider_text = str(
+                    getattr(raw_response, "content", raw_response)
+                )
+                self._record_metadata(raw_response)
+                raise DeepDiveEnrichmentProviderOutputError(
+                    f"structured writer parse failed: {response['parsing_error']}"
+                )
+            parsed = response.get("parsed")
+        self._record_metadata(raw_response)
+        if not isinstance(parsed, dict):
+            self.last_raw_provider_text = str(
+                getattr(raw_response, "content", parsed)
+            )
+            raise DeepDiveEnrichmentProviderOutputError(
+                "enrichment provider payload must be a mapping"
+            )
+        try:
+            raw_payload = _canonical_json_mapping(parsed)
+            self.last_raw_provider_payload = raw_payload
+            self.last_raw_provider_payload_digest = _payload_digest(raw_payload)
+            try:
+                normalized, records = normalize_deep_dive_enrichment_provider_payload(
+                    parsed
+                )
+            except (TypeError, ValueError) as exc:
+                self.last_provider_normalization_error = f"{type(exc).__name__}: {exc}"
+                raise
+            self.last_provider_normalizations = records
+            self.last_normalized_provider_payload_digest = _payload_digest(normalized)
+            candidate = DeepDiveEnrichedWriterResult.model_validate_json(
+                json.dumps(
+                    normalized,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    ensure_ascii=False,
+                    allow_nan=False,
+                ),
+                strict=True,
+            )
+        except (TypeError, ValueError) as exc:
+            raise DeepDiveEnrichmentProviderOutputError(str(exc)) from exc
+        return candidate
+
+    def _system_prompt(self, request: BaseModel) -> str:
+        assert isinstance(request, DeepDiveEnrichmentRequestV1)
+        pool_ids = [row.citation_id for row in request.pool_rows]
+        overlay_note = (
+            "The overlay_covered input lists learning objectives and exercise facts "
+            "the workbook ALREADY covers elsewhere: flex around them — do not "
+            "re-teach those exact facts. "
+            if request.overlay_covered.card_present
+            else ""
+        )
+        return (
+            "Return exactly one strict DeepDiveEnrichedWriterResult. You enrich an "
+            "authored Deep Dive skeleton with net-new depth drawn ONLY from the "
+            "supplied Ask-A pool rows — never from prior knowledge. Author one "
+            "section per skeleton ability, in the supplied order. First reproduce "
+            "every skeleton claim VERBATIM as a role='skeleton' claim (same text, "
+            "source_claim_refs copied from that skeleton claim, citation_refs=[]). "
+            "Then you MAY append role='enrichment' claims: each is one sentence "
+            "grounded in the evidence_excerpt of one-or-more pool rows, with "
+            "citation_refs naming ONLY these pool citation IDs: "
+            f"{pool_ids!r}, and the sentence text ending with its inline markers, "
+            "one per citation_ref in order, formatted exactly like "
+            "'[ask-a-cite-001]'. Place an enrichment claim only under an ability "
+            "listed in every cited row's supports_ability_ids where possible, and "
+            "never cite a row that supports none of the section's ability. Every "
+            "numeral in an enrichment sentence must appear in a cited "
+            "evidence_excerpt. Each section's prose is exactly the space-joined "
+            "claim texts. Keep every skeleton bold term exactly; bold a new term "
+            "only when it appears verbatim in a cited excerpt, and list bold "
+            "metadata once in prose order. "
+            + overlay_note
+            + (
+                # R1: BOTH decline losses are described, keyed to the pool
+                # state the writer actually sees, so a prompt-conformant
+                # decline always carries the loss the gate accepts for that
+                # state (row d pool-empty vs row d' pool-unused stay distinct).
+                "HONEST DECLINE: the supplied pool has ZERO rows, so you cannot "
+                "add sourced depth — return status='degraded' with sections=[], "
+                "bold_terms=[], known_losses=['deep_dive_enrichment_pool_empty'] "
+                "and marker='deep_dive_enrichment_degraded'. "
+                if not request.pool_rows
+                else
+                "HONEST DECLINE: if the supplied pool rows are too thin to add "
+                "sourced depth, return status='degraded' with sections=[], "
+                "bold_terms=[], known_losses=['deep_dive_enrichment_pool_unused'] "
+                "and marker='deep_dive_enrichment_degraded' (the pool has rows "
+                "you chose not to use; 'deep_dive_enrichment_pool_empty' is "
+                "reserved for a zero-row pool). "
+            )
+            + "Never invent citations, "
+            "facts, headings, or slide deixis, and never claim enrichment you did "
+            "not use."
+        )
+
+
 __all__ = [
     "WORKBOOK_DEEP_DIVE_MAX_COMPLETION_TOKENS",
     "WORKBOOK_DEEP_DIVE_REQUEST_TIMEOUT_S",
+    "DEEP_DIVE_ENRICHMENT_PROVIDER_CONTRACT_MODE",
+    "DEEP_DIVE_ENRICHMENT_PROVIDER_NORMALIZER_VERSION",
     "DEEP_DIVE_PROVIDER_CONTRACT_MODE",
     "DEEP_DIVE_PROVIDER_NORMALIZER_VERSION",
+    "DeepDiveEnrichmentProviderOutputError",
     "DeepDiveProviderOutputError",
+    "LiveDeepDiveEnrichmentWriter",
     "LiveDeepDiveWriter",
     "LivePromiseTransformer",
     "LiveSceneComposer",

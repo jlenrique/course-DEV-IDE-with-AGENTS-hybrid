@@ -1,0 +1,50 @@
+# Standing live-witness replay registry (wave-3940 party record D3, amendment
+# M-D3-1a). Auto-enrolling: adding a frozen witness is a one-line row here.
+# Pre-flight before every paid run replays ALL enrolled witnesses; STRICT mode
+# (WITNESS_REPLAY_STRICT=1) turns any skip into a FAILURE (skip ≠ green).
+#
+# Founding disposition (Story 37.2b, amendment A3/12 — zero undeclared
+# omissions): THREE deep-dive witness dirs exist on disk at founding.
+#   - deep-dive-38-3a-live-cd98f7e5 — the PASSING 38.3a live attempt
+#     (completed journal, authored skeleton, gate pass). ENROLLED as the
+#     replayable completed-journal witness for the 07W.1 family.
+#   - deep-dive-38-3a-live-7ed48f8a — preserved FAILED first-run attempt
+#     (journal frozen at call_in_progress). ENROLLED as an ambiguity-shape
+#     witness: replay pins the state classification + journal identity
+#     (immutability is separately pinned by the 38.3a evidence script).
+#   - deep-dive-38-3a-live-b6fc76ea — preserved FAILED first-run attempt,
+#     same classification as 7ed48f8a. ENROLLED as an ambiguity-shape witness.
+schema_version: witness-replay-registry.v1
+families:
+  - family: workbook-deep-dive-call.v1
+    node_id: "07W.1"
+    witnesses:
+      - id: deep-dive-38-3a-live-cd98f7e5
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-cd98f7e5/run/workbook-deep-dive-call.v1.json
+        state: completed
+        disposition: enrolled
+        capture:
+          model: gpt-5
+          model_config_digest: sha256:676faca379fc2da624912d3e10a6955e12d7a74d683eb6676c0d15659e77945a
+          idempotency_key: sha256:8a5cd8811aa6bf06ee90c93733784ef441af1638226fafb42159dcb933745b79
+      - id: deep-dive-38-3a-live-7ed48f8a
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-7ed48f8a/run/workbook-deep-dive-call.v1.json
+        state: call_in_progress
+        disposition: enrolled
+        capture:
+          idempotency_key: sha256:de31a3f58b4987fbb87e88df8f72acc04de1e564a454ed6c13e584137027f32f
+      - id: deep-dive-38-3a-live-b6fc76ea
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-b6fc76ea/run/workbook-deep-dive-call.v1.json
+        state: call_in_progress
+        disposition: enrolled
+        capture:
+          idempotency_key: sha256:a0ac1ea3e7340f6650fb29fe499bf09b99f8e3b2d4e120925766470bf0de6fb6
+  - family: workbook-deep-dive-enrichment-call.v1
+    node_id: "07W.3"
+    # Zero-witness rule (Winston D3-1): this path has NO frozen witness yet.
+    # The first witness freezes from probe-37-2b-deep-dive-enrichment-001 on
+    # PASS and enrolls here as a one-line row. Until then, normal runs SKIP
+    # with the probe named; STRICT pre-flight FAILS (probe → freeze → replay
+    # → spend — a paid run may not claim replay-green on this path).
+    pending_first_witness: probe-37-2b-deep-dive-enrichment-001
+    witnesses: []

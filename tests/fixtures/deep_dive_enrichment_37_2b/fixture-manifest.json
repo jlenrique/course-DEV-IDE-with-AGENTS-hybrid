@@ -1,0 +1,26 @@
+{
+  "fixtures": {
+    "ask-a-contribution-output.v1.json": {
+      "entry_schema_version": "ask-a-knowledge-entry.v1",
+      "pinned_schema_version": "ask-a-contribution-output.v1",
+      "sha256": "59771f1d1e6730f0a36d0ca98ee329bdf13e0c24e16ab1026b56bf0cd616ccef"
+    },
+    "g0-enrichment.json": {
+      "pinned_schema_version": "g0-enrichment-card",
+      "sha256": "a6ff6f29b559ec9b1b2902b8879048cdef78efb5bbefa4d6aa4e264b8d7b71a5"
+    },
+    "u01@1.rendered-workbook.md": {
+      "pinned_schema_version": "rendered-workbook-md",
+      "sha256": "e3f0935e51a54256c715732f7c4a705f62bd9b936afa03b1f3f73321e0ecafbe"
+    },
+    "workbook-brief.v1.json": {
+      "pinned_schema_version": "workbook-brief.v1",
+      "sha256": "a72aa8028fec3c2e7cd64f3d7e1d0cb62a4153a652e8e888c33bd00e7a696636"
+    }
+  },
+  "schema_version": "deep-dive-enrichment-37-2b-fixtures.v1",
+  "source_runs": [
+    "runs/a940c5eb-1043-42c1-a2a4-8a6301b6bcf4",
+    "runs/8b275e5b-ed8a-4720-8217-8ddaca4c6627"
+  ]
+}

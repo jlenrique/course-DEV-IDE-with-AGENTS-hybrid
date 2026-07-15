@@ -237,23 +237,28 @@ def test_default_band_executes_real_brief_ask_a_retryable_then_remaining_stubs(
         envelope = workbook_wiring.run_workbook_band_node(
             node_id=node_id,
             production_envelope=envelope,
-            runtime_context=(_offline_context(tmp_path) if node_id in {"07W.1", "07W.2"} else None),
+            runtime_context=(
+                _offline_context(tmp_path)
+                if node_id in {"07W.1", "07W.2", "07W.3"}
+                else None
+            ),
             dispatch_live=False,
         )
 
+    # 37.2b (deliberate pin update, amendment A1): 07W.3 is ACTIVATED at the
+    # exact coordinate — the legacy workbook_review_stub row never appears.
     assert [(item.node_id, item.specialist_id) for item in envelope.contributions] == [
         ("05B", "irene_pass1"),
         ("06", "package_builder"),
         ("07W.1", "workbook_brief"),
         ("07W.2", "ask_a_enrichment"),
-        ("07W.3", "workbook_review_stub"),
+        ("07W.3", "workbook_review"),
         ("07W.4", "ask_b_hot_topics"),
     ]
     assert envelope.contributions[2].model_used == "workbook-brief-offline"
     assert envelope.contributions[3].model_used == "deterministic-ask-a-research-wiring"
-    assert all(
-        item.model_used == "deterministic-workbook-band-stub" for item in envelope.contributions[4:]
-    )
+    assert envelope.contributions[4].model_used == "workbook-review-offline"
+    assert envelope.contributions[5].model_used == "deterministic-workbook-band-stub"
     assert envelope.contributions[2].output["schema_version"] == "workbook-brief.v1"
     assert envelope.contributions[2].output["status_summary"] == {
         "scene": "degraded",
@@ -261,10 +266,27 @@ def test_default_band_executes_real_brief_ask_a_retryable_then_remaining_stubs(
     }
     assert envelope.contributions[3].output["disposition"] == "retryable_demand_not_ready"
     assert envelope.contributions[3].output["known_losses"] == ["ask_a_demand_not_ready"]
+    # The offline brief carries a PRESENT-but-non-authored (offline-stub)
+    # skeleton, so the activated review node degrades honestly: no enrichment
+    # result, a typed loss NAMING the skeleton's recorded state (R5 — never
+    # the "no skeleton" loss), Check/Reflection honestly stubbed.
+    # R15: the expected payload is a hand-written LITERAL, never computed from
+    # the function under test (the digest was computed once, out-of-band, from
+    # the canonical-JSON sha256 of the payload minus its digest field).
     assert envelope.contributions[4].output == {
-        "stub_status": "not_yet_wired",
-        "review_payload": {},
-        "known_losses": ["semantic_writers_not_yet_wired"],
+        "schema_version": "workbook-review-contribution.v1",
+        "node_id": "07W.3",
+        "specialist_id": "workbook_review",
+        "deep_dive_enrichment": None,
+        "deep_dive_enrichment_receipt": None,
+        "known_losses": [
+            "deep_dive_enrichment_skeleton_not_authored_unavailable",
+            "check_writer_not_yet_wired",
+            "reflection_writer_not_yet_wired",
+        ],
+        "output_digest": (
+            "sha256:15a48dba512d2790dbcb92872725d3fae39c1e50e506d90faa331bed92e4d314"
+        ),
     }
     assert envelope.contributions[5].output == {
         "research_entries": [],
