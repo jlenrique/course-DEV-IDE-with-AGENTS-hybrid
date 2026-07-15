@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "102b32a38092a5808987e96b21ab3a27e8a72b19",
-  "generatedAt": "2026-07-14T21:14:00.460Z",
+  "gitCommitHash": "b24b2aed4539da6d71669a31f277570566b1fa9f",
+  "generatedAt": "2026-07-15T13:47:04.150Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -12807,7 +12807,7 @@
     },
     "app/marcus/lesson_plan/ask_a_enrichment.py": {
       "filePath": "app/marcus/lesson_plan/ask_a_enrichment.py",
-      "contentHash": "547598cbbf6af3ef2493aedab8d6b2431aa8b3a1eff13d607ced8941f0bf83cb",
+      "contentHash": "d0be54d11ba6239b1b2fe43a8eb99a42b3a1cfa26a1c56dd66bc02bf7967838e",
       "functions": [
         {
           "name": "canonical_digest",
@@ -12855,6 +12855,15 @@
           "lineCount": 6
         },
         {
+          "name": "derive_scite_query",
+          "params": [
+            "demand"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
           "name": "build_scope",
           "params": [
             "demand",
@@ -12863,7 +12872,7 @@
           ],
           "returnType": "AskARetrievalScopeV1",
           "exported": true,
-          "lineCount": 33
+          "lineCount": 26
         },
         {
           "name": "evidence_for_body",
@@ -13078,6 +13087,7 @@
         "normalize_match_text",
         "ability_tokens",
         "AskARetrievalScopeV1",
+        "derive_scite_query",
         "build_scope",
         "evidence_for_body",
         "match_scope_associations",
@@ -13086,7 +13096,7 @@
         "AskAResearchIntakeV1",
         "AskAContributionOutputV1"
       ],
-      "totalLines": 441,
+      "totalLines": 464,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/blueprint_coauthor.py": {
@@ -16270,7 +16280,7 @@
     },
     "app/marcus/lesson_plan/deep_dive_projection.py": {
       "filePath": "app/marcus/lesson_plan/deep_dive_projection.py",
-      "contentHash": "82a4ee577d8ef068125658b61e02db6e91a8d4ef2f6c2750b63b180da915598d",
+      "contentHash": "5bf7d31334232f9cf1d5a92536cffb893ab7cef9eada17dbd7c152b39d2d2e96",
       "functions": [
         {
           "name": "_non_blank",
@@ -16421,6 +16431,53 @@
           "returnType": "tuple[\n    Literal[\"degraded\", \"unavailable\"],\n    Literal[\"deep_dive_skeleton_degraded\", \"deep_dive_skeleton_unavailable\"],\n    tuple[ResultLoss, ...],\n]",
           "exported": true,
           "lineCount": 30
+        },
+        {
+          "name": "prose_bold_parity_is_valid",
+          "params": [
+            "proses"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "deep_dive_candidate_would_author",
+          "params": [
+            "request",
+            "candidate"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_distribute_claims",
+          "params": [
+            "num_claims",
+            "num_abilities"
+          ],
+          "returnType": "tuple[tuple[int, ...], ...]",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "_safe_bold_wrap",
+          "params": [
+            "text"
+          ],
+          "returnType": "tuple[str, str | None]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "deterministic_deep_dive_writer",
+          "params": [
+            "request"
+          ],
+          "returnType": "DeepDiveWriterCandidate",
+          "exported": true,
+          "lineCount": 56
         },
         {
           "name": "offline_deep_dive_writer",
@@ -16682,10 +16739,15 @@
         "_source_contains_term",
         "_gate",
         "_failed_result_disposition",
+        "prose_bold_parity_is_valid",
+        "deep_dive_candidate_would_author",
+        "_distribute_claims",
+        "_safe_bold_wrap",
+        "deterministic_deep_dive_writer",
         "offline_deep_dive_writer",
         "compose_deep_dive_skeleton"
       ],
-      "totalLines": 753,
+      "totalLines": 881,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/deep_dive_provider_contract.py": {
@@ -18802,7 +18864,7 @@
     },
     "app/marcus/lesson_plan/pass1_authority.py": {
       "filePath": "app/marcus/lesson_plan/pass1_authority.py",
-      "contentHash": "1209999baa5bc14c83c9630e2101b873c50697b42363fd1ed7af81033d1c2d94",
+      "contentHash": "bd3ae751e9c2a148f8eae689f4eb8b5ac83e75c2f1e732a187f10e9fe60ccd36",
       "functions": [
         {
           "name": "_canonical_bytes",
@@ -18944,7 +19006,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 123
+          "lineCount": 121
         },
         {
           "name": "assert_receipt_matches_plan",
@@ -19002,6 +19064,7 @@
           "source": "app.marcus.lesson_plan.slide_authority",
           "specifiers": [
             "SlideAuthorityInvalidError",
+            "authenticated_anchor_source_texts",
             "resolve_exact_anchor_source"
           ]
         },
@@ -19031,7 +19094,7 @@
         "finalize_plan_authority",
         "assert_receipt_matches_plan"
       ],
-      "totalLines": 629,
+      "totalLines": 628,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/pass1_call_journal.py": {
@@ -20446,7 +20509,7 @@
     },
     "app/marcus/lesson_plan/prework_artifact.py": {
       "filePath": "app/marcus/lesson_plan/prework_artifact.py",
-      "contentHash": "32b94f09baca87a160fee9a2137010bf40cef6591a567f3aa56f09360e62307a",
+      "contentHash": "4c1075ff23a7750651e213aaa371b715de9a7de8ca1f34750ed813d8748a5175",
       "functions": [
         {
           "name": "deep_dive_idempotency_key",
@@ -20607,7 +20670,8 @@
         {
           "name": "DeepDiveExecutionReceiptV1",
           "methods": [
-            "_cost_posture"
+            "_cost_posture",
+            "_fallback_posture"
           ],
           "properties": [
             "schema_version",
@@ -20624,10 +20688,12 @@
             "input_tokens",
             "output_tokens",
             "cost_usd",
-            "cost_unavailable_reason"
+            "cost_unavailable_reason",
+            "fallback_engaged",
+            "fallback_reason"
           ],
           "exported": true,
-          "lineCount": 37
+          "lineCount": 52
         },
         {
           "name": "SceneAuthoringReceipt",
@@ -20828,7 +20894,7 @@
         "validate_source_child",
         "_exclusive_atomic_text"
       ],
-      "totalLines": 496,
+      "totalLines": 511,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/prework_from_run.py": {
@@ -24393,7 +24459,7 @@
     },
     "app/marcus/lesson_plan/slide_authority.py": {
       "filePath": "app/marcus/lesson_plan/slide_authority.py",
-      "contentHash": "84b3a50e63ce8680dfd0dea411c3bf19953d4ed65a7529bc43c57d25e8cfddef",
+      "contentHash": "c45b52427c6a89fac6e89e4171ff2506161004f367780c6647a6a04cda72c565",
       "functions": [
         {
           "name": "_file_identity",
@@ -24547,6 +24613,15 @@
           "lineCount": 54
         },
         {
+          "name": "authenticated_anchor_source_texts",
+          "params": [
+            "source_sections"
+          ],
+          "returnType": "tuple[tuple[str, str], ...]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
           "name": "_identity_digest",
           "params": [
             "value",
@@ -24586,6 +24661,7 @@
             "package_slides",
             "authorized_source_ids",
             "course_source_root",
+            "source_sections",
             "manifest_digest",
             "plan_sidecar_digest",
             "plan_contribution_digest",
@@ -24593,7 +24669,7 @@
           ],
           "returnType": "WorkbookSlideAuthorityMapV1",
           "exported": true,
-          "lineCount": 188
+          "lineCount": 218
         }
       ],
       "classes": [
@@ -24728,6 +24804,12 @@
             "Field",
             "model_validator"
           ]
+        },
+        {
+          "source": "app.models.pass1_source_section",
+          "specifiers": [
+            "Pass1AuthenticatedSourceSection"
+          ]
         }
       ],
       "exports": [
@@ -24753,12 +24835,13 @@
         "_source_inventory",
         "_included",
         "resolve_exact_anchor_source",
+        "authenticated_anchor_source_texts",
         "_identity_digest",
         "_required_identity",
         "_optional_identity",
         "build_slide_authority_map"
       ],
-      "totalLines": 817,
+      "totalLines": 865,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/source_assessment.py": {
@@ -25306,7 +25389,7 @@
     },
     "app/marcus/lesson_plan/trends_projection.py": {
       "filePath": "app/marcus/lesson_plan/trends_projection.py",
-      "contentHash": "f694912ba7f68fa229ec738582e8f1fab62562ec5057902a3724d32dcd2be519",
+      "contentHash": "674aea4661a4574b9f3a4ff271eab91de312f94590976866f45501eb513290a6",
       "functions": [
         {
           "name": "_topic_phrase",
@@ -25380,13 +25463,22 @@
           "lineCount": 15
         },
         {
+          "name": "_strip_inline_comments",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
           "name": "render_trends_markdown",
           "params": [
             "brief"
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 65
+          "lineCount": 66
         }
       ],
       "classes": [
@@ -25488,14 +25580,15 @@
         "reject_model_prior_topic",
         "project_trends_from_packet",
         "trends_inputs_from_run",
+        "_strip_inline_comments",
         "render_trends_markdown"
       ],
-      "totalLines": 400,
+      "totalLines": 419,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/workbook_enrichment.py": {
       "filePath": "app/marcus/lesson_plan/workbook_enrichment.py",
-      "contentHash": "7c3770ce4eebd0d1fdbdabcd7fa3ebc932a7a2da1a56ffa744ff40d03664b677",
+      "contentHash": "04d51331738cf00c71fd6eb5cd1cd8dc2726a4174b732a18dddd6adba9a286b1",
       "functions": [
         {
           "name": "load_enrichment_card",
@@ -25619,6 +25712,42 @@
           "returnType": "list[dict[str, Any]]",
           "exported": true,
           "lineCount": 12
+        },
+        {
+          "name": "_first_heading",
+          "params": [
+            "text"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_ref_slug",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "corpus_root_from_run",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "Path | None",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "corpus_native_further_reading",
+          "params": [
+            "corpus_root"
+          ],
+          "returnType": "tuple[FurtherReadingEntry, ...]",
+          "exported": true,
+          "lineCount": 62
         }
       ],
       "classes": [
@@ -25661,6 +25790,12 @@
           "source": "logging",
           "specifiers": [
             "logging"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
           ]
         },
         {
@@ -25725,14 +25860,18 @@
         "load_run_envelope",
         "lesson_plan_from_run",
         "collateral_from_run",
-        "research_entries_from_run"
+        "research_entries_from_run",
+        "_first_heading",
+        "_ref_slug",
+        "corpus_root_from_run",
+        "corpus_native_further_reading"
       ],
-      "totalLines": 490,
+      "totalLines": 616,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/workbook_producer.py": {
       "filePath": "app/marcus/lesson_plan/workbook_producer.py",
-      "contentHash": "ac5bbdc90b2a302c270d920908cf6173b81227dbc408f90ca9aa401320a6de03",
+      "contentHash": "7f6a69134d4acb65b0aded48804d42c78f3de783b92fcbd3f6e5357576d2e59d",
       "functions": [
         {
           "name": "load_transcript_segments",
@@ -25829,6 +25968,7 @@
             "spec",
             "segments",
             "prose_revoicer",
+            "workbook_title",
             "learning_objectives",
             "answer_keys",
             "further_reading",
@@ -25840,11 +25980,12 @@
             "research_trends",
             "pre_work",
             "encounter_mode",
-            "render_profile"
+            "render_profile",
+            "lo_overlay_loss_note"
           ],
           "returnType": "_ComposedDoc",
           "exported": true,
-          "lineCount": 328
+          "lineCount": 339
         },
         {
           "name": "render_markdown",
@@ -25863,7 +26004,16 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 21
+          "lineCount": 28
+        },
+        {
+          "name": "_pin_docx_zip_determinism",
+          "params": [
+            "path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 22
         },
         {
           "name": "_render_docx_body",
@@ -26016,10 +26166,11 @@
             "gamma_reuse_justified_by",
             "deck_no_regression_eligible",
             "workbook_brief_receipt",
-            "depth_receipt"
+            "depth_receipt",
+            "lo_overlay_loss"
           ],
           "exported": true,
-          "lineCount": 18
+          "lineCount": 22
         },
         {
           "name": "WorkbookProducer",
@@ -26031,7 +26182,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 233
+          "lineCount": 240
         }
       ],
       "imports": [
@@ -26039,6 +26190,12 @@
           "source": "re",
           "specifiers": [
             "re"
+          ]
+        },
+        {
+          "source": "zipfile",
+          "specifiers": [
+            "zipfile"
           ]
         },
         {
@@ -26055,6 +26212,13 @@
           "specifiers": [
             "dataclass",
             "field"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
           ]
         },
         {
@@ -26151,6 +26315,7 @@
         "compose_workbook",
         "render_markdown",
         "render_docx_from_model",
+        "_pin_docx_zip_determinism",
         "_render_docx_body",
         "_resolve_output_root",
         "_relative_asset_path",
@@ -26159,7 +26324,7 @@
         "_narrative_body_text",
         "_tokenize"
       ],
-      "totalLines": 1253,
+      "totalLines": 1323,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/__init__.py": {
@@ -26220,7 +26385,7 @@
     },
     "app/marcus/orchestrator/ask_a_research_wiring.py": {
       "filePath": "app/marcus/orchestrator/ask_a_research_wiring.py",
-      "contentHash": "fc6f9bf28e5805f8e2ddc2f5df353001c8c4f171154b922cf0f5aa5fff5b01cc",
+      "contentHash": "a0138354c811371d0e695f920ee8b5b4b0738793788411f6184075ecd2dc06fe",
       "functions": [
         {
           "name": "_raise",
@@ -26319,7 +26484,7 @@
           ],
           "returnType": "tuple[AskAContributionOutputV1, list[dict[str, Any]]]",
           "exported": true,
-          "lineCount": 141
+          "lineCount": 146
         },
         {
           "name": "_idempotency_key",
@@ -26452,7 +26617,7 @@
         "_replay_completed",
         "run_ask_a_research"
       ],
-      "totalLines": 492,
+      "totalLines": 497,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/chooser_publisher.py": {
@@ -27940,7 +28105,7 @@
     },
     "app/marcus/orchestrator/g0_enrichment_wiring.py": {
       "filePath": "app/marcus/orchestrator/g0_enrichment_wiring.py",
-      "contentHash": "244adfc2ab6c2690e52c760a1976755e7be9eb638401858fefd22c52593983e9",
+      "contentHash": "62b7a1aab4654d23e792da2a708ab6813ca15e998eb2368ee9536b8ffdd9d080",
       "functions": [
         {
           "name": "resolve_enrichment_mode",
@@ -28253,7 +28418,7 @@
           ],
           "returnType": "tuple[\n    list[TypedComponent], list[LearningObjective], list[EnumerationProvenance]\n]",
           "exported": true,
-          "lineCount": 41
+          "lineCount": 73
         },
         {
           "name": "_coerce_component_row",
@@ -28527,7 +28692,7 @@
         "_full_dump",
         "load_enrichment_result"
       ],
-      "totalLines": 1627,
+      "totalLines": 1659,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/gate_runner.py": {
@@ -31580,7 +31745,7 @@
     },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "d41fe0f5577f65b08a87168db082b58e555f04529504cd2e70fab4a7d22cc3d9",
+      "contentHash": "6613716284744213357ab3f27190b9682b123444c458edc9b894efecf51b7952",
       "functions": [
         {
           "name": "_research_dispatch_live",
@@ -32251,7 +32416,7 @@
           ],
           "returnType": "dict[str, Any] | None",
           "exported": true,
-          "lineCount": 263
+          "lineCount": 283
         },
         {
           "name": "_scripted_min_cluster_floor_for_record",
@@ -33017,7 +33182,7 @@
         "recover_production_trial",
         "_continue_production_walk"
       ],
-      "totalLines": 4688,
+      "totalLines": 4708,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_citation.py": {
@@ -33252,7 +33417,7 @@
     },
     "app/marcus/orchestrator/research_credibility.py": {
       "filePath": "app/marcus/orchestrator/research_credibility.py",
-      "contentHash": "dc212d696164c012a8d84ee9e11f3e39ed88b3f3ae5877663e8235cd41b91b5e",
+      "contentHash": "f23b8911f794cb40af7128e176df14af85fb653bd0138780628969c6de1997e8",
       "functions": [
         {
           "name": "_nested_meta",
@@ -33270,7 +33435,7 @@
           ],
           "returnType": "tuple[EvidenceHierarchyTier, bool]",
           "exported": true,
-          "lineCount": 40
+          "lineCount": 46
         },
         {
           "name": "provider_provenance_for_row",
@@ -33297,7 +33462,7 @@
         "classify_evidence_hierarchy",
         "provider_provenance_for_row"
       ],
-      "totalLines": 106,
+      "totalLines": 112,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_detective_gate.py": {
@@ -35064,7 +35229,7 @@
     },
     "app/marcus/orchestrator/workbook_prework_writers.py": {
       "filePath": "app/marcus/orchestrator/workbook_prework_writers.py",
-      "contentHash": "8c73bba1850bc670884c3794cbb26c68f05168528e4d351f50788f8bba2e31d6",
+      "contentHash": "708e58c972e6e0ee57ab57cf1073fde84aaec314559fe1d457ca158a7a34356b",
       "functions": [
         {
           "name": "_load_config",
@@ -35072,6 +35237,24 @@
           "returnType": "tuple[SpecialistModelConfig, str]",
           "exported": true,
           "lineCount": 6
+        },
+        {
+          "name": "_compact_deep_dive_payload",
+          "params": [
+            "request"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "_is_bold_parity_failure",
+          "params": [
+            "normalized"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 20
         }
       ],
       "classes": [
@@ -35124,11 +35307,13 @@
           "methods": [
             "__init__",
             "__call__",
+            "_degrade_to_safe_construction",
+            "_emit_safe_construction",
             "_system_prompt"
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 117
+          "lineCount": 205
         }
       ],
       "imports": [
@@ -35193,8 +35378,12 @@
         {
           "source": "app.marcus.lesson_plan.deep_dive_projection",
           "specifiers": [
+            "DEEP_DIVE_DEGRADED_MARKER",
             "DeepDiveSkeletonRequest",
-            "DeepDiveSkeletonWriterResult"
+            "DeepDiveSkeletonWriterResult",
+            "deep_dive_candidate_would_author",
+            "deterministic_deep_dive_writer",
+            "prose_bold_parity_is_valid"
           ]
         },
         {
@@ -35258,14 +35447,16 @@
         "_StructuredWriter",
         "LiveSceneComposer",
         "LivePromiseTransformer",
+        "_compact_deep_dive_payload",
+        "_is_bold_parity_failure",
         "LiveDeepDiveWriter"
       ],
-      "totalLines": 425,
+      "totalLines": 581,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/workbook_wiring.py": {
       "filePath": "app/marcus/orchestrator/workbook_wiring.py",
-      "contentHash": "312713175784fca436f3a1eef772fa933a4c7f499d28bbf28e6286a8fe7544f4",
+      "contentHash": "6ed5ef4d4e22da35d3cffdc804adbcd494c130e487c97211f2d4764d3022557d",
       "functions": [
         {
           "name": "_canonical_json",
@@ -35352,7 +35543,7 @@
           ],
           "returnType": "tuple[WorkbookSlideAuthorityMapV1 | None, bytes | None]",
           "exported": true,
-          "lineCount": 115
+          "lineCount": 129
         },
         {
           "name": "_atomic_json",
@@ -35395,7 +35586,7 @@
           ],
           "returnType": "DeepDiveExecutionReceiptV1",
           "exported": true,
-          "lineCount": 37
+          "lineCount": 45
         },
         {
           "name": "_provider_evidence",
@@ -35429,7 +35620,7 @@
           ],
           "returnType": "tuple[DeepDiveSkeletonResult, DeepDiveExecutionReceiptV1]",
           "exported": true,
-          "lineCount": 246
+          "lineCount": 261
         },
         {
           "name": "_brief_factory",
@@ -35546,7 +35737,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 67
+          "lineCount": 82
         },
         {
           "name": "run_workbook_band_node",
@@ -35770,6 +35961,13 @@
           "specifiers": [
             "SpecialistDispatchError"
           ]
+        },
+        {
+          "source": "app.specialists.source_bundle",
+          "specifiers": [
+            "SourceBundleError",
+            "read_extracted_source_sections"
+          ]
         }
       ],
       "exports": [
@@ -35802,7 +36000,7 @@
         "_reconcile_activated_artifact",
         "run_workbook_band_node"
       ],
-      "totalLines": 1782,
+      "totalLines": 1838,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/workbook_writer_model_config.yaml": {
@@ -67534,7 +67732,7 @@
     },
     "app/specialists/workbook_producer/_act.py": {
       "filePath": "app/specialists/workbook_producer/_act.py",
-      "contentHash": "b8fe14b3a4af17ac62ddf5c518bbd0f17a1b4e8ea1b82c332ace19d0ef8b3abe",
+      "contentHash": "8a2ed81229581376ec3f6d8812c568ff10fcdeb9098cea9362dcb3cad8e2f8c1",
       "functions": [
         {
           "name": "_trail_entry",
@@ -67633,6 +67831,16 @@
           "lineCount": 28
         },
         {
+          "name": "_derive_display_title",
+          "params": [
+            "lesson_plan",
+            "run_dir"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
           "name": "_plan_unit_and_context",
           "params": [
             "run_dir",
@@ -67656,6 +67864,40 @@
           "lineCount": 64
         },
         {
+          "name": "_unit_to_enrichment_lo_map",
+          "params": [
+            "lesson_plan",
+            "card"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "_research_figure_supplements",
+          "params": [
+            "research_entries",
+            "further_reading",
+            "glossary_articles",
+            "research_trends"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_authored_prose_figure_supplements",
+          "params": [
+            "spec",
+            "learning_objectives",
+            "answer_keys",
+            "pre_work"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
           "name": "build_workbook_inputs",
           "params": [
             "run_dir",
@@ -67665,7 +67907,7 @@
           ],
           "returnType": "WorkbookInputs | None",
           "exported": true,
-          "lineCount": 201
+          "lineCount": 299
         },
         {
           "name": "_skip_output",
@@ -67682,7 +67924,16 @@
           ],
           "returnType": "WorkbookSidecar | None",
           "exported": true,
-          "lineCount": 63
+          "lineCount": 80
+        },
+        {
+          "name": "_load_persisted_production_envelope",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "ProductionEnvelope | None",
+          "exported": true,
+          "lineCount": 22
         },
         {
           "name": "_reconcile_workbook_brief_authority",
@@ -67692,7 +67943,7 @@
           ],
           "returnType": "WorkbookBriefArtifactV1 | None",
           "exported": true,
-          "lineCount": 79
+          "lineCount": 85
         },
         {
           "name": "_sidecar_refs",
@@ -67701,7 +67952,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 16
+          "lineCount": 17
         },
         {
           "name": "act",
@@ -67727,6 +67978,7 @@
           "properties": [
             "plan_unit",
             "context",
+            "workbook_title",
             "spec",
             "segments",
             "source_text",
@@ -67742,13 +67994,15 @@
             "glossary_articles",
             "glossary_empty_reason",
             "research_trends",
+            "research_supplements",
+            "lo_overlay_loss",
             "pre_work",
             "encounter_mode",
             "render_profile",
             "workbook_brief_receipt"
           ],
           "exported": true,
-          "lineCount": 24
+          "lineCount": 27
         }
       ],
       "imports": [
@@ -67762,6 +68016,12 @@
           "source": "json",
           "specifiers": [
             "json"
+          ]
+        },
+        {
+          "source": "logging",
+          "specifiers": [
+            "logging"
           ]
         },
         {
@@ -67779,7 +68039,8 @@
         {
           "source": "dataclasses",
           "specifiers": [
-            "dataclass"
+            "dataclass",
+            "field"
           ]
         },
         {
@@ -67833,7 +68094,8 @@
         {
           "source": "app.marcus.lesson_plan.prework_projection",
           "specifiers": [
-            "PreWorkBrief"
+            "PreWorkBrief",
+            "render_prework_markdown"
           ]
         },
         {
@@ -67858,6 +68120,8 @@
         {
           "source": "app.marcus.lesson_plan.workbook_enrichment",
           "specifiers": [
+            "corpus_native_further_reading",
+            "corpus_root_from_run",
             "lesson_plan_from_run",
             "load_enrichment_card",
             "project_enrichment_to_workbook_inputs",
@@ -67876,6 +68140,18 @@
             "WorkbookFidelityError",
             "WorkbookProducer",
             "WorkbookSidecar"
+          ]
+        },
+        {
+          "source": "app.models.runtime.production_envelope",
+          "specifiers": [
+            "ProductionEnvelope"
+          ]
+        },
+        {
+          "source": "app.models.runtime.production_trial_envelope",
+          "specifiers": [
+            "ProductionTrialEnvelope"
           ]
         },
         {
@@ -67903,6 +68179,12 @@
           ]
         },
         {
+          "source": "app.specialists._shared.figure_tokens",
+          "specifiers": [
+            "_figures"
+          ]
+        },
+        {
           "source": "app.specialists.dispatch_errors",
           "specifiers": [
             "SpecialistDispatchError"
@@ -67927,17 +68209,22 @@
         "_hash",
         "_sanitize_open_id",
         "_derive_plan_unit_fields",
+        "_derive_display_title",
         "_plan_unit_and_context",
         "WorkbookInputs",
         "_research_inputs",
+        "_unit_to_enrichment_lo_map",
+        "_research_figure_supplements",
+        "_authored_prose_figure_supplements",
         "build_workbook_inputs",
         "_skip_output",
         "produce_workbook",
+        "_load_persisted_production_envelope",
         "_reconcile_workbook_brief_authority",
         "_sidecar_refs",
         "act"
       ],
-      "totalLines": 915,
+      "totalLines": 1234,
       "hasStructuralAnalysis": true
     },
     "app/specialists/workbook_producer/config.yaml": {
