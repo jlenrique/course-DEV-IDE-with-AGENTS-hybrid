@@ -1268,6 +1268,16 @@ _ASK_A_CITE_TOKEN_RE = re.compile(r"ask-a-cite-[0-9]{3}")
 _REFERENCES_HEADING = "## References"
 _CITED_ENTRIES_BLOCK_HEADING = "#### Deep Dive cited entries"
 
+# --- M-R3 LO shippability clause (closure rider; structured-channel-first) ---
+_WORKBOOK_PRODUCER_SPECIALIST_ID = "workbook_producer"
+_WORKBOOK_PRODUCER_NODE_ID = "07W"
+# The producer's degraded-LO placeholder statement copy (composed into the
+# ``## Learning Objectives`` section) and the visible loss callout it renders
+# when ``lo_overlay_loss`` is populated — MD-floor witnesses ONLY; the
+# persisted structured record is the primary assertion surface.
+_LO_PLACEHOLDER_COPY = "objective statement unresolved"
+_LO_OVERLAY_LOSS_CALLOUT = "Enrichment overlay loss:"
+
 
 def _md_section_body(text: str, heading: str) -> str | None:
     """The body of an H2 section (between ``## <heading>`` and the next H2)."""
@@ -1492,6 +1502,101 @@ def _assert_glossary_conformant_markdown(run_dir: Path, md_paths: list[Path]) ->
             raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
 
 
+def _assert_lo_overlay_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """M-R3 LO shippability bar: degraded Learning Objectives never ship.
+
+    STRUCTURED channel first (Amelia F2, closure record): the producer's
+    ``lo_overlay_loss`` record on the persisted 07W ``workbook_producer``
+    contribution in ``run.json`` is the assertion surface — a present record
+    with ``unresolved_count > 0`` (or malformed) REFUSES the completed
+    deliverable, naming the unresolved objectives; the placeholder prose is
+    never the primary witness. MD floor (P15/R3 mirror) on
+    presentation-support deliverables: the ``Enrichment overlay loss:``
+    callout can only be minted by a populated record, so a callout with no
+    record backing it refuses in EVERY branch; the placeholder copy
+    (``objective statement unresolved``) while the persisted contribution
+    carries a null/clean record is a prose/structured desync ⇒ REFUSE. Clean
+    MD + absent/clean record = pass. A run with NO persisted 07W contribution
+    (harness rig / legacy stub) keeps R3's tolerance for the by-design
+    card-less degrade — the callout floor still applies. Test-harness-side
+    only; production runtime is untouched.
+    """
+    placeholder_seen = False
+    callout_seen = False
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+            continue  # legacy-profile deliverable: M-R3 clause does not apply
+        placeholder_seen = placeholder_seen or _LO_PLACEHOLDER_COPY in text
+        callout_seen = callout_seen or _LO_OVERLAY_LOSS_CALLOUT in text
+    if not (run_dir / "run.json").is_file():
+        # No structured authority at all: a loss callout is a fabricated
+        # claim (never a silent skip; P15 mirror).
+        if callout_seen:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        return
+    try:
+        from app.marcus.lesson_plan.workbook_enrichment import (  # noqa: PLC0415
+            load_run_envelope,
+        )
+
+        envelope = load_run_envelope(run_dir)
+    except Exception as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    contribution = (
+        envelope.get_contribution(
+            _WORKBOOK_PRODUCER_SPECIALIST_ID, node_id=_WORKBOOK_PRODUCER_NODE_ID
+        )
+        if envelope is not None
+        else None
+    )
+    if contribution is None:
+        # R3-style tolerance: no persisted 07W contribution (rig / legacy) —
+        # but a loss callout no record can back still refuses.
+        if callout_seen:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        return
+    output = contribution.output if isinstance(contribution.output, dict) else {}
+    workbook_refs = output.get("workbook")
+    loss = (
+        workbook_refs.get("lo_overlay_loss")
+        if isinstance(workbook_refs, dict)
+        else None
+    )
+    if loss is not None:
+        # Structured channel: a persisted loss record must be well-formed and
+        # zero-loss to ship; unresolved objectives refuse BY NAME.
+        unresolved = loss.get("unresolved_count") if isinstance(loss, dict) else None
+        if (
+            not isinstance(unresolved, int)
+            or isinstance(unresolved, bool)
+            or unresolved > 0
+        ):
+            refusal = RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            )
+            objectives = (
+                loss.get("unresolved_objectives") if isinstance(loss, dict) else None
+            )
+            if isinstance(objectives, list) and objectives:
+                refusal.add_note(
+                    "unresolved learning objectives: "
+                    + ", ".join(str(objective) for objective in objectives)
+                )
+            raise refusal
+    if placeholder_seen or callout_seen:
+        # Prose/structured desync: the deliverable claims an LO degrade the
+        # persisted record does not back (record absent or clean).
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+
 def _assert_deep_dive_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
     """37.2b deliverable bar: deep-dive conformance, structured-artifact-first.
 
@@ -1628,6 +1733,14 @@ def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> Non
     # status-dependent bold-term authority, headword-identity association,
     # uncovered honesty, tier-verbatim, citation resolvability.
     _assert_glossary_conformant_markdown(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # M-R3 closure rider: LO shippability bar — a completed presentation-
+    # support workbook whose Learning Objectives degraded (the producer's
+    # persisted ``lo_overlay_loss`` record on the 07W contribution, structured
+    # channel first) is REFUSED; prose desync is the MD floor, never the
+    # primary witness.
+    _assert_lo_overlay_conformant(
         run_dir, [run_dir / md_by_stem[stem] for stem in paired]
     )
 

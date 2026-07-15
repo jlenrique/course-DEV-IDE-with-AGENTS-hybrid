@@ -407,3 +407,124 @@ def test_p15_glossary_section_without_run_json_rejects(tmp_path: Path) -> None:
     _emit_deliverable(tmp_path, markdown)
     assert not (tmp_path / "run.json").exists()
     _assert_bar_rejects(tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# M-R3 — LO shippability bar (closure rider): the producer's persisted
+# ``lo_overlay_loss`` record is the structured assertion surface
+# ---------------------------------------------------------------------------
+
+# The REAL a940c5eb-1043-42c1-a2a4-8a6301b6bcf4 record (the pre-fix live run:
+# 6 of 6 bound objectives resolved no enrichment overlay) lifted VERBATIM from
+# ``runs/a940c5eb-…/run.json`` as the negative witness.
+_A940C5EB_LO_OVERLAY_LOSS = {
+    "unresolved_count": 6,
+    "bound_count": 6,
+    "unresolved_objectives": ["u01", "u02", "u03", "u04", "u05", "u06"],
+    "note": (
+        "6 of 6 learning objective(s) resolved no enrichment overlay "
+        "(statement/Bloom degraded to placeholder): u01, u02, u03, u04, "
+        "u05, u06"
+    ),
+}
+
+# The producer's degraded-LO placeholder statement + visible loss callout as
+# rendered into the deliverable (MD-floor witnesses).
+_LO_PLACEHOLDER_LINE = (
+    "- **`u01`** — _understand_: (objective statement unresolved for `u01` — "
+    "no enrichment overlay resolved this objective on this run) "
+    "(served by section(s): `sec-u01`)"
+)
+_LO_LOSS_CALLOUT_LINE = (
+    "> _Enrichment overlay loss: 6 of 6 learning objective(s) resolved no "
+    "enrichment overlay (statement/Bloom degraded to placeholder): u01, u02, "
+    "u03, u04, u05, u06_"
+)
+
+
+def _producer_output(lo_overlay_loss: dict | None) -> dict:
+    """The persisted 07W refs shape (8b275e5b carries the same coordinate with
+    ``\"lo_overlay_loss\": null`` — the LO-verified clean run)."""
+    return {
+        "workbook": {
+            "asset_ref": "workbook-u01@1",
+            "asset_path": "exports/workbooks/u01@1.md",
+            "fulfills": "u01@1",
+            "modality_ref": "workbook",
+            "markdown_path": "exports/workbooks/u01@1.md",
+            "docx_path": "exports/workbooks/u01@1.docx",
+            "lo_overlay_loss": lo_overlay_loss,
+        }
+    }
+
+
+def _run_dir_with_producer(
+    tmp_path: Path,
+    contribution_payload: dict,
+    markdown: str,
+    lo_overlay_loss: dict | None,
+) -> Path:
+    install_run_json(
+        tmp_path,
+        ask_a_output=None,
+        extra_contributions=(
+            ("workbook_review", "07W.3", contribution_payload, "gpt-5"),
+            (
+                "workbook_producer",
+                "07W",
+                _producer_output(lo_overlay_loss),
+                "gpt-5",
+            ),
+        ),
+    )
+    _emit_deliverable(tmp_path, markdown)
+    return tmp_path
+
+
+def test_mr3_negative_witness_a940c5eb_lo_overlay_loss_rejects(
+    tmp_path: Path,
+) -> None:
+    """NEGATIVE-WITNESS pin: the real a940c5eb 6/6-unresolved record on the
+    persisted contribution REFUSES the deliverable off the STRUCTURED channel
+    alone (the MD is otherwise fully conforming), naming the objectives."""
+    contribution = _enriched_contribution()
+    _run_dir_with_producer(
+        tmp_path,
+        contribution,
+        _render_conforming_md(contribution),
+        dict(_A940C5EB_LO_OVERLAY_LOSS),
+    )
+    with pytest.raises(runner.RunnerRefusal) as caught:
+        _assert_bar(tmp_path)
+    assert str(caught.value) == "workbook-deliverable-nonconforming-despite-completed"
+    notes = "\n".join(getattr(caught.value, "__notes__", []))
+    for objective in _A940C5EB_LO_OVERLAY_LOSS["unresolved_objectives"]:
+        assert objective in notes
+
+
+def test_mr3_clean_8b275e5b_shape_passes(tmp_path: Path) -> None:
+    """The LO-verified clean shape (8b275e5b: contribution present,
+    ``lo_overlay_loss`` null, placeholder-free MD) passes the bar."""
+    contribution = _enriched_contribution()
+    _run_dir_with_producer(
+        tmp_path, contribution, _render_conforming_md(contribution), None
+    )
+    _assert_bar(tmp_path)
+
+
+def test_mr3_placeholder_in_md_without_record_rejects(tmp_path: Path) -> None:
+    """MD floor: the placeholder copy on a presentation-support deliverable
+    while the persisted contribution's record is null ⇒ REFUSE (desync)."""
+    contribution = _enriched_contribution()
+    markdown = _render_conforming_md(contribution) + f"\n{_LO_PLACEHOLDER_LINE}\n"
+    _run_dir_with_producer(tmp_path, contribution, markdown, None)
+    _assert_bar_rejects(tmp_path)
+
+
+def test_mr3_loss_callout_in_md_without_record_rejects(tmp_path: Path) -> None:
+    """MD floor: an ``Enrichment overlay loss`` callout no structured record
+    backs ⇒ REFUSE (a callout can only be minted by a populated record)."""
+    contribution = _enriched_contribution()
+    markdown = _render_conforming_md(contribution) + f"\n{_LO_LOSS_CALLOUT_LINE}\n"
+    _run_dir_with_producer(tmp_path, contribution, markdown, None)
+    _assert_bar_rejects(tmp_path)

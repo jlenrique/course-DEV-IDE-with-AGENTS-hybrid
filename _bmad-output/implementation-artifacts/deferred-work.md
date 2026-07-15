@@ -128,8 +128,8 @@
   evidence: T4 Blind Hunter on the 38-3a normalization diff — _act.py ~L1217 ordering (identity check precedes normalization); not on the governed workbook run's critical path (delegated HIL policy never triggers Pass-1 refinement), so deferred rather than batched.
 
 - source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
-  summary: Fold the LO shippability bar (0 placeholder statements AND no "Enrichment overlay loss" callout) into the runner's `_assert_completed_workbook_deliverable` so it is machine-asserted, not human-verified, at the next 07W touch (closure rider M-R3).
-  evidence: Closure-party Murat — the verdict-honesty check asserts presence + basic conformance only; the J-A bar for trial 8b275e5b was verified by human audit.
+  summary: ✅ RESOLVED 2026-07-15 EVE — LO shippability bar folded into `_assert_completed_workbook_deliverable` (`_assert_lo_overlay_conformant`): structured lo_overlay_loss record refuses with named objectives (real a940c5eb REFUSES 6/6; 8b275e5b PASSES); MD floors for callout/placeholder desync; 4 pins incl. verbatim negative witness (closure rider M-R3).
+  evidence: Closure-party Murat — the verdict-honesty check asserts presence + basic conformance only; the J-A bar for trial 8b275e5b was verified by human audit. Resolved before governed run A so the bar machine-asserts every learner-facing section.
 
 - source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
   summary: BINDING RIDER (M-R2) on the earlier Pass-1 refinement-path defer — the refinement-identity normalization gap must ride into the NEXT Pass-1-touching story's T1 readiness reading, not sit passively in this register.
