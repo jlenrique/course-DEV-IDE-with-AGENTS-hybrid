@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import hashlib
+import io
 import json
+import os
+import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID, uuid4
@@ -417,16 +420,48 @@ def _card(gate: str, *, candidates: list[str] | None = None):
     raise AssertionError(gate)
 
 
+def _valid_workbook_docx_bytes() -> bytes:
+    """A minimal but valid OOXML (.docx) zip: passes the harness conformance check."""
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr("[Content_Types].xml", "<?xml version='1.0'?><Types/>")
+        archive.writestr("word/document.xml", "<?xml version='1.0'?><document/>")
+    return buffer.getvalue()
+
+
+def _emit_workbook(
+    run_dir: Path,
+    *,
+    stem: str = "u01@1",
+    markdown: str | None = None,
+    docx: bytes | None = None,
+) -> Path:
+    """Write an MD+DOCX workbook pair under the producer's ``exports/workbooks`` root."""
+    workbook_dir = run_dir / "exports" / "workbooks"
+    workbook_dir.mkdir(parents=True, exist_ok=True)
+    (workbook_dir / f"{stem}.md").write_text(
+        markdown if markdown is not None else "# Workbook: Test\n\n## Pre-work\n\nBody.\n",
+        encoding="utf-8",
+    )
+    (workbook_dir / f"{stem}.docx").write_bytes(
+        docx if docx is not None else _valid_workbook_docx_bytes()
+    )
+    return workbook_dir
+
+
 def _write_state(
     root: Path,
     *,
     envelope: ProductionTrialEnvelope,
     card=None,
     workbook: bool = True,
+    emit_workbook: bool = True,
     digest_override: str | None = None,
 ) -> Path:
     run_dir = root / str(TRIAL_ID)
     run_dir.mkdir(parents=True, exist_ok=True)
+    if emit_workbook:
+        _emit_workbook(run_dir)
     corpus = root.parent / "corpus"
     corpus.mkdir(parents=True, exist_ok=True)
     (corpus / "source.md").write_text("source", encoding="utf-8")
@@ -477,10 +512,11 @@ def _drive(
     card=None,
     policy: runner.DelegationPolicy | None = None,
     resume_fn=None,
+    emit_workbook: bool = True,
 ) -> dict:
     runs = tmp_path / "runs"
     evidence = tmp_path / "evidence"
-    _write_state(runs, envelope=envelope, card=card)
+    _write_state(runs, envelope=envelope, card=card, emit_workbook=emit_workbook)
     effective_policy = policy or _policy(tmp_path)
 
     def authoritative_resume(**call_kwargs):
@@ -1454,3 +1490,171 @@ def test_resume_return_must_match_authoritative_run_json(tmp_path: Path) -> None
             evidence_root=tmp_path / "evidence",
             resume_fn=split_brain,
         )
+
+
+# --- Verdict honesty: a ``completed`` status alone must not report success. ---
+
+
+def _drive_completed_with_workbook(
+    tmp_path: Path,
+    *,
+    stem: str = "u01@1",
+    markdown: str | None = None,
+    docx: bytes | None = None,
+) -> None:
+    """Set up a paused trial, pre-write a (possibly malformed) workbook, drive to
+    ``completed``, and let the harness judge the deliverable. Raises the runner's
+    refusal when the workbook is missing/nonconforming."""
+    runs = tmp_path / "runs"
+    _write_state(
+        runs,
+        envelope=_envelope("paused-at-gate", gate="G1"),
+        card=_card("G1"),
+        emit_workbook=False,
+    )
+    _emit_workbook(runs / str(TRIAL_ID), stem=stem, markdown=markdown, docx=docx)
+    policy = _policy(tmp_path)
+
+    def authoritative_resume(**_kwargs):
+        returned = _envelope("completed", gate=None).model_copy(
+            update={"corpus_path": (tmp_path / "corpus").as_posix()}
+        )
+        _write_json(runs / str(TRIAL_ID) / "run.json", returned.model_dump(mode="json"))
+        return returned
+
+    runner.drive_paused_trial(
+        trial_id=TRIAL_ID,
+        runs_root=runs,
+        policy=policy,
+        policy_digest=_policy_digest(policy),
+        evidence_root=tmp_path / "evidence",
+        resume_fn=authoritative_resume,
+    )
+
+
+def test_completed_run_without_workbook_deliverable_is_refused(tmp_path: Path) -> None:
+    with pytest.raises(
+        runner.RunnerRefusal, match="workbook-deliverable-missing-despite-completed"
+    ):
+        _drive(
+            tmp_path,
+            envelope=_envelope("paused-at-gate", gate="G1"),
+            card=_card("G1"),
+            resume_fn=lambda **_kwargs: _envelope("completed", gate=None),
+            emit_workbook=False,
+        )
+    summary = json.loads(
+        (tmp_path / "evidence" / str(TRIAL_ID) / "summary.json").read_text(encoding="utf-8")
+    )
+    assert summary["success"] is False
+    assert summary["status"] == "refused"
+    assert summary["reason"] == "workbook-deliverable-missing-despite-completed"
+
+
+def test_completed_run_with_conformant_workbook_succeeds(tmp_path: Path) -> None:
+    summary = _drive(
+        tmp_path,
+        envelope=_envelope("paused-at-gate", gate="G1"),
+        card=_card("G1"),
+        resume_fn=lambda **_kwargs: _envelope("completed", gate=None),
+    )
+    assert summary["success"] is True and summary["status"] == "completed"
+    workbook_dir = tmp_path / "runs" / str(TRIAL_ID) / "exports" / "workbooks"
+    assert list(workbook_dir.glob("*.md")) and list(workbook_dir.glob("*.docx"))
+
+
+def test_completed_run_with_only_markdown_and_no_docx_is_refused(tmp_path: Path) -> None:
+    runs = tmp_path / "runs"
+    _write_state(
+        runs,
+        envelope=_envelope("paused-at-gate", gate="G1"),
+        card=_card("G1"),
+        emit_workbook=False,
+    )
+    workbook_dir = runs / str(TRIAL_ID) / "exports" / "workbooks"
+    workbook_dir.mkdir(parents=True, exist_ok=True)
+    (workbook_dir / "u01@1.md").write_text("# Workbook: Test\n", encoding="utf-8")
+    policy = _policy(tmp_path)
+
+    def authoritative_resume(**_kwargs):
+        returned = _envelope("completed", gate=None).model_copy(
+            update={"corpus_path": (tmp_path / "corpus").as_posix()}
+        )
+        _write_json(runs / str(TRIAL_ID) / "run.json", returned.model_dump(mode="json"))
+        return returned
+
+    with pytest.raises(
+        runner.RunnerRefusal, match="workbook-deliverable-missing-despite-completed"
+    ):
+        runner.drive_paused_trial(
+            trial_id=TRIAL_ID,
+            runs_root=runs,
+            policy=policy,
+            policy_digest=_policy_digest(policy),
+            evidence_root=tmp_path / "evidence",
+            resume_fn=authoritative_resume,
+        )
+
+
+def test_completed_run_with_empty_workbook_markdown_is_refused(tmp_path: Path) -> None:
+    with pytest.raises(
+        runner.RunnerRefusal, match="workbook-deliverable-nonconforming-despite-completed"
+    ):
+        _drive_completed_with_workbook(tmp_path, markdown="")
+
+
+def test_completed_run_with_headingless_workbook_markdown_is_refused(tmp_path: Path) -> None:
+    with pytest.raises(
+        runner.RunnerRefusal, match="workbook-deliverable-nonconforming-despite-completed"
+    ):
+        _drive_completed_with_workbook(tmp_path, markdown="no top-level heading here\n")
+
+
+def test_completed_run_with_nonconforming_workbook_docx_is_refused(tmp_path: Path) -> None:
+    with pytest.raises(
+        runner.RunnerRefusal, match="workbook-deliverable-nonconforming-despite-completed"
+    ):
+        _drive_completed_with_workbook(tmp_path, docx=b"not-a-valid-ooxml-zip")
+
+
+# --- Windows DOCX read-lock: transient OSError must retry, not false-refuse. ---
+
+
+def test_stable_file_row_retries_transient_read_lock_then_succeeds(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = tmp_path / "u01@1.docx"
+    payload = _valid_workbook_docx_bytes()
+    target.write_bytes(payload)
+    real_open = os.open
+    attempts = {"count": 0}
+
+    def flaky_open(path, flags, *args, **kwargs):
+        if os.fspath(path) == os.fspath(target) and attempts["count"] < 2:
+            attempts["count"] += 1
+            raise OSError(13, "sharing violation")
+        return real_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(runner.os, "open", flaky_open)
+    monkeypatch.setattr(runner.time, "sleep", lambda *_args: None)
+    row = runner._stable_file_row(target, coordinate="exports/workbooks/u01@1.docx")
+    assert attempts["count"] == 2
+    assert row["size"] == len(payload)
+
+
+def test_stable_file_row_fails_loud_after_read_lock_retries_exhausted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    target = tmp_path / "u01@1.docx"
+    target.write_bytes(_valid_workbook_docx_bytes())
+    real_open = os.open
+
+    def always_locked(path, flags, *args, **kwargs):
+        if os.fspath(path) == os.fspath(target):
+            raise OSError(13, "sharing violation")
+        return real_open(path, flags, *args, **kwargs)
+
+    monkeypatch.setattr(runner.os, "open", always_locked)
+    monkeypatch.setattr(runner.time, "sleep", lambda *_args: None)
+    with pytest.raises(runner.RunnerRefusal, match="identity-file-unreadable"):
+        runner._stable_file_row(target, coordinate="exports/workbooks/u01@1.docx")

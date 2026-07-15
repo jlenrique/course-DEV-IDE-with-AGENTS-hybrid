@@ -506,6 +506,7 @@ def compose_workbook(
     segments: Sequence[TranscriptSegment],
     *,
     prose_revoicer: ProseRevoicer,
+    workbook_title: str | None = None,
     learning_objectives: Sequence[LearningObjectiveBrief] = (),
     answer_keys: Mapping[str, str] | None = None,
     further_reading: Sequence[FurtherReadingEntry] = (),
@@ -543,7 +544,11 @@ def compose_workbook(
     )
 
     answer_keys = dict(answer_keys or {})
-    doc = _ComposedDoc(title=f"Workbook: {plan_unit.event_type}")
+    # The DISPLAY title is a human-readable label distinct from the open-id
+    # ``event_type`` slug (which reads as a hyphenated 80-char id on the H1).
+    # Fall back to ``event_type`` when no display title is supplied.
+    title_label = (workbook_title or "").strip() or plan_unit.event_type
+    doc = _ComposedDoc(title=f"Workbook: {title_label}")
 
     if pre_work is not None:
         label = {
@@ -1018,6 +1023,7 @@ class WorkbookProducer(ModalityProducer):
         plan_unit: PlanUnit,
         context: ProductionContext,
         *,
+        workbook_title: str | None = None,
         spec: WorkbookSpec,
         segments: Sequence[TranscriptSegment],
         source_text: str,
@@ -1062,6 +1068,7 @@ class WorkbookProducer(ModalityProducer):
             spec,
             segments,
             prose_revoicer=self._prose_revoicer,
+            workbook_title=workbook_title,
             learning_objectives=learning_objectives,
             answer_keys=answer_keys,
             further_reading=further_reading,

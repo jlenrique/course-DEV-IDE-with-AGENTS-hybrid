@@ -15,11 +15,12 @@ import os
 import stat
 import sys
 import time
+import zipfile
 from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, TypeVar
 from uuid import UUID, uuid4
 
 import yaml
@@ -65,6 +66,17 @@ _STOP_STATES = frozenset(
     {"paused-at-error", "waiting_for_provider_batch", "failed", "registered", "in-flight"}
 )
 _SECRET_KEY_FRAGMENTS = ("api_key", "password", "secret", "authorization", "credential")
+# A freshly written OOXML/Office file (the workbook ``.docx`` lands seconds before
+# the output-inventory scan) can be held under a transient share-lock by Windows
+# Defender / the Search indexer, surfacing as an ``OSError`` on ``os.open``/read.
+# Bounded retry-with-backoff absorbs that transient lock so it cannot false-refuse
+# an otherwise-good run; a genuinely unreadable file still fails loud once
+# attempts are exhausted.
+_TRANSIENT_READ_ATTEMPTS = 5
+_TRANSIENT_READ_BACKOFF_SECONDS = 0.1
+_WORKBOOK_EXPORT_PREFIX = "exports/workbooks/"
+
+_T = TypeVar("_T")
 
 
 class RunnerRefusal(RuntimeError):  # noqa: N818 - refusal is the domain term
@@ -176,9 +188,31 @@ def _contained_by(path: Path, root: Path) -> bool:
     return True
 
 
+def _retry_transient_read(operation: Callable[[], _T]) -> _T:
+    """Run ``operation``, retrying only transient ``OSError`` with bounded backoff.
+
+    A Windows AV/indexer share-lock on a just-written file raises ``OSError`` on
+    open/read; a few short-backoff retries let it clear. A ``RunnerRefusal`` (or any
+    non-``OSError``) raised by ``operation`` is a genuine integrity failure and
+    propagates immediately without retry. Once the attempt budget is exhausted the
+    last real ``OSError`` is re-raised so a truly unreadable file still fails loud.
+    """
+    last: OSError | None = None
+    for attempt in range(_TRANSIENT_READ_ATTEMPTS):
+        try:
+            return operation()
+        except OSError as exc:
+            last = exc
+            if attempt + 1 < _TRANSIENT_READ_ATTEMPTS:
+                time.sleep(_TRANSIENT_READ_BACKOFF_SECONDS * (attempt + 1))
+    assert last is not None  # loop only exits via return or a caught OSError
+    raise last
+
+
 def _stable_file_row(path: Path, *, coordinate: str) -> dict[str, Any]:
     flags = os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0)
-    try:
+
+    def _read_identity() -> tuple[os.stat_result, os.stat_result, os.stat_result, bytes, bytes]:
         path_before = path.lstat()
         if not stat.S_ISREG(path_before.st_mode):
             raise RunnerRefusal("identity-non-regular-file-refused")
@@ -198,6 +232,10 @@ def _stable_file_row(path: Path, *, coordinate: str) -> dict[str, Any]:
             path_after = path.lstat()
         finally:
             os.close(descriptor)
+        return before, after, path_after, raw, repeated
+
+    try:
+        before, after, path_after, raw, repeated = _retry_transient_read(_read_identity)
     except OSError as exc:
         raise RunnerRefusal("identity-file-unreadable") from exc
     stable_fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns")
@@ -1161,6 +1199,75 @@ def _authoritative_resume_result(
     return persisted
 
 
+def _assert_conformant_workbook_markdown(path: Path) -> None:
+    """Refuse a present-but-nonconforming workbook MD (empty / no top-level heading)."""
+    try:
+        raw = _retry_transient_read(path.read_bytes)
+    except OSError as exc:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed") from exc
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeError as exc:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed") from exc
+    first_nonblank = next((line for line in text.splitlines() if line.strip()), "")
+    if not text.strip() or not first_nonblank.startswith("# "):
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+
+def _assert_conformant_workbook_docx(path: Path) -> None:
+    """Refuse a present-but-nonconforming workbook DOCX (not a valid OOXML zip)."""
+
+    def _open_and_check() -> None:
+        with zipfile.ZipFile(path) as archive:
+            if archive.testzip() is not None:
+                raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+            names = set(archive.namelist())
+        if "[Content_Types].xml" not in names or not any(n.startswith("word/") for n in names):
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+    try:
+        _retry_transient_read(_open_and_check)
+    except zipfile.BadZipFile as exc:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed") from exc
+    except OSError as exc:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed") from exc
+
+
+def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> None:
+    """Kill the ``status == completed`` false-green: prove a real workbook was emitted.
+
+    ``status == completed`` alone NEVER asserted a deliverable — a silent
+    specialist-budget skip of the terminal 07W band could reach ``completed`` with
+    a missing / empty workbook and still report success. Before finalising
+    ``success=True`` on a completed run, assert an MD+DOCX pair is present in the
+    freshly built output inventory under ``<run_dir>/exports/workbooks/`` (the
+    producer's output root; trial-scoped by ``run_dir``) and that each file is
+    non-empty and basically conformant (MD carries a top-level heading; DOCX is a
+    valid OOXML zip). This is a TEST-HARNESS-side assertion only — it never changes
+    production runtime behaviour. Presence + basic conformance is the priority that
+    kills the false-green; full replay / reload-equality is a deferred follow-on.
+    """
+    inventory = build_run_output_inventory(trial_id=trial_id, run_dir=run_dir)
+    md_by_stem: dict[str, str] = {}
+    docx_by_stem: dict[str, str] = {}
+    for row in inventory["files"]:
+        coordinate = str(row["path"])
+        if not coordinate.startswith(_WORKBOOK_EXPORT_PREFIX):
+            continue
+        if int(row["size"]) <= 0:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        if coordinate.endswith(".md"):
+            md_by_stem[coordinate[: -len(".md")]] = coordinate
+        elif coordinate.endswith(".docx"):
+            docx_by_stem[coordinate[: -len(".docx")]] = coordinate
+    paired = sorted(set(md_by_stem) & set(docx_by_stem))
+    if not paired:
+        raise RunnerRefusal("workbook-deliverable-missing-despite-completed")
+    for stem in paired:
+        _assert_conformant_workbook_markdown(run_dir / md_by_stem[stem])
+        _assert_conformant_workbook_docx(run_dir / docx_by_stem[stem])
+
+
 def _drive_paused_trial_impl(
     *,
     trial_id: UUID,
@@ -1197,6 +1304,11 @@ def _drive_paused_trial_impl(
             _check_deadline(started_at, policy)
             if envelope.status != policy.terminal_success_state:
                 raise RunnerRefusal("terminal-state-changed-before-success")
+            # A ``completed`` status is NOT sufficient for success: assert the
+            # workbook deliverable is actually real (present + basically conformant)
+            # so a missing/empty/malformed workbook fails loud instead of reporting
+            # a false-green. Test-harness-side only; production runtime is untouched.
+            _assert_completed_workbook_deliverable(trial_id, run_dir)
             return journal.finalize(
                 status=envelope.status, success=True, reason="completed", actions=actions
             )

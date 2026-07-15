@@ -457,3 +457,265 @@ def test_q2_in_graph_references_populated_and_g2_consistent(tmp_path: Path) -> N
     for entry in inputs.further_reading:
         assert entry.source_ref in inputs.source_ref_manifest
         assert {"source_ref": entry.source_ref} in list(inputs.citations)
+
+
+# --------------------------------------------------------------------------- #
+# Terminal 07W emission fixes (frozen runs dfc372b7 / 503e54c1)               #
+# --------------------------------------------------------------------------- #
+
+
+def _write_run_json_with_contributions(
+    run_dir: Path, contributions: list[SpecialistContribution]
+) -> None:
+    """Write a valid ``run.json`` carrying arbitrary envelope contributions."""
+    trial_id = uuid.uuid4()
+    envelope = ProductionEnvelope(trial_id=trial_id)
+    for contribution in contributions:
+        envelope.add_contribution(contribution)
+    trial = ProductionTrialEnvelope(
+        trial_id=trial_id,
+        preset="production",
+        corpus_path="course-content/courses/fixture-lesson",
+        operator_id="fixture-operator",
+        started_at=datetime.now(UTC),
+        status="in-flight",
+        production_clone_launch_evidence=False,
+        production_envelope=envelope,
+    )
+    (run_dir / "run.json").write_text(trial.model_dump_json(), encoding="utf-8")
+
+
+def _state_without_envelope() -> Any:
+    """A RunState with ``production_envelope`` NULLED (as the dispatch adapter hands it)."""
+    from app.models.state.model_resolution_entry import ModelResolutionEntry
+    from app.models.state.run_state import RunState
+
+    entry = ModelResolutionEntry(
+        level="per_specialist",
+        requested="gpt-5-nano",
+        resolved="gpt-5-nano",
+        reason="seed",
+        timestamp=datetime(2026, 1, 1, tzinfo=UTC),
+    )
+    return RunState(
+        graph_version="v0.1-stub",
+        temperature=0.0,
+        model_resolution_trail=[entry],
+        production_envelope=None,
+    )
+
+
+def _run_produce(
+    producer: WorkbookProducer, inputs: Any, *, research_supplements: Any = ...
+) -> Any:
+    """Drive ``produce()`` from a built ``WorkbookInputs`` (forwarding every field)."""
+    return producer.produce(
+        inputs.plan_unit,
+        inputs.context,
+        workbook_title=inputs.workbook_title,
+        spec=inputs.spec,
+        segments=inputs.segments,
+        source_text=inputs.source_text,
+        citations=inputs.citations,
+        source_ref_manifest=inputs.source_ref_manifest,
+        vo_script_text=inputs.vo_script_text,
+        learning_objectives=inputs.learning_objectives,
+        answer_keys=inputs.answer_keys,
+        further_reading=inputs.further_reading,
+        research_entries=inputs.research_entries,
+        research_empty_reason=inputs.research_empty_reason,
+        research_omitted_note=inputs.research_omitted_note,
+        glossary_articles=inputs.glossary_articles,
+        glossary_empty_reason=inputs.glossary_empty_reason,
+        research_trends=inputs.research_trends,
+        research_supplements=(
+            inputs.research_supplements if research_supplements is ... else research_supplements
+        ),
+    )
+
+
+# --- Fix 1: production_envelope threading (the 07W blocker) ------------------ #
+
+
+def test_fix1_loader_reads_persisted_envelope(tmp_path: Path) -> None:
+    """``_load_persisted_production_envelope`` re-reads the envelope from run.json.
+
+    Guarded: absent / symlinked run.json returns None (clean degrade).
+    """
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    _write_run_json(run_dir, collateral=_Q1_COLLATERAL, plan_units=_Q1_PLAN_UNITS)
+    envelope = wb_act._load_persisted_production_envelope(run_dir)
+    assert envelope is not None
+    assert any(c.specialist_id == "irene_pass1" for c in envelope.contributions)
+    # Absent run.json → None (never a fabricated authority).
+    assert wb_act._load_persisted_production_envelope(tmp_path / "missing") is None
+
+
+def test_fix1_reconcile_consults_persisted_envelope_when_state_null(tmp_path: Path) -> None:
+    """With ``state.production_envelope`` NULLED, the reconcile loads run.json.
+
+    RED-first: the old path saw ``envelope is None`` and (no sidecar) returned
+    ``None`` WITHOUT ever consulting the persisted authority — so on a real run
+    with a brief sidecar it error-paused ``authority-missing`` at 07W. The fix
+    loads the persisted envelope and runs the collision logic against it: a
+    ``workbook_brief`` contribution pinned to the WRONG node_id is a collision
+    that can ONLY be detected by reading run.json, proving the seam is wired.
+    """
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    _write_run_json_with_contributions(
+        run_dir,
+        [
+            SpecialistContribution.from_output(
+                specialist_id="workbook_brief",
+                output={},
+                model_used="fixture",
+                node_id="99",  # NOT 07W.1 → a coordinate collision
+            )
+        ],
+    )
+    state = _state_without_envelope()
+    with pytest.raises(wb_act.WorkbookProducerActError) as excinfo:
+        wb_act._reconcile_workbook_brief_authority(state, run_dir)
+    assert excinfo.value.tag == "workbook-brief.sidecar-mismatch"
+
+
+def test_fix1_reconcile_null_envelope_no_authority_returns_none(tmp_path: Path) -> None:
+    """A run.json with no brief authority + no sidecar still returns None (no false raise)."""
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    _write_run_json(run_dir, collateral=_Q1_COLLATERAL, plan_units=_Q1_PLAN_UNITS)
+    state = _state_without_envelope()
+    assert wb_act._reconcile_workbook_brief_authority(state, run_dir) is None
+
+
+# --- Fix 2: G1 numeric-fidelity hardening on authored pedagogy prose --------- #
+
+_FIX2_COLLATERAL = collateral_present(
+    [
+        section(
+            "sec-u01",
+            "u01",
+            title="Reading the structural shift",
+            deferred_depth="Read-channel derivation of the structural-shift objective.",
+            # An AUTHORED pedagogy numeral (not in corpus/narration).
+            narrative_intent="The cited intervention reduces clinician burnout by 88% in cohort.",
+        )
+    ]
+)
+
+
+def test_fix2_authored_prose_numeral_declared_as_supplement(tmp_path: Path) -> None:
+    """A numeral authored into collateral prose (``88%``) clears G1 as a supplement.
+
+    RED-first: producing with the pre-fix (research-only) supplement set leaves the
+    authored ``88%`` ``unsourced_numeric`` → ``WorkbookFidelityError`` hard-pause.
+    The fix declares authored-prose figures as G1 supplements so it passes.
+    """
+    run_dir = _make_run_dir(
+        tmp_path,
+        collateral=_FIX2_COLLATERAL,
+        plan_units=_Q1_PLAN_UNITS,
+        enrichment_card=_Q1_CARD,
+        # In-source numeral so the audit's zero-denominator guard does not fire.
+        corpus_text="Administrative waste is roughly 25% of total spend.\n",
+    )
+    inputs = wb_act.build_workbook_inputs(run_dir, run_id="fix2")
+    assert inputs is not None
+    # The authored numeral is now declared as a supplement.
+    assert "percent:88" in inputs.research_supplements
+
+    producer = WorkbookProducer(output_root=str(run_dir / "exports" / "workbooks"))
+    # RED: the pre-fix set (research figures only) does NOT clear the authored 88%.
+    research_only = wb_act._research_figure_supplements(
+        inputs.research_entries,
+        inputs.further_reading,
+        inputs.glossary_articles,
+        inputs.research_trends,
+    )
+    assert "percent:88" not in research_only
+    with pytest.raises(WorkbookFidelityError, match="unsourced"):
+        _run_produce(producer, inputs, research_supplements=research_only)
+    # GREEN: the fix's declared supplements clear it.
+    sidecar = _run_produce(producer, inputs)
+    assert sidecar.numeric_audit["buckets"]["unsourced_numeric"]["count"] == 0
+
+
+# --- Fix 3: TRENDS-WRITER-REQUIRED marker leak ------------------------------ #
+
+
+def test_fix3_trends_marker_not_rendered_but_field_retained() -> None:
+    """The inline writer-required marker is stripped from rendered MD (and thus DOCX).
+
+    RED-first: ``_render_docx_body`` only skips lines that START with ``<!--``, so
+    the INLINE ``<!-- TRENDS-WRITER-REQUIRED -->`` in each hot-topic rationale
+    leaked verbatim into the client MD + DOCX. The fix strips inline comment spans
+    at render time while retaining the marker on the ``rationale`` field.
+    """
+    from app.marcus.lesson_plan.trends_projection import (
+        TRENDS_WRITER_REQUIRED_MARKER,
+        HotTopicCallout,
+        ResearchTrendsBrief,
+        render_trends_markdown,
+    )
+
+    topic = HotTopicCallout(
+        topic="Physician leadership gap",
+        rationale=(
+            f"{TRENDS_WRITER_REQUIRED_MARKER} Bounded hot-topic callout grounded in "
+            "`cite-1` (confidence=medium). Not a forecast."
+        ),
+        supporting_citation_ids=("cite-1",),
+        source_refs=("retrieval:scite:10.1/x",),
+        confidence="medium",
+    )
+    brief = ResearchTrendsBrief(
+        trends=(), hot_topics=(topic,), known_losses=(), empty_reason=None
+    )
+    md = render_trends_markdown(brief)
+    # The programmatic signal is retained on the FIELD…
+    assert TRENDS_WRITER_REQUIRED_MARKER in topic.rationale
+    # …but NEVER leaks into the client-facing rendered output.
+    assert "TRENDS-WRITER-REQUIRED" not in md
+    assert "<!--" not in md
+    assert "Physician leadership gap" in md
+    assert "Bounded hot-topic callout grounded in `cite-1`" in md
+
+
+# --- Fix 4: human-readable H1/DOCX title (not the open-id slug) -------------- #
+
+
+def test_fix4_display_title_human_readable_not_slug(tmp_path: Path) -> None:
+    """The H1/DOCX title reads the un-slugged lesson summary, not the open-id slug.
+
+    RED-first: the old title was ``event_type`` (an 80-char hyphenated open-id
+    slug), producing "Workbook: this-lesson-builds-a-case-for-change-…".
+    """
+    long_summary = (
+        "This lesson builds a case for change by moving from healthcare economic "
+        "and structural reality to waste and burnout, then to accelerating knowledge"
+    )
+    run_dir = _make_run_dir(
+        tmp_path, collateral=_Q1_COLLATERAL, plan_units=_Q1_PLAN_UNITS, enrichment_card=_Q1_CARD
+    )
+    _write_run_json(
+        run_dir,
+        collateral=_Q1_COLLATERAL,
+        plan_units=_Q1_PLAN_UNITS,
+        lesson_summary=long_summary,
+    )
+    inputs = wb_act.build_workbook_inputs(run_dir, run_id="fix4")
+    assert inputs is not None
+    # The display title is human-readable prose (un-slugged)…
+    assert inputs.workbook_title.startswith("This lesson builds a case for change")
+    # …while the open-id ``event_type`` stays the hyphenated slug (unchanged contract).
+    assert inputs.plan_unit.event_type.startswith("this-lesson-builds")
+    assert " " not in inputs.plan_unit.event_type
+
+    producer = WorkbookProducer(output_root=str(run_dir / "exports" / "workbooks"))
+    sidecar = _run_produce(producer, inputs)
+    h1 = (REPO_ROOT / sidecar.markdown_path).read_text(encoding="utf-8").splitlines()[0]
+    assert "This lesson builds a case for change" in h1
+    # The hyphenated slug must NOT be the rendered title.
+    assert inputs.plan_unit.event_type not in h1

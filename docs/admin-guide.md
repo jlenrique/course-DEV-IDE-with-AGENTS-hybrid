@@ -70,6 +70,15 @@ Non-claims (hold these lines when reporting status):
 - OpenAlex does not download PDF bytes, perform institutional SSO, or score credibility (`authority_tier` is deliberately `None`).
 - Jefferson live retrieval beyond the fenced probe evidence is not claimed.
 
+### Workbook Live Authoring — Operational Checklist
+
+The governed workbook live run (Epics 36–40) is driven by the delegated HIL harness `scripts/utilities/marcus_spoc_live_test_runner.py` (it does not bypass HIL; it exercises the production G0 confirm + resume seam under the versioned `tests/fixtures/marcus_spoc/workbook_live_hil_policy.json` policy, `approved_by: Juanl`).
+
+1. `MARCUS_G0_DISPATCH_LIVE` is **default OFF**. **OFF authors deterministic boilerplate learning objectives** (`"Understand the material introduced by src-NNN…"`) — do NOT judge LO/workbook quality from an OFF run. **Set `MARCUS_G0_DISPATCH_LIVE=1` for any real workbook run** so G0 (and Irene refinement) author real, source-grounded LOs via live gpt-5. Requires a live OpenAI key in `.env` (`_has_live_openai()` AND-gates the toggle).
+2. Live LO authoring is **non-deterministic** — the same prompt can author a full LO set on one run and (rarely) return zero. The G0 pre-pass now guards this: on zero LOs from a non-empty corpus it **retries the live call once, then fails loud AT G0** (`G0EnrichmentParseError`) rather than cascading to an opaque 07W.1 error. A fail-loud at G0 means the model refused to author LOs — re-run (a fresh trial), do not force.
+3. Standard governed invocation (fresh immutable trial id every run; never reuse a failed witness): `start --trial-id <fresh-uuid> --policy tests/fixtures/marcus_spoc/workbook_live_hil_policy.json --runs-root runs --evidence-root _bmad-output/implementation-artifacts/evidence/workbook-live-hil --input <corpus-dir> --course-source-root <corpus-dir> --encounter-mode recorded`, with `MARCUS_G0_DISPATCH_LIVE=1` exported. Deck+workbook ON / motion+HUD OFF is runner-enforced.
+4. **First-run-stands, no retry-to-green.** If a run pauses at error, freeze and diagnose; do not re-fire hoping for a better roll. Ratified LOs are digest-bound (`ratified-los.json`) — you cannot hand-patch them; regeneration happens inside a fresh run and is re-ratified at G0R.
+
 ### Do Not Operate As If
 
 - Do not treat the legacy Trial-3 or prompt-pack migration banners below as the current operating plan.

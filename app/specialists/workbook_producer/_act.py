@@ -58,7 +58,7 @@ from app.marcus.lesson_plan.prework_artifact import (
     read_workbook_brief,
     workbook_brief_contribution_receipt,
 )
-from app.marcus.lesson_plan.prework_projection import PreWorkBrief
+from app.marcus.lesson_plan.prework_projection import PreWorkBrief, render_prework_markdown
 from app.marcus.lesson_plan.produced_asset import ProductionContext
 from app.marcus.lesson_plan.schema import PlanUnit
 from app.marcus.lesson_plan.trends_projection import (
@@ -84,6 +84,8 @@ from app.marcus.lesson_plan.workbook_producer import (
     WorkbookProducer,
     WorkbookSidecar,
 )
+from app.models.runtime.production_envelope import ProductionEnvelope
+from app.models.runtime.production_trial_envelope import ProductionTrialEnvelope
 from app.models.state.cache_state import CacheState
 from app.models.state.model_resolution_entry import ModelResolutionEntry
 from app.models.state.run_state import RunState
@@ -357,6 +359,32 @@ def _derive_plan_unit_fields(
     return unit_id, event_type
 
 
+# D1b: the DISPLAY title is distinct from the open-id ``event_type`` slug. The
+# H1 / DOCX heading reads a human-readable label (the raw un-slugged
+# ``lesson_summary``, reasonably truncated) instead of the hyphenated 80-char
+# open-id (which produced titles like "Workbook:
+# this-lesson-builds-a-case-for-change-by-moving-from…").
+_DISPLAY_TITLE_MAX = 120
+
+
+def _derive_display_title(lesson_plan: dict[str, Any] | None, run_dir: Path) -> str:
+    """Human-readable workbook title from the run's real ``lesson_summary``.
+
+    Un-slugged (unlike the open-id ``event_type``): whitespace-collapsed and
+    truncated at a word boundary. Degrades to the run name when the run carries
+    no derivable summary.
+    """
+    summary = ""
+    if isinstance(lesson_plan, dict):
+        summary = str(lesson_plan.get("lesson_summary") or "").strip()
+    summary = re.sub(r"\s+", " ", summary).strip()
+    if not summary:
+        return run_dir.name
+    if len(summary) > _DISPLAY_TITLE_MAX:
+        summary = summary[:_DISPLAY_TITLE_MAX].rsplit(" ", 1)[0].rstrip(" ,.;:—-") + "…"
+    return summary
+
+
 def _plan_unit_and_context(
     run_dir: Path,
     run_id: str | None,
@@ -392,6 +420,7 @@ class WorkbookInputs:
 
     plan_unit: PlanUnit
     context: ProductionContext
+    workbook_title: str
     spec: WorkbookSpec
     segments: tuple[TranscriptSegment, ...]
     source_text: str
@@ -569,6 +598,46 @@ def _research_figure_supplements(
             parts.append(topic.topic or "")
             parts.append(topic.rationale or "")
     return _figures("\n".join(parts))
+
+
+def _authored_prose_figure_supplements(
+    spec: WorkbookSpec,
+    learning_objectives: tuple[LearningObjectiveBrief, ...],
+    answer_keys: dict[str, str],
+    pre_work: PreWorkBrief | None,
+) -> set[str]:
+    """Normalized figure tokens sourced from the run's AUTHORED pedagogy prose.
+
+    The G1 numeric gate audits the FULL rendered workbook body against
+    corpus+narration (plus the B5 research-leg supplements). But those cover only
+    the transcript-derived text — NOT the depth-delta narrative + enrichment LO
+    statements, the collateral exercise/answer-key prose, or the prework
+    Scene/Promise/Friction prose. A symbol-numeral legitimately authored into any
+    of those (e.g. an enrichment LO's ``88%``) but not verbatim in corpus+narration
+    is otherwise flagged ``unsourced_numeric`` and HARD-PAUSES a legitimate
+    workbook. These blocks are UPSTREAM-authored artifacts (Irene's collateral /
+    the enrichment card / the validated prework brief) grounded in the source, not
+    producer fabrications, so their figures are declared as G1 supplements —
+    exactly the same mechanism the research leg uses (B5). This preserves the
+    invariant's intent: a numeral that appears ONLY in producer-composed structural
+    chrome (not corpus, narration, research, or these authored blocks) still fails
+    G1. Symbol-only; the named word-form gap
+    (``braid-workbook-wordform-numeral-gap``) is unchanged.
+    """
+    parts: list[str] = []
+    for section in spec.sections:
+        parts.append(section.title or "")
+        parts.append(section.depth_delta.deferred_depth or "")
+        parts.append(section.narrative_intent or "")
+        for exercise in section.exercises:
+            parts.append(exercise.prompt_intent or "")
+    for lo in learning_objectives:
+        parts.append(lo.statement or "")
+    for worked in answer_keys.values():
+        parts.append(worked or "")
+    if pre_work is not None:
+        parts.append(render_prework_markdown(pre_work))
+    return _figures("\n".join(p for p in parts if p))
 
 
 def build_workbook_inputs(
@@ -813,10 +882,23 @@ def build_workbook_inputs(
     research_supplements = _research_figure_supplements(
         research_entries, further_reading, glossary_articles, research_trends
     )
+    # G1 hardening: ALSO declare figures authored into the pedagogy prose blocks
+    # (depth-delta / LO statements / exercises / answer keys / prework) — those are
+    # upstream-authored, source-grounded, and not covered by corpus+narration, so a
+    # legitimate numeral there must not hard-pause the workbook (mirrors B5).
+    research_supplements = research_supplements | _authored_prose_figure_supplements(
+        spec,
+        learning_objectives,
+        answer_keys,
+        brief.payload.pre_work if brief else None,
+    )
+
+    display_title = _derive_display_title(lesson_plan, run_dir)
 
     return WorkbookInputs(
         plan_unit=plan_unit,
         context=context,
+        workbook_title=display_title,
         spec=spec,
         segments=segments,
         source_text=source_text,
@@ -920,6 +1002,7 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
         return producer.produce(
             inputs.plan_unit,
             inputs.context,
+            workbook_title=inputs.workbook_title,
             spec=inputs.spec,
             segments=inputs.segments,
             source_text=inputs.source_text,
@@ -957,11 +1040,41 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
         ) from exc
 
 
+def _load_persisted_production_envelope(run_dir: Path) -> ProductionEnvelope | None:
+    """Load the persisted ``ProductionEnvelope`` from ``<run_dir>/run.json``.
+
+    The dispatch adapter NULLS ``state.production_envelope`` for EVERY specialist
+    (per-component isolation invariant); workbook_producer is the only specialist
+    that reads it (the 07W.1 brief-authority reconcile). But 07W runs AFTER the
+    band nodes 07W.1-07W.4, which persist ``run.json`` (07W self-resolves from the
+    RUN DIR), so the authoritative envelope is re-loadable from disk. Returns
+    ``None`` when ``run.json`` is absent or unreadable so the envelope-absent path
+    still degrades cleanly. Guarded: contained (a child of ``run_dir``) and not a
+    symlink.
+    """
+    run_json = run_dir / "run.json"
+    if run_json.is_symlink() or not run_json.is_file():
+        return None
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(
+            run_json.read_text(encoding="utf-8")
+        )
+    except (OSError, ValueError):
+        return None
+    return trial.production_envelope
+
+
 def _reconcile_workbook_brief_authority(
     state: RunState, run_dir: Path
 ) -> WorkbookBriefArtifactV1 | None:
     """Require exact contribution authority before activating presentation support."""
     envelope = state.production_envelope
+    # The dispatch adapter nulls ``production_envelope`` on the isolated RunState;
+    # re-load the persisted authority from the run dir so the 07W brief reconcile
+    # runs its collision/legacy/real logic against the REAL envelope instead of
+    # error-pausing on ``authority-missing``.
+    if envelope is None:
+        envelope = _load_persisted_production_envelope(run_dir)
     brief_path = run_dir / WORKBOOK_BRIEF_FILENAME
     if brief_path.is_symlink():
         raise WorkbookProducerActError(
