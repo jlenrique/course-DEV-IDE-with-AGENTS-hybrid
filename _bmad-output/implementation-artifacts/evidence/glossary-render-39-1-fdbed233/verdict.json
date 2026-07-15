@@ -1,0 +1,70 @@
+{
+  "attempt_id": "fdbed233-aa5c-42ab-9477-e6322c5d7747",
+  "bold_term_count": 11,
+  "bold_term_set_digest": "sha256:4ce52399549769d417504938f18cc4d1870e07e040c4e57b43ad80bf3963e824",
+  "claim_licensed": "term-keyed glossary render over the frozen a940c5eb pool + the landed 37-2b bolded-term set \u2014 headword-identity, covered/uncovered honesty, MD+DOCX association, citation resolvability",
+  "completed_at": "2026-07-15T21:43:31.551677+00:00",
+  "deterministic_replay": true,
+  "docx_path": "_bmad-output/implementation-artifacts/evidence/glossary-render-39-1-fdbed233/run/exports/workbooks/u01@1.docx",
+  "enrollment_note": "PASS: freeze this attempt dir as the glossary-render witness and enroll it in tests/live_witness_replay/witnesses.yaml (family workbook-glossary-render.v1, node 07W)",
+  "expected_input_digests": {
+    "ask-a-research-call.v1.json": "sha256:4f4d7849cdfc53154430c7c8120cde3ea71eab8dc6fc873ed976f47de7b7155e",
+    "bundle/extracted.md": "sha256:07875ae66344e7ae9b7e06b2fe8d9cc0b1295eb16d50976a3a8ec46d10262f46",
+    "exports/segment-manifest-storyboard-b.yaml": "sha256:ac27203dfa5ab871d0947d82e1a32859e11a4a855a193f3b47c52c7ed9bf4847",
+    "g0-enrichment.json": "sha256:a6ff6f29b559ec9b1b2902b8879048cdef78efb5bbefa4d6aa4e264b8d7b71a5",
+    "run.json": "sha256:99c3f21d85753ba65dbb982c4b29698a83f9ffbdb4b73c6aa2ec16fd79e4a135",
+    "workbook-brief.v1.json": "sha256:a72aa8028fec3c2e7cd64f3d7e1d0cb62a4153a652e8e888c33bd00e7a696636",
+    "workbook-deep-dive-enrichment-call.v1.json": "sha256:8d32ce0fbbe262beee8faa7645bd947c9eebb513ec49768669692c55f330a6ee"
+  },
+  "first_run_stands": true,
+  "frozen_journal_state": "completed",
+  "frozen_model_config_digest": "sha256:adeb7759a5edc554dcb6eb5424d6b6a3d930fd2e0dca058beb36d7f4d0dcfa6b",
+  "frozen_witness": "deep-dive-enrichment-37-2b-838524b8",
+  "input_digest_drift": {},
+  "input_digests": {
+    "ask-a-research-call.v1.json": "sha256:4f4d7849cdfc53154430c7c8120cde3ea71eab8dc6fc873ed976f47de7b7155e",
+    "bundle/extracted.md": "sha256:07875ae66344e7ae9b7e06b2fe8d9cc0b1295eb16d50976a3a8ec46d10262f46",
+    "exports/segment-manifest-storyboard-b.yaml": "sha256:ac27203dfa5ab871d0947d82e1a32859e11a4a855a193f3b47c52c7ed9bf4847",
+    "g0-enrichment.json": "sha256:a6ff6f29b559ec9b1b2902b8879048cdef78efb5bbefa4d6aa4e264b8d7b71a5",
+    "run.json": "sha256:99c3f21d85753ba65dbb982c4b29698a83f9ffbdb4b73c6aa2ec16fd79e4a135",
+    "workbook-brief.v1.json": "sha256:a72aa8028fec3c2e7cd64f3d7e1d0cb62a4153a652e8e888c33bd00e7a696636",
+    "workbook-deep-dive-enrichment-call.v1.json": "sha256:8d32ce0fbbe262beee8faa7645bd947c9eebb513ec49768669692c55f330a6ee"
+  },
+  "machine_judge": {
+    "claim_licensed": "term-keyed glossary render over the frozen a940c5eb pool + the landed 37-2b bolded-term set \u2014 headword-identity, covered/uncovered honesty, MD+DOCX association, citation resolvability",
+    "headwords": [
+      "spending",
+      "73 days",
+      "25%",
+      "adaptive learning infrastructure",
+      "governance",
+      "$5.2 trillion",
+      "burnout",
+      "AI",
+      "digital front door",
+      "67%",
+      "Incremental"
+    ],
+    "judge": {
+      "citation_resolvability_deduped_once": true,
+      "covered_entry_verbatim_tier_and_citation": true,
+      "deliverable_bar_clauses": true,
+      "docx_association_python_docx": true,
+      "headword_identity_association": true,
+      "lean_uncovered_honesty_plus_coverage_line": true,
+      "md_bold_set_equals_headword_set": true
+    },
+    "pass": true
+  },
+  "markdown_path": "_bmad-output/implementation-artifacts/evidence/glossary-render-39-1-fdbed233/run/exports/workbooks/u01@1.md",
+  "pass": true,
+  "pool_packet_digest": "5af71d68831eb54143439dc0e9191f2ee8e8d9df6e2bc04a40a8487ab91fec26",
+  "probe_id": "probe-39-1-glossary-render-001",
+  "provider_calls": 0,
+  "renderer_config_identity": "sha256:e6ebc5ddce0159b8a39b9e31450f367a606535716158bf3403c13335459a723c",
+  "replay_reconciled": true,
+  "run_dir": "_bmad-output/implementation-artifacts/evidence/glossary-render-39-1-fdbed233/run",
+  "schema_version": "glossary-render-39-1-probe-evidence.v1",
+  "started_at": "2026-07-15T21:43:26.818920+00:00",
+  "story": "39.1"
+}

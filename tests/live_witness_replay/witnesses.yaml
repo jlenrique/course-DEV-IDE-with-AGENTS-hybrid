@@ -63,3 +63,20 @@ families:
         disposition: enrolled
         capture:
           idempotency_key: sha256:509649873f74b0ef84c51b24c5cfd87c1f68c22434f0176240cdc173c161269e
+  - family: workbook-glossary-render.v1
+    node_id: "07W"
+    # Deterministic replay-render witness (no LLM surface — probe
+    # probe-39-1-glossary-render-001 attempt fdbed233 PASSED 2026-07-15:
+    # 7/7 judge checks, zero provider calls, zero input-digest drift,
+    # renderer identity spans 4 modules). Note: the probe's synthetic run dir
+    # reproduces the a940c5eb LO-overlay degrade (observable warning fired) —
+    # expected for the replay sandbox; outside this witness's licensed claim.
+    witnesses:
+      - id: glossary-render-39-1-fdbed233
+        path: _bmad-output/implementation-artifacts/evidence/glossary-render-39-1-fdbed233/verdict.json
+        state: completed
+        disposition: enrolled
+        capture:
+          renderer_config_identity: sha256:e6ebc5ddce0159b8a39b9e31450f367a606535716158bf3403c13335459a723c
+          bold_term_set_digest: sha256:4ce52399549769d417504938f18cc4d1870e07e040c4e57b43ad80bf3963e824
+
