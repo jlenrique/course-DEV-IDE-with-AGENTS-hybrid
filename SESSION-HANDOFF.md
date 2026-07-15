@@ -16,7 +16,7 @@
 
 ## Run-A readiness (scout, close of session)
 
-Static walk of the full 07W band against frozen artifacts: run A statically GREEN (degraded path bar-conformant; ordering/two-walk persistence verified; witness corpus drift-free vs 838524b8). Pre-dispatch: (1) decide the 07W.3 provider-failure recovery protocol (failure journal permanently pauses the trial today); (2) add the glossary-family replay module/meta-pin. Anticipate one designed-honesty G1 pause class (non-DOI pool-row title numerals in covered glossary bodies). Full findings in next-session-start-here.md.
+Static walk of the full 07W band against frozen artifacts: run A statically GREEN (degraded path bar-conformant; ordering/two-walk persistence verified; witness corpus drift-free vs 838524b8). Both pre-dispatch items CLOSED same session: (1) recovery protocol DECIDED — Option B archive affordance filed (`07w3-provider-failure-journal-archive-recovery`); run A UNGATED under the binding interim PARK-never-restart policy; (2) glossary-family replay + registry meta-pin landed (`799add10`, 22/22 STRICT). Anticipate one designed-honesty G1 pause class (non-DOI pool-row title numerals in covered glossary bodies). Full findings in next-session-start-here.md.
 
 ## Unresolved issues / risks
 
