@@ -1,3 +1,44 @@
+# Session Handoff — 2026-07-15 EVE (WRAPUP: **EPIC 38 CLOSED · master consolidated · 39/40 wave opened under the Paid-Run Economy Protocol · 37-2b + 39-1 probe-witnessed** — Class S)
+
+**Final class:** S. **Branches:** `codex/workbook-enhanced-epics-36-40` (consolidated to master `2d5b7493`) → `dev/workbook-wave-3940-2026-07-15`. **Opened as:** S (session START protocol; LO-overlay bridge anchor). **Class drift:** none. **Operator goal (4h window):** executed — optimal live-run proving via probes; WRAPUP at the mark.
+
+## What was completed (marathon single day; ~20 commits, all pushed)
+
+1. **Session ramp + owed debts cleared:** KG+ONBOARDING regenerated at `b24b2aed` (2,976 nodes); user/dev/admin/operator guides aligned; hud-guide rewritten off the retired legacy HUD; STATE-OF-THE-APP §11 refreshed twice (Epic-38 close DoD; wave block).
+2. **The workbook became SHIPPABLE:** LO-overlay bridge fixed via digest-bound authority-map join (`9d4f0593`; marker bridge proven cross-namespace UNSOUND); new live-variance layer (self-parent heads) froze witness `5ee9ac39` → deterministic normalization (`2147ad4d`); verification trial `8b275e5b` COMPLETED with Learning Objectives 6/6 REAL statements. Both fixes: spec party 4/4 → fresh dev → Blind+Edge → remediation.
+3. **Stories 38.1 + 38.3a CLOSED** (4-seat party unanimous CLOSE-WITH-RIDERS; Murat tamper audit clean; post-hoc ask-a-live-verdict.v1 emitted; claim envelope corrected — both passing trials ran the FROZEN lesson `tejal-apc-c1-m1-p2-trends`, Tejal Part 2; off-lesson + cross-SME stay OPEN claims). **Epic-38 retrospective DONE** (REQUIRED; J-F2 adjudicated fix-induced-by-design; deferred-inventory consulted with per-entry verdicts; F-E2E-4 struck).
+4. **Roadmap conversation held with the operator:** 38.2 re-homed to the 39-wave (Epic 38 CLOSED honestly); MERGE ratified for overlay exercises; master consolidation executed (`2d5b7493`); cross-SME sequenced behind the ingestion+registry lanes. **Paid-Run Economy Protocol ratified** (party 4/4 + 7 hardening amendments) and saved as standing memory — the operator's governing directive: optimize paid runs WITHOUT reopening believed-green.
+5. **Wave execution under the protocol:** answer-leak strip (`c0811817`, T4-hardened, 47-pin hygiene module). **Story 37-2b** (07W.3 deep-dive enrichment): full cycle incl. 24-finding T4 + 19-item remediation; live probe attempt 1 FROZE (order-variant bold_terms) → normalizer v2 → **attempt `838524b8` PASS ENRICHED** (judge 3/3, 1 call, zero-recall replay) → `done-awaiting-live-witness`. **Story 39-1** (term-keyed glossary): split ratified (39-1b lifted); 20-finding T4 + 15-patch remediation; **deterministic probe `fdbed233` PASS** (7/7, 0 provider calls, 0 digest drift) → `done-awaiting-live-witness`. **`tests/live_witness_replay/` FOUNDED** (STRICT 19/19; skip≠green meta-pinned; three families witnessed).
+
+## What is next
+
+1. **39-1b dev** (ready-for-dev; deterministic; strict-serialized) → **governed batch run A** (witnesses all three wave stories; per-story verdict lines; STRICT pre-flight). 2. 38-2 + 39-2 + 40-1 → run B → off-frozen-lesson re-proof finale. 3. Post-wave: dispatch-ladder band-factory; Phase-2 lanes per SOTA (HAI exploration pre-authorized when operator AFK — see memory).
+
+## Unresolved issues / risks
+
+- M-R2 BINDING at next Pass-1 touch (refinement-path normalization gap). Deferred register carries: B5 section-scoping, M2a upstream ids, budget-guard, replay-equality, locator contract, RecursionError envelope, band-factory, glossary top-up, bold-term-class curation (J-2: headword-class = operator spot-check at run A).
+- Inherited baseline failure `test_health_tiles_prefer_persisted_cost_report` (pre-wave, attributed via clean-worktree check).
+- KG regen owed again at next consolidation (~40 wave files landed after the morning regen).
+
+## Key lessons
+
+- **Probes convert governed-run failures into probe-cost failures**: attempt aa1ddff9 caught the bold-term-order variance for cents; run A would have burned dollars on it. Probe→freeze→replay→spend is now proven practice, not just doctrine.
+- **Hunter convergence validates the two-pair review format**: both 39-1 lens pairs independently found the same MUST (degraded-path term authority).
+- **Deterministic probes exist**: the glossary path needed zero paid calls — check every "probe" for an LLM surface before assuming spend.
+- **The registry must gate on COMPLETED witnesses**: enrolling a failure witness must never flip STRICT green (caught at implementation).
+
+## Validation summary
+
+- Step 0a battery (session START full-repo after tripwire + WRAPUP since-handoff): lockstep exit 0 ×4 today (latest trace `reports/dev-coherence/2026-07-15-2145/`), standard+cluster walks READY 0-critical, import-linter 18/0, sprint YAML 5/5 ×5, diff-check clean. Step 0b: 38-1/38-3a done-flips carried the 4-seat closure party + tamper audit as the pre-closure equivalent; today's two `done-awaiting-live-witness` flips are probe-witnessed per protocol.
+- Suites at close: workbook line **1927 passed / 6 skipped / 0 failed** (39-1 close); 37-2b close 2442 passed; STRICT replay 19/19. Ruff clean on all touched files throughout.
+- Live evidence: 2 completed governed trials (a940c5eb, 8b275e5b) + 3 probe attempts (1 frozen failure, 2 passes) + 6 frozen negative witnesses — first-run-stands honored on every failure.
+
+## Artifact update checklist
+
+sprint-status ✓ (5× reconciled+tested) · bmm-workflow-status ✓ · project-context ✓ · next-session-start-here ✓ · SESSION-HANDOFF ✓ (this) · guides ✓ (dev-guide wave section; morning alignment batch) · SOTA §11 ✓×2 · deferred-inventory ✓ (retro verdicts + wave follow-ons) · deferred-work ✓ · party records ✓ (closure, retro, wave kickoff, 39-1 green-light) · Cora chronology ✓ · KG regen: owed at next consolidation (recorded).
+
+---
+
 # Session Handoff — 2026-07-15 (WRAPUP: **FIRST COMPLETE WORKBOOK — live gate PASSED** — Class S)
 
 **Final class:** S. **Branch:** `codex/workbook-enhanced-epics-36-40`. **Opened as:** S (repo prep → workbook live-validation arc). **Class drift:** none.

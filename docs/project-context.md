@@ -1,3 +1,13 @@
+# Current Context Addendum - 2026-07-15 (session WRAPUP: Epic 38 CLOSED + first complete workbook + 39/40 wave opened under the Paid-Run Economy Protocol)
+
+**Session class:** S. Branches: `codex/workbook-enhanced-epics-36-40` (consolidated to master `2d5b7493`) then `dev/workbook-wave-3940-2026-07-15`.
+
+**Landed:** First complete runner-verified WORKBOOK (trial `a940c5eb`) + LO-verified follow-up (`8b275e5b`, 6/6 real statements) after two same-day fix cycles (LO-overlay authority-map join `9d4f0593`; Pass-1 head-self-parent normalization `2147ad4d`). Stories 38.1+38.3a CLOSED (party 4/4); Epic-38 retrospective DONE; 38.2 re-homed to the 39-wave; Epic 38 CLOSED. KG+ONBOARDING regenerated at `b24b2aed`; all guides aligned; SOTA §11 refreshed with the Epic-38 close DoD. **Paid-Run Economy Protocol ratified + binding** (witness-replay pre-flight STRICT, probe→freeze→replay→spend, live-shape fixtures, batched governed runs, machine bars with negative pins — `wave-3940-kickoff-party-record-2026-07-15.md`). Wave execution: answer-leak strip (`c0811817`), Story 37-2b (07W.3 deep-dive enrichment; probe attempt 1 froze→normalizer v2→attempt `838524b8` PASS ENRICHED) and Story 39-1 (term-keyed glossary; deterministic probe `fdbed233` PASS 7/7) both `done-awaiting-live-witness`. `tests/live_witness_replay/` FOUNDED (STRICT 19/19, three families witnessed).
+
+**Next:** 39-1b (exercise MERGE, ready-for-dev, strict-serialized) → governed batch run A (witnesses 37-2b+39-1+39-1b; STRICT pre-flight satisfiable) → 38-2 + 39-2 + 40-1 → run B → off-frozen-lesson re-proof finale. HAI cross-SME exploration pre-authorized when AFK at Phase-2 lane 1.
+
+---
+
 # Current Context Addendum - 2026-07-14 (session WRAPUP: Workbook Epics 36–38 advanced; live acceptance next)
 
 **Session class:** S. Branch `codex/workbook-enhanced-epics-36-40`.
