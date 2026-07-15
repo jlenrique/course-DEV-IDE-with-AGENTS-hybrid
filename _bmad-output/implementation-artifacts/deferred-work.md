@@ -122,3 +122,7 @@
 - source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-lo-overlay-bridge-fix.md`
   summary: Harden read_slide_authority_map so pathological input (e.g. RecursionError from deeply nested JSON) is funneled into SlideAuthorityInvalidError like the rest of its failure envelope.
   evidence: T4 Edge Case Hunter — json.loads can raise RecursionError, which escapes the reader's OSError/ValueError catch and would crash every caller (workbook_wiring + the 07W bridge seam); pre-existing reader behavior, not caused by this story.
+
+- source_spec: `_bmad-output/implementation-artifacts/spec-38-3a-pass1-head-self-parent-normalize.md`
+  summary: Cover the Pass-1 REFINEMENT path against the head-self-parent live-variance tic — _validate_raw_refinement_identity runs BEFORE normalize_clusters, so the same model shape on a plan-refinement pass red-rejects as "changed immutable parent_slide_id"; consider normalizing the raw payload before the identity check (same provably-empty predicate) plus a parse-path seam test through _normalize_decoded_pass1_response.
+  evidence: T4 Blind Hunter on the 38-3a normalization diff — _act.py ~L1217 ordering (identity check precedes normalization); not on the governed workbook run's critical path (delegated HIL policy never triggers Pass-1 refinement), so deferred rather than batched.

@@ -712,6 +712,8 @@ def _cluster_emission_instructions(*, refinement: bool = False) -> str:
         "cluster_interstitial_count:0. keep-dense is an INPUT to the decision, "
         "never a veto applied after.\n"
         "- Singletons still carry a cluster_id (degenerate size-1 cluster).\n"
+        "- HEAD units must OMIT parent_slide_id entirely (never the head's "
+        "own unit_id, never null/empty) — only interstitials carry it.\n"
         '- SOURCE ANCHORS: every in-scope plan_unit carries "source_ref_ids" '
         "— 1-6 ordered IDs copied exactly from the supplied catalog. Select "
         "only IDs whose displayed exact text cites the passages this unit "
@@ -889,6 +891,37 @@ def normalize_clusters(plan: dict[str, Any]) -> dict[str, Any]:
     for idx, unit in enumerate(units):
         if unit["cluster_role"] != "head":
             continue
+        # Live-variance normalization (trial 5ee9ac39): live models sometimes
+        # stamp a HEAD with its own unit_id (or an empty string) as
+        # parent_slide_id. Strip ONLY that unambiguous shape — key absent, the
+        # same idiom as Pass-3 orphan demotion. Stripped equality against the
+        # RAW unit_id only (never the _uid() positional fallback, no
+        # casefolding); any other value (another unit's id, a case-differing
+        # id, the cluster_id, a non-string) stays put and remains fail-loud at
+        # _validate_cluster_authority.
+        parent = unit.get("parent_slide_id")
+        raw_unit_id = unit.get("unit_id")
+        if isinstance(parent, str) and (
+            not parent.strip()
+            or (
+                # T4 review: compare ONLY when unit_id is itself a string —
+                # str() coercion would manufacture matches ("None" for a
+                # missing id; "1" for an int id) that must stay fail-loud.
+                isinstance(raw_unit_id, str)
+                and parent.strip() == raw_unit_id.strip()
+            )
+        ):
+            # T4 review: observable normalization (sibling FIX-1 discipline) —
+            # a scrub-heavy run must be distinguishable from a clean one, or
+            # the prompt bullet's effectiveness can never be measured.
+            logger.warning(
+                "pass1 normalize: stripping %s parent_slide_id %r from head %r "
+                "(live-variance shape, trial 5ee9ac39 class)",
+                "self-referential" if parent.strip() else "empty",
+                parent,
+                raw_unit_id,
+            )
+            unit.pop("parent_slide_id", None)
         uid = _uid(unit, idx)
         cid = unit.get("cluster_id")
         if not (isinstance(cid, str) and cid.strip() and cid not in used_cluster_ids):
