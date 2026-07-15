@@ -2126,6 +2126,26 @@ def _runner_payload_for_specialist(
         if plan_path:
             kira_payload["motion_plan_path"] = plan_path
         return kira_payload
+    # 07W run-dir threading (live-diagnosed trial 503e54c1, paused at 07W with
+    # ``workbook_producer.segment-manifest.missing``). The terminal producer
+    # self-resolves ALL its run-dir-relative inputs (storyboard-B segment
+    # manifest, gary exports/captions, ``bundle/extracted.md`` corpus, workbook
+    # output root) from a single run dir. Absent this key its ``_resolve_run_dir``
+    # falls back to the SHIPPED ``RUNS_ROOT / run_id`` (``state/config/runs``) —
+    # WRONG whenever the trial executes under a non-default ``--runs-root`` (e.g.
+    # ``runs``): it then reads an empty shipped-root dir and fails loud on the
+    # segment manifest that DOES exist under the real run. Thread the ACTUAL run
+    # dir — ``runs_root / trial_id``, the SAME coordinate the workbook band,
+    # storyboard_publisher, and deep-dive resolve — so every read lands under the
+    # run the trial is actually executing in, regardless of ``--runs-root``. The
+    # ``WORKBOOK_RUN_DIR`` env replay/dev override still wins (mirrors kira's
+    # ``KIRA_MOTION_PLAN_PATH``). Fail-loud precondition mirrors kira: a non-run
+    # caller (runs_root/trial_id None) returns None and NEVER re-defaults.
+    if specialist_id == "workbook_producer":
+        if runs_root is None or trial_id is None:
+            return None
+        override = os.environ.get("WORKBOOK_RUN_DIR")
+        return {"run_dir": override or (runs_root / str(trial_id)).as_posix()}
     return None
 
 
