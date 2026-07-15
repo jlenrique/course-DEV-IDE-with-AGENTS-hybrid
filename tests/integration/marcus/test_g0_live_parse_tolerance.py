@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import json
 import logging
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -160,3 +162,120 @@ def test_default_extraction_factory_binds_generous_budget_and_timeout() -> None:
     # max_retries=2 absorbs gpt-5's per-call latency variance (a timed-out attempt
     # retries into a faster response); each attempt stays hard-bounded by the timeout.
     assert handle.chat.max_retries == 2
+
+
+# --------------------------------------------------------------------------- #
+# Fix B: REQUIRED-OUTPUT VALIDATION RETRY. A NON-EMPTY corpus that yields ZERO   #
+# usable provisional LOs is an INVALID G0 response — the live call is re-issued   #
+# ONCE, and a still-empty retry FAILS LOUD at G0 (never cascades to the cryptic   #
+# 07W.1 deep-dive Promise error). Root cause: trial 4614f21f authored 0 LOs from  #
+# 11 source files (with 25 typed components) and limped silently downstream.      #
+# --------------------------------------------------------------------------- #
+class _FakeChat:
+    """A fake chat model whose ``invoke`` replays queued response contents in order."""
+
+    def __init__(self, contents: list[str]) -> None:
+        self._contents = list(contents)
+        self.calls = 0
+
+    def invoke(self, _messages: object) -> SimpleNamespace:
+        self.calls += 1
+        return SimpleNamespace(content=self._contents.pop(0))
+
+
+def _factory(contents: list[str]) -> tuple[object, _FakeChat]:
+    """Return a ``(chat_model_factory, fake_chat)`` pair driving ``_live_pre_pass``."""
+    chat = _FakeChat(contents)
+    handle = SimpleNamespace(chat=chat)
+    return (lambda _model_id: handle), chat
+
+
+def _two_file_corpus(tmp_path: Path) -> list[tuple[str, Path]]:
+    (tmp_path / "a.md").write_text("# File A\nAlpha teaches leadership basics.\n", encoding="utf-8")
+    (tmp_path / "b.md").write_text("# File B\nBeta teaches teamwork basics.\n", encoding="utf-8")
+    return gw._enumerate(tmp_path)
+
+
+def _components(enumerated: list[tuple[str, Path]]) -> list[dict[str, object]]:
+    return [
+        {
+            "parent_source_id": sid,
+            "type": "slide",
+            "label": "S",
+            "locator": "File",
+            "excerpt": "teaches",
+        }
+        for sid, _ in enumerated
+    ]
+
+
+def _payload_zero_los(enumerated: list[tuple[str, Path]]) -> str:
+    # A well-formed response with typed components but an EMPTY provisional_los array —
+    # the exact 4614f21f shape (components present, zero LOs).
+    return json.dumps({"components": _components(enumerated), "provisional_los": []})
+
+
+def _payload_with_los(enumerated: list[tuple[str, Path]]) -> str:
+    return json.dumps(
+        {
+            "components": _components(enumerated),
+            "provisional_los": [
+                {
+                    "objective_id": f"lo-g0-{i:03d}",
+                    "statement": f"Learner can explain the concept grounded in {sid}.",
+                    "confidence": "low",
+                    "source_refs": [
+                        {"source_id": sid, "locator": "File", "quoted_span": "teaches"}
+                    ],
+                }
+                for i, (sid, _) in enumerate(enumerated, start=1)
+            ],
+        }
+    )
+
+
+def test_zero_los_from_nonempty_corpus_retries_once_then_fails_loud(
+    tmp_path: Path, caplog: pytest.LogCaptureFixture
+) -> None:
+    enumerated = _two_file_corpus(tmp_path)
+    factory, chat = _factory([_payload_zero_los(enumerated), _payload_zero_los(enumerated)])
+    with caplog.at_level(logging.WARNING), pytest.raises(gw.G0EnrichmentParseError) as exc_info:
+        gw._live_pre_pass(enumerated, tmp_path, factory)
+    # The live G0 call is re-issued EXACTLY once (required-output retry, not a re-run).
+    assert chat.calls == 2
+    # The retry is LOUD (operator sees the 0-LO invalidity + retry decision).
+    assert any("0 provisional learning objectives" in r.message for r in caplog.records)
+    # The fail-loud names the REAL problem (0 LOs from N source files), not 07W.1.
+    msg = str(exc_info.value)
+    assert "0 learning objectives" in msg
+    assert f"{len(enumerated)} source" in msg
+
+
+def test_zero_los_then_nonzero_on_retry_succeeds(tmp_path: Path) -> None:
+    enumerated = _two_file_corpus(tmp_path)
+    factory, chat = _factory([_payload_zero_los(enumerated), _payload_with_los(enumerated)])
+    typed, los, provenance = gw._live_pre_pass(enumerated, tmp_path, factory)
+    # Retried once, then the non-empty response is accepted — no fail-loud.
+    assert chat.calls == 2
+    assert len(los) == len(enumerated)
+    assert typed, "the extracted components survive the required-output retry"
+    assert len(provenance) == len(enumerated)
+
+
+def test_nonzero_los_first_pass_does_not_retry(tmp_path: Path) -> None:
+    enumerated = _two_file_corpus(tmp_path)
+    factory, chat = _factory([_payload_with_los(enumerated)])
+    typed, los, provenance = gw._live_pre_pass(enumerated, tmp_path, factory)
+    # A valid first response must NOT trigger the required-output retry (preserve behavior).
+    assert chat.calls == 1
+    assert len(los) == len(enumerated)
+
+
+def test_empty_live_response_still_fails_loud_before_any_retry(tmp_path: Path) -> None:
+    # An empty RESPONSE TEXT fails loud on the FIRST dispatch (the pre-existing guard) —
+    # the new 0-LO retry must NOT swallow or defer it.
+    enumerated = _two_file_corpus(tmp_path)
+    factory, chat = _factory([""])
+    with pytest.raises(gw.G0EnrichmentParseError):
+        gw._live_pre_pass(enumerated, tmp_path, factory)
+    assert chat.calls == 1
