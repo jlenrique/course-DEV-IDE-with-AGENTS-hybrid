@@ -1792,7 +1792,7 @@ development_status:
   epic-37-review-deep-dive-producer: in-progress  # Review + deep-dive producer (review_projection.py)
   37-1-review-frame-bookend: done  # 2026-07-13 3-layer review + singleton-loss remediation + exact-current closure PASS; 229 passed, 1 skipped; Cora WARN permit.
   37-2a-deep-dive-skeleton: done  # 2026-07-13 3-layer review + 3 remediation rounds; exact-current closure PASS; 219 passed; Cora WARN permit.
-  37-2b-deep-dive-enrichment-cited: backlog  # A1 split; citation-COVERAGE gate (A2); dep 38-0 + 38-1
+  37-2b-deep-dive-enrichment-cited: in-progress  # 2026-07-15 green-lit 4/4 (13 amendments folded) + dev dispatched; first story under the Paid-Run Economy Protocol (probe-37-2b-deep-dive-enrichment-001 pre-registered; witness owed by batch run A)
   37-3-check-on-learning-retrieval: done  # Exact-current closure: 371 focused + 565 dependency + 67 topology; Blind/Edge/Acceptance PASS; Cora warn/permit.
   37-4-closing-reflection-shifted-question: done  # 2026-07-13 exact-current Blind/Edge/Acceptance PASS; 449 focused + 936 dependency + 24 topology; strict warnings/Ruff/diff clean; Cora warn/permit.
   37-5-wire-review-golden-references: backlog  # A8: assemble+dedupe+render References section (FR12)

@@ -4,7 +4,7 @@ baseline_commit: c0811817
 
 # Story 37.2b: Deep Dive enrichment — cited pool-grounded depth + A2 citation-COVERAGE gate
 
-Status: draft  <!-- party green-light round precedes ready-for-dev; do not flip without it -->
+Status: ready-for-dev  <!-- party green-light round precedes ready-for-dev; do not flip without it -->
 
 ## Story
 
@@ -147,3 +147,21 @@ Tier-1 within-node activation (see T1 item 3); regime doc read at T1; lockstep c
 ## Change Log
 
 - 2026-07-15: Story authored from the ratified A1 split + A2 coverage-gate amendment + wave-3940 Paid-Run Economy Protocol; deterministic A2 matrix, probe registration (`probe-37-2b-deep-dive-enrichment-001`), same-diff deliverable-bar extension with negative pins, witness-registry founding, D2.4 dedup input, Tier-1 lockstep declaration (workbook_wiring.py), and M-R2 not-applicable verdict pinned. Status: **draft** pending party green-light round.
+
+## Green-Light Round Amendments (2026-07-15, party 4/4 GREEN-WITH-AMENDMENTS — BINDING on dev)
+
+Record: seats Winston/John/Amelia/Murat, all GREEN-WITH-AMENDMENTS; orchestrator folded; no re-round required (all amendments additive within ratified A2 scope).
+
+1. **(John J1) AC2 matrix row d′ — honest decline:** pool non-empty + usable, writer uses ZERO rows, result typed degraded with stable loss `deep_dive_enrichment_pool_unused`, unused rows reported in the receipt → **PASS-as-degraded**. The 1-row live pool makes this the likeliest real outcome; it is first-class, not an edge.
+2. **(John J2) AC8 probe outcome semantics:** a degraded-honest probe result (row d′ verdict) is a VALID machine-judge PASS that licenses ONLY the thin/empty-honesty path; the enrichment claim stays OPEN pending a richer pool or batch run A. The probe's success criterion is NEVER "citations appeared" — first-run-stands must not penalize an honest decline.
+3. **(John J3, wording) Receipt language:** ability coverage inherited from 38.1 token-match association must read "association-covered" — never imply semantic coverage the machine didn't prove.
+4. **(Murat M1) AC2 matrix row i-a — ability-attribution honesty:** an enrichment claim under ability X citing only rows whose `supports_ability_ids` excludes X → **FAIL** (machine-checkable join; must NOT hide in the operator-WARN). Per-ability coverage in the receipt is measured from PROSE-claim placement joined to row support lists (mirror of row g's measured-not-asserted principle).
+5. **(Murat M2) Named mutation pins:** (a) citation to an excluded/known-loss row → FAIL with a receipt entry DISTINGUISHABLE from invented-id; (b) duplicate `citation_refs` within one claim → named reject pin; (c) 1-row-pool arithmetic invariant `used + unused == available` pinned at available=1 for both cited and uncited branches.
+6. **(Murat M3a) AC8 judge composition:** the probe's deterministic judge NAMES the numeric-fidelity gate (37.2a witnesses re-run) alongside the A2 + AC4 parity gates.
+7. **(Murat M3b) Registry meta-pin:** `tests/live_witness_replay/` ships with one self-test proving `WITNESS_REPLAY_STRICT=1` turns a missing/skipped witness into a FAILURE (skip≠green is load-bearing).
+8. **(Murat M4) Fifth bar negative:** a degraded-status contribution whose MD carries a stray `ask-a-cite-` marker → `_assert_completed_workbook_deliverable` REJECTS (closes the only bar clause with no adversarial input).
+9. **(Winston F1) AC2 matrix row i-b — skeleton-side phantom ref:** a `skeleton`-role claim whose inherited `source_claim_refs` name claim-ids absent from the digest-bound skeleton's claim set → **FAIL** + mutation test. (The mislabeled-but-valid-ref residual stays honestly in the operator-WARN.)
+10. **(Amelia A1) Dev Notes — intentional pin updates (same diff):** `tests/integration/marcus/test_workbook_band_wiring.py` (L249 `("07W.3", "workbook_review_stub")` + L265-297 stub-payload pins) and `tests/unit/marcus/lesson_plan/test_research_demand_38_3a.py:512-518` (full band map) MUST be updated deliberately; `test_review_projection_37_1.py:290` is a negative pin that stays green untouched.
+11. **(Amelia A2) AC1 pool-row typing:** bind pool rows as the REAL `AskAKnowledgeEntryV1` (`ask_a_enrichment.py:215-243`; field is `evidence_hierarchy_tier`, Literal T1..T6) — no re-typed 7-field subset (an invented shape would violate AC7's live-shape rule). T7/T8 exclusion is model-enforced; AC3's fixture pins the upstream `known_losses` record.
+12. **(Amelia A3) Registry founding disposition:** THREE deep-dive witness dirs exist on disk (`deep-dive-38-3a-live-{7ed48f8a,b6fc76ea,cd98f7e5}`) — classify `cd98f7e5` and record the enroll/exclude decision explicitly in `witnesses.yaml`; the founding registry starts with zero undeclared omissions. Skeleton stays minimal (replay + strict mode; no framework-building).
+13. **(Winston F2 → deferred inventory, NOT this diff):** band dispatch-ladder factory protocol filed as a post-wave follow-on; do not refactor the ladder inside this story.
