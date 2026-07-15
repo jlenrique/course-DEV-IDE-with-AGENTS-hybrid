@@ -20,7 +20,7 @@ Static walk of the full 07W band against frozen artifacts: run A statically GREE
 
 ## Unresolved issues / risks
 
-- M-R2 BINDING at next Pass-1 touch (refinement-path normalization gap). Deferred register carries: B5 section-scoping, M2a upstream ids, budget-guard, replay-equality, locator contract, RecursionError envelope, band-factory, glossary top-up, bold-term-class curation (J-2: headword-class = operator spot-check at run A).
+- M-R2 BINDING at next Pass-1 touch (refinement-path normalization gap). Deferred register carries: B5 section-scoping, M2a upstream ids, budget-guard, replay-equality, locator contract, RecursionError envelope, band-factory, glossary top-up, bold-term-class curation (J-2: headword-class = operator spot-check at run A). M-R3 LO bar fold RESOLVED at close (550c3301); 07w3 recovery affordance filed with binding interim PARK policy.
 - Inherited baseline failure `test_health_tiles_prefer_persisted_cost_report` (pre-wave, attributed via clean-worktree check).
 - KG regen owed again at next consolidation (~40 wave files landed after the morning regen).
 
