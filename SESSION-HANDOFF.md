@@ -1,3 +1,48 @@
+# Session Handoff — 2026-07-15 (WRAPUP: **FIRST COMPLETE WORKBOOK — live gate PASSED** — Class S)
+
+**Final class:** S. **Branch:** `codex/workbook-enhanced-epics-36-40`. **Opened as:** S (repo prep → workbook live-validation arc). **Class drift:** none.
+
+## What was completed
+
+1. **Milestone: the presentation-support workbook pipeline ran end-to-end for the first time.** Trial `a940c5eb-1043-42c1-a2a4-8a6301b6bcf4` reached `status: completed` / `success: true` and emitted a real, **runner-verified** workbook (`runs/a940c5eb…/exports/workbooks/u01@1.{md,docx}` — 22KB MD + 42KB DOCX). Prior to tonight the pipeline had died at 07W.1 on 11 straight attempts.
+2. **The path was cleared by a disciplined scout→batch→run loop over 5 governed paid runs** (each a fresh immutable trial; first-run-stands; 4 negative witnesses preserved immutable, never resumed — `399bcd61`, `7dd3e6ed`, `503e54c1`, `4614f21f`, `dfc372b7`). Fixes committed + pushed:
+   - `8b72acdf` 07W.1 slide-authority anchor drift (match authenticated Texas bodies, not raw slides — shared accessor so Pass-1 + workbook can't drift).
+   - `a373ff76` post-07W.1 batch (deep-dive writer robustness + deterministic fallback with fail-loud provenance; Ask-A bold-term-lean + NL query; emission cluster B5/B6/B8 + LO-id bridge + corpus references).
+   - `21d029fd` run-dir threading to the 07W producer (segment-manifest.missing).
+   - `0bb339d1` G0 live-LO reliability (mandate ≥1 grounded LO/file + retry-once-then-fail-loud on zero LOs).
+   - `259c7f52` 07W terminal batch (production_envelope threading — the blocker; G1 numeric hardening; marker-leak + slug-title fixes; **runner verdict honesty** — asserts a real conformant workbook before success=True, killing a false-green).
+3. **Governance / docs:** guides made living docs updated as the app evolves (`6e3f6211`, WRAPUP Step 9 + specialist guide); `docs/dev-guide/how-to-add-a-specialist.md` gained the run-dir + `production_envelope` specialist-integration contracts; `docs/admin-guide.md` gained the workbook live-authoring checklist (`MARCUS_G0_DISPATCH_LIVE`). Repo prep: `runs/` gitignore (`102b32a3`), navigation-aid knowledge-graph refresh on branch (`bedd9d9b`).
+4. **LO regeneration solved:** `MARCUS_G0_DISPATCH_LIVE=1` authors real, source-grounded LOs live (operator-confirmed "very true to the source"); OFF gives deterministic boilerplate.
+
+## What is next
+
+1. **#1 — LO-overlay bridge fix.** The completed workbook rendered its Learning Objectives section as **6/6 placeholders**: the Q1 `uNN↔[evidence:src-NNN]↔lo-g0-NNN` bridge resolved 0/6 for this run's live LOs (earlier 5/7). LOs are real; the enrichment overlay isn't attaching — the marker-based join is fragile under live LO variance. Make the join robust, then a verification run.
+2. Close Stories 38.1 + 38.3a (live gate already passed) via party-mode green-light + `bmad-code-review`.
+3. Then the remaining Epic 37/38/39/40 backlog stories.
+
+## Unresolved issues / risks
+
+- **LO-overlay bridge 0/6** (see #1) — top blocker to a shippable deliverable.
+- Deferred (noted in `next-session-start-here.md`): `production_runner.py` budget-guard (block-mode); deliverable replay/reload-equality in the runner verdict; KG/ONBOARDING regen owed (≥10 substrate files landed; graph baseline stale vs HEAD).
+- Master merge still deferred (operator consolidates when the acceptance arc closes).
+
+## Key lessons
+
+- **Live is the arbiter; deterministic-green ≠ done.** Live LO authoring is non-deterministic (15 LOs one run, 0 the next) and each paid run surfaced the *next* defect layer — a false "tested/validated" would have burned runs. Captured in memory.
+- **Scout→batch→run beats one-defect-per-run.** Static adversarial scouts against real run artifacts flushed whole layers of failures in a batch, minimizing expensive-run cadence.
+- **Specialist state-threading is a recurring integration class** (run-dir, then `production_envelope`) — now documented in the specialist guide so the next builder doesn't rediscover it.
+
+## Validation summary
+
+- 5 governed paid live runs (1 COMPLETED+verified, 4 immutable negative witnesses). First-run-stands honored throughout.
+- Deterministic joint sweeps green at each batch (608 / 253 passed); session-changed files ruff-clean. Pre-existing 21 ruff errors in untouched files (out of scope). Pre-existing unrelated test failures verified on baseline (operator-surface health tile; package_builders authority — both need live HUD/OpenAI, not caused by session).
+
+## Artifact update checklist
+
+- sprint-status.yaml (38.1/38.3a live-gate-passed notes) ✓ · next-session-start-here.md ✓ · SESSION-HANDOFF.md ✓ · guides (admin/dev-specialist) ✓ · WRAPUP protocol ✓. KG regen: deferred (owed).
+
+---
+
 # Session Handoff — 2026-07-14 (WRAPUP: **Workbook Epics 36–38 advanced; fresh governed paid run is next** — Class S)
 
 **Final class:** S. **Branch:** `codex/workbook-enhanced-epics-36-40`. **Opened as:** S (Presentation-Support Workbook implementation and governed live validation). **Class drift:** none.
