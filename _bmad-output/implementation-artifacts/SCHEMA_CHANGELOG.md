@@ -7,6 +7,33 @@ Per semver-for-schemas:
 - **Minor (1.X)** â€” additive only: new optional fields with v1.0-compatible defaults, new enum values that don't break old consumers.
 - **Patch (1.0.X)** â€” docs / clarifications / typo fixes; no machine-readable change.
 
+## CollateralSpec v1.2 - 2026-07-16 - Story 39-1b `Exercise.origin` provenance discriminant
+
+**Type:** Minor (additive only). New optional field with a v1.1-compatible default;
+absent-key payloads round-trip to the default (zero regression).
+
+**Family:** CollateralSpec (`app/marcus/lesson_plan/collateral_spec.py`) — the
+`Exercise` member.
+
+**Reason for introduction:** the ratified D2 MERGE design (wave party record
+2026-07-15 §D2 item 2, Story 39-1b AC 1) makes exercise provenance a FIELD, not a
+list position: `origin: Literal["collateral","enrichment"]` distinguishes
+Irene-authored practice from course-check instruments projected off the G0
+enrichment overlay. The renderer's per-unit "Practice" / "Course Check" groups and
+the runner's deliverable-bar exercise clause key on this field.
+
+**Shapes and contracts pinned:**
+
+- Back-compat default `"collateral"`: every previously serialized spec loads
+  unchanged; `_project_exercises` stamps `"enrichment"` on overlay projections.
+- Emitted JSON-Schema witness regenerated
+  (`app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json`; filename keeps
+  the major version per sibling convention).
+- Shape pins updated in lockstep: `EXERCISE_EXPECTED_FIELDS` allowlist
+  (`tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py`) +
+  byte-current schema parity
+  (`tests/marcus/lesson_plan/test_collateral_spec_json_schema_parity.py`).
+
 ## CanonicalAssetRecord v0.1 - 2026-07-08 - Story S7 Phase-2 C asset evidence boundary
 
 **Type:** Initial shape (no predecessor family).

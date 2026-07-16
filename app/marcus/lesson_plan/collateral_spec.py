@@ -65,8 +65,12 @@ from pydantic import (
 # here so objective-id binding cannot fork the regex.
 from app.marcus.lesson_plan.event_type_registry import OPEN_ID_REGEX_PATTERN
 
-SCHEMA_VERSION: Final[str] = "1.1"
+SCHEMA_VERSION: Final[str] = "1.2"
 """CollateralSpec family schema version; bump on shape drift (per CHANGELOG).
+
+1.2 (39.1b D2 MERGE): additive ``Exercise.origin`` provenance discriminant
+(``collateral`` | ``enrichment``); back-compatible (absent -> default
+``"collateral"``).
 
 1.1 (S7 canonical-arc): additive ``WorkbookSpec.kind`` discriminant
 (``deck-companion-workbook``); back-compatible (absent -> default)."""

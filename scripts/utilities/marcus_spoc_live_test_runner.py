@@ -1686,6 +1686,7 @@ def _assert_exercise_composition_conformant(run_dir: Path, md_paths: list[Path])
     ):
         _refuse()
     # (ii) trim <-> loss-record consistency: silent trim = REJECT.
+    loss_ids: list | None = None
     if trimmed_count > 0:
         loss_trimmed = loss.get("trimmed_count") if isinstance(loss, dict) else None
         loss_ids = (
@@ -1699,10 +1700,56 @@ def _assert_exercise_composition_conformant(run_dir: Path, md_paths: list[Path])
             _refuse()
     elif loss is not None:
         _refuse()  # a loss record with a zero-trim receipt is a desync
+    # (ii-independent, T4 F2): the receipt's trim tally is producer-authored
+    # alongside the loss record, so tally⇔loss alone cannot catch a cap bug
+    # that trims WITHOUT recording. Irene's collateral blueprint on run.json
+    # is the independent authority: kept Practice ids ∪ trimmed ids must
+    # EQUAL the blueprint's authored collateral exercise ids. Tolerant when
+    # the blueprint is absent (rig / declaration none) — never when it
+    # contradicts the receipt.
+    try:
+        from app.marcus.lesson_plan.workbook_enrichment import (  # noqa: PLC0415
+            collateral_from_run,
+        )
+
+        blueprint = collateral_from_run(run_dir)
+    except Exception:
+        blueprint = None
+    if isinstance(blueprint, dict) and blueprint.get("declaration") == "present":
+        workbook = blueprint.get("workbook")
+        blueprint_sections = (
+            workbook.get("sections") if isinstance(workbook, dict) else None
+        )
+        if isinstance(blueprint_sections, list) and blueprint_sections:
+            authored_ids = {
+                str(exercise.get("exercise_id"))
+                for row in blueprint_sections
+                if isinstance(row, dict)
+                for exercise in (row.get("exercises") or [])
+                if isinstance(exercise, dict) and exercise.get("exercise_id")
+            }
+            receipt_practice_ids = {
+                str(exercise_id)
+                for row in sections
+                if isinstance(row, dict)
+                for exercise_id in (
+                    row.get("practice") if isinstance(row.get("practice"), list) else []
+                )
+            }
+            trimmed_ids = {str(t) for t in loss_ids} if loss_ids else set()
+            if receipt_practice_ids & trimmed_ids:
+                _refuse()  # an id cannot be both kept and trimmed
+            if receipt_practice_ids | trimmed_ids != authored_ids:
+                _refuse()  # kept ∪ trimmed must account for EVERY authored id
     for text in texts:
         # MD floor both directions: callout ⇔ populated record.
         if (EXERCISE_OVERLAY_LOSS_CALLOUT in text) != (loss is not None):
             _refuse()
+        # (ii-render): a trimmed id still rendering means the recorded trim
+        # was not actually applied (record/prose desync).
+        for trimmed_id in loss_ids or []:
+            if f"#### Exercise `{trimmed_id}`" in text:
+                _refuse()
         for row in sections:
             if not isinstance(row, dict):
                 _refuse()
@@ -1715,17 +1762,25 @@ def _assert_exercise_composition_conformant(run_dir: Path, md_paths: list[Path])
                 or not isinstance(course_check, list)
             ):
                 _refuse()
-            # (i) origin-labeled group headings present when the class has items.
+            # (i) origin-labeled group headings present when the class has
+            # items — required in BOTH the Exercises block and its Answer Key
+            # mirror (T4 F9: the render emits the identical heading in each,
+            # so a single occurrence means one block lost its label).
             if practice and (
-                f"### {PRACTICE_GROUP_LABEL} — section `{section_id}`" not in text
+                text.count(f"### {PRACTICE_GROUP_LABEL} — section `{section_id}`") < 2
             ):
                 _refuse()
             if course_check and (
-                f"### {COURSE_CHECK_GROUP_LABEL} — section `{section_id}`" not in text
+                text.count(
+                    f"### {COURSE_CHECK_GROUP_LABEL} — section `{section_id}`"
+                )
+                < 2
             ):
                 _refuse()
-            # (iii) overlay-never-trimmed: every course-check id renders.
-            for exercise_id in course_check:
+            # (iii) overlay-never-trimmed: every course-check id renders; and
+            # (T4 F10) every kept Practice id renders too — receipt/prose
+            # desync refuses on BOTH origin classes.
+            for exercise_id in (*practice, *course_check):
                 if f"#### Exercise `{exercise_id}`" not in text:
                     _refuse()
 

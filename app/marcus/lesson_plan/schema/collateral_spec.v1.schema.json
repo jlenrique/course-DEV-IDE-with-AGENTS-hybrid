@@ -200,7 +200,7 @@
   "description": "The DP4 collateral content model carried on ``lesson_plan[\"collateral\"]``.\n\n``declaration`` is the explicit empty-case discriminant: ``\"none\"`` is the\non-record decision that this lesson ships deck-only (degenerate-empty),\nNOT an absent key; ``\"present\"`` requires a workbook with >=1 section.",
   "properties": {
     "schema_version": {
-      "default": "1.1",
+      "default": "1.2",
       "description": "Pinned to SCHEMA_VERSION; changes drive CHANGELOG entries.",
       "title": "Schema Version",
       "type": "string"

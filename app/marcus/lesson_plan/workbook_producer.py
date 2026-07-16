@@ -584,14 +584,19 @@ def _exercise_composition_receipt(
                 "course_check": course_check,
             }
         )
-    trimmed = (
-        exercise_overlay_loss.get("trimmed_count") if exercise_overlay_loss else 0
-    )
+    # T4 F11: the tally is copied VERBATIM from the loss record (never coerced
+    # to a clean-looking 0) — a malformed loss must read as malformed so the
+    # runner bar's well-formedness check refuses it instead of trusting a
+    # producer-laundered claim.
     return {
         "sections": sections,
         "practice_total": practice_total,
         "course_check_total": course_check_total,
-        "collateral_trimmed_count": trimmed if isinstance(trimmed, int) else 0,
+        "collateral_trimmed_count": (
+            exercise_overlay_loss.get("trimmed_count")
+            if exercise_overlay_loss is not None
+            else 0
+        ),
     }
 
 
@@ -1298,9 +1303,18 @@ class WorkbookProducer(ModalityProducer):
             lo_overlay_loss_note=(
                 str(lo_overlay_loss.get("note")) if lo_overlay_loss else None
             ),
+            # T4 F8: the callout must accompany EVERY persisted loss record
+            # (the runner bar asserts callout ⇔ record) and must never render
+            # a literal "None" — a record with a missing/empty note falls back
+            # to an honest generic line instead of desyncing the deliverable.
             exercise_overlay_loss_note=(
-                str(exercise_overlay_loss.get("note"))
-                if exercise_overlay_loss
+                (
+                    str(exercise_overlay_loss.get("note") or "")
+                    or "collateral (Practice) exercises were trimmed by the "
+                    "exercise cap (see the persisted exercise_overlay_loss "
+                    "record for the trimmed ids)"
+                )
+                if exercise_overlay_loss is not None
                 else None
             ),
             deep_dive_review=deep_dive_review,

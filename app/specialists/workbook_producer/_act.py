@@ -461,6 +461,10 @@ def _apply_exercise_composition_cap(
     ordering inside every section — provenance class (collateral before
     enrichment), then stable id — so the composition is byte-deterministic.
 
+    "Stable id" is plain LEXICOGRAPHIC string order (the ratified determinism
+    floor) — numeric suffixes are NOT natural-sorted (``ex-10`` sorts before
+    ``ex-2``); authors wanting numeric retention priority should zero-pad.
+
     Returns the rebuilt sections + the visible ``exercise_overlay_loss``
     record (mirror of ``lo_overlay_loss``; ``None`` when nothing was trimmed).
     Degrade-with-record: ANY trimmed collateral is recorded — never silent.
@@ -483,6 +487,18 @@ def _apply_exercise_composition_cap(
     overlay_total = sum(len(items) for items in per_section_overlay)
     collateral_total = sum(len(items) for items in per_section_collateral)
     budget = max(0, _EXERCISE_TOTAL_CAP - overlay_total)
+    if overlay_total > _EXERCISE_TOTAL_CAP:
+        # T4 F6: overlay (course-check) items are never trimmed by ratified
+        # design, so an overlay set alone exceeding the target cap ships >12
+        # exercises — visible in the log + the receipt's course_check_total,
+        # never a silent reshape.
+        logger.warning(
+            "workbook exercise composition: %d course-check (overlay) "
+            "exercise(s) alone exceed the total cap %d — overlay is never "
+            "trimmed (ratified D2-5); the workbook ships over target",
+            overlay_total,
+            _EXERCISE_TOTAL_CAP,
+        )
 
     # Round-robin retention (J-3): round r grants each unit (in section order)
     # its (r+1)-th collateral item while budget remains — so every unit keeps
@@ -1042,16 +1058,40 @@ def build_workbook_inputs(
             # collision still fails loud in assert_unique_collateral_ids.
             attached: list[Exercise] = []
             for overlay_exercise in overlay_ex:
+                if overlay_exercise.exercise_id.startswith(
+                    _OVERLAY_EXERCISE_ID_PREFIX
+                ):
+                    # T4 F7: a corpus component id that itself begins with the
+                    # prefix double-prefixes deterministically — legal, but
+                    # anomalous enough to surface (it is the enabling condition
+                    # for a re-key collision below).
+                    logger.warning(
+                        "workbook exercise attach: overlay exercise id %r "
+                        "already carries the %r prefix — double-prefixing "
+                        "deterministically",
+                        overlay_exercise.exercise_id,
+                        _OVERLAY_EXERCISE_ID_PREFIX,
+                    )
                 prefixed_id = (
                     _OVERLAY_EXERCISE_ID_PREFIX + overlay_exercise.exercise_id
                 )
-                if (
-                    overlay_exercise.exercise_id in answer_keys
-                    and prefixed_id not in answer_keys
-                ):
-                    answer_keys[prefixed_id] = answer_keys.pop(
-                        overlay_exercise.exercise_id
-                    )
+                if overlay_exercise.exercise_id in answer_keys:
+                    if prefixed_id not in answer_keys:
+                        answer_keys[prefixed_id] = answer_keys.pop(
+                            overlay_exercise.exercise_id
+                        )
+                    else:
+                        # T4 F7: the target slot is already claimed (two
+                        # components whose ids differ only by the prefix) —
+                        # never silently mis-attribute a worked answer.
+                        logger.warning(
+                            "workbook exercise attach: worked answer for %r "
+                            "could not be re-keyed to %r — the slot is already "
+                            "claimed; the rendered exercise reads the claimant "
+                            "and the original stays under its raw key",
+                            overlay_exercise.exercise_id,
+                            prefixed_id,
+                        )
                 attached.append(
                     overlay_exercise.model_copy(update={"exercise_id": prefixed_id})
                 )

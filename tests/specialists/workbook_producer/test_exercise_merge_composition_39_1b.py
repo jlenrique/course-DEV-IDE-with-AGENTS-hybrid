@@ -773,3 +773,51 @@ def test_visible_loss_callout_renders_when_cap_trims(
     assert f"> _{EXERCISE_OVERLAY_LOSS_CALLOUT}" in markdown
     assert "ex-c" in markdown  # named in the callout
     assert "#### Exercise `ex-c`" not in markdown  # but not rendered as an item
+
+
+def test_noteless_loss_record_renders_fallback_callout_never_none(
+    tmp_path: Path, output_root: Path
+) -> None:
+    """T4 F8: a loss record with a missing/empty ``note`` (untyped dict from a
+    harness caller) still renders an honest callout — never a literal "None",
+    never a suppressed callout desyncing from the persisted record."""
+    card = _quiz_card([], ["lo-g0-001"])
+    run_dir = _make_run_dir(
+        tmp_path,
+        card,
+        _collateral(
+            [
+                {
+                    "section_id": "sec-lo-g0-001",
+                    "objective_id": "lo-g0-001",
+                    "exercises": ["ex-a"],
+                }
+            ]
+        ),
+    )
+    inputs = wb_act.build_workbook_inputs(run_dir, run_id="merge391btest")
+    assert inputs is not None
+    producer = WorkbookProducer(output_root=str(output_root))
+    sidecar = producer.produce(
+        inputs.plan_unit,
+        inputs.context,
+        spec=inputs.spec,
+        segments=inputs.segments,
+        source_text=inputs.source_text,
+        citations=inputs.citations,
+        source_ref_manifest=inputs.source_ref_manifest,
+        learning_objectives=inputs.learning_objectives,
+        answer_keys=inputs.answer_keys,
+        research_supplements=inputs.research_supplements,
+        lo_overlay_loss=inputs.lo_overlay_loss,
+        # Note-less loss record (harness-authored shape).
+        exercise_overlay_loss={"trimmed_count": 1, "trimmed_exercise_ids": ["ex-x"]},
+        diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
+        reuse_sha="merge391b",
+    )
+    markdown = (REPO_ROOT / sidecar.markdown_path).read_text(encoding="utf-8")
+    assert f"> _{EXERCISE_OVERLAY_LOSS_CALLOUT}" in markdown  # callout ⇔ record
+    assert f"{EXERCISE_OVERLAY_LOSS_CALLOUT} None_" not in markdown
+    # F11: the receipt echoes the record verbatim (no laundering).
+    assert sidecar.exercise_composition is not None
+    assert sidecar.exercise_composition["collateral_trimmed_count"] == 1

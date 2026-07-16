@@ -252,9 +252,11 @@ def test_kind_is_not_required() -> None:
     assert "kind" not in _required_field_names(WorkbookSpec)
 
 
-def test_schema_version_bumped_to_1_1() -> None:
-    # D5: the family schema version is bumped on the additive shape drift.
-    assert SCHEMA_VERSION == "1.1"
+def test_schema_version_bumped_to_1_2() -> None:
+    # D5 idiom: the family schema version is bumped on additive shape drift.
+    # 1.2 = 39.1b `Exercise.origin` (SCHEMA_CHANGELOG "CollateralSpec v1.2";
+    # T4 F4 remediation — bump + changelog in the same diff as the field).
+    assert SCHEMA_VERSION == "1.2"
 
 
 # Closed-enum triple red-rejection (mirror the BloomLevel discipline).

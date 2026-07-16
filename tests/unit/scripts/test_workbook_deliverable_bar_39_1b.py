@@ -97,6 +97,9 @@ def _receipt(*, trimmed: bool = True) -> dict:
 
 
 def _exercise_markdown(receipt: dict, *, callout: bool) -> str:
+    """The Exercises block + its Answer Key mirror (the real render emits the
+    identical group heading in BOTH blocks — the bar requires two occurrences
+    per labeled section)."""
     lines = ["", "## Exercises", ""]
     for row in receipt["sections"]:
         if row["practice"]:
@@ -118,7 +121,76 @@ def _exercise_markdown(receipt: dict, *, callout: bool) -> str:
     if callout:
         lines.append(f"> _{EXERCISE_OVERLAY_LOSS_CALLOUT} {_REAL_LOSS['note']}_")
         lines.append("")
+    lines.extend(["## Answer Key", ""])
+    for row in receipt["sections"]:
+        for label, group in (
+            (PRACTICE_GROUP_LABEL, row["practice"]),
+            (COURSE_CHECK_GROUP_LABEL, row["course_check"]),
+        ):
+            if not group:
+                continue
+            lines.append(f"### {label} — section `{row['section_id']}`")
+            for exercise_id in group:
+                lines.append(f"#### Answer — `{exercise_id}`")
+                lines.append("Answer key source_ref: `src-ref-fixture`")
+                lines.append("")
     return "\n".join(lines)
+
+
+def _blueprint_contribution(authored_exercise_ids_by_section: dict[str, list[str]]):
+    """An irene_pass1 contribution carrying the collateral blueprint — the
+    independent authority for the bar's kept ∪ trimmed = authored cross-check."""
+    return (
+        "irene_pass1",
+        "03",
+        {
+            "lesson_plan": {
+                "lesson_summary": "bar-test lesson",
+                "plan_units": [],
+                "collateral": {
+                    "declaration": "present",
+                    "workbook": {
+                        "sections": [
+                            {
+                                "section_id": section_id,
+                                "learning_objective_id": section_id.removeprefix("sec-"),
+                                "title": section_id,
+                                "depth_delta": {
+                                    "deferred_from_slide": "slide-01",
+                                    "deferred_depth": "deferred depth",
+                                },
+                                "exercises": [
+                                    {
+                                        "exercise_id": exercise_id,
+                                        "bloom_level": "understand",
+                                        "prompt_intent": "intent",
+                                        "answer_key_source_ref": "src-ref",
+                                    }
+                                    for exercise_id in exercise_ids
+                                ],
+                            }
+                            for section_id, exercise_ids in (
+                                authored_exercise_ids_by_section.items()
+                            )
+                        ]
+                    },
+                    "research_goals": [],
+                },
+            }
+        },
+        "fixture-irene",
+    )
+
+
+# The REAL 8b275e5b authored collateral (kept 6 + trimmed 2 = authored 8).
+_REAL_AUTHORED_COLLATERAL = {
+    "sec-u01": ["ex-u01-1"],
+    "sec-u02": ["ex-u02-1"],
+    "sec-u03": ["ex-u03-1", "ex-u03-2"],
+    "sec-u04": ["ex-u04-1"],
+    "sec-u05": ["ex-u05-1", "ex-u05-2"],
+    "sec-u06": ["ex-u06-1"],
+}
 
 
 # ---------------------------------------------------------------------------
@@ -213,20 +285,24 @@ def _run_dir_with(
     *,
     exercise_composition: dict | None,
     exercise_overlay_loss: dict | None,
+    authored_collateral: dict[str, list[str]] | None = None,
 ) -> Path:
     contribution = _enriched_contribution()
+    extra = [
+        ("workbook_review", "07W.3", contribution, "gpt-5"),
+        (
+            "workbook_producer",
+            "07W",
+            _producer_output(exercise_composition, exercise_overlay_loss),
+            "gpt-5",
+        ),
+    ]
+    if authored_collateral is not None:
+        extra.append(_blueprint_contribution(authored_collateral))
     install_run_json(
         tmp_path,
         ask_a_output=None,
-        extra_contributions=(
-            ("workbook_review", "07W.3", contribution, "gpt-5"),
-            (
-                "workbook_producer",
-                "07W",
-                _producer_output(exercise_composition, exercise_overlay_loss),
-                "gpt-5",
-            ),
-        ),
+        extra_contributions=tuple(extra),
     )
     _emit_deliverable(tmp_path, markdown)
     return tmp_path
@@ -431,5 +507,106 @@ def test_trim_tally_mismatch_rejects(tmp_path: Path) -> None:
         _conforming_md(receipt=receipt, callout=True),
         exercise_composition=receipt,
         exercise_overlay_loss=mismatched,
+    )
+    _assert_bar_rejects(tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# T4 remediation pins (F2 / F9 / F10) — independent-witness + render-desync
+# ---------------------------------------------------------------------------
+
+
+def test_blueprint_cross_check_conforming_passes(tmp_path: Path) -> None:
+    """(F2) kept Practice ∪ trimmed == the authored blueprint collateral —
+    the independent silent-trim witness accepts the real 8b275e5b shape."""
+    receipt = _receipt(trimmed=True)
+    _run_dir_with(
+        tmp_path,
+        _conforming_md(receipt=receipt, callout=True),
+        exercise_composition=receipt,
+        exercise_overlay_loss=dict(_REAL_LOSS),
+        authored_collateral=_REAL_AUTHORED_COLLATERAL,
+    )
+    _assert_bar(tmp_path)
+
+
+def test_blueprint_cross_check_silent_trim_rejects(tmp_path: Path) -> None:
+    """(F2) the REAL silent-trim mutant: the cap dropped `ex-u03-2`/`ex-u05-2`
+    but recorded NOTHING (receipt tally 0, loss absent, receipt/MD internally
+    consistent) — only the authored blueprint betrays the loss. REJECT."""
+    receipt = _receipt(trimmed=False)  # internally consistent zero-trim claim
+    _run_dir_with(
+        tmp_path,
+        _conforming_md(receipt=receipt, callout=False),
+        exercise_composition=receipt,
+        exercise_overlay_loss=None,
+        authored_collateral=_REAL_AUTHORED_COLLATERAL,  # authored 8, kept 6
+    )
+    _assert_bar_rejects(tmp_path)
+
+
+def test_blueprint_cross_check_kept_and_trimmed_overlap_rejects(
+    tmp_path: Path,
+) -> None:
+    """(F2) an id claimed BOTH kept and trimmed is a contradiction."""
+    receipt = _receipt(trimmed=True)
+    overlapping = dict(_REAL_LOSS)
+    overlapping["trimmed_exercise_ids"] = ["ex-u01-1", "ex-u05-2"]  # ex-u01-1 kept
+    _run_dir_with(
+        tmp_path,
+        _conforming_md(receipt=receipt, callout=True),
+        exercise_composition=receipt,
+        exercise_overlay_loss=overlapping,
+        authored_collateral=_REAL_AUTHORED_COLLATERAL,
+    )
+    _assert_bar_rejects(tmp_path)
+
+
+def test_trimmed_id_still_rendering_rejects(tmp_path: Path) -> None:
+    """(ii-render) a recorded-trimmed id still rendering as an exercise means
+    the trim was never applied — record/prose desync."""
+    receipt = _receipt(trimmed=True)
+    markdown = _conforming_md(receipt=receipt, callout=True) + (
+        "\n#### Exercise `ex-u03-2`\nBloom level: **understand**\nGhost item.\n"
+    )
+    _run_dir_with(
+        tmp_path,
+        markdown,
+        exercise_composition=receipt,
+        exercise_overlay_loss=dict(_REAL_LOSS),
+    )
+    _assert_bar_rejects(tmp_path)
+
+
+def test_practice_id_dropped_from_render_rejects(tmp_path: Path) -> None:
+    """(F10) a kept Practice id the receipt carries must render — desync on
+    the Practice class refuses too, not just course-check."""
+    receipt = _receipt(trimmed=True)
+    markdown = _conforming_md(receipt=receipt, callout=True).replace(
+        "#### Exercise `ex-u04-1`\n", "", 1
+    )
+    _run_dir_with(
+        tmp_path,
+        markdown,
+        exercise_composition=receipt,
+        exercise_overlay_loss=dict(_REAL_LOSS),
+    )
+    _assert_bar_rejects(tmp_path)
+
+
+def test_label_missing_from_one_block_rejects(tmp_path: Path) -> None:
+    """(F9) the group heading renders in BOTH the Exercises block and the
+    Answer Key mirror — a single surviving occurrence (one block lost its
+    label) refuses."""
+    receipt = _receipt(trimmed=True)
+    heading = f"### {PRACTICE_GROUP_LABEL} — section `sec-u02`"
+    conforming = _conforming_md(receipt=receipt, callout=True)
+    assert conforming.count(heading) == 2
+    markdown = conforming.replace(f"{heading}\n", "", 1)  # drop ONE occurrence
+    _run_dir_with(
+        tmp_path,
+        markdown,
+        exercise_composition=receipt,
+        exercise_overlay_loss=dict(_REAL_LOSS),
     )
     _assert_bar_rejects(tmp_path)

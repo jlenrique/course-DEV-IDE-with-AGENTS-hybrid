@@ -1,7 +1,7 @@
 ---
 id: 39-1b
 epic: 39
-status: review
+status: done-awaiting-live-witness
 split_from: 39-1-glossary-downstream-render.md  # green-light 2026-07-15 — 4/4 unanimous split; Package B lifted verbatim
 depends_on: 39-1  # MUST land first — strict serialization on shared files _act.py + workbook_producer.py
 anchor_provenance: post-37-2b working tree  # line anchors (e.g. _act.py L859–882) verified against the post-37-2b working tree; re-verify against the post-39-1 landed tree at dev-open
@@ -10,7 +10,7 @@ baseline_commit: 6edf563e7131b246a6357d90b4f7c83d0cde594b
 
 # Story 39.1b: D2 MERGE exercise composition — collateral + enrichment merged, labeled, capped, never silently dropped
 
-Status: review
+Status: done-awaiting-live-witness  # deterministic+review green; no probe owed (fully deterministic); full-run witness owed by batch run A (after 37-2b + 39-1)
 
 ## Story
 
@@ -157,6 +157,31 @@ No other expectation changed; 39-1's diff carries zero flips from this story (pi
 - AC 9 ✅ J-3 round-robin (by unit in section order, then stable id; every unit keeps ≥1 Practice before any keeps 2) pinned against the real frozen shape AND the ratified synthetic 18→12 shape; byte-deterministic across runs.
 - Scope fences held: no irene_pass1/ wiring/manifest/pack edits; terminal 07W stays deterministic-consume; 07W model-free pin, G2 gate, VO↔on-screen invariants untouched; 47 answer-leak pins green.
 
+## Senior Developer Review (AI) — T4 Blind+Edge+Auditor, 2026-07-16
+
+**Outcome: APPROVED WITH REMEDIATION APPLIED (same session).** Three parallel layers on `git diff 6edf563e..179ccdd9`: Blind Hunter (adversarial), Edge Case Hunter, Acceptance Auditor. Auditor verdict: **9/9 ACs satisfied, 0 violated** (frozen-shape deviation ruled conforming-in-intent under the live-shape rule; scope fences + protected invariants held; negative pins genuinely mutated frozen shapes per M-D3-2b). 14 normalized findings after blind+edge dedup → 4 dismissed, 10 patched, 0 deferred, 0 decision-needed.
+
+### Action Items (all resolved this session)
+
+- [x] [Review][Patch] **F4 (MED): schema-versioning contract skipped** — `SCHEMA_VERSION` bumped `1.1 → 1.2` + `SCHEMA_CHANGELOG.md` "CollateralSpec v1.2" entry (minor/additive per the repo's semver-for-schemas) + emitted witness regenerated + shape-stable pin updated in lockstep (same enumerated flip surface). [`collateral_spec.py:68`]
+- [x] [Review][Patch] **F2 (MED): silent-trim check was tautological** (receipt tally copies the loss record) — bar gains the **independent blueprint cross-check**: kept Practice ∪ trimmed ids must EQUAL Irene's authored collateral ids off run.json (disjointness enforced; tolerant only when the blueprint is absent). The REAL silent-trim mutant (trims, records nothing, internally consistent) now REJECTS. [`marcus_spoc_live_test_runner.py`; pins `test_blueprint_cross_check_*`]
+- [x] [Review][Patch] **F9 (LOW): label check satisfiable by the Answer Key mirror alone** — heading presence is now `count >= 2` (Exercises block + Answer Key mirror both required); bar-test MD builder emits the mirror. [pin `test_label_missing_from_one_block_rejects`]
+- [x] [Review][Patch] **F10 (LOW): bar never verified Practice ids / trimmed ids against the render** — kept Practice ids must render; recorded-trimmed ids must NOT render. [pins `test_practice_id_dropped_from_render_rejects`, `test_trimmed_id_still_rendering_rejects`]
+- [x] [Review][Patch] **F8 (LOW): note-less/empty-note loss record rendered a literal "None" callout / suppressed the callout while the record persisted** — callout now renders whenever the record exists, with an honest generic fallback text. [pin `test_noteless_loss_record_renders_fallback_callout_never_none`]
+- [x] [Review][Patch] **F11 (LOW): receipt laundered a malformed `trimmed_count` to 0** — tally now copied VERBATIM; the runner's well-formedness check refuses garbage instead of trusting a producer-cleaned claim.
+- [x] [Review][Patch] **F6 (LOW): overlay overflow past the total cap was unrecorded** — explicit warning when `overlay_total > 12` (overlay is never trimmed by ratified design; the receipt's `course_check_total` carries the number).
+- [x] [Review][Patch] **F7 (LOW): answer-key re-key collision / double-prefix were silent** — both anomalies now warn loudly (mirrors the answer-leak routing warnings); behavior stays deterministic.
+- [x] [Review][Patch] **F1b (LOW): "stable id" ambiguity on numeric suffixes** — docstring states plainly: LEXICOGRAPHIC order (`ex-10` < `ex-2`); zero-pad for numeric retention priority. Natural-sort was not adopted (unratified behavior change; current corpus shapes single-digit).
+
+### Dismissed (4, with reasons)
+
+- **Authored exercise order "destroyed"** — the re-sort IS the ratified row-b total ordering (unit → provenance class → stable id; M-D2-1 determinism floor).
+- **Cap reshapes card-less legacy runs** — D2-5 is an unconditional workbook cap by design (matrix rows f/g assume it); any legacy trim is recorded + callout-visible, never silent.
+- **All-texts semantics on multi-deliverable runs** — matches the deep-dive sibling clause's every-MD idiom; the producer emits exactly one MD+DOCX pair per run today; revisit only if multi-workbook runs ever ship.
+- **Duplicate `section_id` heading ambiguity** — duplicate section ids cannot ship: `assert_unique_collateral_ids` rejects them at `produce()`.
+
+**Post-remediation verification:** changed-files ruff clean; matrix module 16/16; bar modules 24 + siblings = 73 combined green; `tests/marcus/lesson_plan/` + contract version pins 395 green; scoped workbook battery 1,556 green; STRICT witness replay 22/22.
+
 ## File List
 
 - `app/marcus/lesson_plan/collateral_spec.py` — `Exercise.origin` field (AC 1)
@@ -168,10 +193,12 @@ No other expectation changed; 39-1's diff carries zero flips from this story (pi
 - `tests/specialists/workbook_producer/test_exercise_merge_composition_39_1b.py` — NEW: I/O matrix rows a–g + c′ + replay probe (AC 7/9)
 - `tests/unit/scripts/test_workbook_deliverable_bar_39_1b.py` — NEW: bar clause positive floors + negative pins (AC 8)
 - `tests/fixtures/exercise_merge_39_1b/composition-8b275e5b.json` — NEW: committed live-shape composition fixture (row c′; schema_version bump tripwire)
-- `tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py` — pin flip 1 (origin in allowlist)
+- `tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py` — pin flip 1 (origin in allowlist) + T4 F4 version-pin update (1.1→1.2, same enumerated surface)
 - `tests/specialists/workbook_producer/test_workbook_enriched_consumption.py` — pin flip 2 (rendered `g0-` id)
+- `_bmad-output/implementation-artifacts/SCHEMA_CHANGELOG.md` — T4 F4: CollateralSpec v1.2 entry (additive `Exercise.origin`)
 
 ## Change Log
 
+- 2026-07-16 (T4): **Review APPROVED + remediation applied same session** — schema v1.2 bump + changelog (F4); bar hardened with the independent blueprint cross-check (F2), both-blocks label check (F9), Practice-id/trimmed-id render checks (F10); producer callout/receipt robustness (F8/F11); overflow + re-key warnings (F6/F7); lexicographic-order docstring (F1b). 4 findings dismissed with recorded reasons. Status → **done-awaiting-live-witness** (deterministic+review green; no probe owed — fully deterministic; full-run witness owed by batch run A).
 - 2026-07-16: **Story 39.1b implemented** (dev agent, baseline `6edf563e`). D2 MERGE composition landed end-to-end: origin field + enrichment stamp; attach-seam MERGE with `g0-` collision prefix + answer-key re-key; ≤12/per-unit-2 cap with J-3 round-robin trim + `exercise_overlay_loss` (structured record + visible callout, mirror of `lo_overlay_loss`); per-unit "Practice"/"Course Check" origin-keyed render groups mirrored in the Answer Key; `exercise_composition` receipt persisted to run.json; runner deliverable-bar exercise clause + negative pins in the same diff (plank 5). 15 new matrix tests + 12 new bar tests; 3 enumerated pin-flip surfaces (allowlist, rendered id ×4, emitted schema regen); 47 answer-leak pins + STRICT witness replay 22/22 + existing bar modules re-run green. Frozen-shape discrepancy recorded: real 8b275e5b composition is 6 overlay + 8 collateral (14→12, trim 2), not the spec's estimated 6+12; both the real shape and the ratified 18→12 arithmetic are pinned.
 - 2026-07-15: Story created by party-ratified split from 39-1 at the green-light round (4/4 GREEN-WITH-AMENDMENTS; split unanimous). Package B (D2 MERGE composition: 7 ACs + 5-floor I/O matrix) lifted verbatim; folded per finding id: Murat deliverable-bar exercise clause + negative pins (AC 8), J-3 round-robin trim rule + 18→12 pin (AC 9, row c′), split riders (strict serialization after 39-1; suite-green boarding without probe; separate run-A verdict line; ~5 pin flips owned by this diff). Status: **ready-for-dev** (dev-open gated on 39-1 landing — strict serialization).

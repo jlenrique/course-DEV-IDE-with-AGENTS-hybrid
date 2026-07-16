@@ -1807,7 +1807,7 @@ development_status:
   epic-39-glossary-trends-render: backlog  # wave also carries re-homed 38-2 (below) per DAG
   38-2-ask-b-hot-topics-wiring: backlog  # orchestrator; node 07W.4 (LAST). RE-HOMED to the Epic-39 wave 2026-07-15 (wave-3940-kickoff-party-record; key kept verbatim; FR16 Ask-B leg + FR9 assert at the 39-wave close bar; T1 must cite the ratified Epic-38 graph-shape record).
   39-1-glossary-downstream-render: done-awaiting-live-witness  # 2026-07-15: deterministic+T4 green (1927; 15-patch remediation); probe-39-1-glossary-render-001 attempt fdbed233 PASS (deterministic replay, 7/7 judge, 0 provider calls, 0 digest drift); full-run witness owed by batch run A (after 39-1b)
-  39-1b-exercise-merge-composition: review  # 2026-07-16 dev complete: 9 ACs implemented; 15 matrix tests + 12 bar tests green; scoped suites + STRICT replay 22/22 green; baseline-worktree attribution proved 0 new failures (325 inherited full-tree reds pre-exist at 6edf563e); T4 Blind+Edge review next
+  39-1b-exercise-merge-composition: done-awaiting-live-witness  # 2026-07-16: deterministic+T4 green (Blind+Edge+Auditor 9/9 ACs; 10 findings remediated same-session incl. schema v1.2 bump + independent blueprint cross-check on the bar); no probe owed (fully deterministic); full-run witness owed by batch run A
   39-2-trends-door-ajar: backlog
   epic-39-retrospective: optional
   epic-40-cover: backlog

@@ -146,3 +146,7 @@
 - source_spec: `_bmad-output/implementation-artifacts/37-2b-deep-dive-enrichment-cited.md`
   summary: Populate excluded_citation_ids from 38.1 — Ask-A records credibility exclusions by raw row index and never mints citation ids for excluded rows, so the gate's excluded-vs-invented distinguishability (amendment M2a) is fixture-only until 38.1 mints ids for excluded rows.
   evidence: T4 Blind Hunter on 37-2b — upstream 38.1-side enhancement; the gate field + distinguishable row exist and are mutation-tested; production packets carry an empty list today.
+
+- source_spec: `_bmad-output/implementation-artifacts/39-1b-exercise-merge-composition.md`
+  summary: Full-tree serial suite carries ~325 inherited reds at baseline 6edf563e (manifest G0R fold/schema pins, tests/test_progress_map.py, production-runner/Gary integration fixtures with Pass-1 authority-receipt drift, styleguide/irene wiring modules, the known cost-tile red) — the per-story "suite green" claims are scoped batteries + witness replay, not full-tree green. Needs its own attribution/repair arc (likely fixture drift from the G0R gate + Pass-1 authority-receipt regime landings).
+  evidence: 39-1b dev-cycle attribution 2026-07-16 — full default suite 199 failed under xdist, 195 serial; clean baseline worktree at 6edf563e reproduces the same set with the 39-1b diff absent (0 new failures attributable); details in the story Debug Log.
