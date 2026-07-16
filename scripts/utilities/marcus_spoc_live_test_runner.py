@@ -1854,9 +1854,15 @@ def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> 
     source_ref / supporting id resolves into the recomputed packet entries
     (AC 5 anti-theater formulation), the anti-theater sentinel line is
     present, and unusable topics appear ONLY under the Rejected block.
+    The fabrication scan is WHOLE-SECTION (T4 F1/F3): a ``Provenance:``
+    line outside the claims region, an unbacked provenance triple parsed
+    anywhere in the section, and any raw ``ask-b-cite-`` token anywhere
+    in the section that is not a member of the recomputed packet's
+    citation ids all REJECT — region relocation is never an escape.
     No ``run.json`` ⇒ a presentation-support MD whose section carries any
-    grounded-claim content (claim list / ``ask-b-cite-`` tokens /
-    ``Provenance:`` lines) is REJECTED (P15 mirror: no structured authority
+    grounded-claim content (claim list / hot-topic lines /
+    ``ask-b-cite-`` tokens / ``Provenance:`` lines / DOIs — the SAME set
+    the empty branch applies, T4 F2) is REJECTED (P15 mirror: no structured authority
     may back no claims); an explicit-empty section is tolerated (R3-style
     tolerance — the section renders in every profile/run shape, so bare
     presence is never the refusal trigger, unlike the glossary heading).
@@ -1864,7 +1870,13 @@ def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> 
     Residual named honestly (M-6): bar-time and render-time share
     ``project_trends_from_packet`` — a bug INSIDE that pure function is
     invisible to this recompute comparison; it is covered by the
-    deterministic unit pins (39.2 ACs 3–5), not by this bar.
+    deterministic unit pins (39.2 ACs 3–5), not by this bar. Likewise
+    out of scope BY DESIGN (T4 F3 residual): free-prose forecast
+    SEMANTICS — a hand-written prediction sentence carrying no parseable
+    claim/topic/provenance idiom and no ``ask-b-cite-`` token is not
+    detected; this bar is a parse floor, not a semantic audit (semantic
+    honesty is owned by the AC 5 render-honesty unit pins and the
+    run-B judged witness, never by this deterministic clause).
     Test-harness-side only; production runtime is untouched.
     """
 
@@ -1894,9 +1906,15 @@ def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> 
                 continue
             if (
                 _TRENDS_CLAIMS_SUBHEADING in section
+                or _TRENDS_TOPIC_LINE_RE.search(section)
                 or "**Provenance:**" in section
                 or _ASK_B_CITE_TOKEN_RE.search(section)
+                or "https://doi.org/" in section
             ):
+                # T4 F2: the no-authority branch applies the SAME grounded-
+                # content set as the empty branch (topic lines + DOIs
+                # included) — a confidence-labeled hot-topic line with
+                # generic (non-ask-b) cite ids and no run.json REJECTS.
                 _refuse()
         return
 
@@ -1947,7 +1965,6 @@ def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> 
         section = _md_section_body(text, _TRENDS_HEADING)
         if section is None:
             _refuse()
-            continue
         if not brief.usable:
             # Explicit-empty render: the recomputed reason verbatim, and no
             # grounded/fabricated content of any kind (Rejected block allowed).
@@ -1976,6 +1993,30 @@ def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> 
         rejected_region = section[rejected_at:] if rejected_at != -1 else ""
         if _TRENDS_ANTI_THEATER_LINE not in topics_region:
             _refuse()
+        # T4 F1: the fabrication scan is WHOLE-SECTION, never region-scoped.
+        # (i) A ``**Provenance:**`` line may appear ONLY inside the claims
+        # region — a fabricated block relocated after the anti-theater line
+        # (Hot-topics region) or parked under an injected Rejected heading
+        # REJECTS on placement alone; (ii) every provenance triple parsed
+        # ANYWHERE in the section must be packet-backed.
+        if "**Provenance:**" in section[:claims_at] or (
+            "**Provenance:**" in section[topics_at:]
+        ):
+            _refuse()
+        for citation_id, source_ref, _confidence in _TRENDS_PROVENANCE_RE.findall(
+            section
+        ):
+            if citation_id not in packet_citation_ids:
+                _refuse()
+            if source_ref not in packet_source_refs:
+                _refuse()
+        # T4 F3: symmetric raw-token sweep (the empty branch already refuses
+        # on ANY token) — every ``ask-b-cite-`` token ANYWHERE in the section,
+        # including free prose, must be a member of the recomputed packet's
+        # citation ids, else REJECT.
+        for token in _ASK_B_CITE_TOKEN_RE.findall(section):
+            if token not in packet_citation_ids:
+                _refuse()
         # Trend claims reconcile exactly (order + text + provenance triple).
         rendered_claims = _TRENDS_CLAIM_LINE_RE.findall(claims_region)
         rendered_provenance = _TRENDS_PROVENANCE_RE.findall(claims_region)

@@ -2,7 +2,7 @@
 id: 39-2
 epic: 39
 key: 39-2-trends-door-ajar
-status: review
+status: done-awaiting-live-witness
 anchor_provenance: post-38-2-T4 tree at commit 19c3e73e
 baseline_commit: 5e688cca0df19fb4c43ef8ff128e2ec301b43c95
 anchor_reverification: anchors re-verified at 468de34f (artifacts-only diff since baseline); re-verified again at dev baseline 5e688cca
@@ -10,7 +10,7 @@ anchor_reverification: anchors re-verified at 468de34f (artifacts-only diff sinc
 
 # Story 39.2: Trends / Hot-topics as the Door-Ajar
 
-Status: review
+Status: done-awaiting-live-witness
 
 ## Story
 
@@ -305,13 +305,25 @@ T1 executed in full (all six readings, in order; every line anchor re-verified b
 - **FR16/FR9 wave-close assertion:** owed at the `done` flip (post-run-B, ORCHESTRATOR): (i) FR16's Ask-B leg — packet minted at `07W.4` (38-2's half, cross-referenced) AND consumed by its sole consumer (this story's half, landed here); (ii) FR9 — the Door-Ajar renders Ask-B trends/hot-topics bounded + honest with machine-asserted empty-honesty. Neither story's record claims them alone.
 - **Scope-fence confirmation by git:** modified files are exactly `trends_projection.py`, `marcus_spoc_live_test_runner.py`, the two flip modules, the three existing bar-rig modules, `test_exercise_merge_composition_39_1b.py` (+ 3 new files). `research_packet.py`, `_act.py`, `workbook_producer.py`, `ask_b_hot_topics.py`, `ask_b_research_wiring.py`, `workbook_wiring.py`, `production_runner.py`, `pipeline-manifest.yaml`, and `deferred-inventory.md` are all UNTOUCHED.
 
+## Senior Developer Review (AI) — T4 bar-hardening remediation, 2026-07-16
+
+Blind+Edge review of the bar-module change (M-D3-2b standing rule) returned 3 findings + 2 nits on `_assert_trends_door_ajar_conformant`; all remediated same-session with named REJECT pins derived from the frozen-pack (79f1920e) mutant rig. Mutant-kill verified: every new REJECT pin was run against the PRE-fix clause (runner stashed to baseline `6c6ef653`) and demonstrated to FAIL there — 4 failed pre-fix, 4 pass post-fix.
+
+- [x] [Review][Patch] **F1 (MED): fabrication scan was region-scoped** — the `_TRENDS_PROVENANCE_RE` sweep + AC 5 packet-membership loop ran only inside `section[claims_at:topics_at]`, so a fabricated claim+provenance block RELOCATED outside the claims region survived reconciliation. Fixed: the fabrication scan is WHOLE-SECTION — a `**Provenance:**` line may appear ONLY inside the claims region (placement alone REJECTS), and every provenance triple parsed ANYWHERE in the section must be packet-backed. Pins (the review's two demonstrated survivors, F1): `test_t4_f1_fabricated_block_relocated_to_hot_topics_rejects` (block relocated after the anti-theater line, Hot-topics region) + `test_t4_f1_fabricated_block_under_injected_rejected_heading_rejects` (same block under an injected `#### Rejected / unusable topics` heading) — both REJECT.
+- [x] [Review][Patch] **F2 (MED): P15 no-authority branch weaker than the empty branch** — with no `run.json`, a grounded confidence-labeled hot-topic line with generic (non-ask-b) cite ids + source_refs survived (the branch checked only claims-subheading / `Provenance:` / ask-b tokens). Fixed: the no-authority branch applies the empty branch's full grounded-content set (adds `_TRENDS_TOPIC_LINE_RE.search` + the `https://doi.org/` check). Pin (the review's demonstrated survivor, F2): `test_t4_f2_no_run_json_grounded_topic_line_generic_cites_rejects` — REJECTS.
+- [x] [Review][Patch] **F3 (LOW): usable branch never swept unparsed content for raw `ask-b-cite-` tokens** (the empty branch does — asymmetry). Fixed: symmetric whole-section sweep — every `ask-b-cite-` token ANYWHERE in the section must be a member of the recomputed packet's citation ids, else REJECT. Pin (F3): `test_t4_f3_unbacked_raw_ask_b_cite_token_in_prose_rejects` (`See also ask-b-cite-777.` free prose in the claims region) — REJECTS. Free-prose forecast SEMANTICS stay out of scope BY DESIGN per the review's alternative — the bar is a parse floor, not a semantic audit; the clause docstring's M-6 residual note now names that residual explicitly (semantic honesty is owned by the AC 5 unit pins + the run-B judged witness).
+- [x] [Review][Nit] **E2 (a): dead `continue` after `_refuse()`** in the `section is None` branch — removed (`_refuse()` raises unconditionally; the `continue` was unreachable).
+- [x] [Review][Nit] **E2 (b): runner/helper heading-constant drift unguarded** — one-line drift pin added: `test_e2_trends_heading_constant_drift_pin` asserts the runner's `_TRENDS_HEADING` equals `tests/helpers/trends_39_2.py`'s `_TRENDS_HEADING` (the helper's swap and the bar's parse must always target the same section).
+
+Post-remediation verification: full bar battery (`test_workbook_deliverable_bar_37_2b.py` + `_39_1.py` + `_39_1b.py` + `_39_2.py` + `_40_1.py`, `-q -n 0`) → **86 passed, 0 failed** (every conforming shape still ACCEPTs; 40-1's cover clause byte-untouched — the 39-2 trends clause is the ONLY runner surface modified); `tests/unit/marcus/lesson_plan/test_trends_door_ajar_39_2.py` → **13 passed**; `WITNESS_REPLAY_STRICT=1 pytest tests/live_witness_replay -n 0` → **27 passed / 0 skipped**; `ruff check` clean on both touched files (`ruff format` is not the repo's enforced standard — 99/133 files in these trees fail it at baseline, both touched files were non-format-clean pre-diff).
+
 ### File List
 
 - `app/marcus/lesson_plan/trends_projection.py` — MODIFIED (the re-point: import + L313 resolver swap + docstrings; zero logic change elsewhere)
-- `scripts/utilities/marcus_spoc_live_test_runner.py` — MODIFIED (trends clause constants + `_assert_trends_door_ajar_conformant` + spine call after the exercise clause + 40-1 tail rider comment)
+- `scripts/utilities/marcus_spoc_live_test_runner.py` — MODIFIED (trends clause constants + `_assert_trends_door_ajar_conformant` + spine call after the exercise clause + 40-1 tail rider comment; T4 F1–F3 bar hardening + E2 dead-`continue` removal, trends clause ONLY)
 - `tests/helpers/trends_39_2.py` — NEW (M-5 digest-bound frozen-pack extract; `swap_trends_section` / `conforming_trends_body`)
 - `tests/unit/marcus/lesson_plan/test_trends_door_ajar_39_2.py` — NEW (matrix rows 1, 4–8, 13, 15 + AC 4/5 render-honesty pins; 13 tests)
-- `tests/unit/scripts/test_workbook_deliverable_bar_39_2.py` — NEW (rows 9–12, 14, 16 + W-2 + P9/P15 pins; 15 tests; 39-1b rig)
+- `tests/unit/scripts/test_workbook_deliverable_bar_39_2.py` — NEW (rows 9–12, 14, 16 + W-2 + P9/P15 pins; 39-1b rig; T4: +4 F1–F3 survivor REJECT pins + E2 heading drift pin; 20 tests)
 - `tests/unit/marcus/lesson_plan/test_ask_b_trends_consumer_pin_38_2.py` — MODIFIED (CONSCIOUS FLIP #1 + module-docstring truth)
 - `tests/unit/marcus/lesson_plan/test_trends_w3.py` — MODIFIED (CONSCIOUS FLIP #2 only; all other tests unchanged)
 - `tests/unit/scripts/test_workbook_deliverable_bar_37_2b.py` — MODIFIED (rig: trends swap at emit)
@@ -322,3 +334,4 @@ T1 executed in full (all six readings, in order; every line anchor re-verified b
 ### Change Log
 
 - 2026-07-16 (claude-fable-5): 39-2 implemented at baseline `5e688cca` — Door-Ajar re-pointed to `ask_b_hot_topics@07W.4` via `resolve_for_hot_topics`; two enumerated conscious pin flips landed with rationales; `_assert_trends_door_ajar_conformant` bar clause (recompute authority, M-6 residual named, W-2 defaults pin) appended to the deliverable-bar spine with 4 negative + conforming-empty positive pins; 16-row matrix fully named-test-covered; fixtures grounded on the frozen 79f1920e pack (digest-bound). Batteries: 1643 passed / 6 env-skips; STRICT replay 27/27; lockstep exit 0; ruff + import-linter clean. Status → review.
+- 2026-07-16 (T4, claude-fable-5): **Review APPROVED + T4 bar-hardening remediation applied same session** (at post-40-1 baseline `6c6ef653`) — whole-section fabrication scan (F1: `**Provenance:**` placement fence + whole-section provenance packet-membership), no-authority branch mirrors the empty branch's full grounded-content set (F2: topic-line regex + DOI check), symmetric whole-section raw `ask-b-cite-` token sweep (F3) with the parse-floor scope named in the clause's M-6 residual; E2 nits (dead `continue` removed; runner↔helper `_TRENDS_HEADING` drift pin). 5 new pins (4 REJECT survivor pins mutant-kill-verified against the pre-fix clause + 1 drift pin). Bar battery 86/86 (40-1 cover clause untouched); trends unit pins 13/13; STRICT replay 27/27; ruff check clean. Status → **done-awaiting-live-witness** (deterministic+T4 green; no probe owed — deterministic-consume; full-run witness owed by batch run B).

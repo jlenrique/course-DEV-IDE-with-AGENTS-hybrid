@@ -22,6 +22,16 @@ production call. M-4 (row 16) pins the presentation-support-sentinel
 scoping: the section renders in the legacy profile too, and legacy-profile
 deliverables are OUT of clause scope. P15 mirror: grounded-claim content
 with no ``run.json`` behind it refuses; explicit-empty is tolerated.
+
+T4 bar-hardening pins (F1–F3 + E2, frozen-pack mutant rig): the fabrication
+scan is WHOLE-SECTION (F1 — the two demonstrated survivors, a fabricated
+provenance block relocated after the anti-theater line and the same block
+under an injected Rejected heading, both REJECT); the no-authority branch
+applies the empty branch's full grounded-content set (F2 — a grounded
+topic line with generic cite ids and no run.json REJECTS); every raw
+``ask-b-cite-`` token anywhere in the section must be packet-backed
+(F3 — unbacked token in free prose REJECTS); the runner/helper section
+heading constants are drift-pinned (E2).
 """
 
 from __future__ import annotations
@@ -478,3 +488,94 @@ def test_no_run_json_explicit_empty_section_tolerated(tmp_path: Path) -> None:
     fallback_path = tmp_path / "u01@1-fallback.md"
     fallback_path.write_text(fallback, encoding="utf-8")
     runner._assert_trends_door_ajar_conformant(tmp_path, [fallback_path])
+
+
+# ---------------------------------------------------------------------------
+# T4 bar-hardening pins (F1–F3 + E2) — every demonstrated survivor REJECTS
+# ---------------------------------------------------------------------------
+
+
+def test_t4_f1_fabricated_block_relocated_to_hot_topics_rejects(
+    tmp_path: Path,
+) -> None:
+    """T4 F1 survivor (a): the row-9 fabricated claim+provenance block
+    RELOCATED after the anti-theater line (Hot-topics region) — the old
+    region-scoped scan never looked there; the whole-section scan REJECTS
+    (a ``**Provenance:**`` line may appear ONLY inside the claims region)."""
+
+    def mutate(markdown: str) -> str:
+        anchor = runner._TRENDS_ANTI_THEATER_LINE + "\n\n"
+        assert markdown.count(anchor) == 1
+        return markdown.replace(anchor, anchor + _FABRICATED_TREND_BLOCK, 1)
+
+    _run_dir_with(tmp_path, ask_b_output=frozen_ask_b_output(), mutate=mutate)
+    _assert_bar_rejects(tmp_path)
+
+
+def test_t4_f1_fabricated_block_under_injected_rejected_heading_rejects(
+    tmp_path: Path,
+) -> None:
+    """T4 F1 survivor (b): the same fabricated block parked under an INJECTED
+    ``#### Rejected / unusable topics`` heading at the section tail — the
+    Rejected-line regex never parsed it, so it survived reconciliation; the
+    whole-section provenance scan REJECTS on placement alone."""
+
+    def mutate(markdown: str) -> str:
+        section = _trends_section(markdown)
+        injected = "\n#### Rejected / unusable topics\n\n" + _FABRICATED_TREND_BLOCK
+        return markdown.replace(section, section + injected, 1)
+
+    _run_dir_with(tmp_path, ask_b_output=frozen_ask_b_output(), mutate=mutate)
+    _assert_bar_rejects(tmp_path)
+
+
+def test_t4_f2_no_run_json_grounded_topic_line_generic_cites_rejects(
+    tmp_path: Path,
+) -> None:
+    """T4 F2 survivor: NO run.json + a confidence-labeled hot-topic line whose
+    cite ids are generic (non-``ask-b-cite-``) — the old no-authority branch
+    checked a weaker set than the empty branch and let it through; the
+    mirrored stronger set (topic-line regex + DOI check) REJECTS."""
+    grounded = (
+        "\n*Confidence-labeled callout.*\n\n"
+        "- **federated evaluation** (confidence=medium) — grounded topic "
+        "prose. Supporting: `cite-001`; source_refs: "
+        "`retrieval:scite:10.1000/x`.\n"
+    )
+    markdown = re.sub(
+        r"(\n## Research Trends\n)(.*?)(?=\n## )",
+        lambda m: m.group(1) + grounded,
+        RENDERED_WORKBOOK_FIXTURE.read_text(encoding="utf-8"),
+        count=1,
+        flags=re.DOTALL,
+    )
+    assert runner._PRESENTATION_SUPPORT_MD_SENTINEL in markdown
+    path = tmp_path / "u01@1.md"
+    path.write_text(markdown, encoding="utf-8")
+    with pytest.raises(runner.RunnerRefusal) as caught:
+        runner._assert_trends_door_ajar_conformant(tmp_path, [path])
+    assert str(caught.value) == "workbook-deliverable-nonconforming-despite-completed"
+
+
+def test_t4_f3_unbacked_raw_ask_b_cite_token_in_prose_rejects(tmp_path: Path) -> None:
+    """T4 F3: a raw ``ask-b-cite-`` token in free prose inside the claims
+    region (``See also ask-b-cite-777.``) — no parse idiom matched it, so the
+    old usable branch never membership-checked it; the symmetric whole-section
+    token sweep REJECTS (777 is not a recomputed-packet citation id)."""
+
+    def mutate(markdown: str) -> str:
+        anchor = "#### Research trends\n\n"
+        assert anchor in markdown
+        return markdown.replace(anchor, anchor + "See also ask-b-cite-777.\n\n", 1)
+
+    _run_dir_with(tmp_path, ask_b_output=frozen_ask_b_output(), mutate=mutate)
+    _assert_bar_rejects(tmp_path)
+
+
+def test_e2_trends_heading_constant_drift_pin() -> None:
+    """E2 (T4 nit): the runner's ``_TRENDS_HEADING`` anchor and the shared
+    test helper's constant must never drift apart — the helper's swap and the
+    bar's parse must always target the same section."""
+    from tests.helpers import trends_39_2 as trends_39_2_helpers
+
+    assert runner._TRENDS_HEADING == trends_39_2_helpers._TRENDS_HEADING
