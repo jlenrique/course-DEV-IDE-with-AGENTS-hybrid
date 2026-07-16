@@ -19,6 +19,13 @@ from app.marcus.lesson_plan.ask_a_enrichment import (
     canonical_digest,
     evidence_for_body,
 )
+from app.marcus.lesson_plan.ask_b_hot_topics import (
+    AskBContributionOutputV1,
+    AskBExecutionReceiptV1,
+    AskBKnowledgeEntryV1,
+    AskBResearchIntakeV1,
+    AskBRetrievalScopeV1,
+)
 from app.marcus.lesson_plan.deep_dive_projection import DeepDiveAbilityInput
 from app.marcus.lesson_plan.workbook_enrichment import RunEnvelopeCorruptError
 from app.models.runtime.production_envelope import (
@@ -101,6 +108,65 @@ def _valid_ask_a_output() -> dict:
         scope=scope, execution_receipt=receipt, entries=(entry,)
     )
     return AskAContributionOutputV1.build_completed(
+        disposition="completed_ready", intake=intake, entries=(entry,), known_losses=()
+    ).model_dump(mode="json")
+
+
+def _valid_ask_b_output() -> dict:
+    scope_raw = {
+        "schema_version": "ask-b-retrieval-scope.v1",
+        "demand_digest": "sha256:" + "1" * 64,
+        "workbook_brief_payload_digest": "sha256:" + "2" * 64,
+        "abilities": (
+            DeepDiveAbilityInput(ability_id="lo-1", text="Explain model drift"),
+        ),
+        "scene_digest": "sha256:" + "3" * 64,
+        "scene_text": "A clinic hits model drift.",
+        "query": "hot topics: [lo-1] Explain model drift",
+        "query_digest": None,
+        "posture": "hot_topics",
+        "provider_config_fingerprint": "sha256:" + "4" * 64,
+        "association_algorithm": "ask-b-association.v1",
+        "known_scope_losses": (),
+    }
+    scope_raw["query_digest"] = canonical_digest(scope_raw["query"])
+    scope_raw["scope_digest"] = canonical_digest(
+        {k: v for k, v in scope_raw.items() if k != "scope_digest"}
+    )
+    scope = AskBRetrievalScopeV1.model_validate(scope_raw, strict=True)
+    body = "Model drift evidence explains drift risks."
+    excerpt, truncated, body_hash = evidence_for_body(body)
+    entry = AskBKnowledgeEntryV1(
+        citation_id="ask-b-cite-001",
+        source_ref="retrieval:scite:10.1000/y",
+        provider="scite",
+        source_id="10.1000/y",
+        title="Model drift trends",
+        source_hash="sha256:" + "5" * 64,
+        evidence_hierarchy_tier="T4_peer_other",
+        peer_reviewed=True,
+        provider_provenance=("scite",),
+        triangulation_status="single_provider",
+        evidence_excerpt=excerpt,
+        evidence_truncated=truncated,
+        evidence_body_sha256=body_hash,
+        scope_digest=scope.scope_digest,
+        supports_ability_ids=("lo-1",),
+        association_algorithm="ask-b-association.v1",
+        matched_ability_tokens={"lo-1": ("model", "drift")},
+    )
+    receipt = AskBExecutionReceiptV1.build(
+        scope=scope,
+        dispatcher_invocations=1,
+        provider_iterations=(1,),
+        refinement_logs=(),
+        provider_outcomes=("accepted",),
+        provider_receipts=({"provider": "scite"},),
+    )
+    intake = AskBResearchIntakeV1.build(
+        scope=scope, execution_receipt=receipt, entries=(entry,)
+    )
+    return AskBContributionOutputV1.build_completed(
         disposition="completed_ready", intake=intake, entries=(entry,), known_losses=()
     ).model_dump(mode="json")
 
@@ -323,17 +389,20 @@ def test_public_packet_coordinates_are_frozen_and_exported() -> None:
 
 
 def test_three_packets_select_exact_coordinates_and_witness_digests(tmp_path: Path) -> None:
+    # CONSCIOUS FLIP (38-2 AC 3): the bare-fixture Ask-B row this test carried
+    # under 38-1 AC 4's interim "current semantics" is replaced by a strict
+    # contract output — the exact 07W.4 coordinate is now strict.
     generic = _valid_entry(citation_id="generic", source_hash="sha256:generic")
     ask_a_output = _valid_ask_a_output()
-    ask_b = _valid_entry(citation_id="ask-b", source_hash="sha256:ask-b")
+    ask_b_output = _valid_ask_b_output()
     _write_contributions(
         tmp_path,
         [
             ("research_wiring", "04.55", {"research_entries": [generic]}),
             ("ask_a_enrichment", "07W.2", ask_a_output),
-            ("ask_b_hot_topics", "07W.4", {"research_entries": [ask_b]}),
+            ("ask_b_hot_topics", "07W.4", ask_b_output),
             ("ask_a_enrichment", "collision", {"research_entries": [generic]}),
-            ("collision", "07W.2", {"research_entries": [ask_b]}),
+            ("collision", "07W.2", {"research_entries": [_valid_entry()]}),
         ],
     )
 
@@ -358,11 +427,17 @@ def test_three_packets_select_exact_coordinates_and_witness_digests(tmp_path: Pa
     )
     assert default.entries[0]["citation_id"] == "generic"
     assert enrichment.entries[0]["citation_id"] == "ask-a-cite-001"
-    assert hot_topics.entries[0]["citation_id"] == "ask-b"
+    assert hot_topics.entries[0]["citation_id"] == "ask-b-cite-001"
     assert enrichment == rp.resolve_for_enrichment_pool(tmp_path)
     assert len(
         {default.packet_digest, enrichment.packet_digest, hot_topics.packet_digest}
     ) == 3
+    # One-witness-rule shape-pin (38-2 AC 3): every consumer of the Ask-B
+    # packet witnesses the SAME digest.
+    assert hot_topics.packet_digest == rp.resolve_for_hot_topics(tmp_path).packet_digest
+    assert hot_topics.packet_digest == rp.load_research_packet(
+        tmp_path, specialist_id="ask_b_hot_topics", node_id="07W.4"
+    ).packet_digest
 
 
 def test_ask_a_present_malformed_contract_fails_loud(tmp_path: Path) -> None:
@@ -380,6 +455,78 @@ def test_ask_a_strict_completed_packet_resolves_stably(tmp_path: Path) -> None:
     second = rp.resolve_for_enrichment_pool(tmp_path, require_usable=True)
     assert first == second
     assert first.packet_digest == second.packet_digest
+
+
+def test_ask_b_present_malformed_contract_fails_loud(tmp_path: Path) -> None:
+    """38-2 AC 3 mirrored strict pin (ruling-d item 2): the Ask-A strict-pin
+    analog at the exact ``ask_b_hot_topics@07W.4`` coordinate."""
+    _write_contributions(
+        tmp_path,
+        [("ask_b_hot_topics", "07W.4", {"research_entries": [_valid_entry()]})],
+    )
+    with pytest.raises(rp.ResearchPacketShapeError, match="Ask-B"):
+        rp.resolve_for_hot_topics(tmp_path)
+
+
+def test_ask_b_entry_missing_credibility_fields_is_rejected(tmp_path: Path) -> None:
+    """38-2 AC 9 negative-witness pin (M-8 machine reason): an Ask-B entry
+    missing credibility fields must REJECT — only satisfiable under the
+    strict reader, which is why the AC 3 mandate is forced."""
+    output = _valid_ask_b_output()
+    del output["research_entries"][0]["provider_provenance"]
+    _write_contributions(tmp_path, [("ask_b_hot_topics", "07W.4", output)])
+    with pytest.raises(rp.ResearchPacketShapeError, match="Ask-B"):
+        rp.resolve_for_hot_topics(tmp_path)
+
+
+def test_ask_b_stub_shaped_output_claiming_completion_is_rejected(tmp_path: Path) -> None:
+    """38-2 AC 9 negative-witness pin: a stub-shaped output dressed up as a
+    completed contribution must REJECT at the strict reader."""
+    _write_contributions(
+        tmp_path,
+        [
+            (
+                "ask_b_hot_topics",
+                "07W.4",
+                {
+                    "schema_version": "ask-b-contribution-output.v1",
+                    "disposition": "completed_ready",
+                    "research_entries": [],
+                    "known_losses": [],
+                    "research_intake": None,
+                    "dispatcher_invocations": 1,
+                    "output_digest": "sha256:" + "9" * 64,
+                },
+            )
+        ],
+    )
+    with pytest.raises(rp.ResearchPacketShapeError, match="Ask-B"):
+        rp.resolve_for_hot_topics(tmp_path)
+
+
+def test_ask_b_strict_completed_packet_resolves_stably(tmp_path: Path) -> None:
+    """38-2 AC 3: the same ``packet_digest`` is witnessed on every reload."""
+    _write_contributions(tmp_path, [("ask_b_hot_topics", "07W.4", _valid_ask_b_output())])
+    first = rp.resolve_for_hot_topics(tmp_path, require_usable=True)
+    second = rp.resolve_for_hot_topics(tmp_path, require_usable=True)
+    assert first == second
+    assert first.packet_digest == second.packet_digest
+    assert first.entries[0]["citation_id"] == "ask-b-cite-001"
+
+
+def test_generic_04_55_leniency_unchanged_by_ask_b_strictness(tmp_path: Path) -> None:
+    """38-2 AC 3 (ruling-d item 3): the strictness flip is coordinate-exact —
+    the generic ``research_wiring@04.55`` packet keeps its lenient read
+    semantics (bare rows accepted; malformed rows drop into losses)."""
+    bad = {"bad": "row"}
+    _write_contributions(
+        tmp_path,
+        [("research_wiring", "04.55", {"research_entries": [bad, _valid_entry()]})],
+    )
+    packet = rp.load_research_packet(tmp_path)
+    assert packet.status == "degraded"
+    assert len(packet.entries) == 1
+    assert packet.known_losses == ("entry_shape_invalid:0",)
 
 
 @pytest.mark.parametrize(
@@ -426,18 +573,12 @@ def test_named_resolvers_require_usable_and_validate_rows(
         tmp_path,
         [(target[0], target[1], {"research_entries": [{"bad": "row"}]})],
     )
-    if resolver is rp.resolve_for_enrichment_pool:
-        with pytest.raises(rp.ResearchPacketShapeError, match="Ask-A"):
-            resolver(tmp_path)  # type: ignore[operator]
-        return
-    packet = resolver(tmp_path)  # type: ignore[operator]
-    assert packet.status == "empty"
-    assert packet.known_losses == (
-        "entry_shape_invalid:0",
-        "research_entries_all_invalid",
-    )
-    with pytest.raises(rp.ResearchPacketShapeError, match="requires usable"):
-        resolver(tmp_path, require_usable=True)  # type: ignore[operator]
+    # CONSCIOUS FLIP (38-2 AC 3): under 38-1 AC 4's interim semantics the
+    # Ask-B branch read this leniently into an empty packet; the exact 07W.4
+    # coordinate is now strict and fails loud, mirroring Ask-A.
+    expected = "Ask-A" if resolver is rp.resolve_for_enrichment_pool else "Ask-B"
+    with pytest.raises(rp.ResearchPacketShapeError, match=expected):
+        resolver(tmp_path)  # type: ignore[operator]
 
 
 def test_non_generic_empty_paths_preserve_requested_coordinates(tmp_path: Path) -> None:
@@ -458,11 +599,14 @@ def test_non_generic_empty_paths_preserve_requested_coordinates(tmp_path: Path) 
 def test_named_resolvers_fail_loud_for_wrong_container_and_corrupt_run(
     tmp_path: Path,
 ) -> None:
+    # CONSCIOUS FLIP (38-2 AC 3): the wrong-container Ask-B row now fails the
+    # strict contract validation first ("Ask-B"), not the generic list check
+    # — 38-1 AC 4 scoped the lenient read as interim.
     _write_contributions(
         tmp_path,
         [("ask_b_hot_topics", "07W.4", {"research_entries": {"bad": "type"}})],
     )
-    with pytest.raises(rp.ResearchPacketShapeError, match="must be a list"):
+    with pytest.raises(rp.ResearchPacketShapeError, match="Ask-B"):
         rp.resolve_for_hot_topics(tmp_path)
     (tmp_path / "run.json").write_text("{nope", encoding="utf-8")
     with pytest.raises(RunEnvelopeCorruptError):
@@ -582,14 +726,20 @@ def test_identity_by_state_validation_parity(
         "missing-key": {"other": []},
         "wrong-container": {"research_entries": {"bad": "type"}},
     }
+    # CONSCIOUS FLIP (38-2 AC 3): the Ask-B rows of this parametrized family
+    # were pinned lenient under 38-1 AC 4's interim "current semantics"; the
+    # exact 07W.4 coordinate is now strict and behaves like the Ask-A rows.
+    strict = {"ask_a_enrichment": "Ask-A", "ask_b_hot_topics": "Ask-B"}
     if specialist_id == "ask_a_enrichment" and state == "ready":
         outputs["ready"] = _valid_ask_a_output()
+    if specialist_id == "ask_b_hot_topics" and state == "ready":
+        outputs["ready"] = _valid_ask_b_output()
     _write_contributions(
         tmp_path,
         [(specialist_id, node_id, outputs[state])],
     )
-    if specialist_id == "ask_a_enrichment" and state != "ready":
-        with pytest.raises(rp.ResearchPacketShapeError, match="Ask-A"):
+    if specialist_id in strict and state != "ready":
+        with pytest.raises(rp.ResearchPacketShapeError, match=strict[specialist_id]):
             rp.load_research_packet(
                 tmp_path, specialist_id=specialist_id, node_id=node_id
             )

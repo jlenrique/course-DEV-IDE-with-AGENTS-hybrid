@@ -136,6 +136,22 @@ WORKBOOK_BAND_SPECIALIST_IDS: Final[dict[str, str]] = {
     ASK_B_HOT_TOPICS_NODE_ID: ASK_B_HOT_TOPICS_SPECIALIST_ID,
 }
 
+# 38-2 AC 6 (W-2 resume-skip hardening): the reconcile-not-skip set. A node in
+# this set is NEVER short-circuit-skipped by the exact-coordinate lookup when
+# running under the default registry — its persisted stub/typed-retryable
+# output must upgrade at the same coordinate once prerequisites become ready,
+# while completed outputs reconcile and are never recalled. This trap has
+# recurred once per band-node activation (38.1 → 37.2b → 38.2); the named
+# set-equality pin over this constant makes any future band-node omission
+# fail loud at activation time instead of silently skipping forever.
+WORKBOOK_BAND_RECONCILE_NODE_IDS: Final[frozenset[str]] = frozenset(
+    {
+        ASK_A_ENRICHMENT_NODE_ID,
+        WORKBOOK_REVIEW_NODE_ID,
+        ASK_B_HOT_TOPICS_NODE_ID,
+    }
+)
+
 
 def _canonical_json(value: object) -> str:
     return json.dumps(
@@ -1195,19 +1211,30 @@ def _review_factory(
     )
 
 
-def _ask_b_stub(_node_id: str, _envelope: ProductionEnvelope) -> dict[str, object]:
-    return {
-        "research_entries": [],
-        "stub_status": "not_yet_wired",
-        "known_losses": ["ask_b_not_yet_wired"],
-    }
+def _ask_b_factory(
+    _node_id: str,
+    envelope: ProductionEnvelope,
+    *,
+    runtime_context: WorkbookBriefRuntimeContext,
+    dispatch_live: bool,
+) -> dict[str, object]:
+    """Activated 07W.4 Ask-B hot-topics seam (38.2) — replaces the 38.3b stub."""
+    from app.marcus.orchestrator.ask_b_research_wiring import (  # noqa: PLC0415
+        run_ask_b_research,
+    )
+
+    return run_ask_b_research(
+        run_dir=runtime_context.run_dir,
+        trial_id=envelope.trial_id,
+        dispatch_live=dispatch_live,
+    ).model_dump(mode="json")
 
 
 DEFAULT_WORKBOOK_BAND_FACTORIES: Final[dict[str, WorkbookBandFactory]] = {
     WORKBOOK_BRIEF_NODE_ID: _brief_factory,
     ASK_A_ENRICHMENT_NODE_ID: _ask_a_factory,
     WORKBOOK_REVIEW_NODE_ID: _review_factory,
-    ASK_B_HOT_TOPICS_NODE_ID: _ask_b_stub,
+    ASK_B_HOT_TOPICS_NODE_ID: _ask_b_factory,
 }
 
 
@@ -1566,8 +1593,7 @@ def run_workbook_band_node(
     else:
         existing = production_envelope.get_contribution(specialist_id, node_id=node_id)
     if existing is not None and not (
-        node_id in {ASK_A_ENRICHMENT_NODE_ID, WORKBOOK_REVIEW_NODE_ID}
-        and factories is None
+        node_id in WORKBOOK_BAND_RECONCILE_NODE_IDS and factories is None
     ):
         if node_id == WORKBOOK_BRIEF_NODE_ID:
             if runtime_context is None:
@@ -1766,6 +1792,38 @@ def run_workbook_band_node(
                 "completed Ask-A contribution has no call journal",
                 tag="ask-a.split-brain",
             )
+    prior_ask_b = None
+    if (
+        node_id == ASK_B_HOT_TOPICS_NODE_ID
+        and factory is _ask_b_factory
+        and existing is not None
+        and existing.output.get("stub_status") != "not_yet_wired"
+    ):
+        from app.marcus.lesson_plan.ask_b_hot_topics import (  # noqa: PLC0415
+            AskBContributionOutputV1,
+        )
+        from app.marcus.orchestrator.ask_b_research_wiring import (  # noqa: PLC0415
+            JOURNAL_FILENAME as ASK_B_JOURNAL_FILENAME,
+        )
+
+        try:
+            prior_ask_b = AskBContributionOutputV1.model_validate_json(
+                json.dumps(existing.output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"existing Ask-B output is invalid: {exc}",
+                tag="ask-b.reconciliation-failed",
+            ) from exc
+        if (
+            prior_ask_b.disposition.startswith("completed")
+            and runtime_context is not None
+            and not (runtime_context.run_dir / ASK_B_JOURNAL_FILENAME).exists()
+        ):
+            raise SpecialistDispatchError(
+                "completed Ask-B contribution has no call journal",
+                tag="ask-b.split-brain",
+            )
     prior_review = None
     if (
         node_id == WORKBOOK_REVIEW_NODE_ID
@@ -1848,6 +1906,18 @@ def run_workbook_band_node(
                     tag="workbook-review.runtime-context-missing",
                 )
             output = factory(node_id, production_envelope, runtime_context=runtime_context)
+        elif node_id == ASK_B_HOT_TOPICS_NODE_ID and factory is _ask_b_factory:
+            if runtime_context is None:
+                raise SpecialistDispatchError(
+                    "07W.4 requires explicit runtime context",
+                    tag="ask-b.runtime-context-missing",
+                )
+            output = factory(
+                node_id,
+                production_envelope,
+                runtime_context=runtime_context,
+                dispatch_live=bool(dispatch_live),
+            )
         else:
             output = factory(node_id, production_envelope)
     except SpecialistDispatchError:
@@ -1915,11 +1985,12 @@ def run_workbook_band_node(
                 )
             }
         )
-    model_used = (
-        "deterministic-ask-a-research-wiring"
-        if node_id == ASK_A_ENRICHMENT_NODE_ID and factory is _ask_a_factory
-        else WORKBOOK_BAND_MODEL_MARKER
-    )
+    if node_id == ASK_A_ENRICHMENT_NODE_ID and factory is _ask_a_factory:
+        model_used = "deterministic-ask-a-research-wiring"
+    elif node_id == ASK_B_HOT_TOPICS_NODE_ID and factory is _ask_b_factory:
+        model_used = "deterministic-ask-b-hot-topics-wiring"
+    else:
+        model_used = WORKBOOK_BAND_MODEL_MARKER
     if node_id == WORKBOOK_BRIEF_NODE_ID and runtime_context is not None:
         if runtime_context.writer_execution_mode == "live":
             config = getattr(runtime_context.scene_writer, "model_config", None)
@@ -1972,6 +2043,44 @@ def run_workbook_band_node(
                     if not (
                         item.specialist_id == ASK_A_ENRICHMENT_SPECIALIST_ID
                         and item.node_id == ASK_A_ENRICHMENT_NODE_ID
+                    )
+                )
+            }
+        )
+    if (
+        existing is not None
+        and node_id == ASK_B_HOT_TOPICS_NODE_ID
+        and factory is _ask_b_factory
+    ):
+        from app.marcus.lesson_plan.ask_b_hot_topics import (  # noqa: PLC0415
+            AskBContributionOutputV1,
+        )
+
+        try:
+            resolved_ask_b = AskBContributionOutputV1.model_validate_json(
+                json.dumps(output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"Ask-B output validation failed: {exc}", tag="ask-b.output-invalid"
+            ) from exc
+        if prior_ask_b is not None and prior_ask_b.disposition.startswith("completed"):
+            if prior_ask_b != resolved_ask_b:
+                raise SpecialistDispatchError(
+                    "completed Ask-B contribution conflicts with journal replay",
+                    tag="ask-b.split-brain",
+                )
+            return production_envelope
+        if prior_ask_b == resolved_ask_b and prior_ask_b is not None:
+            return production_envelope
+        updated = updated.model_copy(
+            update={
+                "contributions": tuple(
+                    item
+                    for item in updated.contributions
+                    if not (
+                        item.specialist_id == ASK_B_HOT_TOPICS_SPECIALIST_ID
+                        and item.node_id == ASK_B_HOT_TOPICS_NODE_ID
                     )
                 )
             }
@@ -2039,6 +2148,7 @@ __all__ = [
     "DEFAULT_WORKBOOK_BAND_FACTORIES",
     "WORKBOOK_BAND_MODEL_MARKER",
     "WORKBOOK_BAND_NODE_IDS",
+    "WORKBOOK_BAND_RECONCILE_NODE_IDS",
     "WORKBOOK_BAND_SPECIALIST_IDS",
     "WORKBOOK_BRIEF_NODE_ID",
     "WORKBOOK_BRIEF_SPECIALIST_ID",

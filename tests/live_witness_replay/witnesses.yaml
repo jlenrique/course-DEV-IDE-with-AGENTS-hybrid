@@ -63,6 +63,25 @@ families:
         disposition: enrolled
         capture:
           idempotency_key: sha256:509649873f74b0ef84c51b24c5cfd87c1f68c22434f0176240cdc173c161269e
+  - family: ask-b-hot-topics-call.v1
+    node_id: "07W.4"
+    # 38-2 zero-witness rule (D3): family enrolled IN THE STORY DIFF; the
+    # FIRST witness is OWED by component probe probe-38-2-ask-b-hot-topics-001
+    # (run by the orchestrator after review — probe → freeze → replay → spend).
+    # The row below is `disposition: pending` so STRICT pre-flight stays green
+    # while the witness is owed: per-family replay consumes only
+    # `disposition: enrolled` rows. At probe close, flip this row to
+    # `disposition: enrolled`, point `path` at the frozen attempt journal,
+    # and record capture identity (idempotency key + provider/config
+    # fingerprint). Failed attempts (if any) enroll as ambiguity-shape
+    # witnesses exactly like the 7ed48f8a/b6fc76ea precedent rows.
+    witnesses:
+      - id: ask-b-38-2-probe-001-pending
+        path: _bmad-output/implementation-artifacts/evidence/ask-b-38-2-live-PENDING/run/ask-b-hot-topics-call.v1.json
+        state: completed
+        disposition: pending
+        capture:
+          owed_by_probe: probe-38-2-ask-b-hot-topics-001
   - family: workbook-glossary-render.v1
     node_id: "07W"
     # Deterministic replay-render witness (no LLM surface — probe

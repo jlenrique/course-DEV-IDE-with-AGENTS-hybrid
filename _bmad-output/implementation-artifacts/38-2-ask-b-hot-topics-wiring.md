@@ -2,13 +2,14 @@
 id: 38-2
 epic: 38  # re-homed to the Epic-39 wave 2026-07-15 (wave-3940 party record §D1); key kept verbatim
 key: 38-2-ask-b-hot-topics-wiring
-status: ready-for-dev
+status: review
 anchor_provenance: post-39-1b tree at commit 72e17a05
+baseline_commit: 9f0ed20b81cd958debafbbbedd71eb4d099057ca
 ---
 
 # Story 38.2: Ask B — hot-topics wiring (`ask_b_hot_topics@07W.4`)
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -203,24 +204,25 @@ Because trigger rows are touched: read the regime doc at T1 (done, §T1 item 3);
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Ask-B demand + strict contract family (AC 1, 3, 4)
-  - [ ] Add `resolve_hot_topics_demand` + strict demand model to `research_demand.py` (beat-③ vows + scene identity + brief digest; ready/non-ready shape rules mirroring `AskAResearchDemandV1`).
-  - [ ] Add `app/marcus/lesson_plan/ask_b_hot_topics.py` (scope/receipt/intake/entry/output; digests; association algorithm; dispositions + loss codes).
-  - [ ] Contract tests: ordering, association, evidence/hash binding, dispositions, digest binding, empty/degraded, malformed losses.
-  - [ ] Strict Ask-B reader branch in `research_packet.py` at exact `ask_b_hot_topics@07W.4` (AC 3 decided mandate) + the full Murat ruling-d flip set: conscious flips of the 38-1 lenient pins (`test_research_packet_w1.py` L325–365 + L549 family) w/ one-line rationales, mirrored strict-fail-loud tests, generic-`04.55` unchanged-leniency re-pin.
-- [ ] Task 2: Orchestrator Ask-B wiring + journal (AC 1, 2, 5)
-  - [ ] Add `app/marcus/orchestrator/ask_b_research_wiring.py` mirroring `run_ask_a_research` at the `ask-b.*` coordinates (lock, pre-call/completed journal, replay, error translation, reconciliation).
-  - [ ] Two-worker barrier, write-failure, collision, ambiguous-call, zero-recall tests.
-- [ ] Task 3: Activate only `07W.4` (AC 2, 6)
-  - [ ] `workbook_wiring.py`: `_ask_b_factory`, dispatch branch, reconcile-not-skip set fix, upgrade/replace/reconcile blocks, node-specific marker.
-  - [ ] Focused band tests: stub upgrade (incl. persisted-stub resume row 7), completed replay no-op, marker identity, kill-switch posture, no graph/manifest drift.
-- [ ] Task 4: Parity + downstream boundary (AC 7, 8)
-  - [ ] Both-walks parity tests via the real `_persist_envelope` writer and disk-only demand reader; unchanged `04.55`/Ask-A/trends regressions; digest distinctness + one-witness shape-pins; `reject_model_prior_topic`-vs-Ask-B-packet pin.
+- [x] Task 1: Ask-B demand + strict contract family (AC 1, 3, 4)
+  - [x] Add `resolve_hot_topics_demand` + strict demand model to `research_demand.py` (beat-③ vows + scene identity + brief digest; ready/non-ready shape rules mirroring `AskAResearchDemandV1`).
+  - [x] Add `app/marcus/lesson_plan/ask_b_hot_topics.py` (scope/receipt/intake/entry/output; digests; association algorithm; dispositions + loss codes).
+  - [x] Contract tests: ordering, association, evidence/hash binding, dispositions, digest binding, empty/degraded, malformed losses.
+  - [x] Strict Ask-B reader branch in `research_packet.py` at exact `ask_b_hot_topics@07W.4` (AC 3 decided mandate) + the full Murat ruling-d flip set: conscious flips of the 38-1 lenient pins (`test_research_packet_w1.py` L325–365 + L549 family) w/ one-line rationales, mirrored strict-fail-loud tests, generic-`04.55` unchanged-leniency re-pin.
+- [x] Task 2: Orchestrator Ask-B wiring + journal (AC 1, 2, 5)
+  - [x] Add `app/marcus/orchestrator/ask_b_research_wiring.py` mirroring `run_ask_a_research` at the `ask-b.*` coordinates (lock, pre-call/completed journal, replay, error translation, reconciliation).
+  - [x] Two-worker barrier, write-failure, collision, ambiguous-call, zero-recall tests.
+- [x] Task 3: Activate only `07W.4` (AC 2, 6)
+  - [x] `workbook_wiring.py`: `_ask_b_factory`, dispatch branch, reconcile-not-skip set fix (extracted `WORKBOOK_BAND_RECONCILE_NODE_IDS` constant), upgrade/replace/reconcile blocks, node-specific marker.
+  - [x] Focused band tests: stub upgrade (incl. persisted-stub resume row 7), completed replay no-op (row 9), marker identity, kill-switch posture, no graph/manifest drift.
+- [x] Task 4: Parity + downstream boundary (AC 7, 8)
+  - [x] Both-walks parity tests via the real `_persist_envelope` writer and disk-only demand reader (disk-visibility assertions in BOTH real-walk spies; M-7 parametrization of the upgrade/no-op + split-brain proofs over `{07W.2, 07W.4}`); unchanged `04.55`/Ask-A/trends regressions; digest distinctness + one-witness shape-pins; `reject_model_prior_topic`-vs-Ask-B-packet pin in the NEW `test_ask_b_trends_consumer_pin_38_2.py` module (A-4).
 - [ ] Task 5: Verification + D3 protocol (AC 9)
-  - [ ] Full deterministic matrix, negative-witness pins, traceability table, baseline comparison, Ruff/import-linter/lockstep PASS.
-  - [ ] Author + register `probe-38-2-ask-b-hot-topics-001`; write `run_ask_b_38_2_live_evidence.py`; witness-replay pre-flight (STRICT) before spend; execute the probe first-run-stands; freeze evidence; enroll the `ask-b-hot-topics-call.v1` family in `witnesses.yaml` + add the family replay module.
-  - [ ] Set status `done-awaiting-live-witness` with the exact D3 vocabulary; record the run-B boarding verdict-line contract (incl. the M-5/J-2 `completed_empty` acknowledgment rule if applicable).
-  - [ ] Close-time riders: one-line cross-ref note on the 38-1 closure record (AC 3 ruling-d item 5); 39.2 inherited-obligations note in closure record + deferred-inventory/39.2 grooming (J-3).
+  - [x] Full deterministic matrix, negative-witness pins, traceability table, baseline comparison, Ruff/import-linter/lockstep PASS.
+  - [x] Author + register `probe-38-2-ask-b-hot-topics-001` (registration + licensed claim + judge in the script + verdict header, written BEFORE any run); write `run_ask_b_38_2_live_evidence.py`; enroll the `ask-b-hot-topics-call.v1` family in `witnesses.yaml` (first witness `disposition: pending`, owed by the probe) + add the family replay module. NOT executed in this diff — the orchestrator runs the probe after review (deterministic-only dev mandate); STRICT pre-flight green with the witness explicitly pending (25 passed, 0 skipped).
+  - [ ] Execute the probe first-run-stands; freeze evidence; flip the pending witness row to `enrolled` (ORCHESTRATOR, post-review).
+  - [ ] Set status `done-awaiting-live-witness` with the exact D3 vocabulary; record the run-B boarding verdict-line contract (incl. the M-5/J-2 `completed_empty` acknowledgment rule if applicable). (ORCHESTRATOR, after probe green — this diff sets `review`.)
+  - [x] Close-time riders executed early (cannot be forgotten): one-line cross-ref note ON the 38-1 closure record (AC 3 ruling-d item 5); 39.2 inherited-obligations note in deferred-inventory §"Story 39.2 grooming" (J-3). The 38-2 closure-record half of J-3 remains owed at the `done` flip.
 
 ## Dev Notes
 
@@ -268,6 +270,122 @@ The 38-1 precedent spec carries no `r_tier`/`t11_tier`/`files_touched`/`lookahea
 - `lesson_plan` may not import `marcus.orchestrator`; the M3 crossing stays disk/envelope-mediated.
 - Baseline discipline: record the exact pre-story pytest command + failure signatures before any code (the 38.1 preflight-failure class at `production_runner.py` may recur; compare by node/exception/dependency signature, never by count).
 - Live spend only after witness-replay pre-flight in STRICT mode (`WITNESS_REPLAY_STRICT=1`; skip ⇒ fail) with the drift-flag report (prompt/model/config identity vs capture-time values).
+
+## Dev Agent Record
+
+### Agent Model Used
+
+Claude Fable 5 (claude-fable-5)
+
+### Implementation Plan (T1 complete — all §T1 anchors re-verified against tree at baseline 9f0ed20b)
+
+Anchor re-verification notes (tree drifted slightly from the `72e17a05` line numbers; all facts hold):
+- `_ask_b_stub` at `workbook_wiring.py` L1198–1203; registry L1206–1211 — verified.
+- Reconcile-not-skip set at L1568–1571 (`node_id in {ASK_A_ENRICHMENT_NODE_ID, WORKBOOK_REVIEW_NODE_ID} and factories is None`) → return at L1693 — **07W.4 absent, the resume-blocking fact confirmed**.
+- Ask-A dispatch branch L1832–1843; prior-output validation L1737–1768; replace/reconcile L1941–1978; marker selection L1918–1921 — verified.
+- `research_packet.py`: Ask-A-only strict branch L195–207; `resolve_for_hot_topics` L345–355 — verified.
+- `production_runner.py`: both walk sites L3325–3354 (start) and L4330–4385 (continuation) already dispatch the full band via `run_workbook_band_node` + `_persist_envelope` — ZERO diff expected, confirmed.
+- Manifest: node `07W.4` L1064–1076 (`specialist_id: null`, `model_config_ref: null`); edges `07W.3→07W.4→07W` L1159–1160; trigger rows L109–110 — ZERO manifest diff expected, confirmed.
+- Witness registry: three families enrolled (`07W.1`, `07W.3`, `07W`); meta-pin (`test_meta_pin_every_enrolled_family_has_a_consuming_module`) requires a `FAMILY = "<family>"` claim line per enrolled family; `_rows()` filters `disposition == "enrolled"` — the pending-witness convention: enroll the family with the first witness row at a non-`enrolled` disposition (`pending`) so STRICT stays green while the witness is owed by the probe.
+
+**Closed Ask-B demand-level loss→status lattice (AC 1 / A-1 — enumerated PRE-implementation; new design, not the Ask-A map):**
+
+| Demand-level condition | Loss code | Status | Downstream |
+|---|---|---|---|
+| No `run.json` envelope and no brief sidecar | `workbook_brief_absent` | `unavailable` | `retryable_demand_not_ready` + `ask_b_demand_not_ready`, zero dispatch |
+| Legacy `workbook_brief_stub` contribution (no real brief) | `workbook_brief_legacy_stub` | `unavailable` | same retryable |
+| Real brief present but `pre_work.promise.status != "authored"` (no beat-③ vows) | `promise_vows_unavailable` | `unavailable` | same retryable |
+| Otherwise-complete brief, `pre_work.scene.status != "authored"` | `scene_identity_absent` | **`ready`** (the ONLY ready-compatible loss — W-3/A-1 decided: scene is optional enhancement, never blocking) | dispatch proceeds; loss carried into scope + packet `known_losses` |
+| Corrupt/forged/mismatched authority (envelope corrupt, coordinate collision, sidecar/receipt mismatch, symlink, duplicate vow ids) | — (raise `ResearchDemandShapeError`) | — | `ask-b.demand-invalid` |
+
+Status vocabulary is closed: `Literal["ready", "unavailable"]` (no `degraded` — Ask-B binds no skeleton, so Ask-A's skeleton-coupled degraded rows have no Ask-B analog).
+
+**Deterministic ability-association basis (AC 1 / A-5 — substitution taken):** the spec's default per-ability-query-segment inheritance rule is not implementable on the landed substrate (one `dispatch_intent` invocation returns rows with no per-segment attribution; partitioning into per-segment dispatches is forbidden by the exactly-one-dispatch rule). Substituted simpler deterministic rule, SAID in the `ask_b_hot_topics.py` module docstring and digest-covered via `association_algorithm="ask-b-association.v1"` inside the scope digest: an entry's `supports_ability_ids` are the ordered scope abilities whose nontrivial ability-text tokens (NFC+casefold, ≥3 chars, stopword-filtered — the proven Ask-A idiom at a distinct algorithm version) match the row's stored evidence window (title + `evidence_excerpt`, never the unstored full body); matched tokens are recorded per ability on the entry; an entry with zero ability association is rejected into an indexed loss.
+
+**Module plan:**
+1. `research_demand.py` — add `AskBDemandLoss`, `AskBHotTopicsDemandV1` (strict/frozen; lattice above in validator), `resolve_hot_topics_demand(run_dir)` (strict disk read of the exact `workbook_brief@07W.1` authority: envelope → coordinate collision guards → sidecar `read_workbook_brief` → receipt match → promise/scene projection; never falls back).
+2. `ask_b_hot_topics.py` (new) — `AskBRetrievalScopeV1` (binds demand/brief digests, ordered abilities, digest-bound scene identity + text, complete single-line canonical query, posture `hot_topics`, fingerprint, scope losses), `derive_hot_topics_query`, `match_ability_associations`, `AskBKnowledgeEntryV1` (`ask-b-cite-###`, credibility + evidence + association fields), `AskBExecutionReceiptV1`, `AskBResearchIntakeV1` (covered/uncovered ability ids), `AskBContributionOutputV1` (six dispositions, `ask_b_*` loss codes). Shared pure helpers imported from `ask_a_enrichment` (`canonical_digest`, `evidence_for_body`, `normalize_match_text`, `ability_tokens`) — lesson_plan-internal, M3-safe.
+3. `ask_b_research_wiring.py` (new) — mirror of `run_ask_a_research` at `ask-b.*` coordinates: `ask-b-hot-topics-call.v1.lock` / `ask-b-hot-topics-call.v1.json`, `MARCUS_ASK_B_QUERY_MAX_CHARS` (default 8192), pre-call/completed atomic journal, zero-call replay, exact tag set.
+4. `research_packet.py` — strict Ask-B reader branch at exact `ask_b_hot_topics@07W.4` (AC 3 decided mandate).
+5. `workbook_wiring.py` — `_ask_b_factory`; registry swap; `WORKBOOK_BAND_RECONCILE_NODE_IDS` frozenset constant `{07W.2, 07W.3, 07W.4}` (extracted so the W-2 set-equality pin is assertable) used at the skip site; `prior_ask_b` validation; `07W.4` dispatch branch (`ask-b.runtime-context-missing`); `deterministic-ask-b-hot-topics-wiring` marker; completed-reconcile/replace block.
+6. Tests per the 17-row matrix + AC 9 (new modules `test_ask_b_hot_topics_38_2.py`, `test_research_demand_38_2_ask_b.py`, `test_ask_b_research_wiring_38_2.py`, `test_ask_b_trends_consumer_pin_38_2.py`; parametrized extensions inside `test_workbook_band_wiring.py` and `test_research_packet_w1.py`).
+7. `witnesses.yaml` family block (`ask-b-hot-topics-call.v1`, node `07W.4`, first witness `disposition: pending` owed by `probe-38-2-ask-b-hot-topics-001`) + `tests/live_witness_replay/test_ask_b_hot_topics_call_v1.py`.
+8. `scripts/utilities/run_ask_b_38_2_live_evidence.py` — authored, registered, NEVER executed in this diff (orchestrator runs it post-review).
+
+### Debug Log
+
+- **Baseline (pre-code, at 9f0ed20b).** Command A: `./.venv/Scripts/python.exe -m pytest -q tests/unit/marcus/lesson_plan tests/unit/marcus/orchestrator tests/integration/marcus/test_workbook_band_wiring.py --tb=line` → `1 failed, 1579 passed, 3 skipped`. The single failure: `tests/unit/marcus/orchestrator/test_operator_surface_ambient_f_e2e_2.py::test_health_tiles_prefer_persisted_cost_report` — `KeyError: 'run cost'` at L343; reproduced serially (`-n 0`), inherited/ambient (operator-surface cost-report tile; no story surface involved). Command B: `./.venv/Scripts/python.exe -m pytest -q tests/specialists tests/unit/marcus/lesson_plan/test_research_packet_w1.py --tb=no` → `30 failed, 1874 passed, 3 skipped, 1 xfailed`. All 30 failures share ONE dependency signature: `app.specialists.source_bundle.SourceBundleError: source bundle manifest is unreadable or unsafe` ← `FileNotFoundError: .tmp/pytest-fixtures/case-*/bundle/manifest.json` (cd/irene modules; fixture-bundle cache environmental, reproduced serially, predates the diff). STRICT witness replay baseline: `22 passed, 0 skipped`.
+- Contract-family strict-tuple gotcha: `model_validate(raw, strict=True)` rejects JSON-style lists for tuple fields — test fixtures route through `model_validate_json` (mirrors the 38-1 test idiom).
+- Bug caught in-flight (own code): the `_nonblank_line` guard initially risked literal-space separators; verified on disk the guard carries `\r`, `\n`, U+2028, U+2029 exactly (hex-dump check).
+- Ruff I001/E402/SIM300 auto-fixed on the probe script + band module; final `ruff check` clean on every touched file.
+- **Extra (beyond the spec battery list) full `tests/integration/marcus` + `tests/marcus` sweep:** `71 failed, 1404 passed, 10 skipped`. Serial signature check on 4 representatives from 4 modules: ALL fail with the identical inherited environmental class `PreflightGateFailed: pre-flight blocked SPOC spawn ... openai=fail` (± `hud-server-healthz=fail`) raised at `production_runner.py:3146` — the pre-flight gate that fires BEFORE any graph node, on a path this diff does not touch (`production_runner.py` zero-diff, git-verified). This is the exact inherited class the 38-1 baseline documented at its then-L3069/3083 ("isolate/pin preflight ... do not misclassify these as story regressions"); the concurrent governed live trial (648de559) occupies the HUD, and the pytest env carries no live OpenAI key (per the documented dotenv-override gotcha). One sampled node (`test_adhoc_cli...`) passes serially — xdist-environment flake dimension of the same class. Not a 38-2 regression; recorded by signature per AC 9.
+- **Post-implementation batteries (same commands as baseline):** Command A → `1 failed, 1650 passed, 4 skipped` — the ONE failure is the identical inherited node + exception signature (`test_health_tiles_prefer_persisted_cost_report`, `KeyError: 'run cost'`); the +1 skip is the new symlink-capability skip on this host. Command B (specialists alone) → `30 failed, 1836 passed, 3 skipped, 1 xfailed` — the identical 30-node inherited set, same `SourceBundleError` dependency signature, zero new failures. Focused new modules under `-W error` (strict warnings): `62 passed`. `tests/live_witness_replay` STRICT: `25 passed, 0 skipped` (meta-pin green with the new family enrolled). `check_pipeline_manifest_lockstep.py` exit 0 (PASS trace `reports/dev-coherence/2026-07-16-1605/`). `lint-imports`: 18 kept, 0 broken. `git diff --check` clean. Scope-fence zero-diff verified by git: `trends_projection.py`, `production_runner.py`, `state/config/pipeline-manifest.yaml` — untouched.
+
+### AC-to-Test Traceability
+
+| AC / matrix row | Named witnesses |
+|---|---|
+| AC 1 (rows 1, 2, 15) | `test_real_authored_brief_yields_ready_demand_with_bound_scene` · `test_scene_absent_brief_is_ready_with_recorded_scope_loss` (W-3) · `test_promise_not_authored_is_unavailable` · `test_legacy_stub_contribution_is_unavailable` · `test_missing_brief_is_honest_absent_demand` · `test_contribution_receipt_mismatch_fails_loud` · `test_coordinate_collision_fails_loud` · `test_brief_sidecar_without_contribution_fails_loud` · `test_duplicate_vow_objective_ids_fail_loud` · constructed-demand shape suite (7 tests) · `test_corrupt_demand_is_demand_invalid` · `test_nonready_and_disabled_are_typed_zero_call` · `test_ask_b_journal_and_lock_are_own_coordinates` |
+| AC 2 (rows 1, 10, 16) | `test_one_dispatch_completed_journal_and_zero_call_replay` · `test_scope_overflow_fails_before_claim_or_dispatch` · `test_query_carries_complete_ordered_ability_scope_and_scene` · `test_query_without_scene_omits_scene_clause` · `test_nonready_and_disabled_are_typed_zero_call` (kill-switch OFF) · `test_manifest_band_and_model_config_are_pinned` (07W.4 stays model-free; manifest diff ZERO) |
+| AC 3 | `test_scope_binds_demand_and_mirrors_scene_loss` · `test_scope_tamper_fails_loud[×5]` · `test_association_is_deterministic_over_stored_window` (A-5 basis) · `test_entry_requires_ability_association_and_namespace` · `test_entry_rejects_empty_matched_tokens_and_oversized_excerpt` · `test_evidence_is_exact_unicode_slice_and_full_body_hash` · `test_intake_orders_and_exhausts_ability_coverage` · `test_receipt_binds_scope_and_digest` · `test_output_digest_tamper_fails_loud` · `test_entry_scope_digest_mismatch_fails_in_output` · `test_ask_b_module_has_no_orchestrator_import` (M3) · `test_ask_b_present_malformed_contract_fails_loud` (ruling-d 2) · `test_ask_b_strict_completed_packet_resolves_stably` · `test_generic_04_55_leniency_unchanged_by_ask_b_strictness` (ruling-d 3) · one-witness digest pin inside `test_three_packets_select_exact_coordinates_and_witness_digests` (row 5) |
+| AC 4 (rows 3, 4) | `test_completed_empty_is_honest_bounded_and_terminal` · `test_unassociated_rows_are_indexed_losses_never_fabricated` · `test_scene_absent_scope_loss_leads_completed_losses` · `test_completed_scope_losses_lead_the_loss_order` · `test_retryable_outputs_are_zero_call_and_intake_free[×3]` · consumer pins: `test_reject_model_prior_topic_marks_injected_topic_unusable` · `test_grounded_topic_is_not_marked_unusable` · `test_projection_over_ask_b_packet_flags_injected_topics` |
+| AC 5 (rows 12, 13, 14, 17 + failure injections) | `test_barrier_two_workers_exactly_one_dispatch` · `test_call_in_progress_journal_is_hard_pause` · `test_lock_without_journal_is_ambiguous` · `test_provider_exception_preserves_ambiguous_claim` · `test_precall_write_failure_preserves_lock_and_reentry_is_ambiguous` · `test_completed_write_failure_leaves_in_progress_and_reentry_is_ambiguous` · `test_temp_collision_fails_before_dispatch` · `test_completed_raw_body_mutation_fails_replay` · `test_forged_journal_schema_and_state_fail_reconciliation` · `test_journal_idempotency_binds_trial_identity` |
+| AC 6 (rows 7, 9, 13, 14) | `test_ask_default_factory_upgrades_stub_and_retryable_is_exact_noop[07W.2/07W.4]` (row 7; M-4 posture: factories=None, dispatch monkeypatched only at the owned seam) · `test_reconcile_not_skip_set_is_exactly_the_activated_band_tail` (W-2 set EQUALITY) · `test_ask_b_completed_contribution_resume_is_exact_noop` (row 9) · `test_ask_completed_envelope_without_journal_fails_split_brain[ask-a/ask-b]` (row 14 / split-brain) · marker identity + typed-retryable output pins inside `test_default_band_executes_real_brief_and_typed_ask_retryables` · journal-backed roll-forward covered by `test_one_dispatch_completed_journal_and_zero_call_replay` + row-9 test (row 13) |
+| AC 7 (row 6) | `test_start_walk_reaches_07w1_with_persisted_normalized_context` + `test_real_start_then_continuation_reaches_band_in_order` — both spies now assert disk-persisted predecessor visibility at `07W.2` (`workbook_brief@07W.1`) and `07W.4` (`workbook_review@07W.3`) through the sole `_persist_envelope` writer; M-7 parametrization keeps one module/one coordinate axis |
+| AC 8 | `test_trends_inputs_from_run_is_not_repointed_to_ask_b` (fence pin) · `test_generic_04_55_leniency_unchanged_by_ask_b_strictness` · unchanged Ask-A regressions (38-1 suites re-run green) · git zero-diff on `trends_projection.py` |
+| AC 9 (row 8 negative witnesses) | `test_completed_raw_body_mutation_fails_replay` (mutated raw body) · `test_forged_journal_schema_and_state_fail_reconciliation` (forged journal) · `test_ask_completed_envelope_without_journal_fails_split_brain[ask-b]` (completed-without-journal) · `test_ask_b_stub_shaped_output_claiming_completion_is_rejected` (stub-shaped claiming completed) · `test_ask_b_entry_missing_credibility_fields_is_rejected` (missing credibility fields — the M-8 machine reason) · batteries/lockstep/import-linter/Ruff in Debug Log |
+
+**Conscious enumerated pin flips (A-3 + ruling-d item 1 — the COMPLETE list; each carries an in-diff rationale comment):**
+
+1. `test_research_packet_w1.py::test_three_packets_select_exact_coordinates_and_witness_digests` (38-1 L325–365 bare-fixture Ask-B read) — bare row → strict `_valid_ask_b_output()`; 38-1 AC 4 scoped the lenient read as interim; retired by 38-2 AC 3.
+2. `test_research_packet_w1.py::test_named_resolvers_require_usable_and_validate_rows` — Ask-B lenient-empty branch → strict fail-loud (same rationale).
+3. `test_research_packet_w1.py::test_named_resolvers_fail_loud_for_wrong_container_and_corrupt_run` — Ask-B wrong-container now fails the strict contract first (`Ask-B`), not the generic list check.
+4. `test_research_packet_w1.py::test_identity_by_state_validation_parity` (the L549 parametrized family) — Ask-B rows now mirror the strict Ask-A rows (ready via strict output; non-ready fail-loud).
+5. `test_workbook_band_wiring.py` L294 `ask_b_not_yet_wired` stub-output pin — flipped to the typed `retryable_dispatch_disabled` output (kill-switch-off posture over the REAL ready-with-scene-loss offline demand) inside the renamed `test_default_band_executes_real_brief_and_typed_ask_retryables`; the generic `deterministic-workbook-band-stub` marker pin at 07W.4 flips to `deterministic-ask-b-hot-topics-wiring` (stub retired by activation).
+6. `test_workbook_band_wiring.py::test_ask_a_default_factory_upgrades_legacy_and_retryable_is_exact_noop` → PARAMETRIZED `test_ask_default_factory_upgrades_stub_and_retryable_is_exact_noop[07W.2|07W.4]` (M-7 mandate — never a hand-cloned suite; the Ask-A row is preserved verbatim as a parametrized case).
+7. `test_workbook_band_wiring.py::test_ask_a_completed_envelope_without_journal_fails_split_brain` → PARAMETRIZED `test_ask_completed_envelope_without_journal_fails_split_brain[ask-a|ask-b]` (M-7; Ask-A case preserved).
+
+No OTHER pre-existing pin was modified.
+
+### Completion Notes
+
+- **AC 1** — `AskBHotTopicsDemandV1` + `resolve_hot_topics_demand` land in `research_demand.py` with the closed loss→status lattice enumerated pre-dev (see Implementation Plan): scene-absent = READY-with-loss (W-3 decided), promise-not-authored/legacy/absent = unavailable, corrupt = `ResearchDemandShapeError` → `ask-b.demand-invalid`. The deterministic ability-association substitution (A-5) is SAID in the `ask_b_hot_topics.py` module docstring and digest-covered (`ask-b-association.v1` inside the scope digest).
+- **AC 2** — one dispatcher invocation per completed journal through the same Scite-canonical seam Ask-A uses (`_build_intent` + `dispatch_intent`); complete ordered ability scope + collapsed scene identity in the canonical query; `MARCUS_ASK_B_QUERY_MAX_CHARS` overflow fails pre-dispatch; `07W.4` stays manifest model-free with ZERO manifest lines changed.
+- **AC 3** — strict frozen extra-forbid contract family (`ask_b_hot_topics.py`); strict reader branch at exact `ask_b_hot_topics@07W.4` in `load_research_packet` (decided mandate); full ruling-d 5-item discipline executed (flips 1–4 above, mirrored strict pins, generic re-pin, lockstep row TOUCHED, 38-1 cross-ref note added).
+- **AC 4** — empty-honesty native: `completed_empty` with typed losses; scope losses (scene) lead the loss order; `reject_model_prior_topic` proven against an Ask-B packet WITHOUT re-pointing `trends_inputs_from_run`.
+- **AC 5** — own lock/journal/idempotency at `ask-b-hot-topics-call.v1`; crash-safe atomic journal; zero-call replay; full `ask-b.*` tag set translated inside the seam; barrier two-worker exactly-once proven.
+- **AC 6** — `_ask_b_stub` → `_ask_b_factory`; `WORKBOOK_BAND_RECONCILE_NODE_IDS` frozenset extracted and extended to `{07W.2, 07W.3, 07W.4}` (the resume-skip fix) with the W-2 set-EQUALITY pin; BOTH-direction resume pins (row 7 upgrade + row 9 completed no-op); node-specific `deterministic-ask-b-hot-topics-wiring` marker; exact reconciliation table mirrored at `ask-b.*`.
+- **AC 7** — `production_runner.py` diff ZERO (verified); disk-mediated `07W.3 → 07W.4` (and `07W.1 → 07W.2`) visibility asserted inside BOTH real-walk tests; M-7 parametrization discipline held (one module, one coordinate axis).
+- **AC 8** — `trends_projection.py` ZERO lines changed (git-verified); boundary pin proves `trends_inputs_from_run` still reads the generic packet; generic + Ask-A behavior re-proven by regression.
+- **AC 9 (dev half)** — all 17 matrix rows are named tests (traceability above); negative-witness pins REJECT all four known-bad artifact classes; probe `probe-38-2-ask-b-hot-topics-001` authored + registered (id, licensed claim, deterministic judge, first-run-stands, M-5/J-2 `completed_empty` verdict-class rule with exit-code separation) but NOT executed (orchestrator runs it post-review); `ask-b-hot-topics-call.v1` family enrolled in `witnesses.yaml` IN THIS DIFF with the first witness explicitly `pending` (owed by the probe) — STRICT replay 25 passed / 0 skipped with the registry↔module meta-pin green. Probe seed chosen: the in-repo frozen `deep-dive-enrichment-37-2b-838524b8/run` lineage (real ratified brief, AUTHORED scene + promise, 10 beat-③ vows, persisted `not_yet_wired` Ask-B stub → the probe exercises the exact production resume-skip upgrade path). FR note: this story's close records the packet-mint half only; FR16 Ask-B leg + FR9 assert at the 39-wave close bar with 39.2.
+- **Deviation (declared):** the Dev Notes probe plan named the `a940c5eb`/`8b275e5b` closure lineage as seed; those live under gitignored `runs/` while `deep-dive-enrichment-37-2b-838524b8/run` is frozen IN-REPO evidence of the same Tejal Part-2 corpus with strictly better probe properties (authored scene + persisted Ask-B stub). The probe script pins the seed's stub + ready-demand preconditions and fails loud if they do not hold.
+- **Deviation (declared):** close-time riders (38-1 cross-ref, deferred-inventory 39.2 grooming) executed in THIS diff rather than at the `done` flip so they cannot be forgotten; the 38-2 closure-record half of J-3 remains owed at closure.
+
+### File List
+
+- `_bmad-output/implementation-artifacts/38-2-ask-b-hot-topics-wiring.md` (this story: frontmatter, tasks, dev record)
+- `_bmad-output/implementation-artifacts/38-1-ask-a-enrichment-wiring.md` (one-line AC 3 ruling-d item 5 cross-ref on the closure record)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml`
+- `_bmad-output/planning-artifacts/deferred-inventory.md` (J-3: §Story 39.2 grooming)
+- `app/marcus/lesson_plan/ask_b_hot_topics.py` (new)
+- `app/marcus/lesson_plan/research_demand.py`
+- `app/marcus/lesson_plan/research_packet.py`
+- `app/marcus/orchestrator/ask_b_research_wiring.py` (new)
+- `app/marcus/orchestrator/workbook_wiring.py`
+- `scripts/utilities/run_ask_b_38_2_live_evidence.py` (new; authored, NOT executed)
+- `tests/integration/marcus/test_workbook_band_wiring.py`
+- `tests/live_witness_replay/test_ask_b_hot_topics_call_v1.py` (new)
+- `tests/live_witness_replay/witnesses.yaml`
+- `tests/unit/marcus/lesson_plan/test_ask_b_hot_topics_38_2.py` (new)
+- `tests/unit/marcus/lesson_plan/test_ask_b_trends_consumer_pin_38_2.py` (new)
+- `tests/unit/marcus/lesson_plan/test_research_demand_38_2_ask_b.py` (new)
+- `tests/unit/marcus/lesson_plan/test_research_packet_w1.py`
+- `tests/unit/marcus/orchestrator/test_ask_b_research_wiring_38_2.py` (new)
+- `reports/dev-coherence/2026-07-16-1605/check-pipeline-manifest-lockstep.PASS.yaml` (lockstep PASS trace)
+
+### Change Log
+
+- 2026-07-16 — Story 38-2 dev complete (Claude Fable 5, deterministic-only): Ask-B demand model + resolver (new closed lattice); strict Ask-B contract family; exactly-once `ask-b-hot-topics-call.v1` journal wiring; strict reader at exact `ask_b_hot_topics@07W.4` with the full ruling-d flip discipline; `07W.4` activation incl. the reconcile-not-skip resume fix + set-equality pin; both-walks disk-visibility parity; consumer boundary pins; probe authored + registered (not run); `ask-b` witness family enrolled pending. Batteries green vs baseline (only the two pre-existing inherited failure signatures remain, unchanged). Status → review; probe execution + `done-awaiting-live-witness` flip owed to the orchestrator.
 
 ### References
 

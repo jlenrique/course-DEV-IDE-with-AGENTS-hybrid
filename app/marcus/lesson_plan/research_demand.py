@@ -423,10 +423,228 @@ def resolve_enrichment_demand(run_dir: Path) -> AskAResearchDemandV1:
     )
 
 
+# --------------------------------------------------------------------------
+# Ask-B (38.2) — hot-topics demand: beat-③ Promise vows + optional Scene.
+#
+# CLOSED loss→status lattice (38-2 AC 1 / A-1 — a NEW design; Ask-A's
+# skeleton-digest-coupled 6-loss map does NOT transfer):
+#
+#   workbook_brief_absent       → unavailable
+#   workbook_brief_legacy_stub  → unavailable
+#   promise_vows_unavailable    → unavailable  (promise not "authored")
+#   scene_identity_absent       → READY with recorded scope loss (W-3/A-1
+#                                 decided: the scene is an optional
+#                                 enhancement, never a blocking retryable)
+#
+# Corrupt/forged/mismatched authority raises ResearchDemandShapeError
+# (→ ``ask-b.demand-invalid`` at the wiring seam); it is never a status.
+# The status vocabulary is closed to {"ready", "unavailable"} — Ask-B binds
+# no deep-dive skeleton, so Ask-A's "degraded" rows have no analog here.
+# --------------------------------------------------------------------------
+
+AskBHotTopicsDemandStatus = Literal["ready", "unavailable"]
+AskBDemandLoss = Literal[
+    "workbook_brief_absent",
+    "workbook_brief_legacy_stub",
+    "promise_vows_unavailable",
+    "scene_identity_absent",
+]
+_ASK_B_UNAVAILABLE_LOSSES = (
+    "workbook_brief_absent",
+    "workbook_brief_legacy_stub",
+    "promise_vows_unavailable",
+)
+
+
+class AskBHotTopicsDemandV1(BaseModel):
+    """Strict Ask-B demand: ordered beat-③ ability vows + digest-bound Scene."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True, validate_default=True)
+
+    schema_version: Literal["ask-b-hot-topics-demand.v1"] = "ask-b-hot-topics-demand.v1"
+    status: AskBHotTopicsDemandStatus
+    specialist_id: Literal["workbook_brief"] = "workbook_brief"
+    node_id: Literal["07W.1"] = "07W.1"
+    workbook_brief_payload_digest: str | None = Field(
+        default=None, pattern=r"^sha256:[0-9a-f]{64}$"
+    )
+    abilities: tuple[DeepDiveAbilityInput, ...]
+    scene_digest: str | None = Field(default=None, pattern=r"^sha256:[0-9a-f]{64}$")
+    scene_text: str | None = None
+    known_losses: tuple[AskBDemandLoss, ...]
+    demand_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def _closed_shape(self) -> AskBHotTopicsDemandV1:
+        payload = self.model_dump(mode="json", exclude={"demand_digest"})
+        if self.demand_digest != _digest(payload):
+            raise ValueError("Ask-B demand digest mismatch")
+        if (self.scene_digest is None) != (self.scene_text is None):
+            raise ValueError("scene digest and scene text must appear together")
+        if self.scene_text is not None and not self.scene_text.strip():
+            raise ValueError("bound scene text must be nonblank")
+        if self.status == "ready":
+            if self.workbook_brief_payload_digest is None or not self.abilities:
+                raise ValueError("ready Ask-B demand requires brief digest and vows")
+            if len({item.ability_id for item in self.abilities}) != len(self.abilities):
+                raise ValueError("ready Ask-B demand requires unique vow objective IDs")
+            if self.known_losses not in ((), ("scene_identity_absent",)):
+                raise ValueError(
+                    "ready Ask-B demand admits only the scene_identity_absent loss"
+                )
+            scene_bound = self.scene_digest is not None
+            if scene_bound == (self.known_losses == ("scene_identity_absent",)):
+                raise ValueError("scene binding must mirror the scene_identity_absent loss")
+        else:
+            if self.abilities or self.scene_digest is not None:
+                raise ValueError("non-ready Ask-B demand requires an empty payload")
+            if (
+                len(self.known_losses) != 1
+                or self.known_losses[0] not in _ASK_B_UNAVAILABLE_LOSSES
+            ):
+                raise ValueError("non-ready Ask-B demand requires exactly one blocking loss")
+            if (self.workbook_brief_payload_digest is None) != (
+                self.known_losses == ("workbook_brief_absent",)
+            ):
+                raise ValueError("only an absent brief omits its payload digest")
+        return self
+
+
+def _make_ask_b(**values: object) -> AskBHotTopicsDemandV1:
+    raw = {
+        "schema_version": "ask-b-hot-topics-demand.v1",
+        "specialist_id": "workbook_brief",
+        "node_id": "07W.1",
+        **values,
+    }
+    raw["demand_digest"] = _digest(raw)
+    return AskBHotTopicsDemandV1.model_validate(raw, strict=True)
+
+
+def _ask_b_non_ready(
+    *, loss: AskBDemandLoss, payload_digest: str | None
+) -> AskBHotTopicsDemandV1:
+    return _make_ask_b(
+        status="unavailable",
+        workbook_brief_payload_digest=payload_digest,
+        abilities=(),
+        scene_digest=None,
+        scene_text=None,
+        known_losses=(loss,),
+    )
+
+
+def resolve_hot_topics_demand(run_dir: Path) -> AskBHotTopicsDemandV1:
+    """Resolve only exact ``workbook_brief@07W.1`` authority; never fall back.
+
+    Ask-B binds the ordered beat-③ Promise ability vows and — when authored —
+    the digest-bound Scene identity, plus the workbook-brief payload digest.
+    It never binds bold terms or the deep-dive skeleton (narrower than Ask-A
+    by design), never scrapes prose, and never reads another run.
+    """
+    run_dir = Path(run_dir)
+    brief_path = run_dir / WORKBOOK_BRIEF_FILENAME
+    if brief_path.is_symlink():
+        raise ResearchDemandShapeError("workbook brief coordinate is a symlink")
+    try:
+        envelope = load_run_envelope(run_dir)
+    except RunEnvelopeCorruptError as exc:
+        raise ResearchDemandShapeError(str(exc)) from exc
+    if envelope is None:
+        if brief_path.exists():
+            raise ResearchDemandShapeError("workbook brief exists without run envelope")
+        return _ask_b_non_ready(loss="workbook_brief_absent", payload_digest=None)
+    real_matches = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "workbook_brief"
+        and contribution.node_id == "07W.1"
+    )
+    legacy_matches = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if contribution.specialist_id == "workbook_brief_stub"
+        and contribution.node_id == "07W.1"
+    )
+    real = real_matches[0] if real_matches else None
+    legacy = legacy_matches[0] if legacy_matches else None
+    allowed = {"workbook_brief", "workbook_brief_stub"}
+    collisions = tuple(
+        contribution
+        for contribution in envelope.contributions
+        if (
+            contribution.node_id == "07W.1"
+            and contribution.specialist_id not in allowed
+        )
+        or (
+            contribution.specialist_id in allowed
+            and contribution.node_id != "07W.1"
+        )
+    )
+    if (
+        collisions
+        or len(real_matches) > 1
+        or len(legacy_matches) > 1
+        or (real is not None and legacy is not None)
+    ):
+        raise ResearchDemandShapeError("workbook brief coordinate collision")
+    if real is None:
+        if legacy is not None:
+            if brief_path.exists():
+                raise ResearchDemandShapeError("legacy stub contradicts real brief sidecar")
+            return _ask_b_non_ready(
+                loss="workbook_brief_legacy_stub",
+                payload_digest="sha256:" + legacy.output_digest,
+            )
+        if brief_path.exists():
+            raise ResearchDemandShapeError("brief sidecar has no exact contribution")
+        return _ask_b_non_ready(loss="workbook_brief_absent", payload_digest=None)
+    if not brief_path.is_file():
+        raise ResearchDemandShapeError("exact workbook contribution has no sidecar")
+    try:
+        artifact = read_workbook_brief(run_dir)
+    except ValueError as exc:
+        raise ResearchDemandShapeError(str(exc)) from exc
+    if real.output != workbook_brief_contribution_receipt(artifact):
+        raise ResearchDemandShapeError("workbook contribution/sidecar mismatch")
+    promise = artifact.payload.pre_work.promise
+    if promise.status != "authored":
+        return _ask_b_non_ready(
+            loss="promise_vows_unavailable", payload_digest=artifact.payload_digest
+        )
+    abilities = tuple(
+        DeepDiveAbilityInput(ability_id=vow.objective_id, text=vow.text)
+        for vow in promise.vows
+    )
+    if len({item.ability_id for item in abilities}) != len(abilities):
+        raise ResearchDemandShapeError("duplicate Promise vow objective ID")
+    scene = artifact.payload.pre_work.scene
+    if scene.status == "authored":
+        scene_digest = _digest(scene.model_dump(mode="json"))
+        scene_text: str | None = scene.text
+        losses: tuple[AskBDemandLoss, ...] = ()
+    else:
+        scene_digest = None
+        scene_text = None
+        losses = ("scene_identity_absent",)
+    return _make_ask_b(
+        status="ready",
+        workbook_brief_payload_digest=artifact.payload_digest,
+        abilities=abilities,
+        scene_digest=scene_digest,
+        scene_text=scene_text,
+        known_losses=losses,
+    )
+
+
 __all__ = [
     "AskAResearchDemandStatus",
     "AskAResearchDemandV1",
+    "AskBDemandLoss",
+    "AskBHotTopicsDemandStatus",
+    "AskBHotTopicsDemandV1",
     "ResearchDemandLoss",
     "ResearchDemandShapeError",
     "resolve_enrichment_demand",
+    "resolve_hot_topics_demand",
 ]
