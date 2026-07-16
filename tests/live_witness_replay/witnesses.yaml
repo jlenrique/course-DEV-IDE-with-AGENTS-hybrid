@@ -65,29 +65,22 @@ families:
           idempotency_key: sha256:509649873f74b0ef84c51b24c5cfd87c1f68c22434f0176240cdc173c161269e
   - family: ask-b-hot-topics-call.v1
     node_id: "07W.4"
-    # 38-2 zero-witness rule (D3): family enrolled IN THE STORY DIFF; the
-    # FIRST witness is OWED by component probe probe-38-2-ask-b-hot-topics-001
-    # (run by the orchestrator after review — probe → freeze → replay → spend).
-    # The row below is `disposition: pending` so STRICT pre-flight stays green
-    # while the witness is owed: per-family replay consumes only
-    # `disposition: enrolled` rows. At probe close, flip this row to
-    # `disposition: enrolled`, point `path` at the frozen attempt journal,
-    # and record capture identity (idempotency key + provider/config
-    # fingerprint). Failed attempts (if any) enroll as ambiguity-shape
-    # witnesses exactly like the 7ed48f8a/b6fc76ea precedent rows.
-    # 38-2 T4 R10 (B4): a pending row MUST name its owing probe in the
-    # top-level `owed_by_probe` field (machine-asserted), and once ANY probe
-    # evidence pack exists on disk the per-family replay module FAILS a
-    # still-pending row — the flip to `enrolled` is machine-forced, not a
-    # ritual.
+    # Zero-witness rule SATISFIED 2026-07-16: probe-38-2-ask-b-hot-topics-001
+    # attempt 79f1920e PASSED (verdict PASS_USABLE_MINT, 9/9 machine-judge
+    # checks green, exactly one dispatcher invocation, packet-digest reload
+    # equality + zero-call replay proven). First witness frozen from evidence
+    # pack ask-b-38-2-live-79f1920e per the R10 machine-forced pending→enrolled
+    # flip (the per-family replay module fails a still-pending row once any
+    # probe evidence pack exists on disk). No failed attempts — no
+    # ambiguity-shape witnesses owed for this family.
     witnesses:
-      - id: ask-b-38-2-probe-001-pending
-        path: _bmad-output/implementation-artifacts/evidence/ask-b-38-2-live-PENDING/run/ask-b-hot-topics-call.v1.json
+      - id: ask-b-38-2-live-79f1920e
+        path: _bmad-output/implementation-artifacts/evidence/ask-b-38-2-live-79f1920e/run/ask-b-hot-topics-call.v1.json
         state: completed
-        disposition: pending
-        owed_by_probe: probe-38-2-ask-b-hot-topics-001
+        disposition: enrolled
         capture:
-          owed_by_probe: probe-38-2-ask-b-hot-topics-001
+          idempotency_key: sha256:3bcdbcb680c935a5d571d718c7740ba034ef440cd5eaab61da243e38d3a549c3
+          provider_config_fingerprint: sha256:fd4d1879a182ffa1c92fac6ee6353a6b27c22b04d104b1bcfad9c50eb23dba41
   - family: workbook-glossary-render.v1
     node_id: "07W"
     # Deterministic replay-render witness (no LLM surface — probe
