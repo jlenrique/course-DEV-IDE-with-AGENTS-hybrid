@@ -158,3 +158,23 @@
 - source_spec: `_bmad-output/implementation-artifacts/40-1-cover-placeholder-hero-toc-provenance.md`
   summary: 40-1 T4 low/info hardening follow-ons (finding 1 MEDIUM fixed in-session): (2) bar does not parse the learner-visible art-brief pointer line (ghost filename/digest shown to learner passes); (3) receipt art_brief.filename not validated as bare basename (path-confusion door); (4) _identity_line mislabels ok-but-empty corpus_path; (5) hero ![ scan is Cover-section-only; (6) dangling-symlink run.json takes tolerance branch (is_file before is_symlink asymmetry); (7) dead continue after _refuse x2 in the cover clause; (8-party) rendered "Course corpus:" carries an absolute local path w/ username (J-1 tension) + Scene paragraph as theme #1 duplicates paragraph-length alt-text; duplicate NON-cover-H2 fail-loud unpinned.
   evidence: 40-1 combined T4 review 2026-07-16 (diff 681eddfb..6c6ef653) — module survives M-D3-2b; none gate the status flip.
+
+- source_spec: operator-feedback (Juanl, live run ffa19af3, 2026-07-16)
+  summary: Rename the G2B HIL surface from "Variant Selection" to "Style and Variant Selection" across HUD/decision-card/docs vocabulary — the surface couples style-slot picks (A/B treatments, each with its own styleguide) with per-slide variant selection, and the current name undersells the style half.
+  evidence: Operator naming directive issued during the C1M1-P1 concierge run; pairs naturally with the hud-pre-run-settings-confirmation-surface requirement (deferred-inventory).
+
+- source_spec: live trial 1bc3bc4e (C1M1-P1 concierge run, 2026-07-16)
+  summary: LO-refinement adequacy followup normalization (BLOCKS resuming trial 1bc3bc4e and recurs on any live LO-refinement) — the live refinement model decorates AdequacyFollowup literals with annotations ("external-content-expected: expect a separate guide or workbook") and the strict parse at app/marcus/lesson_plan/irene_refinement.py L556 (SourceAdequacy.model_validate(row["adequacy"])) refuses, stranding the G0E->G0R continuation. FIX DESIGN (variance-first seam, normalizer-v2 class): normalize suggested_followups pre-validate — truncate entries prefix-matching a known literal (optionally followed by ':' / whitespace annotation) to the bare literal; DROP unknown entries with logger.warning (field is advisory-by-contract, "Never an action"). Add a parse-seam test with the witnessed decorated shapes.
+  evidence: trial 1bc3bc4e resume output (pydantic literal_error on suggested_followups.1/.2); AdequacyFollowup literal at learning_objective.py L116.
+
+- source_spec: live trials ffa19af3 + 1bc3bc4e (2026-07-16)
+  summary: Corpus-shape validation belongs at pre-flight/plan-time — a slides/-less corpus leaf passed PR-PF, plan-dialogue, G0, and THREE gates before Irene Pass-1 refused it at node 04A (source.bundle.metadata-invalid: no primary slide rows). Add a corpus-shape check (slides/ presence + per-slide parse floor) to PR-PF and/or the plan-dialogue corpus intake so shape errors surface at minute one, not node 13.
+  evidence: trial ffa19af3 error-pause.json; the proven corpus convention at course-content/courses/tejal-apc-c1-m1-p2-trends/.
+
+- source_spec: live trial 3b1a9f5a (2026-07-16)
+  summary: HUD stale-instance collision — a manually relaunched HUD holding port 8791 (bound to a dead trial) made the NEXT trial start fail pre-flight (hud-server-healthz=fail) with no hint about the foreign instance. The start pre-flight should detect a live-but-foreign-nonce HUD on the port and say so (or reap/supersede it); pairs with the hud-pre-run-settings-confirmation-surface requirement.
+  evidence: trial 3b1a9f5a start refusal; manual HUD relaunch precedent earlier the same session.
+
+- source_spec: session observation (2026-07-16)
+  summary: Run-registry root inconsistency — the trial CLI defaults runs to state/config/runs/ while the governed runner uses runs/ (and plan-dialogue writes companions to runs/<uuid>/); monitors/evidence tooling aimed at the wrong root silently see nothing. Unify the default or surface the effective root in the start payload prominently.
+  evidence: ffa19af3/1bc3bc4e registered under state/config/runs/ vs 648de559 under runs/.

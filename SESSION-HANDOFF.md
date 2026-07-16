@@ -1,3 +1,13 @@
+# Session close 2026-07-16 — Epics-39/40 wave build COMPLETE + operator concierge run (C1M1-P1)
+
+**Final class:** S->P drift (opened as autonomous Epics-39/40 completion; operator joined mid-session and drove a live concierge production run with Marcus embodied as SPOC).
+
+Two arcs in one session: (1) the ENTIRE 39/40 wave story DAG reached done-awaiting-live-witness (39-1b full cycle incl. schema v1.2; 38-2 authored->green-lit->dev->T4 13 findings->probe PASS_USABLE_MINT->witness enrolled; 39-2 + 40-1 authored->green-lit->dev->T4->hardened), with run A parked at 07W.3 (Option B) after harvesting the G0 64k ceiling fix (801135a5) and the ratified Gamma positional-bind matcher amendment (7c65cb5a). (2) The operator-driven off-books C1M1 Part-1 run: full planning front door exercised (plan-dialogue --script + collateral-spec), corpus re-curated to the proven slides/ shape after an honest 04A refusal, three trials' worth of guard-proving evidence, and four dispatch-ready product findings filed (LO-followup normalization = next-session blocker fix; corpus-shape pre-flight validation; HUD stale-instance detection; runs-root unification) plus two operator requirements (HUD pre-run settings surface, RED; Style-and-Variant-Selection rename).
+
+Operator directive for next session: TRUE Marcus-SPOC runtime trial directly (see next-session-start-here.md — corpus + companions + settings all READY; one small blocker fix first).
+
+---
+
 # Session Handoff — 2026-07-15 EVE (WRAPUP: **EPIC 38 CLOSED · master consolidated · 39/40 wave opened under the Paid-Run Economy Protocol · 37-2b + 39-1 probe-witnessed** — Class S)
 
 **Final class:** S. **Branches:** `codex/workbook-enhanced-epics-36-40` (consolidated to master `2d5b7493`) → `dev/workbook-wave-3940-2026-07-15`. **Opened as:** S (session START protocol; LO-overlay bridge anchor). **Class drift:** none. **Operator goal (4h window):** executed — optimal live-run proving via probes; WRAPUP at the mark.

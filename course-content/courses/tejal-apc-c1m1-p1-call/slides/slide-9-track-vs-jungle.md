@@ -1,0 +1,7 @@
+# **Slide 9: The Track vs. The Jungle (Functional Flexibility Deep-Dive)**
+
+- **Core Message:** Clinical training prepares you for a predictable environment; system innovation requires a diverse toolkit for an unpredictable environment. (A deep-dive into the Functional Flexibility definition from the Innovation Lexicon.)
+- **Visual Format:** A strict 50/50 split-screen graphic.
+- **Prompt to Generate Image:** > *Left Side (The Track): A sterile, brightly lit, red Olympic running track with clear white lines and perfectly spaced hurdles; a runner in a starting block. Right Side (The Jungle): A dense, complex, pathless jungle environment; a figure stands at the edge looking in, wearing a heavy backpack, compass in hand, machete strapped to their side, and a rope. Left palette: high contrast, sterile whites and bright reds. Right palette: deep rich greens, earthy browns, shadowed lighting.*
+- **On-Screen Text:** Left header: "Kind Learning Environment (Clinical Specialization)" - Right header: "Wicked Learning Environment (Functional Flexibility)"
+- **Narration (Speaker Notes):** "To survive the hospital blueprint, you must develop 'Range.' As a clinician, you were trained on the track—a 'Kind' environment where the rules are clear and the hurdles are visible. But system innovation is the jungle. It is a 'Wicked' environment where the variables constantly change. You cannot bring track shoes to a jungle. You must be functionally flexible, willing to drop your specialized clinical tools and pick up a machete or a compass when the environment demands it."
