@@ -89,6 +89,10 @@ FIXTURE = (
 JAMA_URL = "https://doi.org/10.1001/jama.2019.13978"
 JAMA_CITATION_ID = "src-001-c007"
 QUIZ_COMPONENT_ID = "src-001-c021"
+# 39.1b (D2 MERGE, intentional pin flip enumerated in the 39-1b dev diff):
+# overlay exercise ids are ``g0-``-prefixed at the attach seam (collision
+# guard D2-3), so the RENDERED id carries the prefix.
+RENDERED_QUIZ_EXERCISE_ID = f"g0-{QUIZ_COMPONENT_ID}"
 
 # Numeral-free segments / corpus so the G1 symbol-only numeric gate is a non-event
 # (the enriched body asserts no $/%/x tokens; the gate has nothing to clear).
@@ -280,7 +284,7 @@ def test_t1_enriched_values_displace_constants(tmp_path: Path, output_root: Path
     assert sentinel_url in md
     assert sentinel_lo in md
     assert "Bloom level: **create**" in md
-    assert f"Exercise `{QUIZ_COMPONENT_ID}`" in md
+    assert f"Exercise `{RENDERED_QUIZ_EXERCISE_ID}`" in md
 
     # Constants ABSENT (the proof the enriched corpus displaced them).
     assert "nhe-fact-sheet" not in md  # constant CMS further-reading URL
@@ -333,7 +337,7 @@ def test_t3_byte_exact_exercise_bloom(tmp_path: Path, output_root: Path) -> None
 
     md = _render(_make_run_dir(tmp_path, card), output_root)
 
-    assert f"Exercise `{QUIZ_COMPONENT_ID}`" in md
+    assert f"Exercise `{RENDERED_QUIZ_EXERCISE_ID}`" in md
     assert "Bloom level: **evaluate**" in md
     # The original fixture Bloom must not survive the flip.
     assert "Bloom level: **analyze**" not in md
@@ -389,7 +393,7 @@ def test_t6_teachable_gate_suppresses_exercise(tmp_path: Path, output_root: Path
     _annotation(card, QUIZ_COMPONENT_ID)["teachable"] = False
 
     md = _render(_make_run_dir(tmp_path, card), output_root)
-    assert f"Exercise `{QUIZ_COMPONENT_ID}`" not in md
+    assert f"Exercise `{RENDERED_QUIZ_EXERCISE_ID}`" not in md
 
 
 def test_t6_teachable_gate_reappears_when_true(tmp_path: Path, output_root: Path) -> None:
@@ -398,7 +402,7 @@ def test_t6_teachable_gate_reappears_when_true(tmp_path: Path, output_root: Path
     RED-first: the constant producer has no ``src-001-c021`` exercise to render.
     """
     md = _render(_make_run_dir(tmp_path, _load_card()), output_root)
-    assert f"Exercise `{QUIZ_COMPONENT_ID}`" in md
+    assert f"Exercise `{RENDERED_QUIZ_EXERCISE_ID}`" in md
     assert "Bloom level: **analyze**" in md
 
 

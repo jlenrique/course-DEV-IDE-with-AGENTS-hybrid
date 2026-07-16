@@ -1,15 +1,16 @@
 ---
 id: 39-1b
 epic: 39
-status: ready-for-dev
+status: review
 split_from: 39-1-glossary-downstream-render.md  # green-light 2026-07-15 — 4/4 unanimous split; Package B lifted verbatim
 depends_on: 39-1  # MUST land first — strict serialization on shared files _act.py + workbook_producer.py
 anchor_provenance: post-37-2b working tree  # line anchors (e.g. _act.py L859–882) verified against the post-37-2b working tree; re-verify against the post-39-1 landed tree at dev-open
+baseline_commit: 6edf563e7131b246a6357d90b4f7c83d0cde594b
 ---
 
 # Story 39.1b: D2 MERGE exercise composition — collateral + enrichment merged, labeled, capped, never silently dropped
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -118,6 +119,59 @@ Checked every scoped file against `state/config/pipeline-manifest.yaml::block_mo
 - **Amendments folded into 39-1 per finding id (recorded there):** W1/A-2, W2/M1, J-1, W3, M2, M3, J-2, A-1, A-3.
 - **Orchestrator concurred — party-consensus-=-approval** (solo-operator rule, CLAUDE.md): both stories flip to ready-for-dev without a redundant human hold; 39-1b sits `backlog` in `sprint-status.yaml` until 39-1 lands (strict serialization).
 
+## Dev Agent Record
+
+### Implementation Plan (T1 anchor re-verification, post-39-1 tree at `6edf563e`)
+
+- Attach seam re-anchored: `_act.py:902–925` (was L859–882 in the spec); the REPLACE `sec.model_copy(update={"exercises": list(overlay_ex)})` sat at L923. Visible-degrade idiom re-anchored to `workbook_producer.py:681–685` (lo_overlay_loss_note render). `assert_unique_collateral_ids` at `workbook_producer.py:281` unchanged.
+- Lockstep re-verified at dev-open against the live `state/config/pipeline-manifest.yaml::block_mode_trigger_paths`: zero scoped files are trigger rows (matches the story's Lockstep declaration verbatim).
+- Data flow implemented as the mirror of `lo_overlay_loss`: merge+prefix+cap in `_act.py` (attach seam only, Winston D2-1) → `WorkbookInputs.exercise_overlay_loss` → `produce(exercise_overlay_loss=…)` → `WorkbookSidecar.{exercise_composition, exercise_overlay_loss}` → `_sidecar_refs` → run.json 07W contribution → runner bar clause.
+- The composition receipt (`exercise_composition`) is NEW beyond the spec letter: the bar's structured-first assertion needs a persisted per-section origin-grouping witness; it derives in `produce()` from the SAME composed spec the render walks, so structure cannot diverge from the deliverable.
+
+### Debug Log
+
+- **Frozen-shape discrepancy (recorded, not blocking):** the spec's row c′ claims the real 8b275e5b shape is "18 exercises (6 overlay + 12 collateral)". The frozen run's ACTUAL attachable shape (verified by running the real intake against `runs/8b275e5b…`) is **6 overlay + 8 collateral = 14 → capped to 12** (trim `ex-u03-2`, `ex-u05-2` — round-robin: the second items of the only two 2-collateral units). Per the live-shape rule the pin follows the real substrate (committed fixture `tests/fixtures/exercise_merge_39_1b/composition-8b275e5b.json` + skip-if-absent full replay probe); the ratified 18→12 arithmetic (6+12 → 6+6, trim 6) is pinned separately as a synthetic row-c case so the D2/J-3 letter is also witnessed.
+- Answer-key channel: overlay worked answers are keyed by component id at projection; the `g0-` prefix at attach re-keys them in lockstep (row-e keyed lookups resolve on the RENDERED id). The 47-pin answer-leak floor is projection-level and unaffected (re-run green).
+- `WITNESS_REPLAY_STRICT=1` suite 22/22 green post-change — the glossary-render witness family's digest surface is glossary-scoped and untouched by the Exercises/Answer Key render change.
+- G1 on the frozen run post-merge: numeric audit AUDIT (pass), G2 unsourced 0 — the loss-callout counts are bare integers (symbol-only gate is a non-event) and exercise/answer numerals ride the existing `_authored_prose_figure_supplements` declaration.
+- **Full-suite attribution (2026-07-16):** the repo-wide default suite (`-n auto`) reported 199 failed / 9866 passed; serial re-run + a clean **baseline worktree at `6edf563e`** proved **325 inherited reds failing identically with the 39-1b diff absent** (manifest G0R fold/schema pins, `tests/test_progress_map.py`, production-runner/Gary integration fixtures with Pass-1 authority-receipt drift, the known `test_health_tiles_prefer_persisted_cost_report`, etc. — pre-existing full-tree condition, surfaced to the operator as wave debt, NOT this story's scope), plus 1 uncommitted-diff tripwire (`test_audit_tw_7c_4_no_live_dispatch_scope_creep` scans `git diff HEAD`; clears at commit). **Zero failures attributable to this diff**; every my-surface module (answer-leak 47 pins, band wiring, schema parity, collateral emission, deep-dive wiring, bar modules, matrix module) green serially.
+
+### Intentional pin flips (enumerated — the ~5 owned by this diff)
+
+1. `tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py` — `EXERCISE_EXPECTED_FIELDS` allowlist gains `origin` (AC 1).
+2. `tests/specialists/workbook_producer/test_workbook_enriched_consumption.py` — 4 rendered-id assertions (T1, T3, T6-false, T6-true) flip from `Exercise \`src-001-c021\`` to the `g0-`-prefixed rendered id via new `RENDERED_QUIZ_EXERCISE_ID` (AC 3 collision guard).
+3. `app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json` — emitted JSON-Schema witness regenerated from the live model (byte-current pin `test_emitted_schema_is_byte_current_vs_live`; regen discipline).
+
+No other expectation changed; 39-1's diff carries zero flips from this story (pin-flip ownership rider held).
+
+### Completion Notes
+
+- AC 1 ✅ `origin: Literal["collateral","enrichment"]` (back-compat default) on `Exercise`; `_project_exercises` stamps `"enrichment"`. Existing serialized specs load unchanged (default applies; shape-pin + invariants green).
+- AC 2 ✅ attach loop MERGEs (collateral first, overlay appended); projector stays pure single-source.
+- AC 3 ✅ `g0-<component_id>` prefix at attach + answer-key re-key; residual collision fails loud via `assert_unique_collateral_ids` (row-a negative test); first-section-only overlay dedup preserved.
+- AC 4 ✅ `_apply_exercise_composition_cap`: total ≤12, per-unit collateral cap 2, overlay never trimmed, `exercise_overlay_loss` record mirrors `lo_overlay_loss` + visible MD callout — never silent.
+- AC 5 ✅ per-unit origin-keyed groups "Practice" / "Course Check — drawn from this course's own assessments" in Exercises AND Answer Key (labels are module constants; the runner bar imports them — no drift).
+- AC 6 ✅ DECLARED (contract-bound verified against landed 37-2b code): `deep_dive_enrichment.py:1055–1075` consumes `project_enrichment_to_workbook_inputs` (covered LOs/sections) as authoring input; the exercise-authoring leg cites the same projection. NO machine semantic dedup anywhere in this diff; residual-duplication check is an **operator spot-check at governed run A** (John's seed pairs: admin-cost %, 73-day doubling, digital front door) — WARN taxonomy, never claimed machine-caught.
+- AC 7 ✅ `tests/specialists/workbook_producer/test_exercise_merge_composition_39_1b.py` — 15 deterministic tests: rows a (identity + residual-collision), b (class-then-stable-id order; byte-deterministic), c (per-unit cap, ratified 18→12 round-robin, overlay-beyond-cap, partial-second-round), c′ (committed live-shape fixture pin + full 8b275e5b replay probe M-D2-2, skip-if-absent), d (labels + Answer Key mirror + receipt), e (mixed keyed/unkeyed + no `Correct Answer:` on the rendered surface), f/g (no phantom groups, no loss record), visible-callout test.
+- AC 8 ✅ `_assert_exercise_composition_conformant` wired into `_assert_completed_workbook_deliverable` (same diff, plank 5): structured receipt first (well-formedness; trim⇔loss consistency), MD floor second (label presence per origin class; overlay-never-trimmed; callout⇔record desync both directions). `tests/unit/scripts/test_workbook_deliverable_bar_39_1b.py` — 12 tests incl. the 3 named negative pins (a/b/c) + desync/malformed/tally-mismatch pins + pre-39.1b tolerance; existing 37-2b/39-1 bar modules re-run green (46/46 combined).
+- AC 9 ✅ J-3 round-robin (by unit in section order, then stable id; every unit keeps ≥1 Practice before any keeps 2) pinned against the real frozen shape AND the ratified synthetic 18→12 shape; byte-deterministic across runs.
+- Scope fences held: no irene_pass1/ wiring/manifest/pack edits; terminal 07W stays deterministic-consume; 07W model-free pin, G2 gate, VO↔on-screen invariants untouched; 47 answer-leak pins green.
+
+## File List
+
+- `app/marcus/lesson_plan/collateral_spec.py` — `Exercise.origin` field (AC 1)
+- `app/marcus/lesson_plan/workbook_enrichment.py` — origin stamp in `_project_exercises` (AC 1)
+- `app/specialists/workbook_producer/_act.py` — attach-seam MERGE + `g0-` prefix + answer-key re-key + `_apply_exercise_composition_cap` + `WorkbookInputs.exercise_overlay_loss` + produce pass-through + `_sidecar_refs` keys (ACs 2/3/4/9)
+- `app/marcus/lesson_plan/workbook_producer.py` — group-label constants + `_exercise_origin_groups` + `_exercise_composition_receipt` + labeled Exercises/Answer Key blocks + loss callout + `compose_workbook`/`produce` params + `WorkbookSidecar` fields (ACs 4/5/8-structured)
+- `app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json` — regenerated emitted-schema witness (pin flip 3)
+- `scripts/utilities/marcus_spoc_live_test_runner.py` — `_assert_exercise_composition_conformant` + wiring into `_assert_completed_workbook_deliverable` (AC 8)
+- `tests/specialists/workbook_producer/test_exercise_merge_composition_39_1b.py` — NEW: I/O matrix rows a–g + c′ + replay probe (AC 7/9)
+- `tests/unit/scripts/test_workbook_deliverable_bar_39_1b.py` — NEW: bar clause positive floors + negative pins (AC 8)
+- `tests/fixtures/exercise_merge_39_1b/composition-8b275e5b.json` — NEW: committed live-shape composition fixture (row c′; schema_version bump tripwire)
+- `tests/marcus/lesson_plan/test_collateral_spec_shape_stable.py` — pin flip 1 (origin in allowlist)
+- `tests/specialists/workbook_producer/test_workbook_enriched_consumption.py` — pin flip 2 (rendered `g0-` id)
+
 ## Change Log
 
+- 2026-07-16: **Story 39.1b implemented** (dev agent, baseline `6edf563e`). D2 MERGE composition landed end-to-end: origin field + enrichment stamp; attach-seam MERGE with `g0-` collision prefix + answer-key re-key; ≤12/per-unit-2 cap with J-3 round-robin trim + `exercise_overlay_loss` (structured record + visible callout, mirror of `lo_overlay_loss`); per-unit "Practice"/"Course Check" origin-keyed render groups mirrored in the Answer Key; `exercise_composition` receipt persisted to run.json; runner deliverable-bar exercise clause + negative pins in the same diff (plank 5). 15 new matrix tests + 12 new bar tests; 3 enumerated pin-flip surfaces (allowlist, rendered id ×4, emitted schema regen); 47 answer-leak pins + STRICT witness replay 22/22 + existing bar modules re-run green. Frozen-shape discrepancy recorded: real 8b275e5b composition is 6 overlay + 8 collateral (14→12, trim 2), not the spec's estimated 6+12; both the real shape and the ratified 18→12 arithmetic are pinned.
 - 2026-07-15: Story created by party-ratified split from 39-1 at the green-light round (4/4 GREEN-WITH-AMENDMENTS; split unanimous). Package B (D2 MERGE composition: 7 ACs + 5-floor I/O matrix) lifted verbatim; folded per finding id: Murat deliverable-bar exercise clause + negative pins (AC 8), J-3 round-robin trim rule + 18→12 pin (AC 9, row c′), split riders (strict serialization after 39-1; suite-green boarding without probe; separate run-A verdict line; ~5 pin flips owned by this diff). Status: **ready-for-dev** (dev-open gated on 39-1 landing — strict serialization).

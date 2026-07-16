@@ -68,8 +68,11 @@ DEPTH_DELTA_EXPECTED_FIELDS = frozenset(
 )
 DEPTH_DELTA_REQUIRED_FIELDS = frozenset({"deferred_from_slide", "deferred_depth"})
 
+# 39.1b (D2 MERGE): ``origin`` added — provenance is a field, not a position
+# (back-compat default "collateral"; intentional pin flip enumerated in the
+# 39-1b dev diff).
 EXERCISE_EXPECTED_FIELDS = frozenset(
-    {"exercise_id", "bloom_level", "prompt_intent", "answer_key_source_ref"}
+    {"exercise_id", "bloom_level", "prompt_intent", "answer_key_source_ref", "origin"}
 )
 EXERCISE_REQUIRED_FIELDS = frozenset(
     {"exercise_id", "bloom_level", "prompt_intent", "answer_key_source_ref"}

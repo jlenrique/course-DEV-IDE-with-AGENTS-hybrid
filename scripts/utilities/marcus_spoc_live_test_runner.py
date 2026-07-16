@@ -1597,6 +1597,139 @@ def _assert_lo_overlay_conformant(run_dir: Path, md_paths: list[Path]) -> None:
         raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
 
 
+def _assert_exercise_composition_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """39.1b deliverable bar: exercise-composition clause, structured-first.
+
+    The producer's persisted ``exercise_composition`` receipt +
+    ``exercise_overlay_loss`` record on the 07W ``workbook_producer``
+    contribution in ``run.json`` are the primary assertion surface; the MD is
+    the conformance floor. Asserts (AC 8): (i) the per-unit provenance group
+    labels ("Practice" / "Course Check — drawn from this course's own
+    assessments") are present whenever the corresponding origin class has
+    items; (ii) any collateral trim is accompanied by a structured
+    ``exercise_overlay_loss`` record that matches the receipt tally (silent
+    trim = REJECT); (iii) overlay-never-trimmed holds — every course-check id
+    the receipt carries must render (an overlay item absent from the render =
+    REJECT). MD floor in EVERY branch: an ``Exercise overlay loss:`` callout
+    no structured record backs is a fabricated claim ⇒ REFUSE; a populated
+    record whose callout is missing is a prose/structured desync ⇒ REFUSE.
+    A run with no persisted receipt (pre-39.1b shape / harness rig) keeps the
+    R3-style tolerance — the callout floor still applies. Test-harness-side
+    only; production runtime is untouched.
+    """
+    from app.marcus.lesson_plan.workbook_producer import (  # noqa: PLC0415
+        COURSE_CHECK_GROUP_LABEL,
+        EXERCISE_OVERLAY_LOSS_CALLOUT,
+        PRACTICE_GROUP_LABEL,
+    )
+
+    texts: list[str] = []
+    for path in md_paths:
+        try:
+            texts.append(_retry_transient_read(path.read_bytes).decode("utf-8"))
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+    callout_seen = any(EXERCISE_OVERLAY_LOSS_CALLOUT in text for text in texts)
+
+    def _refuse() -> None:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+    if not (run_dir / "run.json").is_file():
+        if callout_seen:
+            _refuse()  # a callout can only be minted by a populated record
+        return
+    try:
+        from app.marcus.lesson_plan.workbook_enrichment import (  # noqa: PLC0415
+            load_run_envelope,
+        )
+
+        envelope = load_run_envelope(run_dir)
+    except Exception as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    contribution = (
+        envelope.get_contribution(
+            _WORKBOOK_PRODUCER_SPECIALIST_ID, node_id=_WORKBOOK_PRODUCER_NODE_ID
+        )
+        if envelope is not None
+        else None
+    )
+    output = (
+        contribution.output
+        if contribution is not None and isinstance(contribution.output, dict)
+        else {}
+    )
+    workbook_refs = output.get("workbook")
+    refs = workbook_refs if isinstance(workbook_refs, dict) else {}
+    receipt = refs.get("exercise_composition")
+    loss = refs.get("exercise_overlay_loss")
+    if receipt is None:
+        # R3-style tolerance: pre-39.1b persisted shape (or rig) makes no
+        # composition claim — but a loss record/callout with no receipt to
+        # back it is a half-written claim, never a silent pass.
+        if callout_seen or loss is not None:
+            _refuse()
+        return
+    # Receipt well-formedness (a malformed receipt is a refusal, not a skip).
+    sections = receipt.get("sections") if isinstance(receipt, dict) else None
+    trimmed_count = (
+        receipt.get("collateral_trimmed_count") if isinstance(receipt, dict) else None
+    )
+    if (
+        not isinstance(sections, list)
+        or not isinstance(trimmed_count, int)
+        or isinstance(trimmed_count, bool)
+        or trimmed_count < 0
+    ):
+        _refuse()
+    # (ii) trim <-> loss-record consistency: silent trim = REJECT.
+    if trimmed_count > 0:
+        loss_trimmed = loss.get("trimmed_count") if isinstance(loss, dict) else None
+        loss_ids = (
+            loss.get("trimmed_exercise_ids") if isinstance(loss, dict) else None
+        )
+        if (
+            loss_trimmed != trimmed_count
+            or not isinstance(loss_ids, list)
+            or len(loss_ids) != trimmed_count
+        ):
+            _refuse()
+    elif loss is not None:
+        _refuse()  # a loss record with a zero-trim receipt is a desync
+    for text in texts:
+        # MD floor both directions: callout ⇔ populated record.
+        if (EXERCISE_OVERLAY_LOSS_CALLOUT in text) != (loss is not None):
+            _refuse()
+        for row in sections:
+            if not isinstance(row, dict):
+                _refuse()
+            section_id = row.get("section_id")
+            practice = row.get("practice")
+            course_check = row.get("course_check")
+            if (
+                not isinstance(section_id, str)
+                or not isinstance(practice, list)
+                or not isinstance(course_check, list)
+            ):
+                _refuse()
+            # (i) origin-labeled group headings present when the class has items.
+            if practice and (
+                f"### {PRACTICE_GROUP_LABEL} — section `{section_id}`" not in text
+            ):
+                _refuse()
+            if course_check and (
+                f"### {COURSE_CHECK_GROUP_LABEL} — section `{section_id}`" not in text
+            ):
+                _refuse()
+            # (iii) overlay-never-trimmed: every course-check id renders.
+            for exercise_id in course_check:
+                if f"#### Exercise `{exercise_id}`" not in text:
+                    _refuse()
+
+
 def _assert_deep_dive_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
     """37.2b deliverable bar: deep-dive conformance, structured-artifact-first.
 
@@ -1741,6 +1874,12 @@ def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> Non
     # channel first) is REFUSED; prose desync is the MD floor, never the
     # primary witness.
     _assert_lo_overlay_conformant(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # 39.1b: exercise-composition clause (same-diff extension, plank 5) —
+    # origin-labeled groups, trim ⇔ exercise_overlay_loss record consistency,
+    # overlay-never-trimmed; structured receipt first, MD floor second.
+    _assert_exercise_composition_conformant(
         run_dir, [run_dir / md_by_stem[stem] for stem in paired]
     )
 

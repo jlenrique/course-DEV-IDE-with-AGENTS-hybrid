@@ -50,7 +50,11 @@ from typing import TYPE_CHECKING, Any, Final, Literal
 import yaml
 from docx import Document
 
-from app.marcus.lesson_plan.collateral_spec import WorkbookSpec
+from app.marcus.lesson_plan.collateral_spec import (
+    Exercise,
+    WorkbookSection,
+    WorkbookSpec,
+)
 from app.marcus.lesson_plan.modality_producer import ModalityProducer
 from app.marcus.lesson_plan.prework_projection import PreWorkBrief, render_prework_markdown
 from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
@@ -540,6 +544,79 @@ def _segment_anchor(segment_id: str) -> str:
     return f"<!-- {SEGMENT_ANCHOR_PREFIX}{segment_id} -->"
 
 
+# 39.1b (D2 MERGE): per-unit exercise group labels — provenance rides the
+# ``origin`` FIELD, and the render groups key on it (never list position).
+# The runner's deliverable-bar exercise clause imports these as the single
+# source of the label text (label drift = pin flip, never silent divergence).
+PRACTICE_GROUP_LABEL = "Practice"
+COURSE_CHECK_GROUP_LABEL = "Course Check — drawn from this course's own assessments"
+# The visible collateral-trim callout prefix (mirror of the LO-overlay
+# "Enrichment overlay loss:" degrade-with-record idiom).
+EXERCISE_OVERLAY_LOSS_CALLOUT = "Exercise overlay loss:"
+
+
+def _exercise_composition_receipt(
+    spec: WorkbookSpec, exercise_overlay_loss: dict[str, object] | None
+) -> dict[str, object]:
+    """The persisted exercise-composition receipt (39.1b AC 8, structured side).
+
+    Per-section Practice / Course Check ids keyed on the ``origin`` field plus
+    the trim tally — the runner's deliverable-bar exercise clause asserts this
+    record first and the rendered prose second (a receipt/prose desync or a
+    trim tally no ``exercise_overlay_loss`` record backs is a refusal).
+    """
+    sections: list[dict[str, object]] = []
+    practice_total = 0
+    course_check_total = 0
+    for section in spec.sections:
+        practice = [
+            ex.exercise_id for ex in section.exercises if ex.origin == "collateral"
+        ]
+        course_check = [
+            ex.exercise_id for ex in section.exercises if ex.origin == "enrichment"
+        ]
+        practice_total += len(practice)
+        course_check_total += len(course_check)
+        sections.append(
+            {
+                "section_id": section.section_id,
+                "practice": practice,
+                "course_check": course_check,
+            }
+        )
+    trimmed = (
+        exercise_overlay_loss.get("trimmed_count") if exercise_overlay_loss else 0
+    )
+    return {
+        "sections": sections,
+        "practice_total": practice_total,
+        "course_check_total": course_check_total,
+        "collateral_trimmed_count": trimmed if isinstance(trimmed, int) else 0,
+    }
+
+
+def _exercise_origin_groups(
+    section: WorkbookSection,
+) -> list[tuple[str, list[Exercise]]]:
+    """The section's non-empty (label, exercises) origin groups, Practice first.
+
+    Grouping keys on the ``origin`` FIELD (D2-2): a group with no items is
+    omitted (no phantom "Practice" / "Course Check" headings — matrix rows
+    f/g). Item order inside each group is preserved from the composed spec
+    (the attach seam establishes provenance-class + stable-id order).
+    """
+    practice = [ex for ex in section.exercises if ex.origin == "collateral"]
+    course_check = [ex for ex in section.exercises if ex.origin == "enrichment"]
+    return [
+        (label, group)
+        for label, group in (
+            (PRACTICE_GROUP_LABEL, practice),
+            (COURSE_CHECK_GROUP_LABEL, course_check),
+        )
+        if group
+    ]
+
+
 def compose_workbook(
     plan_unit: PlanUnit,
     context: ProductionContext,
@@ -562,6 +639,7 @@ def compose_workbook(
     encounter_mode: Literal["recorded", "live"] = "recorded",
     render_profile: Literal["legacy", "presentation_support"] = "legacy",
     lo_overlay_loss_note: str | None = None,
+    exercise_overlay_loss_note: str | None = None,
     deep_dive_review: Any | None = None,
 ) -> _ComposedDoc:
     """Compose the canonical workbook model from the spec + transcript backbone.
@@ -755,36 +833,59 @@ def compose_workbook(
     else:
         doc.figures.clear()
 
-    # --- Exercises (Bloom level + source-grounded answer key) ---
+    # --- Exercises (Bloom level + source-grounded answer key). 39.1b (D2
+    # MERGE): grouped per unit by the ``origin`` FIELD (never list position) —
+    # "Practice" (Irene collateral) then "Course Check — drawn from this
+    # course's own assessments" (enrichment overlay); a group with no items
+    # renders no phantom heading. Any collateral the composition cap trimmed
+    # is a visible callout (degrade-with-record; never a silent drop). ---
     exercise_lines: list[str] = []
     for section in spec.sections:
-        for exercise in section.exercises:
-            exercise_lines.append(f"### Exercise `{exercise.exercise_id}`")
-            exercise_lines.append(f"Bloom level: **{exercise.bloom_level}**")
-            exercise_lines.append(exercise.prompt_intent)
-            exercise_lines.append(f"Answer key (source_ref: `{exercise.answer_key_source_ref}`)")
-            exercise_lines.append("")
+        for group_label, group in _exercise_origin_groups(section):
+            exercise_lines.append(
+                f"### {group_label} — section `{section.section_id}`"
+            )
+            for exercise in group:
+                exercise_lines.append(f"#### Exercise `{exercise.exercise_id}`")
+                exercise_lines.append(f"Bloom level: **{exercise.bloom_level}**")
+                exercise_lines.append(exercise.prompt_intent)
+                exercise_lines.append(
+                    f"Answer key (source_ref: `{exercise.answer_key_source_ref}`)"
+                )
+                exercise_lines.append("")
+    if exercise_overlay_loss_note:
+        exercise_lines.append(
+            f"> _{EXERCISE_OVERLAY_LOSS_CALLOUT} {exercise_overlay_loss_note}_"
+        )
+        exercise_lines.append("")
     doc.blocks.append((2, "Exercises", "\n".join(exercise_lines).rstrip()))
 
     # --- S5b Answer Key (worked answers, source-grounded; G1/G3). The worked
     # answer prose is a produce-time input (the corpus "Correct Answer" line);
     # the spec carries only the answer_key_source_ref slot. When no worked answer
     # is supplied the producer emits an explicit pending note + the source_ref
-    # (never a fabricated answer). ---
+    # (never a fabricated answer). 39.1b: carries the SAME origin group labels
+    # as the Exercises block (D2-2 / John F2). ---
     answer_lines: list[str] = []
     for section in spec.sections:
-        for exercise in section.exercises:
-            answer_lines.append(f"### Answer — `{exercise.exercise_id}`")
-            worked = answer_keys.get(exercise.exercise_id, "").strip()
-            if worked:
-                answer_lines.append(worked)
-            else:
+        for group_label, group in _exercise_origin_groups(section):
+            answer_lines.append(
+                f"### {group_label} — section `{section.section_id}`"
+            )
+            for exercise in group:
+                answer_lines.append(f"#### Answer — `{exercise.exercise_id}`")
+                worked = answer_keys.get(exercise.exercise_id, "").strip()
+                if worked:
+                    answer_lines.append(worked)
+                else:
+                    answer_lines.append(
+                        "*(worked answer pending writer; grounded by the "
+                        f"source_ref below — source_ref: `{exercise.answer_key_source_ref}`)*"
+                    )
                 answer_lines.append(
-                    "*(worked answer pending writer; grounded by the "
-                    f"source_ref below — source_ref: `{exercise.answer_key_source_ref}`)*"
+                    f"Answer key source_ref: `{exercise.answer_key_source_ref}`"
                 )
-            answer_lines.append(f"Answer key source_ref: `{exercise.answer_key_source_ref}`")
-            answer_lines.append("")
+                answer_lines.append("")
     doc.blocks.append((2, "Answer Key", "\n".join(answer_lines).rstrip()))
 
     # --- W2 Research Glossary. 39.1 (the learner-deliverable path): the
@@ -1097,6 +1198,14 @@ class WorkbookSidecar:
     # resolve (statement/Bloom degraded to a placeholder). ``None`` when every
     # bound objective resolved (no loss to record).
     lo_overlay_loss: dict[str, object] | None = None
+    # 39.1b (D2 MERGE): the exercise-composition receipt — per-section Practice
+    # / Course Check ids keyed on the ``origin`` field — the structured surface
+    # the runner's deliverable-bar exercise clause asserts FIRST (prose second).
+    exercise_composition: dict[str, object] | None = None
+    # 39.1b: visible record of collateral (Practice) exercises the composition
+    # cap trimmed (mirror of ``lo_overlay_loss``); ``None`` when nothing was
+    # trimmed. Course-check (overlay) items are never trimmed.
+    exercise_overlay_loss: dict[str, object] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -1149,6 +1258,7 @@ class WorkbookProducer(ModalityProducer):
         render_profile: Literal["legacy", "presentation_support"] = "legacy",
         workbook_brief_receipt: dict[str, object] | None = None,
         lo_overlay_loss: dict[str, object] | None = None,
+        exercise_overlay_loss: dict[str, object] | None = None,
         deep_dive_review: Any | None = None,
     ) -> WorkbookSidecar:
         """Produce the workbook artifacts on the frozen deck inputs.
@@ -1187,6 +1297,11 @@ class WorkbookProducer(ModalityProducer):
             render_profile=render_profile,
             lo_overlay_loss_note=(
                 str(lo_overlay_loss.get("note")) if lo_overlay_loss else None
+            ),
+            exercise_overlay_loss_note=(
+                str(exercise_overlay_loss.get("note"))
+                if exercise_overlay_loss
+                else None
             ),
             deep_dive_review=deep_dive_review,
         )
@@ -1336,6 +1451,13 @@ class WorkbookProducer(ModalityProducer):
                 else None
             ),
             lo_overlay_loss=lo_overlay_loss,
+            # 39.1b: the exercise-composition receipt derives from the SAME
+            # composed spec the render walked (origin-field groups), so the
+            # structured channel cannot diverge from the deliverable.
+            exercise_composition=_exercise_composition_receipt(
+                spec, exercise_overlay_loss
+            ),
+            exercise_overlay_loss=exercise_overlay_loss,
         )
 
     @staticmethod

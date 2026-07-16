@@ -237,6 +237,16 @@ class Exercise(BaseModel):
             "source; never a fabricated citation."
         ),
     )
+    origin: Literal["collateral", "enrichment"] = Field(
+        "collateral",
+        description=(
+            "Exercise authority (D2 MERGE, 39.1b): provenance is a FIELD, not a "
+            "list position. ``collateral`` = Irene-authored practice; "
+            "``enrichment`` = a course-check instrument projected off the G0 "
+            "enrichment overlay. Back-compat default keeps every previously "
+            "serialized spec loading unchanged."
+        ),
+    )
 
     @field_validator("exercise_id")
     @classmethod

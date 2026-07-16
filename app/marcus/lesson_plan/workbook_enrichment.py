@@ -516,6 +516,9 @@ def _project_exercises(
             bloom_level=ann["bloom"],  # type: ignore[arg-type]
             prompt_intent=prompt,
             answer_key_source_ref=answer_ref,
+            # D2 MERGE (39.1b): overlay-projected exercises are course-check
+            # instruments — provenance is a field, never a list position.
+            origin="enrichment",
         )
         # Home section: the first served LO that is surfaced, else the first LO.
         home = next((r for r in lo_refs if r in surfaced), None) or (

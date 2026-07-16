@@ -50,7 +50,12 @@ from typing import Any, Literal
 import yaml
 from pydantic import ValidationError
 
-from app.marcus.lesson_plan.collateral_spec import CollateralSpec, WorkbookSpec
+from app.marcus.lesson_plan.collateral_spec import (
+    CollateralSpec,
+    Exercise,
+    WorkbookSection,
+    WorkbookSpec,
+)
 from app.marcus.lesson_plan.deep_dive_enrichment import (
     WorkbookReviewContributionV1,
     load_workbook_review_contribution,
@@ -431,6 +436,108 @@ def _plan_unit_and_context(
 # Author the produce() inputs from Irene's collateral + the enrichment overlay
 # ---------------------------------------------------------------------------
 
+# 39.1b (D2 MERGE, ratified 2026-07-15): exercise-composition constants.
+# Overlay (course-check) exercise ids are prefixed at attach so a cross-source
+# ``exercise_id`` collision is structurally impossible unless the collateral
+# itself authored a ``g0-``-prefixed id — which then fails loud in
+# ``assert_unique_collateral_ids`` (never silent-dropped).
+_OVERLAY_EXERCISE_ID_PREFIX = "g0-"
+# D2-5 cap: target total <=12 exercises per workbook; per-unit collateral cap 2.
+_EXERCISE_TOTAL_CAP = 12
+_UNIT_COLLATERAL_CAP = 2
+
+
+def _apply_exercise_composition_cap(
+    sections: list[WorkbookSection],
+) -> tuple[list[WorkbookSection], dict[str, object] | None]:
+    """D2-5 cap + J-3 round-robin collateral trim (39.1b ACs 4/9).
+
+    Target total <= ``_EXERCISE_TOTAL_CAP`` exercises per workbook; per-unit
+    (per-section) collateral cap ``_UNIT_COLLATERAL_CAP``; overlay
+    (course-check) items are NEVER trimmed. When the caps force collateral
+    trimming, retention is round-robin by unit then stable ``exercise_id``:
+    every unit keeps >=1 Practice item before any unit keeps 2; within a unit,
+    retention follows stable-id order. Also establishes the row-b total
+    ordering inside every section — provenance class (collateral before
+    enrichment), then stable id — so the composition is byte-deterministic.
+
+    Returns the rebuilt sections + the visible ``exercise_overlay_loss``
+    record (mirror of ``lo_overlay_loss``; ``None`` when nothing was trimmed).
+    Degrade-with-record: ANY trimmed collateral is recorded — never silent.
+    """
+    per_section_collateral: list[list[Exercise]] = []
+    per_section_overlay: list[list[Exercise]] = []
+    for sec in sections:
+        per_section_collateral.append(
+            sorted(
+                (ex for ex in sec.exercises if ex.origin == "collateral"),
+                key=lambda ex: ex.exercise_id,
+            )
+        )
+        per_section_overlay.append(
+            sorted(
+                (ex for ex in sec.exercises if ex.origin == "enrichment"),
+                key=lambda ex: ex.exercise_id,
+            )
+        )
+    overlay_total = sum(len(items) for items in per_section_overlay)
+    collateral_total = sum(len(items) for items in per_section_collateral)
+    budget = max(0, _EXERCISE_TOTAL_CAP - overlay_total)
+
+    # Round-robin retention (J-3): round r grants each unit (in section order)
+    # its (r+1)-th collateral item while budget remains — so every unit keeps
+    # one Practice item before any unit keeps two. The per-unit cap is the
+    # round count; items beyond it are trimmed even with slack budget.
+    keep_counts = [0] * len(sections)
+    remaining = budget
+    for round_index in range(_UNIT_COLLATERAL_CAP):
+        for i, items in enumerate(per_section_collateral):
+            if remaining <= 0:
+                break
+            if len(items) > round_index:
+                keep_counts[i] += 1
+                remaining -= 1
+        if remaining <= 0:
+            break
+
+    trimmed_ids: list[str] = []
+    rebuilt: list[WorkbookSection] = []
+    for i, sec in enumerate(sections):
+        kept = per_section_collateral[i][: keep_counts[i]]
+        trimmed_ids.extend(
+            ex.exercise_id for ex in per_section_collateral[i][keep_counts[i] :]
+        )
+        merged = [*kept, *per_section_overlay[i]]
+        if merged != list(sec.exercises):
+            sec = sec.model_copy(update={"exercises": merged})
+        rebuilt.append(sec)
+
+    if not trimmed_ids:
+        return rebuilt, None
+    logger.warning(
+        "workbook exercise composition: %d of %d collateral (Practice) "
+        "exercise(s) trimmed by the cap (total<=%d, per-unit collateral "
+        "cap %d; round-robin by unit then stable id): %s",
+        len(trimmed_ids),
+        collateral_total,
+        _EXERCISE_TOTAL_CAP,
+        _UNIT_COLLATERAL_CAP,
+        trimmed_ids,
+    )
+    return rebuilt, {
+        "trimmed_count": len(trimmed_ids),
+        "collateral_count": collateral_total,
+        "kept_collateral_count": collateral_total - len(trimmed_ids),
+        "overlay_count": overlay_total,
+        "trimmed_exercise_ids": list(trimmed_ids),
+        "note": (
+            f"{len(trimmed_ids)} of {collateral_total} collateral (Practice) "
+            "exercise(s) trimmed by the exercise cap (round-robin by unit "
+            "then stable id; course-check items are never trimmed): "
+            + ", ".join(trimmed_ids)
+        ),
+    }
+
 
 @dataclass(frozen=True)
 class WorkbookInputs:
@@ -456,6 +563,10 @@ class WorkbookInputs:
     research_trends: ResearchTrendsBrief
     research_supplements: set[str] = field(default_factory=set)
     lo_overlay_loss: dict[str, object] | None = None
+    # 39.1b (D2 MERGE): visible record of collateral (Practice) exercises the
+    # composition cap trimmed — mirror of ``lo_overlay_loss``; ``None`` when
+    # nothing was trimmed. Course-check (overlay) items are never trimmed.
+    exercise_overlay_loss: dict[str, object] | None = None
     pre_work: PreWorkBrief | None = None
     encounter_mode: Literal["recorded", "live"] = "recorded"
     render_profile: Literal["legacy", "presentation_support"] = "legacy"
@@ -900,7 +1011,12 @@ def build_workbook_inputs(
                 citations.append({"source_ref": entry.source_ref})
 
     # Sections: collateral is authoritative; overlay exercises (when present)
-    # resolve into their HOME section by learning_objective_id.
+    # MERGE into their HOME section by learning_objective_id (39.1b, D2
+    # ratified 2026-07-15: collateral exercises first, overlay appended —
+    # REPLACE forced a false choice between two authorities with different
+    # pedagogical jobs). The merge lives at THIS attach seam only;
+    # ``project_enrichment_to_workbook_inputs`` stays a pure single-source
+    # projector (Winston D2-1).
     #
     # Remediation item-1 (MUST-FIX): two collateral sections may legally bind the
     # SAME learning_objective_id (the model does not forbid it). Attaching the
@@ -920,9 +1036,35 @@ def build_workbook_inputs(
         # SAME overlay LO must not both attach the same exercise objects (that
         # duplicates exercise_id and crashes assert_unique_collateral_ids).
         if overlay_ex and overlay_key not in overlay_attached:
-            sec = sec.model_copy(update={"exercises": list(overlay_ex)})
+            # D2-3 collision guard: prefix overlay exercise ids at attach and
+            # re-key their worked-answer entries in lockstep (row-e keyed
+            # lookups resolve on the RENDERED id). A residual cross-source
+            # collision still fails loud in assert_unique_collateral_ids.
+            attached: list[Exercise] = []
+            for overlay_exercise in overlay_ex:
+                prefixed_id = (
+                    _OVERLAY_EXERCISE_ID_PREFIX + overlay_exercise.exercise_id
+                )
+                if (
+                    overlay_exercise.exercise_id in answer_keys
+                    and prefixed_id not in answer_keys
+                ):
+                    answer_keys[prefixed_id] = answer_keys.pop(
+                        overlay_exercise.exercise_id
+                    )
+                attached.append(
+                    overlay_exercise.model_copy(update={"exercise_id": prefixed_id})
+                )
+            sec = sec.model_copy(
+                update={"exercises": [*sec.exercises, *attached]}
+            )
             overlay_attached.add(overlay_key)
         sections.append(sec)
+    # 39.1b (D2-5 + J-3): apply the composition cap — total<=12, per-unit
+    # collateral cap 2, overlay never trimmed, round-robin retention — and
+    # record ANY trimmed collateral in the visible exercise_overlay_loss
+    # structure (mirror of lo_overlay_loss; never silent).
+    sections, exercise_overlay_loss = _apply_exercise_composition_cap(sections)
     # Remediation item-6: carry the blueprint's kind through the rebuild (single
     # value today; explicit so a future closed-set growth cannot silently revert).
     spec = WorkbookSpec(sections=sections, kind=blueprint.kind)
@@ -1129,6 +1271,7 @@ def build_workbook_inputs(
         research_trends=research_trends,
         research_supplements=research_supplements,
         lo_overlay_loss=lo_overlay_loss,
+        exercise_overlay_loss=exercise_overlay_loss,
         pre_work=brief.payload.pre_work if brief else None,
         encounter_mode=brief.payload.encounter_mode if brief else "recorded",
         render_profile="presentation_support" if brief else "legacy",
@@ -1258,6 +1401,7 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             research_trends=inputs.research_trends,
             research_supplements=inputs.research_supplements,
             lo_overlay_loss=inputs.lo_overlay_loss,
+            exercise_overlay_loss=inputs.exercise_overlay_loss,
             pre_work=inputs.pre_work,
             encounter_mode=inputs.encounter_mode,
             render_profile=inputs.render_profile,
@@ -1406,6 +1550,11 @@ def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
         "workbook_brief": sidecar.workbook_brief_receipt,
         "depth_receipt": sidecar.depth_receipt,
         "lo_overlay_loss": sidecar.lo_overlay_loss,
+        # 39.1b (D2 MERGE): the exercise-composition receipt + collateral-trim
+        # loss record — the structured assertion surface for the runner's
+        # exercise deliverable-bar clause (AC 8).
+        "exercise_composition": sidecar.exercise_composition,
+        "exercise_overlay_loss": sidecar.exercise_overlay_loss,
     }
 
 
