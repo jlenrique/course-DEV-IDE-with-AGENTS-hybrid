@@ -41,6 +41,10 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+### Story 40-1 green-light follow-ons (filed 2026-07-16 at the 40-1 green-light round, amendment J-4; spec = 40-1-cover-placeholder-hero-toc-provenance.md)
+
+- 🟢 **`workbook-cover-s0-s7-dual-coding-dedupe`** (40-1 Scope Fences + green-light J-4, mandatory filing): 40-1's `## About This Workbook` cover block carries the "how to use this workbook with the deck" dual-coding note (§12 Part 3) ADDITIVELY — the S0 Overview and S7 Human Review footer stay in place UNCHANGED, so the dual-coding note appears in both the cover provenance block and the legacy S0/S7 surfaces. §12's "absorbs old S0 + S7" is satisfied additively this pass; retiring/deduplicating the S0/S7 copies is this named follow-on. CLEANUP DIRECTION when reactivated: dedupe toward the cover colophon as the single home (retire the S0/S7 duplicates) — **direction may flip if substrate evolves** (e.g. if a later §10 section-model revision re-homes the note or the S7 footer gains independent duties). **Reactivation trigger: Epics-39/40 wave close (post-run-B), OR the next §10 section-model touch — whichever first.**
+
 ### Story 39-1 close follow-ons (filed 2026-07-15 at 39-1 dev close per the spec's Scope Fences + Dev Notes J-2; spec = 39-1-glossary-downstream-render.md)
 
 - 🟡 **`glossary-uncovered-term-targeted-topup`** (39-1 Scope Fence, mandatory filing): uncovered bolded terms render honest-uncovered, full stop — the "optional targeted top-up" research dispatch for uncovered terms was explicitly DEFERRED at green-light (no new research dispatch of any kind in 39-1). CLEANUP DIRECTION when reactivated: a targeted Ask-A-style top-up call keyed to the uncovered term set, riding the existing Ask-A packet/digest discipline — **direction may flip if substrate evolves** (e.g. if a richer default pool or the 38-2 Ask-B leg makes term coverage a non-problem, or if headword-class curation shrinks the term set first). **Reactivation trigger: post-wave research-quality batch (couples to `research-quality-resolvable-doi-yield`) OR the first governed run whose glossary coverage is operator-flagged as too thin to ship.**

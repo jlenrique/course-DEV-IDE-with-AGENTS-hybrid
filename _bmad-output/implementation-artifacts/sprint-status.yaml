@@ -1808,10 +1808,10 @@ development_status:
   38-2-ask-b-hot-topics-wiring: done-awaiting-live-witness  # 2026-07-16: deterministic+T4 green; probe probe-38-2-ask-b-hot-topics-001 attempt 79f1920e PASS_USABLE_MINT (9/9 judge, 1 dispatcher call, zero-call replay); witness ask-b-38-2-live-79f1920e frozen+enrolled, STRICT replay 27/0-skip; full-run witness owed by batch run B
   39-1-glossary-downstream-render: done-awaiting-live-witness  # 2026-07-15: deterministic+T4 green (1927; 15-patch remediation); probe-39-1-glossary-render-001 attempt fdbed233 PASS (deterministic replay, 7/7 judge, 0 provider calls, 0 digest drift); full-run witness owed by batch run A (after 39-1b)
   39-1b-exercise-merge-composition: done-awaiting-live-witness  # 2026-07-16: deterministic+T4 green (Blind+Edge+Auditor 9/9 ACs; 10 findings remediated same-session incl. schema v1.2 bump + independent blueprint cross-check on the bar); no probe owed (fully deterministic); full-run witness owed by batch run A
-  39-2-trends-door-ajar: ready-for-dev  # 2026-07-16 green-lit 4/4 GREEN-WITH-AMENDMENTS (two combined seats; recompute bar authority ratified; flip inventory closed; fixtures grounded on frozen 79f1920e pack); size M; deterministic — no probe; boards run B
+  39-2-trends-door-ajar: in-progress  # 2026-07-16 dev dispatched at baseline 5e688cca; green-lit 4/4 GREEN-WITH-AMENDMENTS (two combined seats; recompute bar authority ratified; flip inventory closed; fixtures grounded on frozen 79f1920e pack); size M; deterministic — no probe; boards run B
   epic-39-retrospective: optional
   epic-40-cover: backlog
-  40-1-cover-placeholder-hero-toc-provenance: backlog  # Gamma hero = placeholder + art-brief; TOC + provenance deterministic
+  40-1-cover-placeholder-hero-toc-provenance: ready-for-dev  # 2026-07-16 green-lit 4/4 GREEN-WITH-AMENDMENTS (flip inventory closed pre-dev; bidirectional TOC + date value-match pins; models-used struck to receipt-only by orchestrator ruling); dev serialized after 39-2 lands (shared runner file); deterministic — no probe; boards run B
   epic-40-retrospective: optional
 
 action_items:
