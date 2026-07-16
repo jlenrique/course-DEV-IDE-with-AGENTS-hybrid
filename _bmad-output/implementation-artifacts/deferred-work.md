@@ -178,3 +178,15 @@
 - source_spec: session observation (2026-07-16)
   summary: Run-registry root inconsistency — the trial CLI defaults runs to state/config/runs/ while the governed runner uses runs/ (and plan-dialogue writes companions to runs/<uuid>/); monitors/evidence tooling aimed at the wrong root silently see nothing. Unify the default or surface the effective root in the start payload prominently.
   evidence: ffa19af3/1bc3bc4e registered under state/config/runs/ vs 648de559 under runs/.
+
+- source_spec: live production trial bc747b51 (C1M1-P1 Marcus-SPOC, 2026-07-16) + operator directive mid-G0E
+  summary: Bundle of HIGH operator-surface requirements for post-trial code — (1) `hil-operator-surfaces-must-be-tabular` — CLI/HUD/SPOC HIL review must use tables/containers (G0 dump + enrichment log sheaf failed reviewability; chat tables worked as exemplar); (2) `hud-lifecycle-survives-gate-pause` — HUD disconnected when trial start returned at G0E pause (8791 dead); keep HUD alive across pauses; (3) reaffirm `hud-stable-public-live-url` — public read-only page, any computer, unchanging URL; (4) expand `hud-pre-run-settings-confirmation-surface` — HUD must standing-show all ~14–16 run-defining toggles (not thin modalities slice) plus pre-walk confirm/change. Full capture + acceptance checklist + toggle table in evidence note.
+  evidence: `_bmad-output/implementation-artifacts/evidence/operator-hil-display-requirements-2026-07-16.md`; trial `state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/` (g0-enrichment.json, operator-surface.json, terminal `c` CommandNotFound after JSON exit); deferred-inventory rows updated same day.
+
+- source_spec: live production trial bc747b51 (G0R pause, 2026-07-16) + operator question on approve paste
+  summary: `next-action-must-not-preselect-approve` — `build_next_action` hardcodes `--verb approve` for all paused-at-gate next_action strings; HUD/agents that paste it bias HIL toward Approve despite DecisionCard verbs approve|edit|reject. Emit neutral verb choice first; never a sole approve-prefilled resume as the implied next step.
+  evidence: `app/marcus/cli/next_action.py` L71-79 (`" --verb approve"`); G0R card verb Literal in `app/models/decision_cards/g0r.py`; operator-surface next_action on trial bc747b51 at G0R; deferred-inventory row + evidence note §5.
+
+- source_spec: live production trial bc747b51 (post-G1, 2026-07-16 WRAPUP) — BLOCKING next session
+  summary: `cd-contribution-missing-before-06-builder` — node 06 error-paused `builder.gary.upstream-missing` (cd absent). Node 4.75 entered; no `cd` specialist contribution on envelope; irene_pass1 present. Diagnose why Creative Director path no-ops without fail-loud; fix so §06 never sees silent CD absence (emit contribution OR refuse earlier). Do not burn recover loops until root cause known.
+  evidence: `state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/error-pause.json` (message §06 builder missing upstream contribution(s): cd; node_id 06); run.json specialist_ids lack cd; trace-fixture has no cd dispatch; deferred-inventory row same id.

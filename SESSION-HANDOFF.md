@@ -1,3 +1,47 @@
+# Session close 2026-07-16 EVE — Marcus-SPOC production trial bc747b51 (G0→G1 then §06 CD miss)
+
+**Final class:** P (opened as true Marcus-SPOC production trial per prior hot-start; no app/ substrate code landed this window — diagnosis + deferred filing only; Class S owed next for the CD fix).
+
+## What was completed
+
+1. **Fresh production trial steered by operator (Juanl) through Marcus-SPOC CLI:** trial `bc747b51-7009-4742-9f65-8de6abc29ca4` on corpus `tejal-apc-c1m1-p1-call` with companions `runs/6408280c-…`, settings production / recorded / batch / detective ON / `MARCUS_G0_DISPATCH_LIVE=1` / budget $10 / HUD on / A/B styleguides.
+2. **Gates cleared with HIL:** G0 directive confirm → G0E approve → G0R approve → G1 approve. Live G0 enrichment + Irene refinement ran; LO-followup normalization from prior session held (decorated followups truncated cleanly).
+3. **Honest stop at node 06:** `paused-at-error` / `builder.gary.upstream-missing` — `§06 builder missing upstream contribution(s): cd`. Envelope has irene_pass1 + texas + research + g0/refinement; **no `cd` contribution** despite `node-enter 4.75`.
+4. **Operator HIL/HUD requirements captured** (tables-required, HUD lifecycle across pause, public stable URL reaffirm, full toggle readout, next-action must not preselect approve) in evidence note + deferred-inventory + deferred-work.
+5. **WRAPUP hygiene:** next-session-start-here.md rewritten with CD blocker as #1; this handoff section; deferred rows for `cd-contribution-missing-before-06-builder`.
+
+## What is next
+
+1. **BLOCKING (Class S):** diagnose + fix `cd-contribution-missing-before-06-builder` using frozen run dir `state/config/runs/bc747b51-…`. Fail-loud at 4.75 or emit real CD contribution before §06. Then recover or fresh-start past G1.
+2. **HIGH operator-surface batch:** `hil-operator-surfaces-must-be-tabular`, `hud-lifecycle-survives-gate-pause`, `hud-stable-public-live-url`, `hud-pre-run-settings-confirmation-surface`, `next-action-must-not-preselect-approve` — see evidence note.
+3. Wave 39/40 live-witness / Run B remains a parallel track (not this trial’s stop reason).
+
+## Unresolved issues / risks
+
+- Trial `bc747b51` stranded at error-pause; blind `trial recover` likely re-hits missing `cd`.
+- HUD disconnected after first start-walk return — operator flew without live HUD for most gates.
+- CLI HIL UX still teaches wrong habits (`approve` / `c` at PS>; markdown paste → `>>`).
+- Step 0 Cora SW skipped (Class P — no substrate file edits this window).
+
+## Key lessons
+
+- DecisionCard gates return to PowerShell; approval is only via `trial resume --verb …`, never a bare word.
+- Chat/agent pasting approve-prefilled next_action biases HIL — product bug in `next_action.py`, not Marcus “deciding.”
+- Tabular re-projection of gate dumps is the only reviewable HIL surface today; must become product behavior.
+- Node-enter ≠ contribution emitted — 4.75 silence before §06 is a fail-loud gap.
+
+## Validation summary
+
+- Live trial evidence on disk (not deleted): G0E/G0R/G1 cards, g0-enrichment, irene-pass1, irene-refinement, error-pause.json.
+- No new unit suite this window; LO-followup fix from prior commit `7104413e` witnessed live (normalize log lines).
+- Class P Step 0 skipped with rationale above.
+
+## Artifact update checklist
+
+next-session-start-here.md ✓ · SESSION-HANDOFF.md ✓ (this) · deferred-inventory.md ✓ · deferred-work.md ✓ · evidence/operator-hil-display-requirements-2026-07-16.md ✓ · sprint-status.yaml N/A (no Kanban flip) · bmm-workflow-status N/A · guides deferred to CD-fix Class S (MANDATORY trigger if integration contract changes) · KG regen still owed at wave consolidation.
+
+---
+
 # Session close 2026-07-16 — Epics-39/40 wave build COMPLETE + operator concierge run (C1M1-P1)
 
 **Final class:** S->P drift (opened as autonomous Epics-39/40 completion; operator joined mid-session and drove a live concierge production run with Marcus embodied as SPOC).
