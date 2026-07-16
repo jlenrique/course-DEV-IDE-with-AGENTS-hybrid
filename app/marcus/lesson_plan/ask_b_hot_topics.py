@@ -29,6 +29,27 @@ canonical query; an absent Scene is a recorded ``scene_identity_absent``
 scope loss carried into the packet ``known_losses`` — never a blocking
 retryable.
 
+Scope-loss lattice (T4 R11 / E6): beyond ``scene_identity_absent``, an
+ability whose text yields ZERO association-basis tokens (e.g. an acronym-only
+"AI" vow) records a per-ability ``ability_association_basis_absent:<id>``
+scope loss and the dispatch continues — visible, never silent. Scope losses
+are recomputed deterministically by the validator, so they can never be
+forged or dropped.
+
+Canonical-query posture (T4 R5 / B6+B7): the query is DERIVED DISPLAY — the
+structured scope fields (ordered abilities, scene digest/text) remain the
+sole identity authority, and the query digest still binds the derived string.
+Vow/scene prose is projected through ``_query_display_text``: scope
+delimiters (``|``, ``;``, ``[``, ``]``) are neutralized to spaces and
+whitespace is collapsed, so row text can never spoof a query segment
+boundary, and contract-legal trailing-space vows never break the single-line
+query contract.
+
+Ordered association evidence (T4 R6 / B8): ``matched_ability_tokens`` is an
+ORDERED LIST of ``{ability_id, tokens}`` pairs — never a JSON object whose
+key order a ``sort_keys`` rewrite could flip; the entry validator checks the
+pair order against ``supports_ability_ids``.
+
 No orchestrator or Texas implementation-type imports (M3 held).
 """
 
@@ -57,12 +78,21 @@ AskBDisposition = Literal[
     "completed_degraded",
     "completed_ready",
 ]
-AskBScopeLoss = Literal["scene_identity_absent"]
+# R11 (E6): the scope-loss vocabulary is open over the deterministic
+# ``ability_association_basis_absent:<ability_id>`` family plus the scene
+# loss; the validator recomputes the exact expected tuple.
+SCENE_IDENTITY_ABSENT_LOSS: Literal["scene_identity_absent"] = "scene_identity_absent"
+ABILITY_BASIS_ABSENT_PREFIX: Literal["ability_association_basis_absent:"] = (
+    "ability_association_basis_absent:"
+)
 
 ASK_B_ASSOCIATION_ALGORITHM: Literal["ask-b-association.v1"] = "ask-b-association.v1"
 
 _DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 _TOKEN_RE = re.compile(r"[^\W_]+", re.UNICODE)
+# R5 (B7): characters that structure the canonical query; neutralized out of
+# vow/scene display text so prose can never spoof a segment boundary.
+_QUERY_DELIMITERS = "|;[]"
 
 
 def _nonblank_line(value: str) -> str:
@@ -85,6 +115,53 @@ class _StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True, validate_default=True)
 
 
+def _query_display_text(value: str) -> str:
+    """Project structured prose into the derived-display canonical query.
+
+    T4 R5 (B6 trailing-space crash + B7 delimiter injection, live-repro'd):
+    scope delimiters are neutralized to spaces and whitespace is collapsed
+    (symmetric for vow text and scene text), so contract-legal upstream text
+    can neither crash the single-line query contract nor spoof a query
+    segment. The structured fields remain the identity authority; the query
+    digest binds the derived string.
+    """
+    for mark in _QUERY_DELIMITERS:
+        value = value.replace(mark, " ")
+    return " ".join(value.split())
+
+
+def _scope_losses_for(
+    abilities: tuple[DeepDiveAbilityInput, ...], *, scene_bound: bool
+) -> tuple[str, ...]:
+    """Deterministic expected scope-loss tuple (scene loss leads; R11/E6)."""
+    losses: list[str] = []
+    if not scene_bound:
+        losses.append(SCENE_IDENTITY_ABSENT_LOSS)
+    for ability in abilities:
+        if not ability_tokens(ability.text):
+            losses.append(f"{ABILITY_BASIS_ABSENT_PREFIX}{ability.ability_id}")
+    return tuple(losses)
+
+
+class AskBAbilityTokenMatchV1(_StrictModel):
+    """One ordered ``{ability_id, tokens}`` association-evidence pair.
+
+    T4 R6 (B8): ordered association evidence must NOT live in JSON object key
+    order — a ``sort_keys`` rewrite of a serialized entry must never be able
+    to flip validity. The pair list order is checked against
+    ``supports_ability_ids`` by the entry validator.
+    """
+
+    ability_id: NonBlankLine
+    tokens: tuple[NonBlankLine, ...]
+
+    @model_validator(mode="after")
+    def _tokens_nonempty(self) -> AskBAbilityTokenMatchV1:
+        if not self.tokens:
+            raise ValueError("ability association requires matched tokens")
+        return self
+
+
 class AskBRetrievalScopeV1(_StrictModel):
     """Immutable pre-call Ask-B scope: digest-bound, no outcome fields."""
 
@@ -99,7 +176,7 @@ class AskBRetrievalScopeV1(_StrictModel):
     posture: AskBPosture = "hot_topics"
     provider_config_fingerprint: Sha256Digest
     association_algorithm: Literal["ask-b-association.v1"] = ASK_B_ASSOCIATION_ALGORITHM
-    known_scope_losses: tuple[AskBScopeLoss, ...]
+    known_scope_losses: tuple[NonBlankLine, ...]
     scope_digest: Sha256Digest
 
     @model_validator(mode="after")
@@ -112,11 +189,17 @@ class AskBRetrievalScopeV1(_StrictModel):
             raise ValueError("scene digest and scene text must appear together")
         if self.scene_text is not None and not self.scene_text.strip():
             raise ValueError("bound scene text must be nonblank")
-        scene_bound = self.scene_digest is not None
-        if scene_bound == (self.known_scope_losses == ("scene_identity_absent",)):
-            raise ValueError("scene binding must mirror the scene_identity_absent loss")
-        if self.known_scope_losses not in ((), ("scene_identity_absent",)):
-            raise ValueError("Ask-B scope admits only the scene_identity_absent loss")
+        # R11 (E6): the loss tuple is recomputed, never trusted — scene loss
+        # mirrors scene binding, and every zero-basis ability records its
+        # per-ability loss (visible, never silent).
+        expected_losses = _scope_losses_for(
+            self.abilities, scene_bound=self.scene_digest is not None
+        )
+        if self.known_scope_losses != expected_losses:
+            raise ValueError(
+                "scope losses must mirror the scene binding and the per-ability "
+                "association basis"
+            )
         if self.query_digest != canonical_digest(self.query):
             raise ValueError("query digest mismatch")
         expected = canonical_digest(self.model_dump(mode="json", exclude={"scope_digest"}))
@@ -129,24 +212,33 @@ def derive_hot_topics_query(demand: AskBHotTopicsDemandV1) -> str:
     """Compose the canonical single-line query carrying the COMPLETE scope.
 
     Per 38-2 AC 2 the canonical query carries the complete ORDERED ability
-    scope (+ the scene identity when present). Nothing is truncated, dropped,
+    scope (+ the scene identity when present). Nothing is truncated,
     reordered, or partitioned — an over-limit query fails loud upstream with
-    ``ask-b.scope-overflow``. Multiline scene prose is projected to one line
-    by whitespace collapse only (deterministic; no content dropped) because
-    the canonical query is a single-line contract field.
+    ``ask-b.scope-overflow``.
+
+    T4 R5 (B6/E7 + B7): the query is DERIVED DISPLAY. Vow and scene prose are
+    projected through ``_query_display_text`` (delimiter neutralization +
+    whitespace collapse, symmetric for both), so contract-legal trailing
+    whitespace never crashes the single-line contract and prose can never
+    spoof a ``[id]`` / ``;`` / ``| scene:`` segment boundary. The structured
+    demand fields remain the identity authority; the query digest still binds
+    this derived string.
     """
     if demand.status != "ready":
         raise ValueError("Ask-B query requires ready demand")
     segments = " ; ".join(
-        f"[{ability.ability_id}] {ability.text}" for ability in demand.abilities
+        f"[{_query_display_text(ability.ability_id)}] {_query_display_text(ability.text)}"
+        for ability in demand.abilities
     )
     query = (
         "hot topics, recent developments and emerging trends for these abilities: "
         + segments
     )
     if demand.scene_text is not None:
-        query += " | scene: " + " ".join(demand.scene_text.split())
-    return query
+        query += " | scene: " + _query_display_text(demand.scene_text)
+    # Final collapse keeps the query a strict nonblank single line even when a
+    # display projection above yields an empty segment tail (R5/B6).
+    return " ".join(query.split())
 
 
 def build_scope(
@@ -169,7 +261,11 @@ def build_scope(
         "posture": "hot_topics",
         "provider_config_fingerprint": provider_config_fingerprint,
         "association_algorithm": ASK_B_ASSOCIATION_ALGORITHM,
-        "known_scope_losses": demand.known_losses,
+        # R11 (E6): losses are computed, not inherited — the demand carries the
+        # scene fact; zero-basis abilities add their per-ability loss here.
+        "known_scope_losses": _scope_losses_for(
+            demand.abilities, scene_bound=demand.scene_digest is not None
+        ),
     }
     raw["scope_digest"] = canonical_digest(raw)
     return AskBRetrievalScopeV1.model_validate(raw, strict=True)
@@ -177,24 +273,29 @@ def build_scope(
 
 def match_ability_associations(
     scope: AskBRetrievalScopeV1, *, title: str, body: str
-) -> tuple[tuple[str, ...], dict[str, tuple[str, ...]]]:
+) -> tuple[tuple[str, ...], tuple[AskBAbilityTokenMatchV1, ...]]:
     """Apply ``ask-b-association.v1`` over the STORED evidence window.
 
     ``body`` MUST be the stored ``evidence_excerpt`` window (mirror of the
     Ask-A Scout MED #3 discipline): matching over the full body would let a
     token past the excerpt window be recorded against an excerpt that does
     not actually contain it.
+
+    Returns the ordered matched ability ids plus the ORDERED evidence pairs
+    (T4 R6/B8 — list-of-pairs, never object key order).
     """
     haystack = normalize_match_text(f"{title}\n{body}")
     haystack_tokens = frozenset(_TOKEN_RE.findall(haystack))
-    matched_by_ability: dict[str, tuple[str, ...]] = {}
+    matches: list[AskBAbilityTokenMatchV1] = []
     for ability in scope.abilities:
         matched = tuple(
             token for token in ability_tokens(ability.text) if token in haystack_tokens
         )
         if matched:
-            matched_by_ability[ability.ability_id] = matched
-    return tuple(matched_by_ability), matched_by_ability
+            matches.append(
+                AskBAbilityTokenMatchV1(ability_id=ability.ability_id, tokens=matched)
+            )
+    return tuple(match.ability_id for match in matches), tuple(matches)
 
 
 class AskBKnowledgeEntryV1(_StrictModel):
@@ -223,11 +324,15 @@ class AskBKnowledgeEntryV1(_StrictModel):
     scope_digest: Sha256Digest
     supports_ability_ids: tuple[NonBlankLine, ...]
     association_algorithm: Literal["ask-b-association.v1"]
-    matched_ability_tokens: dict[NonBlankLine, tuple[NonBlankLine, ...]]
+    # R6 (B8): ORDERED list of pairs — a sort_keys rewrite of the serialized
+    # entry cannot flip validity; the digest covers the list order.
+    matched_ability_tokens: tuple[AskBAbilityTokenMatchV1, ...]
 
     @model_validator(mode="after")
     def _entry_invariants(self) -> AskBKnowledgeEntryV1:
-        if not re.fullmatch(r"ask-b-cite-[0-9]{3}", self.citation_id):
+        # R1c (E5): natural-width citation numbering — {3,} grows past 999
+        # rows without breaking the mint (f"{n:03d}" widens naturally).
+        if not re.fullmatch(r"ask-b-cite-[0-9]{3,}", self.citation_id):
             raise ValueError("citation ID is not Ask-B namespaced")
         if not self.provider_provenance:
             raise ValueError("provider provenance required")
@@ -235,9 +340,14 @@ class AskBKnowledgeEntryV1(_StrictModel):
             raise ValueError("evidence excerpt invalid")
         if not self.supports_ability_ids:
             raise ValueError("Ask-B entry requires a deterministic ability association")
-        if tuple(self.matched_ability_tokens) != self.supports_ability_ids:
+        if (
+            tuple(match.ability_id for match in self.matched_ability_tokens)
+            != self.supports_ability_ids
+        ):
             raise ValueError("ability association evidence mismatch")
-        if any(not tokens for tokens in self.matched_ability_tokens.values()):
+        # Belt-and-braces at the entry level too (a model_construct-forged
+        # pair must still fail here, mirroring the pair-model invariant).
+        if any(not match.tokens for match in self.matched_ability_tokens):
             raise ValueError("ability association requires matched tokens")
         return self
 
@@ -398,6 +508,17 @@ class AskBContributionOutputV1(_StrictModel):
                 for e in self.research_entries
             ):
                 raise ValueError("entry scope mismatch")
+            # R4a (E8): a forged association naming an ability OUTSIDE the
+            # dispatch scope is rejected — supports_ability_ids ⊆ scope ids.
+            scope_ability_ids = {
+                ability.ability_id for ability in self.research_intake.scope.abilities
+            }
+            for e in self.research_entries:
+                if not set(e.supports_ability_ids) <= scope_ability_ids:
+                    raise ValueError(
+                        "entry ability association names an ability outside the "
+                        "dispatch scope"
+                    )
             rebuilt = AskBResearchIntakeV1.build(
                 scope=self.research_intake.scope,
                 execution_receipt=self.research_intake.execution_receipt,
@@ -423,7 +544,10 @@ class AskBContributionOutputV1(_StrictModel):
 
 
 __all__ = [
+    "ABILITY_BASIS_ABSENT_PREFIX",
     "ASK_B_ASSOCIATION_ALGORITHM",
+    "SCENE_IDENTITY_ABSENT_LOSS",
+    "AskBAbilityTokenMatchV1",
     "AskBContributionOutputV1",
     "AskBExecutionReceiptV1",
     "AskBKnowledgeEntryV1",

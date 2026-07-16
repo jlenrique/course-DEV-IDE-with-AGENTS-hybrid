@@ -75,11 +75,17 @@ families:
     # and record capture identity (idempotency key + provider/config
     # fingerprint). Failed attempts (if any) enroll as ambiguity-shape
     # witnesses exactly like the 7ed48f8a/b6fc76ea precedent rows.
+    # 38-2 T4 R10 (B4): a pending row MUST name its owing probe in the
+    # top-level `owed_by_probe` field (machine-asserted), and once ANY probe
+    # evidence pack exists on disk the per-family replay module FAILS a
+    # still-pending row — the flip to `enrolled` is machine-forced, not a
+    # ritual.
     witnesses:
       - id: ask-b-38-2-probe-001-pending
         path: _bmad-output/implementation-artifacts/evidence/ask-b-38-2-live-PENDING/run/ask-b-hot-topics-call.v1.json
         state: completed
         disposition: pending
+        owed_by_probe: probe-38-2-ask-b-hot-topics-001
         capture:
           owed_by_probe: probe-38-2-ask-b-hot-topics-001
   - family: workbook-glossary-render.v1

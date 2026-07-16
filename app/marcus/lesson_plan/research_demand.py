@@ -488,6 +488,20 @@ class AskBHotTopicsDemandV1(BaseModel):
                 raise ValueError("ready Ask-B demand requires brief digest and vows")
             if len({item.ability_id for item in self.abilities}) != len(self.abilities):
                 raise ValueError("ready Ask-B demand requires unique vow objective IDs")
+            # T4 R5a (B6/E7): vow text with line-control characters is a forged
+            # or corrupt authority — rejected here so the wiring seam types it
+            # ``ask-b.demand-invalid`` instead of crashing at query build.
+            # (Trailing/extra WHITESPACE stays contract-legal; the canonical
+            # query collapses it — see ``derive_hot_topics_query``.)
+            for item in self.abilities:
+                if any(
+                    mark in item.text
+                    for mark in ("\r", "\n", "\u2028", "\u2029")
+                ):
+                    raise ValueError(
+                        "ready Ask-B demand vow text must not carry line-control "
+                        "characters"
+                    )
             if self.known_losses not in ((), ("scene_identity_absent",)):
                 raise ValueError(
                     "ready Ask-B demand admits only the scene_identity_absent loss"

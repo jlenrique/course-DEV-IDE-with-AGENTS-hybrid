@@ -19,10 +19,20 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from tests.live_witness_replay.registry import family, skip_or_fail, witness_path
+from tests.live_witness_replay.registry import (
+    REPO_ROOT,
+    family,
+    skip_or_fail,
+    witness_path,
+)
 
 FAMILY = "ask-b-hot-topics-call.v1"
 OWING_PROBE = "probe-38-2-ask-b-hot-topics-001"
+# R10 (B4): every path pattern the probe script can write an evidence pack
+# under (`run_ask_b_38_2_live_evidence.py` allocates `ask-b-38-2-live-*`;
+# the second glob guards a renamed successor).
+_PROBE_EVIDENCE_ROOT = REPO_ROOT / "_bmad-output/implementation-artifacts/evidence"
+_PROBE_EVIDENCE_GLOBS = ("ask-b-38-2-live-*", "ask-b-hot-topics-38-2*")
 
 
 def _rows() -> list[dict[str, Any]]:
@@ -55,6 +65,41 @@ def test_witness_state_is_explicit_never_silent() -> None:
     )
     assert any(
         row.get("capture", {}).get("owed_by_probe") == OWING_PROBE for row in pending
+    )
+
+
+def test_pending_rows_name_their_owing_probe() -> None:
+    """R10 (B4): pending is a DEBT, and a debt has a named creditor — every
+    pending row carries the top-level ``owed_by_probe`` field naming the
+    probe that owes the witness."""
+    for row in _pending_rows():
+        assert row.get("owed_by_probe") == OWING_PROBE, (
+            f"pending witness row {row.get('id')!r} does not name its owing "
+            f"probe in the top-level owed_by_probe field"
+        )
+
+
+def test_pending_flip_is_machine_forced_once_probe_evidence_exists() -> None:
+    """R10 (B4): the pending→enrolled flip is MACHINE-FORCED, not a ritual.
+
+    If any probe evidence pack directory exists on disk (the probe has run),
+    a still-``pending`` disposition FAILS the suite: the orchestrator must
+    flip the row to ``enrolled`` (or enroll the failed attempt as an
+    ambiguity-shape witness) in the same motion that froze the evidence.
+    """
+    if not _pending_rows():
+        return  # flipped — the enrolled-witness pins above own coverage
+    packs = sorted(
+        pack
+        for pattern in _PROBE_EVIDENCE_GLOBS
+        for pack in _PROBE_EVIDENCE_ROOT.glob(pattern)
+        if pack.is_dir()
+    )
+    assert not packs, (
+        f"probe evidence pack(s) exist on disk ({[p.name for p in packs]}) but "
+        f"the {FAMILY} witness row is still disposition: pending — flip it to "
+        f"enrolled (or enroll the failed attempt as an ambiguity-shape "
+        f"witness) per the zero-witness rule; the flip is machine-forced (R10/B4)"
     )
 
 

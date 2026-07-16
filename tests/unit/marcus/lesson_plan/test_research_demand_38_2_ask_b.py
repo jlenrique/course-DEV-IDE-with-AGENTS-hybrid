@@ -320,6 +320,26 @@ def test_constructed_non_ready_demand_rejects_payload_or_extra_losses() -> None:
         AskBHotTopicsDemandV1.model_validate_json(json.dumps(raw), strict=True)
 
 
+@pytest.mark.parametrize("bad_text", ["I can\nact.", "I can\ract.", "I can act."])
+def test_constructed_ready_demand_rejects_line_control_vow_text(bad_text: str) -> None:
+    """38-2 T4 R5a (B6/E7): vow text carrying \\r/\\n (or unicode line
+    separators) is rejected AT the demand contract, so the wiring seam types
+    it ``ask-b.demand-invalid`` instead of crashing at query build. Trailing
+    whitespace stays contract-legal (see the companion scope test)."""
+    raw = _raw_demand(abilities=[{"ability_id": "LO-1", "text": bad_text}])
+    with pytest.raises(ValueError, match="line-control"):
+        AskBHotTopicsDemandV1.model_validate_json(json.dumps(raw), strict=True)
+
+
+def test_constructed_ready_demand_accepts_trailing_space_vow_text() -> None:
+    """38-2 T4 R5c (B6): trailing-space vow text is contract-legal upstream
+    (PromiseVow NonBlankStr) and must stay legal here — the canonical query
+    collapses it downstream."""
+    raw = _raw_demand(abilities=[{"ability_id": "LO-1", "text": "I can act. "}])
+    demand = AskBHotTopicsDemandV1.model_validate_json(json.dumps(raw), strict=True)
+    assert demand.abilities[0].text == "I can act. "
+
+
 def test_constructed_non_ready_demand_rejects_ready_only_scene_loss() -> None:
     raw = _raw_demand(
         status="unavailable",

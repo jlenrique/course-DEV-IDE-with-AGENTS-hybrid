@@ -598,6 +598,162 @@ def test_ask_completed_envelope_without_journal_fails_split_brain(
     assert exc.value.tag == expected_tag
 
 
+# 38-2 T4 R2 (Auditor row-14, M-7 idiom): the conflicting-completed
+# split-brain branch gets its OWN parametrized proof — distinct from the
+# completed-WITHOUT-journal branch above.
+@pytest.mark.parametrize("ask", ["ask-a", "ask-b"])
+def test_ask_conflicting_completed_contribution_fails_split_brain(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ask: str
+) -> None:
+    """T4 R2: completed journal PRESENT at the run coordinate + persisted
+    COMPLETED contribution whose body DIFFERS from the journal replay →
+    ``ask-{a,b}.split-brain`` (workbook_wiring conflicting-completed branch),
+    with zero re-dispatch."""
+
+    def variant_result(body: str) -> SimpleNamespace:
+        result = _ask_b_provider_result()
+        result.rows[0].body = body
+        return result
+
+    journal_body = "Choose a first move with explicit decision criteria."
+    conflict_body = "Choose a first move quickly across clinic workflows."
+    conflicting_run = tmp_path / "conflicting-run"
+    conflicting_run.mkdir()
+    if ask == "ask-a":
+        raw_demand = {
+            "schema_version": "ask-a-research-demand.v1",
+            "specialist_id": "workbook_brief",
+            "node_id": "07W.1",
+            "status": "ready",
+            "workbook_brief_payload_digest": "sha256:" + "a" * 64,
+            "skeleton_authority_digest": "sha256:" + "b" * 64,
+            "skeleton_candidate_digest": "sha256:" + "c" * 64,
+            "abilities": (DeepDiveAbilityInput(ability_id="lo-1", text="Choose a move."),),
+            "bold_terms": (BoldTermMarker(term="first move"),),
+            "source_claim_refs": ("claim-1",),
+            "known_losses": (),
+        }
+        raw_demand["demand_digest"] = canonical_digest(raw_demand)
+        demand = AskAResearchDemandV1.model_validate(raw_demand, strict=True)
+        monkeypatch.setattr(
+            ask_a_research_wiring, "resolve_enrichment_demand", lambda _: demand
+        )
+        module, run_name = ask_a_research_wiring, "run_ask_a_research"
+        node_id, specialist_id, expected_tag = (
+            "07W.2",
+            "ask_a_enrichment",
+            "ask-a.split-brain",
+        )
+    else:
+        monkeypatch.setattr(
+            ask_b_research_wiring,
+            "resolve_hot_topics_demand",
+            lambda _: _ask_b_ready_demand(),
+        )
+        module, run_name = ask_b_research_wiring, "run_ask_b_research"
+        node_id, specialist_id, expected_tag = (
+            "07W.4",
+            "ask_b_hot_topics",
+            "ask-b.split-brain",
+        )
+    run = getattr(module, run_name)
+    envelope = _empty_envelope()
+    # Journal at the RESUME coordinate (tmp_path) replays to output A ...
+    journal_backed = run(
+        run_dir=tmp_path,
+        trial_id=envelope.trial_id,
+        dispatch_live=True,
+        dispatch=lambda _: variant_result(journal_body),
+    )
+    # ... while the persisted contribution carries a DIFFERENT completed body.
+    conflicting = run(
+        run_dir=conflicting_run,
+        trial_id=envelope.trial_id,
+        dispatch_live=True,
+        dispatch=lambda _: variant_result(conflict_body),
+    )
+    assert journal_backed.disposition.startswith("completed")
+    assert conflicting.disposition.startswith("completed")
+    assert journal_backed != conflicting
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id=specialist_id,
+            node_id=node_id,
+            output=conflicting.model_dump(mode="json"),
+            model_used=f"deterministic-{ask}-wiring-fixture",
+        )
+    )
+    with pytest.raises(SpecialistDispatchError) as exc:
+        workbook_wiring.run_workbook_band_node(
+            node_id=node_id,
+            production_envelope=envelope,
+            runtime_context=_offline_context(tmp_path),
+            dispatch_live=True,
+        )
+    assert exc.value.tag == expected_tag
+
+
+# 38-2 T4 R3 (B2, live-repro'd; conscious symmetric hardening at BOTH band
+# coordinates): stub detection keys on FULL stub-shape equality — never the
+# single `stub_status` magic key.
+@pytest.mark.parametrize("ask", ["ask-a", "ask-b"])
+def test_forged_completed_contribution_with_stub_magic_key_never_redispatches(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, ask: str
+) -> None:
+    """T4 R3 negative pin: a forged completed-CLAIMING contribution that
+    carries the `stub_status: not_yet_wired` magic key must go to strict
+    validation and REJECT (``ask-{a,b}.reconciliation-failed``) — never be
+    treated as the honest stub and re-dispatched (paid-call poisoning)."""
+    if ask == "ask-a":
+        module, run_name = ask_a_research_wiring, "run_ask_a_research"
+        node_id, specialist_id, expected_tag = (
+            "07W.2",
+            "ask_a_enrichment",
+            "ask-a.reconciliation-failed",
+        )
+    else:
+        module, run_name = ask_b_research_wiring, "run_ask_b_research"
+        node_id, specialist_id, expected_tag = (
+            "07W.4",
+            "ask_b_hot_topics",
+            "ask-b.reconciliation-failed",
+        )
+
+    def never_dispatch(**_: object) -> object:
+        raise AssertionError("forged magic-key contribution must never re-dispatch")
+
+    monkeypatch.setattr(module, run_name, never_dispatch)
+    forged = {
+        "schema_version": (
+            "ask-a-contribution-output.v1" if ask == "ask-a" else "ask-b-contribution-output.v1"
+        ),
+        "disposition": "completed_ready",
+        "research_entries": [],
+        "known_losses": [],
+        "research_intake": None,
+        "dispatcher_invocations": 1,
+        "output_digest": "sha256:" + "9" * 64,
+        "stub_status": "not_yet_wired",  # the B2 magic key
+    }
+    envelope = _empty_envelope()
+    envelope.add_contribution(
+        SpecialistContribution.from_output(
+            specialist_id=specialist_id,
+            node_id=node_id,
+            output=forged,
+            model_used="forged-fixture",
+        )
+    )
+    with pytest.raises(SpecialistDispatchError) as exc:
+        workbook_wiring.run_workbook_band_node(
+            node_id=node_id,
+            production_envelope=envelope,
+            runtime_context=_offline_context(tmp_path),
+            dispatch_live=True,
+        )
+    assert exc.value.tag == expected_tag
+
+
 def test_atomic_outer_writer_preserves_last_durable_run_on_replace_failure(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

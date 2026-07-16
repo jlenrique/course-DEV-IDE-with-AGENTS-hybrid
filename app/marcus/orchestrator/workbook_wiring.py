@@ -1237,6 +1237,24 @@ DEFAULT_WORKBOOK_BAND_FACTORIES: Final[dict[str, WorkbookBandFactory]] = {
     ASK_B_HOT_TOPICS_NODE_ID: _ask_b_factory,
 }
 
+# 38-2 T4 R3 (B2, live-repro'd) — stub detection keys on FULL stub-shape
+# EQUALITY (the exact honest-empty output the retired band stubs emitted),
+# never on the single `stub_status` magic key: a forged completed-claiming
+# contribution carrying the magic key must fall through to strict contract
+# validation (→ `ask-{a,b}.reconciliation-failed`), never be treated as a
+# stub and re-dispatched. The Ask-A constant is a CONSCIOUS SYMMETRIC
+# HARDENING: its gate mirrored the same flaw (B2).
+_ASK_A_LEGACY_STUB_OUTPUT: Final[dict[str, object]] = {
+    "research_entries": [],
+    "stub_status": "not_yet_wired",
+    "known_losses": ["ask_a_not_yet_wired"],
+}
+_ASK_B_LEGACY_STUB_OUTPUT: Final[dict[str, object]] = {
+    "research_entries": [],
+    "stub_status": "not_yet_wired",
+    "known_losses": ["ask_b_not_yet_wired"],
+}
+
 
 def runtime_context_for_run(
     run_dir: Path, *, node_id: str | None = None
@@ -1765,7 +1783,9 @@ def run_workbook_band_node(
         node_id == ASK_A_ENRICHMENT_NODE_ID
         and factory is _ask_a_factory
         and existing is not None
-        and existing.output.get("stub_status") != "not_yet_wired"
+        # R3 (B2, symmetric hardening): full stub-shape equality — a forged
+        # output carrying only the magic key goes to strict validation below.
+        and existing.output != _ASK_A_LEGACY_STUB_OUTPUT
     ):
         from app.marcus.lesson_plan.ask_a_enrichment import (  # noqa: PLC0415
             AskAContributionOutputV1,
@@ -1797,7 +1817,10 @@ def run_workbook_band_node(
         node_id == ASK_B_HOT_TOPICS_NODE_ID
         and factory is _ask_b_factory
         and existing is not None
-        and existing.output.get("stub_status") != "not_yet_wired"
+        # R3 (B2, live-repro'd): full stub-shape equality — never the single
+        # `stub_status` magic key (a forged completed-claiming contribution
+        # carrying that key must REJECT below, never re-dispatch).
+        and existing.output != _ASK_B_LEGACY_STUB_OUTPUT
     ):
         from app.marcus.lesson_plan.ask_b_hot_topics import (  # noqa: PLC0415
             AskBContributionOutputV1,

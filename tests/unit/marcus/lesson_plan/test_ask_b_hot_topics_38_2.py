@@ -9,6 +9,7 @@ from typing import Any
 import pytest
 
 from app.marcus.lesson_plan.ask_b_hot_topics import (
+    AskBAbilityTokenMatchV1,
     AskBContributionOutputV1,
     AskBExecutionReceiptV1,
     AskBKnowledgeEntryV1,
@@ -173,13 +174,15 @@ def test_association_is_deterministic_over_stored_window() -> None:
         body="Evidence on automation and symptoms in clinics.",
     )
     assert abilities == ("LO-1", "LO-2")
-    assert set(matched["LO-1"]) <= set(("will", "distinguish", "workflow", "symptoms"))
-    assert matched["LO-1"]  # nonempty token evidence
+    # R6 (B8): evidence pairs are an ORDERED LIST mirroring the ability order.
+    assert tuple(match.ability_id for match in matched) == ("LO-1", "LO-2")
+    assert set(matched[0].tokens) <= set(("will", "distinguish", "workflow", "symptoms"))
+    assert matched[0].tokens  # nonempty token evidence
     none_abilities, none_matched = match_ability_associations(
         scope, title="Quantum chromodynamics", body="Nothing relevant here."
     )
     assert none_abilities == ()
-    assert none_matched == {}
+    assert none_matched == ()
 
 
 def test_entry_requires_ability_association_and_namespace() -> None:
@@ -187,7 +190,7 @@ def test_entry_requires_ability_association_and_namespace() -> None:
     entry = _entry(scope)
     assert entry.supports_ability_ids
     with pytest.raises(ValueError, match="ability association"):
-        _entry(scope, supports_ability_ids=(), matched_ability_tokens={})
+        _entry(scope, supports_ability_ids=(), matched_ability_tokens=())
     with pytest.raises(ValueError, match="namespaced"):
         _entry(scope, citation_id="ask-a-cite-001")
     with pytest.raises(ValueError, match="evidence mismatch"):
@@ -197,13 +200,128 @@ def test_entry_requires_ability_association_and_namespace() -> None:
 def test_entry_rejects_empty_matched_tokens_and_oversized_excerpt() -> None:
     scope = _scope()
     with pytest.raises(ValueError, match="matched tokens"):
+        # R6: an empty-token pair fails at the pair model itself.
         _entry(
             scope,
             supports_ability_ids=("LO-1",),
-            matched_ability_tokens={"LO-1": ()},
+            matched_ability_tokens=(
+                AskBAbilityTokenMatchV1.model_construct(ability_id="LO-1", tokens=()),
+            ),
         )
     with pytest.raises(ValueError, match="excerpt invalid"):
         _entry(scope, evidence_excerpt="x" * 2001)
+
+
+def test_citation_namespace_grows_naturally_past_999() -> None:
+    """R1c (E5): the citation regex is [0-9]{3,} — 'ask-b-cite-1000' (the
+    natural f'{n:03d}' widening at row 1000) validates; a 2-digit id or a
+    foreign namespace still rejects."""
+    scope = _scope()
+    entry = _entry(scope, citation_id="ask-b-cite-1000")
+    assert entry.citation_id == "ask-b-cite-1000"
+    with pytest.raises(ValueError, match="namespaced"):
+        _entry(scope, citation_id="ask-b-cite-01")
+
+
+def test_association_evidence_is_ordered_pairs_not_object_key_order() -> None:
+    """R6 (B8): a sort_keys rewrite of the serialized entry cannot flip
+    validity — the evidence rides in an ordered list of {ability_id, tokens}
+    pairs, and a reordered pair list fails loud against supports order."""
+    scope = _scope()
+    body = "Workflow symptoms and automation move research evidence."
+    excerpt, truncated, body_hash = evidence_for_body(body)
+    abilities, matched = match_ability_associations(
+        scope, title="Workflow automation", body=excerpt
+    )
+    assert len(matched) >= 2  # both LO-1 and LO-2 associate on this window
+    entry = _entry(scope)
+    rewritten = json.dumps(entry.model_dump(mode="json"), sort_keys=True)
+    survived = AskBKnowledgeEntryV1.model_validate_json(rewritten, strict=True)
+    assert survived == entry
+    with pytest.raises(ValueError, match="evidence mismatch"):
+        _entry(
+            scope,
+            supports_ability_ids=abilities,
+            matched_ability_tokens=tuple(reversed(matched)),
+        )
+
+
+def test_forged_association_outside_scope_is_rejected_in_output() -> None:
+    """R4a (E8): an entry whose supports_ability_ids names an ability OUTSIDE
+    the dispatch scope (a forged association carrying the right scope digest)
+    is rejected by the output validator."""
+    scope = _scope()
+    receipt = _receipt(scope)
+    forged = _entry(
+        scope,
+        supports_ability_ids=("LO-9",),
+        matched_ability_tokens=(
+            AskBAbilityTokenMatchV1(ability_id="LO-9", tokens=("workflow",)),
+        ),
+    )
+    intake = AskBResearchIntakeV1.build(
+        scope=scope, execution_receipt=receipt, entries=(forged,)
+    )
+    with pytest.raises(ValueError, match="outside the dispatch scope"):
+        AskBContributionOutputV1.build_completed(
+            disposition="completed_ready",
+            intake=intake,
+            entries=(forged,),
+            known_losses=(),
+        )
+
+
+def test_acronym_only_ability_records_association_basis_loss() -> None:
+    """R11 (E6): an ability with ZERO association-basis tokens (acronym-only
+    'AI' vow) records a per-ability known_loss at scope build and the scope
+    continues — visible, never silent."""
+    demand = _demand(
+        abilities=[
+            {"ability_id": "LO-1", "text": "I will distinguish workflow symptoms."},
+            {"ability_id": "LO-2", "text": "AI"},
+        ]
+    )
+    scope = build_scope(demand, provider_config_fingerprint="sha256:" + "e" * 64)
+    assert scope.known_scope_losses == ("ability_association_basis_absent:LO-2",)
+    # The loss is validator-recomputed: dropping it fails loud.
+    raw = scope.model_dump(mode="json")
+    raw["known_scope_losses"] = []
+    with pytest.raises(ValueError, match="mirror"):
+        AskBRetrievalScopeV1.model_validate_json(json.dumps(raw), strict=True)
+
+
+def test_query_neutralizes_scope_delimiters_from_vow_and_scene_text() -> None:
+    """R5b (B7, live-repro'd injection): vow/scene prose cannot spoof a query
+    segment — the delimiters `| ; [ ]` are neutralized in the derived-display
+    query while the structured fields keep identity authority."""
+    demand = _demand(
+        abilities=[
+            {"ability_id": "LO-1", "text": "Choose ] [LO-9] a | move ; now"},
+            {"ability_id": "LO-2", "text": "I can choose a first automation move."},
+        ]
+    )
+    query = derive_hot_topics_query(demand)
+    assert "[LO-9]" not in query  # spoofed segment neutralized
+    assert "[LO-1] Choose LO-9 a move now" in query
+    # exactly one scene delimiter (the real one) and one inter-ability ';'
+    assert query.count("|") == 1
+    assert query.count(";") == 1
+    # structured identity is untouched by display projection
+    assert demand.abilities[0].text == "Choose ] [LO-9] a | move ; now"
+
+
+def test_trailing_space_vow_resolves_to_working_scope() -> None:
+    """R5c (B6, live-repro'd): a trailing-space vow is contract-legal upstream
+    and must resolve to a WORKING scope (whitespace-collapse symmetric with
+    the scene treatment), never crash the single-line query contract."""
+    demand = _demand(
+        abilities=[
+            {"ability_id": "LO-1", "text": "I will distinguish workflow symptoms. "},
+        ],
+    )
+    scope = build_scope(demand, provider_config_fingerprint="sha256:" + "e" * 64)
+    assert "[LO-1] I will distinguish workflow symptoms." in scope.query
+    assert scope.query == scope.query.strip()
 
 
 def test_evidence_is_exact_unicode_slice_and_full_body_hash() -> None:

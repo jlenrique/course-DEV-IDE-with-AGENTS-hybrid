@@ -679,10 +679,17 @@ def load_run_envelope(run_dir: Path) -> Any | None:
     model classes (M3-safe: the MODEL, never the orchestrator).
 
     - Missing file → ``None`` (genuine absence; producer may skip).
+    - Symlinked ``run.json`` → :class:`RunEnvelopeCorruptError` (38-2 T4 R9 /
+      B5: the sole-writer envelope coordinate must be a regular file —
+      additive containment guard mirroring every other Ask-B disk guard).
     - Present but unreadable / invalid JSON / ValidationError →
       :class:`RunEnvelopeCorruptError` (fail-loud; never silent no-op).
     """
     artifact = run_dir / _RUN_ENVELOPE_BASENAME
+    if artifact.is_symlink():
+        raise RunEnvelopeCorruptError(
+            f"run.json coordinate is a symlink at {artifact}"
+        )
     if not artifact.is_file():
         return None
     # Function-local import keeps the module import-graph thin and the M3 edge

@@ -20,6 +20,7 @@ from app.marcus.lesson_plan.ask_a_enrichment import (
     evidence_for_body,
 )
 from app.marcus.lesson_plan.ask_b_hot_topics import (
+    AskBAbilityTokenMatchV1,
     AskBContributionOutputV1,
     AskBExecutionReceiptV1,
     AskBKnowledgeEntryV1,
@@ -153,7 +154,10 @@ def _valid_ask_b_output() -> dict:
         scope_digest=scope.scope_digest,
         supports_ability_ids=("lo-1",),
         association_algorithm="ask-b-association.v1",
-        matched_ability_tokens={"lo-1": ("model", "drift")},
+        # 38-2 T4 R6 (B8): ordered list-of-pairs association evidence.
+        matched_ability_tokens=(
+            AskBAbilityTokenMatchV1(ability_id="lo-1", tokens=("model", "drift")),
+        ),
     )
     receipt = AskBExecutionReceiptV1.build(
         scope=scope,
@@ -502,6 +506,42 @@ def test_ask_b_stub_shaped_output_claiming_completion_is_rejected(tmp_path: Path
     )
     with pytest.raises(rp.ResearchPacketShapeError, match="Ask-B"):
         rp.resolve_for_hot_topics(tmp_path)
+
+
+def test_duplicate_ask_b_contributions_at_coordinate_fail_loud(tmp_path: Path) -> None:
+    """38-2 T4 R4b (B9): the strict Ask-B reader rejects DUPLICATE
+    contributions at the exact coordinate — forged-authority paranoia
+    mirroring the demand resolver — instead of silently reading the first."""
+    output = _valid_ask_b_output()
+    _write_contributions(
+        tmp_path,
+        [
+            ("ask_b_hot_topics", "07W.4", output),
+            ("ask_b_hot_topics", "07W.4", output),
+        ],
+    )
+    with pytest.raises(rp.ResearchPacketShapeError, match="duplicate Ask-B"):
+        rp.resolve_for_hot_topics(tmp_path)
+
+
+def test_symlinked_run_json_is_corruption_not_honest_absence(tmp_path: Path) -> None:
+    """38-2 T4 R9 (B5): the shared ``load_run_envelope`` loader rejects a
+    symlinked ``run.json`` (additive containment guard, mirroring every other
+    Ask-B disk guard) — never a silent read-through, never honest-absence."""
+    from app.marcus.lesson_plan.workbook_enrichment import load_run_envelope
+
+    real_dir = tmp_path / "real"
+    _write_contributions(real_dir, [("ask_b_hot_topics", "07W.4", _valid_ask_b_output())])
+    linked_dir = tmp_path / "linked"
+    linked_dir.mkdir()
+    try:
+        (linked_dir / "run.json").symlink_to(real_dir / "run.json")
+    except OSError as exc:  # WinError 1314: no symlink privilege on this host
+        pytest.skip(f"host cannot create symlinks: {exc}")
+    with pytest.raises(RunEnvelopeCorruptError, match="symlink"):
+        load_run_envelope(linked_dir)
+    with pytest.raises(RunEnvelopeCorruptError, match="symlink"):
+        rp.resolve_for_hot_topics(linked_dir)
 
 
 def test_ask_b_strict_completed_packet_resolves_stably(tmp_path: Path) -> None:

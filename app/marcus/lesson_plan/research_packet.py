@@ -175,6 +175,25 @@ def load_research_packet(
             known_losses=("run_json_absent",),
         )
 
+    # 38-2 T4 R4b (B9): at the strict Ask-B coordinate, DUPLICATE
+    # contributions are forged authority — the strict reader mirrors the
+    # demand resolver's coordinate-collision paranoia instead of silently
+    # reading the first match.
+    if (
+        specialist_id == ASK_B_HOT_TOPICS_SPECIALIST_ID
+        and node_id == ASK_B_HOT_TOPICS_NODE_ID
+    ):
+        ask_b_matches = tuple(
+            contribution
+            for contribution in envelope.contributions
+            if contribution.specialist_id == ASK_B_HOT_TOPICS_SPECIALIST_ID
+            and contribution.node_id == ASK_B_HOT_TOPICS_NODE_ID
+        )
+        if len(ask_b_matches) > 1:
+            raise ResearchPacketShapeError(
+                "duplicate Ask-B contributions at ask_b_hot_topics@07W.4"
+            )
+
     contribution = envelope.get_contribution(specialist_id, node_id=node_id)
     if contribution is None:
         missing_loss = (
