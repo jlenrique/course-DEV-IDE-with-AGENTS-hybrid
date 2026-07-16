@@ -2,15 +2,15 @@
 id: 39-2
 epic: 39
 key: 39-2-trends-door-ajar
-status: ready-for-dev
+status: review
 anchor_provenance: post-38-2-T4 tree at commit 19c3e73e
-baseline_commit: 19c3e73e521f3df684a5f60f6e23b0e3da1c3db7
-anchor_reverification: anchors re-verified at 468de34f (artifacts-only diff since baseline)
+baseline_commit: 5e688cca0df19fb4c43ef8ff128e2ec301b43c95
+anchor_reverification: anchors re-verified at 468de34f (artifacts-only diff since baseline); re-verified again at dev baseline 5e688cca
 ---
 
 # Story 39.2: Trends / Hot-topics as the Door-Ajar
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -173,20 +173,20 @@ Expected trigger-row touches: **ZERO** — `check_pipeline_manifest_lockstep.py`
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: The re-point + digest witness (AC 1)
-  - [ ] Swap the L313 resolver call in `trends_inputs_from_run` to `resolve_for_hot_topics`; update the module/function docstrings to state the Ask-B coordinate truth (W3 header comment included).
-  - [ ] Digest-witness pin (re-pointed path == `resolve_for_hot_topics` digest; ≠ generic digest); `resolve_for_trends_projector` still-generic pin (extends `test_research_packet_w1.py` L332, A-5); `04.55`-consumer regressions.
-  - [ ] Strictness-upgrade pin (W-1 + M-2, matrix row 13): forged/malformed Ask-B contribution through `trends_inputs_from_run` raises `ResearchPacketShapeError` reaching the `_act.py` L1217 seam.
-- [ ] Task 2: Conscious flips + post-re-point pins (AC 2, 3)
-  - [ ] Flip the 38-2 boundary pin (rename + invert + rationale line); flip `test_trends_w3.py::test_trends_inputs_from_run` (generic-only → empty-honest + rationale line).
-  - [ ] Post-re-point `reject_model_prior_topic` pins through `trends_inputs_from_run(injected_topics=...)` (ungrounded unusable; grounded not).
-- [ ] Task 3: Empty-class + render honesty pins (AC 4, 5)
-  - [ ] Three empty-class tests (matrix rows 3–6) incl. the class-(c) defense-in-depth docstring note; render-honesty pins (anti-theater line, no marker leakage, caps/losses, no fabricated tokens in empty renders); byte-determinism pin (M-3, row 15).
-- [ ] Task 4: Runner bar clause + negative pins (AC 6)
-  - [ ] `_assert_trends_door_ajar_conformant` (deterministic-recompute authority + presentation-support MD floor + P15-mirror no-authority rule + the M-6 residual-honesty docstring) wired into `_assert_completed_workbook_deliverable`; W-2 defaults-drift pin (bar recompute defaults == `_act.py` L1217 effective defaults).
-  - [ ] Negative pins (matrix rows 9–11 + the M-1 dropped-row pin, row 14) + conforming-empty positive pin (row 12) + both-profiles scoping pin (M-4, row 16) — mutants derived from the frozen pack per M-5; Blind+Edge review flagged for the bar module change.
+- [x] Task 1: The re-point + digest witness (AC 1)
+  - [x] Swap the L313 resolver call in `trends_inputs_from_run` to `resolve_for_hot_topics`; update the module/function docstrings to state the Ask-B coordinate truth (W3 header comment included).
+  - [x] Digest-witness pin (re-pointed path == `resolve_for_hot_topics` digest; ≠ generic digest); `resolve_for_trends_projector` still-generic pin (extends `test_research_packet_w1.py` L332, A-5); `04.55`-consumer regressions.
+  - [x] Strictness-upgrade pin (W-1 + M-2, matrix row 13): forged/malformed Ask-B contribution through `trends_inputs_from_run` raises `ResearchPacketShapeError` reaching the `_act.py` L1217 seam.
+- [x] Task 2: Conscious flips + post-re-point pins (AC 2, 3)
+  - [x] Flip the 38-2 boundary pin (rename + invert + rationale line); flip `test_trends_w3.py::test_trends_inputs_from_run` (generic-only → empty-honest + rationale line).
+  - [x] Post-re-point `reject_model_prior_topic` pins through `trends_inputs_from_run(injected_topics=...)` (ungrounded unusable; grounded not).
+- [x] Task 3: Empty-class + render honesty pins (AC 4, 5)
+  - [x] Three empty-class tests (matrix rows 3–6) incl. the class-(c) defense-in-depth docstring note; render-honesty pins (anti-theater line, no marker leakage, caps/losses, no fabricated tokens in empty renders); byte-determinism pin (M-3, row 15).
+- [x] Task 4: Runner bar clause + negative pins (AC 6)
+  - [x] `_assert_trends_door_ajar_conformant` (deterministic-recompute authority + presentation-support MD floor + P15-mirror no-authority rule + the M-6 residual-honesty docstring) wired into `_assert_completed_workbook_deliverable`; W-2 defaults-drift pin (bar recompute defaults == `_act.py` L1217 effective defaults).
+  - [x] Negative pins (matrix rows 9–11 + the M-1 dropped-row pin, row 14) + conforming-empty positive pin (row 12) + both-profiles scoping pin (M-4, row 16) — mutants derived from the frozen pack per M-5; Blind+Edge review flagged for the bar module change.
 - [ ] Task 5: Verification + close (AC 7)
-  - [ ] Full matrix, traceability table (flip declarations), baseline comparison, Ruff/import-linter/lockstep (exit 0), strict warnings.
+  - [x] Full matrix, traceability table (flip declarations), baseline comparison, Ruff/import-linter/lockstep (exit 0), strict warnings.
   - [ ] Status → `done-awaiting-live-witness` with the exact D3 vocabulary (ORCHESTRATOR, post-review); run-B verdict-line contract recorded incl. the M-5/J-2 empty-acknowledgment branch.
   - [ ] At the `done` flip (post-run-B): close record asserts FR16's Ask-B leg + FR9 jointly with 38-2 (wave-close bar); strike the J-3 grooming entry in deferred-inventory (bidirectional cross-ref); the legacy-resolver follow-on is ALREADY FILED at green-light (J-3, 2026-07-16) — verify the cross-ref only. (ORCHESTRATOR.)
 
@@ -256,16 +256,69 @@ The Epic-38/39-wave story family (38-1, 38-2, 39-1, 39-1b) carries no `r_tier`/`
 | M-6 | Bar clause docstring names the residual honestly: bar-time and render-time share `project_trends_from_packet`, so bugs inside that pure function are covered by the deterministic unit pins, not the bar | AC 6 (Residual-honesty bullet); Task 4; Dev Notes bar-clause design note |
 | J-3 | Legacy-resolver (`resolve_for_trends_projector`) retire/rename follow-on FILED under `deferred-inventory.md` §Named-But-Not-Filed Follow-Ons as `trends-legacy-resolver-retire-or-rename`, sourced to 39-2 | `_bmad-output/planning-artifacts/deferred-inventory.md` (filed 2026-07-16); AC 1, Scope Fences, Task 5 updated to cite the filing |
 
+40-1 rider (mirrored): 40-1 appends `_assert_cover_conformant` after this story's trends clause; "last in the spine" holds only until 40-1 lands.
+
 ## Dev Agent Record
 
 ### Agent Model Used
 
-_(pending dispatch)_
+claude-fable-5 (Claude Code dev agent, fresh dispatch 2026-07-16; baseline `5e688cca`)
 
 ### Implementation Plan
 
-_(T1 pending)_
+T1 executed in full (all six readings, in order; every line anchor re-verified byte-for-byte in the tree at `5e688cca` — `trends_projection.py` L313/L305–319/L173–212/L215–302/L340–405, `research_packet.py` L228–244/L360–366/L382–392, runner L1239–1244/L1312–1338/L1600–1618/L1882–1939, manifest `block_mode_trigger_paths` L60–110). Order of work: (1) re-point + docstrings; (2) the two conscious flips; (3) shared `tests/helpers/trends_39_2.py` (M-5 digest-bound frozen-pack extract + `swap_trends_section`, mirroring the 39-1 `swap_glossary_section` precedent); (4) runner bar clause + spine wiring + 40-1 tail rider; (5) conforming-render swaps in the three existing bar rigs (37-2b / 39-1 / 39-1b) whose frozen fixture MD carries the pre-39.2 generic-packet trends section; (6) new unit-pin module + new bar-pin module; (7) batteries/ruff/import-linter/lockstep/STRICT-replay.
+
+### AC-to-named-test traceability (matrix rows; flips declared)
+
+| Row | Named test | Module |
+|---|---|---|
+| 1 | `test_row1_repointed_path_consumes_real_frozen_ask_b_pack` + `test_row1_digest_witness_one_witness_rule` | `tests/unit/marcus/lesson_plan/test_trends_door_ajar_39_2.py` |
+| 2 | `test_trends_inputs_from_run_is_repointed_to_ask_b` — **CONSCIOUS FLIP #1** (rename+invert of `…is_not_repointed_to_ask_b`); rationale carried in-test: J-3 grooming note declared the pin "flips consciously at 39-2"; 38-2 AC 8 scoped the old direction as "39.2 owns the re-point" | `test_ask_b_trends_consumer_pin_38_2.py` |
+| 3 | `test_trends_inputs_from_run` — **CONSCIOUS FLIP #2** (generic-only run → empty-honest, class (a) loss asserted); same rationale carried in-test | `test_trends_w3.py` |
+| 4 | `test_row4_no_run_json_is_empty_honest_absent`; regression: `test_workbook_w4_empty_honesty.py` UNCHANGED (regression-proven, not flipped) | `test_trends_door_ajar_39_2.py` |
+| 5 | `test_row5_completed_empty_is_designed_honest_outcome` (scope losses lead; M-5/J-2 timeless defense pin) | `test_trends_door_ajar_39_2.py` |
+| 6 | `test_row6_all_rows_unusable_projection_layer_empty` (class-(c) defense-in-depth docstring note included) | `test_trends_door_ajar_39_2.py` |
+| 7 | `test_row7_injected_ungrounded_topic_unusable_through_repointed_path` + `test_row7_grounded_topic_not_marked_unusable_through_repointed_path` (J-3 obligation 2) | `test_trends_door_ajar_39_2.py` |
+| 8 | `test_row8_resolve_for_trends_projector_still_resolves_generic` (extends the `test_research_packet_w1.py` L332 resolver baseline, A-5) | `test_trends_door_ajar_39_2.py` |
+| 9 | `test_row9_fabricated_trend_without_packet_backing_rejects` | `tests/unit/scripts/test_workbook_deliverable_bar_39_2.py` |
+| 10 | `test_row10_unusable_topic_rendered_as_usable_rejects` + `test_row10_confidence_label_rewritten_rejects` | `test_workbook_deliverable_bar_39_2.py` |
+| 11 | `test_row11_empty_packet_with_populated_render_rejects` + `test_row11_completed_empty_with_populated_render_rejects` | `test_workbook_deliverable_bar_39_2.py` |
+| 12 | `test_row12_conforming_empty_class_a_passes` + `test_row12_conforming_empty_class_b_passes` (**ACCEPT** — timeless defense pin per A-2) | `test_workbook_deliverable_bar_39_2.py` |
+| 13 | `test_row13_forged_ask_b_contribution_fails_loud_through_consumer` + `test_row13_forged_ask_b_reaches_production_call_at_act_seam` (W-1 + M-2; propagates uncaught through `build_workbook_inputs` to the `_act.py` L1217 seam) | `test_trends_door_ajar_39_2.py` |
+| 14 | `test_row14_usable_row_dropped_from_render_rejects` (M-1 silent-loss direction) | `test_workbook_deliverable_bar_39_2.py` |
+| 15 | `test_row15_recompute_and_render_are_byte_deterministic` (M-3) | `test_trends_door_ajar_39_2.py` |
+| 16 | `test_row16_section_renders_in_both_profiles` + `test_row16_legacy_profile_deliverable_out_of_clause_scope` (M-4) | `test_workbook_deliverable_bar_39_2.py` |
+| W-2 | `test_w2_bar_recompute_defaults_equal_act_call_defaults` (signature defaults == bar constants == 5/3/(); AST-pins the sole `_act.py` call site passes no overrides) | `test_workbook_deliverable_bar_39_2.py` |
+| P9/P15 | `test_p9_duplicate_trends_section_rejects`; `test_no_run_json_grounded_trends_content_rejects` + `test_no_run_json_explicit_empty_section_tolerated` (incl. the producer None-brief fallback shape) | `test_workbook_deliverable_bar_39_2.py` |
+| AC 4/5 | `test_ac4_caps_are_bounded_with_visible_loss`; `test_ac5_anti_theater_line_and_no_forecast_template` (marker stripped from MD, retained in field) | `test_trends_door_ajar_39_2.py` |
+
+**Flip inventory is CLOSED:** exactly the two enumerated flips landed (rows 2 + 3). Grep of the tree confirms no third `trends_inputs_from_run`-coordinate pin exists: remaining callers are `test_workbook_w4_empty_honesty.py` (unchanged, regression-green), the frozen live-evidence scripts (NOT re-run, NOT touched — paid-run economy), and this story's new modules.
 
 ### Completion Notes
 
-_(pending — MUST include: the two flip rationale lines as landed; lockstep exit-0 evidence; the run-B verdict-line contract; and at the `done` flip, the FR16-Ask-B-leg + FR9 joint wave-close assertion per AC 7)_
+- **The re-point (AC 1):** one-line resolver swap at `trends_projection.py` L313 (`resolve_for_trends_projector` → `resolve_for_hot_topics`) + import swap + module/function docstring truth updates. `research_packet.py` line changes: **ZERO** (trigger row held). `_act.py` re-pointed transitively with ZERO line changes. The legacy resolver survives byte-untouched for its frozen-evidence consumers (row 8 pin). Note: `_act.py` L23 module-docstring still names `resolve_for_trends_projector` — stale doc nit left in place because `_act.py` is expected-touch-ZERO (fence outranks the nit; flagged for the already-FILED `trends-legacy-resolver-retire-or-rename` follow-on).
+- **Flip rationale lines as landed:** (1) `test_trends_inputs_from_run_is_repointed_to_ask_b` — "the J-3 grooming note declared the 38-2 boundary pin 'flips consciously at 39-2'; 38-2 AC 8 scoped the old direction as '39.2 owns the re-point' — the re-point is now LANDED…"; (2) `test_trends_w3.py::test_trends_inputs_from_run` — "the J-3 grooming note declared the trends consumer re-points to Ask-B at 39-2, so a generic-04.55-only run now yields an EMPTY-HONEST brief… the inverse of the pre-re-point assertion." The flipped 38-2 module's header docstring was updated in the same diff to state the new truth (documentation accuracy on the flipped pin, cited to 39-2 AC 2).
+- **Bar clause (AC 6):** `_assert_trends_door_ajar_conformant` appended LAST in `_assert_completed_workbook_deliverable` (after the exercise clause) with the 40-1 spine-tail rider comment. Recompute authority = `resolve_for_hot_topics` → `project_trends_from_packet` with the pinned production defaults; parse-based exact reconciliation (claim texts + provenance triples + topic tuples, order-sensitive) + AC 5 packet-membership; M-6 residual named verbatim in the clause docstring; presentation-support-sentinel scoped; P15-mirror no-authority branch with the R3-style explicit-empty tolerance (incl. the `workbook_producer.py` None-brief fallback shape). No existing clause weakened or reordered. **Blind+Edge review of the bar-module change is FLAGGED for the review gate (M-D3-2b standing rule).**
+- **Rig adaptations forced by the re-point (test-harness side only, documented):** the frozen `u01@1.rendered-workbook.md` fixture (digest-pinned) carries the PRE-39.2 generic-packet trends section; a new shared helper `tests/helpers/trends_39_2.py` provides `swap_trends_section` (in-memory swap to the recomputed conforming render — exact mirror of the 39-1 `swap_glossary_section` precedent) + the M-5 digest-bound frozen-pack extract (`frozen_ask_b_output`, pinned to output_digest `a10c67b9…`). The three existing bar rigs (37-2b/39-1/39-1b) swap at emit time. Additionally `test_exercise_merge_composition_39_1b.py::test_row_c_prime_replay_full_8b275e5b_run_composition` (local-only replay probe; CI-skipped) now replays off a tmp COPY of the frozen 8b275e5b run with the legacy pre-38-2 Ask-B STUB contribution dropped: under the W-1 strictness upgrade the strict reader fail-louds on the raw stub BY DESIGN, and on a live run the band's reconcile-upgrade replaces the stub before terminal consumption — empty class (a) is the honest replay posture. The frozen run dir is never mutated. This was investigated per binding rule 4 and is a designed-behavior consequence, not a regression.
+- **Verification evidence:** baseline (pre-code, at `5e688cca`): focused battery `pytest tests/unit/marcus/lesson_plan/test_trends_w3.py test_ask_b_trends_consumer_pin_38_2.py test_workbook_w4_empty_honesty.py test_research_packet_w1.py tests/unit/scripts/ tests/specialists/workbook_producer/` → **349 passed, 2 skipped**; post-diff full three-tree battery (`tests/unit/marcus/lesson_plan/ tests/unit/scripts/ tests/specialists/workbook_producer/`) → **1643 passed, 6 skipped, 0 failed**. Per-failure signatures: ZERO inherited failures pre AND post; all 6 skips are the known WinError-1314 symlink-privilege environment class (`test_research_packet_w1.py:540`, `test_research_demand_38_3a.py:124/329`, `test_research_demand_38_2_ask_b.py:240`, `test_marcus_spoc_live_test_runner.py:865`) — identical class pre/post. New/flipped modules under `-W error` (strict warnings): 38 passed. `WITNESS_REPLAY_STRICT=1 pytest tests/live_witness_replay -n 0`: **27 passed, 0 skipped** (pre AND post). `check_pipeline_manifest_lockstep.py`: **exit 0** (pre AND post; zero trigger rows touched — trivially green as declared). Ruff on all touched files: clean. import-linter: **18 kept, 0 broken**. No probe authored, no witness family enrolled (deterministic-consume, D3 plank 3).
+- **Run-B verdict-line contract (recorded per §Provenance rider):** the run-B evidence pack carries a per-story verdict line for 39-2 keyed to the rendered Door-Ajar — the `## Research Trends` section of the terminal `07W` presentation-support deliverable composed from `ask_b_hot_topics@07W.4`. REACHED+PASS = witness; NOT-REACHED = OPEN (no-evidence — never pass, never fail); "aboard" ≠ tested. Expected evidence defaults to a **USABLE Door-Ajar render** (A-2/J-1/J-2: 38-2 probe PASS_USABLE_MINT; the `completed_empty` boarding branch is resolved-counterfactual, no acknowledgment line owed); an empty-honest render is acceptable ONLY if the live run legitimately mints empty — recorded honestly, never failed, never retried-to-green.
+- **FR16/FR9 wave-close assertion:** owed at the `done` flip (post-run-B, ORCHESTRATOR): (i) FR16's Ask-B leg — packet minted at `07W.4` (38-2's half, cross-referenced) AND consumed by its sole consumer (this story's half, landed here); (ii) FR9 — the Door-Ajar renders Ask-B trends/hot-topics bounded + honest with machine-asserted empty-honesty. Neither story's record claims them alone.
+- **Scope-fence confirmation by git:** modified files are exactly `trends_projection.py`, `marcus_spoc_live_test_runner.py`, the two flip modules, the three existing bar-rig modules, `test_exercise_merge_composition_39_1b.py` (+ 3 new files). `research_packet.py`, `_act.py`, `workbook_producer.py`, `ask_b_hot_topics.py`, `ask_b_research_wiring.py`, `workbook_wiring.py`, `production_runner.py`, `pipeline-manifest.yaml`, and `deferred-inventory.md` are all UNTOUCHED.
+
+### File List
+
+- `app/marcus/lesson_plan/trends_projection.py` — MODIFIED (the re-point: import + L313 resolver swap + docstrings; zero logic change elsewhere)
+- `scripts/utilities/marcus_spoc_live_test_runner.py` — MODIFIED (trends clause constants + `_assert_trends_door_ajar_conformant` + spine call after the exercise clause + 40-1 tail rider comment)
+- `tests/helpers/trends_39_2.py` — NEW (M-5 digest-bound frozen-pack extract; `swap_trends_section` / `conforming_trends_body`)
+- `tests/unit/marcus/lesson_plan/test_trends_door_ajar_39_2.py` — NEW (matrix rows 1, 4–8, 13, 15 + AC 4/5 render-honesty pins; 13 tests)
+- `tests/unit/scripts/test_workbook_deliverable_bar_39_2.py` — NEW (rows 9–12, 14, 16 + W-2 + P9/P15 pins; 15 tests; 39-1b rig)
+- `tests/unit/marcus/lesson_plan/test_ask_b_trends_consumer_pin_38_2.py` — MODIFIED (CONSCIOUS FLIP #1 + module-docstring truth)
+- `tests/unit/marcus/lesson_plan/test_trends_w3.py` — MODIFIED (CONSCIOUS FLIP #2 only; all other tests unchanged)
+- `tests/unit/scripts/test_workbook_deliverable_bar_37_2b.py` — MODIFIED (rig: trends swap at emit)
+- `tests/unit/scripts/test_workbook_deliverable_bar_39_1.py` — MODIFIED (rig: trends swap at emit, both rigs)
+- `tests/unit/scripts/test_workbook_deliverable_bar_39_1b.py` — MODIFIED (rig: trends swap at emit + pre-receipt-tolerance test)
+- `tests/specialists/workbook_producer/test_exercise_merge_composition_39_1b.py` — MODIFIED (8b275e5b replay probe: tmp-copy rig dropping the legacy Ask-B stub; frozen run dir never mutated)
+
+### Change Log
+
+- 2026-07-16 (claude-fable-5): 39-2 implemented at baseline `5e688cca` — Door-Ajar re-pointed to `ask_b_hot_topics@07W.4` via `resolve_for_hot_topics`; two enumerated conscious pin flips landed with rationales; `_assert_trends_door_ajar_conformant` bar clause (recompute authority, M-6 residual named, W-2 defaults pin) appended to the deliverable-bar spine with 4 negative + conforming-empty positive pins; 16-row matrix fully named-test-covered; fixtures grounded on the frozen 79f1920e pack (digest-bound). Batteries: 1643 passed / 6 env-skips; STRICT replay 27/27; lockstep exit 0; ruff + import-linter clean. Status → review.

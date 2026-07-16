@@ -1278,6 +1278,38 @@ _WORKBOOK_PRODUCER_NODE_ID = "07W"
 _LO_PLACEHOLDER_COPY = "objective statement unresolved"
 _LO_OVERLAY_LOSS_CALLOUT = "Enrichment overlay loss:"
 
+# --- 39.2 trends / Door-Ajar conformance clause (same-diff bar, plank 5) ---
+_TRENDS_HEADING = "## Research Trends"
+_TRENDS_CLAIMS_SUBHEADING = "#### Research trends"
+_TRENDS_HOT_TOPICS_SUBHEADING = "#### Hot topics"
+_TRENDS_REJECTED_SUBHEADING = "#### Rejected / unusable topics"
+_TRENDS_ANTI_THEATER_LINE = (
+    "*Bounded callout from wrangled evidence — not trend-forecasting theater.*"
+)
+# W-2 (defaults-drift pin): these recompute defaults are asserted EQUAL to the
+# ``_act.py`` L1217 effective call defaults (``trends_inputs_from_run(run_dir)``
+# with the signature defaults) by a named test — if either side drifts, the pin
+# fails, so the bar's recompute authority can never silently diverge from the
+# production call it stands in for.
+_TRENDS_BAR_MAX_TRENDS = 5
+_TRENDS_BAR_MAX_HOT_TOPICS = 3
+_TRENDS_BAR_INJECTED_TOPICS: tuple[str, ...] = ()
+# Rendered-line idioms of ``render_trends_markdown`` the clause parses (the
+# bar re-derives claims/topics from the recompute, never from these lines).
+_TRENDS_PROVENANCE_RE = re.compile(
+    r"^  - \*\*Provenance:\*\* `([^`]+)` · `([^`]+)` · tier=[^\n]*?"
+    r"confidence=([a-z]+)",
+    re.MULTILINE,
+)
+_TRENDS_CLAIM_LINE_RE = re.compile(r"^- (.+)$", re.MULTILINE)
+_TRENDS_TOPIC_LINE_RE = re.compile(
+    r"^- \*\*(.+?)\*\* \(confidence=([a-z]+)\) — .*?"
+    r"Supporting: (.*?); source_refs: (.*?)\.$",
+    re.MULTILINE,
+)
+_TRENDS_REJECTED_LINE_RE = re.compile(r"^- \*\*(.+?)\*\* — ", re.MULTILINE)
+_ASK_B_CITE_TOKEN_RE = re.compile(r"ask-b-cite-[0-9]{3,}")
+
 
 def _md_section_body(text: str, heading: str) -> str | None:
     """The body of an H2 section (between ``## <heading>`` and the next H2)."""
@@ -1785,6 +1817,193 @@ def _assert_exercise_composition_conformant(run_dir: Path, md_paths: list[Path])
                     _refuse()
 
 
+def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """39.2 deliverable bar: trends / Door-Ajar conformance, recompute-first.
+
+    Substrate-forced difference from the glossary/exercise idiom, declared
+    honestly: NO trends receipt is persisted on the 07W contribution
+    (``_sidecar_refs``), and the projection is a pure deterministic function
+    of ``run.json`` — so the structured authority is the deterministic
+    RECOMPUTE: ``resolve_for_hot_topics(run_dir)`` →
+    ``project_trends_from_packet(packet)`` with the ``_act.py`` production
+    defaults (``max_trends=5``, ``max_hot_topics=3``, no injected topics;
+    the W-2 pin asserts that equality), compared against the rendered
+    ``## Research Trends`` section. Floor (presentation-support sentinel MDs
+    only, mirroring the 39.1 scope — legacy-profile deliverables are out of
+    clause scope, M-4): exactly ONE section per deliverable (counted, P9);
+    recompute NOT usable ⇒ the section is the explicit-empty render (the
+    recomputed ``empty_reason`` verbatim inside ``*(...)*``; NO claim list,
+    NO usable hot-topic lines, NO ``ask-b-cite-`` tokens, NO ``Provenance:``
+    lines, NO DOIs; the Rejected/unusable honesty block is permitted);
+    recompute usable ⇒ rendered claims/topics reconcile EXACTLY with the
+    recompute (claim texts, citation_id/source_ref/confidence order,
+    topic/supporting/source_refs order — a missing rendered claim (M-1
+    silent-loss direction), an extra/fabricated claim, or a reordered/
+    rewritten confidence label all REJECT), every rendered citation_id /
+    source_ref / supporting id resolves into the recomputed packet entries
+    (AC 5 anti-theater formulation), the anti-theater sentinel line is
+    present, and unusable topics appear ONLY under the Rejected block.
+    No ``run.json`` ⇒ a presentation-support MD whose section carries any
+    grounded-claim content (claim list / ``ask-b-cite-`` tokens /
+    ``Provenance:`` lines) is REJECTED (P15 mirror: no structured authority
+    may back no claims); an explicit-empty section is tolerated (R3-style
+    tolerance — the section renders in every profile/run shape, so bare
+    presence is never the refusal trigger, unlike the glossary heading).
+
+    Residual named honestly (M-6): bar-time and render-time share
+    ``project_trends_from_packet`` — a bug INSIDE that pure function is
+    invisible to this recompute comparison; it is covered by the
+    deterministic unit pins (39.2 ACs 3–5), not by this bar.
+    Test-harness-side only; production runtime is untouched.
+    """
+
+    def _refuse() -> None:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+    text_by_path: dict[Path, str] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        # LF-normalize (write_text translates \n -> \r\n on Windows); the
+        # section/heading anchors below are LF-based.
+        text_by_path[path] = text.replace("\r\n", "\n")
+
+    if not (run_dir / "run.json").is_file():
+        # P15 mirror: grounded-claim content with no structured authority
+        # behind it refuses; a bare / explicit-empty section is tolerated.
+        for text in text_by_path.values():
+            if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+                continue
+            section = _md_section_body(text, _TRENDS_HEADING)
+            if section is None:
+                continue
+            if (
+                _TRENDS_CLAIMS_SUBHEADING in section
+                or "**Provenance:**" in section
+                or _ASK_B_CITE_TOKEN_RE.search(section)
+            ):
+                _refuse()
+        return
+
+    try:
+        from app.marcus.lesson_plan.research_packet import (  # noqa: PLC0415
+            resolve_for_hot_topics,
+        )
+        from app.marcus.lesson_plan.trends_projection import (  # noqa: PLC0415
+            project_trends_from_packet,
+        )
+
+        packet = resolve_for_hot_topics(run_dir)
+        brief = project_trends_from_packet(
+            packet,
+            max_trends=_TRENDS_BAR_MAX_TRENDS,
+            max_hot_topics=_TRENDS_BAR_MAX_HOT_TOPICS,
+            injected_topics=_TRENDS_BAR_INJECTED_TOPICS,
+        )
+    except Exception as exc:
+        # A forged/malformed Ask-B contribution (ResearchPacketShapeError) or
+        # corrupt envelope fails the recompute — reject, never trust prose.
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+
+    packet_citation_ids = {str(entry.get("citation_id")) for entry in packet.entries}
+    packet_source_refs = {str(entry.get("source_ref")) for entry in packet.entries}
+    expected_claims = [claim.claim_text for claim in brief.trends]
+    expected_provenance = [
+        (claim.citation_id, claim.source_ref, claim.confidence)
+        for claim in brief.trends
+    ]
+    expected_topics = [
+        (topic.topic, topic.confidence, topic.supporting_citation_ids, topic.source_refs)
+        for topic in brief.hot_topics
+        if topic.confidence != "unusable"
+    ]
+    expected_rejected = [
+        topic.topic for topic in brief.hot_topics if topic.confidence == "unusable"
+    ]
+
+    for text in text_by_path.values():
+        if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+            continue  # legacy-profile deliverable: 39.2 clause does not apply (M-4)
+        # P9 singularity: exactly ONE Research Trends section (counted).
+        if len(re.findall(rf"(?m)^{re.escape(_TRENDS_HEADING)}\s*$", text)) != 1:
+            _refuse()
+        section = _md_section_body(text, _TRENDS_HEADING)
+        if section is None:
+            _refuse()
+            continue
+        if not brief.usable:
+            # Explicit-empty render: the recomputed reason verbatim, and no
+            # grounded/fabricated content of any kind (Rejected block allowed).
+            if brief.empty_reason is None or f"*({brief.empty_reason})*" not in section:
+                _refuse()
+            if (
+                _TRENDS_CLAIMS_SUBHEADING in section
+                or _TRENDS_TOPIC_LINE_RE.search(section)
+                or "**Provenance:**" in section
+                or _ASK_B_CITE_TOKEN_RE.search(section)
+                or "https://doi.org/" in section
+            ):
+                _refuse()
+            continue
+        # Usable branch: split into the renderer's fixed subregion order.
+        claims_at = section.find(_TRENDS_CLAIMS_SUBHEADING)
+        topics_at = section.find(_TRENDS_HOT_TOPICS_SUBHEADING)
+        rejected_at = section.find(_TRENDS_REJECTED_SUBHEADING)
+        if claims_at == -1 or topics_at == -1 or topics_at < claims_at:
+            _refuse()
+        if rejected_at != -1 and rejected_at < topics_at:
+            _refuse()
+        topics_end = rejected_at if rejected_at != -1 else len(section)
+        claims_region = section[claims_at:topics_at]
+        topics_region = section[topics_at:topics_end]
+        rejected_region = section[rejected_at:] if rejected_at != -1 else ""
+        if _TRENDS_ANTI_THEATER_LINE not in topics_region:
+            _refuse()
+        # Trend claims reconcile exactly (order + text + provenance triple).
+        rendered_claims = _TRENDS_CLAIM_LINE_RE.findall(claims_region)
+        rendered_provenance = _TRENDS_PROVENANCE_RE.findall(claims_region)
+        if rendered_claims != expected_claims:
+            _refuse()
+        if [tuple(row) for row in rendered_provenance] != expected_provenance:
+            _refuse()
+        # Usable hot topics reconcile exactly; unusable never renders here.
+        rendered_topics = [
+            (
+                match[0],
+                match[1],
+                tuple(re.findall(r"`([^`]+)`", match[2])),
+                tuple(re.findall(r"`([^`]+)`", match[3])),
+            )
+            for match in _TRENDS_TOPIC_LINE_RE.findall(topics_region)
+        ]
+        if rendered_topics != expected_topics:
+            _refuse()
+        if any(confidence == "unusable" for _, confidence, _, _ in rendered_topics):
+            _refuse()
+        # Rejected block reconciles (production defaults inject nothing, so a
+        # populated Rejected block with an empty recompute is a desync).
+        if _TRENDS_REJECTED_LINE_RE.findall(rejected_region) != expected_rejected:
+            _refuse()
+        # AC 5 packet-membership: every rendered claim/topic is backed by a
+        # packet row — anything unbacked is fabricated ⇒ REJECT.
+        for citation_id, source_ref, _confidence in rendered_provenance:
+            if citation_id not in packet_citation_ids:
+                _refuse()
+            if source_ref not in packet_source_refs:
+                _refuse()
+        for _topic, _confidence, supporting_ids, source_refs in rendered_topics:
+            if not set(supporting_ids) <= packet_citation_ids:
+                _refuse()
+            if not set(source_refs) <= packet_source_refs:
+                _refuse()
+
+
 def _assert_deep_dive_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
     """37.2b deliverable bar: deep-dive conformance, structured-artifact-first.
 
@@ -1937,6 +2156,14 @@ def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> Non
     _assert_exercise_composition_conformant(
         run_dir, [run_dir / md_by_stem[stem] for stem in paired]
     )
+    # 39.2: trends / Door-Ajar clause (same-diff extension, plank 5) —
+    # deterministic-recompute authority off run.json (no persisted trends
+    # receipt), presentation-support MD floor, conforming-empty accepted.
+    _assert_trends_door_ajar_conformant(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # Spine tail (39-2 mirrored rider): 40-1 (cover producer) appends its
+    # clause AFTER the 39.2 trends clause above — keep this the tail until then.
 
 
 def _drive_paused_trial_impl(

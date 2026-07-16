@@ -1,12 +1,14 @@
 """Consumer-side pin: ``reject_model_prior_topic`` vs the Ask-B packet (38.2 AC 4).
 
 Deliberately a NEW module — NOT ``test_trends_w3.py`` — so 39-2's
-``trends_inputs_from_run`` re-point opens conflict-free (A-4). This story
-does NOT re-point any trends consumer; the boundary pin below proves it.
+``trends_inputs_from_run`` re-point opens conflict-free (A-4). 38-2 did NOT
+re-point any trends consumer; 39-2 has since consciously flipped the boundary
+pin below to its inverse (the re-point is now LANDED — 39-2 AC 2, flip #1).
 """
 
 from __future__ import annotations
 
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 from uuid import UUID
@@ -86,10 +88,18 @@ def test_projection_over_ask_b_packet_flags_injected_topics(tmp_path: Path) -> N
     assert unusable[0].topic == "forecast theater topic"
 
 
-def test_trends_inputs_from_run_is_not_repointed_to_ask_b(tmp_path: Path) -> None:
-    """Boundary pin (38-2 AC 8): ``trends_inputs_from_run`` still reads the
-    generic ``04.55`` packet — the re-point belongs to 39.2, not this story."""
+def test_trends_inputs_from_run_is_repointed_to_ask_b(tmp_path: Path) -> None:
+    """Matrix row 2 — CONSCIOUS FLIP #1 (39-2 AC 2): the J-3 grooming note
+    declared the 38-2 boundary pin "flips consciously at 39-2"; 38-2 AC 8
+    scoped the old direction as "39.2 owns the re-point" — the re-point is now
+    LANDED, so an Ask-B-only run (no ``04.55`` contribution) yields a USABLE
+    brief through ``trends_inputs_from_run``, entries traceable to
+    ``ask-b-cite-###`` ids (inverse of the retired
+    ``test_trends_inputs_from_run_is_not_repointed_to_ask_b``)."""
     _write_ask_b_run(tmp_path)  # ONLY an Ask-B contribution exists
     brief = trends_inputs_from_run(tmp_path)
-    assert brief.trends == ()
-    assert brief.empty_reason is not None
+    assert brief.usable
+    assert brief.empty_reason is None
+    assert brief.trends
+    for claim in brief.trends:
+        assert re.fullmatch(r"ask-b-cite-[0-9]{3,}", claim.citation_id)

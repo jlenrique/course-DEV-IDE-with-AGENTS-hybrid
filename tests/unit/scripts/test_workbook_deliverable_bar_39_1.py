@@ -46,6 +46,7 @@ from tests.helpers.glossary_39_1 import (
     mangled_headwords,
     swap_glossary_section,
 )
+from tests.helpers.trends_39_2 import swap_trends_section
 
 
 def _receipt(request, *, mode: str = "live") -> DeepDiveEnrichmentExecutionReceiptV1:
@@ -144,7 +145,9 @@ def _run_dir_with(tmp_path: Path, contribution_payload: dict, markdown: str) -> 
             ("workbook_review", "07W.3", contribution_payload, "gpt-5"),
         ),
     )
-    _emit_deliverable(tmp_path, markdown)
+    # 39.2 same-diff bar extension: swap the fixture's pre-39.2 trends section
+    # for this run's Ask-B recompute render (empty-honest — no Ask-B here).
+    _emit_deliverable(tmp_path, swap_trends_section(markdown, tmp_path))
     return tmp_path
 
 
@@ -477,7 +480,9 @@ def _run_dir_with_producer(
             ),
         ),
     )
-    _emit_deliverable(tmp_path, markdown)
+    # 39.2 same-diff bar extension: swap the fixture's pre-39.2 trends section
+    # for this run's Ask-B recompute render (empty-honest — no Ask-B here).
+    _emit_deliverable(tmp_path, swap_trends_section(markdown, tmp_path))
     return tmp_path
 
 

@@ -304,14 +304,40 @@ def test_row_c_prime_fixture_pins_real_8b275e5b_composition() -> None:
     assert loss == loss_again
 
 
-def test_row_c_prime_replay_full_8b275e5b_run_composition() -> None:
+def test_row_c_prime_replay_full_8b275e5b_run_composition(tmp_path: Path) -> None:
     """M-D2-2: the real-run replay probe pins the CHOSEN composition (merged,
     labeled ids, capped) against the frozen inputs. Skips when the gitignored
-    run dir is absent (the committed fixture pin above is the CI floor)."""
+    run dir is absent (the committed fixture pin above is the CI floor).
+
+    39.2 rig note: the frozen pre-38-2 run carries the legacy Ask-B STUB
+    contribution (``stub_status: not_yet_wired``) at ``07W.4`` — under the
+    39.2 re-point the strict Ask-B reader fail-louds on it BY DESIGN (W-1).
+    On a live run the band's reconcile-upgrade replaces the stub before the
+    terminal producer consumes, so the honest replay posture is empty class
+    (a): replay off a tmp COPY with the stub dropped (the frozen run dir is
+    never mutated); the exercise-composition pins are Ask-B-independent.
+    """
     if not (RUN_8B275E5B / "g0-enrichment.json").is_file():
         pytest.skip("run 8b275e5b artifacts unavailable")
     fixture = _load_composition_fixture()
-    inputs = wb_act.build_workbook_inputs(RUN_8B275E5B, run_id="8b275e5b")
+    replay_dir = tmp_path / "8b275e5b-replay"
+    shutil.copytree(RUN_8B275E5B, replay_dir)
+    trial = json.loads((replay_dir / "run.json").read_text(encoding="utf-8"))
+    envelope = trial.get("production_envelope", trial)
+    envelope["contributions"] = [
+        contribution
+        for contribution in envelope["contributions"]
+        if not (
+            contribution["specialist_id"] == "ask_b_hot_topics"
+            and contribution.get("node_id") == "07W.4"
+            and isinstance(contribution.get("output"), dict)
+            and contribution["output"].get("stub_status") == "not_yet_wired"
+        )
+    ]
+    (replay_dir / "run.json").write_text(
+        json.dumps(trial, ensure_ascii=False), encoding="utf-8"
+    )
+    inputs = wb_act.build_workbook_inputs(replay_dir, run_id="8b275e5b")
     assert inputs is not None
     kept_by_section = {
         sec.section_id: [ex.exercise_id for ex in sec.exercises]

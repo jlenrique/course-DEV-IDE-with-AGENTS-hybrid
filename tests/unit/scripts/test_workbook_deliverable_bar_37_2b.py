@@ -32,6 +32,7 @@ from tests.helpers.deep_dive_enrichment_37_2b import (
     make_request,
 )
 from tests.helpers.glossary_39_1 import swap_glossary_section
+from tests.helpers.trends_39_2 import swap_trends_section
 
 
 def _receipt(request, *, mode: str = "live") -> DeepDiveEnrichmentExecutionReceiptV1:
@@ -110,7 +111,11 @@ def _run_dir_with(
     if contribution_payload is not None:
         extra = (("workbook_review", "07W.3", contribution_payload, "gpt-5"),)
     install_run_json(tmp_path, ask_a_output=None, extra_contributions=extra)
-    _emit_deliverable(tmp_path, markdown)
+    # 39.2 same-diff bar extension: the frozen fixture MD carries the PRE-39.2
+    # generic-packet trends section; a conforming deliverable now carries the
+    # Ask-B recompute render for THIS run (empty-honest here — no Ask-B
+    # contribution is installed). In-memory swap; fixture stays frozen.
+    _emit_deliverable(tmp_path, swap_trends_section(markdown, tmp_path))
     return tmp_path
 
 
