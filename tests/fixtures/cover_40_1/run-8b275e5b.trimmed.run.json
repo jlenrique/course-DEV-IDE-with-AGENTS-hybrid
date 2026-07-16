@@ -1,0 +1,1143 @@
+{
+ "schema_version": "production-trial-envelope.v1",
+ "trial_id": "8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+ "preset": "production",
+ "corpus_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+ "operator_id": "codex_hil_runner",
+ "started_at": "2026-07-15T15:20:29.589345Z",
+ "completed_at": "2026-07-15T15:49:47.908829Z",
+ "status": "completed",
+ "paused_gate": null,
+ "paused_error_tag": null,
+ "waiting_batch_id": null,
+ "langsmith_trace_id": "8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+ "production_clone_launch_evidence": true,
+ "production_clone_launch_evidence_reason": "live-specialist-call-recorded",
+ "production_envelope": {
+  "schema_version": "production-envelope.v2",
+  "trial_id": "8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+  "contributions": [
+   {
+    "specialist_id": "texas",
+    "contributed_at": "2026-07-15T15:25:28.242398Z",
+    "output": {
+     "artifacts": [
+      "extracted.md",
+      "metadata.json",
+      "extraction-report.yaml",
+      "manifest.json",
+      "ingestion-evidence.md",
+      "result.yaml"
+     ],
+     "bundle_reference": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\bundle",
+     "dispatch_exit_code": 10,
+     "g0_expected_floor": 580,
+     "g0_word_count": 884,
+     "model_id": "gpt-5-nano",
+     "overall_status": "complete_with_warnings",
+     "report_schema_version": "1.0",
+     "status": "complete_with_warnings"
+    },
+    "cost_usd": 0.0,
+    "model_used": "gpt-5-nano",
+    "output_digest": "2970472c1c48e1629e63d1bce13102dd34982cf514ad1027e1a5ef8f3164bf71",
+    "node_id": "02",
+    "attempt": 1,
+    "provenance": "real"
+   },
+   {
+    "specialist_id": "research_wiring",
+    "contributed_at": "2026-07-15T15:26:35.274862Z",
+    "output": {
+     "research_entries": [
+      {
+       "citation_id": "cite-001",
+       "source_ref": "retrieval:scite:10.1186/s12961-015-0032-9",
+       "provider": "scite",
+       "source_id": "10.1186/s12961-015-0032-9",
+       "title": "An institutional approach to support the conduct and use of health policy and systems research: The Nodal Institute in the Eastern Mediterranean Region",
+       "source_hash": "sha256:5751a64998bf2dc71a2a4f470160ff6a6c582c87d0e90fca03dcbc15a703e4b1",
+       "evidence_hierarchy_tier": "T4_peer_other",
+       "peer_reviewed": true,
+       "provider_provenance": [
+        "scite"
+       ],
+       "triangulation_status": "single_provider",
+       "reliability_score": 0.25
+      },
+      {
+       "citation_id": "cite-002",
+       "source_ref": "retrieval:scite:10.34197/ats-scholar.2025-0033ps",
+       "provider": "scite",
+       "source_id": "10.34197/ats-scholar.2025-0033ps",
+       "title": "Leaning into Necessary Discomforts: Striving for Clinical Excellence While Maintaining Wellness",
+       "source_hash": "sha256:fed3cfbeab1cc65e03d44c5b0b416604d3f3124ea6feaf33b48be976fd0c2be6",
+       "evidence_hierarchy_tier": "T4_peer_other",
+       "peer_reviewed": true,
+       "provider_provenance": [
+        "scite"
+       ],
+       "triangulation_status": "single_provider",
+       "reliability_score": 0.1
+      },
+      {
+       "citation_id": "cite-003",
+       "source_ref": "retrieval:scite:10.1097/ms9.0000000000002953",
+       "provider": "scite",
+       "source_id": "10.1097/ms9.0000000000002953",
+       "title": "Knowledge, attitude and practices regarding use of artificial intelligence for medical writings among doctors of khyber pakhtunkhwa: a cross-sectional study",
+       "source_hash": "sha256:7cf8f2e4b68490e718b61faaadb4c5a82187c09e2eab1fc19274a95a8c5f85be",
+       "evidence_hierarchy_tier": "T1_systematic",
+       "peer_reviewed": true,
+       "provider_provenance": [
+        "scite"
+       ],
+       "triangulation_status": "single_provider",
+       "reliability_score": 0.1
+      },
+      {
+       "citation_id": "cite-004",
+       "source_ref": "retrieval:scite:10.21203/rs.3.rs-9799303/v1",
+       "provider": "scite",
+       "source_id": "10.21203/rs.3.rs-9799303/v1",
+       "title": "The GPS for Thinking: How AI Partners Are Reshaping Student Metacognition",
+       "source_hash": "sha256:162199bf877b9398307357640e887284f27175267b84df5ee30ac1f888986a4a",
+       "evidence_hierarchy_tier": "T4_peer_other",
+       "peer_reviewed": true,
+       "provider_provenance": [
+        "scite"
+       ],
+       "triangulation_status": "single_provider",
+       "reliability_score": 0.1
+      },
+      {
+       "citation_id": "cite-005",
+       "source_ref": "retrieval:scite:10.7759/cureus.108705",
+       "provider": "scite",
+       "source_id": "10.7759/cureus.108705",
+       "title": "Developing Healthcare Leaders: Perspectives on Critical Competencies, Current Gaps, and Training Recommendations",
+       "source_hash": "sha256:6aaad6f0bfa1019d1dee1066165d8b60da2c3d8acc4ebd99b2a864a81a11d039",
+       "evidence_hierarchy_tier": "T4_peer_other",
+       "peer_reviewed": true,
+       "provider_provenance": [
+        "scite"
+       ],
+       "triangulation_status": "single_provider",
+       "reliability_score": 0.1
+      }
+     ],
+     "dropped_dispatch_failures": {
+      "count": 0,
+      "failures": []
+     },
+     "triangulation_receipt": {
+      "query_intent": "Find evidence for research-enrichment gap on u01: Learner needs primary-source grounding for the national health expenditures figure and its organizational significance.; Find evidence for research-enrichment gap on u02: Learner needs source-backed confidence that administrative burden, not patient volume, is the central burnout driver.; Find evidence for research-enrichment gap on u03: Learner needs deeper evidence context for the medical knowledge doubling estimate and physician AI adoption/training gap.",
+      "triangulated_rows": [
+       {
+        "source_id": "10.1097/ms9.0000000000002953",
+        "identity_key": "10.1097/ms9.0000000000002953",
+        "rows_by_provider": {
+         "scite": {
+          "source_id": "10.1097/ms9.0000000000002953",
+          "title": "Knowledge, attitude and practices regarding use of artificial intelligence for medical writings among doctors of khyber pakhtunkhwa: a cross-sectional study",
+          "body": "Background and objectives:\n            Artificial intelligence (AI) is a cutting-edge technology affecting all eras of science and technology and medicine, which is not an exception. Medical writings play a significant role in improving health standard and patient outcomes owing to their global dissemination. AI has widely affected medical writings. This study aims to determine the knowledge, attitude, and practices among the doctors of Khyber Pakhtunkhwa (KPK) regarding the use of artificial intelligence (AI) in medical writings. Medial writings cover a broad horizon of writings ranging from simple medical reports and prescription and extending to impactful article writings and evidence-based research papers as well as figure and graph generation for these papers using the input data.\n          \n          \n            Materials and methods:\n            It is a questionnaire-based cross-sectional study involving convenience non-probability sampling. The questionnaire contained a total of 29 items with subsequent portions of knowledge assessment containing 11 items, the attitude assessment comprised 10 items, and the practice assessment involved eight items. Being the first study of its kind, a conservational approach was adopted for sample size determination, and initially, the calculated sample was 385 using an online sample size calculator. The final sample size adopted was 500 to avoid any discrepancies owing to small sample size. The study setting was KPK, a province of Pakistan, and the study population was the medical doctors practicing in KPK. SPSS 28 was used for data analysis. Frequency, percentage, correlation, and regression analysis were used.\n          \n          \n            Results:\n            Out of 500 respondents, 135 were females and 365 were males. The overall data suggest a high level of knowledge regarding AI in medicine (91.2%). The use of AI was about 30.6%, highlighting a gap that needs to be addressed. The majority of doctors agreed on the impact of AI in medical writing (92.5%), indicating a positive attitude toward promotion within the community. The Pearson coefficient showed statistically significant values. Regression analysis with P-value &lt; 0.001 also supported the hypothesis.\n          \n          \n            Conclusion:\n            The study revealed a positive perception of AI in medical writing, recognizing its potential for efficiency and quality improvement. However, respondents expressed concerns about AI authorship, ethics, privacy, and bias, leading to low adoption. The findings underscore the necessity for education, training, and clear guidelines to responsibly integrate AI into medical writing, ensuring ethical use and advancing the field with informed practices.",
+          "authors": [
+           "Waseem Sajjad",
+           "Areeba Inam",
+           "Bilal Ahmed"
+          ],
+          "date": "2025",
+          "provider": "scite",
+          "provider_metadata": {
+           "scite": {
+            "doi": "10.1097/ms9.0000000000002953",
+            "scite_paper_id": null,
+            "venue": "annals of medicine and surgery",
+            "year": 2025,
+            "supporting_count": 0,
+            "contradicting_count": 0,
+            "mentioning_count": 0,
+            "cited_by_count": 0,
+            "citation_context_snippets": [],
+            "scite_report_url": null,
+            "known_losses": []
+           }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+         }
+        },
+        "convergence_signal": null,
+        "reliability_score": 0.1,
+        "triangulation_status": "single_provider",
+        "contradiction_flags": [
+         {
+          "source_id": "10.1097/ms9.0000000000002953",
+          "reason": "single_source_only",
+          "detail": {
+           "providers": [
+            "scite"
+           ],
+           "single_source_only": []
+          }
+         }
+        ]
+       },
+       {
+        "source_id": "10.1186/s12961-015-0032-9",
+        "identity_key": "10.1186/s12961-015-0032-9",
+        "rows_by_provider": {
+         "scite": {
+          "source_id": "10.1186/s12961-015-0032-9",
+          "title": "An institutional approach to support the conduct and use of health policy and systems research: The Nodal Institute in the Eastern Mediterranean Region",
+          "body": "BackgroundThe use of health policy and systems research (HPSR) to support decision making in health systems is limited in the Eastern Mediterranean Region (EMR). This is partly due to the lack of effective initiatives to strengthen regional HPSR capacities and promote its use in decision making. This paper offers a structured reflection on the establishment and core functioning of a HPSR Nodal Institute for the EMR with specific focus on the approach used to support the conduct and use of HPSR. It seeks to gain better understanding of the activities conducted by the Nodal Institute, the methods by which the Nodal Institute implemented these activities, and the outcomes of these activities.MethodsA multi-faceted approach was implemented by the Nodal Institute in collaboration with regional academic/research institutions, Sub-Nodes. The overall approach was a phased one that included the selection of Sub-Nodes, mapping of academic/research institutions in the EMR, stakeholders’ meetings, and HPSR capacity building workshops, and culminated with a regional meeting.ResultsThe mapping of academic/research institutions in the EMR resulted in the identification of 50 institutions, of which only 32 were engaged in HPSR. These institutions have the highest HPSR involvement in information/evidence (84%) and the lowest in human resources for health (34%). Their main HPSR focus areas included quality of healthcare services, patient safety, management of non-communicable diseases, and human resources for health. Regional HPSR challenges among these institutions were identified. The validation and ranking questionnaires resulted in the identification of country-specific HPSR priorities according to stakeholders in three countries. From these results, cross-cutting HPSR priorities among the countries related to primary healthcare, non-communicable diseases, human resources for health, as well as cross-cutting HPSR priorities among stakeholders and according to stakeholders of the countries, were extracted.ConclusionThe Nodal Institute in the EMR is a promising initiative to support the conduct and use of HPSR in health policies. The approach and findings reported in this paper allow for the development of opportunities towards the building of capacity for HPSR in the region and other countries and provide a roadmap for academic/research institutions interested in HPSR in the region.",
+          "authors": [
+           "Fadi El‐Jardali",
+           "Shadi Saleh",
+           "Rawya Khodor"
+          ],
+          "date": "2015",
+          "provider": "scite",
+          "provider_metadata": {
+           "scite": {
+            "doi": "10.1186/s12961-015-0032-9",
+            "scite_paper_id": null,
+            "venue": "health research policy and systems",
+            "year": 2015,
+            "supporting_count": 1,
+            "contradicting_count": 0,
+            "mentioning_count": 13,
+            "cited_by_count": 15,
+            "citation_context_snippets": [],
+            "scite_report_url": null,
+            "known_losses": []
+           }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+         }
+        },
+        "convergence_signal": null,
+        "reliability_score": 0.25,
+        "triangulation_status": "single_provider",
+        "contradiction_flags": [
+         {
+          "source_id": "10.1186/s12961-015-0032-9",
+          "reason": "single_source_only",
+          "detail": {
+           "providers": [
+            "scite"
+           ],
+           "single_source_only": []
+          }
+         }
+        ]
+       },
+       {
+        "source_id": "10.21203/rs.3.rs-9799303/v1",
+        "identity_key": "10.21203/rs.3.rs-9799303/v1",
+        "rows_by_provider": {
+         "scite": {
+          "source_id": "10.21203/rs.3.rs-9799303/v1",
+          "title": "The GPS for Thinking: How AI Partners Are Reshaping Student Metacognition",
+          "body": "Abstract\n                Generative artificial intelligence is rapidly becoming a cognitive partner in education, capable of planning tasks, monitoring progress, and evaluating solutions on a learner’s behalf. This conceptual synthesis paper examines the risk that such AI tools, while improving immediate performance, may erode students’ metacognitive abilities, their capacity to plan, monitor, and evaluate their own thinking. Drawing a parallel with GPS navigation research, where habitual turn-by-turn guidance has been shown to impair spatial memory and hippocampal engagement, we introduce the metaphor of AI as a “GPS for thinking.” Through an integrative review of literature spanning cognitive psychology, neuroscience, and the learning sciences, we synthesise evidence that AI-assisted learning can lead to a form of cognitive disuse atrophy, specifically by short-circuiting the metacognitive loop. Emerging studies reveal that students who rely heavily on AI tutors often perform worse when the tool is removed, suffer from an illusion of explanatory depth, and struggle to articulate the reasoning behind their answers. To counter these effects, we propose a shift from a GPS model where the tool issues commands to a compass model, where the tool provides orientation while preserving learner agency. Five evidence-informed design principles are advanced: prompting planning before assistance, delaying and fading feedback, embedding mandatory reflection pauses, making AI reasoning visible, and calibrating learners’ confidence. The article argues that the long-term goal of educational AI must be to strengthen, not supplant, the student’s inner compass.",
+          "authors": [
+           "Sayed Mahbub Hasan Amiri",
+           "Nahid Akter",
+           "Marzana Mithila"
+          ],
+          "date": "2026",
+          "provider": "scite",
+          "provider_metadata": {
+           "scite": {
+            "doi": "10.21203/rs.3.rs-9799303/v1",
+            "scite_paper_id": null,
+            "venue": null,
+            "year": 2026,
+            "supporting_count": 0,
+            "contradicting_count": 0,
+            "mentioning_count": 0,
+            "cited_by_count": 0,
+            "citation_context_snippets": [],
+            "scite_report_url": null,
+            "known_losses": []
+           }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+         }
+        },
+        "convergence_signal": null,
+        "reliability_score": 0.1,
+        "triangulation_status": "single_provider",
+        "contradiction_flags": [
+         {
+          "source_id": "10.21203/rs.3.rs-9799303/v1",
+          "reason": "single_source_only",
+          "detail": {
+           "providers": [
+            "scite"
+           ],
+           "single_source_only": []
+          }
+         }
+        ]
+       },
+       {
+        "source_id": "10.34197/ats-scholar.2025-0033ps",
+        "identity_key": "10.34197/ats-scholar.2025-0033ps",
+        "rows_by_provider": {
+         "scite": {
+          "source_id": "10.34197/ats-scholar.2025-0033ps",
+          "title": "Leaning into Necessary Discomforts: Striving for Clinical Excellence While Maintaining Wellness",
+          "body": "Abstract\n                  Medical education is redefining clinical excellence in the face of high learner (medical student and house staff) burnout rates, exposing a dichotomy between clinical rigor and well-being. Endurance-based traditions that once equated long hours with competence persist, yet contemporary evidence shows that effective learning environments, grounded in psychological safety and timely bidirectional feedback, improve both performance and well-being. Through the lens of early career clinician educators, we trace the origins of hardship-driven training, review data linking burnout to impaired clinical performance, and describe how competency-based medical education, anchored in entrustable professional activities and qualitative milestones, shifts success metrics from hours logged to skills demonstrated. We explore generational shifts that intensify the need for transparent discussions of expectations between learners and educators. We advocate for a culture in which mistakes are viewed as learning opportunities rather than failures. Finally, we argue that educational reforms must undergo rigorous, longitudinal evaluation before widespread implementation to ensure that they enhance competence, reduce burnout, and maximize patient safety. Clarifying which stressors cultivate mastery and which merely exhaust will allow us to produce physicians who learn more effectively, care for patients more safely, and remain in the profession longer. By cocreating psychologically safe, data-driven training models that retain “necessary discomforts” while eliminating “unnecessary harms,” medical education can reconcile its dual obligations to clinical excellence and learner well-being.",
+          "authors": [
+           "Hitesh H. Patel",
+           "Erica Lin"
+          ],
+          "date": "2025",
+          "provider": "scite",
+          "provider_metadata": {
+           "scite": {
+            "doi": "10.34197/ats-scholar.2025-0033ps",
+            "scite_paper_id": null,
+            "venue": "ats scholar",
+            "year": 2025,
+            "supporting_count": 0,
+            "contradicting_count": 0,
+            "mentioning_count": 0,
+            "cited_by_count": 0,
+            "citation_context_snippets": [],
+            "scite_report_url": null,
+            "known_losses": []
+           }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+         }
+        },
+        "convergence_signal": null,
+        "reliability_score": 0.1,
+        "triangulation_status": "single_provider",
+        "contradiction_flags": [
+         {
+          "source_id": "10.34197/ats-scholar.2025-0033ps",
+          "reason": "single_source_only",
+          "detail": {
+           "providers": [
+            "scite"
+           ],
+           "single_source_only": []
+          }
+         }
+        ]
+       },
+       {
+        "source_id": "10.7759/cureus.108705",
+        "identity_key": "10.7759/cureus.108705",
+        "rows_by_provider": {
+         "scite": {
+          "source_id": "10.7759/cureus.108705",
+          "title": "Developing Healthcare Leaders: Perspectives on Critical Competencies, Current Gaps, and Training Recommendations",
+          "body": "Introduction\n    \n\n     This study sought to define the leadership skills and competencies that are essential to physician leaders and current gaps in physician leadership training. The study also aimed to identify the skills that current physician leaders would have liked to develop earlier in their careers and generate recommendations for successfully integrating leader development into medical education.\n    \n\n     Methods\n    \n\n     This qualitative study explored healthcare leader development through semi-structured interviews with 14 healthcare executives from major healthcare systems in the Southeastern United States. Participants were selected based on their high-level leadership roles. Interviews were conducted virtually and focused on three areas: critical leadership skills, reflections on early career development needs, and strategies for integrating leadership training into medical education. Transcripts were thematically analyzed by three independent investigators to identify recurring themes and insights.\n    \n\n     Results\n    \n\n     Healthcare leaders identified six essential leadership skills: adaptability, empathy and gratitude, relational leadership, change leadership, project management, and knowledge of the healthcare system. Common gaps that emerging leaders should address include relational leadership, redefining leadership beyond hierarchy, self-awareness, understanding the healthcare system, and financial acumen. To prepare future physician leaders, interviewees emphasized the need for training in professional identity formation as a leader, experiential learning, interdisciplinary collaboration, self-awareness, and resilience. Several themes, including relational leadership, healthcare system knowledge, self-awareness, and business acumen, emerged across multiple domains.\n    \n\n     Conclusions\n    \n\n     Healthcare leadership requires more than clinical expertise alone. The role demands a blend of interpersonal, adaptive, and technical skills to navigate complex challenges. Given the growing demands placed upon healthcare leaders, medical institutions must integrate structured leadership training early in physicians’ careers. Preparing future leaders through intentional education and mentorship will help ensure that the healthcare system remains effective and responsive amid significant external pressures and internal transformations.",
+          "authors": [
+           "Sonum Tharwani",
+           "Madeleine Laughon",
+           "Dalia Namak"
+          ],
+          "date": "2026",
+          "provider": "scite",
+          "provider_metadata": {
+           "scite": {
+            "doi": "10.7759/cureus.108705",
+            "scite_paper_id": null,
+            "venue": "cureus",
+            "year": 2026,
+            "supporting_count": 0,
+            "contradicting_count": 0,
+            "mentioning_count": 0,
+            "cited_by_count": 0,
+            "citation_context_snippets": [],
+            "scite_report_url": null,
+            "known_losses": []
+           }
+          },
+          "source_origin": "operator-named",
+          "tracy_row_ref": null,
+          "convergence_signal": null,
+          "authority_tier": null,
+          "completeness_ratio": null,
+          "structural_fidelity": null
+         }
+        },
+        "convergence_signal": null,
+        "reliability_score": 0.1,
+        "triangulation_status": "single_provider",
+        "contradiction_flags": [
+         {
+          "source_id": "10.7759/cureus.108705",
+          "reason": "single_source_only",
+          "detail": {
+           "providers": [
+            "scite"
+           ],
+           "single_source_only": []
+          }
+         }
+        ]
+       }
+      ],
+      "metadata": {
+       "row_count": 5,
+       "cluster_count": 5,
+       "dual_provider_count": 0,
+       "single_provider_count": 5,
+       "title_bridge_rows_added": 0
+      }
+     },
+     "research_intake": {
+      "cluster_id": "research_wiring",
+      "intake_mode": "corroborate",
+      "evidence_bolster_active": false,
+      "entries_consumed": 5,
+      "retrieval_provenance": [
+       {
+        "source_id": "10.1186/s12961-015-0032-9",
+        "providers": [
+         "scite"
+        ],
+        "citation_id": "cite-001",
+        "source_ref": "retrieval:scite:10.1186/s12961-015-0032-9",
+        "evidence_hierarchy_tier": "T4_peer_other",
+        "peer_reviewed": true,
+        "triangulation_status": "single_provider",
+        "reliability_score": 0.25,
+        "attribution_phrase": "According to scite.ai citation-context analysis."
+       },
+       {
+        "source_id": "10.34197/ats-scholar.2025-0033ps",
+        "providers": [
+         "scite"
+        ],
+        "citation_id": "cite-002",
+        "source_ref": "retrieval:scite:10.34197/ats-scholar.2025-0033ps",
+        "evidence_hierarchy_tier": "T4_peer_other",
+        "peer_reviewed": true,
+        "triangulation_status": "single_provider",
+        "reliability_score": 0.1,
+        "attribution_phrase": "According to scite.ai citation-context analysis."
+       },
+       {
+        "source_id": "10.1097/ms9.0000000000002953",
+        "providers": [
+         "scite"
+        ],
+        "citation_id": "cite-003",
+        "source_ref": "retrieval:scite:10.1097/ms9.0000000000002953",
+        "evidence_hierarchy_tier": "T1_systematic",
+        "peer_reviewed": true,
+        "triangulation_status": "single_provider",
+        "reliability_score": 0.1,
+        "attribution_phrase": "According to scite.ai citation-context analysis."
+       },
+       {
+        "source_id": "10.21203/rs.3.rs-9799303/v1",
+        "providers": [
+         "scite"
+        ],
+        "citation_id": "cite-004",
+        "source_ref": "retrieval:scite:10.21203/rs.3.rs-9799303/v1",
+        "evidence_hierarchy_tier": "T4_peer_other",
+        "peer_reviewed": true,
+        "triangulation_status": "single_provider",
+        "reliability_score": 0.1,
+        "attribution_phrase": "According to scite.ai citation-context analysis."
+       },
+       {
+        "source_id": "10.7759/cureus.108705",
+        "providers": [
+         "scite"
+        ],
+        "citation_id": "cite-005",
+        "source_ref": "retrieval:scite:10.7759/cureus.108705",
+        "evidence_hierarchy_tier": "T4_peer_other",
+        "peer_reviewed": true,
+        "triangulation_status": "single_provider",
+        "reliability_score": 0.1,
+        "attribution_phrase": "According to scite.ai citation-context analysis."
+       }
+      ],
+      "known_losses": [],
+      "attribution_phrases": [
+       "According to scite.ai citation-context analysis."
+      ]
+     },
+     "l2_citation_report": {
+      "l2_numeric_report": {
+       "status": "FAIL",
+       "non_gating": true,
+       "experimental": true,
+       "reason": "zero-denominator: cannot audit numeric provenance with narration_token_count=0, source_token_count=0",
+       "narration_token_count": 0,
+       "source_token_count": 0,
+       "drift_rate": null,
+       "buckets": {
+        "source_derived": {
+         "count": 0,
+         "tokens": []
+        },
+        "research_supplement": {
+         "count": 0,
+         "tokens": []
+        },
+        "unsourced_numeric": {
+         "count": 0,
+         "pairs": []
+        }
+       },
+       "unsourced_framing": {
+        "count": 0,
+        "items": [],
+        "note": "WARN-only semantic framing leg: empty narration or source — no framing candidates scored. Reports candidate framing sentences that look like claims without citation anchors and with weak lexical overlap to the source corpus. Does NOT assert comprehensive semantic claim↔source faithfulness.",
+        "disposition": {
+         "mode": "warn_only",
+         "gates_production": false,
+         "disposition": "pipeline_and_disposition",
+         "version": "v0-heuristic-2026-07-10",
+         "claim_fence": "Reports candidate framing sentences that look like claims without citation anchors and with weak lexical overlap to the source corpus. Does NOT assert comprehensive semantic claim↔source faithfulness."
+        }
+       },
+       "classifications": [],
+       "semantic_tripwire": {
+        "mode": "warn_only",
+        "gates_production": false,
+        "disposition": "pipeline_and_disposition",
+        "version": "v0-heuristic-2026-07-10",
+        "claim_fence": "Reports candidate framing sentences that look like claims without citation anchors and with weak lexical overlap to the source corpus. Does NOT assert comprehensive semantic claim↔source faithfulness."
+       }
+      },
+      "l2_numeric_status": "FAIL",
+      "l2_numeric_auditable": false,
+      "citation_manifest": [
+       {
+        "citation_id": "cite-001",
+        "source_ref": "retrieval:scite:10.1186/s12961-015-0032-9",
+        "source_hash": "sha256:5751a64998bf2dc71a2a4f470160ff6a6c582c87d0e90fca03dcbc15a703e4b1"
+       },
+       {
+        "citation_id": "cite-002",
+        "source_ref": "retrieval:scite:10.34197/ats-scholar.2025-0033ps",
+        "source_hash": "sha256:fed3cfbeab1cc65e03d44c5b0b416604d3f3124ea6feaf33b48be976fd0c2be6"
+       },
+       {
+        "citation_id": "cite-003",
+        "source_ref": "retrieval:scite:10.1097/ms9.0000000000002953",
+        "source_hash": "sha256:7cf8f2e4b68490e718b61faaadb4c5a82187c09e2eab1fc19274a95a8c5f85be"
+       },
+       {
+        "citation_id": "cite-004",
+        "source_ref": "retrieval:scite:10.21203/rs.3.rs-9799303/v1",
+        "source_hash": "sha256:162199bf877b9398307357640e887284f27175267b84df5ee30ac1f888986a4a"
+       },
+       {
+        "citation_id": "cite-005",
+        "source_ref": "retrieval:scite:10.7759/cureus.108705",
+        "source_hash": "sha256:6aaad6f0bfa1019d1dee1066165d8b60da2c3d8acc4ebd99b2a864a81a11d039"
+       }
+      ],
+      "unsourced_citations": 0,
+      "scope_note": "resolvability gate: source_ref resolves to a real retrieved row. claim<->source SUPPORT faithfulness is the named operator spot-check (AC-O4), held OUT of L2."
+     },
+     "citation_manifest": [
+      {
+       "citation_id": "cite-001",
+       "source_ref": "retrieval:scite:10.1186/s12961-015-0032-9",
+       "source_hash": "sha256:5751a64998bf2dc71a2a4f470160ff6a6c582c87d0e90fca03dcbc15a703e4b1"
+      },
+      {
+       "citation_id": "cite-002",
+       "source_ref": "retrieval:scite:10.34197/ats-scholar.2025-0033ps",
+       "source_hash": "sha256:fed3cfbeab1cc65e03d44c5b0b416604d3f3124ea6feaf33b48be976fd0c2be6"
+      },
+      {
+       "citation_id": "cite-003",
+       "source_ref": "retrieval:scite:10.1097/ms9.0000000000002953",
+       "source_hash": "sha256:7cf8f2e4b68490e718b61faaadb4c5a82187c09e2eab1fc19274a95a8c5f85be"
+      },
+      {
+       "citation_id": "cite-004",
+       "source_ref": "retrieval:scite:10.21203/rs.3.rs-9799303/v1",
+       "source_hash": "sha256:162199bf877b9398307357640e887284f27175267b84df5ee30ac1f888986a4a"
+      },
+      {
+       "citation_id": "cite-005",
+       "source_ref": "retrieval:scite:10.7759/cureus.108705",
+       "source_hash": "sha256:6aaad6f0bfa1019d1dee1066165d8b60da2c3d8acc4ebd99b2a864a81a11d039"
+      }
+     ]
+    },
+    "cost_usd": 0.0,
+    "model_used": "deterministic-research-wiring",
+    "output_digest": "a4384d5fc5a226bcb31a46dc499c173fb842975655c70d1afe8aee8fb467fef2",
+    "node_id": "04.55",
+    "attempt": 1,
+    "provenance": "real"
+   },
+   {
+    "specialist_id": "workbook_brief",
+    "contributed_at": "2026-07-15T15:49:45.357509Z",
+    "output": {
+     "artifact_path": "workbook-brief.v1.json",
+     "payload_digest": "sha256:4f2f9b502bcb8b8c3d554469d1ffc89ebd5171a1a82ab3a6c04d43bcd1c33c47",
+     "schema_version": "workbook-brief.v1",
+     "status_summary": {
+      "scene": "authored",
+      "promise": "authored"
+     },
+     "warning_summary": [
+      "actual_payoff_sufficiency_operator_check",
+      "semantic_faithfulness_operator_check",
+      "scene_invented_terms_operator_check",
+      "promise_source_adequacy_operator_check",
+      "promise_no_spoiler_operator_check",
+      "promise_lo_vs_vow_operator_check",
+      "promise_pertinent_ability_operator_check",
+      "promise_half_rhyme_operator_check",
+      "promise_mastery_overclaim_operator_check"
+     ],
+     "loss_summary": [],
+     "node_id": "07W.1",
+     "specialist_id": "workbook_brief",
+     "deep_dive_summary": {
+      "status": "authored",
+      "authority_digest": "sha256:2718ce6e8d994888b4fd23f5edd9276dabf1fecb8daf021a03c82e4711ce8ba4",
+      "candidate_payload_digest": "sha256:efba608548a53aed9384061ed7beda015035b41f88a49f578b23a3098a59b352",
+      "execution": {
+       "schema_version": "deep-dive-execution-receipt.v1",
+       "writer": "deep_dive",
+       "mode": "live",
+       "calls": 1,
+       "idempotency_key": "sha256:ba60b86de4ffcaa7ba46e8e7b1ffe0553e8ba3886bc6a900e20daf4f570a3850",
+       "prior_payload_digest": null,
+       "slide_authority_map_digest": "sha256:ef147ef764788f31ac4d0b5cb23ff82bddb1dd6dbed08c6501c5e2b3aa4c3aae",
+       "model": "gpt-5",
+       "model_config_digest": "sha256:210ae10dfb3065a39a693a1c253fb20473cca5d7d67ed8c7471b5e37dd460c3b",
+       "request_id": null,
+       "latency_ms": 103386.21070000227,
+       "input_tokens": 4289,
+       "output_tokens": 14359,
+       "cost_usd": 0.14895125,
+       "cost_unavailable_reason": null,
+       "fallback_engaged": false,
+       "fallback_reason": null
+      }
+     }
+    },
+    "cost_usd": 0.0,
+    "model_used": "gpt-5",
+    "output_digest": "0974a4239358df017f20881485afd6e2c310a0431528ae0f1cfaa0a53f9f3299",
+    "node_id": "07W.1",
+    "attempt": 1,
+    "provenance": "real"
+   },
+   {
+    "specialist_id": "workbook_review_stub",
+    "contributed_at": "2026-07-15T15:49:47.485586Z",
+    "output": {
+     "stub_status": "not_yet_wired",
+     "review_payload": {},
+     "known_losses": [
+      "semantic_writers_not_yet_wired"
+     ]
+    },
+    "cost_usd": 0.0,
+    "model_used": "deterministic-workbook-band-stub",
+    "output_digest": "61ab55ab72d8a67ed8bedef3b5b60c289ece371b95590c1942f0608cd5241d9d",
+    "node_id": "07W.3",
+    "attempt": 1,
+    "provenance": "real"
+   },
+   {
+    "specialist_id": "workbook_producer",
+    "contributed_at": "2026-07-15T15:49:47.896380Z",
+    "output": {
+     "workbook": {
+      "asset_ref": "workbook-u01@1",
+      "asset_path": ".tmp/cover-40-1-derivation/8b275e5b-replay/exports/workbooks/u01@1.md",
+      "fulfills": "u01@1",
+      "modality_ref": "workbook",
+      "markdown_path": ".tmp/cover-40-1-derivation/8b275e5b-replay/exports/workbooks/u01@1.md",
+      "docx_path": ".tmp/cover-40-1-derivation/8b275e5b-replay/exports/workbooks/u01@1.docx",
+      "numeric_audit_status": "AUDIT",
+      "citation_unsourced": 0,
+      "segment_coverage": {
+       "status": "not_applicable_pre_deep_dive",
+       "claim_fence": "No transcript-segment completeness claim until Story 37.2a supplies traceable read-prose"
+      },
+      "gamma_reuse_justified_by": "empty-intersection@8b275e5b",
+      "workbook_brief": {
+       "path": "workbook-brief.v1.json",
+       "payload_digest": "sha256:4f2f9b502bcb8b8c3d554469d1ffc89ebd5171a1a82ab3a6c04d43bcd1c33c47",
+       "status_summary": {
+        "scene": "authored",
+        "promise": "authored"
+       },
+       "warning_summary": [
+        "actual_payoff_sufficiency_operator_check",
+        "semantic_faithfulness_operator_check",
+        "scene_invented_terms_operator_check",
+        "promise_source_adequacy_operator_check",
+        "promise_no_spoiler_operator_check",
+        "promise_lo_vs_vow_operator_check",
+        "promise_pertinent_ability_operator_check",
+        "promise_half_rhyme_operator_check",
+        "promise_mastery_overclaim_operator_check"
+       ],
+       "loss_summary": [],
+       "scene_receipt": {
+        "classification": {
+         "status": "decisive",
+         "lesson_type": "fresh_pain",
+         "archetype": "external_friction",
+         "confidence": 1.0,
+         "evidence_refs": [
+          "assessments/chapter-2-knowledge-check.md#Q5"
+         ]
+        },
+        "gate": {
+         "failures": []
+        },
+        "extraction_losses": [],
+        "operator_warnings": [
+         "actual_payoff_sufficiency_operator_check",
+         "semantic_faithfulness_operator_check",
+         "scene_invented_terms_operator_check"
+        ],
+        "introduced_terms": [
+         "around",
+         "awaits",
+         "checks",
+         "movement",
+         "pages",
+         "piling",
+         "slows",
+         "status",
+         "step",
+         "up"
+        ]
+       },
+       "promise_receipt": {
+        "gate": {
+         "failures": []
+        },
+        "authority_refs": [
+         "ratified-los.json#ratified_los/0",
+         "ratified-los.json#ratified_los/1",
+         "ratified-los.json#ratified_los/2",
+         "ratified-los.json#ratified_los/3",
+         "ratified-los.json#ratified_los/4",
+         "ratified-los.json#ratified_los/5",
+         "ratified-los.json#ratified_los/6",
+         "ratified-los.json#ratified_los/7",
+         "ratified-los.json#ratified_los/8",
+         "ratified-los.json#ratified_los/9",
+         "ratified-los.json#ratified_los/10"
+        ],
+        "operator_warnings": [
+         "promise_source_adequacy_operator_check",
+         "promise_no_spoiler_operator_check",
+         "promise_lo_vs_vow_operator_check",
+         "promise_pertinent_ability_operator_check",
+         "promise_half_rhyme_operator_check",
+         "promise_mastery_overclaim_operator_check"
+        ]
+       },
+       "writer_receipts": [
+        {
+         "writer": "scene",
+         "mode": "live",
+         "calls": 1,
+         "model": "gpt-5",
+         "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+         "request_id": null,
+         "latency_ms": 19222.176699997362,
+         "input_tokens": 632,
+         "output_tokens": 2152,
+         "cost_usd": 0.022309999999999997,
+         "cost_unavailable_reason": null
+        },
+        {
+         "writer": "promise",
+         "mode": "live",
+         "calls": 1,
+         "model": "gpt-5",
+         "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+         "request_id": null,
+         "latency_ms": 13494.246500002191,
+         "input_tokens": 1385,
+         "output_tokens": 1884,
+         "cost_usd": 0.02057125,
+         "cost_unavailable_reason": null
+        }
+       ]
+      },
+      "depth_receipt": {
+       "status": "not_applicable_pre_deep_dive",
+       "claim_fence": "No read-prose depth claim until Story 37.2a supplies traceable Deep Dive prose"
+      },
+      "lo_overlay_loss": null,
+      "exercise_composition": {
+       "sections": [
+        {
+         "section_id": "sec-u01",
+         "practice": [
+          "ex-u01-1"
+         ],
+         "course_check": [
+          "g0-src-001-c002"
+         ]
+        },
+        {
+         "section_id": "sec-u02",
+         "practice": [
+          "ex-u02-1"
+         ],
+         "course_check": [
+          "g0-src-001-c003"
+         ]
+        },
+        {
+         "section_id": "sec-u03",
+         "practice": [
+          "ex-u03-1"
+         ],
+         "course_check": [
+          "g0-src-001-c005"
+         ]
+        },
+        {
+         "section_id": "sec-u04",
+         "practice": [
+          "ex-u04-1"
+         ],
+         "course_check": [
+          "g0-src-002-c001"
+         ]
+        },
+        {
+         "section_id": "sec-u05",
+         "practice": [
+          "ex-u05-1"
+         ],
+         "course_check": [
+          "g0-src-002-c002"
+         ]
+        },
+        {
+         "section_id": "sec-u06",
+         "practice": [
+          "ex-u06-1"
+         ],
+         "course_check": [
+          "g0-src-002-c003"
+         ]
+        }
+       ],
+       "practice_total": 6,
+       "course_check_total": 6,
+       "collateral_trimmed_count": 2
+      },
+      "exercise_overlay_loss": {
+       "trimmed_count": 2,
+       "collateral_count": 8,
+       "kept_collateral_count": 6,
+       "overlay_count": 6,
+       "trimmed_exercise_ids": [
+        "ex-u03-2",
+        "ex-u05-2"
+       ],
+       "note": "2 of 8 collateral (Practice) exercise(s) trimmed by the exercise cap (round-robin by unit then stable id; course-check items are never trimmed): ex-u03-2, ex-u05-2"
+      },
+      "cover": {
+       "hero": "placeholder",
+       "hero_marker": "HERO ILLUSTRATION — PLACEHOLDER — Gamma generation deferred",
+       "encounter_mode": "recorded",
+       "toc": [
+        {
+         "label": "Before you begin",
+         "target": "Pre-work",
+         "phase": "before"
+        },
+        {
+         "label": "The scene",
+         "target": "Scene",
+         "phase": "before"
+        },
+        {
+         "label": "Your friction scale",
+         "target": "Friction Scale",
+         "phase": "before"
+        },
+        {
+         "label": "The promise",
+         "target": "Promise",
+         "phase": "before"
+        },
+        {
+         "label": "How to use this workbook",
+         "target": "Overview",
+         "phase": "after"
+        },
+        {
+         "label": "What you'll be able to do",
+         "target": "Learning Objectives",
+         "phase": "after"
+        },
+        {
+         "label": "Read deeper",
+         "target": "Deep Dive",
+         "phase": "after"
+        },
+        {
+         "label": "Beyond the slides",
+         "target": "Depth-delta narrative",
+         "phase": "after"
+        },
+        {
+         "label": "Test yourself",
+         "target": "Exercises",
+         "phase": "after"
+        },
+        {
+         "label": "Check your answers",
+         "target": "Answer Key",
+         "phase": "after"
+        },
+        {
+         "label": "Key terms",
+         "target": "Research Glossary",
+         "phase": "after"
+        },
+        {
+         "label": "Sources & further reading",
+         "target": "References",
+         "phase": "after"
+        },
+        {
+         "label": "What's next in the field",
+         "target": "Research Trends",
+         "phase": "after"
+        },
+        {
+         "label": "Review status",
+         "target": "Human Review Checkpoint",
+         "phase": "after"
+        }
+       ],
+       "art_brief": {
+        "filename": "u01@1.cover-art-brief.json",
+        "path": ".tmp/cover-40-1-derivation/8b275e5b-replay/exports/workbooks/u01@1.cover-art-brief.json",
+        "digest": "4aede06f324797b3592e81663274ff0e3a41cfe7da040d4a4d06773118094229",
+        "schema_version": "workbook-cover-art-brief.v1"
+       },
+       "provenance": {
+        "run_id": "8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+        "generated_at": "2026-07-15T15:20:29.589345+00:00",
+        "date_source": "run.json:started_at",
+        "corpus_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+        "sme_name": null,
+        "deck_reference": "exports/segment-manifest-storyboard-b.yaml (source bundle 948d3375c58c)",
+        "models_used": [
+         {
+          "specialist_id": "ask_a_enrichment",
+          "node_id": "07W.2",
+          "model_used": "deterministic-ask-a-research-wiring"
+         },
+         {
+          "specialist_id": "cd",
+          "node_id": "4.75",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "compositor",
+          "node_id": "14",
+          "model_used": "deterministic-compositor-v0"
+         },
+         {
+          "specialist_id": "desmond",
+          "node_id": "14.5",
+          "model_used": "gpt-5-nano"
+         },
+         {
+          "specialist_id": "enrique",
+          "node_id": "11",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "enrique",
+          "node_id": "11B",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "enrique",
+          "node_id": "12",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "g0_enrichment",
+          "node_id": "g0-enrichment",
+          "model_used": "marcus"
+         },
+         {
+          "specialist_id": "gary",
+          "node_id": "07",
+          "model_used": "gpt-5-nano"
+         },
+         {
+          "specialist_id": "irene",
+          "node_id": "08",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "irene_pass1",
+          "node_id": "04A",
+          "model_used": "gpt-5.4"
+         },
+         {
+          "specialist_id": "irene_pass1",
+          "node_id": "05",
+          "model_used": "gpt-5.4"
+         },
+         {
+          "specialist_id": "irene_pass1",
+          "node_id": "05B",
+          "model_used": "gpt-5.4"
+         },
+         {
+          "specialist_id": "irene_refinement",
+          "node_id": "irene-refinement",
+          "model_used": "marcus"
+         },
+         {
+          "specialist_id": "package_builder",
+          "node_id": "06",
+          "model_used": "deterministic-package-builder-authority-v1"
+         },
+         {
+          "specialist_id": "quinn_r",
+          "node_id": "07B",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "quinn_r",
+          "node_id": "08B",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "quinn_r",
+          "node_id": "13",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "research_wiring",
+          "node_id": "04.55",
+          "model_used": "deterministic-research-wiring"
+         },
+         {
+          "specialist_id": "texas",
+          "node_id": "02",
+          "model_used": "gpt-5-nano"
+         },
+         {
+          "specialist_id": "texas",
+          "node_id": "03",
+          "model_used": "gpt-5-nano"
+         },
+         {
+          "specialist_id": "vera",
+          "node_id": "7.5",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "vision",
+          "node_id": "07G",
+          "model_used": "gpt-5.5"
+         },
+         {
+          "specialist_id": "workbook_brief",
+          "node_id": "07W.1",
+          "model_used": "gpt-5"
+         },
+         {
+          "specialist_id": "workbook_producer",
+          "node_id": "07W",
+          "model_used": "gpt-5-nano"
+         },
+         {
+          "specialist_id": "workbook_review_stub",
+          "node_id": "07W.3",
+          "model_used": "deterministic-workbook-band-stub"
+         }
+        ],
+        "identity_degrade": null,
+        "fidelity_stamp": {
+         "gates": [
+          "G1",
+          "G2"
+         ],
+         "posture": "enforced-by-construction"
+        }
+       }
+      }
+     },
+     "workbook_producer": {
+      "specialist_id": "workbook_producer",
+      "docx_path": ".tmp/cover-40-1-derivation/8b275e5b-replay/exports/workbooks/u01@1.docx",
+      "markdown_path": ".tmp/cover-40-1-derivation/8b275e5b-replay/exports/workbooks/u01@1.md"
+     }
+    },
+    "cost_usd": 0.0,
+    "model_used": "gpt-5-nano",
+    "output_digest": "91adb4363c86a68cd68582e8f6abfa4d8126707a0f69fc3dfcdf57946e5a3768",
+    "node_id": "07W",
+    "attempt": 1,
+    "provenance": "real"
+   }
+  ],
+  "fixture_run": false
+ },
+ "cost_report_path": "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\cost-report.json",
+ "artifact_paths": [
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G0E.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\checkpoint.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\cost-report.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\trace-fixture.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\run_summary.yaml",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G0R.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G1.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\conversation\\G1\\0000.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G2B.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G2C.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G3.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G4.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\decision-card-G4A.json",
+  "C:\\Users\\juanl\\Documents\\GitHub\\course-DEV-IDE-with-AGENTS-hybrid\\runs\\8b275e5b-ed8a-4720-8217-8ddaca4c6627\\resume-command.json",
+  "_artifacts\\current-trial\\engagement_decay_report.md"
+ ]
+}

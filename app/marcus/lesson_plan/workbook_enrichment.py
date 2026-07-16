@@ -715,6 +715,89 @@ def load_run_envelope(run_dir: Path) -> Any | None:
     return trial.production_envelope
 
 
+def run_identity_from_run(run_dir: Path) -> dict[str, Any]:
+    """READ-ONLY run-identity reader for the 40.1 cover provenance block.
+
+    Reads ``<run_dir>/run.json`` and projects the OUTER
+    :class:`ProductionTrialEnvelope` identity fields the cover renders/persists:
+    ``trial_id`` / ``started_at`` (the generation-date source — NEVER
+    wall-clock) / ``corpus_path``, plus the sorted distinct
+    (``specialist_id``, ``node_id``, ``model_used``) pairs off the inner
+    envelope's contributions (**receipt-only** per the 40-1 J-2 orchestrator
+    ruling — never rendered).
+
+    Precise fail-shape contract (40-1 W-1 — deliberately STRICTER than
+    :func:`corpus_root_from_run`, which swallows corrupt→None and has no
+    symlink guard): the reader is **reasoned non-raising** — it never raises
+    on bad input, and its degrade result DISTINGUISHES the three fail shapes
+    so the provenance renderer can emit distinct honest absent-REASON lines:
+
+    - ``{"status": "absent", "reason": ...}`` — ``run.json`` does not exist;
+    - ``{"status": "symlink", "reason": ...}`` — the coordinate is a symlink
+      (untrusted; mirrors the ``load_run_envelope`` containment guard);
+    - ``{"status": "corrupt", "reason": ...}`` — present but unreadable /
+      invalid JSON / model-invalid;
+    - ``{"status": "ok", "trial_id": ..., "started_at": <isoformat>,
+      "corpus_path": ..., "models_used": [...]}`` on success.
+
+    ``load_run_envelope``'s contract is NOT widened — this is a sibling
+    reader over the OUTER envelope (only ``corpus_root_from_run`` previously
+    deserialized it).
+    """
+    artifact = run_dir / _RUN_ENVELOPE_BASENAME
+    if artifact.is_symlink():
+        return {
+            "status": "symlink",
+            "reason": f"run.json coordinate is a symlink at {artifact}",
+        }
+    if not artifact.is_file():
+        return {"status": "absent", "reason": f"run.json absent at {artifact}"}
+    from pydantic import ValidationError  # noqa: PLC0415
+
+    from app.models.runtime.production_trial_envelope import (  # noqa: PLC0415
+        ProductionTrialEnvelope,
+    )
+
+    try:
+        raw = artifact.read_text(encoding="utf-8")
+    except OSError as exc:
+        return {
+            "status": "corrupt",
+            "reason": f"run.json unreadable at {artifact}: {exc}",
+        }
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(raw)
+    except (ValidationError, ValueError) as exc:
+        return {
+            "status": "corrupt",
+            "reason": f"run.json corrupt at {artifact}: {exc}",
+        }
+    models_used = sorted(
+        {
+            (
+                contribution.specialist_id,
+                contribution.node_id or "",
+                contribution.model_used,
+            )
+            for contribution in trial.production_envelope.contributions
+        }
+    )
+    return {
+        "status": "ok",
+        "trial_id": str(trial.trial_id),
+        "started_at": trial.started_at.isoformat(),
+        "corpus_path": trial.corpus_path,
+        "models_used": [
+            {
+                "specialist_id": specialist_id,
+                "node_id": node_id or None,
+                "model_used": model_used,
+            }
+            for specialist_id, node_id, model_used in models_used
+        ],
+    }
+
+
 def lesson_plan_from_run(run_dir: Path) -> dict[str, Any] | None:
     """Read Irene's authored ``lesson_plan`` dict off ``run.json`` (or ``None``)."""
     envelope = load_run_envelope(run_dir)
@@ -886,4 +969,5 @@ __all__ = [
     "load_run_envelope",
     "project_enrichment_to_workbook_inputs",
     "research_entries_from_run",
+    "run_identity_from_run",
 ]

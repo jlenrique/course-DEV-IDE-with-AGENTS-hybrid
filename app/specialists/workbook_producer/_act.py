@@ -95,9 +95,11 @@ from app.marcus.lesson_plan.workbook_enrichment import (
     load_enrichment_card,
     project_enrichment_to_workbook_inputs,
     research_entries_from_run,
+    run_identity_from_run,
 )
 from app.marcus.lesson_plan.workbook_producer import (
     DEFAULT_WORKBOOK_OUTPUT_ROOT,
+    CoverInputs,
     DuplicateCollateralIdError,
     FurtherReadingEntry,
     LearningObjectiveBrief,
@@ -408,6 +410,54 @@ def _derive_display_title(lesson_plan: dict[str, Any] | None, run_dir: Path) -> 
     return summary
 
 
+def _sme_name_from_corpus(corpus_root: Path | None) -> str | None:
+    """Cheap READ-ONLY SME derivation off the corpus ``course.yaml`` (40.1).
+
+    The course registry record carries ``sme.name`` (the source of
+    ``CoursePlanningProfile.sme_name``, ``input_bundle.py``). A corpus without
+    a ``course.yaml`` — or any read/parse failure — yields ``None`` and the
+    cover renders the explicit honest "SME not recorded in this run's
+    artifacts" line. Never fabricated, never raising.
+    """
+    if corpus_root is None:
+        return None
+    course_yaml = corpus_root / "course.yaml"
+    if not course_yaml.is_file():
+        return None
+    try:
+        data = yaml.safe_load(course_yaml.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    sme = data.get("sme")
+    name = sme.get("name") if isinstance(sme, dict) else data.get("sme_name")
+    return str(name).strip() if isinstance(name, str) and name.strip() else None
+
+
+def _deck_reference(run_dir: Path, manifest_relpath: str) -> str:
+    """Deck/source-bundle reference for the cover provenance block (40.1).
+
+    The configured ``segment_manifest_relpath`` plus the frozen source
+    bundle's identity (its ``directive_sha256`` prefix) when cheaply readable
+    — READ-ONLY and non-raising; degrades to the bare relpath.
+    """
+    metadata = run_dir / "bundle" / "metadata.json"
+    if metadata.is_file():
+        try:
+            payload = json.loads(metadata.read_text(encoding="utf-8"))
+            digest = (
+                str(payload.get("directive_sha256") or "")
+                if isinstance(payload, dict)
+                else ""
+            )
+        except (OSError, ValueError):
+            digest = ""
+        if digest:
+            return f"{manifest_relpath} (source bundle {digest[:12]})"
+    return manifest_relpath
+
+
 def _plan_unit_and_context(
     run_dir: Path,
     run_id: str | None,
@@ -592,6 +642,9 @@ class WorkbookInputs:
     # 39.1: the term-keyed glossary projection (bold-term authority is the
     # SAME 07W.3 contribution read — one disk read, A-3 hoist).
     glossary: GlossaryProjection | None = None
+    # 40.1: read-only run-identity inputs for the cover provenance block
+    # (presentation_support branch only; ``None`` on legacy — no cover).
+    cover_inputs: CoverInputs | None = None
 
 
 def _research_inputs(
@@ -1289,6 +1342,19 @@ def build_workbook_inputs(
 
     display_title = _derive_display_title(lesson_plan, run_dir)
 
+    # 40.1: cover inputs — presentation_support branch ONLY (the cover is the
+    # §10 model's front door; a legacy render emits no cover and claims no
+    # receipt). All derivations are READ-ONLY over persisted run artifacts:
+    # the W-1 run-identity reader (reasoned non-raising degrades), the cheap
+    # corpus SME probe, and the configured deck-manifest reference.
+    cover_inputs: CoverInputs | None = None
+    if brief is not None:
+        cover_inputs = CoverInputs(
+            run_identity=run_identity_from_run(run_dir),
+            sme_name=_sme_name_from_corpus(corpus_root),
+            deck_reference=_deck_reference(run_dir, manifest_relpath),
+        )
+
     return WorkbookInputs(
         plan_unit=plan_unit,
         context=context,
@@ -1316,6 +1382,7 @@ def build_workbook_inputs(
         encounter_mode=brief.payload.encounter_mode if brief else "recorded",
         render_profile="presentation_support" if brief else "legacy",
         deep_dive_review=deep_dive_review,
+        cover_inputs=cover_inputs,
         workbook_brief_receipt=(
             {
                 "path": WORKBOOK_BRIEF_FILENAME,
@@ -1447,6 +1514,7 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             render_profile=inputs.render_profile,
             workbook_brief_receipt=inputs.workbook_brief_receipt,
             deep_dive_review=inputs.deep_dive_review,
+            cover_inputs=inputs.cover_inputs,
             # DP6 (spec landmine): workbook-only diff justifies reuse; do not force
             # a spurious fresh-gamma. Stamp the in-graph run id.
             diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
@@ -1595,6 +1663,11 @@ def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
         # exercise deliverable-bar clause (AC 8).
         "exercise_composition": sidecar.exercise_composition,
         "exercise_overlay_loss": sidecar.exercise_overlay_loss,
+        # 40.1: the cover receipt (additive key) — the structured assertion
+        # surface for the runner's cover deliverable-bar clause (AC 6). The
+        # art-brief path + digest ride INSIDE the receipt; models-used pairs
+        # are receipt-only per the J-2 orchestrator ruling.
+        "cover": sidecar.cover,
     }
 
 

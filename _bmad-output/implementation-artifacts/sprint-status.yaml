@@ -1811,7 +1811,7 @@ development_status:
   39-2-trends-door-ajar: review  # 2026-07-16 dev complete at baseline 5e688cca (claude-fable-5): re-point + 2 conscious flips + bar clause + 16-row matrix all landed; batteries 1643/0-fail (6 env-skips), STRICT replay 27/27, lockstep exit 0, ruff+import-linter clean; fences git-clean (research_packet/_act/producer/manifest untouched); Blind+Edge review owed on the bar-module change (M-D3-2b); boards run B post-review
   epic-39-retrospective: optional
   epic-40-cover: backlog
-  40-1-cover-placeholder-hero-toc-provenance: ready-for-dev  # 2026-07-16 green-lit 4/4 GREEN-WITH-AMENDMENTS (flip inventory closed pre-dev; bidirectional TOC + date value-match pins; models-used struck to receipt-only by orchestrator ruling); dev serialized after 39-2 lands (shared runner file); deterministic — no probe; boards run B
+  40-1-cover-placeholder-hero-toc-provenance: review  # 2026-07-16 dev complete at baseline 681eddfb (claude-fable-5): cover blocks + art-brief sidecar + W-1 identity reader + cover bar clause + 5 negative pins + M-5 full-chain battery (committed 8b275e5b derived fixture + live replay PASS) all landed; exactly the two A-1 flips; batteries green (81 bar / 169 specialists / 1753 lesson_plan / STRICT replay 27/27 / lockstep exit 0 / import-linter 18-0 / ruff clean); fences git-clean (trial-envelope/wiring/runner-walk/trends/manifest untouched); Blind+Edge review owed on the bar-module change (M-D3-2b); boards run B post-review
   epic-40-retrospective: optional
 
 action_items:

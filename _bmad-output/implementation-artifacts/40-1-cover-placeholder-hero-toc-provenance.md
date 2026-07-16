@@ -1,15 +1,15 @@
 ---
 id: 40-1
 epic: 40
-status: ready-for-dev
+status: review
 depends_on: 39-2  # DAG: … 38.2 → 39.2 → 40.1 — 40-1 opens dev only after 39-2 lands; shared-file serialization is RUNNER-BAR-ONLY (see Provenance)
 anchor_provenance: post-38-2-T4 tree 19c3e73e  # every line anchor below verified against this tree; re-verify against the post-39-2 landed tree at dev-open
-baseline_commit: 19c3e73e
+baseline_commit: 681eddfb20ffbab32fe33b875c1a6dcb0f3c65e7  # dev-open baseline (post-39-2 landed tree); spec anchors originally verified at 19c3e73e
 ---
 
 # Story 40.1: Cover producer — placeholder hero + art-brief, journey-TOC, provenance block
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -162,4 +162,72 @@ Items from the draft's flagged list, disposed: (i) presentation_support-only cov
 
 ## Dev Agent Record
 
-*(empty — story not yet dispatched)*
+**Dev complete 2026-07-16 (claude-fable-5, fresh dev agent). Baseline `681eddfb` (post-39-2 landed tree). Status → review.**
+
+### Dev-open duties (binding rule 1 + W-3 rider)
+
+- `baseline_commit` re-anchored to `681eddfb20ffbab32fe33b875c1a6dcb0f3c65e7` (frontmatter).
+- **W-3 rider CONFIRMED by git:** `git show --stat 681eddfb` (39-2's landed diff) touches `trends_projection.py`, the runner file, and test modules ONLY — `workbook_producer.py` and `_act.py` are absent from the diff stat (verified, not assumed).
+- Runner-file anchors re-verified against the post-39-2 tree: 39-2's trends clause landed at the spine tail with the mirrored rider comment (`# Spine tail (39-2 mirrored rider): …` at the end of `_assert_completed_workbook_deliverable`); the 40-1 cover clause replaced that comment and appended AFTER the trends clause — the cover clause is now the spine tail. §T1 items 1–7 all executed (epic AC text, design §12/§10, wave §D3, producer/intake/enrichment substrate, runner idioms, lockstep manifest L60–110).
+
+### Per-AC implementation
+
+- **AC 1** — `_compose_cover_blocks` post-pass at the END of `compose_workbook` (presentation_support only) inserts `## Cover` → `## Contents` → `## About This Workbook` at `doc.blocks[0:0]`; H1 stays first (runner MD floor untouched). Exported constants `COVER_HEADING`/`CONTENTS_HEADING`/`ABOUT_HEADING`/`COVER_HEADINGS`/`COVER_HERO_PLACEHOLDER_MARKER`/`COVER_ART_BRIEF_SCHEMA_VERSION` (the `PRACTICE_GROUP_LABEL` anti-drift idiom). Hero = honest TEXT block (marker + deterministic alt-text + art-brief pointer path+digest); never `![`; heading-collision + no-`###`-in-cover pinned.
+- **AC 2** — `build_cover_art_brief` + `cover_art_brief_digest` (canonical `sort_keys/ensure_ascii/separators` self-digest — the `cache_prefix` idiom); `produce()` writes `<stem>.cover-art-brief.json` beside MD/DOCX in canonical bytes; themes = Scene brief + section titles + LO statements (run-artifact inputs only, order-stable dedup); palette hints = fixed archetype map (`external_friction`/`internal_friction`/default), pinned; digest-stable double-produce pinned (matrix row f).
+- **AC 3** — `compose_cover_sections` is a pure function of the FINAL composed heading list; one entry per H2 (+ fixed footer entry), `_TOC_BEFORE_HEADINGS` = {Pre-work, Scene, Friction Scale, Promise} (W-2), everything else → "After you watch" (unknown = verbatim-fallback, never dropped — row k witnessed at compose level via a scene-text-injected H2 AND at the pure-function level); encounter-mode copy = one line per variant, equal line counts (A-3); entries are list items `- <label> — `<heading>``, exact-string anchors, no `## `-prefixed lines; friendly-label map + verbatim fallback pinned.
+- **AC 4** — `## About This Workbook` renders as a learner-plain colophon (J-1): unit/fulfills/LO ids, lesson label, `Production run:` (= `trial_id`), `Generated:` (= `started_at` VALUE — NEVER wall-clock), corpus, SME (honest "not recorded in this run's artifacts" fallback), deck reference, the gate-declaration copy ("numeric-fidelity and citation checks — a shipped workbook has passed by construction" — no gate ids rendered), and the dual-coding note. Models-used = RECEIPT-ONLY (J-2). W-1 degrades render DISTINCT reason lines (absent / corrupt / symlink / not-supplied), pinned parametrically (row g).
+- **AC 5** — cover rides `doc.blocks`; both renderers emit it with zero parallel-render code; hero is plain text so `_render_docx_body`'s `![`-skip cannot drop it; B8 DOCX byte-determinism pinned (row f).
+- **AC 6** — `_assert_cover_conformant` appended AFTER the trends clause; receipt-present branch ONLY (A-2); M-1 fence honored (imports ONLY the exported constants; all values from run.json/MD/art-brief file; never `compose_workbook`/`doc.blocks`); asserts (i) BIDIRECTIONAL TOC (receipt AND render vs rendered H2 set; duplicate-H2 fail-loud), (ii) hero honesty (marker present, no `![`), (iii) run-id VALUE = `trial_id`, (iv) art-brief exists beside the MD / parses / pinned schema / self-digest recomputes = receipt digest, (v) date VALUE-match vs the envelope `started_at` the clause itself loads (M-3). Negative pins (a)–(e) all land as mutated copies of the committed 8b275e5b-derived fixture and REJECT; row i tripwires + P9 duplicate-section counter + receipt-with-no-witness refusal added.
+- **AC 7** — 11-row matrix landed as named tests: rows a/b/c/d/e/f/g/k in `tests/unit/marcus/lesson_plan/test_workbook_cover_40_1.py`; row h = FLIP-2 (render diff) + a receipt/brief mode-parity pin; rows i/j in the bar module. Row g fixtures are MUTATED COPIES of the frozen live run.json via the committed digest-bound trimmed slice (M-6); symlink leg skip-guarded on OSError (repo precedent `test_ac3_containment_rejects_symlink_escape`).
+- **AC 8** — existing bars re-run green (all 5 bar modules = 81 passed); the M-5 NAMED battery executes the FULL `_assert_completed_workbook_deliverable` clause chain (incl. 39-2's trends clause) twice: committed-derived-fixture CI floor (always runs) + skip-if-absent live 8b275e5b replay (ran, PASS, and pins the derived MD/brief digests byte-identical to the committed fixture). G1 verified quiet by construction (cover provenance sections tokenize to ∅ — pinned) + a B5 supplement witness for a symbol-bearing theme string.
+
+### The TWO flips (CLOSED A-1 inventory — no other pin changed)
+
+- **FLIP-1** `test_presentation_support_frontmatter_and_fr17_cut`: `headings[:4]` → `["Cover", "Contents", "About This Workbook", "Pre-work"]` (+ `headings[4:7]` keeps the pre-work order pin). *Rationale: the cover blocks now render first on the presentation_support profile (AC 1).*
+- **FLIP-2** `test_recorded_live_parity_is_exactly_one_label_in_md_and_docx`: consciously EXTENDED — the diff set is now exactly THREE encounter-copy pairs (TOC Before-you-watch label, [presentation] divider, existing pre-work label), each one line with equal line counts, `zip(strict=True)` preserved (A-3). *Rationale: the journey-TOC adds the two mode-keyed copy lines AC 3 specifies.*
+
+Any other pin: untouched — verified by the batteries below (H1 pins, section-index scoping, pre-work order, AC-8 dual-coding double-fence, G1 regex-quiet, glossary witness family under STRICT replay all green).
+
+### Files touched (exactly the lockstep-declared set + tests/fixtures)
+
+- `app/marcus/lesson_plan/workbook_producer.py` — constants, `CoverInputs`, `compose_cover_sections`/`_compose_cover_blocks`, art-brief builder+digest, `_ComposedDoc.cover_receipt/cover_art_brief`, `WorkbookSidecar.cover/art_brief_path`, `produce()` writer.
+- `app/specialists/workbook_producer/_act.py` — `WorkbookInputs.cover_inputs`, `_sme_name_from_corpus` (cheap READ-ONLY course.yaml probe; honest None), `_deck_reference` (manifest relpath + bundle `directive_sha256` prefix), presentation_support-only wiring, `_sidecar_refs["cover"]` (additive).
+- `app/marcus/lesson_plan/workbook_enrichment.py` — `run_identity_from_run` (W-1 reasoned non-raising reader over the OUTER trial envelope; distinguishes absent/corrupt/symlink; models_used receipt-only; `load_run_envelope` contract NOT widened).
+- `scripts/utilities/marcus_spoc_live_test_runner.py` — cover-clause regexes + `_assert_cover_conformant` + spine-tail call.
+- Tests: `tests/unit/marcus/lesson_plan/test_workbook_cover_40_1.py` (19), `tests/specialists/workbook_producer/test_workbook_cover_intake_40_1.py` (6), `tests/unit/scripts/test_workbook_deliverable_bar_40_1.py` (14), FLIP-1/FLIP-2 in `tests/marcus/lesson_plan/test_workbook_s0_s7.py`.
+- Fixtures: `tests/fixtures/cover_40_1/` — `run-8b275e5b.trimmed.run.json` (mutated copy of the frozen live run.json, trimmed to the clause-read contributions), `u01@1.cover.md` + `u01@1.cover-art-brief.json` (the derived cover-bearing deliverable), `fixture-manifest.json` (`cover-render-fixture.v1`, sha256 bindings — bump tripwire).
+
+### Battery tally (all deterministic; no live LLM/network/Gamma calls anywhere)
+
+| Battery | Result |
+|---|---|
+| `tests/unit/marcus/lesson_plan/test_workbook_cover_40_1.py` | 18 passed, 1 skipped (symlink privilege guard) |
+| `tests/specialists/workbook_producer/test_workbook_cover_intake_40_1.py` | 6 passed |
+| `tests/unit/scripts/test_workbook_deliverable_bar_40_1.py` (incl. both M-5 legs) | 14 passed |
+| `tests/marcus/lesson_plan/test_workbook_s0_s7.py` (FLIP-1/FLIP-2 folded) | 14 passed |
+| ALL 5 bar modules (37_2b + 39_1 + 39_1b + 39_2 + 40_1) | 81 passed |
+| `tests/specialists/workbook_producer/` | 169 passed |
+| `WITNESS_REPLAY_STRICT=1 pytest tests/live_witness_replay -n 0` | 27 passed (0 skipped) |
+| `tests/unit/marcus/lesson_plan/ + tests/marcus/lesson_plan/` | 1753 passed, 8 skipped (pre-existing env skips) |
+| `tests/unit/scripts/` (runner touched ⇒ full dir) | 149 passed, 1 skipped |
+| Lockstep checker (`check_pipeline_manifest_lockstep.py`) | exit 0 (PASS trace under reports/dev-coherence) |
+| import-linter | 18 contracts kept, 0 broken |
+| ruff on all touched files | clean |
+
+### Deviations / decisions of record
+
+1. **Art-brief location semantics in the receipt:** the receipt's `art_brief` carries `filename` + `digest` (+ the repo-relative `path` for the run record); the bar resolves the sidecar BESIDE the MD (`md_path.parent / filename`). Rationale: `_sidecar_refs` path fields are repo-relative but bar-test rigs live in pytest tmp dirs — the beside-the-MD resolution is the coordinate that is invariant across production and rig shapes, and it still satisfies AC 6(iv)'s "exists at the receipt path" in substance (the receipt names the file; a missing/stale/corrupt brief REJECTS — pinned).
+2. **Receipt-present + envelope-loadable ⇒ degraded provenance refuses:** on a completed run whose `run.json` the clause just loaded, a receipt claiming a degraded/absent run id or date cannot VALUE-match and refuses (pins c/d cover it). Degraded provenance is legal only where the bar cannot run its receipt-present branch at all (no run.json ⇒ tolerance).
+3. **Deck reference shape:** `segment_manifest_relpath` + the source bundle's `directive_sha256` 12-char prefix when `bundle/metadata.json` is cheaply readable (READ-ONLY, non-raising degrade to the bare relpath) — the "configured relpath + bundle identity" reading of AC 4(vi).
+4. **SME probe:** `<corpus_root>/course.yaml → sme.name` (the `CoursePlanningProfile.sme_name` source). The frozen 8b275e5b corpus carries no course.yaml ⇒ the honest "SME not recorded in this run's artifacts" line renders on the derived fixture — by design, never fabricated.
+5. **G1 test-rig note:** two rigs needed a real figure token added to their SOURCE text because the frozen tejal extract is genuinely numeral-free and G1's zero-denominator honesty gate (correctly) refuses a numeral-bearing workbook against a numeral-free source. Production-path behavior unchanged; the cover itself tokenizes to ∅ (pinned).
+6. **M-5 live leg ran at dev time** (run dir present): FULL clause chain REACHED+PASS on the derived cover-bearing 8b275e5b fixture, and the committed fixture is digest-pinned to that derivation.
+7. **Pre-existing untracked noise NOT touched:** `_bmad-output/implementation-artifacts/evidence/workbook-live-hil/{648de559…, eea3555e…}` were written 11:04–12:42 today (before this dev session's baseline commit at 14:15) by earlier run-A/gamma work — left as found.
+
+### Fence cleanliness (by git)
+
+`git status` working-set for this story = exactly: the 4 lockstep-declared source files + the 3 new test modules + `test_workbook_s0_s7.py` (the two flips) + `tests/fixtures/cover_40_1/` + this story file + `sprint-status.yaml`. **Zero fenced files touched:** `production_trial_envelope.py` (trigger row — read-only mirrored, never edited), `workbook_wiring.py`, `production_runner.py`, `research_packet.py`, `workflow_runner.py`, `state/config/pipeline-manifest.yaml`, `trends_projection.py`, ask_b/glossary/exercise/deep-dive surfaces — all absent from the diff. No Gamma calls, no new LLM surface, no probe minted (none owed). NOT committed per dispatch instruction.
+
+### Next (per the run-B boarding rider)
+
+Suite-green achieved; `bmad-code-review` (Blind+Edge on the bar-module change per M-D3-2b) owed before the F2 status flip to `done-awaiting-live-witness`; full-run witness owed by governed run B (per-story verdict line keyed to the terminal 07W render + the cover bar clause).

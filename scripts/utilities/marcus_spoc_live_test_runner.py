@@ -1310,6 +1310,17 @@ _TRENDS_TOPIC_LINE_RE = re.compile(
 _TRENDS_REJECTED_LINE_RE = re.compile(r"^- \*\*(.+?)\*\* — ", re.MULTILINE)
 _ASK_B_CITE_TOKEN_RE = re.compile(r"ask-b-cite-[0-9]{3,}")
 
+# --- 40.1 cover conformance clause (same-diff bar extension, plank 5) ---
+# Rendered-line idioms of the producer's cover composer the clause parses
+# (values compared against persisted artifacts only — M-1 anti-tautology
+# fence: heading/marker/schema-version STRINGS are imported from the producer
+# module inside the clause; every assertion VALUE comes from run.json, the
+# rendered MD, or the art-brief sidecar file).
+_COVER_TOC_ENTRY_RE = re.compile(r"^- .+ — `([^`]+)`$", re.MULTILINE)
+_COVER_RUN_ID_LINE_RE = re.compile(r"^Production run: (\S+)$", re.MULTILINE)
+_COVER_GENERATED_LINE_RE = re.compile(r"^Generated: (\S+)$", re.MULTILINE)
+_MD_H2_RE = re.compile(r"(?m)^## (.*?)\s*$")
+
 
 def _md_section_body(text: str, heading: str) -> str | None:
     """The body of an H2 section (between ``## <heading>`` and the next H2)."""
@@ -2004,6 +2015,230 @@ def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> 
                 _refuse()
 
 
+def _assert_cover_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """40.1 deliverable bar: cover conformance, structured-receipt-first.
+
+    The persisted ``cover`` receipt on the 07W ``workbook_producer``
+    contribution in ``run.json`` is the primary assertion surface; the MD is
+    the conformance floor. **Receipt-present branch only (A-2):** every cover
+    assert below executes ONLY when the receipt exists — receipt-absent
+    presentation-support MDs (RENDERED_WORKBOOK_FIXTURE and every existing
+    bar-test fixture) keep passing UNCHANGED (R3-style tolerance).
+
+    Anti-tautology fence (M-1): the clause imports ONLY exported constants
+    from the producer module (heading/marker strings + the art-brief
+    schema-version literal); it NEVER calls ``compose_workbook`` and NEVER
+    reads ``doc.blocks`` — every assertion VALUE comes from persisted
+    artifacts (``run.json``, the rendered MD, the art-brief sidecar file), so
+    the bar can fail the producer.
+
+    Receipt-present asserts (AC 6): (i) BIDIRECTIONAL TOC coverage (M-2) —
+    every rendered ``## `` heading (cover headings excluded; the
+    renderer-appended footer included) has exactly one TOC entry in the
+    receipt AND in the rendered ``Contents`` section, AND every TOC entry's
+    target names a verbatim-matching rendered heading (missing entry =
+    REJECT; phantom entry = REJECT; duplicate-H2 ambiguity = fail-loud
+    REJECT); (ii) hero honesty — the ``Cover`` body carries the exported
+    placeholder marker and NO ``![`` image reference while the receipt claims
+    ``placeholder``; (iii) provenance run-id — receipt AND rendered run id
+    both equal ``run.json`` ``trial_id``; (iv) the art-brief sidecar exists
+    beside the MD at the receipt filename, parses, carries the pinned
+    ``schema_version``, and its self-digest RECOMPUTES (canonical
+    sort-keys/ascii/compact JSON over the non-digest fields) and matches the
+    receipt digest; (v) date VALUE-match (M-3) — rendered and receipt
+    generation dates both equal the ``started_at`` VALUE of the trial
+    envelope THIS clause loads from ``run.json`` (a source-of-truth value
+    comparison, never a format check; wall-clock backfill REJECTS).
+    Test-harness-side only; production runtime is untouched.
+    """
+    from app.marcus.lesson_plan.workbook_producer import (  # noqa: PLC0415
+        ABOUT_HEADING,
+        CONTENTS_HEADING,
+        COVER_ART_BRIEF_SCHEMA_VERSION,
+        COVER_HEADING,
+        COVER_HERO_PLACEHOLDER_MARKER,
+    )
+
+    def _refuse() -> None:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+    text_by_path: dict[Path, str] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        # LF-normalize (write_text translates \n -> \r\n on Windows); the
+        # heading/line anchors below are LF-based.
+        text_by_path[path] = text.replace("\r\n", "\n")
+
+    run_json = run_dir / "run.json"
+    if not run_json.is_file():
+        # A-2: no structured authority ⇒ no receipt can exist; tolerance.
+        return
+    if run_json.is_symlink():
+        _refuse()
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(
+            run_json.read_text(encoding="utf-8")
+        )
+    except Exception as exc:  # corrupt envelope: reject, never trust prose
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    contribution = trial.production_envelope.get_contribution(
+        _WORKBOOK_PRODUCER_SPECIALIST_ID, node_id=_WORKBOOK_PRODUCER_NODE_ID
+    )
+    output = (
+        contribution.output
+        if contribution is not None and isinstance(contribution.output, dict)
+        else {}
+    )
+    workbook_refs = output.get("workbook")
+    refs = workbook_refs if isinstance(workbook_refs, dict) else {}
+    receipt = refs.get("cover")
+    if receipt is None:
+        # A-2 (BLOCKING): receipt-absent shapes (pre-40.1 runs, legacy
+        # renders, every existing bar-test fixture) pass UNCHANGED.
+        return
+    # --- receipt-present branch: well-formedness first (malformed = refusal).
+    if not isinstance(receipt, dict) or receipt.get("hero") != "placeholder":
+        _refuse()
+    toc = receipt.get("toc")
+    art_brief_ref = receipt.get("art_brief")
+    provenance = receipt.get("provenance")
+    if (
+        not isinstance(toc, list)
+        or not toc
+        or not isinstance(art_brief_ref, dict)
+        or not isinstance(provenance, dict)
+    ):
+        _refuse()
+    receipt_targets = [
+        entry.get("target") for entry in toc if isinstance(entry, dict)
+    ]
+    if len(receipt_targets) != len(toc) or not all(
+        isinstance(target, str) and target for target in receipt_targets
+    ):
+        _refuse()
+    if len(set(receipt_targets)) != len(receipt_targets):
+        _refuse()  # duplicate receipt entries: one entry per heading (AC 3)
+    # (iii) + (v): source-of-truth values loaded by THIS clause.
+    trial_run_id = str(trial.trial_id)
+    if provenance.get("run_id") != trial_run_id:
+        _refuse()  # negative pin (c): receipt run id must equal trial_id
+    receipt_date = provenance.get("generated_at")
+    if not isinstance(receipt_date, str):
+        _refuse()
+    try:
+        receipt_dt = datetime.fromisoformat(receipt_date)
+    except ValueError as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    if receipt_dt != trial.started_at:
+        _refuse()  # negative pin (d): wall-clock-mutated receipt date (M-3)
+    filename = art_brief_ref.get("filename")
+    receipt_digest = art_brief_ref.get("digest")
+    if (
+        not isinstance(filename, str)
+        or not filename
+        or not isinstance(receipt_digest, str)
+        or not receipt_digest
+    ):
+        _refuse()
+    covered = [
+        (path, text)
+        for path, text in text_by_path.items()
+        if _PRESENTATION_SUPPORT_MD_SENTINEL in text
+    ]
+    if not covered:
+        _refuse()  # a cover receipt with no presentation-support render behind it
+    for path, text in covered:
+        h2_headings = _MD_H2_RE.findall(text)
+        for cover_heading in (COVER_HEADING, CONTENTS_HEADING, ABOUT_HEADING):
+            if h2_headings.count(cover_heading) != 1:
+                _refuse()  # cover sections present exactly once (counted)
+        section_targets = [
+            heading
+            for heading in h2_headings
+            if heading not in (COVER_HEADING, CONTENTS_HEADING, ABOUT_HEADING)
+        ]
+        if len(set(section_targets)) != len(section_targets):
+            _refuse()  # duplicate-H2 ambiguity resolved FAIL-LOUD (M-2)
+        contents_body = _md_section_body(text, f"## {CONTENTS_HEADING}")
+        cover_body = _md_section_body(text, f"## {COVER_HEADING}")
+        about_body = _md_section_body(text, f"## {ABOUT_HEADING}")
+        if contents_body is None or cover_body is None or about_body is None:
+            _refuse()
+            continue
+        # (i) BIDIRECTIONAL TOC coverage (M-2), receipt AND render surfaces:
+        # a rendered section with no TOC entry = REJECT (missing direction);
+        # a TOC entry naming no rendered heading = REJECT (phantom direction).
+        rendered_targets = _COVER_TOC_ENTRY_RE.findall(contents_body)
+        if len(set(rendered_targets)) != len(rendered_targets):
+            _refuse()  # exactly one entry per heading, rendered surface
+        if set(rendered_targets) != set(section_targets):
+            _refuse()
+        if set(receipt_targets) != set(section_targets):
+            _refuse()
+        # (ii) hero honesty: the exported placeholder marker, and NO image
+        # reference inside the Cover body while the receipt claims
+        # ``placeholder`` — an ``![`` here is a fabricated hero claim.
+        if COVER_HERO_PLACEHOLDER_MARKER not in cover_body:
+            _refuse()
+        if "![" in cover_body:
+            _refuse()
+        # (iii) rendered run id equals run.json trial_id (VALUE).
+        run_match = _COVER_RUN_ID_LINE_RE.search(about_body)
+        if run_match is None or run_match.group(1) != trial_run_id:
+            _refuse()
+        # (v) rendered generation date equals envelope started_at (M-3 VALUE
+        # match — a degraded/absent Generated line on a receipt-present
+        # completed run is equally a refusal: the value cannot match).
+        date_match = _COVER_GENERATED_LINE_RE.search(about_body)
+        if date_match is None:
+            _refuse()
+            continue
+        try:
+            rendered_dt = datetime.fromisoformat(date_match.group(1))
+        except ValueError as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        if rendered_dt != trial.started_at:
+            _refuse()
+        # (iv) art-brief sidecar: exists beside the MD at the receipt
+        # filename, regular file, parses, pinned schema_version, self-digest
+        # recomputes and matches the receipt digest (stale/corrupt = REJECT).
+        brief_path = path.parent / filename
+        if brief_path.is_symlink() or not brief_path.is_file():
+            _refuse()
+        try:
+            brief = json.loads(brief_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        if (
+            not isinstance(brief, dict)
+            or brief.get("schema_version") != COVER_ART_BRIEF_SCHEMA_VERSION
+        ):
+            _refuse()
+        recomputed = hashlib.sha256(
+            json.dumps(
+                {key: value for key, value in brief.items() if key != "self_digest"},
+                sort_keys=True,
+                ensure_ascii=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        if brief.get("self_digest") != recomputed or receipt_digest != recomputed:
+            _refuse()
+
+
 def _assert_deep_dive_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
     """37.2b deliverable bar: deep-dive conformance, structured-artifact-first.
 
@@ -2162,8 +2397,14 @@ def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> Non
     _assert_trends_door_ajar_conformant(
         run_dir, [run_dir / md_by_stem[stem] for stem in paired]
     )
-    # Spine tail (39-2 mirrored rider): 40-1 (cover producer) appends its
-    # clause AFTER the 39.2 trends clause above — keep this the tail until then.
+    # 40.1: cover clause (same-diff extension, plank 5) — receipt-present
+    # branch ONLY (A-2): bidirectional journey-TOC (M-2), hero-placeholder
+    # honesty, run-id + generation-date VALUE-match against run.json (M-3),
+    # art-brief sidecar digest recompute. Appended AFTER the 39.2 trends
+    # clause per the serialize rider (W-3/J-3); current spine tail.
+    _assert_cover_conformant(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
 
 
 def _drive_paused_trial_impl(
