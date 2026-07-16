@@ -1,7 +1,7 @@
 ---
 id: 40-1
 epic: 40
-status: review
+status: done-awaiting-live-witness
 depends_on: 39-2  # DAG: … 38.2 → 39.2 → 40.1 — 40-1 opens dev only after 39-2 lands; shared-file serialization is RUNNER-BAR-ONLY (see Provenance)
 anchor_provenance: post-38-2-T4 tree 19c3e73e  # every line anchor below verified against this tree; re-verify against the post-39-2 landed tree at dev-open
 baseline_commit: 681eddfb20ffbab32fe33b875c1a6dcb0f3c65e7  # dev-open baseline (post-39-2 landed tree); spec anchors originally verified at 19c3e73e
@@ -9,7 +9,7 @@ baseline_commit: 681eddfb20ffbab32fe33b875c1a6dcb0f3c65e7  # dev-open baseline (
 
 # Story 40.1: Cover producer — placeholder hero + art-brief, journey-TOC, provenance block
 
-Status: review
+Status: done-awaiting-live-witness  # deterministic+T4 green; no probe owed (fully deterministic); full-run witness owed by batch run B
 
 ## Story
 

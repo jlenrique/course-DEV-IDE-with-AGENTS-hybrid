@@ -692,3 +692,20 @@ def test_g1_symbol_bearing_theme_rides_b5_supplement(segments, output_root) -> N
     md = (REPO_ROOT / sidecar.markdown_path).read_text(encoding="utf-8")
     assert "42%" in _section_body(md, COVER_HEADING)  # the alt-text carries it
     assert sidecar.numeric_audit["buckets"]["unsourced_numeric"]["count"] == 0
+
+
+# T4 40-1 finding-1 remediation pin: the palette-hint map keys EVERY real
+# SceneBrief.archetype Literal member (no dead keys, no silent default fall).
+def test_palette_hint_map_keys_every_real_archetype() -> None:
+    from typing import get_args
+
+    from app.marcus.lesson_plan.prework_projection import SceneBrief
+    from app.marcus.lesson_plan.workbook_producer import _COVER_PALETTE_HINTS
+
+    literal = SceneBrief.model_fields["archetype"].annotation
+    real = {a for arg in get_args(literal) for a in get_args(arg) if isinstance(a, str)}
+    assert real, "archetype Literal members must be extractable"
+    assert set(_COVER_PALETTE_HINTS) == real, (
+        f"palette hints must key exactly the real archetype vocabulary; "
+        f"map={sorted(_COVER_PALETTE_HINTS)} real={sorted(real)}"
+    )

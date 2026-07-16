@@ -1811,7 +1811,7 @@ development_status:
   39-2-trends-door-ajar: done-awaiting-live-witness  # deterministic+T4 green (F1-F3 bar hardening landed); no probe owed (deterministic-consume); full-run witness owed by batch run B
   epic-39-retrospective: optional
   epic-40-cover: backlog
-  40-1-cover-placeholder-hero-toc-provenance: review  # 2026-07-16 dev complete at baseline 681eddfb (claude-fable-5): cover blocks + art-brief sidecar + W-1 identity reader + cover bar clause + 5 negative pins + M-5 full-chain battery (committed 8b275e5b derived fixture + live replay PASS) all landed; exactly the two A-1 flips; batteries green (81 bar / 169 specialists / 1753 lesson_plan / STRICT replay 27/27 / lockstep exit 0 / import-linter 18-0 / ruff clean); fences git-clean (trial-envelope/wiring/runner-walk/trends/manifest untouched); Blind+Edge review owed on the bar-module change (M-D3-2b); boards run B post-review
+  40-1-cover-placeholder-hero-toc-provenance: done-awaiting-live-witness  # 2026-07-16: deterministic+T4 green (combined Blind+Edge+Auditor PASS; MEDIUM palette-vocabulary finding fixed in-session + pin; 7 low/info filed); no probe owed (fully deterministic); full-run witness owed by batch run B
   epic-40-retrospective: optional
 
 action_items:

@@ -180,9 +180,13 @@ _TOC_FOOTER_HEADING: Final[str] = "Human Review Checkpoint"
 # Small fixed deterministic palette-hint mapping (dev latitude exercised once,
 # pinned by tests): keyed on the pre-work scene archetype; deterministic
 # default when no archetype is derivable.
+# T4 40-1 finding 1: keys MUST be the real SceneBrief.archetype Literal
+# members (prework_projection.py) — the earlier "internal_friction" key was
+# unreachable dead config and two real archetypes silently took the default.
 _COVER_PALETTE_HINTS: Final[Mapping[str, tuple[str, str]]] = {
     "external_friction": ("deep teal", "warm amber accent"),
-    "internal_friction": ("indigo", "soft coral accent"),
+    "introspective_threshold": ("indigo", "soft coral accent"),
+    "difficulty_practice": ("forest green", "warm amber accent"),
 }
 _COVER_PALETTE_DEFAULT: Final[tuple[str, str]] = ("slate blue", "warm neutral accent")
 
