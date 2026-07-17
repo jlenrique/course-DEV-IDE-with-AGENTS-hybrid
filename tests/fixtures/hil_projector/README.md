@@ -54,13 +54,32 @@ they build (their poll-surface dicts do not exist on disk yet).
 | G2F motion-clip (section_07f) | 43-7 | ❌ must capture on its own |
 | G4B input-package (section_11b) | 43-8 | ❌ must capture on its own |
 | G5 final handoff (section_15) | 43-8 | ❌ must capture on its own |
-| research packets | 43-9 | ❌ must capture on its own |
-| workbook content | 43-9 | ❌ must capture on its own |
+| ~~research packets~~ | 43-9 | ➖ **DE-SCOPED — no fixture** (not a HIL surface; see §b.2) |
+| ~~workbook content~~ | 43-9 | ➖ **DE-SCOPED — no fixture** (not a HIL surface; see §b.2) |
 
 **Rider-R2 discipline note:** because no real run reached the later gates, a downstream
 story cannot lean on this corpus to close its named surface — it must add its own real
 fixture (or a documented hand-built one) alongside. This corpus is exactly the "G0E-only
 replay corpus" §3 pin 3 warns must never be able to re-close the whole requirement.
+
+## (b.2) Story 43-9 — `research_packet` + `workbook` DE-SCOPED (no fixtures, no renderers)
+
+Unlike 43-1..43-8, Story 43-9 renders **nothing** and captures **no fixture**. Its job
+was to investigate whether `research_packet` and `workbook` (which 43-10 provisionally
+listed in the canonical set but which have **no `poll_surface`**) are operator-reviewed
+HIL surfaces at a paused gate. The finding for **both is NO**, so both were **removed from
+`GATE_CONTENT_TYPES` and `KNOWN_UNRENDERED_ALLOWLIST`** (an honest correction of 43-10's
+provisional set, AC-D1) rather than given phantom renderers:
+
+| De-scoped type | Where it runs | Why it is NOT a HIL surface (evidence) |
+|---|---|---|
+| `workbook` | 07W band (`07W.1`–`07W.4`, `07W`), wired in `app/marcus/orchestrator/workbook_wiring.py` | Deterministic orchestration seam authoring artifacts (brief / Ask-A research / review / Ask-B research / MD+DOCX producer). Runs **post-G5** (after node 15 handoff). Every 07W node has `gate: false` / `Gate="—"` (static-validation report §3 walk), no `poll_surface`, no decision card. Not in the woken `ProductionGateId` set `{G0E,G0R,G0S,G1,G2B,G2C,G3,G4,G4A}`; no `decision-card-workbook*.json` is ever written. |
+| `research_packet` | research dispatch at node `04.55` (+ the workbook Ask-A/Ask-B research seams) | Consumed **internally** (feeds enrichment / the workbook band). No gate, no `poll_surface`, no decision card. Node 04.55's only *gated* surface is the G1.5 **estimator / run-constants** — already covered as the separate `estimator` / `run_constants` content types (Story 43-5). |
+
+**Net effect:** after 43-9 the canonical `GATE_CONTENT_TYPES` is exactly the **14** rendered
+types, `KNOWN_UNRENDERED_ALLOWLIST` is **empty**, and the 43-12 governance-close assertion
+(`allowlist == frozenset()`) holds. No `poll-research-*.json` / `poll-workbook-*.json`
+fixture exists **by design** — there is no operator render surface to feed.
 
 ## (b.1) SYNTHETIC fixtures (no real run reached the gate)
 

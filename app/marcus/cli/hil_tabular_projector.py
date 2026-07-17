@@ -1368,9 +1368,24 @@ _RENDERER_REGISTRY: dict[str, GateContentRenderer] = {}
 #: ``run_constants`` G1.5 · ``plan_unit`` G1A · ``per_slide_mode`` G2B ·
 #: ``variant_ab`` G2M · ``literal_visual`` 06B · ``storyboard_targets`` 07C ·
 #: ``motion_plan`` G2.5 · ``motion_clip`` G2F · ``storyboard_b`` G3B ·
-#: ``voice_candidates`` G4A · ``input_package`` G4B · ``final_handoff`` G5 ·
-#: ``research_packet`` · ``workbook``. Additive data only, no behavior change
-#: (rider R7).
+#: ``voice_candidates`` G4A · ``input_package`` G4B · ``final_handoff`` G5.
+#: Additive data only, no behavior change (rider R7).
+#:
+#: Story 43-9 — HONEST DE-SCOPE of ``research_packet`` + ``workbook`` (removed
+#: from this canonical set). 43-10 provisionally listed both, but the investigation
+#: proved NEITHER is an operator-reviewed HIL surface at a paused gate:
+#:   * ``workbook`` — the 07W band (07W.1 brief · 07W.2 Ask-A · 07W.3 review ·
+#:     07W.4 Ask-B · 07W producer, wired in ``app/marcus/orchestrator/workbook_wiring.py``)
+#:     is a deterministic orchestration seam that runs POST-G5 (after node 15 handoff)
+#:     with NO gate code and NO poll_surface — none of its nodes pause for operator
+#:     review. It is not in the woken ``ProductionGateId`` pause set and no
+#:     ``decision-card-workbook*.json`` is ever written.
+#:   * ``research_packet`` — the research dispatch at node 04.55 is consumed
+#:     INTERNALLY (feeds enrichment / the workbook Ask-A/Ask-B seams); it has no gate,
+#:     no poll_surface, and no decision card. (Node 04.55's only gated surface is the
+#:     G1.5 estimator / run-constants, already covered as ``estimator`` / ``run_constants``.)
+#: The coverage set should contain only content types the operator actually reviews at
+#: a gate, so both are dropped — a correction of 43-10's provisional set, not a skip.
 GATE_CONTENT_TYPES: frozenset[str] = frozenset(
     {
         "directive",  # G0 directive composition / sources[] material-partition
@@ -1387,8 +1402,8 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
         "voice_candidates",  # G4A voice-candidate selection
         "input_package",  # G4B input-package preview
         "final_handoff",  # G5 final handoff artifacts + summary
-        "research_packet",  # research packet content
-        "workbook",  # workbook content
+        # research_packet / workbook DELIBERATELY OMITTED — Story 43-9 de-scope
+        # (not operator-reviewed HIL surfaces; see the module note above).
     }
 )
 
@@ -1439,6 +1454,14 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: (G2.5) and ``motion_clip`` (G2F) here in the same change that registers
 #: :func:`render_motion_plan` + :func:`render_motion_clip` — both now covered by bespoke
 #: renderers, NOT waived.
+#:
+#: Story 43-9 EMPTIES this allowlist. It does NOT register new renderers; instead it
+#: de-scopes ``research_packet`` + ``workbook`` out of ``GATE_CONTENT_TYPES`` entirely
+#: (neither is an operator-reviewed paused-gate HIL surface — see the GATE_CONTENT_TYPES
+#: note above). With those two gone from the canonical set and all 14 remaining types
+#: registered, the ``GATE_CONTENT_TYPES - {14 registered}`` difference below is now the
+#: EMPTY set. The 43-12 governance-close assertion (``allowlist == frozenset()``)
+#: therefore holds after this story.
 KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
     GATE_CONTENT_TYPES
     - {

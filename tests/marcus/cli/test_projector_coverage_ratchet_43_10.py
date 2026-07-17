@@ -57,8 +57,13 @@ _EXPECTED_CANONICAL_KEYS: frozenset[str] = frozenset(
         "voice_candidates",  # G4A voice-candidate selection
         "input_package",  # G4B input-package preview
         "final_handoff",  # G5 final handoff artifacts + summary
-        "research_packet",  # research packet content
-        "workbook",  # workbook content
+        # Story 43-9 DE-SCOPE: research_packet + workbook removed from the canonical
+        # universe. The investigation proved neither is an operator-reviewed HIL
+        # surface at a paused gate — the 07W workbook band runs post-G5 with no gate
+        # code / poll_surface, and the 04.55 research dispatch is consumed internally
+        # (no gate, no decision card). Neither appears in the woken ProductionGateId
+        # pause set. Both are dropped rather than given phantom renderers (AC-D1);
+        # this named list is corrected in lockstep with GATE_CONTENT_TYPES.
     }
 )
 
@@ -126,18 +131,23 @@ def test_registry_and_allowlist_are_disjoint() -> None:
 
 
 def test_allowlist_is_shrinking_registry_is_growing_at_43_3() -> None:
-    """State pin (updated at 43-7, the seventh allowlist→registry move): the
-    allowlist tightens as each bespoke story registers a renderer. This assertion
-    INTENTIONALLY tracks the CURRENT state, not a hard-coded full set — the last
-    remaining story (43-9) moves more types registry-ward and updates this witness in
-    lockstep, and 43-12 empties the allowlist entirely.
+    """State pin (updated at 43-9, the FINAL bespoke story): the allowlist tightens as
+    each bespoke story registers a renderer, and 43-9 empties it. This assertion
+    INTENTIONALLY tracks the CURRENT state, not a hard-coded full set.
+
+    43-9 is different from 43-1..43-8: it registers NO new renderer. Instead it
+    de-scopes the two non-HIL content types (``research_packet`` + ``workbook``) out of
+    ``GATE_CONTENT_TYPES`` — neither is an operator-reviewed paused-gate surface. With
+    those gone, the canonical set == the 14 registered renderers, so the waived set
+    (``GATE_CONTENT_TYPES - registered``) is now EMPTY.
     """
     # 43-1 registered ``directive`` (G0); 43-3 added ``per_slide_mode`` (G2B) +
     # ``variant_ab`` (G2M); 43-4 added ``voice_candidates`` (G4A); 43-5 added
     # ``plan_unit`` (G1A) + ``estimator`` (G1.5) + ``run_constants`` (G1.5); 43-6 added
     # ``literal_visual`` (06B) + ``storyboard_targets`` (07C) + ``storyboard_b`` (G3B);
-    # 43-8 added ``input_package`` (G4B) + ``final_handoff`` (G5); 43-7 adds
-    # ``motion_plan`` (G2.5) + ``motion_clip`` (G2F) — the seventh allowlist→registry move.
+    # 43-8 added ``input_package`` (G4B) + ``final_handoff`` (G5); 43-7 added
+    # ``motion_plan`` (G2.5) + ``motion_clip`` (G2F). 43-9 registers nothing new — it
+    # de-scopes research_packet + workbook, leaving these 14 as the whole canonical set.
     registered = frozenset(
         {
             "directive",
@@ -157,10 +167,17 @@ def test_allowlist_is_shrinking_registry_is_growing_at_43_3() -> None:
         }
     )
     assert registered_content_types() == registered
-    # …hence those have LEFT the allowlist; every other canonical type is still
-    # waived (disjoint invariant: registry ∩ allowlist == ∅).
+    # …hence those have LEFT the allowlist; after the 43-9 de-scope EVERY canonical type
+    # is now registered, so the waived set is empty (disjoint invariant: registry ∩
+    # allowlist == ∅; and registry == canonical set).
     expected_waived = GATE_CONTENT_TYPES - registered
     assert expected_waived == KNOWN_UNRENDERED_ALLOWLIST
+    # 43-9 explicit witness: the allowlist is now EMPTY (all 16→14 canonical types
+    # resolved — 14 rendered, 2 de-scoped). The 43-12 governance-close assertion
+    # (``KNOWN_UNRENDERED_ALLOWLIST == frozenset()``) holds after this story.
+    allowlist = KNOWN_UNRENDERED_ALLOWLIST
+    assert allowlist == frozenset()
+    assert registered_content_types() == GATE_CONTENT_TYPES
 
 
 def test_governance_close_hook_43_12() -> None:
