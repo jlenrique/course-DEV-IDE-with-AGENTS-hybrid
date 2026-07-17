@@ -1,0 +1,60 @@
+{
+  "card": {
+    "card_id": "3a5cf7f9-42e0-439d-b052-a6712802585c",
+    "created_at": "2026-07-16T22:50:58.569511Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "drafted_proposal": {
+      "confidence": 0.66,
+      "confidence_signals": [
+        "irene_lo_thin_gap:3",
+        "g0_n_flagged:13",
+        "g0_n_ungrounded:12",
+        "word_count_above_floor",
+        "overall_status_complete_with_warnings",
+        "dissent_upheld_no_blocker",
+        "citation_resolution_failures_noncritical",
+        "typed_components_coverage_ok",
+        "corpus_fingerprint_present"
+      ],
+      "decision": "revise",
+      "directive": "apply-edit",
+      "node_id": "04",
+      "operator_id": "Juanl",
+      "rationale": "Ingestion is broadly solid (coverage across 14 files, word count above floor) and Irene’s LO set is mostly adequate, but three LOs are flagged thin/gap (mission phrasing, innovation mindset definition, and explicit course list). Several narration components remain ungrounded and multiple citations lack resolvable DOIs. Recommend minor edits to attach explicit source text and/or citations and clear ungrounded flags before proceeding."
+    },
+    "evidence": [
+      {
+        "kind": "production-runner",
+        "node_id": "04"
+      },
+      {
+        "content": "# Texas - specialist-complete - 2026-07-16T22:50:37.949395Z\n## Received\ninput keys: cache_prefix\n## Decided\ntexas emitted cache payload because its act node completed successfully.\n## Emitted artifacts\n- `none`\n## Resolution trail (model_resolution_trail entries)\n- per_specialist -> gpt-5-nano: specialist 'texas' declared default_model='gpt-5-nano' in model_config.yaml\n- per_specialist -> gpt-5-nano: bundle.parsed.ok\n## Persistence\n- trial_id: bc747b51-7009-4742-9f65-8de6abc29ca4\n- specialist_id: texas\n- gate_id: specialist-complete\n- schema: specialist-summary.v1\n- deferred: false\n",
+        "kind": "specialist-summary",
+        "path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/specialist-summaries/texas-20260716T225037949395Z.md"
+      }
+    ],
+    "gate_focus": "trial_open",
+    "gate_id": "G1",
+    "meta": {
+      "affected_nodes": [
+        "04"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "next_nodes": [
+      "04A",
+      "04.5",
+      "04.55"
+    ],
+    "opened_by": "production_runner",
+    "schema_version": "v1",
+    "trial_id": "bc747b51-7009-4742-9f65-8de6abc29ca4",
+    "trial_summary": "Production graph reached Gate 1.",
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/checkpoint.json",
+  "digest": "REDACTED-DIGEST",
+  "issued_at": "2026-07-16T22:50:58.570682Z",
+  "server_nonce": "REDACTED-NONCE"
+}

@@ -1,0 +1,799 @@
+{
+  "card": {
+    "card_id": "5eb79d3e-5b66-43a5-8684-a5db344e81b6",
+    "created_at": "2026-07-16T22:40:33.413059Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "flagged_for_operator": [],
+    "gate_focus": "lo_ratification",
+    "gate_id": "G0R",
+    "lo_delta": [
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 7 Definition: \"Intrapreneurship: Acting like an entrepreneur, but driving the innovation from within the walls of an existing, established organization (e.g., a hospital system) while navigating its legacy constraints.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-001",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Chapter 1 Knowledge Check > Q1",
+              "quoted_span": "Intrapreneurship specifically refers to utilizing entrepreneurial principles to drive change and implement innovative solutions from inside an existing organization",
+              "source_id": "src-001"
+            }
+          ],
+          "statement": "Define intrapreneurship as utilizing entrepreneurial principles to drive change and implement innovative solutions from inside an existing organization.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-001",
+        "rationale_diff": "Tightened to the exact phrasing used in the course lexicon for assessability, replacing \"utilizing entrepreneurial principles\" with \"acting like an entrepreneur\" and adding \"navigating legacy constraints\" per Slide 7 definition: \"Intrapreneurship: Acting like an entrepreneur, but driving the innovation from within the walls of an existing, established organization ... while navigating its legacy constraints.\"",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Master References: \"Epstein, D. Range: Why Generalists Triumph in a Specialized World — source of the Kind vs. Wicked learning-environments framing and Functional Flexibility\"; Slide 9 On-Screen Text: \"Kind Learning Environment ...\" / \"Wicked Learning Environment (Functional Flexibility)\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-002",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Master References — C1M1 Part 1",
+              "quoted_span": "source of the Kind vs. Wicked learning-environments framing and Functional Flexibility",
+              "source_id": "src-002"
+            }
+          ],
+          "statement": "Identify Epstein’s Range as the source for the Kind vs. Wicked learning-environments framing and Functional Flexibility.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-002",
+        "rationale_diff": "Clarified the author/title and anchored to the explicit provenance note; aligns with Slide 9 terminology and Quiz Q4’s reference to Epstein’s concepts.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 1 Narration: \"You are practicing in an era of immense technological advancement and increasing system complexity.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "understand",
+          "confidence": "high",
+          "objective_id": "lo-g0-003",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 1",
+              "quoted_span": "You are practicing in an era of immense technological advancement and increasing system complexity.",
+              "source_id": "src-003"
+            }
+          ],
+          "statement": "Describe the current clinical era as one of immense technological advancement and increasing system complexity.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-003",
+        "rationale_diff": "Aligned wording to Slide 1 narration for direct assessability.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [
+              "explicit mission statement text labeling this shift as the program’s mission",
+              "verbatim phrase \"innovation leader shaping the system\""
+            ],
+            "rationale": "Slide 3 On-Screen Text: \"From Clinical Reactor → Systemic Innovator\"; Slide 6 Narration: \"When we talk about designing the system, we aren't speaking abstractly.\" The source does not present an explicit mission sentence using that phrasing.",
+            "suggested_followups": [
+              "special-artifact-guidance",
+              "external-content-expected"
+            ],
+            "verdict": "thin"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-004",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 10",
+              "quoted_span": "The Mission: Move from an employee *within* the system to an innovation leader *shaping* the system.",
+              "source_id": "src-004"
+            }
+          ],
+          "statement": "State the program’s mission as moving from an employee within the system to an innovation leader shaping the system.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-004",
+        "rationale_diff": "Recast the \"mission\" wording to the explicit program framing visible in the source, tying Slide 3 on-screen text to Slide 6’s language about \"designing the system.\"",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 11 Definition Text: \"Growth Mindset — the belief that clinical and leadership capabilities are not fixed traits, but can be developed through dedication and iteration.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-005",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 11",
+              "quoted_span": "the belief that clinical and leadership capabilities are not fixed traits, but can be developed through dedication and iteration.",
+              "source_id": "src-005"
+            }
+          ],
+          "statement": "Define Growth Mindset as the belief that clinical and leadership capabilities are not fixed but can be developed through dedication and iteration.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-005",
+        "rationale_diff": "Matched the exact definition presented on Slide 11 for precision; removed redundant phrasing.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 12 Definition Text: \"Psychological Safety — a shared belief that the environment is safe for interpersonal risk-taking.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-006",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 12",
+              "quoted_span": "a shared belief that the environment is safe for interpersonal risk-taking.",
+              "source_id": "src-006"
+            }
+          ],
+          "statement": "Define Psychological Safety as a shared belief that the environment is safe for interpersonal risk-taking.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-006",
+        "rationale_diff": "Adopted verbatim definition from Slide 12 for assessability and alignment with Edmondson.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 2 Narration: \"You have been expertly trained to follow evidence-based pathways, but likely not taught how to create the pathways of the future.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "understand",
+          "confidence": "high",
+          "objective_id": "lo-g0-007",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 2",
+              "quoted_span": "You have been expertly trained to follow evidence-based pathways, but likely not taught how to create the pathways of the future.",
+              "source_id": "src-007"
+            }
+          ],
+          "statement": "Contrast traditional training as following evidence-based pathways versus creating future pathways.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-007",
+        "rationale_diff": "Grounded the contrast in the precise phrasing of Slide 2 narration to make the comparison directly assessable.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [
+              "explicit, standalone definition text for \"innovation mindset\" in the provided span"
+            ],
+            "rationale": "Slide 3 On-Screen Text: \"From Clinical Reactor → Systemic Innovator\"; Slide 6 Narration: \"When we talk about designing the system...\"; Quiz Q3: \"How does the curriculum define adopting an 'innovation mindset' for the modern clinician?\" The excerpt lacks a standalone definition box or verbatim definition.",
+            "suggested_followups": [
+              "special-artifact-guidance",
+              "external-content-expected"
+            ],
+            "verdict": "thin"
+          },
+          "bloom_level": "understand",
+          "confidence": "high",
+          "objective_id": "lo-g0-008",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 3",
+              "quoted_span": "An innovation mindset is the internal conviction that you are not just an employee within a healthcare system, but a designer of it",
+              "source_id": "src-008"
+            }
+          ],
+          "statement": "Explain that an innovation mindset is the conviction that clinicians are designers of the healthcare system, not just employees within it.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-008",
+        "rationale_diff": "Replaced abstract phrasing with the source’s visible framing and language about designing the system (Slide 3 on-screen text; Slide 6 narration); acknowledged presence of the construct via Quiz Q3.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 4 Narration: \"The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-009",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 4",
+              "quoted_span": "The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.",
+              "source_id": "src-009"
+            }
+          ],
+          "statement": "Recognize that the course asserts the solution to healthcare’s challenges lies within clinicians themselves.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-009",
+        "rationale_diff": "Aligned to the exact course assertion in Slide 4; tightened phrasing for assessment.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [
+              "explicit titles/names of the three courses",
+              "sequence labels (e.g., C1/C2/C3) tied to those names in the provided text"
+            ],
+            "rationale": "Slide 5 Image Prompt: \"It features three distinct waypoints:\" (no course names provided in the excerpt).",
+            "suggested_followups": [
+              "external-content-expected",
+              "special-artifact-guidance"
+            ],
+            "verdict": "gap"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-010",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 5",
+              "quoted_span": "Course 1, which you are starting now, is 'Sparking Innovation: From Insight to Opportunity,' where you will learn to see your daily clinical world differently. Course 2 is 'Building the Solution: Design, Plan, and Pitch'. Finally, Course 3 is 'Driving Impact: From Project to Lasting Change,' where you bring your vision to life.",
+              "source_id": "src-010"
+            }
+          ],
+          "statement": "List the certificate’s three courses: Sparking Innovation; Building the Solution; Driving Impact.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-010",
+        "rationale_diff": "Specified an ordered list for clear assessment; however, the provided excerpt does not supply these titles explicitly.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Master References: \"Physician-innovator lineage examples cited in Slide 6: Dr. Thomas Fogarty (balloon embolectomy catheter).\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-011",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 6",
+              "quoted_span": "Consider Dr. Thomas Fogarty, who invented the balloon embolectomy catheter",
+              "source_id": "src-011"
+            }
+          ],
+          "statement": "Recall that Dr. Thomas Fogarty invented the balloon embolectomy catheter as a device innovation.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-011",
+        "rationale_diff": "No wording change needed; anchored to the provided lineage reference for assessability.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 7 Definition: \"Intrapreneurship: Acting like an entrepreneur, but driving the innovation from within the walls of an existing, established organization ... while navigating its legacy constraints.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "remember",
+          "confidence": "high",
+          "objective_id": "lo-g0-012",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 7",
+              "quoted_span": "Intrapreneurship: Acting like an entrepreneur, but driving the innovation from *within* the walls of an existing, established organization",
+              "source_id": "src-012"
+            }
+          ],
+          "statement": "Define intrapreneurship as acting like an entrepreneur while driving innovation from within an existing organization.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-012",
+        "rationale_diff": "Standardized duplicate LO to the exact Slide 7 definition for precision and consistency.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 8 Core Message: \"You cannot expect clinical staff to take the interpersonal risks required to innovate if there is no safety net for failure. Safety precedes innovation.\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "understand",
+          "confidence": "high",
+          "objective_id": "lo-g0-013",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 8",
+              "quoted_span": "You cannot expect clinical staff to take the interpersonal risks required to innovate if there is no safety net for failure. Safety precedes innovation.",
+              "source_id": "src-013"
+            }
+          ],
+          "statement": "Explain why safety precedes innovation, noting that risk-taking is unlikely without a safety net for failure.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-013",
+        "rationale_diff": "Aligned the causal language to Slide 8’s core message to make the explanation directly testable.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      },
+      {
+        "disposition": "refined-in-place",
+        "lo": {
+          "adequacy": {
+            "missing": [],
+            "rationale": "Slide 9 Core Message: \"Clinical training prepares you for a predictable environment; system innovation requires a diverse toolkit for an unpredictable environment.\"; Slide 9 On-Screen Text: \"Kind Learning Environment ...\" / \"Wicked Learning Environment (Functional Flexibility)\"",
+            "suggested_followups": [],
+            "verdict": "adequate"
+          },
+          "bloom_level": "understand",
+          "confidence": "high",
+          "objective_id": "lo-g0-014",
+          "origin": "g0",
+          "recommendation": "keep",
+          "source_refs": [
+            {
+              "locator": "Slide 9",
+              "quoted_span": "Clinical training prepares you for a predictable environment; system innovation requires a diverse toolkit for an unpredictable environment.",
+              "source_id": "src-014"
+            }
+          ],
+          "statement": "Differentiate between predictable clinical training environments and the unpredictable environments of system innovation.",
+          "status": "refined"
+        },
+        "merged_from": [],
+        "objective_id": "lo-g0-014",
+        "rationale_diff": "Added the course’s Kind vs. Wicked terminology from Slide 9 to make the distinction concrete and assessable.",
+        "split_into": [],
+        "transition": "provisional->refined"
+      }
+    ],
+    "meta": {
+      "affected_nodes": [
+        "g0-ratify-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Ratify the refined learning objectives + signed LO-delta (or edit/reject). Adequacy alerts are advisory; rule on any recommend-drop / proposed-new. Marcus proposes; you decide.",
+    "reconcile": {
+      "changed": 14,
+      "flagged_thin_or_gap": 3,
+      "g0_count": 14,
+      "irene_count": 14,
+      "proposed_new": 0,
+      "recommend_drop": 0
+    },
+    "refined_los": [
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 7 Definition: \"Intrapreneurship: Acting like an entrepreneur, but driving the innovation from within the walls of an existing, established organization (e.g., a hospital system) while navigating its legacy constraints.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-001",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Chapter 1 Knowledge Check > Q1",
+            "quoted_span": "Intrapreneurship specifically refers to utilizing entrepreneurial principles to drive change and implement innovative solutions from inside an existing organization",
+            "source_id": "src-001"
+          }
+        ],
+        "statement": "Define intrapreneurship as utilizing entrepreneurial principles to drive change and implement innovative solutions from inside an existing organization.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Master References: \"Epstein, D. Range: Why Generalists Triumph in a Specialized World — source of the Kind vs. Wicked learning-environments framing and Functional Flexibility\"; Slide 9 On-Screen Text: \"Kind Learning Environment ...\" / \"Wicked Learning Environment (Functional Flexibility)\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-002",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Master References — C1M1 Part 1",
+            "quoted_span": "source of the Kind vs. Wicked learning-environments framing and Functional Flexibility",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Identify Epstein’s Range as the source for the Kind vs. Wicked learning-environments framing and Functional Flexibility.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 1 Narration: \"You are practicing in an era of immense technological advancement and increasing system complexity.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "understand",
+        "confidence": "high",
+        "objective_id": "lo-g0-003",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 1",
+            "quoted_span": "You are practicing in an era of immense technological advancement and increasing system complexity.",
+            "source_id": "src-003"
+          }
+        ],
+        "statement": "Describe the current clinical era as one of immense technological advancement and increasing system complexity.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [
+            "explicit mission statement text labeling this shift as the program’s mission",
+            "verbatim phrase \"innovation leader shaping the system\""
+          ],
+          "rationale": "Slide 3 On-Screen Text: \"From Clinical Reactor → Systemic Innovator\"; Slide 6 Narration: \"When we talk about designing the system, we aren't speaking abstractly.\" The source does not present an explicit mission sentence using that phrasing.",
+          "suggested_followups": [
+            "special-artifact-guidance",
+            "external-content-expected"
+          ],
+          "verdict": "thin"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-004",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 10",
+            "quoted_span": "The Mission: Move from an employee *within* the system to an innovation leader *shaping* the system.",
+            "source_id": "src-004"
+          }
+        ],
+        "statement": "State the program’s mission as moving from an employee within the system to an innovation leader shaping the system.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 11 Definition Text: \"Growth Mindset — the belief that clinical and leadership capabilities are not fixed traits, but can be developed through dedication and iteration.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-005",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 11",
+            "quoted_span": "the belief that clinical and leadership capabilities are not fixed traits, but can be developed through dedication and iteration.",
+            "source_id": "src-005"
+          }
+        ],
+        "statement": "Define Growth Mindset as the belief that clinical and leadership capabilities are not fixed but can be developed through dedication and iteration.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 12 Definition Text: \"Psychological Safety — a shared belief that the environment is safe for interpersonal risk-taking.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-006",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 12",
+            "quoted_span": "a shared belief that the environment is safe for interpersonal risk-taking.",
+            "source_id": "src-006"
+          }
+        ],
+        "statement": "Define Psychological Safety as a shared belief that the environment is safe for interpersonal risk-taking.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 2 Narration: \"You have been expertly trained to follow evidence-based pathways, but likely not taught how to create the pathways of the future.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "understand",
+        "confidence": "high",
+        "objective_id": "lo-g0-007",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "You have been expertly trained to follow evidence-based pathways, but likely not taught how to create the pathways of the future.",
+            "source_id": "src-007"
+          }
+        ],
+        "statement": "Contrast traditional training as following evidence-based pathways versus creating future pathways.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [
+            "explicit, standalone definition text for \"innovation mindset\" in the provided span"
+          ],
+          "rationale": "Slide 3 On-Screen Text: \"From Clinical Reactor → Systemic Innovator\"; Slide 6 Narration: \"When we talk about designing the system...\"; Quiz Q3: \"How does the curriculum define adopting an 'innovation mindset' for the modern clinician?\" The excerpt lacks a standalone definition box or verbatim definition.",
+          "suggested_followups": [
+            "special-artifact-guidance",
+            "external-content-expected"
+          ],
+          "verdict": "thin"
+        },
+        "bloom_level": "understand",
+        "confidence": "high",
+        "objective_id": "lo-g0-008",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 3",
+            "quoted_span": "An innovation mindset is the internal conviction that you are not just an employee within a healthcare system, but a designer of it",
+            "source_id": "src-008"
+          }
+        ],
+        "statement": "Explain that an innovation mindset is the conviction that clinicians are designers of the healthcare system, not just employees within it.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 4 Narration: \"The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-009",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 4",
+            "quoted_span": "The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.",
+            "source_id": "src-009"
+          }
+        ],
+        "statement": "Recognize that the course asserts the solution to healthcare’s challenges lies within clinicians themselves.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [
+            "explicit titles/names of the three courses",
+            "sequence labels (e.g., C1/C2/C3) tied to those names in the provided text"
+          ],
+          "rationale": "Slide 5 Image Prompt: \"It features three distinct waypoints:\" (no course names provided in the excerpt).",
+          "suggested_followups": [
+            "external-content-expected",
+            "special-artifact-guidance"
+          ],
+          "verdict": "gap"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-010",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 5",
+            "quoted_span": "Course 1, which you are starting now, is 'Sparking Innovation: From Insight to Opportunity,' where you will learn to see your daily clinical world differently. Course 2 is 'Building the Solution: Design, Plan, and Pitch'. Finally, Course 3 is 'Driving Impact: From Project to Lasting Change,' where you bring your vision to life.",
+            "source_id": "src-010"
+          }
+        ],
+        "statement": "List the certificate’s three courses: Sparking Innovation; Building the Solution; Driving Impact.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Master References: \"Physician-innovator lineage examples cited in Slide 6: Dr. Thomas Fogarty (balloon embolectomy catheter).\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-011",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 6",
+            "quoted_span": "Consider Dr. Thomas Fogarty, who invented the balloon embolectomy catheter",
+            "source_id": "src-011"
+          }
+        ],
+        "statement": "Recall that Dr. Thomas Fogarty invented the balloon embolectomy catheter as a device innovation.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 7 Definition: \"Intrapreneurship: Acting like an entrepreneur, but driving the innovation from within the walls of an existing, established organization ... while navigating its legacy constraints.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "remember",
+        "confidence": "high",
+        "objective_id": "lo-g0-012",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 7",
+            "quoted_span": "Intrapreneurship: Acting like an entrepreneur, but driving the innovation from *within* the walls of an existing, established organization",
+            "source_id": "src-012"
+          }
+        ],
+        "statement": "Define intrapreneurship as acting like an entrepreneur while driving innovation from within an existing organization.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 8 Core Message: \"You cannot expect clinical staff to take the interpersonal risks required to innovate if there is no safety net for failure. Safety precedes innovation.\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "understand",
+        "confidence": "high",
+        "objective_id": "lo-g0-013",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 8",
+            "quoted_span": "You cannot expect clinical staff to take the interpersonal risks required to innovate if there is no safety net for failure. Safety precedes innovation.",
+            "source_id": "src-013"
+          }
+        ],
+        "statement": "Explain why safety precedes innovation, noting that risk-taking is unlikely without a safety net for failure.",
+        "status": "refined"
+      },
+      {
+        "adequacy": {
+          "missing": [],
+          "rationale": "Slide 9 Core Message: \"Clinical training prepares you for a predictable environment; system innovation requires a diverse toolkit for an unpredictable environment.\"; Slide 9 On-Screen Text: \"Kind Learning Environment ...\" / \"Wicked Learning Environment (Functional Flexibility)\"",
+          "suggested_followups": [],
+          "verdict": "adequate"
+        },
+        "bloom_level": "understand",
+        "confidence": "high",
+        "objective_id": "lo-g0-014",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 9",
+            "quoted_span": "Clinical training prepares you for a predictable environment; system innovation requires a diverse toolkit for an unpredictable environment.",
+            "source_id": "src-014"
+          }
+        ],
+        "statement": "Differentiate between predictable clinical training environments and the unpredictable environments of system innovation.",
+        "status": "refined"
+      }
+    ],
+    "schema_version": "v1",
+    "trial_id": "bc747b51-7009-4742-9f65-8de6abc29ca4",
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/checkpoint.json",
+  "digest": "REDACTED-DIGEST",
+  "issued_at": "2026-07-16T22:40:33.422365Z",
+  "server_nonce": "REDACTED-NONCE"
+}

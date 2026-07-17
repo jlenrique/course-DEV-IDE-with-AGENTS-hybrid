@@ -1,0 +1,1147 @@
+{
+  "card": {
+    "card_id": "eef1b67c-d562-4a05-8ccc-e25725663cf0",
+    "coverage_plan": {},
+    "created_at": "2026-07-16T22:34:56.107392Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "dissents": [
+      {
+        "against": "src-012-c001",
+        "disposition": "upheld",
+        "marcus_position": "typed src-012-c001 (Slide 7) as slide; a defensible alternative reading is reference_citation",
+        "operator_position": ""
+      }
+    ],
+    "enumeration_provenance": [
+      {
+        "connector": "local_file",
+        "locator": "assessments/chapter-1-knowledge-check.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-001"
+      },
+      {
+        "connector": "local_file",
+        "locator": "references/master-references.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-002"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-1-welcome-on-camera.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-003"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-10-part1-summary.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-004"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-11-growth-mindset.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-005"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-12-psychological-safety.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-006"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-2-trained-to-follow.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-007"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-3-designer-of-the-system.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-008"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-4-the-solution-is-you.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-009"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-5-heros-journey.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-010"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-6-lineage-of-physician-innovators.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-011"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-7-innovation-lexicon.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-012"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-8-tightrope-and-net.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-013"
+      },
+      {
+        "connector": "local_file",
+        "locator": "slides/slide-9-track-vs-jungle.md",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call",
+        "source_id": "src-014"
+      }
+    ],
+    "gate_focus": "source_enrichment",
+    "gate_id": "G0E",
+    "meta": {
+      "affected_nodes": [
+        "g0-enrichment-gate"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "operator_prompt": "Confirm the source TYPE manifest + candidate provisional LOs (or edit/reject). Marcus proposes; you decide.",
+    "provisional_los": [
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-001",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Chapter 1 Knowledge Check > Q1",
+            "quoted_span": "Intrapreneurship specifically refers to utilizing entrepreneurial principles to drive change and implement innovative solutions from inside an existing organization",
+            "source_id": "src-001"
+          }
+        ],
+        "statement": "Define intrapreneurship as utilizing entrepreneurial principles to drive change and implement innovative solutions from inside an existing organization.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-002",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Master References — C1M1 Part 1",
+            "quoted_span": "source of the Kind vs. Wicked learning-environments framing and Functional Flexibility",
+            "source_id": "src-002"
+          }
+        ],
+        "statement": "Identify Epstein’s Range as the source for the Kind vs. Wicked learning-environments framing and Functional Flexibility.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-003",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 1",
+            "quoted_span": "You are practicing in an era of immense technological advancement and increasing system complexity.",
+            "source_id": "src-003"
+          }
+        ],
+        "statement": "Describe the current clinical era as one of immense technological advancement and increasing system complexity.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-004",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 10",
+            "quoted_span": "The Mission: Move from an employee *within* the system to an innovation leader *shaping* the system.",
+            "source_id": "src-004"
+          }
+        ],
+        "statement": "State the program’s mission as moving from an employee within the system to an innovation leader shaping the system.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-005",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 11",
+            "quoted_span": "the belief that clinical and leadership capabilities are not fixed traits, but can be developed through dedication and iteration.",
+            "source_id": "src-005"
+          }
+        ],
+        "statement": "Define Growth Mindset as the belief that clinical and leadership capabilities are not fixed but can be developed through dedication and iteration.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-006",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 12",
+            "quoted_span": "a shared belief that the environment is safe for interpersonal risk-taking.",
+            "source_id": "src-006"
+          }
+        ],
+        "statement": "Define Psychological Safety as a shared belief that the environment is safe for interpersonal risk-taking.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-007",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 2",
+            "quoted_span": "You have been expertly trained to follow evidence-based pathways, but likely not taught how to create the pathways of the future.",
+            "source_id": "src-007"
+          }
+        ],
+        "statement": "Contrast traditional training as following evidence-based pathways versus creating future pathways.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-008",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 3",
+            "quoted_span": "An innovation mindset is the internal conviction that you are not just an employee within a healthcare system, but a designer of it",
+            "source_id": "src-008"
+          }
+        ],
+        "statement": "Explain that an innovation mindset is the conviction that clinicians are designers of the healthcare system, not just employees within it.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-009",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 4",
+            "quoted_span": "The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.",
+            "source_id": "src-009"
+          }
+        ],
+        "statement": "Recognize that the course asserts the solution to healthcare’s challenges lies within clinicians themselves.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-010",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 5",
+            "quoted_span": "Course 1, which you are starting now, is 'Sparking Innovation: From Insight to Opportunity,' where you will learn to see your daily clinical world differently. Course 2 is 'Building the Solution: Design, Plan, and Pitch'. Finally, Course 3 is 'Driving Impact: From Project to Lasting Change,' where you bring your vision to life.",
+            "source_id": "src-010"
+          }
+        ],
+        "statement": "List the certificate’s three courses: Sparking Innovation; Building the Solution; Driving Impact.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-011",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 6",
+            "quoted_span": "Consider Dr. Thomas Fogarty, who invented the balloon embolectomy catheter",
+            "source_id": "src-011"
+          }
+        ],
+        "statement": "Recall that Dr. Thomas Fogarty invented the balloon embolectomy catheter as a device innovation.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-012",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 7",
+            "quoted_span": "Intrapreneurship: Acting like an entrepreneur, but driving the innovation from *within* the walls of an existing, established organization",
+            "source_id": "src-012"
+          }
+        ],
+        "statement": "Define intrapreneurship as acting like an entrepreneur while driving innovation from within an existing organization.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-013",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 8",
+            "quoted_span": "You cannot expect clinical staff to take the interpersonal risks required to innovate if there is no safety net for failure. Safety precedes innovation.",
+            "source_id": "src-013"
+          }
+        ],
+        "statement": "Explain why safety precedes innovation, noting that risk-taking is unlikely without a safety net for failure.",
+        "status": "provisional"
+      },
+      {
+        "adequacy": null,
+        "bloom_level": null,
+        "confidence": "high",
+        "objective_id": "lo-g0-014",
+        "origin": "g0",
+        "recommendation": "keep",
+        "source_refs": [
+          {
+            "locator": "Slide 9",
+            "quoted_span": "Clinical training prepares you for a predictable environment; system innovation requires a diverse toolkit for an unpredictable environment.",
+            "source_id": "src-014"
+          }
+        ],
+        "statement": "Differentiate between predictable clinical training environments and the unpredictable environments of system innovation.",
+        "status": "provisional"
+      }
+    ],
+    "reconcile": {
+      "n_components": 64,
+      "n_files_covered": 14,
+      "n_files_ignored": 0,
+      "n_files_in": 14,
+      "n_flagged": 13,
+      "n_ungrounded": 12
+    },
+    "schema_version": "v1",
+    "traversal_roots": [
+      {
+        "kind": "corpus_dir",
+        "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call"
+      }
+    ],
+    "trial_id": "bc747b51-7009-4742-9f65-8de6abc29ca4",
+    "typed_components": [
+      {
+        "component_id": "src-001-c001",
+        "excerpt": "# Chapter 1 Knowledge Check: Setting the Stage (5 Questions)\n\nParsed as a lesson component for downstream use per operator directive",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Knowledge Check Overview",
+        "locator": "Chapter 1 Knowledge Check",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "quiz"
+      },
+      {
+        "component_id": "src-001-c002",
+        "excerpt": "**Question 1 (Remember): Multiple Choice** Which of the following best defines \"intrapreneurship\" according to the course's innovation lexicon?",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Q1: Intrapreneurship (MC, Remember)",
+        "locator": "Chapter 1 Knowledge Check > Q1",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "quiz"
+      },
+      {
+        "component_id": "src-001-c003",
+        "excerpt": "**Question 2 (Understand): Multiple Choice** Which of the following best describes the use of \"First Principles Thinking\" when approaching systemic healthcare problems?",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Q2: First Principles Thinking (MC, Understand)",
+        "locator": "Chapter 1 Knowledge Check > Q2",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "quiz"
+      },
+      {
+        "component_id": "src-001-c004",
+        "excerpt": "**Question 3 (Understand): Multiple Choice** How does the curriculum define adopting an \"innovation mindset\" for the modern clinician?",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Q3: Innovation Mindset (MC, Understand)",
+        "locator": "Chapter 1 Knowledge Check > Q3",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "quiz"
+      },
+      {
+        "component_id": "src-001-c005",
+        "excerpt": "**Question 4 (Understand): Multiple Choice** According to David Epstein's concepts discussed, why is \"functional flexibility\" crucial for a physician-innovator?",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Q4: Functional Flexibility (MC, Understand)",
+        "locator": "Chapter 1 Knowledge Check > Q4",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "quiz"
+      },
+      {
+        "component_id": "src-001-c006",
+        "excerpt": "**Question 5 (Understand): True/False** Statement: When evaluating systemic friction, high nursing turnover is considered a root cause, whereas a broken electronic health record (EHR) triage workflow is a symptom.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Q5: Root Cause vs Symptom (T/F, Understand)",
+        "locator": "Chapter 1 Knowledge Check > Q5",
+        "other_type": null,
+        "parent_source_id": "src-001",
+        "source_type": "quiz"
+      },
+      {
+        "component_id": "src-002-c001",
+        "excerpt": "Culled from the Part 1 slide notes per operator directive (appended to the Workbook via the references channel).",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "References Provenance Note",
+        "locator": "Master References — C1M1 Part 1",
+        "other_type": {
+          "kind": "other",
+          "label": "references-provenance-note",
+          "provenance": "Contextual note about source compilation and routing to workbook references"
+        },
+        "parent_source_id": "src-002",
+        "source_type": "other"
+      },
+      {
+        "component_id": "src-002-c002",
+        "excerpt": "- National Academy of Medicine (NAM). (2019). *Taking Action Against Clinician Burnout: A Systems Approach to Professional Well-Being.*",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Reference: NAM 2019 Clinician Burnout",
+        "locator": "Master References — C1M1 Part 1",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-002-c003",
+        "excerpt": "- Dweck, C. *Mindset: The New Psychology of Success* — origin of the Growth Mindset construct cited in the Expectations narration.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Reference: Dweck — Mindset",
+        "locator": "Master References — C1M1 Part 1",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-002-c004",
+        "excerpt": "- Edmondson, A. — Psychological Safety: a shared belief that the team environment is safe for interpersonal risk-taking; cited in the Expectations narration",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Reference: Edmondson — Psychological Safety",
+        "locator": "Master References — C1M1 Part 1",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-002-c005",
+        "excerpt": "- Epstein, D. *Range: Why Generalists Triumph in a Specialized World* — source of the Kind vs. Wicked learning-environments framing and Functional Flexibility",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Reference: Epstein — Range",
+        "locator": "Master References — C1M1 Part 1",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-002-c006",
+        "excerpt": "- Physician-innovator lineage examples cited in Slide 6: Dr. Thomas Fogarty (balloon embolectomy catheter); Dr. Peter Pronovost (central line checklist); Dr. Patricia Bath (Laserphaco Probe).",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Reference: Physician-innovator lineage examples",
+        "locator": "Master References — C1M1 Part 1",
+        "other_type": null,
+        "parent_source_id": "src-002",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-003-c001",
+        "excerpt": "# **Slide 1: Welcome — The Modern Clinician's Era (Intro Beat 1 of 4, Motion)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 1 Title",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-003-c002",
+        "excerpt": "- **Visual Format:** Motion video beat (0:00–0:15, On-Camera). Dr. Naik centered on screen in a professional, well-lit office or clinical setting.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 1 Visual Format",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-003-c003",
+        "excerpt": "- **On-Screen Text (Lower Third):** Tejal Naik, M.D. | Hospitalist & Entrepreneur-in-Residence",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 1 Lower Third",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-003-c004",
+        "excerpt": "> *Cinematic, 4k resolution video of a modern hospital environment. A physician looking thoughtfully at a computer screen, soft natural light, shallow depth of field.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 1 B-Roll Prompt",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-003-c005",
+        "excerpt": "Narration (Speaker Notes): \"Welcome. I am Dr. Tejal Naik. You are practicing in an era of immense technological advancement and increasing system complexity.\"",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 1 Narration",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-003-c006",
+        "excerpt": "• **References:** National Academy of Medicine (NAM). (2019). Taking Action Against Clinician Burnout: A Systems Approach to Professional Well-Being.",
+        "flagged_unconsumed": true,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 1 Reference",
+        "locator": "Slide 1",
+        "other_type": null,
+        "parent_source_id": "src-003",
+        "source_type": "reference_citation"
+      },
+      {
+        "component_id": "src-004-c001",
+        "excerpt": "# **Slide 10: Part 1 Summary — Setting the Stage**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 10 Title",
+        "locator": "Slide 10",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-004-c002",
+        "excerpt": "- **Visual Format:** Bulleted recap with a forward-pointing arrow.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 10 Visual Format",
+        "locator": "Slide 10",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-004-c003",
+        "excerpt": "- **The Gap:** Traditional training creates clinical experts, but not necessarily system innovators.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 10 Key Summary Point",
+        "locator": "Slide 10",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-004-c004",
+        "excerpt": "Narration (Speaker Notes): \"Let's summarize what we have covered. You have established your mental framework and embraced the concept of 'Range.'",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 10 Narration",
+        "locator": "Slide 10",
+        "other_type": null,
+        "parent_source_id": "src-004",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-005-c001",
+        "excerpt": "# **Slide 11: Expectations — The Growth Mindset (Standalone Block 1 of 2)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 11 Title",
+        "locator": "Slide 11",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-005-c002",
+        "excerpt": "- **Visual Format:** Column visual with imagery describing growth mindset, carrying its formal definition.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 11 Visual Format",
+        "locator": "Slide 11",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-005-c003",
+        "excerpt": "**Growth Mindset** — the belief that clinical and leadership capabilities are not fixed traits, but can be developed through dedication and iteration.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 11 Definition Text",
+        "locator": "Slide 11",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-005-c004",
+        "excerpt": "Narration (Speaker Notes): \"To navigate this lineage, you must cultivate two foundational elements: a Growth Mindset and Psychological Safety.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 11 Narration",
+        "locator": "Slide 11",
+        "other_type": null,
+        "parent_source_id": "src-005",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-006-c001",
+        "excerpt": "# **Slide 12: Expectations — Psychological Safety (Standalone Block 2 of 2)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 12 Title",
+        "locator": "Slide 12",
+        "other_type": null,
+        "parent_source_id": "src-006",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-006-c002",
+        "excerpt": "- **Visual Format:** Column visual with imagery describing psychological safety, carrying its formal definition.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 12 Visual Format",
+        "locator": "Slide 12",
+        "other_type": null,
+        "parent_source_id": "src-006",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-006-c003",
+        "excerpt": "**Psychological Safety** — a shared belief that the environment is safe for interpersonal risk-taking.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 12 Definition Text",
+        "locator": "Slide 12",
+        "other_type": null,
+        "parent_source_id": "src-006",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-006-c004",
+        "excerpt": "Narration (Speaker Notes): \"But a growth mindset cannot survive without psychological safety. Amy Edmondson defines this as a shared belief that the environment is safe for interpersonal risk-taking.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 12 Narration",
+        "locator": "Slide 12",
+        "other_type": null,
+        "parent_source_id": "src-006",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-007-c001",
+        "excerpt": "# **Slide 2: Trained to Follow, Not Yet to Create (Intro Beat 2 of 4, Motion)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 2 Title",
+        "locator": "Slide 2",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-007-c002",
+        "excerpt": "- **Visual Format:** Motion video beat (0:15–0:30, B-Roll Overlay). Footage of a busy hospital corridor blurred in the background",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 2 Visual Format",
+        "locator": "Slide 2",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-007-c003",
+        "excerpt": "> *High-quality b-roll of a busy nursing station, fast-paced but professional; close-up of a fatigued physician scrolling a dense EHR interface.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 2 B-Roll Prompt",
+        "locator": "Slide 2",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-007-c004",
+        "excerpt": "Narration (Speaker Notes): \"You have been expertly trained to follow evidence-based pathways, but likely not taught how to create the pathways of the future.\"",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 2 Narration",
+        "locator": "Slide 2",
+        "other_type": null,
+        "parent_source_id": "src-007",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-008-c001",
+        "excerpt": "# **Slide 3: From Clinical Reactor to Systemic Innovator (Intro Beat 3 of 4, Motion)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 3 Title",
+        "locator": "Slide 3",
+        "other_type": null,
+        "parent_source_id": "src-008",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-008-c002",
+        "excerpt": "- **Visual Format:** Motion video beat (0:30–0:45, On-Camera). Return to Dr. Naik, speaking with a forward-leaning, encouraging posture.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 3 Visual Format",
+        "locator": "Slide 3",
+        "other_type": null,
+        "parent_source_id": "src-008",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-008-c003",
+        "excerpt": "- **On-Screen Text:** From Clinical Reactor → Systemic Innovator",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 3 On-Screen Text",
+        "locator": "Slide 3",
+        "other_type": null,
+        "parent_source_id": "src-008",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-008-c004",
+        "excerpt": "Narration (Speaker Notes): \"The primary barrier to change is rarely a lack of ideas; it is the absence of a structured process and the psychological safety to pursue them.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 3 Narration",
+        "locator": "Slide 3",
+        "other_type": null,
+        "parent_source_id": "src-008",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-009-c001",
+        "excerpt": "# **Slide 4: The Solution Lies Dormant Within You (Intro Beat 4 of 4, Motion)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 4 Title",
+        "locator": "Slide 4",
+        "other_type": null,
+        "parent_source_id": "src-009",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-009-c002",
+        "excerpt": "- **Visual Format:** Motion video beat (0:45–1:00, Animation Overlay). A simple animation showing a traditional clinical pathway diverging",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 4 Visual Format",
+        "locator": "Slide 4",
+        "other_type": null,
+        "parent_source_id": "src-009",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-009-c003",
+        "excerpt": "Narration (Speaker Notes): \"The solution to healthcare's biggest challenges lies dormant within its most valuable asset: you.\"",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 4 Narration",
+        "locator": "Slide 4",
+        "other_type": null,
+        "parent_source_id": "src-009",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-010-c001",
+        "excerpt": "# **Slide 5: The Innovator's \"Hero's Journey\"**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 5 Title",
+        "locator": "Slide 5",
+        "other_type": null,
+        "parent_source_id": "src-010",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-010-c002",
+        "excerpt": "- **Visual Format:** High-Quality Infographic / Roadmap Diagram.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 5 Visual Format",
+        "locator": "Slide 5",
+        "other_type": null,
+        "parent_source_id": "src-010",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-010-c003",
+        "excerpt": "> *A clean, modern corporate infographic of a horizontal winding roadmap titled 'The Innovator's Journey'. It features three distinct waypoints:",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 5 Image Prompt",
+        "locator": "Slide 5",
+        "other_type": null,
+        "parent_source_id": "src-010",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-010-c004",
+        "excerpt": "Narration (Speaker Notes): \"This certificate is designed to unlock a skill set you already possess as clinicians. We will treat this program as a personal and professional quest—an adaptation of the classic Hero's Journey.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 5 Narration",
+        "locator": "Slide 5",
+        "other_type": null,
+        "parent_source_id": "src-010",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-011-c001",
+        "excerpt": "# **Slide 6: The Lineage of Physician Innovators**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 6 Title",
+        "locator": "Slide 6",
+        "other_type": null,
+        "parent_source_id": "src-011",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-011-c002",
+        "excerpt": "- **Visual Format:** A split-screen or four-quadrant profile slide highlighting diverse innovation types (Process, Device, System, Organizational).",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 6 Visual Format",
+        "locator": "Slide 6",
+        "other_type": null,
+        "parent_source_id": "src-011",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-011-c003",
+        "excerpt": "Narration (Speaker Notes): \"When we talk about designing the system, we aren't speaking abstractly. Physicians have always been at the vanguard of innovation.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 6 Narration",
+        "locator": "Slide 6",
+        "other_type": null,
+        "parent_source_id": "src-011",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-012-c001",
+        "excerpt": "# **Slide 7: The Innovation Lexicon (Definition Box)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 7 Title",
+        "locator": "Slide 7",
+        "other_type": null,
+        "parent_source_id": "src-012",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-012-c002",
+        "excerpt": "- **Visual Format:** A clean, high-contrast \"Reference Box\" slide that learners can screenshot or download.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 7 Visual Format",
+        "locator": "Slide 7",
+        "other_type": null,
+        "parent_source_id": "src-012",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-012-c003",
+        "excerpt": "**Intrapreneurship:** Acting like an entrepreneur, but driving the innovation from *within* the walls of an existing, established organization (e.g., a hospital system) while navigating its legacy constraints.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 7 Definition: Intrapreneurship",
+        "locator": "Slide 7",
+        "other_type": null,
+        "parent_source_id": "src-012",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-012-c004",
+        "excerpt": "Narration (Speaker Notes): \"Before we dive into problem framing, we must establish a shared language. In this program, words have very specific meanings.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 7 Narration",
+        "locator": "Slide 7",
+        "other_type": null,
+        "parent_source_id": "src-012",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-013-c001",
+        "excerpt": "# **Slide 8: The Tightrope & The Net (Psychological Safety Deep-Dive)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 8 Title",
+        "locator": "Slide 8",
+        "other_type": null,
+        "parent_source_id": "src-013",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-013-c002",
+        "excerpt": "You cannot expect clinical staff to take the interpersonal risks required to innovate if there is no safety net for failure. Safety precedes innovation.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 8 Core Message",
+        "locator": "Slide 8",
+        "other_type": null,
+        "parent_source_id": "src-013",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-013-c003",
+        "excerpt": "- **Visual Format:** A 50/50 split-screen graphic.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 8 Visual Format",
+        "locator": "Slide 8",
+        "other_type": null,
+        "parent_source_id": "src-013",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-013-c004",
+        "excerpt": "> *Left Side (No Safety): A clinician balancing on a high, thin tightrope over a dark, empty abyss with no net",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 8 Image Prompt",
+        "locator": "Slide 8",
+        "other_type": null,
+        "parent_source_id": "src-013",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-013-c005",
+        "excerpt": "- **On-Screen Text:** Left header: \"No Safety Net: Compliance & Fear\" - Right header: \"Psychological Safety: Innovation & Risk-Taking\"",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 8 On-Screen Text",
+        "locator": "Slide 8",
+        "other_type": null,
+        "parent_source_id": "src-013",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-013-c006",
+        "excerpt": "Narration (Speaker Notes): \"We defined Psychological Safety as a prerequisite for innovation, but let's visualize why. Imagine asking your clinical team to walk a tightrope—",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 8 Narration",
+        "locator": "Slide 8",
+        "other_type": null,
+        "parent_source_id": "src-013",
+        "source_type": "narration"
+      },
+      {
+        "component_id": "src-014-c001",
+        "excerpt": "# **Slide 9: The Track vs. The Jungle (Functional Flexibility Deep-Dive)**",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 9 Title",
+        "locator": "Slide 9",
+        "other_type": null,
+        "parent_source_id": "src-014",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-014-c002",
+        "excerpt": "- **Core Message:** Clinical training prepares you for a predictable environment; system innovation requires a diverse toolkit for an unpredictable environment.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 9 Core Message",
+        "locator": "Slide 9",
+        "other_type": null,
+        "parent_source_id": "src-014",
+        "source_type": "slide"
+      },
+      {
+        "component_id": "src-014-c003",
+        "excerpt": "- **Visual Format:** A strict 50/50 split-screen graphic.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 9 Visual Format",
+        "locator": "Slide 9",
+        "other_type": null,
+        "parent_source_id": "src-014",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-014-c004",
+        "excerpt": "> *Left Side (The Track): A sterile, brightly lit, red Olympic running track with clear white lines and perfectly spaced hurdles; a runner in a starting block.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 9 Image Prompt",
+        "locator": "Slide 9",
+        "other_type": null,
+        "parent_source_id": "src-014",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-014-c005",
+        "excerpt": "- **On-Screen Text:** Left header: \"Kind Learning Environment (Clinical Specialization)\" - Right header: \"Wicked Learning Environment (Functional Flexibility)\"",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": false,
+        "kind": null,
+        "label": "Slide 9 On-Screen Text",
+        "locator": "Slide 9",
+        "other_type": null,
+        "parent_source_id": "src-014",
+        "source_type": "motion_script_storyboard"
+      },
+      {
+        "component_id": "src-014-c006",
+        "excerpt": "Narration (Speaker Notes): \"To survive the hospital blueprint, you must develop 'Range.' As a clinician, you were trained on the track—a 'Kind' environment where the rules are clear and the hurdles are visible.",
+        "flagged_unconsumed": false,
+        "flagged_ungrounded": true,
+        "kind": null,
+        "label": "Slide 9 Narration",
+        "locator": "Slide 9",
+        "other_type": null,
+        "parent_source_id": "src-014",
+        "source_type": "narration"
+      }
+    ],
+    "verb": "approve"
+  },
+  "checkpoint_path": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/checkpoint.json",
+  "digest": "REDACTED-DIGEST",
+  "issued_at": "2026-07-16T22:34:56.108395Z",
+  "server_nonce": "REDACTED-NONCE"
+}
