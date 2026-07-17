@@ -1835,6 +1835,24 @@ development_status:
   42-8-ngrok-reserved-public-hud-tunnel: done  # 2026-07-17 dev complete + review PASS + LIVE-PROVEN (ran ngrok http --domain=<operator dev-domain> 8792 -> tunnel up at the stable URL). Additive ngrok mode (from_env/tunnel_argv/NGROK_AUTHTOKEN child-env/URL surfaced); reuses 42-2 lifecycle+CREATE_NO_WINDOW; 42-4 scrub intact (public.py untouched); cloudflare/tailscale kept. 59 hud/notify tests, lockstep 0, ruff/import-linter/TW-7c-4 clean. Operator .env wired (mode+domain; token in ngrok.yml).
   epic-42-retrospective: optional
 
+  # === Epic 43 — HIL Surface Tabular Coverage (green-lit 5/5 SIGN-WITH-RIDERS 2026-07-17; party-greenlight-epic-43-2026-07-17.md) ===
+  # Reopens `hil-operator-surfaces-must-be-tabular` (42-1 closed on only the G0/G0E slice). Scope: ALL gates. Two code audits 2026-07-17 established the defect inventory (epic spec §2). Pure-render, replay-tested vs runs 5169a872 + bc747b51, zero live spend. Dispatch order: 43-0 → 43-2 → 43-10 → 43-1 → 43-3 → 43-4 → 43-5 → 43-6 → 43-8 → 43-7 → 43-9 → 43-11 → 43-12.
+  epic-43-hil-surface-tabular-coverage: backlog
+  43-0-replay-fixtures-capture: backlog  # Slab-0 prerequisite (rider R2): freeze real directive.yaml / decision-card-*.json / poll-surface dicts from 5169a872 + bc747b51 as test fixtures before any renderer
+  43-2-generic-gate-content-table-registry: backlog  # Slab 1 (rider R1: lands FIRST) — generic poll-surface-dict → stderr table + renderer registry; wire _emit_gate_surface_if_paused for all paused gates; fix recover/resume-batch to call the projector; bounded nested-value summarize
+  43-10-projector-coverage-registry-test: backlog  # Slab 4 but lands RED-first (rider R3) — registry test asserts every gate content type has a renderer; shrinking known-unrendered allowlist 15→0; 43-12 fails if non-empty
+  43-1-g0-directive-source-inventory-table: backlog  # Slab 1 — G0 directive bespoke renderer (3 pins); kill trial.py:364 read_text dump; c/e/s/x preserved, [e]dit opens raw YAML; columns ref_id·role·locator·min-words·excluded·brief-desc, primary-first, header+counts footer
+  43-3-variant-mode-selection-renderer: backlog  # Slab 2 — G2B per-slide mode (section_05_5) + G2M A/B variant (section_07b)
+  43-4-voice-candidate-selection-renderer: backlog  # Slab 2 — G4A voice candidates (section_11)
+  43-5-plan-unit-estimator-constants-renderer: backlog  # Slab 2 — G1A plan-unit (section_04a) + G1.5 estimator (section_04_5) + run-constants (section_04_55)
+  43-6-build-target-list-renderers: backlog  # Slab 3 — literal-visual (section_06b) + storyboard targets (section_07c) + G3B storyboard/live-URL (section_08b)
+  43-8-input-package-final-handoff-renderers: backlog  # Slab 3 — G4B input-package (section_11b) + G5 final handoff (section_15)
+  43-7-motion-plan-clip-renderers: backlog  # Slab 3, sequenced LAST (rider R6) — G2.5 motion-plan (section_07d) + G2F motion-clip (section_07f)
+  43-9-research-packet-workbook-renderers: backlog  # Slab 3, sequenced LAST (rider R6) — research packets + workbook content
+  43-11-spoc-narration-projector-unification: backlog  # Slab 4 — unify marcus_spoc narration + tabular projector on shared builders OR parity/anti-drift test (rider R5 raw-access affordance defined epic-wide)
+  43-12-governance-close-requirement-reopen: backlog  # Slab 4 — reopen/split hil-operator-surfaces-must-be-tabular with each named surface as its own AC; correct 42-1 closure record honestly; assert 43-10 allowlist empty; epic retrospective
+  epic-43-retrospective: optional
+
 action_items:
   - epic: 38
     action: "Strip 'Correct Answer:' lines from projected quiz exercises in workbook_enrichment._project_exercises (answer_keys is the channel) before Epic-39-line dev opens"
