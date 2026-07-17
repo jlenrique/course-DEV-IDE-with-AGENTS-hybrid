@@ -572,10 +572,37 @@ The operator HUD is served from `localhost` as the authority (GET-only, zero-mut
 
    The launcher runs `tailscale serve --bg http://127.0.0.1:8792`; the page is reachable at `https://<machine>.<tailnet>.ts.net` to your tailnet devices only. Identity is enforced by your tailnet ACL — no anonymous access. (Teardown between runs, if desired: `tailscale serve --https=443 off`.)
 
+### ngrok reserved domain — one stable, no-login public URL (Story 42-8)
+
+The operator directed a **plain, stable, no-login** public URL for this HUD: nothing proprietary is shown and the surface is read-only, so an anonymous public URL is acceptable here. `ngrok` with a **reserved domain** gives you ONE unchanging `https://` URL you can open from any device, run after run. (The non-leak positive-allowlist scrub still applies — free belt-and-suspenders.)
+
+Everything is configured from `.env` — **no separate `ngrok config add-authtoken` step is required** (though it still works if you prefer it):
+
+1. **Install ngrok** on the run machine (the `ngrok` binary must be on `PATH`, or set `HUD_TUNNEL_NGROK_BIN` to its full path). See <https://ngrok.com/download>.
+2. **Reserve a domain** in the ngrok dashboard (Universal Gateway → Domains → *New Domain*). A free static domain looks like `something.ngrok-free.app`; a paid plan lets you use a custom domain. This reserved domain is what keeps the URL **stable run-to-run** (without it, ngrok would hand out a random per-run URL).
+3. **Copy your authtoken** from the ngrok dashboard (Getting Started → Your Authtoken).
+4. **Set the env vars** in `.env` (gitignored — the authtoken is a secret):
+
+   ```
+   HUD_TUNNEL_MODE=ngrok
+   HUD_TUNNEL_NGROK_DOMAIN=something.ngrok-free.app
+   HUD_TUNNEL_NGROK_AUTHTOKEN=<your ngrok authtoken>
+   HUD_PUBLIC_PORT=8792
+   ```
+
+   That's it. The launcher runs `ngrok http --domain=something.ngrok-free.app 8792` and hands the authtoken to the ngrok child **through its process environment** (`NGROK_AUTHTOKEN`) — so the secret never appears on the command line, in a log, or on the wire. The stable URL `https://something.ngrok-free.app` is logged at launch and written to `.hud-public-url` in the run dir.
+
+   - **Authtoken source is your choice.** If you omit `HUD_TUNNEL_NGROK_AUTHTOKEN`, the launcher leaves authentication to ngrok's own config — so a prior `ngrok config add-authtoken <token>` on the run machine also works. The `.env` path is preferred (one place, no extra CLI step).
+   - **Bin override:** set `HUD_TUNNEL_NGROK_BIN` if `ngrok` is not on `PATH`.
+   - If `HUD_TUNNEL_NGROK_DOMAIN` is absent, the ngrok overlay is **inert** (the launcher refuses to open a random per-run quick-tunnel) and the run is unaffected — exactly like the other modes when unconfigured.
+
+> **ngrok-free interstitial note.** On the free tier, an anonymous visitor first sees a one-click **"You are about to visit …"** ngrok warning page before the HUD loads. This is expected and harmless for a self-viewed read-only HUD — just click through. To skip it, either send the `ngrok-skip-browser-warning` request header (any value) or use a paid ngrok plan. It does **not** affect the stability of the reserved-domain URL.
+
 ### Validation checklist (operator-gated live leg)
 
 - [ ] With no `HUD_TUNNEL_MODE`, start a run: local HUD works at `http://localhost:8791`; no overlay child spawns (overlay absence never affects the run).
 - [ ] With Cloudflare config set, start a run: `hud.yourdomain.com` prompts for identity (login/MFA or emailed PIN); an un-allowlisted identity is denied.
+- [ ] With ngrok config set (`HUD_TUNNEL_MODE=ngrok` + reserved `HUD_TUNNEL_NGROK_DOMAIN` + `HUD_TUNNEL_NGROK_AUTHTOKEN`), start a run: the reserved `https://<domain>` is reachable (no login) and is the **same** URL on a second run; a free-tier visitor clicks through the ngrok interstitial once. Confirm the authtoken appears in **no** log line.
 - [ ] After authenticating, the page renders status/gate/progress/roster/settings/trace and updates live.
 - [ ] Open the page from a **second device** (phone) — reachable at the same URL under identity.
 - [ ] **Non-leak spot check**: view-source / DevTools on the public page and on `GET /projection` — confirm no launch nonce, no `resume`/paste command, no decision-card evidence, no file paths. (The hermetic test enforces this in code; this is the live confirmation.)

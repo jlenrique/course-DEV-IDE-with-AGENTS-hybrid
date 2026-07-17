@@ -5,11 +5,27 @@ status: ready-for-dev   # operator-directed 2026-07-17: add an ngrok-reserved (s
 depends_on: 42-4
 gate_mode: single-gate   # additive tunnel mode; app/hud/** + preflight (lockstep glob) but hermetic + additive
 lockstep: true   # app/hud/** glob + preflight tunnel plumbing
+baseline_commit: cf7df4fd   # dev-open baseline 2026-07-17 (post-41-4)
 ---
 
 # Story 42.8: ngrok-reserved public HUD tunnel mode — one stable, no-login read-only URL
 
-Status: ready-for-dev  # operator directive: stable anonymous public URL via ngrok reserved domain
+Status: done  # 2026-07-17 dev complete + review PASS + LIVE-PROVEN with the operator's real ngrok Dev Domain
+
+## Dev Agent Record + Review — 2026-07-17
+
+**Dev complete (fresh Claude dev agent, anti-orphan: no stash-baseline). Reviewed inline + LIVE-WITNESSED. APPROVE.**
+
+### What landed (additive `ngrok` mode)
+- `app/marcus/orchestrator/preflight.py`: `PUBLIC_OVERLAY_MODES += "ngrok"`; `PublicOverlayConfig` + `ngrok_domain/ngrok_authtoken/ngrok_bin`; `from_env` ngrok branch (absent domain → inert, never a random quick-tunnel); `tunnel_argv` = `ngrok http --domain=<reserved> <8792>` (token NEVER on argv); new `public_overlay_url` + `.hud-public-url` sentinel emit + `PublicOverlayHandles.public_url` (URL surfaced: logged + sentinel); `_tunnel_child_env` overlays `NGROK_AUTHTOKEN` onto the child env ONLY (first-class `.env` authtoken path per operator clarification — no `ngrok config add-authtoken` step required; absent → falls back to the operator's own `ngrok.yml`). Reuses 42-2 `_status_aware_teardown` + `_no_window_creationflags` (windowless child).
+- `docs/admin-guide.md`: ngrok reserved-domain recipe + `NGROK_AUTHTOKEN`-via-env note + ngrok-free interstitial (`ngrok-skip-browser-warning`) note + checklist.
+- `tests/hud/test_public_surface_readonly_and_nonleak.py`: +9 hermetic ngrok tests (mocked spawn).
+
+### Review verification
+- **LIVE-PROVEN (better than the mock):** orchestrator ran the exact argv `ngrok http --domain=deplete-courier-blurt.ngrok-free.dev 8792` against the operator's real free-plan ngrok account → tunnel started at `https://deplete-courier-blurt.ngrok-free.dev` (the free `--domain=` form works). The operator's `.env` is wired (`HUD_TUNNEL_MODE=ngrok` + `HUD_TUNNEL_NGROK_DOMAIN=…`; authtoken in `ngrok.yml`, not duplicated in `.env`).
+- ngrok tests + `tests/hud/` + `tests/notify/` = 59 passed; lockstep exit 0; ruff clean; import-linter 18/0; TW-7c-4 exit 0. Scope = `preflight.py` + `admin-guide.md` + the test file (public.py untouched → 42-4 scrub intact; cloudflare/tailscale modes kept, guarded by `test_existing_modes_unaffected_by_ngrok_addition`). Secret hygiene pinned (`test_ngrok_authtoken_flows_via_child_env_never_argv_or_log`).
+
+**Findings:** none. Read-only + non-leak scrub preserved; token never leaves the child env; stable URL constant run-to-run.
 
 ## Story
 

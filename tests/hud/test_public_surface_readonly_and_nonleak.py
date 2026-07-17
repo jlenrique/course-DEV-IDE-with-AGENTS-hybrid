@@ -11,6 +11,7 @@ DOES echo them (the contrast proves the test has teeth).
 
 from __future__ import annotations
 
+import logging
 import subprocess
 import sys
 import uuid
@@ -32,8 +33,10 @@ from app.hud.public import (
 )
 from app.hud.server import create_hud_app
 from app.marcus.orchestrator.preflight import (
+    HUD_PUBLIC_URL_SENTINEL_NAME,
     PublicOverlayConfig,
     launch_public_overlay,
+    public_overlay_url,
     tunnel_argv,
 )
 from app.models.runtime.operator_surface import (
@@ -540,3 +543,222 @@ def test_tunnel_launch_failure_degrades_reach_not_run(
     # NEVER raises; app is up, tunnel failed → reach degraded, run intact.
     assert result.status == "tunnel-failed"
     assert result.app_proc is not None
+
+
+# ==========================================================================
+# (g) ngrok reserved-domain mode — one stable, no-login public URL (Story 42.8)
+#
+# ADDITIVE alongside cloudflare/tailscale. The reserved --domain makes the URL
+# stable (never a random --url quick-tunnel); the authtoken is a SECRET that
+# rides the child's NGROK_AUTHTOKEN env ONLY — never the argv, a log, or the URL.
+# ==========================================================================
+
+_NGROK_DOMAIN = "marcus-hud.ngrok-free.app"
+_NGROK_TOKEN = "SENTINEL-NGROK-AUTHTOKEN-2xSECRET"
+
+
+def test_ngrok_tunnel_argv_is_reserved_domain_never_quick_tunnel() -> None:
+    # (a) mode=ngrok + domain → `ngrok http --domain=<domain> 8792`, no --url.
+    cfg = PublicOverlayConfig.from_env(
+        {
+            "HUD_TUNNEL_MODE": "ngrok",
+            "HUD_TUNNEL_NGROK_DOMAIN": _NGROK_DOMAIN,
+            "HUD_PUBLIC_PORT": "8792",
+        }
+    )
+    assert cfg is not None and cfg.mode == "ngrok"
+    argv = tunnel_argv(cfg)
+    assert argv == ["ngrok", "http", f"--domain={_NGROK_DOMAIN}", "8792"]
+    assert "--url" not in argv  # never a random per-run quick-tunnel
+
+
+def test_ngrok_bin_override_is_honored() -> None:
+    cfg = PublicOverlayConfig.from_env(
+        {
+            "HUD_TUNNEL_MODE": "ngrok",
+            "HUD_TUNNEL_NGROK_DOMAIN": _NGROK_DOMAIN,
+            "HUD_TUNNEL_NGROK_BIN": r"C:\tools\ngrok.exe",
+        }
+    )
+    assert cfg is not None
+    assert tunnel_argv(cfg)[0] == r"C:\tools\ngrok.exe"
+
+
+def test_ngrok_absent_domain_is_inert() -> None:
+    # (b) mode=ngrok but NO reserved domain → unconfigured (never a quick-tunnel).
+    assert PublicOverlayConfig.from_env({"HUD_TUNNEL_MODE": "ngrok"}) is None
+    assert (
+        PublicOverlayConfig.from_env(
+            {"HUD_TUNNEL_MODE": "ngrok", "HUD_TUNNEL_NGROK_AUTHTOKEN": _NGROK_TOKEN}
+        )
+        is None
+    )
+
+
+def test_ngrok_child_spawns_windowless_and_registers_teardown(
+    run_dir: Path, bound_trial_id: uuid.UUID, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # (c) the ngrok child spawns CREATE_NO_WINDOW on win32 AND registers the
+    # 42-2 status-aware teardown (same lifecycle owner as the cloudflare child).
+    from app.marcus.orchestrator import preflight as preflight_mod
+
+    cfg = PublicOverlayConfig.from_env(
+        {"HUD_TUNNEL_MODE": "ngrok", "HUD_TUNNEL_NGROK_DOMAIN": _NGROK_DOMAIN}
+    )
+    assert cfg is not None
+
+    registered: list[Any] = []
+    monkeypatch.setattr(
+        preflight_mod.atexit,
+        "register",
+        lambda fn, *a, **k: registered.append((fn, a, k)),
+    )
+
+    records: list[dict[str, Any]] = []
+    result = launch_public_overlay(
+        trial_id=bound_trial_id,
+        run_dir=run_dir,
+        config=cfg,
+        popen=_fake_popen_factory(records),
+    )
+    assert result.status == "launched"
+    assert len(records) == 2  # public app child + ngrok tunnel child
+    assert records[0]["argv"][1:] == ["-m", "app.hud.public"]
+    assert records[1]["argv"] == ["ngrok", "http", f"--domain={_NGROK_DOMAIN}", "8792"]
+
+    expected_flag = (
+        subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0  # type: ignore[attr-defined]
+    )
+    for rec in records:
+        if sys.platform == "win32":
+            assert rec["kwargs"].get("creationflags", 0) == expected_flag
+        assert rec["kwargs"]["stdin"] is subprocess.DEVNULL
+
+    # Both children hung on the 42-2 status-aware teardown (survives pause).
+    torn = [fn for fn, _a, _k in registered]
+    assert torn.count(preflight_mod._status_aware_teardown) == 2
+
+
+def test_ngrok_authtoken_flows_via_child_env_never_argv_or_log(
+    run_dir: Path, bound_trial_id: uuid.UUID, caplog: pytest.LogCaptureFixture
+) -> None:
+    # authtoken from HUD_TUNNEL_NGROK_AUTHTOKEN → NGROK_AUTHTOKEN on the child env;
+    # NEVER on the argv, in a log line, or on the surfaced URL (secret hygiene).
+    cfg = PublicOverlayConfig.from_env(
+        {
+            "HUD_TUNNEL_MODE": "ngrok",
+            "HUD_TUNNEL_NGROK_DOMAIN": _NGROK_DOMAIN,
+            "HUD_TUNNEL_NGROK_AUTHTOKEN": _NGROK_TOKEN,
+        }
+    )
+    assert cfg is not None and cfg.ngrok_authtoken == _NGROK_TOKEN
+
+    records: list[dict[str, Any]] = []
+    with caplog.at_level(logging.DEBUG, logger="app.marcus.orchestrator.preflight"):
+        result = launch_public_overlay(
+            trial_id=bound_trial_id,
+            run_dir=run_dir,
+            config=cfg,
+            popen=_fake_popen_factory(records),
+        )
+    assert result.status == "launched"
+
+    # The tunnel child's env carries the token — the ONLY place it lives.
+    tunnel_env = records[1]["kwargs"]["env"]
+    assert tunnel_env["NGROK_AUTHTOKEN"] == _NGROK_TOKEN
+
+    # It is NEVER on the argv, in the surfaced URL, or in any log message.
+    assert _NGROK_TOKEN not in " ".join(records[1]["argv"])
+    assert _NGROK_TOKEN not in (result.public_url or "")
+    assert _NGROK_TOKEN not in (public_overlay_url(cfg) or "")
+    assert _NGROK_TOKEN not in caplog.text
+    # And it never leaks onto the emitted URL sentinel file.
+    assert _NGROK_TOKEN not in (run_dir / HUD_PUBLIC_URL_SENTINEL_NAME).read_text(
+        encoding="utf-8"
+    )
+
+
+def test_ngrok_absent_authtoken_leaves_child_env_to_ngrok_own_config(
+    run_dir: Path, bound_trial_id: uuid.UUID, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # No HUD_TUNNEL_NGROK_AUTHTOKEN → no NGROK_AUTHTOKEN overlay; the child falls
+    # back to the operator's own ngrok.yml (`ngrok config add-authtoken`).
+    monkeypatch.delenv("NGROK_AUTHTOKEN", raising=False)
+    cfg = PublicOverlayConfig.from_env(
+        {"HUD_TUNNEL_MODE": "ngrok", "HUD_TUNNEL_NGROK_DOMAIN": _NGROK_DOMAIN}
+    )
+    assert cfg is not None and cfg.ngrok_authtoken is None
+
+    records: list[dict[str, Any]] = []
+    launch_public_overlay(
+        trial_id=bound_trial_id,
+        run_dir=run_dir,
+        config=cfg,
+        popen=_fake_popen_factory(records),
+    )
+    assert "NGROK_AUTHTOKEN" not in records[1]["kwargs"]["env"]
+
+
+def test_ngrok_stable_url_surfaced_logged_and_emitted(
+    run_dir: Path, bound_trial_id: uuid.UUID, caplog: pytest.LogCaptureFixture
+) -> None:
+    # (e) the reserved-domain URL = https://<domain>, constant run-to-run, and it
+    # is surfaced: returned on the handles, logged, and emitted to the sentinel.
+    cfg = PublicOverlayConfig.from_env(
+        {"HUD_TUNNEL_MODE": "ngrok", "HUD_TUNNEL_NGROK_DOMAIN": _NGROK_DOMAIN}
+    )
+    assert cfg is not None
+    assert public_overlay_url(cfg) == f"https://{_NGROK_DOMAIN}"
+
+    records: list[dict[str, Any]] = []
+    with caplog.at_level(logging.INFO, logger="app.marcus.orchestrator.preflight"):
+        result = launch_public_overlay(
+            trial_id=bound_trial_id,
+            run_dir=run_dir,
+            config=cfg,
+            popen=_fake_popen_factory(records),
+        )
+    assert result.public_url == f"https://{_NGROK_DOMAIN}"
+    assert f"https://{_NGROK_DOMAIN}" in caplog.text
+    emitted = (run_dir / HUD_PUBLIC_URL_SENTINEL_NAME).read_text(encoding="utf-8")
+    assert emitted == f"https://{_NGROK_DOMAIN}"
+
+
+def test_ngrok_mode_keeps_readonly_nonleak_scrub_and_public_app(
+    run_dir: Path, bound_trial_id: uuid.UUID
+) -> None:
+    # (d) ngrok changes only the tunnel; the public surface is the SAME scrubbed
+    # app (app.hud.public) and the non-leak allowlist still drops every secret.
+    cfg = PublicOverlayConfig.from_env(
+        {"HUD_TUNNEL_MODE": "ngrok", "HUD_TUNNEL_NGROK_DOMAIN": _NGROK_DOMAIN}
+    )
+    assert cfg is not None
+
+    records: list[dict[str, Any]] = []
+    launch_public_overlay(
+        trial_id=bound_trial_id,
+        run_dir=run_dir,
+        config=cfg,
+        popen=_fake_popen_factory(records),
+    )
+    # Same read-only public app child — no ngrok-specific surface was introduced.
+    assert records[0]["argv"][1:] == ["-m", "app.hud.public"]
+
+    # The scrub is mode-independent: the public view still drops every sentinel.
+    projection = build_secret_laden_projection(bound_trial_id).model_dump(mode="json")
+    blob = "\n".join(_all_strings(build_public_view(projection)))
+    for name, secret in SECRETS.items():
+        assert secret not in blob, f"ngrok-mode public view leaked {name!r}"
+
+
+def test_existing_modes_unaffected_by_ngrok_addition() -> None:
+    # Hard fence: cloudflare/tailscale still parse + build named tunnels; the
+    # ngrok addition is purely additive (operator picks via HUD_TUNNEL_MODE).
+    cf = PublicOverlayConfig.from_env(
+        {"HUD_TUNNEL_MODE": "cloudflare", "HUD_TUNNEL_TOKEN": "tok"}
+    )
+    ts = PublicOverlayConfig.from_env({"HUD_TUNNEL_MODE": "tailscale"})
+    assert cf is not None and cf.mode == "cloudflare"
+    assert ts is not None and ts.mode == "tailscale"
+    assert tunnel_argv(cf)[:3] == ["cloudflared", "tunnel", "run"]
+    assert tunnel_argv(ts)[:2] == ["tailscale", "serve"]

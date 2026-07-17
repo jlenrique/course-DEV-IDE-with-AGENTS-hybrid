@@ -771,7 +771,12 @@ DEFAULT_PUBLIC_HUD_PORT = 8792
 
 #: The tunnel modes the launcher will run. Anything else (incl. absent) leaves
 #: the overlay unconfigured — the launcher NEVER guesses a mode.
-PUBLIC_OVERLAY_MODES = frozenset({"cloudflare", "tailscale"})
+#:
+#: ``ngrok`` (Story 42.8) fronts a **reserved** ngrok domain — one stable,
+#: no-login public URL — added ALONGSIDE ``cloudflare`` / ``tailscale`` (the
+#: operator picks via ``HUD_TUNNEL_MODE``). Its stability comes from the
+#: reserved ``--domain=`` (never a random per-run quick-tunnel ``--url``).
+PUBLIC_OVERLAY_MODES = frozenset({"cloudflare", "tailscale", "ngrok"})
 
 
 @dataclass(frozen=True)
@@ -783,6 +788,15 @@ class PublicOverlayConfig:
     — with neither, :meth:`from_env` returns ``None`` (unconfigured) rather than
     ever degrading to an anonymous quick-tunnel. ``tailscale`` serves the local
     port on the machine's stable ``*.ts.net`` name, tailnet-restricted.
+
+    ``ngrok`` (Story 42.8) fronts a **reserved** ngrok domain — one stable,
+    no-login public URL. It REQUIRES ``HUD_TUNNEL_NGROK_DOMAIN`` (the reserved
+    domain; absent → :meth:`from_env` returns ``None``, inert). The optional
+    ``ngrok_authtoken`` (from ``HUD_TUNNEL_NGROK_AUTHTOKEN``) is a **secret**: it
+    is NEVER placed on the argv (:func:`tunnel_argv`) or logged — the launcher
+    hands it to the ngrok child through its process env (``NGROK_AUTHTOKEN``,
+    which ngrok v3 reads natively). When it is absent the child falls back to the
+    operator's own ``ngrok.yml`` (e.g. a prior ``ngrok config add-authtoken``).
     """
 
     mode: str
@@ -792,6 +806,9 @@ class PublicOverlayConfig:
     tunnel_name: str | None = None
     cloudflared_bin: str = "cloudflared"
     tailscale_bin: str = "tailscale"
+    ngrok_domain: str | None = None
+    ngrok_authtoken: str | None = None
+    ngrok_bin: str = "ngrok"
 
     @classmethod
     def from_env(cls, env: Mapping[str, str]) -> PublicOverlayConfig | None:
@@ -810,6 +827,33 @@ class PublicOverlayConfig:
         hostname = (env.get("HUD_TUNNEL_HOSTNAME") or "").strip() or None
         cloudflared_bin = (env.get("HUD_TUNNEL_CLOUDFLARED_BIN") or "cloudflared").strip()
         tailscale_bin = (env.get("HUD_TUNNEL_TAILSCALE_BIN") or "tailscale").strip()
+        ngrok_bin = (env.get("HUD_TUNNEL_NGROK_BIN") or "ngrok").strip()
+
+        if raw_mode == "ngrok":
+            # The reserved domain is what makes the URL STABLE run-to-run (never
+            # a random quick-tunnel). Absent → inert, like the other modes.
+            domain = (env.get("HUD_TUNNEL_NGROK_DOMAIN") or "").strip() or None
+            if domain is None:
+                LOGGER.warning(
+                    "HUD_TUNNEL_MODE=ngrok but HUD_TUNNEL_NGROK_DOMAIN is not set "
+                    "— refusing to open a random per-run quick-tunnel; overlay "
+                    "stays unconfigured."
+                )
+                return None
+            # SECRET: the authtoken NEVER rides the argv or a log line. It is
+            # handed to the ngrok child through NGROK_AUTHTOKEN in its process
+            # env (see ``_tunnel_child_env``); absent → ngrok uses its own config.
+            authtoken = (env.get("HUD_TUNNEL_NGROK_AUTHTOKEN") or "").strip() or None
+            return cls(
+                mode="ngrok",
+                public_port=public_port,
+                hostname=hostname,
+                cloudflared_bin=cloudflared_bin,
+                tailscale_bin=tailscale_bin,
+                ngrok_domain=domain,
+                ngrok_authtoken=authtoken,
+                ngrok_bin=ngrok_bin or "ngrok",
+            )
 
         if raw_mode == "cloudflare":
             token = (env.get("HUD_TUNNEL_TOKEN") or "").strip() or None
@@ -848,8 +892,21 @@ def tunnel_argv(config: PublicOverlayConfig) -> list[str]:
 
     Guaranteed to never contain the cloudflared quick-tunnel ``--url`` flag: a
     cloudflare tunnel is ``tunnel run --token <t>`` or ``tunnel run <name>``; a
-    tailscale tunnel is ``serve`` onto the stable machine name.
+    tailscale tunnel is ``serve`` onto the stable machine name; an ngrok tunnel
+    is ``http --domain=<reserved> <port>`` — the reserved ``--domain`` makes the
+    URL STABLE (never a random ``--url`` quick-tunnel).
     """
+    if config.mode == "ngrok":
+        # SECRET HYGIENE: the authtoken is DELIBERATELY absent from the argv — it
+        # is passed to the child via NGROK_AUTHTOKEN in its process env instead
+        # (``_tunnel_child_env``), so it can never leak onto a command line or a
+        # log. Only the (non-secret) reserved domain + port appear here.
+        return [
+            config.ngrok_bin,
+            "http",
+            f"--domain={config.ngrok_domain}",
+            str(config.public_port),
+        ]
     if config.mode == "cloudflare":
         if config.cloudflare_token:
             return [config.cloudflared_bin, "tunnel", "run", "--token", config.cloudflare_token]
@@ -863,6 +920,45 @@ def tunnel_argv(config: PublicOverlayConfig) -> list[str]:
     ]
 
 
+def public_overlay_url(config: PublicOverlayConfig | None) -> str | None:
+    """The STABLE public URL the operator hands out, or ``None`` (Story 42.8 AC-5).
+
+    ``ngrok`` → ``https://<reserved-domain>`` (constant run-to-run — that is the
+    whole point of the reserved domain). ``cloudflare`` → ``https://<hostname>``
+    when a hostname is configured. ``tailscale``'s ``*.ts.net`` name is intrinsic
+    to the tailnet (not in our config), so it has no derivable URL here. NEVER
+    contains a secret — the ngrok authtoken lives only in the child's env.
+    """
+    if config is None:
+        return None
+    if config.mode == "ngrok" and config.ngrok_domain:
+        return f"https://{config.ngrok_domain}"
+    if config.mode == "cloudflare" and config.hostname:
+        return f"https://{config.hostname}"
+    return None
+
+
+#: The sentinel file the launcher drops in the run dir carrying the stable
+#: public URL (Story 42.8 AC-5) — a secret-free, best-effort emit so the local
+#: HUD / operator can surface the URL each run. NEVER carries the authtoken.
+HUD_PUBLIC_URL_SENTINEL_NAME = ".hud-public-url"
+
+
+def _tunnel_child_env(config: PublicOverlayConfig) -> dict[str, str]:
+    """Process env for the tunnel child — inherits ``os.environ``, overlays secrets.
+
+    For ``ngrok`` with an operator-provided authtoken, overlays
+    ``NGROK_AUTHTOKEN`` so the child authenticates purely from its env (ngrok v3
+    reads it natively) — NO ``ngrok config add-authtoken`` step required, and the
+    secret never touches the argv or a log. Absent → no overlay, so the child
+    falls back to the operator's own ``ngrok.yml``. Other modes inherit env only.
+    """
+    env = dict(os.environ)
+    if config.mode == "ngrok" and config.ngrok_authtoken:
+        env["NGROK_AUTHTOKEN"] = config.ngrok_authtoken
+    return env
+
+
 @dataclass
 class PublicOverlayHandles:
     """Outcome of an overlay launch attempt (never raises to build this)."""
@@ -871,6 +967,7 @@ class PublicOverlayHandles:
     app_proc: subprocess.Popen | None = None
     tunnel_proc: subprocess.Popen | None = None
     config: PublicOverlayConfig | None = None
+    public_url: str | None = None  # the STABLE URL surfaced to the operator (AC-5)
 
 
 def _spawn_child(
@@ -954,18 +1051,37 @@ def launch_public_overlay(
         return PublicOverlayHandles(status="app-failed", config=config)
     atexit.register(_status_aware_teardown, app_proc, run_dir)
 
+    public_url = public_overlay_url(config)
     tunnel_proc = _spawn_child(
         tunnel_argv(config),
-        env=dict(os.environ),
+        # The tunnel child's env carries the ngrok authtoken (if any) via
+        # NGROK_AUTHTOKEN — the ONLY place the secret lives (never argv/logs).
+        env=_tunnel_child_env(config),
         log_path=run_dir / "hud-tunnel.log",
         popen=popen,
     )
     if tunnel_proc is None:
         # App is up but unreachable from outside — reach degraded, run intact.
         return PublicOverlayHandles(
-            status="tunnel-failed", app_proc=app_proc, config=config
+            status="tunnel-failed",
+            app_proc=app_proc,
+            config=config,
+            public_url=public_url,
         )
     atexit.register(_status_aware_teardown, tunnel_proc, run_dir)
+    # Surface the STABLE URL (AC-5): log it + emit a secret-free sentinel the
+    # local HUD / operator can read each run. The URL never carries a secret.
+    if public_url:
+        LOGGER.info(
+            "public overlay reachable at %s (mode=%s) for trial %s",
+            public_url,
+            config.mode,
+            trial_id,
+        )
+        with suppress(Exception):
+            (run_dir / HUD_PUBLIC_URL_SENTINEL_NAME).write_text(
+                public_url, encoding="utf-8"
+            )
     LOGGER.info(
         "launched public overlay (mode=%s, port=%s) for trial %s",
         config.mode,
@@ -977,12 +1093,14 @@ def launch_public_overlay(
         app_proc=app_proc,
         tunnel_proc=tunnel_proc,
         config=config,
+        public_url=public_url,
     )
 
 
 __all__ = [
     "COORDINATION_DB_PATH",
     "DEFAULT_PUBLIC_HUD_PORT",
+    "HUD_PUBLIC_URL_SENTINEL_NAME",
     "HUD_STOP_SENTINEL_NAME",
     "HUD_TEARDOWN_GRACE_S",
     "PHASE_01_LOCAL_ITEMS",
@@ -997,6 +1115,7 @@ __all__ = [
     "launch_hud_server",
     "launch_public_overlay",
     "probe_hud_identity",
+    "public_overlay_url",
     "reattach_or_launch_hud_server",
     "request_hud_stop",
     "run_preflight",
