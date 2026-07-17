@@ -793,6 +793,21 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/marcus/cli/test_hil_tabular_projector.py",
     "tests/marcus/cli/test_next_action_neutral_verb.py",
     "tests/unit/marcus/cli/test_next_action.py",
+    # Story 42-3 (full run-settings standing readout — all ~16 toggles; green-lit
+    # 5/5 2026-07-16, dual-gate, LOCKSTEP operator-surface projection). ADDITIVE
+    # within v1: a new RunSettingsSection on the operator-surface contract + a
+    # deterministic resolver in the sole-writer assembler (reads env / directive
+    # / run_summary / prior surface — NEVER run_state, no new dispatch surface) +
+    # the HUD render readout panel. Deterministic / OFFLINE; schema regenerated
+    # with shape-pin + parity in the same diff. production_runner.py untouched.
+    "app/models/runtime/operator_surface.py",
+    "app/marcus/orchestrator/operator_surface_assembler.py",
+    "app/hud/render/page.py",
+    "tests/unit/models/test_operator_surface_shape_pin.py",
+    "tests/contracts/test_operator_surface_parity.py",
+    "tests/contracts/test_operator_surface_projection_demands_parity.py",
+    "tests/unit/marcus/orchestrator/test_operator_surface_run_settings.py",
+    "tests/hud/test_settings_readout_panel.py",
 }
 
 

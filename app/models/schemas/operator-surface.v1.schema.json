@@ -798,6 +798,103 @@
       "title": "PreflightSection",
       "type": "object"
     },
+    "RunSettingsSection": {
+      "additionalProperties": false,
+      "description": "The ~16 run-defining toggles as a standing readout (Story 42.3, AD-1).\n\nEvery field is a REQUIRED resolved display string \u2014 env-absent toggles\nrender an explicit resolved default (``\"off\"`` / ``\"unset\"``), never a\nmissing key (AC-3). The assembler's deterministic resolver populates all\nsixteen from env / directive / run_summary / the prior projection, so the\nsection is a pure projection of resolved run settings (double-emit on\nidentical inputs is byte-identical modulo ``as_of``).",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "component_deck": {
+          "title": "Component Deck",
+          "type": "string"
+        },
+        "component_motion": {
+          "title": "Component Motion",
+          "type": "string"
+        },
+        "component_workbook": {
+          "title": "Component Workbook",
+          "type": "string"
+        },
+        "coverage_gate": {
+          "title": "Coverage Gate",
+          "type": "string"
+        },
+        "deck_enrichment_active": {
+          "title": "Deck Enrichment Active",
+          "type": "string"
+        },
+        "encounter_mode": {
+          "title": "Encounter Mode",
+          "type": "string"
+        },
+        "g0_dispatch_live": {
+          "title": "G0 Dispatch Live",
+          "type": "string"
+        },
+        "llm_execution_mode": {
+          "title": "Llm Execution Mode",
+          "type": "string"
+        },
+        "narration_figure_fidelity_active": {
+          "title": "Narration Figure Fidelity Active",
+          "type": "string"
+        },
+        "preset": {
+          "title": "Preset",
+          "type": "string"
+        },
+        "research_detective_live": {
+          "title": "Research Detective Live",
+          "type": "string"
+        },
+        "research_dispatch_live": {
+          "title": "Research Dispatch Live",
+          "type": "string"
+        },
+        "treatment_slots": {
+          "title": "Treatment Slots",
+          "type": "string"
+        },
+        "trial_budget_usd": {
+          "title": "Trial Budget Usd",
+          "type": "string"
+        },
+        "udac_active": {
+          "title": "Udac Active",
+          "type": "string"
+        },
+        "voice_direction": {
+          "title": "Voice Direction",
+          "type": "string"
+        }
+      },
+      "required": [
+        "as_of",
+        "component_deck",
+        "component_motion",
+        "component_workbook",
+        "preset",
+        "encounter_mode",
+        "llm_execution_mode",
+        "g0_dispatch_live",
+        "research_dispatch_live",
+        "research_detective_live",
+        "narration_figure_fidelity_active",
+        "voice_direction",
+        "deck_enrichment_active",
+        "udac_active",
+        "coverage_gate",
+        "trial_budget_usd",
+        "treatment_slots"
+      ],
+      "title": "RunSettingsSection",
+      "type": "object"
+    },
     "SpecialistEntry": {
       "additionalProperties": false,
       "description": "Specialist roster activity row.",
@@ -1183,6 +1280,17 @@
       "minimum": 0,
       "title": "Progress Seq",
       "type": "integer"
+    },
+    "run_settings": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunSettingsSection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "schema_version": {
       "const": "v1",

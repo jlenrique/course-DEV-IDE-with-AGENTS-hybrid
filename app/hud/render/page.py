@@ -39,6 +39,7 @@ from typing import Any
 
 from app.hud.render.client import POLL_JS
 from app.hud.render.styles import CSS
+from app.models.runtime.operator_surface import RUN_SETTINGS_TOGGLES
 
 #: Stable zone container ids (the client replaces innerHTML per id).
 ZONE_IDS: tuple[str, ...] = (
@@ -273,7 +274,7 @@ def _zone_identity(view: dict[str, Any]) -> str:
         notif = f'<span class="chip warn">⚠ {_esc(parse_status)}</span>'
 
     age = _age_stamp(view["proj"].get("as_of"), view["now"])
-    return (
+    header = (
         '<header class="id-header">'
         f'<span class="mono trial">{_esc(ident.get("trial_id"))}</span>'
         f'<span class="kv">lesson <b>{_esc(ident.get("lesson"))}</b></span>'
@@ -282,6 +283,50 @@ def _zone_identity(view: dict[str, Any]) -> str:
         f'<span class="id-right freshness">'
         f'<span class="meta"><span class="sweep"></span>snapshot {_esc(age)}</span>'
         "</span></header>"
+    )
+    # Story 42.3: the full 16-toggle standing readout rides the (always-present)
+    # identity zone, so it is visible from launch through every gate to terminal.
+    return header + _run_settings_panel(view)
+
+
+# --------------------------------------------------------------------------
+# Run-settings standing readout (Story 42.3)
+# --------------------------------------------------------------------------
+
+
+def _rs_state(value: Any) -> str:
+    """Map a resolved toggle value to a CSS state modifier (on/off/unset/value)."""
+    v = str(value).strip().lower()
+    if v == "on":
+        return "on"
+    if v == "off":
+        return "off"
+    if v in ("", "unset", "none"):
+        return "unset"
+    return "value"
+
+
+def _run_settings_panel(view: dict[str, Any]) -> str:
+    """Render all 16 run-defining toggles as a persistent labelled readout.
+
+    Renders NOTHING when the projection carries no ``run_settings`` section
+    (a pre-42.3 frozen surface), so old consumers are unaffected (AC-6).
+    """
+    rs = view["proj"].get("run_settings")
+    if not isinstance(rs, dict):
+        return ""
+    rows = "".join(
+        f'<div class="rs-item"><span class="rs-k">{_esc(label)}</span>'
+        f'<span class="rs-v rs-{_rs_state(rs.get(field))}">'
+        f'{_esc(rs.get(field, "—"))}</span></div>'
+        for field, label in RUN_SETTINGS_TOGGLES
+    )
+    age = _age_stamp(rs.get("as_of"), view["now"])
+    age_html = f'<span class="rs-age">{_esc(age)}</span>' if age else ""
+    return (
+        '<section class="run-settings" aria-label="run settings standing readout">'
+        f'<div class="rs-title">Run settings · standing readout{age_html}</div>'
+        f'<div class="rs-grid">{rows}</div></section>'
     )
 
 

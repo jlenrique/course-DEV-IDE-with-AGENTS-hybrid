@@ -40,7 +40,7 @@ import logging
 import os
 import threading
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager, suppress
 from datetime import UTC, datetime
 from pathlib import Path
@@ -65,6 +65,7 @@ from app.models.runtime.operator_surface import (
     OperatorSurfaceProjection,
     PreflightItem,
     PreflightSection,
+    RunSettingsSection,
     SpecialistEntry,
     SpecialistsSection,
     StepEntry,
@@ -88,9 +89,24 @@ PROJECTION_FILENAME = "operator-surface.json"
 #: ``None`` section, never a raise into the walk (greenlight amendment 8).
 ERROR_PAUSE_FILENAME = "error-pause.json"
 RUN_SUMMARY_FILENAME = "run_summary.yaml"
+DIRECTIVE_FILENAME = "directive.yaml"
 COST_REPORT_FILENAME = "cost-report.json"
 COST_REPORT_TRANSACTION_FILENAME = "cost-report-transaction.v1.json"
 EXPORTS_DIRNAME = "exports"
+
+#: Env truthiness convention (matches udac_wiring / g0_enrichment_wiring /
+#: enrichment_consumption verbatim). A toggle env var is "on" iff its stripped
+#: lowercased value is in this set; absent/anything-else → "off" (never a
+#: missing key — Story 42.3 AC-3).
+_ENV_TRUTHY: frozenset[str] = frozenset({"1", "true", "yes", "on"})
+
+#: Environment-var name for the voice-direction toggle (run config; folded into
+#: the run-settings readout as an on/off resolved default when the directive
+#: carries no explicit ``voice_direction`` value).
+_VOICE_DIRECTION_ENV = "MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE"
+
+#: Bound on any resolved run-settings display string (AD-16 anti-bloat).
+_RUN_SETTING_MAX_CHARS = 240
 
 #: Bounds so the additive sections cannot reopen the 525KB run.json trap (AD-16).
 _CONTEXT_ENTRY_MAX_CHARS = 240
@@ -132,6 +148,131 @@ def _sha256_text(text: str) -> str:
 def _run_json_digest(envelope: Any) -> str:
     """Digest of the exact bytes ``_persist_envelope`` writes to run.json (AD-17)."""
     return _sha256_text(envelope.model_dump_json(indent=2) + "\n")
+
+
+# --------------------------------------------------------------------------
+# Run-settings resolver (Story 42.3) — the ONE deterministic place mapping each
+# of the 16 canonical toggles to its resolved display value.
+#
+# Pure + I/O-guarded: reads env + the run-dir ``directive.yaml`` /
+# ``run_summary.yaml`` + the prior projection (for run_state-carried values
+# already on the surface — llm_execution_mode, preset). It NEVER reaches into
+# ``run_state`` directly (that lives in the runner, off the assembler's sole-
+# writer lane) and NEVER raises. The section it returns is a pure projection of
+# resolved settings, so a double-emit on identical inputs is byte-identical
+# apart from ``as_of`` (AC-3). One source of truth with the canonical list:
+# ``RUN_SETTINGS_TOGGLES`` names the fields; this resolver fills them.
+# --------------------------------------------------------------------------
+
+
+def _safe_yaml_mapping(path: Path) -> dict[str, Any]:
+    """Read a YAML file into a mapping; missing/garbage → ``{}`` (never raises)."""
+    try:
+        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — a missing/garbage artifact is not fatal
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def _env_flag(env: Mapping[str, str], name: str) -> str:
+    """Resolve an env toggle to an explicit ``"on"``/``"off"`` (never missing)."""
+    return "on" if (env.get(name) or "").strip().lower() in _ENV_TRUTHY else "off"
+
+
+def _str_or_unset(value: Any) -> str:
+    """A present non-empty scalar → its bounded str; otherwise ``"unset"``."""
+    if value is None:
+        return "unset"
+    text = str(value).strip()
+    return text[:_RUN_SETTING_MAX_CHARS] if text else "unset"
+
+
+def _component_state(selection: Mapping[str, Any], key: str) -> str:
+    """Component-selection bool → ``"on"``/``"off"``; missing → ``"unset"``."""
+    value = selection.get(key)
+    if isinstance(value, bool):
+        return "on" if value else "off"
+    return "unset"
+
+
+def _treatment_slots(directive: Mapping[str, Any]) -> str:
+    """Styleguide picks (treatment slots A/B) from the directive; else ``unset``."""
+    names: list[str] = []
+    raw = directive.get("gamma_settings")
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                styleguide = item.get("styleguide")
+                if isinstance(styleguide, str) and styleguide.strip():
+                    names.append(styleguide.strip())
+    joined = ", ".join(dict.fromkeys(names))
+    if joined:
+        return joined[:_RUN_SETTING_MAX_CHARS]
+    return _str_or_unset(directive.get("treatment_slots"))
+
+
+def resolve_run_settings(
+    run_dir: Path,
+    prev: OperatorSurfaceProjection | None,
+    now: datetime,
+    *,
+    env: Mapping[str, str] | None = None,
+) -> RunSettingsSection:
+    """Resolve all 16 run-defining toggles into a ``RunSettingsSection`` (AC-1/3).
+
+    Deterministic given (env, run_dir artifacts, prev). Every field resolves to
+    an explicit value — env-absent toggles read ``"off"``, unknown non-env
+    settings read ``"unset"`` — so the readout never carries a missing key.
+    """
+    env = os.environ if env is None else env
+    directive = _safe_yaml_mapping(run_dir / DIRECTIVE_FILENAME)
+    run_summary = _safe_yaml_mapping(run_dir / RUN_SUMMARY_FILENAME)
+    selection = run_summary.get("component_selection")
+    selection = selection if isinstance(selection, dict) else {}
+
+    # Preset + llm_execution_mode are already resolved onto the surface by the
+    # envelope/modalities writers (run_state-sourced); prefer them, then the
+    # directive, then an explicit default — never reaching into run_state here.
+    preset = directive.get("preset")
+    if prev is not None:
+        preset = prev.identity.preset
+    llm_mode = None
+    if prev is not None and prev.modalities is not None:
+        llm_mode = prev.modalities.llm_execution_mode
+    if not llm_mode:
+        llm_mode = directive.get("llm_execution_mode")
+
+    voice = directive.get("voice_direction")
+    voice_direction = (
+        _str_or_unset(voice)
+        if voice not in (None, "")
+        else _env_flag(env, _VOICE_DIRECTION_ENV)
+    )
+    coverage = directive.get("coverage_gate")
+    if coverage in (None, ""):
+        coverage = directive.get("coverage_gate_family")
+
+    return RunSettingsSection(
+        as_of=now,
+        component_deck=_component_state(selection, "deck"),
+        component_motion=_component_state(selection, "motion"),
+        component_workbook=_component_state(selection, "workbook"),
+        preset=_str_or_unset(preset),
+        encounter_mode=_str_or_unset(directive.get("encounter_mode")),
+        llm_execution_mode=_str_or_unset(llm_mode),
+        g0_dispatch_live=_env_flag(env, "MARCUS_G0_DISPATCH_LIVE"),
+        research_dispatch_live=_env_flag(env, "MARCUS_RESEARCH_DISPATCH_LIVE"),
+        research_detective_live=_env_flag(env, "MARCUS_RESEARCH_DETECTIVE_LIVE"),
+        narration_figure_fidelity_active=_env_flag(
+            env, "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE"
+        ),
+        voice_direction=voice_direction,
+        deck_enrichment_active=_env_flag(env, "MARCUS_DECK_ENRICHMENT_ACTIVE"),
+        udac_active=_env_flag(env, "MARCUS_UDAC_ACTIVE"),
+        coverage_gate=_str_or_unset(coverage),
+        trial_budget_usd=_str_or_unset(env.get("MARCUS_TRIAL_BUDGET_USD")),
+        treatment_slots=_treatment_slots(directive),
+    )
 
 
 class OperatorSurfaceAssembler:
@@ -749,6 +890,20 @@ class OperatorSurfaceAssembler:
                 prev: OperatorSurfaceProjection | None, now: datetime
             ) -> dict[str, Any]:
                 built: dict[str, Any] = {}
+                # Story 42.3 — the standing run-settings readout rides EVERY
+                # ambient refresh (both walks call this same path), so all ~16
+                # toggles are present from launch through terminal. Resolution
+                # is independently guarded: a failure here must never drop the
+                # other ambient sections (amendment 8).
+                try:
+                    built["run_settings"] = resolve_run_settings(
+                        self.run_dir, prev, now
+                    ).model_dump(mode="json")
+                except Exception:  # noqa: BLE001 — never sink the ambient write
+                    LOGGER.exception(
+                        "run-settings resolve failed for trial %s — readout skipped",
+                        self.trial_id,
+                    )
                 if tile_dicts is not None:
                     built["health"] = HealthSection(
                         as_of=now, tiles=[]
@@ -896,4 +1051,5 @@ __all__ = [
     "DEFAULT_HUD_CONFIG_PATH",
     "OperatorSurfaceAssembler",
     "PROJECTION_FILENAME",
+    "resolve_run_settings",
 ]

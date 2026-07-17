@@ -18,12 +18,14 @@ from pydantic import ValidationError
 
 from app.models.runtime.operator_surface import (
     HUD_CONFIG_DEFAULTS,
+    RUN_SETTINGS_TOGGLES,
     EnvelopeSection,
     EventClass,
     IdentitySection,
     NotificationsEchoSection,
     OperatorSurfaceProjection,
     OperatorSurfaceStatus,
+    RunSettingsSection,
     operator_surface_schema_text,
 )
 
@@ -129,6 +131,67 @@ def test_quota_confidence_enum_is_direct_proxy_unknown() -> None:
     schema = OperatorSurfaceProjection.model_json_schema()
     conf = set(schema["$defs"]["PreflightItem"]["properties"]["quota_confidence"]["enum"])
     assert conf == {"direct", "proxy", "unknown"}
+
+
+# ---------------------------------------------------------------------------
+# Story 42.3 — run-settings standing readout: shape + keep-in-sync guard (AC-5)
+# ---------------------------------------------------------------------------
+
+_SIXTEEN_TOGGLE_FIELDS = {
+    "component_deck",
+    "component_motion",
+    "component_workbook",
+    "preset",
+    "encounter_mode",
+    "llm_execution_mode",
+    "g0_dispatch_live",
+    "research_dispatch_live",
+    "research_detective_live",
+    "narration_figure_fidelity_active",
+    "voice_direction",
+    "deck_enrichment_active",
+    "udac_active",
+    "coverage_gate",
+    "trial_budget_usd",
+    "treatment_slots",
+}
+
+
+def test_run_settings_section_is_in_schema_defs() -> None:
+    schema = OperatorSurfaceProjection.model_json_schema()
+    assert "RunSettingsSection" in schema["$defs"]
+    assert "run_settings" in schema["properties"]
+    assert schema["$defs"]["RunSettingsSection"]["additionalProperties"] is False
+
+
+def test_run_settings_carries_exactly_the_sixteen_toggles() -> None:
+    """AC-1: the section carries all 16 run-defining toggles (+ the as_of stamp)."""
+    fields = set(RunSettingsSection.model_fields) - {"as_of"}
+    assert fields == _SIXTEEN_TOGGLE_FIELDS
+    assert len(fields) == 16
+
+
+def test_keep_in_sync_canonical_list_pins_the_sixteen_toggles() -> None:
+    """AC-5 keep-in-sync guard: the canonical (field, label) list and the model
+    share ONE source of truth, so a future knob that isn't added to BOTH the
+    readout model and the canonical list fails loudly here."""
+    canonical_fields = [field for field, _label in RUN_SETTINGS_TOGGLES]
+    assert len(canonical_fields) == 16
+    assert len(set(canonical_fields)) == 16, "duplicate toggle field in the canonical list"
+    assert set(canonical_fields) == (set(RunSettingsSection.model_fields) - {"as_of"}), (
+        "RUN_SETTINGS_TOGGLES drifted from RunSettingsSection — a new knob must be "
+        "added to BOTH the canonical list and the readout model in lockstep"
+    )
+    # every canonical label is a non-empty operator-facing string
+    for _field, label in RUN_SETTINGS_TOGGLES:
+        assert isinstance(label, str) and label.strip()
+
+
+def test_run_settings_fields_are_required_never_missing_key() -> None:
+    """AC-3: env-absent toggles render an explicit resolved default, never a
+    missing key — so every field is REQUIRED on the strict producer model."""
+    with pytest.raises(ValidationError):
+        RunSettingsSection(as_of=_BASE_TIME)  # no toggles → strict model rejects
 
 
 # ---------------------------------------------------------------------------

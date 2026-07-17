@@ -46,6 +46,7 @@ from app.models.runtime.operator_surface import (
     OperatorSurfaceStatus,
     PreflightItem,
     PreflightSection,
+    RunSettingsSection,
     SpecialistEntry,
     SpecialistsSection,
     StepEntry,
@@ -120,6 +121,28 @@ def _steps(walk_index: int = 3) -> StepsSection:
                 locked_artifact_summary=None,
             ),
         ],
+    )
+
+
+def _run_settings() -> RunSettingsSection:
+    return RunSettingsSection(
+        as_of=BASE_TIME,
+        component_deck="on",
+        component_motion="off",
+        component_workbook="on",
+        preset="production",
+        encounter_mode="recorded",
+        llm_execution_mode="batch",
+        g0_dispatch_live="on",
+        research_dispatch_live="off",
+        research_detective_live="off",
+        narration_figure_fidelity_active="off",
+        voice_direction="on",
+        deck_enrichment_active="off",
+        udac_active="off",
+        coverage_gate="standard",
+        trial_budget_usd="10.00",
+        treatment_slots="hil-2026-apc-crossroads-classic",
     )
 
 
@@ -220,6 +243,7 @@ def build_projection(
             styleguide="hil-2026-apc-crossroads-classic",
             styleguide_provenance="style-control-map",
         ),
+        run_settings=_run_settings(),
         trace=trace
         if trace is not None
         else TraceSection(
@@ -247,6 +271,7 @@ _SECTION_DEFS: list[tuple[type[BaseModel], str]] = [
     (SpecialistsSection, "SpecialistsSection"),
     (SpecialistEntry, "SpecialistEntry"),
     (ModalitiesSection, "ModalitiesSection"),
+    (RunSettingsSection, "RunSettingsSection"),
     (TraceSection, "TraceSection"),
     (TraceEvent, "TraceEvent"),
     (NotificationsEchoSection, "NotificationsEchoSection"),
@@ -372,6 +397,44 @@ def test_new_sections_default_to_none() -> None:
         assert proj.decision_card is None
         assert proj.error_message is None
         assert proj.deliverables is None
+
+
+# ---------------------------------------------------------------------------
+# Story 42.3 — run-settings standing readout: round-trip + back-compat (AC-6)
+# ---------------------------------------------------------------------------
+
+
+def test_run_settings_section_round_trips() -> None:
+    proj = build_projection("in-flight")
+    assert proj.run_settings is not None
+    dumped = proj.model_dump(mode="json")
+    restored = OperatorSurfaceProjection.model_validate(dumped)
+    assert restored.run_settings is not None
+    assert restored.run_settings.udac_active == "off"
+    assert restored.run_settings.component_deck == "on"
+    assert restored.model_dump(mode="json") == dumped
+
+
+def test_run_settings_defaults_to_none_additive_within_v1() -> None:
+    """The section is OPTIONAL — a run without it is a valid v1 projection."""
+    proj = build_projection("in-flight")
+    proj.run_settings = None
+    assert proj.model_dump(mode="json")["run_settings"] is None
+
+
+def test_back_compat_pre_42_3_modalities_only_surface_still_parses() -> None:
+    """AC-6: a frozen pre-42.3 surface (old ``modalities`` slice, NO
+    ``run_settings`` key) still parses through the lenient reader (additive,
+    tolerant read) — schema_version stays 'v1', so it is never Unrecognized."""
+    payload = build_projection("in-flight").model_dump(mode="json")
+    del payload["run_settings"]  # a surface written before 42.3 landed
+    result = read_operator_surface_lenient(payload)
+    assert isinstance(result, OperatorSurfaceProjection)
+    assert result.schema_version == "v1"
+    assert result.run_settings is None
+    # the old modalities slice is untouched
+    assert result.modalities is not None
+    assert result.modalities.llm_execution_mode == "batch"
 
 
 def test_decision_card_section_all_inner_fields_optional() -> None:
