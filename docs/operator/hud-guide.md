@@ -33,6 +33,14 @@ Surfaces include: run/status header, the pending **gate card** (with a paste-rea
 
 The HUD is read-only; verdicts go through the CLI. Copy the paste command from the gate card — it is a `python -m app.marcus.cli trial resume --trial-id <id> ...` inline-verdict invocation — run it in a shell, and watch the HUD update as the walk resumes.
 
+## Pre-walk settings confirm (G0S) — on by default
+
+A real `trial start` now **pauses before the walk spends anything** at the pre-walk settings gate (G0S) so you can confirm — or change — your ~16 run settings (the standing readout) before the first specialist call. This is **on by default** for the operator CLI start path (Story 42-6): you no longer need to export `MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE`. Under the hood the CLI writes a per-run wake sentinel (`<run_dir>/.prewalk-settings-confirm`); the env flag still works as an independent override (OR semantics).
+
+- **Confirm** to proceed with the shown settings, or **change** a setting and re-confirm — same paste-command flow as any other gate (see *Acting on a gate*).
+- **Fast keyless run:** pass `--no-prewalk-settings-confirm` to `trial start` to skip the pause and go straight into the walk.
+- Non-interactive / offline (`--allow-offline-cost-report`) / delegated-HIL runs skip the pause automatically and honestly (the skip is traced, never silent).
+
 ## Known non-blocking debt (Epic 35 close record)
 
 Batch pause-class rendering un-witnessed live; browser DOM/notification witness; L2-golden gate-snapshot. Workbook runs are typically driven by the governed live-test runner with HUD OFF (runner-enforced) — see `docs/admin-guide.md` §Workbook Live Authoring.

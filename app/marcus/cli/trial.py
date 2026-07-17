@@ -56,6 +56,7 @@ from app.marcus.orchestrator.production_runner import (
     resume_batch_production_trial,
     resume_production_trial,
     run_production_trial,
+    write_prewalk_settings_confirm_sentinel,
 )
 from app.marcus.orchestrator.styleguide_picker import PickerError
 from app.marcus.orchestrator.workbook_wiring import (
@@ -496,6 +497,7 @@ def start_trial(
     hud: Literal["on", "off"] = "on",
     course_source_root: Path | None = None,
     encounter_mode: Literal["recorded", "live"] | None = None,
+    prewalk_settings_confirm: bool = False,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     if not input_path.exists():
@@ -771,6 +773,14 @@ def start_trial(
     runner_kwargs: dict[str, Any] = {}
     if max_specialist_calls is not None:
         runner_kwargs["max_specialist_calls"] = max_specialist_calls
+    # Story 42.6 (rider R1): the operator CLI start path writes the per-run G0S
+    # wake sentinel by DEFAULT (the CLI flag defaults ON) so the pre-walk
+    # settings confirm gate SHOWS without exporting an env flag. The function
+    # default is OFF, so direct `start_trial(...)` test callers write no sentinel
+    # and G0S stays dormant (byte-identical) — the whole reason for the sentinel.
+    # OR semantics with MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE preserved.
+    if prewalk_settings_confirm:
+        write_prewalk_settings_confirm_sentinel(run_dir)
     envelope = run_production_trial(
         corpus_path=input_path,
         preset=preset,
@@ -961,6 +971,10 @@ def start_trial_cli(args: argparse.Namespace) -> int:
                 Path(args.course_source_root) if getattr(args, "course_source_root", None) else None
             ),
             encounter_mode=getattr(args, "encounter_mode", None),
+            # Story 42.6: default ON for the operator CLI path — writes the per-run
+            # wake sentinel so G0S pauses pre-walk. `--no-prewalk-settings-confirm`
+            # opts out (fast keyless run). Namespaces without the attr default ON.
+            prewalk_settings_confirm=getattr(args, "prewalk_settings_confirm", True),
         )
     except PreflightGateFailed as exc:
         # AD-7/AD-11: pre-flight blocked SPOC spawn. The projection is left at
@@ -1486,6 +1500,19 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "(default: on, per AD-7). Pre-flight/heartbeats are runtime-owned "
             "and run regardless of this flag; only the server/notifier launches "
             "are gated. Use 'off' to run the pre-flight gate without the HUD."
+        ),
+    )
+    start.add_argument(
+        "--prewalk-settings-confirm",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Story 42.6: pause pre-walk at the settings-confirm gate (G0S) so you "
+            "can confirm or change your ~16 run settings before the walk spends "
+            "(default: ON for a real operator start). Use "
+            "'--no-prewalk-settings-confirm' for a fast keyless run that skips the "
+            "pause. The MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE env flag remains an "
+            "independent override (OR semantics)."
         ),
     )
     start.add_argument(

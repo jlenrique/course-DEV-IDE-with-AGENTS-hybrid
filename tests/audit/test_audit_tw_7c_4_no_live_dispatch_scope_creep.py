@@ -838,6 +838,16 @@ PERMITTED_PYTHON_DIFFS = {
     # tunnel is operator-gated live evidence, not a dispatch path.
     "app/hud/public.py",
     "tests/hud/test_public_surface_readonly_and_nonleak.py",
+    # Story 42-6 (G0S default-ON for operator-steered runs via a per-run WAKE
+    # SENTINEL; rider R1, green-lit 5/5, dual-gate, LOCKSTEP). Additive to 42-5:
+    # a per-run marker file (`<run_dir>/.prewalk-settings-confirm`) that the
+    # operator CLI start path writes by DEFAULT so G0S wakes without exporting the
+    # env flag (OR semantics preserved) — WITHOUT the os.environ.setdefault leak
+    # that would push the pause into the ~13 direct start_trial test callers (the
+    # function default stays OFF). production_runner.py + trial.py already rostered
+    # above. NO new live-dispatch call site — the sentinel only flips the WAKE
+    # condition of a pause that halts BEFORE the first spend.
+    "tests/marcus/orchestrator/test_prewalk_settings_wake_sentinel.py",
 }
 
 

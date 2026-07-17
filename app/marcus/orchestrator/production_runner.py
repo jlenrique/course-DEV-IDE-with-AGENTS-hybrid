@@ -161,13 +161,51 @@ PRE_WALK_SETTINGS_GATE_ID = "G0S"
 PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV = "MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE"
 _PREWALK_SETTINGS_TRUTHY: frozenset[str] = frozenset({"1", "true", "yes", "on"})
 
+# Story 42.6 (rider R1): the per-run WAKE SENTINEL. The env flag above is a
+# global override; the sentinel is a per-run marker file the operator CLI start
+# path (`start_trial(..., prewalk_settings_confirm=True)`) writes into the run
+# dir so G0S wakes by DEFAULT on a real steered run — WITHOUT the env leak that
+# `os.environ.setdefault` would push into the ~13 direct `start_trial` test
+# callers. Direct `start_trial(...)` calls (tests) keep the function default OFF
+# ⇒ no sentinel ⇒ G0S dormant ⇒ byte-identical traversal. Presence is the
+# signal (content is advisory provenance only).
+PREWALK_SETTINGS_CONFIRM_SENTINEL_NAME = ".prewalk-settings-confirm"
 
-def _prewalk_settings_confirm_active() -> bool:
-    """Return True iff the pre-walk settings confirm gate is woken (default OFF)."""
-    return (
+
+def _prewalk_settings_sentinel_path(run_dir: Path) -> Path:
+    """Return the per-run G0S wake-sentinel path inside ``run_dir``."""
+    return run_dir / PREWALK_SETTINGS_CONFIRM_SENTINEL_NAME
+
+
+def write_prewalk_settings_confirm_sentinel(run_dir: Path) -> Path:
+    """Write the per-run G0S wake sentinel into ``run_dir`` (Story 42.6, AC-2).
+
+    Called by the operator CLI start path so the pre-walk settings confirm gate
+    wakes by default on a real steered run. Idempotent; presence is the signal.
+    """
+    run_dir.mkdir(parents=True, exist_ok=True)
+    path = _prewalk_settings_sentinel_path(run_dir)
+    path.write_text(
+        json.dumps({"written_by": "start_trial", "at": _now().isoformat()}) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _prewalk_settings_confirm_active(run_dir: Path | None = None) -> bool:
+    """Return True iff the pre-walk settings confirm gate is woken (default OFF).
+
+    OR semantics (Story 42.6 AC-1): the gate wakes when EITHER the global env
+    override :data:`PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV` is truthy OR a per-run
+    wake sentinel exists in ``run_dir``. Callers without a run dir pass ``None``
+    (env-only overload).
+    """
+    if (
         os.environ.get(PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV, "").strip().lower()
         in _PREWALK_SETTINGS_TRUTHY
-    )
+    ):
+        return True
+    return run_dir is not None and _prewalk_settings_sentinel_path(run_dir).exists()
 
 
 def _research_dispatch_live() -> bool:
@@ -2689,9 +2727,10 @@ def _prewalk_settings_gate_disposition(
 
     Returns one of:
 
-    * ``"traverse"`` — the wake flag is OFF (default): the content-free gate is
-      dormant, traversed byte-identically (exactly like G0E/G0R when their wake
-      flag is off). No surface mutation, so the default start walk is unchanged.
+    * ``"traverse"`` — neither wake signal is present (env flag unset AND no
+      per-run sentinel — Story 42.6): the content-free gate is dormant, traversed
+      byte-identically (exactly like G0E/G0R when their wake flag is off). No
+      surface mutation, so a direct ``start_trial`` (test) walk is unchanged.
     * ``"skip-explicit"`` — the gate is WOKEN but a non-interactive
       (``pause_at_gates=False``) or offline-harness (``allow_offline_cost_report``)
       mode overrides the pause. AC-6 opt-out: EXPLICIT + logged/traced — never a
@@ -2701,7 +2740,7 @@ def _prewalk_settings_gate_disposition(
     Invariant helper called from BOTH walks (start + continuation) so the
     disposition can never drift between them (two-walk trap).
     """
-    if not _prewalk_settings_confirm_active():
+    if not _prewalk_settings_confirm_active(_run_dir(trial_id, runs_root)):
         return "traverse"
     if not pause_at_gates or allow_offline_cost_report:
         reason = (
