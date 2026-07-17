@@ -652,6 +652,17 @@ Cross-cutting tech debt that grew during Slabs 1-4 + that should be properly tra
 
 ---
 
+## Static-validation deck+motion+workbook findings (filed 2026-07-17)
+
+Source: `_bmad-output/implementation-artifacts/static-validation-deck-motion-workbook-pipeline-2026-07-17.md` (independent read-only static validation). Triaged by Marcus-orchestrator 2026-07-17. **S-2 (G0 directive raw dump) is NOT filed here — it is OWNED by Epic 43 (HIL Surface Tabular Coverage), which supersedes and exceeds it** (43 fixes the systemic projector gap across all 13 gates, not just G0). S-5/S-7/S-8 = by-design/info, no action.
+
+- **`workbook-capability-tier-honesty-lag`** (S-1, HIGH-honesty, **PARTY-GATED**) — `bundle_catalog.py` still tiers `workbook` as `mechanism_only_never_produced` ("no real producer has emitted a workbook artifact yet") and `narrated-deck-with-workbook` readiness `not_yet`, despite real MD+DOCX produced at trials `a940c5eb` + LO-verified `8b275e5b`. Direction is CONSERVATIVE (understates → greys the bundle → fail-safe, not an overclaim), so non-urgent. **Do NOT silently edit the tier** (tier bumps are governance per CLAUDE.md pack-versioning + the report §8.2). Correct bump is nuanced: artifact was produced on the FROZEN lesson (Tejal P2) — honest tier is *proven-on-frozen-lesson*, NOT blanket `proven_wired`; off-frozen-lesson stays an open claim. Trigger: party-ratify at the next workbook-track touch or the 39/40-wave close. Direction may flip if substrate evolves.
+- **`deck-plus-workbook-without-motion-catalog-path`** (S-4, MEDIUM, product question) — no catalog bundle for deck+workbook without motion; selecting workbook always forces the motion nodes. Product-shape decision (PM/John), not a defect. Trigger: an operator/SME actually wanting workbook-sans-motion.
+- **`unchained-node-operator-swimlane-doc`** (S-3, LOW, docs) — `directive-composer`/`g0-enrichment`/`irene-refinement`/… appear in the 52-node list but do real work at start-time/wake-gated side paths; easy to misread as "the walk visits the composer." Document unchained-node semantics in the operator swimlane. Trigger: next operator-facing doc pass.
+- **`motion-modality-registry-hygiene`** (S-6, LOW, cleanup) — motion is a composer `_STUB_MODALITIES` binding, not in `MODALITY_REGISTRY`; prune works, registry hygiene incomplete. Trigger: next modality-registry touch.
+
+Report §8.4 (re-run the static check post-Epic-43 remediation, then a steered live proof of the full triple) is noted as the Epic-43-close verification step.
+
 ## Inventory Summary
 
 > **Refreshed 2026-05-07 at pre-Trial-3 cleanup S1 P0-IH (Mary AM-5 amendment).** Counts reflect ACTIVE entries only — 24 closed entries segregated to §"Closed Entries — Archived" at the bottom of this file (preserved verbatim for audit trail; no content deleted). Hot-start scan at session-WRAPUP / next-session-START should now skim ACTIVE entries only.
