@@ -848,6 +848,15 @@ PERMITTED_PYTHON_DIFFS = {
     # above. NO new live-dispatch call site — the sentinel only flips the WAKE
     # condition of a pause that halts BEFORE the first spend.
     "tests/marcus/orchestrator/test_prewalk_settings_wake_sentinel.py",
+    # Story 41-4 (dollar-budget enforced stop — MARCUS_TRIAL_BUDGET_USD becomes a
+    # brake, not a gauge; dual-gate, LOCKSTEP production_runner.py). Additive to
+    # 41-2/41-3: a shared PRE-spend + POST-spend dollar brake in BOTH walk
+    # specialist branches that pauses-at-error with the distinct `budget.exceeded`
+    # tag via the same check_trial_budget SSOT that feeds BudgetStatus. No-cap/
+    # unset stays byte-identical (41-3 interim preserved). Deterministic / OFFLINE
+    # (fake ProductionDispatchAdapter with a per-dispatch cost + stubbed preflight)
+    # — NO new live-dispatch call site; production_runner.py already rostered above.
+    "tests/marcus/orchestrator/test_dollar_budget_enforced_stop.py",
 }
 
 

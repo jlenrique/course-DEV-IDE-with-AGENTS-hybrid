@@ -100,6 +100,7 @@ from app.runtime.cascade_config import (
 )
 from app.runtime.economics import (
     RUNS_ROOT,
+    check_trial_budget,
     measure_trial_cost,
     record_trial_cost_report,
 )
@@ -3330,6 +3331,88 @@ def _assert_specialist_dispatched_or_raise(
     )
 
 
+def _resolve_trial_budget_usd() -> float | None:
+    """Read ``MARCUS_TRIAL_BUDGET_USD`` as the run's dollar cap, or ``None``.
+
+    Mirrors the report-side cap read (``app.runtime.economics`` §resolved_budget):
+    an unset / blank / unparseable value means **no cap** — the 41-3 interim
+    (spend bounded only by the finite graph + idempotency + gate-pauses) is
+    preserved and enforcement never fires.
+    """
+    raw = (os.getenv("MARCUS_TRIAL_BUDGET_USD") or "").strip()
+    if not raw:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def _accumulated_run_spend_usd(production_envelope: ProductionEnvelope) -> float:
+    """Sum the accumulated per-contribution ``cost_usd`` in the live envelope.
+
+    This is the SAME mid-walk live-partial computation the operator-surface cost
+    reading falls back to (``_operator_surface_cost_reading``) — the real, known
+    partial spend accrued so far this walk. It is the accumulated-spend input the
+    dollar brake feeds into ``check_trial_budget`` (the BudgetStatus SSOT).
+    """
+    total = 0.0
+    for contribution in getattr(production_envelope, "contributions", ()) or ():
+        value = getattr(contribution, "cost_usd", 0.0)
+        total += float(value) if isinstance(value, (int, float)) else 0.0
+    return total
+
+
+def _assert_within_dollar_budget_or_raise(
+    *,
+    production_envelope: ProductionEnvelope,
+    node_id: str,
+    specialist_id: str,
+) -> None:
+    """Fail loud (``budget.exceeded``) when accumulated spend crosses the cap.
+
+    Story 41-4 — the dollar brake (BOTH walks, the shared chokepoint adjacent to
+    ``_assert_specialist_dispatched_or_raise``). ``MARCUS_TRIAL_BUDGET_USD`` was a
+    SOFT-cap gauge (``BudgetStatus`` warned at cost-report time but the walk never
+    stopped); this makes it a real economic brake.
+
+    ONE SOURCE OF TRUTH (AC-3): the enforcement decision is
+    ``check_trial_budget(accumulated, cap)`` — the identical posture computation
+    that produces the ``BudgetStatus`` in the trial economics report. The report
+    and the brake therefore agree by construction: the hard stop fires exactly
+    when that computation returns ``over-budget-warning`` (accumulated spend has
+    crossed the cap).
+
+    Callers invoke this at TWO points around a specialist dispatch:
+      * PRE-spend — before dispatching, so an already-over-budget run pauses
+        WITHOUT spending the crossing call (the preferred stop).
+      * POST-spend — after a dispatch, so a single call that overshoots the cap
+        is still caught honestly at its node.
+
+    No-cap / unset budget (AC-2 back-compat): ``_resolve_trial_budget_usd``
+    returns ``None`` and this is a no-op — a no-cap run NEVER budget-pauses,
+    byte-identical to the 41-3 interim.
+    """
+    budget_usd = _resolve_trial_budget_usd()
+    if budget_usd is None or budget_usd < 0.0:
+        # No cap (unset/blank/unparseable) OR a misconfigured negative cap: do
+        # not enforce (a negative cap is not a real economic bound — the report
+        # path treats <0 as an operator error, never as a tighter brake).
+        return
+    accumulated = _accumulated_run_spend_usd(production_envelope)
+    status = check_trial_budget(accumulated, budget_usd)
+    if status.state != "over-budget-warning":
+        return
+    raise SpecialistDispatchError(
+        f"dollar budget exceeded at node {node_id} (specialist {specialist_id!r}): "
+        f"accumulated ${accumulated:.6f} of ${budget_usd:.6f} cap "
+        f"(over by ${status.over_by_usd:.6f}) — pausing before further spend so "
+        "MARCUS_TRIAL_BUDGET_USD is a real brake, not just an after-the-fact "
+        "report (Story 41-4 dollar-budget enforced stop)",
+        tag="budget.exceeded",
+    )
+
+
 def run_production_trial(
     corpus_path: Path,
     preset: Literal["production", "explore"],
@@ -3916,10 +3999,48 @@ def run_production_trial(
                 # Story 41-3 (REMOVE the throttle): the call-count cap
                 # (max_specialist_calls) is gone — a specialist node dispatches
                 # whenever live is available and the run is not an offline cost
-                # report, with no per-call budget gate. A composed production run's
-                # spend is now bounded by the finite composed graph, per-node
-                # idempotency, and human gate-pauses; there is no early dollar
-                # cutoff until the budget-enforcement follow-on lands.
+                # report, with no per-call budget gate.
+                # Story 41-4 (the dollar brake landed): 41-3 said "spend is bounded
+                # by the finite composed graph, per-node idempotency, and human
+                # gate-pauses; there is no early dollar cutoff until the
+                # budget-enforcement follow-on lands." THIS is that follow-on —
+                # MARCUS_TRIAL_BUDGET_USD is now a real economic brake. The dollar
+                # cutoff is enforced by _assert_within_dollar_budget_or_raise
+                # (shared, both walks) PRE-spend (below, before this dispatch) and
+                # POST-spend (after it) via the same check_trial_budget SSOT that
+                # feeds BudgetStatus. No-cap/unset budget stays byte-identical.
+                #
+                # Story 41-4 PRE-spend brake: if accumulated spend has already
+                # crossed the cap, pause BEFORE spending this node's dispatch (do
+                # not spend the crossing call). No-op when no-cap/unset.
+                try:
+                    _assert_within_dollar_budget_or_raise(
+                        production_envelope=production_envelope,
+                        node_id=node.id,
+                        specialist_id=specialist_id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 dispatched_specialist = False
                 if _has_live_openai() and not allow_offline_cost_report:
                     dispatched = _dispatch_specialist_catching_batch_wait(
@@ -3949,6 +4070,37 @@ def run_production_trial(
                     production_envelope, run_state = dispatched
                     specialist_calls += 1
                     dispatched_specialist = True
+                    # Story 41-4 POST-spend brake: catch a single dispatch that
+                    # overshot the cap (the pre-spend check cannot know this
+                    # call's cost in advance). Same SSOT; distinct budget.exceeded.
+                    try:
+                        _assert_within_dollar_budget_or_raise(
+                            production_envelope=production_envelope,
+                            node_id=node.id,
+                            specialist_id=specialist_id,
+                        )
+                    except SpecialistDispatchError as exc:
+                        return _pause_at_error(
+                            error=exc,
+                            node_id=node.id,
+                            node_index=index,
+                            specialist_id=specialist_id,
+                            trial_id=effective_trial_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trace_metadata=trace_metadata,
+                            last_gate_crossed=last_gate_crossed,
+                            graph_step_completed=graph_step_completed,
+                            specialist_calls=specialist_calls,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
                 try:
                     _assert_specialist_dispatched_or_raise(
                         dispatched=dispatched_specialist,
@@ -5135,10 +5287,46 @@ def _continue_production_walk(
                 # Story 41-3 (REMOVE the throttle): the call-count cap
                 # (max_specialist_calls) is gone — a specialist node dispatches
                 # whenever live is available and the run is not an offline cost
-                # report, with no per-call budget gate. A composed production run's
-                # spend is now bounded by the finite composed graph, per-node
-                # idempotency, and human gate-pauses; there is no early dollar
-                # cutoff until the budget-enforcement follow-on lands.
+                # report, with no per-call budget gate.
+                # Story 41-4 (the dollar brake landed — resume/recover leg, two-walk
+                # parity): 41-3's "no early dollar cutoff until the follow-on lands"
+                # interim is closed here. MARCUS_TRIAL_BUDGET_USD is enforced by the
+                # SHARED _assert_within_dollar_budget_or_raise PRE-spend (below) and
+                # POST-spend (after dispatch) via the same check_trial_budget SSOT
+                # that feeds BudgetStatus. Resume-safe: a resume that is still over
+                # the cap re-pauses PRE-spend (no silent double-spend); a resume with
+                # a RAISED cap continues. No-cap/unset stays byte-identical.
+                #
+                # Story 41-4 PRE-spend brake: pause BEFORE spending this node's
+                # dispatch if accumulated spend has already crossed the cap.
+                try:
+                    _assert_within_dollar_budget_or_raise(
+                        production_envelope=production_envelope,
+                        node_id=node.id,
+                        specialist_id=specialist_id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 dispatched_specialist = False
                 if _has_live_openai() and not allow_offline_cost_report:
                     dispatched = _dispatch_specialist_catching_batch_wait(
@@ -5168,6 +5356,36 @@ def _continue_production_walk(
                     production_envelope, run_state = dispatched
                     specialist_calls += 1
                     dispatched_specialist = True
+                    # Story 41-4 POST-spend brake: catch a single dispatch that
+                    # overshot the cap. Same SSOT; distinct budget.exceeded.
+                    try:
+                        _assert_within_dollar_budget_or_raise(
+                            production_envelope=production_envelope,
+                            node_id=node.id,
+                            specialist_id=specialist_id,
+                        )
+                    except SpecialistDispatchError as exc:
+                        return _pause_at_error(
+                            error=exc,
+                            node_id=node.id,
+                            node_index=index,
+                            specialist_id=specialist_id,
+                            trial_id=trial_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trace_metadata=trace_metadata,
+                            last_gate_crossed=last_gate_crossed,
+                            graph_step_completed=graph_step_completed,
+                            specialist_calls=specialist_calls,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
                 try:
                     _assert_specialist_dispatched_or_raise(
                         dispatched=dispatched_specialist,

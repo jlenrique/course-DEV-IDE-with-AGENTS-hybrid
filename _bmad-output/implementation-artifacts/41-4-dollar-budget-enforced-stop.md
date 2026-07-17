@@ -1,10 +1,10 @@
 ---
 id: 41-4
 epic: 41
-status: ready-for-dev   # rider R4 (Epic-42 sign-off) = the named twin of 41-3; the Epic-41 dollar brake
+status: done   # 2026-07-17 dev complete + dual-gate review PASS; rider R4 RESOLVED — dollar brake landed
 depends_on: 41-3
 gate_mode: dual-gate   # LOCKSTEP (production_runner.py) + a real spend-enforcement rail
-baseline_commit: 39f006ac
+baseline_commit: 8ec16e2f   # dev-open baseline 2026-07-17 (post-42-7)
 lockstep: true
 ---
 
@@ -62,3 +62,29 @@ so that the dollar budget is a real economic brake — not just an after-the-fac
 
 ## Green-Light
 Rider R4 was named + HIGH-prioritized by the Epic-42 party sign-off (5/5) and is the explicit twin filed at 41-3's green-light — that is the green-light. Dual-gate, lockstep; fresh-Claude-dev-agent.
+
+## Dev Agent Record
+
+**Status: implemented (awaiting orchestrator green-light / review). The brake landed.**
+
+The dollar brake is now a real economic rail. The 41-3 interim — *"no early dollar cutoff until the budget-enforcement follow-on lands"* — is CLOSED: `MARCUS_TRIAL_BUDGET_USD` STOPS the walk instead of only warning at cost-report time.
+
+- **Where the brake lands (both walks, shared chokepoint):** new `_assert_within_dollar_budget_or_raise(...)` in `app/marcus/orchestrator/production_runner.py`, called at the specialist-dispatch branch in BOTH `run_production_trial` (start walk) and `_continue_production_walk` (resume/recover walk), at TWO points each:
+  - **PRE-spend** (before the dispatch, after the S2 idempotency skip): if accumulated spend has already crossed the cap, pause WITHOUT spending the crossing call.
+  - **POST-spend** (immediately after a dispatch): catch a single call that overshoots the cap.
+  - 1 definition + 4 invocations = 5 occurrences (pinned by `test_ac5_shared_dollar_brake_invoked_in_both_walks`). Distinct tag `budget.exceeded`; routed through 41-2's honest `_pause_at_error` path (same `SpecialistDispatchError` carrier, distinct tag) — NO parallel error channel.
+- **One source of truth (AC-3):** the enforcement decision is `check_trial_budget(accumulated, cap)` — the identical posture computation that produces `BudgetStatus` in the trial economics report. Hard stop fires exactly when it returns `over-budget-warning` (accumulated `>` cap); the report and the brake agree by construction. Accumulated spend = sum of live per-contribution `cost_usd` (the same mid-walk live-partial the operator-surface cost reading uses). The env cap read (`MARCUS_TRIAL_BUDGET_USD`) mirrors the report-side `resolved_budget` read.
+- **No-cap preserved (AC-2):** unset/blank/unparseable/negative cap ⇒ `_resolve_trial_budget_usd()` returns `None` and the brake is a strict no-op — a no-cap run NEVER budget-pauses (byte-identical to the 41-3 interim).
+- **Resume-safe (AC-4):** a resume still over the SAME cap re-pauses PRE-spend (node never re-dispatched — no silent double-spend); a resume with a RAISED cap continues.
+- **Alignment (AC-5):** `budget.exceeded` (dollar) is distinct from 41-2's `dispatch.live-unavailable` (keyless) and the retired 41-3 `dispatch.budget-exhausted` (call-count). **Deferred-inventory note for the orchestrator:** the twin entry `production-runner-dollar-budget-enforced-stop` is now DISCHARGED — the dollar brake landed here at 41-4; strike/close it (orchestrator owns the inventory edit).
+- **Files:** `app/marcus/orchestrator/production_runner.py` (import of `check_trial_budget` + 3 new helpers + the shared brake in both walks), `tests/marcus/orchestrator/test_dollar_budget_enforced_stop.py` (new, 20 tests), `tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py` (allowlist the new test file). Cost-accounting math unchanged; only the enforcement decision + pause were ADDED. Lockstep exit 0; ruff clean; import-linter 18/0.
+
+## Senior Developer Review (AI) — 2026-07-17 — DUAL-GATE
+
+**Reviewer:** orchestrator, inline (hermetic; no windows). **Outcome: APPROVE.** (Dev agent orphaned a background baseline pytest and left its work in a stash; orchestrator restored it via `git stash pop` — brake + 20-test file recovered intact — and completed the verification.)
+
+**Correctness:** the brake reuses the EXISTING SSOT `app/runtime/economics.py::check_trial_budget(running_total, cap)` (same posture that produces `BudgetStatus`) — the report and the brake agree by construction (AC-3), and cost-accounting math is untouched. `_assert_within_dollar_budget_or_raise` lands at BOTH walks' dispatch chokepoint (pre-spend: don't spend the crossing call; post-spend: catch an overshoot), routed through 41-2's honest `_pause_at_error` with a DISTINCT `budget.exceeded` tag (no parallel error channel; distinct from 41-2 `dispatch.live-unavailable` + the retired 41-3 `dispatch.budget-exhausted`). No-cap (`_resolve_trial_budget_usd()` None on unset/blank/negative) → strict no-op = 41-3 interim preserved (AC-2). Resume-safe: same-cap re-pauses pre-spend (no double-spend), raised-cap continues (AC-4).
+
+**Verification:** 40 targeted tests pass (20 brake + 41-2 fail-loud + 42-5 gate — undisturbed); `tests/marcus/orchestrator/` = 324 passed / 2 skipped / 1 pre-existing (`test_start_walk_no_motion` PreflightGateFailed, environmental, before the budget check — R4 can't cause it); **net-new = 0**. Lockstep exit 0; ruff clean; import-linter 18/0. Diff scope = `production_runner.py` + the new test + TW-7c-4 allowlist (economics.py reused UNMODIFIED — no other trigger-path source).
+
+**Findings:** none blocking. Closes 41-3's interim + discharges the deferred twin `production-runner-dollar-budget-enforced-stop`.
