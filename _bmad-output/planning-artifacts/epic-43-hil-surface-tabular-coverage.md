@@ -1,6 +1,6 @@
 # Epic 43 — HIL Surface Tabular Coverage
 
-**Status:** GREEN-LIT 5/5 SIGN-WITH-RIDERS (party 2026-07-17 — Winston/John/Amelia/Murat/Sally; record `party-greenlight-epic-43-2026-07-17.md`)
+**Status:** ✅ CLOSED 2026-07-17 — all 12 stories done + reviewed; 14 gate content types have bespoke tabular renderers; ratchet allowlist EMPTY; requirement `hil-operator-surfaces-must-be-tabular` completed (42-1 false-close corrected). Retrospective: `epic-43-retrospective-2026-07-17.md`. Green-lit 5/5 SIGN-WITH-RIDERS (party 2026-07-17 — Winston/John/Amelia/Murat/Sally; record `party-greenlight-epic-43-2026-07-17.md`).
 **Author:** Marcus-orchestrator (session 2026-07-17), from operator directive "scope to all gates"
 **Class:** S (substrate — operator surface / the product)
 **Predecessor:** Epic 42 (Operator Surface Next-Pass). This epic **reopens** the requirement `hil-operator-surfaces-must-be-tabular`, which Epic 42-1 closed against only the G0/G0E slice.

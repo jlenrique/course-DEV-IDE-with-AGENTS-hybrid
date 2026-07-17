@@ -853,6 +853,14 @@ PERMITTED_PYTHON_DIFFS = {
     # hil_tabular_projector.py + trial.py + test_projector_coverage_ratchet_43_10.py
     # + test_variant_mode_renderers_43_3.py already rostered above (state-pin lockstep edits).
     "tests/marcus/cli/test_motion_plan_clip_renderers_43_7.py",
+    # Story 43-11 (SPOC narration <-> tabular projector anti-drift parity guard).
+    # PURE TEST-ONLY: a new parity test feeding the frozen 43-0 fixtures
+    # (g0-enrichment + G0E/G0R decision cards) to BOTH marcus_spoc.narrate_gate and
+    # the projector renderers, asserting they agree on the load-bearing G0E/G0R facts
+    # (typed/provisional/refined LO totals + LO identity sets). Deterministic / OFFLINE
+    # — NO new live-dispatch call site; NO source change (parity-test route, per the
+    # story's lower-risk default); the projector stays stdlib-pure.
+    "tests/unit/marcus/cli/test_spoc_projector_parity_43_11.py",
     # Story 42-3 (full run-settings standing readout — all ~16 toggles; green-lit
     # 5/5 2026-07-16, dual-gate, LOCKSTEP operator-surface projection). ADDITIVE
     # within v1: a new RunSettingsSection on the operator-surface contract + a
