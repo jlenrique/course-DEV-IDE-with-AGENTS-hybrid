@@ -5,6 +5,7 @@ status: ready-for-dev
 depends_on: 42-3   # needs the full 16-toggle readout to project into the confirm surface
 gate_mode: dual-gate   # new HIL pause in the flow of execution + assembler/surface adjacency
 anchor_provenance: HEAD 23480353
+baseline_commit: 482cf78a  # dev-open baseline 2026-07-17 (post-42-3)
 lockstep: true   # start-path HIL pause + operator_surface projection
 ---
 
@@ -25,9 +26,13 @@ so that I never discover a wrong setting (wrong preset, detective off, budget mi
 - **Requirement:** `deferred-inventory.md` §Named-But-Not-Filed `hud-pre-run-settings-confirmation-surface` (part b) — "surfaced at the BEGINNING of a real run as a settings-confirmation surface the operator can confirm or CHANGE before the walk proceeds — a requirement on BOTH the HUD and the app's flow of execution (pre-walk settings pause/card)." Marked RED priority by the operator.
 - **Depends on 42-3:** the 16-toggle readout (`run_settings` section) is the content this gate projects; 42-5 adds the PAUSE + confirm/change verbs on top of it.
 
+## Gate convention (BINDING — operator directive 2026-07-17: review guides before adding a gate)
+
+**Operator-authorized approach = CONVENTION-CONFORMING (a real gate, not an ad-hoc pause).** Follow `docs/dev-guide.md §"Adding a new gate (post-M5; rare)"` (≈L1169): (1) a real **DecisionCard subclass in `app/models/decision_cards/`** (settings-gate card carrying the 42-3 16-toggle readout; follow g0*.py + `DecisionCardMeta`); (2) wire into **`pipeline-manifest.yaml`** as a HEAD gate before G0 (`nodes[*].gate_id` + `edges[*].decision_card_schema` — LOCKSTEP; pick a non-colliding gate_id e.g. `G0S`); (3) step-3 adapted — a pre-G0 gate has NO specialist, so it is emitted **orchestrator/marcus-side** (like pre-gate-marcus), documented; (4) **schema-shape story** discipline for the new card (shape-pin per `docs/dev-guide/scaffolds/schema-story/`). PLUS `docs/dev-guide/gate-decision-binding-semantics.md` — pause via `interrupt(...)` with `verdict_verb_options`, resume via `OperatorVerdict`; import `resume_from_verdict` (C3 binding) but don't invoke at node time. Verbs: confirm→approve / change→edit (reuse `DecisionCardVerb`), no bespoke pause.
+
 ## T1 Readiness (BINDING readings before any code)
 
-1. **Lockstep gate FIRST:** `docs/dev-guide/pipeline-manifest-regime.md` — this touches the start-path (`production_runner.py` adjacency) and the operator-surface projection; both are trigger rows. Cora block-mode hook.
+1. **Lockstep gate FIRST:** `docs/dev-guide/pipeline-manifest-regime.md` — this touches the start-path (`production_runner.py`) + `pipeline-manifest.yaml` (the head-gate wiring) + the operator-surface projection; all trigger rows. Cora block-mode hook. **Also read the gate convention above** (`dev-guide.md §Adding a new gate` + `gate-decision-binding-semantics.md`) BEFORE any code.
 2. 42-3's `run_settings` section (the readout content) — this gate reprojects it as a confirm surface.
 3. The start-path in `production_runner.py` / `app/marcus/cli/trial.py` — where the walk begins, to insert a pre-G0 settings pause that halts the walk until the operator confirms (mirror the existing DecisionCard gate pause/resume mechanics — do NOT invent a new pause primitive).
 4. Existing gate/DecisionCard machinery (G0 confirm etc.) — the pre-walk gate reuses the same pause → operator verdict → resume contract (`trial resume --verb …`), presenting `confirm | change` (and the tabular projector from 42-1 for readability).

@@ -1812,6 +1812,7 @@ development_status:
   epic-39-retrospective: optional
   epic-40-cover: backlog
   40-1-cover-placeholder-hero-toc-provenance: done-awaiting-live-witness  # 2026-07-16: deterministic+T4 green (combined Blind+Edge+Auditor PASS; MEDIUM palette-vocabulary finding fixed in-session + pin; 7 low/info filed); no probe owed (fully deterministic); full-run witness owed by batch run B
+  40-2-workbook-cover-art-trove-selection: proposed  # 2026-07-17 NEW operator requirement: cover producer selects most thematically resonant image from a curated trove (C:\Users\juanl\Box\OIIE\TEJAL\WORKBOOK cover art, 23 files) matching lesson theme/LOs vs descriptive filenames; replaces 40-1 placeholder with real embedded image (MD+DOCX); adds app setting MARCUS_WORKBOOK_COVER_ART_TROVE (party: also a 42-3 17th toggle?). No Gamma. Guide-review pre-dev. QUEUED behind Epic-42 goal.
   epic-40-retrospective: optional
 
   # === Epic 41 — Resume-Walk Dispatch Integrity (green-lit 5/5 2026-07-16; BLOCKING; surfaced by trial bc747b51 §06 CD-miss diagnosis) ===
@@ -1827,7 +1828,7 @@ development_status:
   42-2-hud-lifecycle-survives-gate-pause: done  # 2026-07-16 dev complete + review PASS. CREATE_NO_WINDOW on HUD spawn (AC-7 — the operator's window fix); status-aware teardown (pause/unknown=no-op, terminal/stop=terminate+grace) replaces blanket atexit; resume reuse no double-launch; never-raises. 32 hermetic tests, tests/hud+notify 125 passed, lockstep 0, ruff/import-linter clean, baseline-diff net-new=0 (1 pre-existing inherited fail). Residual filed: repo-wide-no-window-spawn-sweep (3 git/texas subprocess.run). Live no-window proof owed at operator's next run.
   42-3-full-run-settings-standing-readout: done  # 2026-07-17 dev complete + dual-gate review PASS. RunSettingsSection (16 toggles) on operator surface + HUD panel; additive-within-v1 (AD-4/35.9 precedent, correct governance); resolver sole-writer both walks (no production_runner edit); keep-in-sync guard; back-compat. lockstep 0, shape-pin+parity 137, ruff/import-linter clean. ALSO remediated a 42-1 escape (2 orchestrator-projection tests asserted old next_action.command format; 42-1's CLI-scoped baseline-diff missed them). LESSON: contract-wide changes need consumer-set baseline-diff.
   42-4-public-readonly-hud-stable-url: ready-for-dev  # depends 42-2; dual-gate; LOCKSTEP+security; public read-only HUD at a stable URL (Cloudflare Tunnel+Access / Tailscale fallback); non-leak allowlist bar (no nonces/digests/source/secrets)
-  42-5-pre-walk-settings-confirm-gate: ready-for-dev  # depends 42-3; dual-gate; LOCKSTEP; pre-G0 settings pause the operator can confirm-or-change before the walk spends; reuses DecisionCard pause primitive; WALK test
+  42-5-pre-walk-settings-confirm-gate: in-progress  # 2026-07-17 dev-open (fresh Claude dev agent, baseline 482cf78a); depends 42-3 (done); dual-gate; LOCKSTEP; pre-G0 settings pause the operator can confirm-or-change before the walk spends; reuses DecisionCard pause primitive; WALK test + segment run
   epic-42-retrospective: optional
 
 action_items:
