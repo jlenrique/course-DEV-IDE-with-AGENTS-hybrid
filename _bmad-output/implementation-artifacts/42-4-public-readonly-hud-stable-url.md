@@ -5,12 +5,42 @@ status: ready-for-dev
 depends_on: 42-2   # needs the lifecycle fix (pause keeps HUD alive) before a public overlay is meaningful
 gate_mode: dual-gate   # own security/non-leak bar + app/hud/** lockstep
 anchor_provenance: HEAD 23480353
+baseline_commit: 8d485ace  # dev-open baseline 2026-07-17 (post-42-5; last Epic-42 story)
 lockstep: true   # app/hud/** + ops integration
 ---
 
 # Story 42.4: Public read-only HUD at a stable URL, browsable from any machine
 
-Status: ready-for-dev  # green-lit 5/5 2026-07-16; dual-gate; own non-leak bar; LOCKSTEP
+Status: done  # 2026-07-17 dev complete (app-side hermetic) + dual-gate review PASS; tunnel/identity leg operator-gated live evidence
+
+## Dev Agent Record
+
+**Dev complete 2026-07-17 (fresh Claude dev agent). Baseline `8d485ace`. Status → review → done (operator-gated tunnel leg owed).**
+
+### File List
+- `app/hud/public.py` (A) — distinct public overlay app + `build_public_view` **positive allowlist** (copies only enumerated fields per section; unknown/future fields dropped by default). `create_public_hud_app` takes NO `launch_nonce` (structurally can't serve it), own port (8792), 3 GET routes, `/healthz` without nonce, `/projection` = scrubbed view (never `snapshot.raw`), unrecognized→secret-free `_offline_page`.
+- `app/marcus/orchestrator/preflight.py` (M, additive) — `PublicOverlayConfig.from_env` (tunnel mode/token/name/hostname/port from env, never hardcoded), `tunnel_argv` (cloudflared named-tunnel / tailscale serve — NEVER `--url` quick-tunnel), `launch_public_overlay` + `_spawn_child` (CREATE_NO_WINDOW on win32, registers 42-2's `_status_aware_teardown`, NEVER-raises, unconfigured→no-op).
+- `docs/admin-guide.md` (M) §Public Read-Only HUD Overlay + `docs/operator/hud-guide.md` (M, pointer) — the operator Cloudflare/Tailscale setup recipe + validation checklist.
+- `tests/hud/test_public_surface_readonly_and_nonleak.py` (A, 15) + TW-7c-4 allowlist.
+- **`app/hud/server.py` NOT touched** — the overlay is a new `app/hud/**` module → satisfies the lockstep glob with zero blast radius on the authority server.
+
+### Completion Notes
+- The public surface serves a positive-allowlist scrub — drops `launch_nonce`, `next_action.command` (resume paste), decision-card digests, error message text, preflight item outputs, deliverable paths, `envelope_digest`, `manifest_digest`, `operator_id`, `specialist.model/cost`, `trace.detail`, notifications-echo. Localhost (8791) stays authority; the tunnel fronts the SEPARATE public app (8792), so the nonce-bearing authority `/healthz` + raw `/projection` are never tunnel-reachable (defense-in-depth beyond the tunnel ACL). Identity-aware (Cloudflare Access / Tailscale ACL), never anonymous/shared-password.
+
+### Change Log
+- 2026-07-17: public read-only HUD overlay (`app/hud/public.py` positive-allowlist) + tunnel plumbing (operator-gated) + operator recipe; done.
+
+## Senior Developer Review (AI) — 2026-07-17 — DUAL-GATE (security)
+
+**Reviewer:** orchestrator, inline adversarial (hermetic; no windows). **Outcome: APPROVE (operator-gated tunnel leg owed).**
+
+**Security core (non-leak):** VERIFIED — `build_public_view` is a genuine POSITIVE allowlist (`_copy_allowed(section, ALLOWED_*)` per section; a fresh dict, never `snapshot.raw`), so any un-named/future field is dropped by default — the safe direction. The public app has no `launch_nonce` parameter (structurally can't serve it) and runs on a separate port, so the authority server's nonce/raw surfaces are never tunnel-reachable. The **teeth-check test** (`test_local_authority_server_does_echo_secrets_teeth_check`) proves the local authority DOES carry the sentinels — so the non-leak assertions are non-vacuous. Excellent test discipline for a security bar.
+
+**Convention conformance:** follows the hud-guide service contract (GET-only, read-only/zero-mutation, localhost authority, no wrong-run fallback → `_offline_page`/foreign-veil); tunnel config from env (never hardcoded); no-quick-tunnel refusal; CREATE_NO_WINDOW on the tunnel child; reuses 42-2's status-aware lifecycle owner; NEVER-raises (unconfigured/failed → reach degrades, run never does).
+
+**Verification:** 15 hermetic tests pass (non-leak allowlist `test_build_public_view_drops_every_forbidden_sentinel` + teeth-check + read-only + no-quick-tunnel + idle/foreign veil + windowless spawn + localhost-preserved); `tests/hud`+`tests/notify` 145 pass; lockstep exit 0; ruff clean; import-linter 18/0 (HUD1 layer fence held); TW-7c-4 pass; diff scope = `public.py` (new) + `preflight.py` + docs + tests — **server.py untouched, no other trigger-path source**; baseline-diff net-new 0 (the 1 fail is the known inherited `test_health_tiles_prefer_persisted_cost_report`).
+
+**Findings:** none blocking. **Operator-gated live evidence owed:** the actual Cloudflare Tunnel + Access (or Tailscale Serve) stand-up, identity enforcement, and second-device reachability at the stable hostname — per `verify-via-shipped-deps`, operator runs it against the admin-guide recipe. This lands in the Epic-42 live-test.
 
 ## Story
 

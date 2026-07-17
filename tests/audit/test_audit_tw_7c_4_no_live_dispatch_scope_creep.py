@@ -829,6 +829,15 @@ PERMITTED_PYTHON_DIFFS = {
     "app/manifest/compiler.py",
     "tests/marcus/orchestrator/test_pre_walk_settings_gate.py",
     "tests/unit/models/decision_cards/test_g_settings_card_shape.py",
+    # Story 42-4 (public read-only HUD at a stable URL; green-lit 5/5 2026-07-16,
+    # dual-gate, LOCKSTEP app/hud/** + own non-leak/identity security bar). A NEW
+    # tunnel-facing public overlay app (a positive-allowlist projection of the
+    # same live run file — no secret route, no raw bytes) + its operator-gated,
+    # config-driven NAMED tunnel plumbing in preflight.py (already rostered
+    # above). No live-dispatch surface: the overlay is a read-only GET view; the
+    # tunnel is operator-gated live evidence, not a dispatch path.
+    "app/hud/public.py",
+    "tests/hud/test_public_surface_readonly_and_nonleak.py",
 }
 
 

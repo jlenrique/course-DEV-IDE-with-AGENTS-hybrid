@@ -533,6 +533,57 @@ These are reference material, not configuration. Agents consult them for decisio
 
 ---
 
+## Public Read-Only HUD Overlay (Story 42-4)
+
+The operator HUD is served from `localhost` as the authority (GET-only, zero-mutation — see `docs/operator/hud-guide.md`). Story 42-4 adds an **optional, additive** outbound overlay so the operator can watch a live run from any browser or phone at one stable URL, **while no secret ever crosses the wire and localhost stays the authority**.
+
+**What the app provides vs. what you configure.** The app ships:
+
+- A **separate** public read-only app (`app/hud/public.py`, `python -m app.hud.public`) bound to its own local port (default `8792`, `HUD_PUBLIC_PORT`). It is a **positive-allowlist projection** of the same live run file — it serves only status, gate, progress/steps, ambient roster, health tiles, the 42-3 run-settings readout, and trace timings. It **never** serves the launch nonce, resume commands/digests, decision-card evidence, verbatim error/source text, credentials, or export paths (enforced in code + pinned by `tests/hud/test_public_surface_readonly_and_nonleak.py`).
+- The **tunnel launcher** (`launch_public_overlay` in `app/marcus/orchestrator/preflight.py`), which reads tunnel config from `.env`/environment, launches the public app + a **named** tunnel child, and couples both to the run lifecycle (survives gate pauses; torn down after a short grace on terminal status — reuses the Story 42-2 status-aware owner). It **refuses** to open an anonymous quick-tunnel; if no tunnel is configured the overlay is simply absent and the run is unaffected.
+
+**You configure** (operator-gated live evidence): the actual Cloudflare Tunnel + Access (preferred) or Tailscale Serve (fallback), the identity policy, and the stable hostname. The overlay is inert until these env vars are present.
+
+### Preferred path — Cloudflare Tunnel + Access (named, identity-aware)
+
+1. **Create a named tunnel** in the Cloudflare Zero Trust dashboard (Networks → Tunnels → *Create a tunnel* → **Cloudflared**). Name it something stable, e.g. `marcus-hud`. Copy the **tunnel token** it shows.
+2. **Route a stable hostname to the tunnel.** In the tunnel's *Public Hostname* tab, add e.g. `hud.yourdomain.com` → **Service** `http://localhost:8792` (the overlay port). This hostname is reserved and stable run-to-run; a fresh run reuses the same hostname.
+3. **Restrict with Cloudflare Access.** In Zero Trust → Access → Applications, add a *Self-hosted* app for `hud.yourdomain.com` with a policy that **allows only your identity** — an *Emails* rule listing your address (one-time PIN by email) or an IdP login with MFA. Do **not** use a reusable shared password / Basic-Auth. Set a short session duration.
+4. **Set the env vars** in `.env` (gitignored — the token is a secret):
+
+   ```
+   HUD_TUNNEL_MODE=cloudflare
+   HUD_TUNNEL_TOKEN=<the tunnel token from step 1>
+   HUD_TUNNEL_HOSTNAME=hud.yourdomain.com
+   HUD_PUBLIC_PORT=8792
+   ```
+
+   (Locally-managed alternative: instead of `HUD_TUNNEL_TOKEN`, set `HUD_TUNNEL_NAME=marcus-hud` with a `~/.cloudflared/config.yml` ingress mapping the hostname to `http://localhost:8792`.) Install `cloudflared` and confirm it is on `PATH` (or set `HUD_TUNNEL_CLOUDFLARED_BIN`).
+
+### Fallback — Tailscale Serve (private, tailnet-only)
+
+1. Install Tailscale and join the operator's tailnet on the run machine; give the machine a stable name (its `*.ts.net` name is intrinsic and stable).
+2. Set:
+
+   ```
+   HUD_TUNNEL_MODE=tailscale
+   HUD_PUBLIC_PORT=8792
+   ```
+
+   The launcher runs `tailscale serve --bg http://127.0.0.1:8792`; the page is reachable at `https://<machine>.<tailnet>.ts.net` to your tailnet devices only. Identity is enforced by your tailnet ACL — no anonymous access. (Teardown between runs, if desired: `tailscale serve --https=443 off`.)
+
+### Validation checklist (operator-gated live leg)
+
+- [ ] With no `HUD_TUNNEL_MODE`, start a run: local HUD works at `http://localhost:8791`; no overlay child spawns (overlay absence never affects the run).
+- [ ] With Cloudflare config set, start a run: `hud.yourdomain.com` prompts for identity (login/MFA or emailed PIN); an un-allowlisted identity is denied.
+- [ ] After authenticating, the page renders status/gate/progress/roster/settings/trace and updates live.
+- [ ] Open the page from a **second device** (phone) — reachable at the same URL under identity.
+- [ ] **Non-leak spot check**: view-source / DevTools on the public page and on `GET /projection` — confirm no launch nonce, no `resume`/paste command, no decision-card evidence, no file paths. (The hermetic test enforces this in code; this is the live confirmation.)
+- [ ] Pause at a gate: the public page stays live across the pause (Story 42-2 coupling). Reach a terminal status: the overlay tears down after the grace; the stable hostname then honestly shows offline.
+- [ ] Idle (no active run): the overlay app, if running, shows **"HUD offline — no active run"**; it never renders a stale/foreign run.
+
+---
+
 ## Security Posture
 
 ### Secrets Management

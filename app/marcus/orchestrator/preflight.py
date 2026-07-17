@@ -755,19 +755,250 @@ def reattach_or_launch_hud_server(
     return proc, ("launched" if proc is not None else "failed")
 
 
+# --------------------------------------------------------------------------
+# Public read-only overlay — tunnel plumbing (Story 42.4, operator-gated)
+#
+# The overlay is ADDITIVE and DEGRADES REACH ONLY: when no tunnel is configured
+# (or a child fails to launch) the local HUD is unchanged and the run proceeds
+# (AC-5). Every function here NEVER raises. The tunnel is fronted onto a
+# SEPARATE public app (``app.hud.public``) on its own local port — never onto
+# the localhost authority server — and the tunnel is ALWAYS a NAMED /
+# identity-aware tunnel, NEVER an anonymous quick-tunnel (AC-1/AC-3).
+# --------------------------------------------------------------------------
+
+#: Default local port the public overlay app binds (the tunnel forwards to it).
+DEFAULT_PUBLIC_HUD_PORT = 8792
+
+#: The tunnel modes the launcher will run. Anything else (incl. absent) leaves
+#: the overlay unconfigured — the launcher NEVER guesses a mode.
+PUBLIC_OVERLAY_MODES = frozenset({"cloudflare", "tailscale"})
+
+
+@dataclass(frozen=True)
+class PublicOverlayConfig:
+    """Operator-provided tunnel config, read from ``.env`` / settings — never hardcoded.
+
+    ``cloudflare`` REQUIRES a named-tunnel credential (``HUD_TUNNEL_TOKEN`` for a
+    remotely-managed tunnel, or ``HUD_TUNNEL_NAME`` for a locally-configured one)
+    — with neither, :meth:`from_env` returns ``None`` (unconfigured) rather than
+    ever degrading to an anonymous quick-tunnel. ``tailscale`` serves the local
+    port on the machine's stable ``*.ts.net`` name, tailnet-restricted.
+    """
+
+    mode: str
+    public_port: int = DEFAULT_PUBLIC_HUD_PORT
+    hostname: str | None = None
+    cloudflare_token: str | None = None
+    tunnel_name: str | None = None
+    cloudflared_bin: str = "cloudflared"
+    tailscale_bin: str = "tailscale"
+
+    @classmethod
+    def from_env(cls, env: Mapping[str, str]) -> PublicOverlayConfig | None:
+        """Parse overlay config; ``None`` when unconfigured or invalid (never raises)."""
+        raw_mode = (env.get("HUD_TUNNEL_MODE") or "").strip().lower()
+        if raw_mode == "cloudflared":
+            raw_mode = "cloudflare"
+        if raw_mode not in PUBLIC_OVERLAY_MODES:
+            return None  # unset / off / unknown → overlay stays absent
+
+        try:
+            public_port = int(env.get("HUD_PUBLIC_PORT", str(DEFAULT_PUBLIC_HUD_PORT)))
+        except (TypeError, ValueError):
+            public_port = DEFAULT_PUBLIC_HUD_PORT
+
+        hostname = (env.get("HUD_TUNNEL_HOSTNAME") or "").strip() or None
+        cloudflared_bin = (env.get("HUD_TUNNEL_CLOUDFLARED_BIN") or "cloudflared").strip()
+        tailscale_bin = (env.get("HUD_TUNNEL_TAILSCALE_BIN") or "tailscale").strip()
+
+        if raw_mode == "cloudflare":
+            token = (env.get("HUD_TUNNEL_TOKEN") or "").strip() or None
+            name = (env.get("HUD_TUNNEL_NAME") or "").strip() or None
+            # NEVER an anonymous quick-tunnel: a named credential is mandatory.
+            if token is None and name is None:
+                LOGGER.warning(
+                    "HUD_TUNNEL_MODE=cloudflare but neither HUD_TUNNEL_TOKEN nor "
+                    "HUD_TUNNEL_NAME is set — refusing to open an anonymous "
+                    "quick-tunnel; overlay stays unconfigured."
+                )
+                return None
+            return cls(
+                mode="cloudflare",
+                public_port=public_port,
+                hostname=hostname,
+                cloudflare_token=token,
+                tunnel_name=name,
+                cloudflared_bin=cloudflared_bin,
+                tailscale_bin=tailscale_bin,
+            )
+
+        # tailscale — the stable machine name is intrinsic to the tailnet; no
+        # token needed. Identity is enforced by the operator's tailnet ACL.
+        return cls(
+            mode="tailscale",
+            public_port=public_port,
+            hostname=hostname,
+            cloudflared_bin=cloudflared_bin,
+            tailscale_bin=tailscale_bin,
+        )
+
+
+def tunnel_argv(config: PublicOverlayConfig) -> list[str]:
+    """Build the tunnel child's argv — ALWAYS named/identity-aware (AC-1/AC-3).
+
+    Guaranteed to never contain the cloudflared quick-tunnel ``--url`` flag: a
+    cloudflare tunnel is ``tunnel run --token <t>`` or ``tunnel run <name>``; a
+    tailscale tunnel is ``serve`` onto the stable machine name.
+    """
+    if config.mode == "cloudflare":
+        if config.cloudflare_token:
+            return [config.cloudflared_bin, "tunnel", "run", "--token", config.cloudflare_token]
+        return [config.cloudflared_bin, "tunnel", "run", str(config.tunnel_name)]
+    # tailscale Serve onto the loopback public app port.
+    return [
+        config.tailscale_bin,
+        "serve",
+        "--bg",
+        f"http://127.0.0.1:{config.public_port}",
+    ]
+
+
+@dataclass
+class PublicOverlayHandles:
+    """Outcome of an overlay launch attempt (never raises to build this)."""
+
+    status: str  # "unconfigured" | "launched" | "app-failed" | "tunnel-failed"
+    app_proc: subprocess.Popen | None = None
+    tunnel_proc: subprocess.Popen | None = None
+    config: PublicOverlayConfig | None = None
+
+
+def _spawn_child(
+    argv: list[str],
+    *,
+    env: Mapping[str, str],
+    log_path: Path,
+    popen: Callable[..., subprocess.Popen],
+) -> subprocess.Popen | None:
+    """Spawn a windowless, detached-stdio child; ``None`` on any failure (quiet).
+
+    Mirrors :func:`launch_hud_server`'s child discipline: ``CREATE_NO_WINDOW`` on
+    win32 (Story 42.2 AC-7), stdout/stderr to a log file, no stdin. NEVER raises.
+    """
+    handle = None
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        handle = open(log_path, "ab")  # noqa: SIM115 — child owns it
+        popen_kwargs: dict[str, object] = {
+            "env": dict(env),
+            "stdout": handle,
+            "stderr": handle,
+            "stdin": subprocess.DEVNULL,
+        }
+        creationflags = _no_window_creationflags()
+        if creationflags:
+            popen_kwargs["creationflags"] = creationflags
+        return popen(argv, **popen_kwargs)
+    except Exception as exc:  # noqa: BLE001 — a launch failure degrades reach, never raises
+        LOGGER.warning("public-overlay child failed to launch (%s): %s", argv[:1], exc)
+        if handle is not None:
+            with suppress(Exception):
+                handle.close()
+        return None
+
+
+def launch_public_overlay(
+    *,
+    trial_id: UUID | str,
+    run_dir: Path,
+    config: PublicOverlayConfig | None,
+    mode: str = "session",
+    python_executable: str | None = None,
+    popen: Callable[..., subprocess.Popen] = subprocess.Popen,
+) -> PublicOverlayHandles:
+    """Launch the public overlay app + its tunnel, lifecycle-coupled to the run.
+
+    Operator-gated: when ``config is None`` (no tunnel configured) this is a
+    no-op returning ``status="unconfigured"`` — the local HUD is untouched and
+    the run proceeds (AC-5). Otherwise it launches TWO children:
+
+    1. the public read-only app (``python -m app.hud.public``) bound to the
+       overlay port — a distinct surface with no secret route (AC-1/AC-2);
+    2. the NAMED tunnel (:func:`tunnel_argv`) fronting that port (AC-1/AC-3).
+
+    Both spawn windowless on win32 (Story 42.2 AC-7) and register the SAME
+    status-aware ``atexit`` teardown as the HUD child (Story 42.2 AC-1/AC-2): a
+    gate pause keeps them ALIVE, a terminal status / explicit stop tears them
+    down after a grace. NEVER raises (AC-5): any launch fault degrades REACH,
+    never the run.
+    """
+    if config is None:
+        return PublicOverlayHandles(status="unconfigured")
+
+    run_dir = Path(run_dir)
+    app_env = {
+        **os.environ,
+        "HUD_TRIAL_ID": str(trial_id),
+        "HUD_RUN_DIR": str(run_dir),
+        "HUD_PUBLIC_PORT": str(config.public_port),
+        "HUD_MODE": mode,
+    }
+    app_argv = [python_executable or sys.executable, "-m", "app.hud.public"]
+    app_proc = _spawn_child(
+        app_argv,
+        env=app_env,
+        log_path=run_dir / "hud-public.log",
+        popen=popen,
+    )
+    if app_proc is None:
+        return PublicOverlayHandles(status="app-failed", config=config)
+    atexit.register(_status_aware_teardown, app_proc, run_dir)
+
+    tunnel_proc = _spawn_child(
+        tunnel_argv(config),
+        env=dict(os.environ),
+        log_path=run_dir / "hud-tunnel.log",
+        popen=popen,
+    )
+    if tunnel_proc is None:
+        # App is up but unreachable from outside — reach degraded, run intact.
+        return PublicOverlayHandles(
+            status="tunnel-failed", app_proc=app_proc, config=config
+        )
+    atexit.register(_status_aware_teardown, tunnel_proc, run_dir)
+    LOGGER.info(
+        "launched public overlay (mode=%s, port=%s) for trial %s",
+        config.mode,
+        config.public_port,
+        trial_id,
+    )
+    return PublicOverlayHandles(
+        status="launched",
+        app_proc=app_proc,
+        tunnel_proc=tunnel_proc,
+        config=config,
+    )
+
+
 __all__ = [
     "COORDINATION_DB_PATH",
+    "DEFAULT_PUBLIC_HUD_PORT",
     "HUD_STOP_SENTINEL_NAME",
     "HUD_TEARDOWN_GRACE_S",
     "PHASE_01_LOCAL_ITEMS",
     "PHASE_02_HEARTBEAT_ITEMS",
+    "PUBLIC_OVERLAY_MODES",
     "SOFT_ITEM_NAMES",
     "TERMINAL_RUN_STATUSES",
     "PreflightDeps",
     "PreflightResult",
+    "PublicOverlayConfig",
+    "PublicOverlayHandles",
     "launch_hud_server",
+    "launch_public_overlay",
     "probe_hud_identity",
     "reattach_or_launch_hud_server",
     "request_hud_stop",
     "run_preflight",
+    "tunnel_argv",
 ]

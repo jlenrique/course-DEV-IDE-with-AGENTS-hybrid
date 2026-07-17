@@ -37,6 +37,12 @@ The HUD is read-only; verdicts go through the CLI. Copy the paste command from t
 
 Batch pause-class rendering un-witnessed live; browser DOM/notification witness; L2-golden gate-snapshot. Workbook runs are typically driven by the governed live-test runner with HUD OFF (runner-enforced) — see `docs/admin-guide.md` §Workbook Live Authoring.
 
+## Public read-only overlay (any browser / phone, stable URL)
+
+The localhost HUD above is the **authority**. Story 42-4 adds an **optional** outbound overlay so you can watch a run from any browser or phone at one stable URL. It is a **separate** GET-only app (`app/hud/public.py`) serving a positive-allowlist projection of the same run — status/gate/progress/roster/settings/trace only. It **never** exposes the launch nonce, resume/paste commands, decision-card evidence, error/source text, credentials, or export paths, and it can never serve a write route (belt-and-suspenders beyond the tunnel's identity ACL). Localhost stays authority; if no tunnel is configured, the overlay is simply absent and the run is unaffected.
+
+Access is **identity-aware and never anonymous**: Cloudflare Access (account login + MFA, or an emailed single-use PIN allowlisted to you) on a named Cloudflare Tunnel (preferred), or Tailscale Serve on your tailnet (fallback). Full setup recipe + validation checklist: `docs/admin-guide.md` §Public Read-Only HUD Overlay.
+
 ## Pointers
 
 - Dev-side substrate map: `docs/dev-guide.md` §Current Status (Epic 35 bullet).
