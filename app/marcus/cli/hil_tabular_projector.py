@@ -68,6 +68,16 @@ _MODE_DESC_WIDTH: int = 56
 _VOICE_NAME_WIDTH: int = 40
 _VOICE_USE_CASE_WIDTH: int = 24
 
+#: Fixed display widths (chars) for the long free-text cells of the three Irene /
+#: plan-band renderers (Story 43-5, rider R5 — width-aware columns). The plan-unit
+#: ``source_fitness`` / ``rationale`` free text and the estimator ``summary`` are
+#: the only unbounded cells; every value cell is hard-capped via
+#: :func:`_truncate_cell`.
+_PLAN_UNIT_TEXT_WIDTH: int = 60
+_ESTIMATOR_VALUE_WIDTH: int = 60
+_ESTIMATOR_SUMMARY_WIDTH: int = 72
+_RUN_CONSTANTS_VALUE_WIDTH: int = 60
+
 #: Human-facing one-line descriptions distinguishing the two per-slide presentation
 #: modes (Story 43-3). Sourced from ``app/gates/section_05_5/poll_surface.py``'s
 #: closed ``_AVAILABLE_MODES`` tuple — the two modes the operator compares at G2B.
@@ -627,6 +637,207 @@ def render_voice_candidates(
     return "\n".join(parts)
 
 
+def _plan_unit_body(content: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Return the PlanUnit mapping from whatever shape the paused-gate path hands us.
+
+    Tolerates (a) the ``section_04a/poll_surface.py::display_plan_unit`` return shape
+    (PlanUnit under a top-level ``plan_unit`` key), (b) the G1 decision-card ``card``
+    body (PlanUnit nested at ``drafted_proposal.plan_unit``), or (c) a bare PlanUnit
+    mapping handed directly — so the renderer never raw-dumps regardless of shape.
+    """
+    plan_unit = content.get("plan_unit")
+    if isinstance(plan_unit, Mapping):
+        return plan_unit
+    drafted = content.get("drafted_proposal")
+    if isinstance(drafted, Mapping):
+        nested = drafted.get("plan_unit")
+        if isinstance(nested, Mapping):
+            return nested
+    return content
+
+
+def render_plan_unit(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G1A plan-unit ratification",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G1A plan-unit ratification** renderer (Story 43-5, AC-1) — table the
+    PlanUnit's ratification attributes (unit id, event type, weather band, scope
+    verdict + state, modality, source-fitness, rationale, gap count) as named rows,
+    instead of the generic ``Field | Value`` dump, so the operator ratifies the unit
+    on its merits.
+
+    ``content`` is the ``app/gates/section_04a/poll_surface.py::display_plan_unit``
+    return shape (``surface_id`` / ``decision_card`` / ``plan_unit``), or the G1
+    decision-card ``card`` body (PlanUnit nested under
+    ``drafted_proposal.plan_unit``), or a bare PlanUnit mapping — :func:`_plan_unit_body`
+    drills to the PlanUnit either way. Registered under ``content_type="plan_unit"``.
+    Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5); projector stays
+    stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    unit = _plan_unit_body(content)
+    scope = unit.get("scope_decision")
+    if not isinstance(scope, Mapping):
+        scope = {}
+    unit_id = unit.get("unit_id") or "—"
+    event_type = unit.get("event_type") or "—"
+    weather = unit.get("weather_band") or "—"
+    gaps = unit.get("gaps")
+    n_gaps = (
+        len(gaps)
+        if isinstance(gaps, Sequence) and not isinstance(gaps, (str, bytes))
+        else 0
+    )
+    scope_cell = (
+        f"{scope.get('scope') or '—'} "
+        f"({scope.get('state') or '—'}; proposed_by {scope.get('proposed_by') or '—'}, "
+        f"ratified_by {scope.get('ratified_by') or '—'})"
+    )
+    banner = (
+        f"G1A plan-unit ratification   unit {unit_id} · {event_type} · weather {weather}"
+    )
+    rows: list[Sequence[Any]] = [
+        ["unit_id", unit_id],
+        ["event_type", event_type],
+        ["weather_band", weather],
+        ["scope", scope_cell],
+        ["modality_ref", unit.get("modality_ref") or "—"],
+        [
+            "source_fitness",
+            _truncate_cell(
+                str(unit.get("source_fitness_diagnosis") or "—"), _PLAN_UNIT_TEXT_WIDTH
+            ),
+        ],
+        ["rationale", _truncate_cell(str(unit.get("rationale") or "—"), _PLAN_UNIT_TEXT_WIDTH)],
+        ["gaps", f"{n_gaps} gap(s)"],
+    ]
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["Attribute", "Value"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
+def _estimator_body(content: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Return the estimator G1Card mapping from whatever shape we are handed.
+
+    Tolerates the ``section_04_5/poll_surface.py::display_estimator`` return shape
+    (G1Card under a top-level ``estimator`` key) OR the bare G1Card ``card`` body
+    handed directly.
+    """
+    estimator = content.get("estimator")
+    if isinstance(estimator, Mapping):
+        return estimator
+    return content
+
+
+def render_estimator(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G1.5 run-budget estimator",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G1.5 run-budget estimator** renderer (Story 43-5, AC-1) — table the
+    estimator's line items (parent slide count, target runtime, estimated slides,
+    per-slide seconds, feasibility — whatever the section_04_5 estimator's
+    ``drafted_proposal`` carries) ONE ROW PER LINE ITEM, instead of the generic
+    ``Field | Value`` dump.
+
+    ``content`` is the ``app/gates/section_04_5/poll_surface.py::display_estimator``
+    return shape (``surface_id`` / ``estimator_id`` / ``estimator``), or the bare
+    estimator G1Card ``card`` body — :func:`_estimator_body` drills in either way. The
+    estimate line items live in the G1Card's free-form ``drafted_proposal`` (the
+    section_04_5 estimator reuses ``G1Card`` as its decision card, carrying the budget
+    values there, NOT in dedicated model fields — verified against
+    ``tests/gates/section_04_5/_helpers.py::fixture_estimator_card``). Registered under
+    ``content_type="estimator"``. Reuses :func:`_md_table` + :func:`_truncate_cell`
+    (rider R5); projector stays stdlib-pure.
+    """
+    card = _estimator_body(content)
+    proposal = card.get("drafted_proposal")
+    if not isinstance(proposal, Mapping):
+        proposal = {}
+    rows: list[Sequence[Any]] = []
+    for key, value in proposal.items():
+        if isinstance(value, (Mapping, Sequence)) and not isinstance(value, (str, bytes)):
+            display = _summarize_nested_value(value)
+        else:
+            display = "" if value is None else str(value)
+        rows.append([key, _truncate_cell(display, _ESTIMATOR_VALUE_WIDTH)])
+    n = len(rows)
+    banner = f"G1.5 run-budget estimator   {n} line item(s)"
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["Line item", "Value"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    summary = card.get("trial_summary")
+    if summary:
+        parts.extend(
+            ["", f"summary: {_truncate_cell(str(summary), _ESTIMATOR_SUMMARY_WIDTH)}"]
+        )
+    return "\n".join(parts)
+
+
+def _run_constants_body(content: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Return the run-constants key/value mapping from whatever shape we are handed.
+
+    Tolerates the ``section_04_55/poll_surface.py::display_run_constants`` return shape
+    (the flat constants under a top-level ``run_constants`` key), the review-payload
+    ``constants`` key, OR the bare constants mapping handed directly.
+    """
+    for key in ("run_constants", "constants"):
+        nested = content.get(key)
+        if isinstance(nested, Mapping):
+            return nested
+    return content
+
+
+def render_run_constants(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G1.5 run-constants lock",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G1.5 run-constants lock** renderer (Story 43-5, AC-1) — table the
+    run-constants as ONE ROW PER CONSTANT (key → value), instead of the generic
+    ``Field | Value`` dump, so the operator reviews the locked run parameters on their
+    merits. Nested values (e.g. a ``cluster_density`` sub-map) are bounded-summarized
+    (:func:`_summarize_nested_value`, 240-char cap), never raw-dumped.
+
+    ``content`` is the ``app/gates/section_04_55/poll_surface.py::display_run_constants``
+    return shape (``surface_id`` / ``run_constants_id`` / ``run_constants``), the
+    review-payload ``constants`` shape, or the bare constants mapping —
+    :func:`_run_constants_body` drills in either way. Registered under
+    ``content_type="run_constants"``. Reuses :func:`_md_table` + :func:`_truncate_cell`
+    (rider R5); projector stays stdlib-pure.
+    """
+    constants = _run_constants_body(content)
+    rc_id = (
+        content.get("run_constants_id")
+        or constants.get("run_id")
+        or constants.get("RUN_ID")
+        or "—"
+    )
+    rows: list[Sequence[Any]] = []
+    for key, value in constants.items():
+        if isinstance(value, (Mapping, Sequence)) and not isinstance(value, (str, bytes)):
+            display = _summarize_nested_value(value)
+        else:
+            display = "" if value is None else str(value)
+        rows.append([key, _truncate_cell(display, _RUN_CONSTANTS_VALUE_WIDTH)])
+    n = len(rows)
+    banner = f"G1.5 run-constants lock   {rc_id} · {n} constant(s)"
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["Constant", "Value"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
 #: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
 #: (43-1, 43-3…43-9) register against this contract; the generic fallback above
 #: satisfies it for every content type with no bespoke renderer yet.
@@ -699,9 +910,22 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: Story 43-4 (the THIRD allowlist→registry move) additionally deletes
 #: ``voice_candidates`` (G4A) here in the same change that registers
 #: :func:`render_voice_candidates` — now covered by a bespoke renderer, NOT waived.
+#:
+#: Story 43-5 (the FOURTH allowlist→registry move) additionally deletes ``plan_unit``
+#: (G1A), ``estimator`` (G1.5) and ``run_constants`` (G1.5) here in the same change
+#: that registers :func:`render_plan_unit` + :func:`render_estimator` +
+#: :func:`render_run_constants` — all three now covered by bespoke renderers, NOT waived.
 KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
     GATE_CONTENT_TYPES
-    - {"directive", "per_slide_mode", "variant_ab", "voice_candidates"}
+    - {
+        "directive",
+        "per_slide_mode",
+        "variant_ab",
+        "voice_candidates",
+        "plan_unit",
+        "estimator",
+        "run_constants",
+    }
 )
 
 #: Story 43-3, AC-0 — the gate→content_type BRIDGE. Maps the gate identifier the
@@ -727,6 +951,20 @@ GATE_TO_CONTENT_TYPE: dict[str, str] = {
     # G4A voice-candidate selection (section_11 woken 11-gate). Story 43-4.
     "G4A": "voice_candidates",
     "section_11_g4a_voice_selection": "voice_candidates",
+    # Story 43-5 — G1A plan-unit ratification (section_04a). The paused-gate string
+    # "G1A" is unambiguous, so both it and the poll-surface ``surface_id`` route.
+    "G1A": "plan_unit",
+    "section_04a_g1a_poll": "plan_unit",
+    # Story 43-5 — the two G1.5 gates: run-budget estimator (section_04_5) and
+    # run-constants lock (section_04_55). Both pause at the SAME "G1.5" gate string
+    # (manifest RUNTIME_GATE_IDS carries a single "G1.5"), so the raw gate string
+    # CANNOT disambiguate them — mapping "G1.5" to either would mis-route the other.
+    # The poll-surface ``surface_id`` is therefore the disambiguating key (mirrors
+    # 43-3's G2B/G2M split, where the distinct paused-gate string was the
+    # disambiguator). "G1.5" is deliberately NOT mapped: an unmapped gate resolves to
+    # None → the generic fallback, which still TABLES the content (no raw dump).
+    "section_04_5_g1_5_estimator": "estimator",
+    "section_04_55_g1_5_run_constants": "run_constants",
 }
 
 
@@ -803,6 +1041,15 @@ register_renderer("variant_ab", render_variant_ab)
 #: ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gains a bespoke renderer here, so the
 #: paused G4A surface tables its candidate voices instead of raw-dumping.
 register_renderer("voice_candidates", render_voice_candidates)
+
+#: Story 43-5 — register the three bespoke Irene / plan-band renderers at import time
+#: (the FOURTH allowlist→registry move). ``plan_unit`` (G1A), ``estimator`` (G1.5) and
+#: ``run_constants`` (G1.5) leave ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gain
+#: bespoke renderers here, so the paused G1A / G1.5 surfaces table their content
+#: instead of raw-dumping.
+register_renderer("plan_unit", render_plan_unit)
+register_renderer("estimator", render_estimator)
+register_renderer("run_constants", render_run_constants)
 
 
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
@@ -944,12 +1191,15 @@ __all__ = [
     "resolve_content_type",
     "render_directive_sources",
     "render_enrichment_metrics",
+    "render_estimator",
     "render_gate_content",
     "render_gate_identity",
     "render_generic_gate_content",
     "render_hil_tables",
     "render_learning_objectives",
     "render_per_slide_mode",
+    "render_plan_unit",
+    "render_run_constants",
     "render_ungrounded_advisories",
     "render_variant_ab",
     "render_voice_candidates",

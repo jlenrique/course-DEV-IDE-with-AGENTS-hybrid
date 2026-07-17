@@ -1,0 +1,40 @@
+{
+  "surface_id": "section_04_5_g1_5_estimator",
+  "estimator_id": "33333333-3333-4333-8333-333333333333",
+  "decision_card_digest": "a2bbf38d98d8a95f1008fe269aa56b8ab0b8c9a6ab8a6de1b003b3380270809e",
+  "estimator": {
+    "decision_card_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "meta": {
+      "cache_state": "healthy",
+      "affected_nodes": [
+        "04.5"
+      ],
+      "override_trail": []
+    },
+    "schema_version": "v1",
+    "card_id": "33333333-3333-4333-8333-333333333333",
+    "trial_id": "22222222-2222-4222-8222-222222222222",
+    "gate_id": "G1",
+    "gate_focus": "trial_open",
+    "created_at": "2026-05-05T12:00:00Z",
+    "drafted_proposal": {
+      "parent_slide_count": 8,
+      "target_total_runtime_minutes": 12.0,
+      "estimated_total_slides": 14.4,
+      "avg_slide_seconds": 50.0,
+      "feasibility": "PASS"
+    },
+    "evidence": [
+      {
+        "source": "slide_count_runtime_estimator",
+        "profile_used": "visual-led"
+      }
+    ],
+    "trial_summary": "Run-budget estimator values are feasible for the active profile.",
+    "opened_by": "marcus",
+    "next_nodes": [
+      "04.55"
+    ],
+    "verb": "approve"
+  }
+}
