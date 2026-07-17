@@ -125,18 +125,20 @@ def test_registry_and_allowlist_are_disjoint() -> None:
     )
 
 
-def test_allowlist_is_shrinking_registry_is_growing_at_43_1() -> None:
-    """State pin (updated at 43-1, the first allowlist→registry move): the
-    allowlist tightens by exactly one row as each bespoke story registers a
-    renderer. This assertion INTENTIONALLY tracks the CURRENT state, not a
-    hard-coded full set — later stories (43-3…43-9) move more types registry-ward
-    and update this witness in lockstep, and 43-12 empties the allowlist entirely.
+def test_allowlist_is_shrinking_registry_is_growing_at_43_3() -> None:
+    """State pin (updated at 43-3, the second allowlist→registry move): the
+    allowlist tightens as each bespoke story registers a renderer. This assertion
+    INTENTIONALLY tracks the CURRENT state, not a hard-coded full set — later
+    stories (43-4…43-9) move more types registry-ward and update this witness in
+    lockstep, and 43-12 empties the allowlist entirely.
     """
-    # 43-1 registers the first bespoke renderer: ``directive`` (G0).
-    assert registered_content_types() == frozenset({"directive"})
-    # …hence ``directive`` has LEFT the allowlist; every other canonical type is
+    # 43-1 registered ``directive`` (G0); 43-3 adds ``per_slide_mode`` (G2B) +
+    # ``variant_ab`` (G2M) — the second allowlist→registry move.
+    registered = frozenset({"directive", "per_slide_mode", "variant_ab"})
+    assert registered_content_types() == registered
+    # …hence those three have LEFT the allowlist; every other canonical type is
     # still waived (disjoint invariant: registry ∩ allowlist == ∅).
-    expected_waived = GATE_CONTENT_TYPES - {"directive"}
+    expected_waived = GATE_CONTENT_TYPES - registered
     assert expected_waived == KNOWN_UNRENDERED_ALLOWLIST
 
 

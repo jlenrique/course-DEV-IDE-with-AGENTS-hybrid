@@ -56,6 +56,21 @@ _DIRECTIVE_DESC_WIDTH: int = 44
 #: Unknown / excluded-only roles sort last; ties break lexically by ``ref_id``.
 _DIRECTIVE_ROLE_RANK: dict[str, int] = {"primary": 0, "supporting": 1}
 
+#: Fixed display width (chars) for the free-text ``Description`` column of the G2B
+#: per-slide-mode table (Story 43-3, rider R5 — width-aware columns).
+_MODE_DESC_WIDTH: int = 56
+
+#: Human-facing one-line descriptions distinguishing the two per-slide presentation
+#: modes (Story 43-3). Sourced from ``app/gates/section_05_5/poll_surface.py``'s
+#: closed ``_AVAILABLE_MODES`` tuple — the two modes the operator compares at G2B.
+#: Unknown modes fall back to an em-dash so a new mode never raw-dumps.
+_PER_SLIDE_MODE_DESCRIPTIONS: dict[str, str] = {
+    "narrated-deck": "Narrated slide deck — synced voiceover, no motion clips.",
+    "motion-enabled-narrated-lesson": (
+        "Narrated deck plus motion / animation clips per slide."
+    ),
+}
+
 #: Human-friendly labels for the ``source_type`` of an ungrounded advisory
 #: component. Speaker-notes narration is the dominant flagged kind (bc747b51: all
 #: 12 ungrounded advisories were ``narration``); other types fall back to a
@@ -412,6 +427,100 @@ def render_directive_sources(
     return "\n".join(parts)
 
 
+def _unwrap_payload(content: Mapping[str, Any], payload_key: str) -> Mapping[str, Any]:
+    """Return ``content[payload_key]`` when it is the nested poll-surface payload,
+    else ``content`` itself.
+
+    The paused-at-gate path may feed EITHER the full poll-surface ``display_*``
+    return (which nests the fields under ``payload_key``) OR the payload mapping
+    directly — this keeps both bespoke renderers tolerant of the shape they are
+    handed without ever raw-dumping.
+    """
+    nested = content.get(payload_key)
+    if isinstance(nested, Mapping):
+        return nested
+    return content
+
+
+def render_per_slide_mode(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G2B per-slide-mode selection",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G2B per-slide-mode selection** renderer (Story 43-3, AC-1) —
+    table the available per-slide presentation modes with the field that
+    distinguishes them, instead of the generic ``Field | Value`` dump.
+
+    ``content`` is the ``app/gates/section_05_5/poll_surface.py::display_per_slide_mode``
+    return shape (``surface_id`` / ``slide_id`` / ``decision_card`` /
+    ``per_slide_mode_payload`` with ``available_modes`` + ``readiness_status``), or
+    the ``per_slide_mode_payload`` mapping directly. Registered under
+    ``content_type="per_slide_mode"``. Reuses :func:`_md_table` + :func:`_truncate_cell`
+    (rider R5). Projector stays stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    payload = _unwrap_payload(content, "per_slide_mode_payload")
+    modes = payload.get("available_modes") or []
+    readiness = payload.get("readiness_status") or content.get("readiness_status") or "—"
+    slide_id = content.get("slide_id") or payload.get("slide_id") or "—"
+    banner = (
+        f"G2B per-slide-mode selection   slide {slide_id} · readiness {readiness}"
+    )
+    rows: list[Sequence[Any]] = [
+        [
+            idx,
+            mode,
+            _truncate_cell(
+                _PER_SLIDE_MODE_DESCRIPTIONS.get(str(mode), "—"), _MODE_DESC_WIDTH
+            ),
+        ]
+        for idx, mode in enumerate(modes, start=1)
+    ]
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["#", "Mode", "Description"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
+def render_variant_ab(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G2M A/B variant selection",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G2M A/B variant selection** renderer (Story 43-3, AC-2) — table
+    the per-slide A/B variants side-by-side (one column per variant), instead of
+    the generic ``Field | Value`` dump.
+
+    ``content`` is the ``app/gates/section_07b/poll_surface.py::display_per_slide_variant``
+    return shape (``surface_id`` / ``slide_ids`` / ``decision_card`` /
+    ``per_slide_variant_payload`` with ``readiness_status`` + ``ready_nodes``), or
+    the ``per_slide_variant_payload`` mapping directly. One row per slide awaiting
+    an A/B selection. Registered under ``content_type="variant_ab"``. Reuses
+    :func:`_md_table` (rider R5); projector stays stdlib-pure.
+    """
+    payload = _unwrap_payload(content, "per_slide_variant_payload")
+    slide_ids = content.get("slide_ids")
+    if not isinstance(slide_ids, Sequence) or isinstance(slide_ids, (str, bytes)):
+        slide_ids = payload.get("ready_nodes") or []
+    readiness = payload.get("readiness_status") or content.get("readiness_status") or "—"
+    banner = (
+        f"G2M A/B variant selection   {len(slide_ids)} slide(s) · "
+        f"readiness {readiness}"
+    )
+    rows: list[Sequence[Any]] = [
+        [idx, slide_id, "A", "B"] for idx, slide_id in enumerate(slide_ids, start=1)
+    ]
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["#", "slide_id", "Variant A", "Variant B"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
 #: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
 #: (43-1, 43-3…43-9) register against this contract; the generic fallback above
 #: satisfies it for every content type with no bespoke renderer yet.
@@ -475,7 +584,49 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: same change that registers :func:`render_directive_sources` — so ``directive`` is
 #: now covered by a bespoke renderer, NOT waived (the 43-10 disjoint invariant
 #: ``registry ∩ allowlist == ∅`` requires the deletion).
-KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(GATE_CONTENT_TYPES - {"directive"})
+#:
+#: Story 43-3 (the SECOND allowlist→registry move) additionally deletes
+#: ``per_slide_mode`` (G2B) and ``variant_ab`` (G2M) here in the same change that
+#: registers :func:`render_per_slide_mode` + :func:`render_variant_ab` — both are
+#: now covered by bespoke renderers, NOT waived.
+KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
+    GATE_CONTENT_TYPES - {"directive", "per_slide_mode", "variant_ab"}
+)
+
+#: Story 43-3, AC-0 — the gate→content_type BRIDGE. Maps the gate identifier the
+#: paused-at-gate wiring sees (``trial.py::_emit_gate_surface_if_paused``'s
+#: ``paused_gate`` string, or a poll-surface ``surface_id``) to the canonical
+#: content-type key a bespoke renderer is registered under. This is the load-bearing
+#: seam every later bespoke renderer on the paused path reuses: 43-10's canonical
+#: keys (``per_slide_mode`` / ``variant_ab`` / …) are SEMANTIC, not gate_ids, so
+#: without this map a renderer registered under ``"variant_ab"`` would never be
+#: dispatched (the G2B/G2M cards both carry decision-card ``gate_id == "G2C"`` — the
+#: PAUSED_GATE string is the disambiguator). Both the gate string and the
+#: poll-surface ``surface_id`` are accepted keys so routing is robust to whichever
+#: identifier the wiring holds. An UNMAPPED gate resolves to ``None`` → the generic
+#: fallback renderer (behavior unchanged for every gate not listed here). Additive
+#: data only, no schema bump (rider R7).
+GATE_TO_CONTENT_TYPE: dict[str, str] = {
+    # G2B per-slide presentation-mode selection (section_05_5).
+    "G2B": "per_slide_mode",
+    "section_05_5_g2b_per_slide_mode": "per_slide_mode",
+    # G2M A/B variant selection (section_07b).
+    "G2M": "variant_ab",
+    "section_07b_g2m_per_slide_variant": "variant_ab",
+}
+
+
+def resolve_content_type(gate_key: str | None) -> str | None:
+    """Resolve a paused-gate identifier to its canonical content-type key via
+    :data:`GATE_TO_CONTENT_TYPE` (Story 43-3, AC-0 bridge).
+
+    Returns the mapped content-type key, or ``None`` for an empty / unmapped gate —
+    ``None`` flows to the generic fallback in :func:`get_renderer`, so an unmapped
+    gate keeps its current behavior.
+    """
+    if not gate_key:
+        return None
+    return GATE_TO_CONTENT_TYPE.get(str(gate_key))
 
 
 def register_renderer(content_type: str, renderer: GateContentRenderer) -> None:
@@ -525,6 +676,13 @@ def render_gate_content(
 #: ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gains a bespoke renderer here, so the
 #: G0 confirm surface tables its source inventory instead of raw-dumping YAML.
 register_renderer("directive", render_directive_sources)
+
+#: Story 43-3 — register the two bespoke G2B/G2M renderers at import time (the
+#: SECOND allowlist→registry move). ``per_slide_mode`` + ``variant_ab`` leave
+#: ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gain bespoke renderers here, so the
+#: paused G2B / G2M surfaces table their options instead of raw-dumping.
+register_renderer("per_slide_mode", render_per_slide_mode)
+register_renderer("variant_ab", render_variant_ab)
 
 
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
@@ -654,6 +812,7 @@ def emit_gate_surface(
 
 __all__ = [
     "GATE_CONTENT_TYPES",
+    "GATE_TO_CONTENT_TYPE",
     "KNOWN_UNRENDERED_ALLOWLIST",
     "PAGE_SIZE",
     "GateContentRenderer",
@@ -662,6 +821,7 @@ __all__ = [
     "get_renderer",
     "register_renderer",
     "registered_content_types",
+    "resolve_content_type",
     "render_directive_sources",
     "render_enrichment_metrics",
     "render_gate_content",
@@ -669,5 +829,7 @@ __all__ = [
     "render_generic_gate_content",
     "render_hil_tables",
     "render_learning_objectives",
+    "render_per_slide_mode",
     "render_ungrounded_advisories",
+    "render_variant_ab",
 ]

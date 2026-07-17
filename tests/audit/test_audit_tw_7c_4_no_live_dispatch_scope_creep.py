@@ -806,6 +806,13 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/marcus/cli/test_projector_coverage_ratchet_43_10.py",
     "tests/marcus/cli/test_g0_directive_table_43_1.py",
     "tests/unit/marcus/cli/test_hil_projector_fixtures.py",
+    # Story 43-3 (G2B per-slide-mode + G2M A/B variant renderers + the
+    # gate→content_type bridge; the FIRST bespoke renderers to fire on the
+    # paused-at-gate path). Deterministic / OFFLINE — replays the two SYNTHETIC
+    # poll-surface fixtures (.json, outside the *.py fence); NO new live-dispatch
+    # call site; the projector stays stdlib-pure. hil_tabular_projector.py +
+    # trial.py already rostered above (42-1).
+    "tests/marcus/cli/test_variant_mode_renderers_43_3.py",
     # Story 42-3 (full run-settings standing readout — all ~16 toggles; green-lit
     # 5/5 2026-07-16, dual-gate, LOCKSTEP operator-surface projection). ADDITIVE
     # within v1: a new RunSettingsSection on the operator-surface contract + a

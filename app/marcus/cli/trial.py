@@ -31,6 +31,7 @@ from app.marcus.cli.hil_tabular_projector import (
     build_gate_surface,
     emit_gate_surface,
     render_gate_content,
+    resolve_content_type,
 )
 from app.marcus.cli.marcus_spoc import (
     DEGRADED_PUBLISH_URL_SCRIPTED,
@@ -307,10 +308,20 @@ def _emit_gate_surface_if_paused(payload: dict[str, Any], *, runs_root: Path) ->
             # the projector via the renderer registry (generic fallback until a
             # bespoke renderer registers), so every paused gate — G1, G0E, G0R and
             # beyond — tables its content instead of raw-dumping a JSON blob.
+            #
+            # Story 43-3, AC-0 — the gate→content_type BRIDGE. 43-10's canonical
+            # renderer keys (per_slide_mode / variant_ab / …) are SEMANTIC, not
+            # gate_ids, so resolving content_type to the raw gate_id/gate string
+            # would NEVER dispatch a bespoke renderer registered under a semantic
+            # key. Resolve through GATE_TO_CONTENT_TYPE instead: the PAUSED_GATE
+            # string (G2B/G2M) is the disambiguator — the G2B/G2M cards both carry
+            # decision-card gate_id "G2C". An unmapped gate resolves to None →
+            # generic fallback (behavior unchanged for every gate not yet mapped).
             if isinstance(card, dict) and card:
+                gate_key = str(gate or card.get("gate_id") or "")
                 gate_content = {
                     "content": card,
-                    "content_type": str(card.get("gate_id") or gate or "gate"),
+                    "content_type": resolve_content_type(gate_key),
                     "title": f"Gate {gate} content" if gate else "Gate content",
                 }
 
