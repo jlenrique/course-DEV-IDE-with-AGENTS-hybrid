@@ -113,6 +113,72 @@ def _has_langsmith_env() -> bool:
     return bool(os.getenv("LANGSMITH_API_KEY") and os.getenv("LANGSMITH_PROJECT"))
 
 
+def _require_live_env_unless_offline(
+    *,
+    allow_offline_cost_report: bool,
+    context: str,
+    trial_id: UUID | None = None,
+) -> None:
+    """Fail loud when a LIVE trial start/continuation lacks the live LLM env.
+
+    Single implementation shared by ``start`` / ``resume`` / ``recover`` /
+    ``resume-batch`` so the four front doors never drift (story 41-1). The gate
+    predicate is byte-identical to the original ``start_trial`` preflight and to
+    ``production_runner._has_live_openai`` / ``_has_langsmith_env``: when the run
+    will dispatch live (``allow_offline_cost_report`` is False), a missing
+    ``OPENAI_API_KEY`` OR missing LangSmith env raises a ``RuntimeError`` BEFORE
+    any walk runs — so a preflight PASS guarantees the walk's dispatch guard is
+    live. ``allow_offline_cost_report=True`` short-circuits (offline harness stays
+    keyless), exactly as start does.
+
+    The resume/recover paths previously had NO preflight: a keyless resume from a
+    fresh shell (frozen trial ``bc747b51``) silently skipped live specialist
+    dispatch and stranded the run three nodes later. ``context`` tailors the
+    actionable message; ``trial_id`` names the run on the continuation paths.
+    """
+    if allow_offline_cost_report:
+        return
+    if os.getenv("OPENAI_API_KEY") and _has_langsmith_env():
+        return
+    if context == "start":
+        raise RuntimeError(
+            "OPENAI_API_KEY plus LANGSMITH_API_KEY and LANGSMITH_PROJECT are required "
+            "before production trial start. Use --allow-offline-cost-report only "
+            "for local harness checks; offline reports do not close production "
+            "clone-launch equivalence."
+        )
+    trial_ref = f" {trial_id}" if trial_id is not None else ""
+    raise RuntimeError(
+        f"OPENAI_API_KEY (and LANGSMITH_API_KEY/LANGSMITH_PROJECT) are required to "
+        f"{context} production trial{trial_ref}: a keyless {context} would silently "
+        "skip live specialist dispatch and strand the run at a downstream node. "
+        "Export the key (and LangSmith env), or use --allow-offline-cost-report for "
+        "offline harness checks."
+    )
+
+
+def _persisted_allow_offline_cost_report(pause_path: Path) -> bool:
+    """Read ``allow_offline_cost_report`` from a persisted pause record's runner.
+
+    Reads the SAME field ``_continue_production_walk`` reads on resume
+    (``runner.get("allow_offline_cost_report", False)``) from the pause record a
+    given continuation rehydrates (``checkpoint.json`` for a gate pause,
+    ``error-pause.json`` for an error pause, ``provider-batch-pause.json`` for a
+    batch wait), so the front-door preflight decision matches the walk's decision
+    exactly. A missing/unreadable record — or a runner without the key — defaults
+    to False (live): when the mode cannot be confirmed offline, require the live
+    env rather than silently degrade.
+    """
+    try:
+        record = json.loads(pause_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    runner = record.get("runner") if isinstance(record, dict) else None
+    if not isinstance(runner, dict):
+        return False
+    return bool(runner.get("allow_offline_cost_report", False))
+
+
 def _resolve_editor() -> str:
     """Windows-portable editor resolution (P-R6, hardened per Codex P6 review).
 
@@ -387,15 +453,10 @@ def start_trial(
         # only the code + the SSOT; the commit still runs post-compose against
         # the composed directive). A stale/foreign/unpickable code aborts here.
         decode_picker_selection_code(selection_code, expected_run_tag=trial_id.hex)
-    if not allow_offline_cost_report and (
-        not os.getenv("OPENAI_API_KEY") or not _has_langsmith_env()
-    ):
-        raise RuntimeError(
-            "OPENAI_API_KEY plus LANGSMITH_API_KEY and LANGSMITH_PROJECT are required "
-            "before production trial start. Use --allow-offline-cost-report only "
-            "for local harness checks; offline reports do not close production "
-            "clone-launch equivalence."
-        )
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=allow_offline_cost_report,
+        context="start",
+    )
     effective_trial_id = trial_id or uuid4()
     run_dir = runs_root / str(effective_trial_id)
     gamma_settings = _load_gamma_settings_file(gamma_settings_file)
@@ -865,6 +926,17 @@ def resume_trial(
     continuation, which rehydrates from the run directory on disk.
     """
     _load_env_if_available()
+    # Live-env preflight parity with start (story 41-1): a keyless resume of a
+    # live gate-paused run fails loud here — before _continue_production_walk —
+    # instead of silently skipping live specialist dispatch. The offline flag is
+    # read from the SAME persisted runner the walk reads (checkpoint.json).
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=_persisted_allow_offline_cost_report(
+            runs_root / str(trial_id) / "checkpoint.json"
+        ),
+        context="resume",
+        trial_id=trial_id,
+    )
     if (verdict_file is None) == (verdict is None):
         raise ValueError(
             "resume_trial requires exactly one of verdict_file or verdict "
@@ -1008,6 +1080,17 @@ def recover_trial(
     when the fix is before the failed node (Mine-next trust T2).
     """
     _load_env_if_available()
+    # Live-env preflight parity with start (story 41-1): a keyless recover of a
+    # live error-paused run fails loud here — before _continue_production_walk —
+    # instead of silently skipping live specialist dispatch. The offline flag is
+    # read from the SAME persisted runner the walk reads (error-pause.json).
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=_persisted_allow_offline_cost_report(
+            runs_root / str(trial_id) / "error-pause.json"
+        ),
+        context="recover",
+        trial_id=trial_id,
+    )
     migration_requested = course_source_root is not None or encounter_mode is not None
     if migration_requested:
         if course_source_root is None or encounter_mode is None:
@@ -1142,6 +1225,17 @@ def resume_batch_trial(
     """Poll existing provider Batch and continue when completed (B3)."""
 
     _load_env_if_available()
+    # Live-env preflight parity with start (story 41-1): batch continuation still
+    # dispatches live specialists after the batch completes, so a keyless resume
+    # fails loud here — before _continue_production_walk. The offline flag is read
+    # from the SAME persisted runner the walk reads (provider-batch-pause.json).
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=_persisted_allow_offline_cost_report(
+            runs_root / str(trial_id) / "provider-batch-pause.json"
+        ),
+        context="resume-batch",
+        trial_id=trial_id,
+    )
     envelope = resume_batch_production_trial(
         trial_id=trial_id,
         runs_root=runs_root,

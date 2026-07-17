@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-16  # 39-1b dev complete -> review (D2 MERGE composition: origin field, attach-seam merge + g0- prefix, <=12 cap + J-3 round-robin trim + exercise_overlay_loss, Practice/Course Check labeled groups + Answer Key mirror, exercise deliverable-bar clause + negative pins same-diff). Baseline-worktree attribution: 0 new failures; 325 inherited full-tree reds pre-exist at 6edf563e (wave debt, surfaced to operator). Next per DAG: T4 review -> done-awaiting-live-witness -> governed batch run A (37-2b + 39-1 + 39-1b).
+last_updated: 2026-07-16  # Epic 41 (Resume-Walk Dispatch Integrity, BLOCKING) + Epic 42 (Operator Surface Next-Pass) green-lit 5/5 from trial bc747b51 diagnosis; 7 stories filed ready-for-dev (41-1/41-2 + 42-1..42-5). 41-1 dispatches first (unblocks resuming any paid walk past G1). Prior: 39-1b dev complete -> review. Governed batch runs A/B still owed for the 39/40 wave (done-awaiting-live-witness).
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1813,6 +1813,21 @@ development_status:
   epic-40-cover: backlog
   40-1-cover-placeholder-hero-toc-provenance: done-awaiting-live-witness  # 2026-07-16: deterministic+T4 green (combined Blind+Edge+Auditor PASS; MEDIUM palette-vocabulary finding fixed in-session + pin; 7 low/info filed); no probe owed (fully deterministic); full-run witness owed by batch run B
   epic-40-retrospective: optional
+
+  # === Epic 41 — Resume-Walk Dispatch Integrity (green-lit 5/5 2026-07-16; BLOCKING; surfaced by trial bc747b51 §06 CD-miss diagnosis) ===
+  epic-41-resume-walk-dispatch-integrity: in-progress  # party-greenlight-post-trial-bc747b51-arc-2026-07-16.md; epics-resume-walk-dispatch-integrity-2026-07-16.md
+  41-1-resume-recover-live-env-preflight: done  # 2026-07-16 dev complete (fresh Claude dev agent) + bmad-code-review 3-layer PASS-after-remediation (1 Med test-hermeticity fixed + re-verified without .env; 1 Med LangSmith-strictness adjudicated intended; lows dismissed/documented). trial.py shared preflight for start/resume/recover/resume-batch; production_runner.py untouched (41-2 owns node-level fail-loud). Unblocks resuming paid walks past G1.
+  41-2-specialist-dispatch-fail-loud-silent-skip: ready-for-dev  # depends 41-1; dual-gate; LOCKSTEP (production_runner.py both walks); invariant: entered+not-carrying specialist in a production run MUST emit or fail loud at the node; RED-first vs bc747b51 (raise at 4.75 not §06)
+  epic-41-retrospective: optional
+
+  # === Epic 42 — Operator Surface Next-Pass (green-lit 5/5 2026-07-16; Epic 35 successor; HUD + HIL usability from trial bc747b51) ===
+  epic-42-operator-surface-next-pass: in-progress  # epics-operator-surface-next-pass-2026-07-16.md
+  42-1-tabular-hil-neutral-next-action: ready-for-dev  # single-gate; C+G merged (tabular HIL surfaces + next_action must not preselect --verb approve); replay vs real bc747b51 g0-enrichment.json (64 components)
+  42-2-hud-lifecycle-survives-gate-pause: ready-for-dev  # single-gate; LOCKSTEP (app/hud/**+app/notify/**); root cause = launch_hud_server atexit terminate on trial-start process exit at pause; pause != teardown, teardown couples to terminal status+grace
+  42-3-full-run-settings-standing-readout: ready-for-dev  # dual-gate; LOCKSTEP (operator_surface assembler+schema bump governance); all ~16 run-defining toggles as a standing readout for the whole run
+  42-4-public-readonly-hud-stable-url: ready-for-dev  # depends 42-2; dual-gate; LOCKSTEP+security; public read-only HUD at a stable URL (Cloudflare Tunnel+Access / Tailscale fallback); non-leak allowlist bar (no nonces/digests/source/secrets)
+  42-5-pre-walk-settings-confirm-gate: ready-for-dev  # depends 42-3; dual-gate; LOCKSTEP; pre-G0 settings pause the operator can confirm-or-change before the walk spends; reuses DecisionCard pause primitive; WALK test
+  epic-42-retrospective: optional
 
 action_items:
   - epic: 38
