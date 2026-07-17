@@ -1,3 +1,13 @@
+# Current Context Addendum - 2026-07-17 (session WRAPUP: EPICS 41 + 42 COMPLETE — bc747b51 fixed + ngrok public HUD)
+
+**Session class:** S. Branch `dev/workbook-wave-3940-2026-07-15` (origin `4ca3d19b`; 14 commits, pushed).
+
+**Landed:** Two epics start-to-finish from the parked `bc747b51` diagnosis. **Epic 41 — Resume-Walk Dispatch Integrity** (41-1 resume/recover live-env preflight; 41-2 fail-loud on silent specialist skip both walks; 41-3 REMOVE the `max_specialist_calls` throttle — the ACTUAL bc747b51 cause was `cap=1` starvation, not keyless; 41-4 `MARCUS_TRIAL_BUDGET_USD` dollar-budget enforced-stop). **Epic 42 — Operator Surface Next-Pass** (party-signed 5/5): 42-1 tabular HIL + neutral next-action verb; 42-2 HUD-survives-gate-pause + `CREATE_NO_WINDOW`; 42-3 16-toggle run-settings standing readout (additive-within-v1); 42-4 public read-only HUD non-leak overlay; 42-5 G0S pre-walk settings gate (convention-conforming manifest HEAD gate); 42-6 G0S default-ON wake-sentinel; 42-7 manifest-pin refresh (live 52-node); 42-8 ngrok reserved-domain public HUD. Operator's public HUD wired + live-proven at `https://deplete-courier-blurt.ngrok-free.dev`.
+
+**Next:** operator live steered run (R2 — the only owed witness); KG/ONBOARDING regen + master consolidation (owed); Story 40-2 workbook cover-art trove selection (operator-directed, queued). Do NOT reopen Epic 41/42.
+
+---
+
 # Current Context Addendum - 2026-07-15 (session WRAPUP: Epic 38 CLOSED + first complete workbook + 39/40 wave opened under the Paid-Run Economy Protocol)
 
 **Session class:** S. Branches: `codex/workbook-enhanced-epics-36-40` (consolidated to master `2d5b7493`) then `dev/workbook-wave-3940-2026-07-15`.

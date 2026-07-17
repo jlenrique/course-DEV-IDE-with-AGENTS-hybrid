@@ -1,3 +1,44 @@
+# Session close 2026-07-17 — EPICS 41 + 42 COMPLETE (bc747b51 fixed end-to-end) + ngrok public HUD wired
+
+**Final class:** S. **Branch:** `dev/workbook-wave-3940-2026-07-15` (origin in sync at `4ca3d19b`; 14 commits this session `23480353→4ca3d19b`, all pushed). **Opened as:** BMAD session-startup protocol against the parked `bc747b51` CD-miss.
+
+## What was completed (two epics + all riders, one session)
+
+Diagnosed `bc747b51` from the frozen run and **corrected the root cause**: NOT keyless resume — the composed run was starved by **`max_specialist_calls=1`** (the operator had the key; live models dispatched). Party green-lit a 2-epic decomposition (5/5), then built + dual-gate-reviewed + pushed every story, one-at-a-time (fresh-Claude-dev-agent, inline reviews to avoid console-window spam):
+
+- **Epic 41 — Resume-Walk Dispatch Integrity (DONE):** 41-1 resume/recover live-env preflight (`3919c7fb`); 41-2 fail-loud on silent specialist skip, both walks, RED-first (`81fdc495`); 41-3 **REMOVE the max_specialist_calls throttle** — the actual bc747b51 fix (`d8fb959b`); 41-4 dollar-budget **enforced-stop** — `MARCUS_TRIAL_BUDGET_USD` now a brake, not a gauge (`cf7df4fd`).
+- **Epic 42 — Operator Surface Next-Pass (DONE, party-signed 5/5 `516ca453`):** 42-1 tabular HIL + neutral verb (`8a9f7095`); 42-2 HUD survives pause + **CREATE_NO_WINDOW** (console-spam fix) (`72a15de5`); 42-3 16-toggle settings readout (`482cf78a`); 42-4 public read-only HUD non-leak overlay (`f8dd93d2`); 42-5 G0S pre-walk settings gate (convention-conforming manifest HEAD gate) (`8d485ace`); 42-6 G0S **default-ON** wake-sentinel (`39f006ac`); 42-8 **ngrok reserved-domain public HUD** (`4ca3d19b`).
+- **All 4 sign-off riders cleared:** R1 (42-6), R3 (42-7 manifest-pins `8ec16e2f`), R4 (41-4). R2 = operator live run (owed).
+- **ngrok public HUD wired + live-proven:** operator installed ngrok (v3.39.8) + authtoken (in `ngrok.yml`); stable Dev Domain = **`deplete-courier-blurt.ngrok-free.dev`**; `.env` set (`HUD_TUNNEL_MODE=ngrok` + domain); orchestrator ran the real `ngrok http --domain=… 8792` — tunnel came up.
+
+## What is next
+
+1. **R2 — the operator's live steered `trial start --hud on`** (the ONLY thing owed): witnesses G0S pause (default-ON) + windowless HUD (localhost:8791) + public HUD at the ngrok URL + a now-completable, budget-braked run. bc747b51 is honestly recoverable (or fresh trial).
+2. **Owed maintenance:** KG/ONBOARDING regen (many substrate files landed — production_runner, operator_surface, hud, manifest, decision_cards); master consolidation still owed at wave close; the 39/40 wave batch runs A/B still owed (separate track).
+3. **Queued (operator-directed, not built):** Story **40-2** workbook cover-art trove selection (`MARCUS_WORKBOOK_COVER_ART_TROVE`; trove `C:\Users\juanl\Box\OIIE\TEJAL\WORKBOOK cover art`, 23 files). HAI cross-SME exploration pre-authorized (Phase-2).
+
+## Unresolved issues / risks
+
+- Recurring dev-agent friction: the consumer-wide baseline-diff exceeds the 120s tool timeout → auto-backgrounds → agents that `git stash` for the baseline stranded their work (41-3, 42-6, 41-4). Restored each from stash; 42-8 dispatched with an anti-orphan instruction (no stash; orchestrator runs the baseline-diff) — that worked. **Keep instructing agents NOT to stash-for-baseline.**
+- Pre-existing (NOT this arc): ~55 `PreflightGateFailed` env fails (no live openai/HUD in the test sandbox), the inherited `test_health_tiles_prefer_persisted_cost_report`, and the `test_start_trial_ratified_collateral…` 07W.1 FileNotFound — all stash-witnessed pre-existing across the arc.
+
+## Key lessons (+ memories saved)
+
+- **The operator makes the rules** — never frame a design default as "forbidden" to him (memory `feedback-operator-makes-the-rules-no-forbidden-framing`).
+- **Review dev/admin guides BEFORE adding gates/agents/services** (memory `feedback-review-guides-before-gates-agents-services`) — the G0S gate was built convention-conforming (DecisionCard + manifest wiring + binding-semantics) because of this.
+- Diagnosis correction: the loud symptom (§06 CD-miss) was 3 nodes downstream of the real cause (budget starvation). A contract-wide change (e.g. `next_action.command`) needs a CONSUMER-WIDE baseline-diff — a 42-1 escape into orchestrator-projection tests was caught + fixed at 42-3.
+
+## Validation summary
+
+- Per-story: lockstep exit 0 (every lockstep story), ruff + import-linter (18/0) clean, dual-gate/single-gate reviews, consumer-wide baseline-diff **net-new = 0** on all 14 commits. Manifest suite refreshed to green (74). ngrok argv live-proven against the operator's real account.
+- Live-tested on real data: 42-1 tabular HIL (64/12/14 real enrichment), 42-4 non-leak scrub (teeth-check on real secrets), 42-3 16⇔16 sync — witnessed. 42-5/42-2/42-4-tunnel live legs are operator-gated (R2).
+
+## Artifact update checklist
+
+sprint-status ✓ (all stories + both epics done) · deferred-inventory ✓ (riders filed/resolved; R4/R1/R3 twins discharged; 40-2 + no-window-sweep filed) · SESSION-HANDOFF ✓ (this) · next-session-start-here ✓ · party records ✓ (arc green-light + Epic-42 sign-off) · guides: admin-guide ✓ (ngrok recipe); dev-guide gate-convention exercised; **KG/ONBOARDING regen OWED at consolidation** · memories ✓ (2 new) · redundant witness stash cleaned.
+
+---
+
 # Session close 2026-07-16 EVE — Marcus-SPOC production trial bc747b51 (G0→G1 then §06 CD miss)
 
 **Final class:** P (opened as true Marcus-SPOC production trial per prior hot-start; no app/ substrate code landed this window — diagnosis + deferred filing only; Class S owed next for the CD fix).
