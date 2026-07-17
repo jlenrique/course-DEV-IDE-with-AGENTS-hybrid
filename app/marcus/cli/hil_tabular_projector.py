@@ -29,11 +29,20 @@ Contract fences (Story 42.1 Scope Fences):
 
 from __future__ import annotations
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import IO, Any
 
 #: Marcus HIL Display Standards pagination threshold (rows).
 PAGE_SIZE: int = 15
+
+#: Bound (chars) for a summarized nested value in the generic renderer — mirrors
+#: ``operator_surface_assembler._CONTEXT_ENTRY_MAX_CHARS`` (240) per Epic 43 rider
+#: R2, so a fat nested value can never dump raw JSON into the operator surface.
+_NESTED_VALUE_MAX_CHARS: int = 240
+
+#: Fixed display width (chars) for the value column of the generic key/value table
+#: (rider R5 — width-aware / fixed-width columns, no ugly wrap at 80 cols).
+_GENERIC_VALUE_WIDTH: int = 60
 
 #: Human-friendly labels for the ``source_type`` of an ungrounded advisory
 #: component. Speaker-notes narration is the dominant flagged kind (bc747b51: all
@@ -189,6 +198,149 @@ def render_learning_objectives(
     return "\n".join(parts)
 
 
+def _truncate_cell(text: str, width: int) -> str:
+    """Fixed-width guard (rider R5): hard-cap a display cell so the generic table
+    cannot wrap ugly at 80 cols. ``width <= 0`` disables the cap.
+    """
+    if width <= 0 or len(text) <= width:
+        return text
+    if width <= 1:
+        return text[:width]
+    return text[: width - 1] + "…"
+
+
+def _summarize_shallow(value: Any) -> str:
+    """One-level peek used inside a list summary (never recurses further)."""
+    if isinstance(value, Mapping):
+        return f"{{{len(value)} field(s)}}"
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        return f"[{len(value)} item(s)]"
+    return str(value)[:_NESTED_VALUE_MAX_CHARS]
+
+
+def _summarize_nested_value(value: Any) -> str:
+    """Bounded one-line summary of an arbitrary (possibly nested) value.
+
+    Reuses the ``operator_surface_assembler._summarize_context_entry`` PATTERN
+    (rider R2) — a concrete ``path`` > voice-option names > a ``kind (node_id)``
+    tag > a field/count digest — generalized to any value and always bounded to
+    ``_NESTED_VALUE_MAX_CHARS``. Never dumps raw nested JSON (AC-2).
+    """
+    if isinstance(value, Mapping):
+        path = value.get("path")
+        voices = value.get("voices")
+        kind = value.get("kind")
+        node = value.get("node_id")
+        if isinstance(path, str) and path:
+            text = path
+        elif isinstance(voices, Sequence) and not isinstance(voices, (str, bytes)) and voices:
+            names = [
+                str(v.get("voice_name"))
+                for v in voices
+                if isinstance(v, Mapping) and v.get("voice_name")
+            ]
+            text = "voice options: " + ", ".join(names) if names else "voice options"
+        elif kind and node:
+            text = f"{kind} ({node})"
+        else:
+            fields = ", ".join(str(k) for k in list(value)[:8])
+            text = f"{{{len(value)} field(s): {fields}}}" if fields else "{}"
+    elif isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        text = f"[{len(value)} item(s)]"
+        if value:
+            text += f" e.g. {_summarize_shallow(value[0])}"
+    else:
+        text = str(value)
+    return text[:_NESTED_VALUE_MAX_CHARS]
+
+
+def render_generic_gate_content(
+    content: Mapping[str, Any],
+    *,
+    title: str = "Gate content",
+    page_size: int = PAGE_SIZE,
+    value_width: int = _GENERIC_VALUE_WIDTH,
+) -> str:
+    """Generic FALLBACK renderer (AC-2) — project ANY paused gate's poll-surface /
+    decision-card ``content`` mapping into a two-column ``Field | Value`` stderr
+    table via :func:`_md_table`.
+
+    Nested / complex values are bounded-summarized (``_summarize_nested_value`` —
+    rider R2, 240-char cap) and every value cell is width-capped (rider R5); a
+    deeply nested value is therefore never raw-dumped. Rows beyond ``page_size``
+    paginate per the Marcus HIL Display Standards.
+
+    This is the load-bearing scaffold: until a bespoke renderer is registered for a
+    content type, this renderer tables it — so **no gate raw-dumps**.
+    """
+    rows: list[Sequence[Any]] = []
+    for key, value in content.items():
+        if isinstance(value, (Mapping, Sequence)) and not isinstance(value, (str, bytes)):
+            display = _summarize_nested_value(value)
+        else:
+            display = "" if value is None else str(value)
+        rows.append([key, _truncate_cell(display, value_width)])
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["Field", "Value"], shown)
+    parts = [f"**{title}**", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
+#: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
+#: (43-1, 43-3…43-9) register against this contract; the generic fallback above
+#: satisfies it for every content type with no bespoke renderer yet.
+GateContentRenderer = Callable[..., str]
+
+#: content-type key -> bespoke renderer. Intentionally EMPTY at 43-2: this story
+#: ships the scaffold + the generic fallback; later stories register here. The
+#: 43-10 structural-coverage test enumerates it via ``registered_content_types``.
+_RENDERER_REGISTRY: dict[str, GateContentRenderer] = {}
+
+
+def register_renderer(content_type: str, renderer: GateContentRenderer) -> None:
+    """Register a bespoke renderer for a gate ``content_type`` (AC-1 extension
+    point) — the single, obvious way a later story plugs a bespoke table into the
+    scaffold.
+    """
+    if not content_type:
+        raise ValueError("content_type must be a non-empty key")
+    _RENDERER_REGISTRY[content_type] = renderer
+
+
+def registered_content_types() -> frozenset[str]:
+    """The enumerable set of content-type keys with a BESPOKE renderer (AC-1).
+
+    43-10's structural-coverage test consumes this to assert every gate content
+    type is covered (its shrinking known-unrendered allowlist → 0).
+    """
+    return frozenset(_RENDERER_REGISTRY)
+
+
+def get_renderer(content_type: str | None) -> GateContentRenderer:
+    """Return the bespoke renderer registered for ``content_type``, else the
+    generic fallback (:func:`render_generic_gate_content`)."""
+    if content_type is None:
+        return render_generic_gate_content
+    return _RENDERER_REGISTRY.get(content_type, render_generic_gate_content)
+
+
+def render_gate_content(
+    content: Mapping[str, Any],
+    *,
+    content_type: str | None = None,
+    title: str = "Gate content",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Dispatch ``content`` to its registered renderer, else the generic fallback
+    (AC-1/AC-2). Every paused gate's own content flows through here, so no gate
+    raw-dumps even before a bespoke renderer exists.
+    """
+    renderer = get_renderer(content_type)
+    return renderer(content, title=title, page_size=page_size)
+
+
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
     """Render an operator-facing HIL surface as stacked markdown tables.
 
@@ -201,6 +353,10 @@ def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE)
     * ``"learning_objectives"``: ``{"title": str, "rows": [ {statement}, ... ]}``
       -> an explicit LO table (e.g. G0R ratified/refined LOs). Rendered IN
       ADDITION to any provisional LOs from ``enrichment``.
+    * ``"gate_content"``: ``{"content": Mapping, "content_type": str | None,
+      "title": str}`` -> the paused gate's OWN poll-surface / decision-card content
+      tabled via the renderer registry (bespoke if registered, else the generic
+      fallback). This is the AC-3 scaffold so EVERY paused gate tables its content.
 
     Returns the sections joined by blank lines. An empty/None surface yields "".
     """
@@ -228,6 +384,16 @@ def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE)
                 page_size=page_size,
             )
         )
+    gate_content = surface.get("gate_content")
+    if isinstance(gate_content, Mapping) and isinstance(gate_content.get("content"), Mapping):
+        sections.append(
+            render_gate_content(
+                gate_content["content"],
+                content_type=gate_content.get("content_type"),
+                title=str(gate_content.get("title", "Gate content")),
+                page_size=page_size,
+            )
+        )
     return "\n\n".join(s for s in sections if s)
 
 
@@ -236,11 +402,14 @@ def build_gate_surface(
     gate_identity: Mapping[str, Any] | None = None,
     enrichment: Mapping[str, Any] | None = None,
     learning_objectives: Mapping[str, Any] | None = None,
+    gate_content: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Assemble the normalized ``render_hil_tables`` surface dict from parts.
 
     Thin, keyword-only constructor so callers (CLI, tests) don't hand-shape the
-    dict literal. Omitted parts are dropped.
+    dict literal. Omitted parts are dropped. ``gate_content`` (the paused gate's
+    own poll-surface / decision-card mapping) is a new optional part — additive
+    within operator-surface v1 (rider R7), no schema bump.
     """
     surface: dict[str, Any] = {}
     if gate_identity:
@@ -249,6 +418,8 @@ def build_gate_surface(
         surface["enrichment"] = enrichment
     if learning_objectives is not None:
         surface["learning_objectives"] = learning_objectives
+    if gate_content is not None:
+        surface["gate_content"] = gate_content
     return surface
 
 
@@ -258,19 +429,27 @@ def emit_gate_surface(
     stream: IO[str],
     next_action: str | None = None,
     shell_context: str = "your shell prompt",
+    raw_artifact: str | None = None,
 ) -> None:
-    """CLI printer: write the tabular HIL surface (+ handoff cue) to ``stream``.
+    """CLI printer: write the tabular HIL surface (+ raw pointer + handoff cue) to
+    ``stream``.
 
-    The only IO seam in this module. Writes the rendered tables and, per AC-6, a
-    handoff-cue footer stating the shell context and the exact resume affordance
-    so the operator does not type ``c`` / ``approve`` at the shell. ``next_action``
-    (when supplied) is the NEUTRAL next-step surface from
-    ``app.marcus.cli.next_action.build_next_action`` — never an approve-prefilled
-    command.
+    The only IO seam in this module. Writes the rendered tables, then per AC-6 a
+    consistent one-line raw-access pointer (the machine JSON on stdout is the
+    documented raw form at EVERY gate — ``raw_artifact`` names the on-disk copy
+    when known), then per AC-6 a handoff-cue footer stating the shell context and
+    the exact resume affordance so the operator does not type ``c`` / ``approve``
+    at the shell. ``next_action`` (when supplied) is the NEUTRAL next-step surface
+    from ``app.marcus.cli.next_action.build_next_action`` — never an
+    approve-prefilled command.
     """
     body = render_hil_tables(surface)
     if body:
         stream.write(body + "\n")
+    raw_line = "raw: full machine JSON on stdout"
+    if raw_artifact:
+        raw_line += f" · on-disk: {raw_artifact}"
+    stream.write("\n" + raw_line + "\n")
     gate = ""
     identity = surface.get("gate_identity")
     if isinstance(identity, Mapping):
@@ -289,10 +468,16 @@ def emit_gate_surface(
 
 __all__ = [
     "PAGE_SIZE",
+    "GateContentRenderer",
     "build_gate_surface",
     "emit_gate_surface",
+    "get_renderer",
+    "register_renderer",
+    "registered_content_types",
     "render_enrichment_metrics",
+    "render_gate_content",
     "render_gate_identity",
+    "render_generic_gate_content",
     "render_hil_tables",
     "render_learning_objectives",
     "render_ungrounded_advisories",

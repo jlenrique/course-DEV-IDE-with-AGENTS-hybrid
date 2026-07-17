@@ -295,9 +295,20 @@ def _emit_gate_surface_if_paused(payload: dict[str, Any], *, runs_root: Path) ->
 
         card_json = _read_json_quiet(run_dir / f"decision-card-{gate}.json") if gate else None
         card_path = run_dir / f"decision-card-{gate}.json" if gate else None
+        gate_content: dict[str, Any] | None = None
         if card_json:
             card = card_json.get("card") or {}
             ask = str(card.get("operator_prompt") or "")
+            # AC-3: feed the PAUSED GATE'S OWN content (its decision-card body) into
+            # the projector via the renderer registry (generic fallback until a
+            # bespoke renderer registers), so every paused gate — G1, G0E, G0R and
+            # beyond — tables its content instead of raw-dumping a JSON blob.
+            if isinstance(card, dict) and card:
+                gate_content = {
+                    "content": card,
+                    "content_type": str(card.get("gate_id") or gate or "gate"),
+                    "title": f"Gate {gate} content" if gate else "Gate content",
+                }
 
         enrichment = _read_json_quiet(run_dir / "g0-enrichment.json")
         identity = {
@@ -306,7 +317,12 @@ def _emit_gate_surface_if_paused(payload: dict[str, Any], *, runs_root: Path) ->
             "gate": gate,
             "ask": ask,
         }
-        surface = build_gate_surface(gate_identity=identity, enrichment=enrichment)
+        surface = build_gate_surface(
+            gate_identity=identity,
+            enrichment=enrichment,
+            gate_content=gate_content,
+        )
+        raw_artifact = str(run_dir / "operator-surface.json")
 
         next_action: str | None = None
         try:
@@ -325,6 +341,7 @@ def _emit_gate_surface_if_paused(payload: dict[str, Any], *, runs_root: Path) ->
             stream=sys.stderr,
             next_action=next_action,
             shell_context="your shell prompt (PowerShell on Windows)",
+            raw_artifact=raw_artifact,
         )
     except Exception:  # noqa: BLE001 — display layer must never break the machine emit
         LOGGER.exception("gate-surface projection failed; machine JSON emit unaffected")
@@ -1255,6 +1272,11 @@ def recover_trial_cli(args: argparse.Namespace) -> int:
     except (ValueError, RuntimeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
+    # AC-4: close the recover front-door hole — a re-pause on recover must table
+    # its gate content on stderr too (mirrors start/resume at :1006/:1164).
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
+    )
     print(json.dumps(payload, sort_keys=True))
     return 0
 
@@ -1374,6 +1396,11 @@ def resume_batch_trial_cli(args: argparse.Namespace) -> int:
         trial_id=args.trial_id,
         runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
         max_specialist_calls=getattr(args, "max_specialist_calls", None),
+    )
+    # AC-4: close the resume-batch front-door hole — a re-pause after a batch
+    # continuation must table its gate content on stderr (mirrors start/resume).
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
     )
     print(json.dumps(payload, sort_keys=True))
     return 0
