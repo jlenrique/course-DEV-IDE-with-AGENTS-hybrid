@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -14,6 +15,7 @@ from contextlib import suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
@@ -25,11 +27,13 @@ from app.composers.section_02a.composer import (
     assert_lesson_corpus_leaf,
 )
 from app.marcus.cli.front_door import FrontDoorError, front_door_select
+from app.marcus.cli.hil_tabular_projector import build_gate_surface, emit_gate_surface
 from app.marcus.cli.marcus_spoc import (
     DEGRADED_PUBLISH_URL_SCRIPTED,
     commit_picker_pick,
     run_picker_preflight,
 )
+from app.marcus.cli.next_action import build_next_action
 from app.marcus.lesson_plan.bundle_catalog import get_bundle
 from app.marcus.lesson_plan.collateral_selection import (
     CollateralSelectionError,
@@ -62,6 +66,8 @@ from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+
+LOGGER = logging.getLogger(__name__)
 
 
 class DirectiveConfirmationRequiredError(RuntimeError):
@@ -240,6 +246,87 @@ def _utf8_safe_print(msg: str) -> None:
         return
     sys.stdout.write(text + "\n")
     sys.stdout.flush()
+
+
+def _read_json_quiet(path: Path) -> dict[str, Any] | None:
+    """Best-effort JSON read for the operator-facing gate projection.
+
+    Returns ``None`` (never raises) on any error — the tabular surface is a
+    display convenience layered on top of the authoritative dense artifacts, so a
+    missing/garbage file must degrade to "render what we have", not sink the CLI.
+    """
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _emit_gate_surface_if_paused(payload: dict[str, Any], *, runs_root: Path) -> None:
+    """Story 42.1 (finding C + AC-3/AC-6): project a ``paused-at-gate`` payload as
+    operator-facing TABLES on stderr (stdout stays the dense machine JSON).
+
+    Reads the on-disk artifacts (``operator-surface.json`` for gate identity,
+    ``g0-enrichment.json`` for the enrichment metrics + ungrounded-advisory +
+    provisional-LO tables, ``decision-card-<gate>.json`` for the ask + the neutral
+    next-action). This REPLACES the anti-pattern where the enrichment ``... NOT
+    grounded ...`` log sheaf + a bare JSON blob were the only operator surface.
+
+    Best-effort: any failure is logged and swallowed so the machine emit is never
+    blocked (mirrors the assembler's next-action guard).
+    """
+    try:
+        if payload.get("status") != "paused-at-gate":
+            return
+        trial_id = str(payload.get("trial_id") or "")
+        run_reg = payload.get("run_registry_path")
+        run_dir = Path(run_reg).parent if run_reg else runs_root / trial_id
+
+        gate = payload.get("paused_gate")
+        operator_id = payload.get("operator_id")
+        surface_json = _read_json_quiet(run_dir / "operator-surface.json")
+        ask = ""
+        if surface_json:
+            env = surface_json.get("envelope") or {}
+            ident = surface_json.get("identity") or {}
+            gate = gate or env.get("paused_gate")
+            operator_id = operator_id or ident.get("operator_id")
+        gate = str(gate or "")
+
+        card_json = _read_json_quiet(run_dir / f"decision-card-{gate}.json") if gate else None
+        card_path = run_dir / f"decision-card-{gate}.json" if gate else None
+        if card_json:
+            card = card_json.get("card") or {}
+            ask = str(card.get("operator_prompt") or "")
+
+        enrichment = _read_json_quiet(run_dir / "g0-enrichment.json")
+        identity = {
+            "trial": trial_id,
+            "status": "paused-at-gate",
+            "gate": gate,
+            "ask": ask,
+        }
+        surface = build_gate_surface(gate_identity=identity, enrichment=enrichment)
+
+        next_action: str | None = None
+        try:
+            env_obj = SimpleNamespace(
+                status="paused-at-gate",
+                trial_id=trial_id,
+                paused_gate=gate,
+                operator_id=str(operator_id or "operator"),
+            )
+            next_action = build_next_action(env_obj, card_path=card_path)
+        except Exception:  # noqa: BLE001 — a next-action failure must not sink the table emit
+            LOGGER.exception("gate-surface: neutral next-action build failed")
+
+        emit_gate_surface(
+            surface,
+            stream=sys.stderr,
+            next_action=next_action,
+            shell_context="your shell prompt (PowerShell on Windows)",
+        )
+    except Exception:  # noqa: BLE001 — display layer must never break the machine emit
+        LOGGER.exception("gate-surface projection failed; machine JSON emit unaffected")
 
 
 def _confirm_or_edit_directive(
@@ -902,6 +989,9 @@ def start_trial_cli(args: argparse.Namespace) -> int:
         # to resume — surface it and let the operator re-run start.
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
+    )
     print(json.dumps(payload, sort_keys=True))
     if payload.get("status") == "cancelled-at-g0":
         return 2
@@ -1056,6 +1146,9 @@ def resume_trial_cli(args: argparse.Namespace) -> int:
         verdict=inline_verdict,
         runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
         max_specialist_calls=args.max_specialist_calls,
+    )
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
     )
     print(json.dumps(payload, sort_keys=True))
     return 0

@@ -5,11 +5,39 @@ status: ready-for-dev
 depends_on: null   # independent; can open first in Epic 42
 gate_mode: single-gate
 anchor_provenance: HEAD 23480353
+baseline_commit: 72a15de5  # dev-open baseline 2026-07-17 (post-42-2)
 ---
 
 # Story 42.1: Tabular HIL projection + neutral next-action verb
 
-Status: ready-for-dev  # green-lit 5/5 2026-07-16; single-gate; replay vs real bc747b51 artifacts
+Status: done  # 2026-07-17 dev complete (fresh Claude dev agent) + review PASS; single-gate; replayed vs real bc747b51 artifacts (64/12/14)
+
+## Dev Agent Record
+
+**Dev complete 2026-07-17 (fresh Claude dev agent). Baseline `72a15de5`. Status → review → done.**
+
+### File List
+- `app/marcus/cli/hil_tabular_projector.py` (A) — pure stdlib module: `render_hil_tables` + section renderers (gate identity / enrichment metrics / one-row-per-ungrounded-flag w/ "advisory (speaker notes) — adjudicate at G0E" caption / one-row-per-LO); `build_gate_surface` + `emit_gate_surface` (thin CLI printer); pagination `PAGE_SIZE=15` (Marcus HIL Display Standards).
+- `app/marcus/cli/next_action.py` (M) — `_read_card_fields` now returns `(card_id, digest, allowed_verbs)` threaded from the card (default canonical `approve|edit|reject`); `_render_neutral_gate_next_action` emits one `trial resume … --verb <v>` line per allowed verb, no preselection, card-id+digest on every line, "Marcus proposes; you decide" header. No `--verb approve` hardcode.
+- `app/marcus/cli/trial.py` (M) — `_emit_gate_surface_if_paused()` routes both gate-print paths through the projector on **stderr** (stdout stays dense machine JSON → `json.loads` consumers untouched); best-effort try/except; AC-6 handoff cue (PowerShell context + "don't type c/approve").
+- `tests/marcus/cli/test_hil_tabular_projector.py` (A), `tests/marcus/cli/test_next_action_neutral_verb.py` (A), `tests/marcus/cli/fixtures/g0-enrichment.trimmed.json` (A), `tests/unit/marcus/cli/test_next_action.py` (M — round-trips adapted to per-verb line), `tests/audit/…tw_7c_4…` (M — allowlist).
+
+### Completion Notes
+- **Authentic replay:** against the frozen `bc747b51/g0-enrichment.json` — **64 typed / 12 ungrounded advisories (all narration speaker-notes) / 14 provisional LOs**, pinned vs `reconcile.n_ungrounded=12`; neutral next-action replayed vs real `decision-card-G0R.json` (real card-id `5eb79d3e…` + digest `f697a34c…`, presents approve|edit|reject). Committed trimmed portable fixture (skip-if-absent).
+- Machine JSON on disk / `NextActionSection.command` shape unchanged; verdict still advances only via `trial resume --verb <chosen>`.
+
+### Change Log
+- 2026-07-17: tabular HIL projector (stderr) + neutral next-action verb; replay vs real bc747b51 (64/12/14); done.
+
+## Senior Developer Review (AI) — 2026-07-17
+
+**Reviewer:** orchestrator, inline (hermetic story, no windows). **Outcome: APPROVE.**
+
+**Correctness:** neutral-verb fix verified — no `--verb approve` hardcode remains; allowed-verb set threaded from the card with a canonical default; presentation order ≠ preference. Projector is a pure function (testable, no side effects); the one IO seam (`emit_gate_surface`) routes to stderr so stdout machine JSON is preserved — clean separation, which is why integration `json.loads(out)` consumers are unbroken (baseline-diff net-new=0). AC-6 handoff cue directly fixes the witnessed `c`-at-PowerShell gotcha.
+
+**Verification:** 27 new tests + adapted next_action round-trips pass; ruff clean; diff scope = `next_action.py` + `trial.py` + new projector/tests/fixture — **zero trigger-path files, no operator_surface/assembler/HUD** (projector stayed CLI-side per fence); import-linter 18/0; TW-7c-4 pass; real-data replay pins 64/12/14.
+
+**Findings:** none. The stderr routing is a good call (operator sees tables; machine JSON stays pipeable).
 
 ## Story
 

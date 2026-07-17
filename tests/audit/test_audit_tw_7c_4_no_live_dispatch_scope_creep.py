@@ -778,6 +778,21 @@ PERMITTED_PYTHON_DIFFS = {
     "app/notify/__main__.py",
     "tests/hud/test_hud_lifecycle_survives_pause.py",
     "tests/notify/test_main.py",
+    # Story 42-1 (tabular HIL projection + neutral next-action verb; green-lit
+    # 5/5 2026-07-16). CLI/display-layer only: a new pure tabular projector
+    # (app/marcus/cli/hil_tabular_projector.py), the neutral multi-verb
+    # next-action rewrite (app/marcus/cli/next_action.py — no longer preselects
+    # --verb approve), and the trial CLI wiring (trial.py already rostered above)
+    # that routes the paused-at-gate print path through the projector on stderr.
+    # Deterministic / OFFLINE — replays against the frozen bc747b51 artifacts +
+    # a committed trimmed fixture; NO new live-dispatch call site. NO change to
+    # gate semantics / machine JSON on disk (operator_surface / assembler
+    # untouched — trigger-path, deferred to 42-3).
+    "app/marcus/cli/hil_tabular_projector.py",
+    "app/marcus/cli/next_action.py",
+    "tests/marcus/cli/test_hil_tabular_projector.py",
+    "tests/marcus/cli/test_next_action_neutral_verb.py",
+    "tests/unit/marcus/cli/test_next_action.py",
 }
 
 
