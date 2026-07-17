@@ -11,7 +11,33 @@ lockstep: true   # start-path HIL pause + operator_surface projection
 
 # Story 42.5: Pre-walk settings confirm-or-change gate
 
-Status: ready-for-dev  # green-lit 5/5 2026-07-16; dual-gate; depends on 42-3
+Status: done  # 2026-07-17 dev complete (convention-conforming G0S gate) + dual-gate review PASS; LIVE segment-witness owed; wake-policy follow-on filed
+
+## Dev Agent Record
+
+**Dev complete 2026-07-17 (fresh Claude dev agent). Baseline `482cf78a`. Convention-conforming Option A (operator-authorized). Status → review → done (live segment-witness owed).**
+
+### Approach — a real manifest HEAD gate (guide-conforming)
+Mirrors the established **G0E/G0R content-free confirm-gate** precedent (marcus-emitted, `specialist_id: null`, pack/HUD-invisible, wake-flag-gated). Convention (`dev-guide.md §Adding a new gate`) satisfied: (1)+(4) real `GSettingsCard` DecisionCard subclass (`app/models/decision_cards/g_settings.py`, gate_id `G0S`) in the discriminated union + shape-pin; (2) manifest HEAD gate node `pre-walk-settings-gate`/`G0S` edge-chained `__start__ → G0S → g0-enrichment-gate`; (3) adapted — no specialist (pre-pipeline), emitted orchestrator/runner-side using the canonical production gate pause → `OperatorVerdict` → `resume_from_verdict` machinery per `gate-decision-binding-semantics.md`.
+
+### File List
+- `app/models/decision_cards/g_settings.py` (A) + `__init__.py` (M, union); `state/config/pipeline-manifest.yaml` (M, HEAD gate — pack byte-identical); `app/manifest/compiler.py`, `app/marcus/cli/gate_shims/_shim_parser.py`, `app/models/runtime/production_trial_envelope.py` (M, G0S in the derivation Literals); `app/marcus/orchestrator/production_runner.py` (M, both-walk G0S branch via shared `_prewalk_settings_gate_disposition` + `_pause_at_prewalk_settings` + override projection at `_continue_production_walk` entry); `app/marcus/orchestrator/operator_surface_assembler.py` (M, `run-settings-overrides.json` write-back + `resolve_run_settings` overlay); `docs/conversational-gates/g0s.j2` (A). Tests: `test_pre_walk_settings_gate.py` (A, 15+ incl. the WALK test), `test_g_settings_card_shape.py` (A), `test_marcus_duality_boundary.py`+`test_shim_parser_factory.py` (M, G0S), TW-7c-4 allowlist.
+
+### Completion Notes
+- Pre-G0 pause BEFORE any spend; 16-toggle readout (consumes 42-3's `RUN_SETTINGS_TOGGLES`/`resolve_run_settings`); confirm=approve / change=edit (neutral `allowed_verbs`, 42-1 surface); change writes to ONE resolution point (`run-settings-overrides.json`), reflected in the 42-3 readout + projected onto env/directive at every walk entry (re-applied each resume). Opt-out (non-interactive/offline) explicit + traced.
+- **Wake-flag:** G0S is operator-woken via `MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE` (default OFF → traversed byte-identically), mirroring G0E/G0R. NOT auto-set in `start_trial` (would leak into 13 start_trial test files). → follow-on `g0s-runner-default-wake-policy` filed.
+
+## Senior Developer Review (AI) — 2026-07-17 — DUAL-GATE
+
+**Reviewer:** orchestrator, inline adversarial (hermetic; no windows). **Outcome: APPROVE (live segment-witness owed).**
+
+**Convention conformance:** VERIFIED against `dev-guide.md §Adding a new gate` + `gate-decision-binding-semantics.md` — real DecisionCard subclass + shape-pin; manifest head-gate (the G0E/G0R content-free precedent is the right model for a specialist-less pre-pipeline gate); canonical pause/`OperatorVerdict`/resume (no bespoke pause); reuses 42-3's readout (no duplicate toggle collection); one resolution point (no shadow state); neutral verbs (no preselect).
+
+**Manifest handling:** VERIFIED — baseline manifest was already **51 nodes** (vs the stale hardcoded `test_compiler.py::==45` pin), so the 9 `tests/unit/manifest/` structural-pin failures are **pre-existing** (net-new=0, confirmed by node-count 51→52 vs the 45-pin). 42-5 correctly added G0S to all DYNAMIC derivation Literals, FIXING `test_production_gate_id_literal_stays_in_sync_with_manifest`. The enforced lockstep gate (`check_pipeline_manifest_lockstep.py`) passes exit 0. The stale hardcoded-count pins are pre-existing debt (filed as `manifest-structural-pins-stale-vs-live`), not 42-5's to fix.
+
+**Verification:** 42-5 walk tests + shape-pin **18 passed** (WALK test exercises pause-before-G0 → change → re-present → confirm → walk-observes-new-value); combined touched surface 93 pass/1 skip; HUD/notify/gates 281 pass; lockstep exit 0; ruff clean; import-linter 18/0; TW-7c-4 pass; consumer-wide baseline-diff net-new=0; pack byte-identical. Completeness re-proven after a stash mishap (18 tests pass, all 7 G0S files present).
+
+**Findings:** none blocking. **(1)** wake-policy: G0S default-OFF means the pre-walk surface is NOT shown by default on a real operator run — the operator must export `MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE=1`, OR the `g0s-runner-default-wake-policy` follow-on (per-run persisted wake sentinel set by start_trial for operator-steered runs) makes it the default. Operator/party ruling owed. **(2)** stale manifest pins = pre-existing debt, filed. **Owed:** a live segment run (`MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE=1` `trial start`) to witness G0S pausing pre-G0 on the HUD + a change round-trip (cheap — pauses before spend; also live-witnesses 42-2's no-window HUD spawn + 42-3's readout render).
 
 ## Story
 

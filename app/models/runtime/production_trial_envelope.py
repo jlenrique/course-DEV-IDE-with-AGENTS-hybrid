@@ -35,7 +35,13 @@ ProductionPreset = Literal["production", "explore"]
 # (MARCUS_G0_ENRICHMENT_ACTIVE); asleep by default so it is traversed. G0R (G0-S3
 # Irene LO ratify-gate #2) follows G0E under the SAME wake flag. Literal member
 # order is validation-irrelevant; this is the node-walk order, for the reader.
-ProductionGateId = Literal["G0E", "G0R", "G1", "G2B", "G2C", "G3", "G4", "G4A"]
+# G0S (Story 42.5) is the PRE-WALK settings confirm-or-change gate — a content-free
+# HIL gate at the HEAD of the walk (before G0 / the first spend), a real manifest
+# node (`pre-walk-settings-gate`) that surfaces in `production_gate_ids` and emits a
+# GSettingsCard, mirroring the G0E/G0R content-free confirm gates.
+ProductionGateId = Literal[
+    "G0E", "G0R", "G0S", "G1", "G2B", "G2C", "G3", "G4", "G4A"
+]
 
 
 class ProductionTrialEnvelope(BaseModel):

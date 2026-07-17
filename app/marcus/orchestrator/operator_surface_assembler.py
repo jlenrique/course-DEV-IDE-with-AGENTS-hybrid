@@ -252,7 +252,7 @@ def resolve_run_settings(
     if coverage in (None, ""):
         coverage = directive.get("coverage_gate_family")
 
-    return RunSettingsSection(
+    section = RunSettingsSection(
         as_of=now,
         component_deck=_component_state(selection, "deck"),
         component_motion=_component_state(selection, "motion"),
@@ -273,6 +273,156 @@ def resolve_run_settings(
         trial_budget_usd=_str_or_unset(env.get("MARCUS_TRIAL_BUDGET_USD")),
         treatment_slots=_treatment_slots(directive),
     )
+    # Story 42.5 (AC-3): the operator's pre-walk CHANGE verdicts persist to the ONE
+    # resolution point — the run-dir override file — and the readout reflects them
+    # for the rest of the run. Overlay the persisted overrides LAST so a changed
+    # value wins over the base env/directive resolution. `_overlaid_run_settings`
+    # is a pure display projection; the env/directive write-back that makes the WALK
+    # observe the change is applied separately at walk entry (`apply_run_settings_
+    # overrides_to_run`).
+    return _overlaid_run_settings(section, run_dir)
+
+
+# --------------------------------------------------------------------------
+# Pre-walk settings CHANGE write-back (Story 42.5) — the ONE resolution point.
+#
+# The operator's CHANGE verdict at the pre-walk settings gate (Story 42.5) is
+# persisted to a SINGLE run-dir artifact, ``run-settings-overrides.json`` — a
+# flat ``{RunSettingsSection field -> resolved display value}`` map. That file is
+# the sole source of truth for operator changes (NO shadow/duplicate state):
+#
+#   * the READOUT reflects it — ``resolve_run_settings`` overlays it last (above),
+#     so the 42.3 standing readout shows the changed value for the rest of the run;
+#   * the WALK observes it — ``apply_run_settings_overrides_to_run`` projects each
+#     override onto the single place the walk resolves that setting FIRST, at the
+#     walk-entry seam (env vars for the ``MARCUS_*`` toggles + budget; the run-dir
+#     ``directive.yaml`` for directive-sourced settings). This is NOT a transient
+#     re-export of process env used as a cross-pause channel (that would not survive
+#     the resume process boundary) — the persisted file is the durable channel and
+#     is projected once, at walk entry, in the resume process.
+#
+# ``RUN_SETTINGS_OVERRIDE_TARGETS`` documents the resolution point PER setting.
+# Component-selection toggles carry a ``"run_state"`` target: they are reflected in
+# the readout (overlay) and applied to ``run_state.component_selection`` by the
+# runner at resume (the walk recomposes from run_state) — never re-read from env.
+# --------------------------------------------------------------------------
+
+RUN_SETTINGS_OVERRIDES_FILENAME = "run-settings-overrides.json"
+
+#: field -> (target_kind, target_key). target_kind is the SINGLE place the walk
+#: resolves that setting; the CHANGE write-back projects the override there.
+RUN_SETTINGS_OVERRIDE_TARGETS: dict[str, tuple[str, str]] = {
+    "component_deck": ("run_state", "deck"),
+    "component_motion": ("run_state", "motion"),
+    "component_workbook": ("run_state", "workbook"),
+    "preset": ("directive", "preset"),
+    "encounter_mode": ("directive", "encounter_mode"),
+    "llm_execution_mode": ("directive", "llm_execution_mode"),
+    "g0_dispatch_live": ("env", "MARCUS_G0_DISPATCH_LIVE"),
+    "research_dispatch_live": ("env", "MARCUS_RESEARCH_DISPATCH_LIVE"),
+    "research_detective_live": ("env", "MARCUS_RESEARCH_DETECTIVE_LIVE"),
+    "narration_figure_fidelity_active": ("env", "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE"),
+    "voice_direction": ("env", _VOICE_DIRECTION_ENV),
+    "deck_enrichment_active": ("env", "MARCUS_DECK_ENRICHMENT_ACTIVE"),
+    "udac_active": ("env", "MARCUS_UDAC_ACTIVE"),
+    "coverage_gate": ("directive", "coverage_gate"),
+    "trial_budget_usd": ("env", "MARCUS_TRIAL_BUDGET_USD"),
+    "treatment_slots": ("directive", "treatment_slots"),
+}
+
+
+class UnknownRunSettingError(ValueError):
+    """A CHANGE verdict named a toggle outside the canonical run-settings set."""
+
+
+def load_run_settings_overrides(run_dir: Path) -> dict[str, str]:
+    """Return the persisted pre-walk overrides (or ``{}``); never raises."""
+    try:
+        raw = json.loads(
+            (run_dir / RUN_SETTINGS_OVERRIDES_FILENAME).read_text(encoding="utf-8")
+        )
+    except Exception:  # noqa: BLE001 — missing/garbage override file is not fatal
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    return {
+        str(k): str(v)
+        for k, v in raw.items()
+        if str(k) in RunSettingsSection.model_fields
+    }
+
+
+def _overlaid_run_settings(section: RunSettingsSection, run_dir: Path) -> RunSettingsSection:
+    """Overlay the persisted CHANGE overrides onto a resolved section (display)."""
+    overrides = load_run_settings_overrides(run_dir)
+    if not overrides:
+        return section
+    return section.model_copy(update=overrides)
+
+
+def apply_run_settings_change(
+    run_dir: Path, changes: Mapping[str, Any]
+) -> dict[str, str]:
+    """Persist a pre-walk CHANGE verdict to the ONE resolution point (Story 42.5 AC-3).
+
+    Validates every key against the canonical ``RunSettingsSection`` field set
+    (fail loud on an unknown toggle — no partial write), merges over any prior
+    overrides, and writes ``run-settings-overrides.json``. Returns the merged map.
+    """
+    unknown = sorted(set(changes) - set(RunSettingsSection.model_fields))
+    if unknown:
+        raise UnknownRunSettingError(
+            f"CHANGE verdict named unknown run-setting(s) {unknown}; "
+            f"valid toggles: {sorted(RunSettingsSection.model_fields)}"
+        )
+    merged = load_run_settings_overrides(run_dir)
+    for key, value in changes.items():
+        merged[str(key)] = str(value)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / RUN_SETTINGS_OVERRIDES_FILENAME).write_text(
+        json.dumps(merged, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return merged
+
+
+def apply_run_settings_overrides_to_run(run_dir: Path) -> dict[str, list[str]]:
+    """Project persisted overrides onto the walk's resolution points at walk entry.
+
+    Env-target overrides (the ``MARCUS_*`` toggles + budget) are written to
+    ``os.environ`` so the scattered env readers observe the changed value FIRST;
+    directive-target overrides are merged into the run-dir ``directive.yaml``.
+    Component / run_state targets are NOT touched here — the runner applies those
+    to ``run_state.component_selection`` at resume. Returns the applied keys by
+    kind (for the runner's explicit trace/log). Never raises into the walk.
+    """
+    applied: dict[str, list[str]] = {"env": [], "directive": []}
+    overrides = load_run_settings_overrides(run_dir)
+    if not overrides:
+        return applied
+    directive_updates: dict[str, str] = {}
+    for field, value in overrides.items():
+        target = RUN_SETTINGS_OVERRIDE_TARGETS.get(field)
+        if target is None:
+            continue
+        kind, key = target
+        if kind == "env":
+            os.environ[key] = value
+            applied["env"].append(key)
+        elif kind == "directive":
+            directive_updates[key] = value
+            applied["directive"].append(key)
+    if directive_updates:
+        try:
+            directive = _safe_yaml_mapping(run_dir / DIRECTIVE_FILENAME)
+            directive.update(directive_updates)
+            (run_dir / DIRECTIVE_FILENAME).write_text(
+                yaml.safe_dump(directive, sort_keys=True), encoding="utf-8"
+            )
+        except Exception:  # noqa: BLE001 — directive write must not break the walk
+            LOGGER.exception(
+                "run-settings directive override write failed for %s", run_dir
+            )
+    return applied
 
 
 class OperatorSurfaceAssembler:

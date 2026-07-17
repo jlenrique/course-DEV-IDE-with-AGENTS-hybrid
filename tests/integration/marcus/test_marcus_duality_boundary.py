@@ -70,8 +70,12 @@ def test_trial2_bypass_and_max3_invariants_hold_across_terminal_gates(tmp_path) 
     assert payload["silent_bypass_events"] == 0
     # Arc 2 (2026-06-18): G2B (variant pick) + G4A (voice pick) woken into the
     # surfaced pause set. G0-S2 (2026-06-26): +G0E source-enrichment confirm-gate #1.
-    # G0-S3 (2026-06-26): +G0R Irene LO ratify-gate #2.
-    assert gates == frozenset({"G0E", "G0R", "G1", "G2B", "G2C", "G3", "G4A", "G4"})
+    # G0-S3 (2026-06-26): +G0R Irene LO ratify-gate #2. Story 42.5 (2026-07-17):
+    # +G0S pre-walk settings confirm-or-change gate (the HEAD-of-walk content-free
+    # gate; a surfaced production pause point in production_gate_ids).
+    assert gates == frozenset(
+        {"G0E", "G0R", "G0S", "G1", "G2B", "G2C", "G3", "G4A", "G4"}
+    )
     for gate_id in gates:
         verdict = OperatorVerdict(
             trial_id=TRIAL_ID,

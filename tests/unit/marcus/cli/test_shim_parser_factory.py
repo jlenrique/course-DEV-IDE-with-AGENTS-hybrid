@@ -18,7 +18,11 @@ def test_active_terminal_gates_canonical_inventory() -> None:
     # the operator drives their verdict through the same single-decision shim.
     # G0-S2 (2026-06-26): +G0E source-enrichment confirm-gate #1.
     # G0-S3 (2026-06-26, b59679ce): +G0R Irene LO ratify-gate #2 (follows G0E).
-    assert ACTIVE_TERMINAL_GATES == ("G0E", "G0R", "G1", "G2B", "G2C", "G3", "G4A", "G4")
+    # Story 42.5 (2026-07-17): +G0S pre-walk settings confirm-or-change gate (the
+    # HEAD-of-walk content-free gate; same single-decision shim surface).
+    assert ACTIVE_TERMINAL_GATES == (
+        "G0E", "G0R", "G0S", "G1", "G2B", "G2C", "G3", "G4A", "G4"
+    )
 
 
 @pytest.mark.parametrize("gate_id", list(ACTIVE_TERMINAL_GATES))

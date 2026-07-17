@@ -28,6 +28,7 @@ from app.models.decision_cards.g4 import G4Card
 from app.models.decision_cards.g4a import G4ACard
 from app.models.decision_cards.g5 import G5Card
 from app.models.decision_cards.g6 import G6Card
+from app.models.decision_cards.g_settings import GSettingsCard
 from app.models.decision_cards.override_event import OverrideEvent
 from app.models.decision_cards.vocabulary import (
     REGISTRY_PATH,
@@ -54,7 +55,8 @@ AnyDecisionCard: TypeAlias = Annotated[
     | G4Card
     | G4ACard
     | G5Card
-    | G6Card,
+    | G6Card
+    | GSettingsCard,
     Field(discriminator="gate_id"),
 ]
 AnyDecisionCardAdapter = TypeAdapter(AnyDecisionCard)
@@ -83,6 +85,7 @@ __all__ = [
     "G4ACard",
     "G5Card",
     "G6Card",
+    "GSettingsCard",
     "OverrideEvent",
     "REGISTRY_PATH",
     "SharedGateDecision",

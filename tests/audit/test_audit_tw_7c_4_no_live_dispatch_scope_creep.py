@@ -808,6 +808,27 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/contracts/test_operator_surface_projection_demands_parity.py",
     "tests/unit/marcus/orchestrator/test_operator_surface_run_settings.py",
     "tests/hud/test_settings_readout_panel.py",
+    # Story 42-5 (pre-walk settings confirm-or-change gate; green-lit 5/5
+    # 2026-07-16, dual-gate, LOCKSTEP start-path + operator-surface). A NEW
+    # pre-G0 HIL pause: the real GSettingsCard DecisionCard subclass (option B —
+    # pre-pipeline pause, NOT a manifest node), the start-path pause insertion +
+    # confirm/change/cancel resume handling in production_runner.py, and the ONE
+    # resolution point (run-settings-overrides.json) write-back + walk-entry
+    # projection in the sole-writer assembler. Reuses the canonical DecisionCard
+    # pause -> OperatorVerdict -> resume_from_verdict machinery (no bespoke pause);
+    # NO new live-dispatch call site (the pause halts BEFORE the first spend).
+    # production_runner.py + operator_surface_assembler.py + decision_cards/__init__.py
+    # already rostered above.
+    "app/models/decision_cards/g_settings.py",
+    # Option A wiring (operator-authorized): G0S is a real manifest HEAD gate, so
+    # the compiler's runtime gate-id set gains G0S (the operator gate-shim surface
+    # `_shim_parser.py` + the `test_marcus_duality_boundary.py` gate-set pin are
+    # already rostered above). No live-dispatch surface — the gate pauses BEFORE the
+    # first spend (production_trial_envelope.py + the two orchestrator/assembler
+    # modules already rostered above).
+    "app/manifest/compiler.py",
+    "tests/marcus/orchestrator/test_pre_walk_settings_gate.py",
+    "tests/unit/models/decision_cards/test_g_settings_card_shape.py",
 }
 
 

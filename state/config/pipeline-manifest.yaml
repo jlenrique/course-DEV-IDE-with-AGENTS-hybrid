@@ -110,6 +110,34 @@ block_mode_trigger_paths:
   - app/marcus/lesson_plan/research_packet.py
 
 nodes:
+  - id: "pre-walk-settings-gate"
+    label: "Pre-Walk Settings Confirm Gate (Story 42.5)"
+    specialist_id: null
+    scaffold_node: null
+    model_config_ref: null
+    gate: true
+    gate_code: "G0S"
+    fold_with: null
+    fold_target: null
+    sub_phase_of: null
+    insertion_after: null
+    hud_tracked: false
+    pack_section_anchor: "0-settings-gate)"
+    pack_version: "v4.2"
+    rationale: >-
+      Pre-walk settings confirm-or-change gate (Story 42.5). The FIRST node in the
+      walk — a content-free HIL pause (is_content_free_gate) at the HEAD, BEFORE G0
+      / the first spend: Marcus-SPOC surfaces the resolved 16-toggle run-settings
+      readout (Story 42.3) and the operator CONFIRMS (approve) or CHANGES (edit) a
+      toggle before the walk proceeds. A change writes to the ONE resolution point
+      (run-settings-overrides.json) and re-presents the updated readout; the walk
+      never spends past an unconfirmed settings surface. Pack/HUD-invisible — a
+      runtime pause point, not pack prose (mirrors G0E/G0R/07B-gate/11-gate). Emits
+      a GSettingsCard at the pause. Pauses ONLY when
+      MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE (traversed byte-identically otherwise,
+      the G0E/G0R wake-flag convention). No specialist / no pre-pass node — the
+      readout is resolved deterministically by the operator-surface assembler.
+
   - id: "directive-composer"
     label: "G0 — Directive Composition (Slab 7a / Story 7a.1)"
     specialist_id: null
@@ -1109,7 +1137,14 @@ edges:
   # (runner-invoked by list order, like directive-composer). The runtime walk
   # order is manifest.nodes LIST order, so this edge is the compiled-graph
   # topology only; the gate pauses ONLY when MARCUS_G0_ENRICHMENT_ACTIVE.
-  - {from: __start__, to: "g0-enrichment-gate"}
+  # Story 42.5: the content-free G0S pre-walk settings gate is the HEAD of the
+  # walk (before G0 / the first spend), edge-chained from __start__ (the
+  # G0E/G0R/07B-gate content-free-gate convention). The runtime walk order is
+  # manifest.nodes LIST order (G0S is the first node), so this edge is the
+  # compiled-graph topology only; the gate pauses ONLY when
+  # MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE.
+  - {from: __start__, to: "pre-walk-settings-gate"}
+  - {from: "pre-walk-settings-gate", to: "g0-enrichment-gate"}
   # G0-S3 (2026-06-26): the content-free G0R ratify-gate threads into the linear
   # chain AFTER G0E (the 07B-gate/11-gate/G0E convention). The irene-refinement
   # ORCHESTRATION node stays unchained (runner-invoked by list order). Both pause

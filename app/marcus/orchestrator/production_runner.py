@@ -53,6 +53,10 @@ from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.operator_surface_assembler import (
     DEFAULT_HUD_CONFIG_PATH,
     OperatorSurfaceAssembler,
+    apply_run_settings_change,
+    apply_run_settings_overrides_to_run,
+    load_run_settings_overrides,
+    resolve_run_settings,
 )
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
 from app.marcus.orchestrator.research_citation import CitationFidelityError
@@ -71,6 +75,7 @@ from app.models.decision_cards import (
     G3Card,
     G4ACard,
     G4Card,
+    GSettingsCard,
 )
 from app.models.decision_cards._base import DecisionCardMeta as DecisionCardBaseMeta
 from app.models.runtime.production_envelope import (
@@ -137,6 +142,32 @@ RESEARCH_DISPATCH_LIVE_ENV = "MARCUS_RESEARCH_DISPATCH_LIVE"
 # code contract (mirrors S5's g0_enrichment F-1802 kill-switch model), NOT
 # ``value in TRUTHY`` (which would wrongly stay OFF on the canonical unset run).
 RESEARCH_DISPATCH_LIVE_KILL_SWITCH: frozenset[str] = frozenset({"0", "false", "no", "off"})
+
+# Story 42.5: the synthetic gate id for the PRE-WALK settings confirm-or-change
+# pause. It is deliberately NOT a `pipeline-manifest.yaml` node / `production_gate_ids`
+# member — it gates ENTRY to the pipeline (before G0 / the first spend), has no
+# specialist and produces no artifact (option B; see g_settings.py + the story
+# Dev Notes). It reuses the canonical pause -> OperatorVerdict -> resume_from_verdict
+# machinery every production gate uses.
+PRE_WALK_SETTINGS_GATE_ID = "G0S"
+
+# Story 42.5: the pre-walk settings gate wake flag. Mirrors the G0E/G0R wake-flag
+# convention — the content-free G0S gate node is ALWAYS in the manifest but PAUSES
+# only when woken; otherwise the walk TRAVERSES it byte-identically (so the default
+# start walk is unchanged). Default ASLEEP (truthy-set semantics, NOT the
+# kill-switch inverse): the operator entrypoint (`start_trial`) wakes it for real
+# operator-steered runs (AC-1), while harness / offline / scripted paths leave it
+# unset ⇒ traversed (AC-6 opt-out is the absence-of-wake, made explicit + logged).
+PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV = "MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE"
+_PREWALK_SETTINGS_TRUTHY: frozenset[str] = frozenset({"1", "true", "yes", "on"})
+
+
+def _prewalk_settings_confirm_active() -> bool:
+    """Return True iff the pre-walk settings confirm gate is woken (default OFF)."""
+    return (
+        os.environ.get(PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV, "").strip().lower()
+        in _PREWALK_SETTINGS_TRUTHY
+    )
 
 
 def _research_dispatch_live() -> bool:
@@ -1020,6 +1051,7 @@ def _build_decision_card(
     production_envelope: Any = None,
     pre_fill: PreFillProposal | None = None,
     runs_root: Path = RUNS_ROOT,
+    run_settings: dict[str, Any] | None = None,
 ) -> Any:
     drafted_proposal: dict[str, Any] = {"node_id": node_id, "operator_id": operator_id}
     if pre_fill is not None:
@@ -1212,6 +1244,25 @@ def _build_decision_card(
                 "Ratify the refined learning objectives + signed LO-delta (or "
                 "edit/reject). Adequacy alerts are advisory; rule on any "
                 "recommend-drop / proposed-new. Marcus proposes; you decide."
+            ),
+        )
+    if gate_id == PRE_WALK_SETTINGS_GATE_ID:
+        # Story 42.5: pre-walk settings confirm-or-change gate. Carries the resolved
+        # 16-toggle readout (Story 42.3) the operator confirms (verb=approve) or
+        # changes (verb=edit). `allowed_verbs` threads the neutral confirm/change
+        # pair onto the next-action surface (no preselected verdict — 42.1 finding G).
+        return GSettingsCard(
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
+            run_settings=run_settings or {},
+            allowed_verbs=["approve", "edit"],
+            operator_prompt=(
+                "Confirm the resolved run settings, or change one before the walk "
+                "spends. Marcus proposes; you decide."
             ),
         )
     raise RuntimeError(f"unsupported production gate id: {gate_id}")
@@ -2627,6 +2678,146 @@ def _pause_at_gate(
     return envelope
 
 
+def _prewalk_settings_gate_disposition(
+    *,
+    trial_id: UUID,
+    runs_root: Path,
+    pause_at_gates: bool,
+    allow_offline_cost_report: bool,
+) -> str:
+    """Decide how the G0S pre-walk settings gate is handled at a walk (Story 42.5).
+
+    Returns one of:
+
+    * ``"traverse"`` — the wake flag is OFF (default): the content-free gate is
+      dormant, traversed byte-identically (exactly like G0E/G0R when their wake
+      flag is off). No surface mutation, so the default start walk is unchanged.
+    * ``"skip-explicit"`` — the gate is WOKEN but a non-interactive
+      (``pause_at_gates=False``) or offline-harness (``allow_offline_cost_report``)
+      mode overrides the pause. AC-6 opt-out: EXPLICIT + logged/traced — never a
+      silent skip of a spend-gating confirm. (This helper appends the trace.)
+    * ``"pause"`` — woken + interactive + not offline: PAUSE (AC-1).
+
+    Invariant helper called from BOTH walks (start + continuation) so the
+    disposition can never drift between them (two-walk trap).
+    """
+    if not _prewalk_settings_confirm_active():
+        return "traverse"
+    if not pause_at_gates or allow_offline_cost_report:
+        reason = (
+            "non-interactive (pause_at_gates=False)"
+            if not pause_at_gates
+            else "offline-harness (allow_offline_cost_report=True)"
+        )
+        LOGGER.info(
+            "trial %s: pre-walk settings confirm gate WOKEN but SKIPPED — %s "
+            "(opt-out is explicit; never a silent skip of a spend-gating confirm)",
+            trial_id,
+            reason,
+        )
+        _append_operator_surface_trace(
+            trial_id, runs_root, "prewalk-settings-skipped", detail=reason
+        )
+        return "skip-explicit"
+    return "pause"
+
+
+def _pause_at_prewalk_settings(
+    *,
+    trial_id: UUID,
+    operator_id: str,
+    envelope: ProductionTrialEnvelope,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    node_index: int,
+    manifest_path: Path,
+    runs_root: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int | None,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
+) -> ProductionTrialEnvelope:
+    """Pause the trial at the pre-walk settings gate (Story 42.5, gate G0S).
+
+    Reuses the canonical DecisionCard pause primitive — build card, register,
+    checkpoint, persist paused-at-gate, emit surface — exactly like ``_pause_at_gate``,
+    but for the content-free HEAD gate node (``pre-walk-settings-gate``) that is
+    crossed ONCE at the very start (before G0 / the first spend). The checkpoint is
+    written at the gate's ``node_index`` so ``next_node_index=node_index+1`` — an
+    ``approve`` (confirm) resume re-enters the walk PAST the settings gate through
+    ``_continue_production_walk`` (both-walk safe). NO pre-gate-Marcus, NO storyboard,
+    NO cost/trace machinery: nothing has been spent, and there is no model proposal —
+    the operator confirms resolved values (mirrors the G0E/G0R content-free gates).
+    """
+    run_dir = _run_dir(trial_id, runs_root)
+    # Refresh the ambient sections so the 16-toggle standing readout (Story 42.3)
+    # is present on the operator surface + HUD at the pause, and reflects any prior
+    # CHANGE override (the resolver overlays run-settings-overrides.json).
+    _refresh_operator_surface_ambient(
+        trial_id,
+        runs_root,
+        run_state,
+        trace_event=("prewalk-settings-pause", "awaiting settings confirm/change"),
+    )
+    readout = resolve_run_settings(run_dir, None, _now()).model_dump(mode="json")
+    card = _build_decision_card(
+        gate_id=PRE_WALK_SETTINGS_GATE_ID,
+        trial_id=trial_id,
+        node_id="__prewalk__",
+        operator_id=operator_id,
+        pending_nodes=[],
+        artifact_paths=envelope.artifact_paths,
+        production_envelope=production_envelope,
+        runs_root=runs_root,
+        run_settings=readout,
+    )
+    stored = register_decision_card(card)
+    checkpoint = _write_checkpoint(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        node_index=node_index,
+        gate_id=PRE_WALK_SETTINGS_GATE_ID,
+        run_state=run_state,
+        envelope=envelope,
+        manifest_path=manifest_path,
+        allow_offline_cost_report=allow_offline_cost_report,
+        max_specialist_calls=max_specialist_calls,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
+    )
+    decision_path = run_dir / f"decision-card-{PRE_WALK_SETTINGS_GATE_ID}.json"
+    _write_json(
+        decision_path,
+        {
+            "card": card.model_dump(mode="json"),
+            "digest": stored.digest,
+            "issued_at": stored.issued_at.astimezone(UTC).isoformat().replace("+00:00", "Z"),
+            "server_nonce": stored.server_nonce,
+            "checkpoint_path": checkpoint.as_posix(),
+        },
+    )
+    envelope = envelope.model_copy(
+        update={
+            "status": "paused-at-gate",
+            "paused_gate": PRE_WALK_SETTINGS_GATE_ID,
+            "paused_error_tag": None,
+            "production_clone_launch_evidence": False,
+            "production_clone_launch_evidence_reason": "paused-before-live-specialist-call",
+            "production_envelope": production_envelope,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
+                decision_path,
+                checkpoint,
+            ),
+        }
+    )
+    _persist_envelope(envelope, runs_root)
+    # Emit the operator surface so the paused-at-gate next_action (the neutral
+    # confirm/change menu, threaded from the card's allowed_verbs) is present.
+    _emit_operator_surface(envelope, runs_root)
+    return envelope
+
+
 def _dispatch_specialist_at_node(
     *,
     adapter: Any,
@@ -3255,6 +3446,35 @@ def run_production_trial(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
+                if gate_id == PRE_WALK_SETTINGS_GATE_ID:
+                    # Story 42.5: the pre-walk settings confirm-or-change gate (G0S)
+                    # at the HEAD of the walk. Pauses ONLY when woken; traverses
+                    # byte-identically otherwise (start-walk leg).
+                    _disposition = _prewalk_settings_gate_disposition(
+                        trial_id=effective_trial_id,
+                        runs_root=runs_root,
+                        pause_at_gates=pause_at_gates,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                    )
+                    if _disposition == "pause":
+                        return _pause_at_prewalk_settings(
+                            trial_id=effective_trial_id,
+                            operator_id=operator_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            node_index=index,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                    last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, effective_trial_id, runs_root)
+                    graph_step_completed = True
+                    continue
                 if (
                     gate_id == g0_enrichment_wiring.G0_ENRICHMENT_GATE_CODE
                     and not g0_enrichment_wiring.g0_enrichment_active()
@@ -3786,6 +4006,124 @@ def run_production_trial(
     return envelope
 
 
+def _apply_component_overrides_to_run_state(run_dir: Path, run_state: RunState) -> RunState:
+    """Project any pre-walk component-selection CHANGE onto run_state (Story 42.5).
+
+    Component toggles resolve at ``run_state.component_selection`` (the walk
+    recomposes the manifest from it), so a changed component is applied here at
+    confirm — never re-read from env. A no-op when no component override exists.
+    """
+    overrides = load_run_settings_overrides(run_dir)
+    updates: dict[str, bool] = {}
+    for field, value in overrides.items():
+        if not field.startswith("component_"):
+            continue
+        name = field[len("component_") :]
+        if name in ComponentSelection.model_fields:
+            updates[name] = str(value).strip().lower() in {"on", "1", "true", "yes"}
+    if not updates:
+        return run_state
+    selection = run_state.component_selection or ComponentSelection.production_default()
+    return run_state.model_copy(
+        update={"component_selection": selection.model_copy(update=updates)}
+    )
+
+
+def _resume_prewalk_settings(
+    *,
+    trial_id: UUID,
+    verdict: OperatorVerdict,
+    envelope: ProductionTrialEnvelope,
+    run_state: RunState,
+    runner: dict[str, Any],
+    checkpoint: dict[str, Any],
+    runs_root: Path,
+    max_specialist_calls: int | None,
+) -> ProductionTrialEnvelope:
+    """Answer the pre-walk settings gate (Story 42.5): confirm / change / cancel.
+
+    Reuses the canonical resume machinery (the caller already validated the verdict
+    via ``resume_from_verdict`` — digest + nonce + card_id). ``approve``==CONFIRM
+    continues the walk at index 0 through the shared ``_continue_production_walk``
+    (both-walk-safe; env/directive overrides project at that entry seam);
+    ``edit``==CHANGE persists the toggle change to the one resolution point and
+    RE-PRESENTS the updated surface (loop until confirm); ``reject``==CANCEL fails
+    the run before any spend.
+    """
+    run_dir = _run_dir(trial_id, runs_root)
+    manifest_path = Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)
+    directive_path = _resolve_resume_directive_path(runner, trial_id=trial_id, runs_root=runs_root)
+    bundle_dir = _resolve_resume_bundle_dir(
+        runner, trial_id=trial_id, runs_root=runs_root, directive_path=directive_path
+    )
+    allow_offline = bool(runner.get("allow_offline_cost_report", False))
+
+    if verdict.verb == "reject":
+        run_summary_path = _emit_run_summary_yaml(
+            trial_id=trial_id,
+            terminal_gate=verdict.gate_id,
+            runs_root=runs_root,
+            manifest_path=manifest_path,
+            langsmith_trace_id=envelope.langsmith_trace_id,
+            selection=run_state.component_selection,
+        )
+        updated = envelope.model_copy(
+            update={
+                "status": "failed",
+                "completed_at": _now(),
+                "production_clone_launch_evidence_reason": (
+                    "operator-cancelled-at-prewalk-settings"
+                ),
+                "artifact_paths": _merge_artifact_paths(
+                    envelope.artifact_paths, run_summary_path
+                ),
+            }
+        )
+        _persist_envelope(updated, runs_root)
+        return updated
+
+    if verdict.verb == "edit":
+        # CHANGE: write to the ONE resolution point, then re-present the surface at
+        # the SAME G0S node index (checkpoint next_node_index-1 = the gate's index).
+        apply_run_settings_change(run_dir, verdict.edit_payload or {})
+        return _pause_at_prewalk_settings(
+            trial_id=trial_id,
+            operator_id=envelope.operator_id,
+            envelope=envelope,
+            production_envelope=envelope.production_envelope,
+            run_state=run_state,
+            node_index=int(checkpoint["next_node_index"]) - 1,
+            manifest_path=manifest_path,
+            runs_root=runs_root,
+            allow_offline_cost_report=allow_offline,
+            max_specialist_calls=runner.get("max_specialist_calls"),
+            directive_path=directive_path,
+            bundle_dir=bundle_dir,
+        )
+
+    # CONFIRM (approve): apply component-selection changes to run_state, then walk.
+    run_state = _apply_component_overrides_to_run_state(run_dir, run_state)
+    resumed_max = (
+        max_specialist_calls
+        if max_specialist_calls is not None
+        else runner.get("max_specialist_calls")
+    )
+    return _continue_production_walk(
+        trial_id=trial_id,
+        envelope=envelope,
+        run_state=run_state,
+        runner=runner,
+        manifest_path=manifest_path,
+        runs_root=runs_root,
+        start_index=int(checkpoint["next_node_index"]),
+        last_gate_crossed=None,
+        max_specialist_calls=resumed_max,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
+        non_evidence_reason="resumed-after-prewalk-settings",
+    )
+
+
 def resume_production_trial(
     *,
     trial_id: UUID,
@@ -3837,6 +4175,23 @@ def resume_production_trial(
     runner = checkpoint.get("runner") or {}
     run_state = RunState.model_validate_json(json.dumps(checkpoint["run_state"]))
     run_state = run_state.model_copy(update={"production_envelope": envelope.production_envelope})
+    if verdict.gate_id == PRE_WALK_SETTINGS_GATE_ID:
+        # Story 42.5: the pre-walk settings gate reuses this verdict-validation +
+        # resume machinery (card rehydrate + resume_from_verdict digest/nonce checks
+        # above), but its confirm/change/cancel semantics differ from a pipeline
+        # gate — it does NOT feed the generic `_apply_verdict_to_run_state`
+        # (edit-payload is a toggle change, not a cache-prefix overwrite). Dispatch
+        # to the dedicated handler.
+        return _resume_prewalk_settings(
+            trial_id=trial_id,
+            verdict=verdict,
+            envelope=envelope,
+            run_state=run_state,
+            runner=runner,
+            checkpoint=checkpoint,
+            runs_root=runs_root,
+            max_specialist_calls=max_specialist_calls,
+        )
     run_state = _apply_verdict_to_run_state(run_state, verdict)
     if (
         verdict.gate_id == irene_refinement_wiring.IRENE_REFINEMENT_GATE_CODE
@@ -4214,6 +4569,21 @@ def _continue_production_walk(
     Winston d.2).
     """
     run_dir = _run_dir(trial_id, runs_root)
+    # Story 42.5 (AC-3): project any persisted pre-walk CHANGE overrides onto the
+    # walk's resolution points BEFORE it resolves anything — env vars for the
+    # MARCUS_* toggles + budget, the directive.yaml for directive-sourced settings.
+    # This is the single walk-entry seam (both walks call it), and each resume is a
+    # fresh process, so the change must be re-projected from the durable override
+    # file every continuation for it to hold "for the rest of the run". No-op when
+    # no override exists (byte-identical). Never raises into the walk.
+    _applied_overrides = apply_run_settings_overrides_to_run(run_dir)
+    if _applied_overrides.get("env") or _applied_overrides.get("directive"):
+        LOGGER.info(
+            "trial %s: applied pre-walk settings overrides at walk entry — env=%s directive=%s",
+            trial_id,
+            _applied_overrides.get("env"),
+            _applied_overrides.get("directive"),
+        )
     # Two-walk trap: REHYDRATE the frozen component_selection from the run record
     # and recompose the SAME graph — never re-default. run_state was loaded from
     # the persisted checkpoint/error-pause by the caller, so its component_selection
@@ -4290,6 +4660,37 @@ def _continue_production_walk(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
+                if gate_id == PRE_WALK_SETTINGS_GATE_ID:
+                    # Story 42.5 (continuation-walk leg, two-walk parity): normally
+                    # the settings gate is crossed on the START walk and the resume
+                    # re-enters PAST it, but a recover re-entering at index 0 must
+                    # honor the SAME disposition. A resume/recover is operator-driven
+                    # (interactive), so pause_at_gates=True here.
+                    _disposition = _prewalk_settings_gate_disposition(
+                        trial_id=trial_id,
+                        runs_root=runs_root,
+                        pause_at_gates=True,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                    )
+                    if _disposition == "pause":
+                        return _pause_at_prewalk_settings(
+                            trial_id=trial_id,
+                            operator_id=runner.get("operator_id") or envelope.operator_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            node_index=index,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                    last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, trial_id, runs_root)
+                    graph_step_completed = True
+                    continue
                 if (
                     gate_id == g0_enrichment_wiring.G0_ENRICHMENT_GATE_CODE
                     and not g0_enrichment_wiring.g0_enrichment_active()
