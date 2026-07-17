@@ -125,17 +125,19 @@ def test_registry_and_allowlist_are_disjoint() -> None:
     )
 
 
-def test_allowlist_is_full_canonical_set_at_43_2() -> None:
-    """State pin at 43-2: with zero bespoke renderers registered, the allowlist is
-    exactly the full canonical set. This assertion INTENTIONALLY tightens as the
-    epic progresses — each bespoke story deletes a row, so this test's expectation
-    is the current allowlist, not a hard-coded full set. Documented as a state
-    witness for 43-2; later stories update it to the shrinking allowlist.
+def test_allowlist_is_shrinking_registry_is_growing_at_43_1() -> None:
+    """State pin (updated at 43-1, the first allowlist→registry move): the
+    allowlist tightens by exactly one row as each bespoke story registers a
+    renderer. This assertion INTENTIONALLY tracks the CURRENT state, not a
+    hard-coded full set — later stories (43-3…43-9) move more types registry-ward
+    and update this witness in lockstep, and 43-12 empties the allowlist entirely.
     """
-    # 43-2 baseline: no bespoke renderers, so nothing is registered yet.
-    assert registered_content_types() == frozenset()
-    # …hence every canonical type is waived.
-    assert KNOWN_UNRENDERED_ALLOWLIST == GATE_CONTENT_TYPES
+    # 43-1 registers the first bespoke renderer: ``directive`` (G0).
+    assert registered_content_types() == frozenset({"directive"})
+    # …hence ``directive`` has LEFT the allowlist; every other canonical type is
+    # still waived (disjoint invariant: registry ∩ allowlist == ∅).
+    expected_waived = GATE_CONTENT_TYPES - {"directive"}
+    assert expected_waived == KNOWN_UNRENDERED_ALLOWLIST
 
 
 def test_governance_close_hook_43_12() -> None:

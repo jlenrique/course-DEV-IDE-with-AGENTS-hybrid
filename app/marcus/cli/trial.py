@@ -27,7 +27,11 @@ from app.composers.section_02a.composer import (
     assert_lesson_corpus_leaf,
 )
 from app.marcus.cli.front_door import FrontDoorError, front_door_select
-from app.marcus.cli.hil_tabular_projector import build_gate_surface, emit_gate_surface
+from app.marcus.cli.hil_tabular_projector import (
+    build_gate_surface,
+    emit_gate_surface,
+    render_gate_content,
+)
 from app.marcus.cli.marcus_spoc import (
     DEGRADED_PUBLISH_URL_SCRIPTED,
     commit_picker_pick,
@@ -227,9 +231,9 @@ def _g0_prompt_text(directive_path: Path) -> str:
     return (
         "G0 — Directive Composition\n"
         f"Composed directive written to: {directive_path}\n"
-        "Review the directive (printed above). Choose:\n"
+        "Review the source-inventory table (printed above). Choose:\n"
         "  [c] confirm and proceed\n"
-        "  [e] edit in $EDITOR, then reload and re-prompt\n"
+        "  [e] edit the raw directive YAML in $EDITOR, then reload and re-prompt\n"
         "  [s] save and show path; exit without running the trial\n"
         "  [x] cancel trial (no specialist dispatch)\n"
         "At-gate context: docs/conversational-gates/g0-directive-composition.md\n"
@@ -378,7 +382,13 @@ def _confirm_or_edit_directive(
             "directive composition cannot be silently auto-confirmed"
         )
     while True:
-        print_fn(directive_path.read_text(encoding="utf-8"))
+        # Story 43-1 — table is the DEFAULT G0 review surface: parse the composed
+        # directive and project it as the operator-approved source-inventory table
+        # (which sources, what roles, what floors), instead of the old raw
+        # ``print_fn(directive_path.read_text())`` YAML dump. The raw directive
+        # stays one keystroke away via [e]dit. yaml is imported at module top.
+        directive_dict = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+        print_fn(render_gate_content(directive_dict, content_type="directive"))
         choice = (input_fn(_g0_prompt_text(directive_path)) or "").strip().lower()
         if choice == "c":
             return "confirmed"

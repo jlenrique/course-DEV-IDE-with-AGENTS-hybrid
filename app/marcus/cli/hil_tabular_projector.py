@@ -44,6 +44,18 @@ _NESTED_VALUE_MAX_CHARS: int = 240
 #: (rider R5 — width-aware / fixed-width columns, no ugly wrap at 80 cols).
 _GENERIC_VALUE_WIDTH: int = 60
 
+#: Fixed display widths (chars) for the two long free-text columns of the G0
+#: directive source-inventory table (Story 43-1, rider R5 — width-aware columns,
+#: no ugly wrap at 80 cols). ``locator`` and the brief ``description`` are the
+#: only unbounded columns; ref_id / role / min-words / excluded are naturally
+#: short. Both are hard-capped via :func:`_truncate_cell`.
+_DIRECTIVE_LOCATOR_WIDTH: int = 44
+_DIRECTIVE_DESC_WIDTH: int = 44
+
+#: Role ordering for the directive table's primary-first sort (Story 43-1, AC-1).
+#: Unknown / excluded-only roles sort last; ties break lexically by ``ref_id``.
+_DIRECTIVE_ROLE_RANK: dict[str, int] = {"primary": 0, "supporting": 1}
+
 #: Human-friendly labels for the ``source_type`` of an ungrounded advisory
 #: component. Speaker-notes narration is the dominant flagged kind (bc747b51: all
 #: 12 ungrounded advisories were ``narration``); other types fall back to a
@@ -288,6 +300,118 @@ def render_generic_gate_content(
     return "\n".join(parts)
 
 
+def _source_is_excluded(source: Mapping[str, Any]) -> bool:
+    """A directive source is excluded iff it carries a truthy ``excluded`` flag or
+    a truthy ``excluded_reason``. The common ``excluded_reason: null`` is NOT
+    excluded (the counts footer's ``X excluded`` tally rides on this predicate).
+    """
+    if source.get("excluded"):
+        return True
+    return bool(source.get("excluded_reason"))
+
+
+def _directive_variant_slugs(gamma_settings: Any) -> dict[str, str]:
+    """Map ``variant_id`` -> ``styleguide`` slug from a directive's
+    ``gamma_settings`` list (each entry ``{variant_id, styleguide}``). Tolerant of
+    a missing / malformed value — returns whatever well-formed entries exist.
+    """
+    slugs: dict[str, str] = {}
+    if isinstance(gamma_settings, Sequence) and not isinstance(gamma_settings, (str, bytes)):
+        for entry in gamma_settings:
+            if isinstance(entry, Mapping):
+                vid = entry.get("variant_id")
+                slug = entry.get("styleguide")
+                if vid is not None and slug is not None:
+                    slugs[str(vid)] = str(slug)
+    return slugs
+
+
+def _corpus_basename(corpus_dir: Any) -> str:
+    """Last path segment of a ``corpus_dir``, separator-agnostic and stdlib-pure
+    (no ``os`` / ``pathlib`` platform coupling): normalize ``\\`` to ``/``, strip
+    trailing slashes, take the final segment. Empty in, empty out.
+    """
+    text = str(corpus_dir or "").replace("\\", "/").rstrip("/")
+    if not text:
+        return ""
+    return text.rsplit("/", 1)[-1]
+
+
+def render_directive_sources(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G0 — Directive review",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G0 directive composition** renderer (Story 43-1) — project a
+    composed *directive* mapping into the operator-approved source-inventory
+    table so the operator can review the material partition (which sources, what
+    roles, what floors) at the G0 confirm, instead of scanning a raw YAML dump.
+    Registered under ``content_type="directive"``.
+
+    Shape (operator-approved, BINDING — do not redesign)::
+
+        G0 — Directive review   run <run_id> · corpus <corpus-basename>
+        Variants:  A <styleguide-A> · B <styleguide-B>
+
+        | ref | role | locator | min-words | excl | description |
+        ...  (sorted PRIMARY-FIRST, lexical by ref within a role)
+
+        N sources · P primary · S supporting · X excluded
+
+    ``content`` is an ALREADY-PARSED directive mapping (``sources[]`` +
+    ``run_id`` / ``corpus_dir`` / ``gamma_settings``) — the projector stays
+    stdlib-pure, the caller (``trial.py``) does the ``yaml.safe_load``. The
+    banner text is fixed to the approved shape; the contract ``title`` /
+    ``page_size`` params are honored for pagination but the banner is not
+    retitled. Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5).
+    """
+    sources = content.get("sources") or []
+    source_list = [s for s in sources if isinstance(s, Mapping)]
+
+    run_id = str(content.get("run_id") or "")
+    corpus = _corpus_basename(content.get("corpus_dir"))
+    slugs = _directive_variant_slugs(content.get("gamma_settings"))
+    banner = f"G0 — Directive review   run {run_id} · corpus {corpus}"
+    variants_line = f"Variants:  A {slugs.get('A', '—')} · B {slugs.get('B', '—')}"
+
+    def _sort_key(entry: Mapping[str, Any]) -> tuple[int, str]:
+        rank = _DIRECTIVE_ROLE_RANK.get(str(entry.get("role") or ""), 2)
+        return (rank, str(entry.get("ref_id") or ""))
+
+    ordered = sorted(source_list, key=_sort_key)
+    rows: list[Sequence[Any]] = []
+    for s in ordered:
+        min_words = s.get("expected_min_words")
+        rows.append(
+            [
+                s.get("ref_id", ""),
+                s.get("role", ""),
+                _truncate_cell(str(s.get("locator") or ""), _DIRECTIVE_LOCATOR_WIDTH),
+                "—" if min_words is None else min_words,
+                "yes" if _source_is_excluded(s) else "—",
+                _truncate_cell(str(s.get("description") or ""), _DIRECTIVE_DESC_WIDTH),
+            ]
+        )
+
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(
+        ["ref", "role", "locator", "min-words", "excl", "description"], shown
+    )
+
+    n = len(source_list)
+    p = sum(1 for s in source_list if str(s.get("role") or "") == "primary")
+    sup = sum(1 for s in source_list if str(s.get("role") or "") == "supporting")
+    x = sum(1 for s in source_list if _source_is_excluded(s))
+    footer = f"{n} sources · {p} primary · {sup} supporting · {x} excluded"
+
+    parts = [banner, variants_line, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    parts.extend(["", footer])
+    return "\n".join(parts)
+
+
 #: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
 #: (43-1, 43-3…43-9) register against this contract; the generic fallback above
 #: satisfies it for every content type with no bespoke renderer yet.
@@ -346,7 +470,12 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: added gate; add the renderer instead. **Empty-at-epic-close:** Story 43-12
 #: (governance close) asserts ``KNOWN_UNRENDERED_ALLOWLIST == frozenset()`` — the
 #: last bespoke story empties this, and the epic cannot close while any row remains.
-KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(GATE_CONTENT_TYPES)
+#:
+#: Story 43-1 (the FIRST allowlist→registry move) deletes ``directive`` here in the
+#: same change that registers :func:`render_directive_sources` — so ``directive`` is
+#: now covered by a bespoke renderer, NOT waived (the 43-10 disjoint invariant
+#: ``registry ∩ allowlist == ∅`` requires the deletion).
+KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(GATE_CONTENT_TYPES - {"directive"})
 
 
 def register_renderer(content_type: str, renderer: GateContentRenderer) -> None:
@@ -389,6 +518,13 @@ def render_gate_content(
     """
     renderer = get_renderer(content_type)
     return renderer(content, title=title, page_size=page_size)
+
+
+#: Story 43-1 — register the bespoke G0 directive renderer at import time. This is
+#: the first allowlist→registry move: ``directive`` leaves
+#: ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gains a bespoke renderer here, so the
+#: G0 confirm surface tables its source inventory instead of raw-dumping YAML.
+register_renderer("directive", render_directive_sources)
 
 
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
@@ -526,6 +662,7 @@ __all__ = [
     "get_renderer",
     "register_renderer",
     "registered_content_types",
+    "render_directive_sources",
     "render_enrichment_metrics",
     "render_gate_content",
     "render_gate_identity",

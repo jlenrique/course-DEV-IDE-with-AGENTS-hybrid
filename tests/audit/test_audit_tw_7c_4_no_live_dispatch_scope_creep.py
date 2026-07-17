@@ -793,6 +793,19 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/marcus/cli/test_hil_tabular_projector.py",
     "tests/marcus/cli/test_next_action_neutral_verb.py",
     "tests/unit/marcus/cli/test_next_action.py",
+    # Epic 43 (HIL Surface Tabular Coverage; green-lit 5/5 SIGN-WITH-RIDERS
+    # 2026-07-17; party-greenlight-epic-43-2026-07-17.md). CLI/display-layer
+    # only, extending the 42-1 projector: a renderer registry + generic
+    # gate-content table (43-2), the coverage-ratchet + canonical SSOT (43-10),
+    # the G0 directive source-inventory renderer replacing the trial.py raw-YAML
+    # dump (43-1), and the frozen replay fixtures (43-0). Deterministic / OFFLINE
+    # — replays the 43-0 fixtures; NO new live-dispatch call site; the projector
+    # stays stdlib-pure. app/marcus/cli/{trial.py,hil_tabular_projector.py}
+    # already rostered above (42-1).
+    "tests/marcus/cli/test_hil_generic_gate_content_43_2.py",
+    "tests/marcus/cli/test_projector_coverage_ratchet_43_10.py",
+    "tests/marcus/cli/test_g0_directive_table_43_1.py",
+    "tests/unit/marcus/cli/test_hil_projector_fixtures.py",
     # Story 42-3 (full run-settings standing readout — all ~16 toggles; green-lit
     # 5/5 2026-07-16, dual-gate, LOCKSTEP operator-surface projection). ADDITIVE
     # within v1: a new RunSettingsSection on the operator-surface contract + a
