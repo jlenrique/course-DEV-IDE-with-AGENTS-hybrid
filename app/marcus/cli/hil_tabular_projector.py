@@ -60,6 +60,14 @@ _DIRECTIVE_ROLE_RANK: dict[str, int] = {"primary": 0, "supporting": 1}
 #: per-slide-mode table (Story 43-3, rider R5 — width-aware columns).
 _MODE_DESC_WIDTH: int = 56
 
+#: Fixed display widths (chars) for the two long free-text columns of the G4A
+#: voice-candidate table (Story 43-4, rider R5 — width-aware columns). The voice
+#: ``voice_name`` (e.g. "Sarah - Mature, Reassuring, Confident") and the
+#: ``use_case`` characteristic are the only unbounded cells; ``voice_id`` / gender
+#: / accent are naturally short. Both are hard-capped via :func:`_truncate_cell`.
+_VOICE_NAME_WIDTH: int = 40
+_VOICE_USE_CASE_WIDTH: int = 24
+
 #: Human-facing one-line descriptions distinguishing the two per-slide presentation
 #: modes (Story 43-3). Sourced from ``app/gates/section_05_5/poll_surface.py``'s
 #: closed ``_AVAILABLE_MODES`` tuple — the two modes the operator compares at G2B.
@@ -521,6 +529,104 @@ def render_variant_ab(
     return "\n".join(parts)
 
 
+def _voice_options(card: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    """The rich voice-option dicts the operator picks FROM — sourced from the G4A
+    card's ``pick_context`` entry whose ``kind == "voice-options"`` (each voice
+    carries ``voice_name`` / ``voice_id`` / ``characteristics``). Empty when the
+    card carries only the bare ``voice_candidates`` id list with no adjacent
+    specialist voice-options block (the renderer then falls back to that id list).
+    """
+    pick_context = card.get("pick_context")
+    if isinstance(pick_context, Sequence) and not isinstance(pick_context, (str, bytes)):
+        for entry in pick_context:
+            if isinstance(entry, Mapping) and entry.get("kind") == "voice-options":
+                voices = entry.get("voices")
+                if isinstance(voices, Sequence) and not isinstance(voices, (str, bytes)):
+                    return [v for v in voices if isinstance(v, Mapping)]
+    return []
+
+
+def render_voice_candidates(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G4A voice-candidate selection",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G4A voice-candidate selection** renderer (Story 43-4, AC-1) — table
+    the candidate voices ONE ROW PER CANDIDATE with their distinguishing fields
+    (voice name + ``voice_id`` + gender / accent / use-case characteristics), instead
+    of the generic ``Field | Value`` dump, so the operator can choose a voice on the
+    merits.
+
+    ``content`` is the ``app/models/decision_cards/g4a.py::G4ACard`` body the runner
+    surfaces at a paused G4A ``11-gate`` (the ``decision-card-G4A.json`` ``card``
+    mapping — ``voice_candidates`` id list + a ``pick_context`` entry
+    ``{kind: "voice-options", voices: [...]}`` + ``selected_voice_id``). It also
+    tolerates the nested section_11 ``poll_surface.display_voice_candidates`` display
+    shape (the card body nested under ``decision_card``) — :func:`_unwrap_payload`
+    drills in either way. Registered under ``content_type="voice_candidates"``.
+
+    NB (Story 43-4 judgment call): ``section_11/poll_surface.py::display_voice_candidates``
+    is bound to the ``G4Card`` FIDELITY-CLOSEOUT model (``extra="forbid"``, no
+    ``voice_candidates`` / ``pick_context`` fields), so it does NOT carry the voice
+    candidates — the card that actually flows at a paused G4A is the ``G4ACard``
+    (proven by the on-disk ``decision-card-G4A.json`` evidence). This renderer targets
+    that real card body.
+
+    Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5). Projector stays
+    stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    card = _unwrap_payload(content, "decision_card")
+    voices = _voice_options(card)
+    selected = card.get("selected_voice_id")
+    candidate_ids = card.get("voice_candidates")
+    if not (
+        isinstance(candidate_ids, Sequence) and not isinstance(candidate_ids, (str, bytes))
+    ):
+        candidate_ids = []
+
+    rows: list[Sequence[Any]] = []
+    if voices:
+        # Rich voice-options block — one row per candidate with distinguishing fields.
+        for idx, voice in enumerate(voices, start=1):
+            characteristics = voice.get("characteristics")
+            if not isinstance(characteristics, Mapping):
+                characteristics = {}
+            voice_id = str(voice.get("voice_id") or "")
+            rows.append(
+                [
+                    idx,
+                    _truncate_cell(str(voice.get("voice_name") or ""), _VOICE_NAME_WIDTH),
+                    voice_id,
+                    characteristics.get("gender") or "—",
+                    characteristics.get("accent") or "—",
+                    _truncate_cell(
+                        str(characteristics.get("use_case") or "—"), _VOICE_USE_CASE_WIDTH
+                    ),
+                    "yes" if selected and voice_id == str(selected) else "—",
+                ]
+            )
+    else:
+        # Fallback — the bare ``voice_candidates`` id list (no specialist options
+        # attached); still one row per candidate so the operator sees the choices.
+        for idx, voice_id in enumerate(candidate_ids, start=1):
+            vid = str(voice_id)
+            sel = "yes" if selected and vid == str(selected) else "—"
+            rows.append([idx, "—", vid, "—", "—", "—", sel])
+
+    n = len(rows)
+    sel_note = f"selected {selected}" if selected else "no pick yet (default-accept)"
+    banner = f"G4A voice-candidate selection   {n} candidate(s) · {sel_note}"
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(
+        ["#", "Voice", "voice_id", "Gender", "Accent", "Use case", "Sel"], shown
+    )
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
 #: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
 #: (43-1, 43-3…43-9) register against this contract; the generic fallback above
 #: satisfies it for every content type with no bespoke renderer yet.
@@ -589,8 +695,13 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: ``per_slide_mode`` (G2B) and ``variant_ab`` (G2M) here in the same change that
 #: registers :func:`render_per_slide_mode` + :func:`render_variant_ab` — both are
 #: now covered by bespoke renderers, NOT waived.
+#:
+#: Story 43-4 (the THIRD allowlist→registry move) additionally deletes
+#: ``voice_candidates`` (G4A) here in the same change that registers
+#: :func:`render_voice_candidates` — now covered by a bespoke renderer, NOT waived.
 KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
-    GATE_CONTENT_TYPES - {"directive", "per_slide_mode", "variant_ab"}
+    GATE_CONTENT_TYPES
+    - {"directive", "per_slide_mode", "variant_ab", "voice_candidates"}
 )
 
 #: Story 43-3, AC-0 — the gate→content_type BRIDGE. Maps the gate identifier the
@@ -613,6 +724,9 @@ GATE_TO_CONTENT_TYPE: dict[str, str] = {
     # G2M A/B variant selection (section_07b).
     "G2M": "variant_ab",
     "section_07b_g2m_per_slide_variant": "variant_ab",
+    # G4A voice-candidate selection (section_11 woken 11-gate). Story 43-4.
+    "G4A": "voice_candidates",
+    "section_11_g4a_voice_selection": "voice_candidates",
 }
 
 
@@ -683,6 +797,12 @@ register_renderer("directive", render_directive_sources)
 #: paused G2B / G2M surfaces table their options instead of raw-dumping.
 register_renderer("per_slide_mode", render_per_slide_mode)
 register_renderer("variant_ab", render_variant_ab)
+
+#: Story 43-4 — register the bespoke G4A voice-candidate renderer at import time (the
+#: THIRD allowlist→registry move). ``voice_candidates`` leaves
+#: ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gains a bespoke renderer here, so the
+#: paused G4A surface tables its candidate voices instead of raw-dumping.
+register_renderer("voice_candidates", render_voice_candidates)
 
 
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
@@ -832,4 +952,5 @@ __all__ = [
     "render_per_slide_mode",
     "render_ungrounded_advisories",
     "render_variant_ab",
+    "render_voice_candidates",
 ]

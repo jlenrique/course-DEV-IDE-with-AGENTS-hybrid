@@ -237,11 +237,15 @@ def test_paused_g2m_routes_to_bespoke_variant_renderer_via_trial(
 
 
 def test_bridge_is_the_full_declared_map() -> None:
-    """AC-0: the bridge maps exactly the two Story 43-3 gates (both the paused-gate
-    string and the poll-surface ``surface_id`` forms), nothing stale."""
+    """AC-0: the bridge maps exactly the declared gates (both the paused-gate string
+    and the poll-surface ``surface_id`` forms), nothing stale. State pin — updated in
+    lockstep as each bespoke story adds its gate (43-4 added the two G4A forms)."""
     assert GATE_TO_CONTENT_TYPE == {
         "G2B": "per_slide_mode",
         "section_05_5_g2b_per_slide_mode": "per_slide_mode",
         "G2M": "variant_ab",
         "section_07b_g2m_per_slide_variant": "variant_ab",
+        # Story 43-4 — G4A voice-candidate selection (section_11 woken 11-gate).
+        "G4A": "voice_candidates",
+        "section_11_g4a_voice_selection": "voice_candidates",
     }

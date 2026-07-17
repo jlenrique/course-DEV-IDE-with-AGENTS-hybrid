@@ -663,6 +663,8 @@ Source: `_bmad-output/implementation-artifacts/static-validation-deck-motion-wor
 
 Report §8.4 (re-run the static check post-Epic-43 remediation, then a steered live proof of the full triple) is noted as the Epic-43-close verification step.
 
+- **`section-11-display-voice-candidates-model-binding-mismatch`** (MEDIUM, VERIFY — surfaced by Story 43-4 dev 2026-07-17) — `app/gates/section_11/poll_surface.py` binds `display_voice_candidates` / `load_voice_selection` to `G4Card` (`from app.models.decision_cards.g4 import G4Card`), but the card that actually flows at a paused G4A `11-gate` (per on-disk evidence `.../s8-tejal-p4-terminal-walk-.../decision-card-G4A.json`) is a **`G4ACard`** carrying `voice_candidates` + `pick_context[].kind=="voice-options"`. `G4Card` looks like the fidelity-**closeout** model (artifact_paths/outcome_summary/final_status, `extra="forbid"`) — no voice candidates. If confirmed, `display_voice_candidates` is bound to the wrong model for the G4A surface (would fail/mislead on a real G4A pause). 43-4's renderer correctly targets the real `G4ACard` body, so this is NOT an Epic-43 blocker. Trigger: verify whether `display_voice_candidates` is live-invoked on a G4A pause (vs legacy/dead); if live, re-bind to `G4ACard`. Fix only on its own merits (SPOC-goal guardrail), not to make a proofing run pass.
+
 ## Inventory Summary
 
 > **Refreshed 2026-05-07 at pre-Trial-3 cleanup S1 P0-IH (Mary AM-5 amendment).** Counts reflect ACTIVE entries only — 24 closed entries segregated to §"Closed Entries — Archived" at the bottom of this file (preserved verbatim for audit trail; no content deleted). Hot-start scan at session-WRAPUP / next-session-START should now skim ACTIVE entries only.
