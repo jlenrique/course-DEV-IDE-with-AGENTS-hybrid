@@ -1,0 +1,2238 @@
+{
+  "corpus_fingerprint": "f1d35112b63232343acee8e98f3436d5ae460e6cb64f8b1727edde02f9dea90d",
+  "model_id": "marcus",
+  "typed_components": [
+    {
+      "component_id": "src-001-c001",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Chapter 2 Knowledge Check Header",
+      "locator": "Chapter 2 Knowledge Check",
+      "excerpt": "# Chapter 2 Knowledge Check: The Macro Trends (5 Questions)",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c002",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q1 Structural Shifts",
+      "locator": "Q1",
+      "excerpt": "**Q1: Structural Shifts (Remembering)**\n- **Prompt:** Between 2012 and 2022, which major structural shift occurred regarding physician practice models?",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c003",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q2 Healthcare Economics",
+      "locator": "Q2",
+      "excerpt": "**Q2: Healthcare Economics (Understanding)**\n- **Prompt:** Approximately what percentage of total U.S. healthcare spending is attributed to administrative costs and waste?",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c004",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q3 Burnout Epidemic",
+      "locator": "Q3",
+      "excerpt": "**Q3: Burnout Epidemic (Analyzing)**\n- **Prompt:** While patient volume and acuity are high, the data shows that the *primary* driver of the physician burnout epidemic is:",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c005",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q4 Supply and Demand",
+      "locator": "Q4",
+      "excerpt": "**Q4: Supply and Demand (Evaluating)**\n- **Prompt:** Based on the \"Healthcare Supply and Demand\" concepts, why does simply hiring more physicians often fail to solve access issues in a poorly designed system?",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c006",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q5 The Modern Dilemma",
+      "locator": "Q5",
+      "excerpt": "**Q5: The Modern Dilemma (Applying)**\n- **Prompt:** You are an attending physician managing a complex workflow. You notice a recurring delay in patient transport.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-002-c001",
+      "parent_source_id": "src-002",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Chapter 3 Knowledge Check Header",
+      "locator": "Chapter 3 Knowledge Check",
+      "excerpt": "# Chapter 3 Knowledge Check: The Case for Change (5 Questions)",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-002-c002",
+      "parent_source_id": "src-002",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q1 The Knowledge Explosion",
+      "locator": "Q1",
+      "excerpt": "**Q1: The Knowledge Explosion (Remembering)**\n- **Prompt:** In 1950, medical knowledge doubled every 50 years. What is the currently projected doubling time?",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-002-c003",
+      "parent_source_id": "src-002",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q2 Technological Acceleration",
+      "locator": "Q2",
+      "excerpt": "**Q2: Technological Acceleration (Understanding)**\n- **Prompt:** While 66% of physicians report using some form of AI in practice, what is the critical gap identified in the macro trends?",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-002-c004",
+      "parent_source_id": "src-002",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q3 Healthcare Consumerism",
+      "locator": "Q3",
+      "excerpt": "**Q3: Healthcare Consumerism (Applying)**\n- **Prompt:** A hospital implements a \"Digital Front Door\" strategy. Which of the following initiatives best represents this concept?",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-002-c005",
+      "parent_source_id": "src-002",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q4 The Leadership Gap",
+      "locator": "Q4",
+      "excerpt": "**Q4: The Leadership Gap (Analyzing)**\n- **Prompt:** The data shows 67% of physicians want to pursue leadership roles, yet only 18% receive formal business training.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-002-c006",
+      "parent_source_id": "src-002",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Q5 The Trillion-Dollar Problem",
+      "locator": "Q5",
+      "excerpt": "**Q5: The Trillion-Dollar Problem (Evaluating)**\n- **Prompt:** Referring to Tyler Beauchamp\u2019s article, which category of care failure requires the most urgent intrapreneurial intervention to reduce macro-level waste?",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-003-c001",
+      "parent_source_id": "src-003",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Corpus \u2014 tejal-apc-c1-m1-p2-trends",
+      "locator": "Corpus \u2014 tejal-apc-c1-m1-p2-trends",
+      "excerpt": "**Source:** [Tejal C1M1 Outline](https://www.notion.so/Tejal-C1M1-Outline-75c02e8c7930832bb7e3819afe23ef9b)",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-003-c002",
+      "parent_source_id": "src-003",
+      "source_type": "quiz",
+      "other_type": null,
+      "label": "Layout",
+      "locator": "Corpus \u2014 tejal-apc-c1-m1-p2-trends > Layout",
+      "excerpt": "- `slides/` \u2014 **PRIMARY material**: the 5 narrated slides of Part 2 + the Part 2 Summary slide. Each file contains the Visual Format spec, the image-generation prompt (where present), the Narration / ",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-003-c003",
+      "parent_source_id": "src-003",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Trial-3 launch command (from repo root)",
+      "locator": "Corpus \u2014 tejal-apc-c1-m1-p2-trends > Trial-3 launch command (from repo root)",
+      "excerpt": "```powershell",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-003-c004",
+      "parent_source_id": "src-003",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Provenance for forensic audit",
+      "locator": "Corpus \u2014 tejal-apc-c1-m1-p2-trends > Provenance for forensic audit",
+      "excerpt": "- **Notion page URL:** https://www.notion.so/Tejal-C1M1-Outline-75c02e8c7930832bb7e3819afe23ef9b",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-004-c001",
+      "parent_source_id": "src-004",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "YouTube Video Embed",
+      "locator": "Video",
+      "excerpt": "Embed YouTube Video: [https://www.youtube.com/watch?v=GjRAHuHIOD0](https://www.youtube.com/watch?v=GjRAHuHIOD0)",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-004-c002",
+      "parent_source_id": "src-004",
+      "source_type": "assignment_instructions",
+      "other_type": null,
+      "label": "Viewing Prompt",
+      "locator": "Context Text",
+      "excerpt": "Before we look at the specific data driving healthcare's transformation, watch this brief breakdown of healthcare supply and demand. As you watch, consider: How do these macroeconomic principles manifest",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-005-c001",
+      "parent_source_id": "src-005",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Required Reading Hyperlink",
+      "locator": "Article Link",
+      "excerpt": "Embedded hyperlink. [https://medium.com/@TylerBeauchamp/healthcare-s-trillion-dollar-problem-90438f4164dc](https://medium.com/@TylerBeauchamp/healthcare-s-trillion-dollar-problem-90438f4164dc)",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-005-c002",
+      "parent_source_id": "src-005",
+      "source_type": "assignment_instructions",
+      "other_type": null,
+      "label": "Reading Instructions",
+      "locator": "Context Text",
+      "excerpt": "We just discussed the human cost of a poorly designed system. To dive deeper into the mechanics of this waste, read Tyler Beauchamp's breakdown of 'Healthcare's Trillion-Dollar Problem'. Pay special atte",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-006-c001",
+      "parent_source_id": "src-006",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 1: The Economic & Structural Reality",
+      "locator": "Slide 1",
+      "excerpt": "# **Slide 1: The Economic & Structural Reality**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-006-c002",
+      "parent_source_id": "src-006",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Slide 1 Visual Format",
+      "locator": "Slide 1 > Visual Format",
+      "excerpt": "**Visual Format:** Dual-Axis Data Visualization (Clean, high-contrast chart).",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-006-c003",
+      "parent_source_id": "src-006",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Slide 1 Image Generation Prompt",
+      "locator": "Slide 1 > Image Prompt",
+      "excerpt": "Prompt to Generate Image: > *A sleek, corporate data visualization slide on a dark navy background. The left side features an upward trending line graph labeled 'National Health Expenditures reaching",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": true,
+      "kind": null
+    },
+    {
+      "component_id": "src-006-c004",
+      "parent_source_id": "src-006",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 1 Narration",
+      "locator": "Slide 1 > Narration",
+      "excerpt": "To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-006-c005",
+      "parent_source_id": "src-006",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Slide 1 References",
+      "locator": "Slide 1 > References",
+      "excerpt": "\u2022 **References:** CMS NHE Fact Sheet; American Medical Association Practice Ownership Report.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-007-c001",
+      "parent_source_id": "src-007",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 2: The Human Cost: System Waste & Burnout",
+      "locator": "Slide 2",
+      "excerpt": "# **Slide 2: The Human Cost: System Waste & Burnout**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-007-c002",
+      "parent_source_id": "src-007",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Slide 2 Visual Format",
+      "locator": "Slide 2 > Visual Format",
+      "excerpt": "**Visual Format:** Infographic with two stark, contrasting statistics.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-007-c003",
+      "parent_source_id": "src-007",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 2 Narration",
+      "locator": "Slide 2 > Narration",
+      "excerpt": "These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of th",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-007-c004",
+      "parent_source_id": "src-007",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Slide 2 References",
+      "locator": "Slide 2 > References",
+      "excerpt": "**References:** Shrank WH et al., JAMA (2019); Medscape Physician Burnout Report (2024).",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-008-c001",
+      "parent_source_id": "src-008",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 3: The Knowledge Explosion & New Technologies",
+      "locator": "Slide 3",
+      "excerpt": "# **Slide 3: The Knowledge Explosion & New Technologies**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-008-c002",
+      "parent_source_id": "src-008",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Slide 3 Visual Format",
+      "locator": "Slide 3 > Visual Format",
+      "excerpt": "**Visual Format:** Conceptual Animation or Timeline Diagram.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-008-c003",
+      "parent_source_id": "src-008",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 3 Narration",
+      "locator": "Slide 3 > Narration",
+      "excerpt": "At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just 73 days. We",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-008-c004",
+      "parent_source_id": "src-008",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Slide 3 References",
+      "locator": "Slide 3 > References",
+      "excerpt": "**References:** Densen P. (2011); Isaranuwatchai W et al., JMIR (2018); AMA AI Report.",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-009-c001",
+      "parent_source_id": "src-009",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 4: The Consumer Shift & The Digital Front Door",
+      "locator": "Slide 4",
+      "excerpt": "# **Slide 4: The Consumer Shift & The Digital Front Door**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-009-c002",
+      "parent_source_id": "src-009",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Slide 4 Visual Format",
+      "locator": "Slide 4 > Visual Format",
+      "excerpt": "**Visual Format:** Infographic showing a patient journey (Smartphone to Provider).",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-009-c003",
+      "parent_source_id": "src-009",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 4 Narration",
+      "locator": "Slide 4 > Narration",
+      "excerpt": "Patients are no longer just passive recipients of care; they are consumers who expect the same transparency, digital access, and convenience they experience in every other industry. This requires org",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-010-c001",
+      "parent_source_id": "src-010",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 5: The Leadership Gap",
+      "locator": "Slide 5",
+      "excerpt": "# **Slide 5: The Leadership Gap**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-010-c002",
+      "parent_source_id": "src-010",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Slide 5 Visual Format",
+      "locator": "Slide 5 > Visual Format",
+      "excerpt": "**Visual Format:** Bar chart highlighting the gap between \"Interest in Leadership\" and \"Formal Training.\"",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-010-c003",
+      "parent_source_id": "src-010",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 5 Narration",
+      "locator": "Slide 5 > Narration",
+      "excerpt": "This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, onl",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-010-c004",
+      "parent_source_id": "src-010",
+      "source_type": "reference_citation",
+      "other_type": null,
+      "label": "Slide 5 References",
+      "locator": "Slide 5 > References",
+      "excerpt": "**References:** Jackson Physician Search (2023); Rotenstein LS et al., Academic Medicine (2021).",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-011-c001",
+      "parent_source_id": "src-011",
+      "source_type": "slide",
+      "other_type": null,
+      "label": "Slide 6: Part 2 Summary & Knowledge Check",
+      "locator": "Slide 6",
+      "excerpt": "# **Part 2 Summary & Knowledge Check**",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-011-c002",
+      "parent_source_id": "src-011",
+      "source_type": "motion_script_storyboard",
+      "other_type": null,
+      "label": "Slide 6 Visual Format",
+      "locator": "Slide 6 > Visual Format",
+      "excerpt": "**Visual Format:** Bulleted recap with a bold, concluding statement.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-011-c003",
+      "parent_source_id": "src-011",
+      "source_type": "other",
+      "other_type": {
+        "kind": "other",
+        "label": "Slide Summary Placeholder",
+        "provenance": "Empty summary field present in source; not one of the 10-type set"
+      },
+      "label": "Slide 6 Summary Text",
+      "locator": "Slide 6 > Summary Text",
+      "excerpt": "- **Summary Text:**",
+      "flagged_unconsumed": true,
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-011-c004",
+      "parent_source_id": "src-011",
+      "source_type": "narration",
+      "other_type": null,
+      "label": "Slide 6 Narration",
+      "locator": "Slide 6 > Narration",
+      "excerpt": "To summarize our case for change: Healthcare is shifting toward a system that is data-driven, consumer-responsive, and operationally incredibly complex. Incremental adaptation is no longer sufficient.",
+      "flagged_unconsumed": false,
+      "flagged_ungrounded": false,
+      "kind": null
+    }
+  ],
+  "provisional_los": [
+    {
+      "objective_id": "lo-g0-001",
+      "statement": "Recall the major structural shift between 2012 and 2022: a drastic decrease in independent private practice and a surge in physicians employed by large health systems.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-001",
+          "locator": "Q1",
+          "quoted_span": "A drastic decrease in independent private practice and a surge in physicians employed by large health systems."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-002",
+      "statement": "State the current projected doubling time of medical knowledge as 73 days.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-002",
+          "locator": "Q1",
+          "quoted_span": "73 days."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-003",
+      "statement": "Analyze your clinical workflows to describe how these macroeconomic principles manifest after watching the embedded video.",
+      "status": "provisional",
+      "confidence": "medium",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-004",
+          "locator": "Context Text",
+          "quoted_span": "As you watch, consider: How do these macroeconomic principles manifest in your daily clinical workflows?\u201d"
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-004",
+      "statement": "Identify and summarize the diagram categorizing the domains of care failure from the required reading.",
+      "status": "provisional",
+      "confidence": "medium",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-005",
+          "locator": "Context Text",
+          "quoted_span": "Pay special attention to the diagram categorizing the domains of care failure."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-005",
+      "statement": "Recall that U.S. healthcare spending is reaching $5.2 trillion in 2024 and describe its structural implications.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-006",
+          "locator": "Slide 1 > Narration",
+          "quoted_span": "U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-006",
+      "statement": "Report that roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-007",
+          "locator": "Slide 2 > Narration",
+          "quoted_span": "Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-007",
+      "statement": "Recognize that 66% of physicians use some form of AI in practice while formal training to oversee these tools remains severely limited.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-008",
+          "locator": "Slide 3 > Narration",
+          "quoted_span": "66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-008",
+      "statement": "Define the digital front door as creating a frictionless journey beyond a basic patient portal.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-009",
+          "locator": "Slide 4 > Narration",
+          "quoted_span": "A true digital front door doesn't just offer a basic patient portal; it creates a frictionless journey."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-009",
+      "statement": "Report that 67% of physicians want leadership roles but only 18% receive executive or business training.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-010",
+          "locator": "Slide 5 > Narration",
+          "quoted_span": "The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    },
+    {
+      "objective_id": "lo-g0-010",
+      "statement": "Summarize that healthcare is shifting toward a system that is data-driven, consumer-responsive, and operationally incredibly complex.",
+      "status": "provisional",
+      "confidence": "high",
+      "bloom_level": null,
+      "source_refs": [
+        {
+          "source_id": "src-011",
+          "locator": "Slide 6 > Narration",
+          "quoted_span": "Healthcare is shifting toward a system that is data-driven, consumer-responsive, and operationally incredibly complex."
+        }
+      ],
+      "adequacy": null,
+      "origin": "g0",
+      "recommendation": "keep"
+    }
+  ],
+  "traversal_roots": [
+    {
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "kind": "corpus_dir"
+    }
+  ],
+  "enumeration_provenance": [
+    {
+      "source_id": "src-001",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "assessments/chapter-2-knowledge-check.md"
+    },
+    {
+      "source_id": "src-002",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "assessments/chapter-3-knowledge-check.md"
+    },
+    {
+      "source_id": "src-003",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "README.md"
+    },
+    {
+      "source_id": "src-004",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "references/intro-video-youtube.md"
+    },
+    {
+      "source_id": "src-005",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "references/required-reading-beauchamp.md"
+    },
+    {
+      "source_id": "src-006",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "slides/slide-1-the-economic-structural-reality.md"
+    },
+    {
+      "source_id": "src-007",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "slides/slide-2-the-human-cost-system-waste-burnout.md"
+    },
+    {
+      "source_id": "src-008",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "slides/slide-3-the-knowledge-explosion-new-technologies.md"
+    },
+    {
+      "source_id": "src-009",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "slides/slide-4-the-consumer-shift-the-digital-front-door.md"
+    },
+    {
+      "source_id": "src-010",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "slides/slide-5-the-leadership-gap.md"
+    },
+    {
+      "source_id": "src-011",
+      "root_id": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1-m1-p2-trends",
+      "connector": "local_file",
+      "locator": "slides/slide-6-part-2-summary.md"
+    }
+  ],
+  "reconcile": {
+    "n_files_in": 11,
+    "n_files_covered": 11,
+    "n_files_ignored": 0,
+    "n_components": 44,
+    "n_flagged": 22,
+    "n_ungrounded": 1
+  },
+  "dissents": [
+    {
+      "against": "src-002-c005",
+      "marcus_position": "typed src-002-c005 (Q4) as quiz; a defensible alternative reading is slide",
+      "operator_position": "",
+      "disposition": "upheld"
+    }
+  ],
+  "citation_resolutions": [
+    {
+      "component_id": "src-004-c001",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-005-c001",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-006-c005",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-007-c004",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-008-c004",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    },
+    {
+      "component_id": "src-010-c004",
+      "doi": null,
+      "resolution_status": "failed",
+      "resolved_ref": null,
+      "reason": "no_doi_in_excerpt",
+      "resolver_provider": "scite",
+      "normalization_version": "tex-norm-v1"
+    }
+  ],
+  "pedagogy_annotations": [
+    {
+      "component_id": "src-001-c001",
+      "lo_refs": [
+        "lo-g0-001",
+        "lo-g0-002",
+        "lo-g0-005",
+        "lo-g0-006",
+        "lo-g0-010"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "assessment",
+      "teaches_after": [],
+      "prerequisite_concepts": [
+        "US healthcare macro trends"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Chapter-level knowledge check assessing comprehension of key trends and figures (lo-g0-001,002,005,006,010). Understand level fits recall-plus-context items.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-001-c002",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001"
+      ],
+      "prerequisite_concepts": [
+        "Practice ownership vs employment"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Checks recall of the major 2012\u20132022 structural shift (lo-g0-001). Memory-level fact retrieval.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-001-c003",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002"
+      ],
+      "prerequisite_concepts": [
+        "Medical knowledge growth rates"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Assesses exact doubling time of medical knowledge (73 days) per lo-g0-002. Pure recall.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-001-c004",
+      "lo_refs": [
+        "lo-g0-005"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003"
+      ],
+      "prerequisite_concepts": [
+        "National health expenditure"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Verifies recall of $5.2T 2024 spending and awareness of structural implications (lo-g0-005). Primarily a fact check.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-001-c005",
+      "lo_refs": [
+        "lo-g0-006"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004"
+      ],
+      "prerequisite_concepts": [
+        "Administrative waste share"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Tests the statistic that ~25% of spending is admin/waste (lo-g0-006). Recall-level.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-001-c006",
+      "lo_refs": [
+        "lo-g0-010"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005"
+      ],
+      "prerequisite_concepts": [
+        "Operating model shifts"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Checks understanding that healthcare is becoming data-driven, consumer-responsive, and complex (lo-g0-010). Conceptual comprehension.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-002-c001",
+      "lo_refs": [
+        "lo-g0-007",
+        "lo-g0-008",
+        "lo-g0-009",
+        "lo-g0-004",
+        "lo-g0-003"
+      ],
+      "bloom": "analyze",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006"
+      ],
+      "prerequisite_concepts": [
+        "AI in care",
+        "Access/DFD",
+        "Physician leadership",
+        "Care failure domains",
+        "Workflow analysis"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Aggregates items on AI use, digital front door, leadership training, care-failure diagram, and workflow analysis (lo-g0-007/8/9/4/3). Includes analytic item(s).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-002-c002",
+      "lo_refs": [
+        "lo-g0-007"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001"
+      ],
+      "prerequisite_concepts": [
+        "AI adoption & oversight"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Assesses recognition that 66% use AI and training is limited (lo-g0-007). Recall.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-002-c003",
+      "lo_refs": [
+        "lo-g0-008"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002"
+      ],
+      "prerequisite_concepts": [
+        "Patient access channels"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Tests understanding of the digital front door definition beyond portals (lo-g0-008).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-002-c004",
+      "lo_refs": [
+        "lo-g0-009"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003"
+      ],
+      "prerequisite_concepts": [
+        "Leadership training gap"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Checks recall that 67% want leadership roles but only 18% receive exec/business training (lo-g0-009).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-002-c005",
+      "lo_refs": [
+        "lo-g0-004"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004"
+      ],
+      "prerequisite_concepts": [
+        "Care failure taxonomy"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Assesses ability to identify/summarize the care-failure domains diagram from reading (lo-g0-004).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-002-c006",
+      "lo_refs": [
+        "lo-g0-003"
+      ],
+      "bloom": "analyze",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005"
+      ],
+      "prerequisite_concepts": [
+        "Workflow mapping"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Evaluates analysis of clinical workflows reflecting macroeconomic principles after video (lo-g0-003).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-003-c001",
+      "lo_refs": [
+        "lo-g0-008"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006"
+      ],
+      "prerequisite_concepts": [
+        "Patient digital engagement"
+      ],
+      "assessment_link": "src-002-c003",
+      "teachable": true,
+      "rationale": "Defines the digital front door as a frictionless journey beyond portals (lo-g0-008). Prepares learners for related assessment.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-003-c002",
+      "lo_refs": [
+        "lo-g0-008"
+      ],
+      "bloom": "apply",
+      "pedagogical_role": "assessment",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001"
+      ],
+      "prerequisite_concepts": [
+        "Omnichannel access design"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Applied check on digital front door concepts (lo-g0-008) using layout-focused prompts.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-003-c003",
+      "lo_refs": [
+        "lo-g0-009"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002"
+      ],
+      "prerequisite_concepts": [
+        "Physician leadership pathways"
+      ],
+      "assessment_link": "src-002-c004",
+      "teachable": true,
+      "rationale": "Storyboard example contextualizes leadership interest vs training gap (lo-g0-009) to support comprehension before assessment.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-003-c004",
+      "lo_refs": [],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003"
+      ],
+      "prerequisite_concepts": [
+        "Source credibility"
+      ],
+      "assessment_link": null,
+      "teachable": true,
+      "rationale": "Documents provenance for audit; supports recall of sources but does not teach a listed objective.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-004-c002",
+      "lo_refs": [
+        "lo-g0-003"
+      ],
+      "bloom": "analyze",
+      "pedagogical_role": "practice",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004"
+      ],
+      "prerequisite_concepts": [
+        "Macroeconomic principles",
+        "Workflow mapping"
+      ],
+      "assessment_link": "src-002-c006",
+      "teachable": true,
+      "rationale": "Guided practice analyzing one\u2019s workflows post-video (lo-g0-003), preparing for the analytic quiz item.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-005-c002",
+      "lo_refs": [
+        "lo-g0-004"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "practice",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002"
+      ],
+      "prerequisite_concepts": [
+        "Care failure taxonomy"
+      ],
+      "assessment_link": "src-002-c005",
+      "teachable": true,
+      "rationale": "Practice to identify and summarize the care-failure domains diagram (lo-g0-004) ahead of assessment.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-006-c001",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002"
+      ],
+      "prerequisite_concepts": [
+        "Physician employment trends"
+      ],
+      "assessment_link": "src-001-c002",
+      "teachable": true,
+      "rationale": "Defines the 2012\u20132022 shift toward system employment vs private practice (lo-g0-001) to build conceptual grasp before quiz.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-006-c002",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001"
+      ],
+      "prerequisite_concepts": [
+        "Physician employment trends"
+      ],
+      "assessment_link": "src-001-c002",
+      "teachable": true,
+      "rationale": "Visual storyboard exemplifies the employment shift (lo-g0-001) to reinforce understanding for assessment.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-006-c003",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002"
+      ],
+      "prerequisite_concepts": [
+        "Physician employment trends"
+      ],
+      "assessment_link": "src-001-c002",
+      "teachable": false,
+      "rationale": "Image prompt supports comprehension of independent vs employed practice trends (lo-g0-001).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-006-c004",
+      "lo_refs": [
+        "lo-g0-001"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003"
+      ],
+      "prerequisite_concepts": [
+        "Physician employment trends"
+      ],
+      "assessment_link": "src-001-c002",
+      "teachable": true,
+      "rationale": "Narration highlights key facts of the structural shift (lo-g0-001) for recall.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-007-c001",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004"
+      ],
+      "prerequisite_concepts": [
+        "Medical knowledge growth rates"
+      ],
+      "assessment_link": "src-001-c003",
+      "teachable": true,
+      "rationale": "States the 73-day doubling time of medical knowledge (lo-g0-002) for direct recall.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-007-c002",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001"
+      ],
+      "prerequisite_concepts": [
+        "Medical knowledge growth rates"
+      ],
+      "assessment_link": "src-001-c003",
+      "teachable": true,
+      "rationale": "Visual format illustrates implications of rapid knowledge growth (lo-g0-002) to deepen understanding.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-007-c003",
+      "lo_refs": [
+        "lo-g0-002"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002"
+      ],
+      "prerequisite_concepts": [
+        "Medical knowledge growth rates"
+      ],
+      "assessment_link": "src-001-c003",
+      "teachable": true,
+      "rationale": "Narration reinforces the exact doubling-time figure for recall (lo-g0-002).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-008-c001",
+      "lo_refs": [
+        "lo-g0-005"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003"
+      ],
+      "prerequisite_concepts": [
+        "National health expenditure"
+      ],
+      "assessment_link": "src-001-c004",
+      "teachable": true,
+      "rationale": "Introduces $5.2T 2024 spending and structural context (lo-g0-005) for recall.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-008-c002",
+      "lo_refs": [
+        "lo-g0-005"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001"
+      ],
+      "prerequisite_concepts": [
+        "National health expenditure"
+      ],
+      "assessment_link": "src-001-c004",
+      "teachable": true,
+      "rationale": "Visuals/examples connect spending levels to system structure (lo-g0-005).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-008-c003",
+      "lo_refs": [
+        "lo-g0-005"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002"
+      ],
+      "prerequisite_concepts": [
+        "National health expenditure"
+      ],
+      "assessment_link": "src-001-c004",
+      "teachable": true,
+      "rationale": "Narration focuses on the key spending figure and implications for recall (lo-g0-005).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-009-c001",
+      "lo_refs": [
+        "lo-g0-006"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003"
+      ],
+      "prerequisite_concepts": [
+        "Administrative waste share"
+      ],
+      "assessment_link": "src-001-c005",
+      "teachable": true,
+      "rationale": "Defines that ~25% of spending is admin/waste (lo-g0-006) for direct recall.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-009-c002",
+      "lo_refs": [
+        "lo-g0-006"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001"
+      ],
+      "prerequisite_concepts": [
+        "Administrative processes"
+      ],
+      "assessment_link": "src-001-c005",
+      "teachable": true,
+      "rationale": "Visuals exemplify how admin waste manifests operationally (lo-g0-006).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-009-c003",
+      "lo_refs": [
+        "lo-g0-006"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001",
+        "src-009-c002"
+      ],
+      "prerequisite_concepts": [
+        "Administrative waste share"
+      ],
+      "assessment_link": "src-001-c005",
+      "teachable": true,
+      "rationale": "Narration reinforces the 25% figure for recall (lo-g0-006).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-010-c001",
+      "lo_refs": [
+        "lo-g0-007"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001",
+        "src-009-c002",
+        "src-009-c003"
+      ],
+      "prerequisite_concepts": [
+        "AI adoption & oversight"
+      ],
+      "assessment_link": "src-002-c002",
+      "teachable": true,
+      "rationale": "States that 66% of physicians use AI and training is limited (lo-g0-007) for recognition.",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-010-c002",
+      "lo_refs": [
+        "lo-g0-007"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001",
+        "src-009-c002",
+        "src-009-c003",
+        "src-010-c001"
+      ],
+      "prerequisite_concepts": [
+        "AI use cases"
+      ],
+      "assessment_link": "src-002-c002",
+      "teachable": true,
+      "rationale": "Visual examples of AI-in-practice support comprehension of adoption vs training gap (lo-g0-007).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-010-c003",
+      "lo_refs": [
+        "lo-g0-007"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001",
+        "src-009-c002",
+        "src-009-c003",
+        "src-010-c001",
+        "src-010-c002"
+      ],
+      "prerequisite_concepts": [
+        "AI adoption & oversight"
+      ],
+      "assessment_link": "src-002-c002",
+      "teachable": true,
+      "rationale": "Narration highlights adoption and training stats for recall (lo-g0-007).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-011-c001",
+      "lo_refs": [
+        "lo-g0-010"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001",
+        "src-009-c002",
+        "src-009-c003",
+        "src-010-c001",
+        "src-010-c002",
+        "src-010-c003"
+      ],
+      "prerequisite_concepts": [
+        "Operating model shifts"
+      ],
+      "assessment_link": "src-001-c006",
+      "teachable": true,
+      "rationale": "Defines the shift toward data-driven, consumer-responsive, complex operations (lo-g0-010).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-011-c002",
+      "lo_refs": [
+        "lo-g0-010"
+      ],
+      "bloom": "understand",
+      "pedagogical_role": "worked_example",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001",
+        "src-009-c002",
+        "src-009-c003",
+        "src-010-c001",
+        "src-010-c002",
+        "src-010-c003",
+        "src-011-c001"
+      ],
+      "prerequisite_concepts": [
+        "Data-driven operations"
+      ],
+      "assessment_link": "src-001-c006",
+      "teachable": true,
+      "rationale": "Visual storyboard exemplifies data-driven, consumer-focused operations (lo-g0-010).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    },
+    {
+      "component_id": "src-011-c004",
+      "lo_refs": [
+        "lo-g0-010"
+      ],
+      "bloom": "remember",
+      "pedagogical_role": "definition",
+      "teaches_after": [
+        "src-001-c001",
+        "src-001-c002",
+        "src-001-c003",
+        "src-001-c004",
+        "src-001-c005",
+        "src-001-c006",
+        "src-002-c001",
+        "src-002-c002",
+        "src-002-c003",
+        "src-002-c004",
+        "src-002-c005",
+        "src-002-c006",
+        "src-003-c001",
+        "src-003-c002",
+        "src-003-c003",
+        "src-003-c004",
+        "src-004-c002",
+        "src-005-c002",
+        "src-006-c001",
+        "src-006-c002",
+        "src-006-c003",
+        "src-006-c004",
+        "src-007-c001",
+        "src-007-c002",
+        "src-007-c003",
+        "src-008-c001",
+        "src-008-c002",
+        "src-008-c003",
+        "src-009-c001",
+        "src-009-c002",
+        "src-009-c003",
+        "src-010-c001",
+        "src-010-c002",
+        "src-010-c003",
+        "src-011-c001",
+        "src-011-c002"
+      ],
+      "prerequisite_concepts": [
+        "Operating model shifts"
+      ],
+      "assessment_link": "src-001-c006",
+      "teachable": true,
+      "rationale": "Narration reinforces the system-shift summary for recall (lo-g0-010).",
+      "transform_model": "marcus",
+      "transform_version": "ped-v1",
+      "generated_at": "2026-07-15T03:38:47.495876Z"
+    }
+  ],
+  "enrichment_mode": "live"
+}

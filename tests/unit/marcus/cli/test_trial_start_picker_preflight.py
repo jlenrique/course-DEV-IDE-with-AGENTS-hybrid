@@ -263,7 +263,15 @@ def test_resume_and_recover_never_prompt(
     monkeypatch.setattr(
         trial_module, "recover_production_trial", lambda **_k: _fake_walk_envelope()
     )
-    (tmp_path / str(TRIAL_ID)).mkdir(parents=True)
+    run_dir = tmp_path / str(TRIAL_ID)
+    run_dir.mkdir(parents=True)
+    # Seed the persisted pause records with an offline runner so the story-41-1
+    # live-env preflight short-circuits (offline harness stays keyless) — keeps
+    # this test hermetic on a clean checkout / CI with no .env present. Matches
+    # the pause-record idiom in test_trial_legacy_workbook_migration_36_4.py.
+    _offline_runner = json.dumps({"runner": {"allow_offline_cost_report": True}})
+    (run_dir / "checkpoint.json").write_text(_offline_runner, encoding="utf-8")
+    (run_dir / "error-pause.json").write_text(_offline_runner, encoding="utf-8")
 
     from app.models.state.operator_verdict import OperatorVerdict
 

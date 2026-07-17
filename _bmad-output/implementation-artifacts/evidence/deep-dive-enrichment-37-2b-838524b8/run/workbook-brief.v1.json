@@ -1,0 +1,952 @@
+{
+  "payload": {
+    "schema_version": "workbook-brief.v1",
+    "node_id": "07W.1",
+    "specialist_id": "workbook_brief",
+    "pre_work": {
+      "scene": {
+        "status": "authored",
+        "text": "You, the attending physician, are managing a complex workflow and you notice a recurring delay in patient transport. Requests sit in the queue and the patient stays in place as the workflow waits for pickup.",
+        "source_refs": [
+          "assessments/chapter-2-knowledge-check.md#Q5"
+        ],
+        "known_losses": [],
+        "marker": null,
+        "lesson_type": "fresh_pain",
+        "archetype": "external_friction"
+      },
+      "friction_scale": {
+        "duration_copy": "Take about 20 seconds.",
+        "rating_prompt": "Rate this friction from 0 to 10.",
+        "low_anchor": "0 — present, but not getting in the way.",
+        "high_anchor": "10 — repeatedly blocks the work.",
+        "locate_prompt": "Locate where it shows up.",
+        "honest_line_prompt": "Write one honest line.",
+        "review_hook": "Keep this mark and line for review after the presentation."
+      },
+      "promise": {
+        "status": "authored",
+        "vows": [
+          {
+            "objective_id": "lo-g0-001",
+            "text": "Recall the major structural shift between 2012 and 2022: a drastic decrease in independent private practice and a surge in physicians employed by large health systems."
+          },
+          {
+            "objective_id": "lo-g0-002",
+            "text": "State the current projected doubling time of medical knowledge as 73 days."
+          },
+          {
+            "objective_id": "lo-g0-003",
+            "text": "Analyze your clinical workflows to describe how these macroeconomic principles manifest after watching the embedded video."
+          },
+          {
+            "objective_id": "lo-g0-004",
+            "text": "Identify and summarize the diagram categorizing the domains of care failure from the required reading."
+          },
+          {
+            "objective_id": "lo-g0-005",
+            "text": "Recall that U.S. healthcare spending is reaching $5.2 trillion in 2024 and describe its structural implications."
+          },
+          {
+            "objective_id": "lo-g0-006",
+            "text": "Report that roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste."
+          },
+          {
+            "objective_id": "lo-g0-007",
+            "text": "Recognize that 66% of physicians use some form of AI in practice while formal training to oversee these tools remains severely limited."
+          },
+          {
+            "objective_id": "lo-g0-008",
+            "text": "Define the digital front door as creating a frictionless journey beyond a basic patient portal."
+          },
+          {
+            "objective_id": "lo-g0-009",
+            "text": "Report that 67% of physicians want leadership roles but only 18% receive executive or business training."
+          },
+          {
+            "objective_id": "lo-g0-010",
+            "text": "Summarize that healthcare is shifting toward a system that is data-driven, consumer-responsive, and operationally incredibly complex."
+          }
+        ],
+        "known_losses": [],
+        "marker": null
+      },
+      "provenance": {
+        "source_refs": [
+          "assessments/chapter-2-knowledge-check.md#Q5"
+        ],
+        "known_losses": []
+      },
+      "beat_order": [
+        "scene",
+        "friction_scale",
+        "promise"
+      ]
+    },
+    "selected_seed_id": "part2-q5",
+    "selected_seed_ref": "assessments/chapter-2-knowledge-check.md#Q5",
+    "lesson_type": "fresh_pain",
+    "archetype": "external_friction",
+    "promise_authority_refs": [
+      "ratified-los.json#ratified_los/0",
+      "ratified-los.json#ratified_los/1",
+      "ratified-los.json#ratified_los/2",
+      "ratified-los.json#ratified_los/3",
+      "ratified-los.json#ratified_los/4",
+      "ratified-los.json#ratified_los/5",
+      "ratified-los.json#ratified_los/6",
+      "ratified-los.json#ratified_los/7",
+      "ratified-los.json#ratified_los/8",
+      "ratified-los.json#ratified_los/9"
+    ],
+    "encounter_mode": "recorded",
+    "writer_execution_mode": "live",
+    "scene_receipt": {
+      "classification": {
+        "status": "decisive",
+        "lesson_type": "fresh_pain",
+        "archetype": "external_friction",
+        "confidence": 1.0,
+        "evidence_refs": [
+          "assessments/chapter-2-knowledge-check.md#Q5"
+        ]
+      },
+      "gate": {
+        "failures": []
+      },
+      "extraction_losses": [],
+      "operator_warnings": [
+        "actual_payoff_sufficiency_operator_check",
+        "semantic_faithfulness_operator_check",
+        "scene_invented_terms_operator_check"
+      ],
+      "introduced_terms": [
+        "pickup",
+        "place",
+        "queue",
+        "requests",
+        "sit",
+        "stays",
+        "waits"
+      ]
+    },
+    "promise_receipt": {
+      "gate": {
+        "failures": []
+      },
+      "authority_refs": [
+        "ratified-los.json#ratified_los/0",
+        "ratified-los.json#ratified_los/1",
+        "ratified-los.json#ratified_los/2",
+        "ratified-los.json#ratified_los/3",
+        "ratified-los.json#ratified_los/4",
+        "ratified-los.json#ratified_los/5",
+        "ratified-los.json#ratified_los/6",
+        "ratified-los.json#ratified_los/7",
+        "ratified-los.json#ratified_los/8",
+        "ratified-los.json#ratified_los/9"
+      ],
+      "operator_warnings": [
+        "promise_source_adequacy_operator_check",
+        "promise_no_spoiler_operator_check",
+        "promise_lo_vs_vow_operator_check",
+        "promise_pertinent_ability_operator_check",
+        "promise_half_rhyme_operator_check",
+        "promise_mastery_overclaim_operator_check"
+      ]
+    },
+    "writer_receipts": [
+      {
+        "writer": "scene",
+        "mode": "live",
+        "calls": 1,
+        "model": "gpt-5",
+        "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+        "request_id": null,
+        "latency_ms": 26089.162099990062,
+        "input_tokens": 632,
+        "output_tokens": 2598,
+        "cost_usd": 0.02677,
+        "cost_unavailable_reason": null
+      },
+      {
+        "writer": "promise",
+        "mode": "live",
+        "calls": 1,
+        "model": "gpt-5",
+        "model_config_digest": "sha256:80165d5ce280209136252c5f1aa8f6b5d4d2ee7f3570d67bf78d57fdb322f302",
+        "request_id": null,
+        "latency_ms": 12418.20660000667,
+        "input_tokens": 1267,
+        "output_tokens": 1773,
+        "cost_usd": 0.019313749999999998,
+        "cost_unavailable_reason": null
+      }
+    ],
+    "warnings": [
+      "actual_payoff_sufficiency_operator_check",
+      "semantic_faithfulness_operator_check",
+      "scene_invented_terms_operator_check",
+      "promise_source_adequacy_operator_check",
+      "promise_no_spoiler_operator_check",
+      "promise_lo_vs_vow_operator_check",
+      "promise_pertinent_ability_operator_check",
+      "promise_half_rhyme_operator_check",
+      "promise_mastery_overclaim_operator_check"
+    ],
+    "known_losses": [],
+    "deep_dive_skeleton": {
+      "status": "authored",
+      "sections": [
+        {
+          "ability_id": "lo-g0-001",
+          "prose": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare **spending** continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:01",
+              "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare **spending** continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n",
+              "source_claim_refs": [
+                "claim:delta:slide-1"
+              ],
+              "source_span_refs": [
+                "delta:slide-1"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-002",
+          "prose": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just **73 days**. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:02",
+              "text": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just **73 days**. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n",
+              "source_claim_refs": [
+                "claim:delta:slide-3"
+              ],
+              "source_span_refs": [
+                "delta:slide-3"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-003",
+          "prose": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about **25%** of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes.",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:03",
+              "text": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about **25%** of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes.",
+              "source_claim_refs": [
+                "claim:vo:seg-02"
+              ],
+              "source_span_refs": [
+                "vo:seg-02"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-004",
+          "prose": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an **adaptive learning infrastructure**—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface. Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping **governance**, and surfacing risks before they reach patients.",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:04",
+              "text": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an **adaptive learning infrastructure**—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface.",
+              "source_claim_refs": [
+                "claim:vo:seg-04"
+              ],
+              "source_span_refs": [
+                "vo:seg-04"
+              ]
+            },
+            {
+              "skeleton_claim_id": "sk:05",
+              "text": "Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping **governance**, and surfacing risks before they reach patients.",
+              "source_claim_refs": [
+                "claim:vo:seg-05"
+              ],
+              "source_span_refs": [
+                "vo:seg-05"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-005",
+          "prose": "The starting point is the sheer scale of spending: **$5.2 trillion** refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it.",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:06",
+              "text": "The starting point is the sheer scale of spending: **$5.2 trillion** refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it.",
+              "source_claim_refs": [
+                "claim:vo:seg-01"
+              ],
+              "source_span_refs": [
+                "vo:seg-01"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-006",
+          "prose": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of **burnout**. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:07",
+              "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of **burnout**. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n",
+              "source_claim_refs": [
+                "claim:delta:slide-2"
+              ],
+              "source_span_refs": [
+                "delta:slide-2"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-007",
+          "prose": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. **AI** isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address.",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:08",
+              "text": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. **AI** isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address.",
+              "source_claim_refs": [
+                "claim:vo:seg-03"
+              ],
+              "source_span_refs": [
+                "vo:seg-03"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-008",
+          "prose": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true **digital front door** is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it.",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:09",
+              "text": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true **digital front door** is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it.",
+              "source_claim_refs": [
+                "claim:vo:seg-06"
+              ],
+              "source_span_refs": [
+                "vo:seg-06"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-009",
+          "prose": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: **67%** of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale.",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:10",
+              "text": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: **67%** of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale.",
+              "source_claim_refs": [
+                "claim:vo:seg-07"
+              ],
+              "source_span_refs": [
+                "vo:seg-07"
+              ]
+            }
+          ]
+        },
+        {
+          "ability_id": "lo-g0-010",
+          "prose": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. **Incremental** tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires.",
+          "claims": [
+            {
+              "skeleton_claim_id": "sk:11",
+              "text": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. **Incremental** tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires.",
+              "source_claim_refs": [
+                "claim:vo:seg-08"
+              ],
+              "source_span_refs": [
+                "vo:seg-08"
+              ]
+            }
+          ]
+        }
+      ],
+      "bold_terms": [
+        {
+          "term": "spending"
+        },
+        {
+          "term": "73 days"
+        },
+        {
+          "term": "25%"
+        },
+        {
+          "term": "adaptive learning infrastructure"
+        },
+        {
+          "term": "governance"
+        },
+        {
+          "term": "$5.2 trillion"
+        },
+        {
+          "term": "burnout"
+        },
+        {
+          "term": "AI"
+        },
+        {
+          "term": "digital front door"
+        },
+        {
+          "term": "67%"
+        },
+        {
+          "term": "Incremental"
+        }
+      ],
+      "known_losses": [],
+      "marker": null,
+      "authority": {
+        "lesson_ref": "exports/segment-manifest-storyboard-b.yaml",
+        "source_spans": [
+          {
+            "span_id": "vo:seg-01",
+            "text": "The starting point is the sheer scale of spending: $5.2 trillion refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-01/narration_text"
+          },
+          {
+            "span_id": "vo:seg-02",
+            "text": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about 25% of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-02/narration_text"
+          },
+          {
+            "span_id": "vo:seg-03",
+            "text": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. AI isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-03/narration_text"
+          },
+          {
+            "span_id": "vo:seg-04",
+            "text": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an adaptive learning infrastructure—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-04/narration_text"
+          },
+          {
+            "span_id": "vo:seg-05",
+            "text": "Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping governance, and surfacing risks before they reach patients.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-05/narration_text"
+          },
+          {
+            "span_id": "vo:seg-06",
+            "text": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true digital front door is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-06/narration_text"
+          },
+          {
+            "span_id": "vo:seg-07",
+            "text": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: 67% of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-07/narration_text"
+          },
+          {
+            "span_id": "vo:seg-08",
+            "text": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. Incremental tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires.",
+            "source_ref": "exports/segment-manifest-storyboard-b.yaml#segments/seg-08/narration_text"
+          },
+          {
+            "span_id": "delta:slide-1",
+            "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n",
+            "source_ref": "slides/slide-1-the-economic-structural-reality.md#Narration (Speaker Notes)"
+          },
+          {
+            "span_id": "delta:slide-2",
+            "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n",
+            "source_ref": "slides/slide-2-the-human-cost-system-waste-burnout.md#Narration (Speaker Notes)"
+          },
+          {
+            "span_id": "delta:slide-3",
+            "text": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just 73 days. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n",
+            "source_ref": "slides/slide-3-the-knowledge-explosion-new-technologies.md#Narration (Speaker Notes)"
+          },
+          {
+            "span_id": "delta:slide-4",
+            "text": "\"Patients are no longer just passive recipients of care; they are consumers who expect the same transparency, digital access, and convenience they experience in every other industry. This requires organizations to rethink access through infrastructure like the 'Digital Front Door.' A true digital front door doesn't just offer a basic patient portal; it creates a frictionless journey. For example, Jefferson Health has moved beyond basic telehealth to create a comprehensive digital ecosystem, leveraging AI-driven triage to allow patients to navigate their care journey seamlessly. In a consumer-driven environment, intentional system design is what separates a frustrating patient experience from a world-class one.\"",
+            "source_ref": "slides/slide-4-the-consumer-shift-the-digital-front-door.md#Narration (Speaker Notes)"
+          },
+          {
+            "span_id": "delta:slide-5",
+            "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that management and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely—they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\"\n",
+            "source_ref": "slides/slide-5-the-leadership-gap.md#Narration (Speaker Notes)"
+          },
+          {
+            "span_id": "delta:slide-6",
+            "text": "\"To summarize our case for change: Healthcare is shifting toward a system that is data-driven, consumer-responsive, and operationally incredibly complex. Incremental adaptation is no longer sufficient. Without deliberate leadership, technological advancement will not translate into improved patient outcomes or physician well-being. You are uniquely positioned to lead this change because you already navigate uncertainty and solve complex problems in real-time. It is time to translate your clinical expertise into tools for shaping the future of care.\"",
+            "source_ref": "slides/slide-6-part-2-summary.md#Narration (Speaker Notes)"
+          }
+        ],
+        "source_claims": [
+          {
+            "claim_id": "claim:vo:seg-01",
+            "text": "The starting point is the sheer scale of spending: $5.2 trillion refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it.",
+            "source_span_refs": [
+              "vo:seg-01"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:vo:seg-02",
+            "text": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about 25% of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes.",
+            "source_span_refs": [
+              "vo:seg-02"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:vo:seg-03",
+            "text": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. AI isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address.",
+            "source_span_refs": [
+              "vo:seg-03"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:vo:seg-04",
+            "text": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an adaptive learning infrastructure—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface.",
+            "source_span_refs": [
+              "vo:seg-04"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:vo:seg-05",
+            "text": "Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping governance, and surfacing risks before they reach patients.",
+            "source_span_refs": [
+              "vo:seg-05"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:vo:seg-06",
+            "text": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true digital front door is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it.",
+            "source_span_refs": [
+              "vo:seg-06"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:vo:seg-07",
+            "text": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: 67% of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale.",
+            "source_span_refs": [
+              "vo:seg-07"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:vo:seg-08",
+            "text": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. Incremental tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires.",
+            "source_span_refs": [
+              "vo:seg-08"
+            ],
+            "role": "vo"
+          },
+          {
+            "claim_id": "claim:delta:slide-1",
+            "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare spending continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n",
+            "source_span_refs": [
+              "delta:slide-1"
+            ],
+            "role": "source_supported_delta"
+          },
+          {
+            "claim_id": "claim:delta:slide-2",
+            "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of burnout. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n",
+            "source_span_refs": [
+              "delta:slide-2"
+            ],
+            "role": "source_supported_delta"
+          },
+          {
+            "claim_id": "claim:delta:slide-3",
+            "text": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just 73 days. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n",
+            "source_span_refs": [
+              "delta:slide-3"
+            ],
+            "role": "source_supported_delta"
+          },
+          {
+            "claim_id": "claim:delta:slide-4",
+            "text": "\"Patients are no longer just passive recipients of care; they are consumers who expect the same transparency, digital access, and convenience they experience in every other industry. This requires organizations to rethink access through infrastructure like the 'Digital Front Door.' A true digital front door doesn't just offer a basic patient portal; it creates a frictionless journey. For example, Jefferson Health has moved beyond basic telehealth to create a comprehensive digital ecosystem, leveraging AI-driven triage to allow patients to navigate their care journey seamlessly. In a consumer-driven environment, intentional system design is what separates a frustrating patient experience from a world-class one.\"",
+            "source_span_refs": [
+              "delta:slide-4"
+            ],
+            "role": "source_supported_delta"
+          },
+          {
+            "claim_id": "claim:delta:slide-5",
+            "text": "\"This brings us to the ultimate gap, and the reason you are here. The data shows that 67% of practicing physicians want to pursue leadership roles to have a voice in organizational decisions. Yet, only 18% receive any executive or business training, and very few organizations offer formal leadership development. The COVID-19 pandemic clearly demonstrated that management and systems-thinking skills, often viewed as 'soft,' are actually critical to health and well-being. Academic Health Centers face this acutely—they have the clinical expertise but often lack the cultural incentives and interdisciplinary integration to translate ideas into scalable improvements. We need individuals who can bridge clinical practice with business and technology strategy.\"\n",
+            "source_span_refs": [
+              "delta:slide-5"
+            ],
+            "role": "source_supported_delta"
+          },
+          {
+            "claim_id": "claim:delta:slide-6",
+            "text": "\"To summarize our case for change: Healthcare is shifting toward a system that is data-driven, consumer-responsive, and operationally incredibly complex. Incremental adaptation is no longer sufficient. Without deliberate leadership, technological advancement will not translate into improved patient outcomes or physician well-being. You are uniquely positioned to lead this change because you already navigate uncertainty and solve complex problems in real-time. It is time to translate your clinical expertise into tools for shaping the future of care.\"",
+            "source_span_refs": [
+              "delta:slide-6"
+            ],
+            "role": "source_supported_delta"
+          }
+        ],
+        "abilities": [
+          {
+            "ability_id": "lo-g0-001",
+            "text": "Recall the major structural shift between 2012 and 2022: a drastic decrease in independent private practice and a surge in physicians employed by large health systems."
+          },
+          {
+            "ability_id": "lo-g0-002",
+            "text": "State the current projected doubling time of medical knowledge as 73 days."
+          },
+          {
+            "ability_id": "lo-g0-003",
+            "text": "Analyze your clinical workflows to describe how these macroeconomic principles manifest after watching the embedded video."
+          },
+          {
+            "ability_id": "lo-g0-004",
+            "text": "Identify and summarize the diagram categorizing the domains of care failure from the required reading."
+          },
+          {
+            "ability_id": "lo-g0-005",
+            "text": "Recall that U.S. healthcare spending is reaching $5.2 trillion in 2024 and describe its structural implications."
+          },
+          {
+            "ability_id": "lo-g0-006",
+            "text": "Report that roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste."
+          },
+          {
+            "ability_id": "lo-g0-007",
+            "text": "Recognize that 66% of physicians use some form of AI in practice while formal training to oversee these tools remains severely limited."
+          },
+          {
+            "ability_id": "lo-g0-008",
+            "text": "Define the digital front door as creating a frictionless journey beyond a basic patient portal."
+          },
+          {
+            "ability_id": "lo-g0-009",
+            "text": "Report that 67% of physicians want leadership roles but only 18% receive executive or business training."
+          },
+          {
+            "ability_id": "lo-g0-010",
+            "text": "Summarize that healthcare is shifting toward a system that is data-driven, consumer-responsive, and operationally incredibly complex."
+          }
+        ],
+        "slide_authority_map_digest": "sha256:2851338177625b0241411a953e1edfc369efc1e358eeaeb13e2169da4485e8e2"
+      },
+      "candidate_snapshot": {
+        "status": "authored",
+        "sections": [
+          {
+            "ability_id": "lo-g0-001",
+            "prose": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare **spending** continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:01",
+                "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare **spending** continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n",
+                "source_claim_refs": [
+                  "claim:delta:slide-1"
+                ],
+                "source_span_refs": [
+                  "delta:slide-1"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-002",
+            "prose": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just **73 days**. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:02",
+                "text": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just **73 days**. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n",
+                "source_claim_refs": [
+                  "claim:delta:slide-3"
+                ],
+                "source_span_refs": [
+                  "delta:slide-3"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-003",
+            "prose": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about **25%** of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes.",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:03",
+                "text": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about **25%** of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes.",
+                "source_claim_refs": [
+                  "claim:vo:seg-02"
+                ],
+                "source_span_refs": [
+                  "vo:seg-02"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-004",
+            "prose": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an **adaptive learning infrastructure**—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface. Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping **governance**, and surfacing risks before they reach patients.",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:04",
+                "text": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an **adaptive learning infrastructure**—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface.",
+                "source_claim_refs": [
+                  "claim:vo:seg-04"
+                ],
+                "source_span_refs": [
+                  "vo:seg-04"
+                ]
+              },
+              {
+                "skeleton_claim_id": "sk:05",
+                "text": "Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping **governance**, and surfacing risks before they reach patients.",
+                "source_claim_refs": [
+                  "claim:vo:seg-05"
+                ],
+                "source_span_refs": [
+                  "vo:seg-05"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-005",
+            "prose": "The starting point is the sheer scale of spending: **$5.2 trillion** refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it.",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:06",
+                "text": "The starting point is the sheer scale of spending: **$5.2 trillion** refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it.",
+                "source_claim_refs": [
+                  "claim:vo:seg-01"
+                ],
+                "source_span_refs": [
+                  "vo:seg-01"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-006",
+            "prose": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of **burnout**. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:07",
+                "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of **burnout**. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n",
+                "source_claim_refs": [
+                  "claim:delta:slide-2"
+                ],
+                "source_span_refs": [
+                  "delta:slide-2"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-007",
+            "prose": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. **AI** isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address.",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:08",
+                "text": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. **AI** isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address.",
+                "source_claim_refs": [
+                  "claim:vo:seg-03"
+                ],
+                "source_span_refs": [
+                  "vo:seg-03"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-008",
+            "prose": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true **digital front door** is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it.",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:09",
+                "text": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true **digital front door** is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it.",
+                "source_claim_refs": [
+                  "claim:vo:seg-06"
+                ],
+                "source_span_refs": [
+                  "vo:seg-06"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-009",
+            "prose": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: **67%** of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale.",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:10",
+                "text": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: **67%** of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale.",
+                "source_claim_refs": [
+                  "claim:vo:seg-07"
+                ],
+                "source_span_refs": [
+                  "vo:seg-07"
+                ]
+              }
+            ]
+          },
+          {
+            "ability_id": "lo-g0-010",
+            "prose": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. **Incremental** tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires.",
+            "claims": [
+              {
+                "skeleton_claim_id": "sk:11",
+                "text": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. **Incremental** tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires.",
+                "source_claim_refs": [
+                  "claim:vo:seg-08"
+                ],
+                "source_span_refs": [
+                  "vo:seg-08"
+                ]
+              }
+            ]
+          }
+        ],
+        "bold_terms": [
+          {
+            "term": "spending"
+          },
+          {
+            "term": "73 days"
+          },
+          {
+            "term": "25%"
+          },
+          {
+            "term": "adaptive learning infrastructure"
+          },
+          {
+            "term": "governance"
+          },
+          {
+            "term": "$5.2 trillion"
+          },
+          {
+            "term": "burnout"
+          },
+          {
+            "term": "AI"
+          },
+          {
+            "term": "digital front door"
+          },
+          {
+            "term": "67%"
+          },
+          {
+            "term": "Incremental"
+          }
+        ],
+        "known_losses": [],
+        "marker": null
+      },
+      "authority_digest": "sha256:1560a2bfa56ca4e2fff76c1173918b4606cb329ee308924e23ebc4c47418549f",
+      "candidate_payload_digest": "sha256:31d5d58cc7ce0967bef6c82c4c404a5e0246bd4e20f188e711ed803a933597ec",
+      "gate": {
+        "gate_version": "deep-dive-skeleton-gate.v1",
+        "authority_digest": "sha256:1560a2bfa56ca4e2fff76c1173918b4606cb329ee308924e23ebc4c47418549f",
+        "candidate_payload_digest": "sha256:31d5d58cc7ce0967bef6c82c4c404a5e0246bd4e20f188e711ed803a933597ec",
+        "declared_vo_claim_ids": [
+          "claim:vo:seg-01",
+          "claim:vo:seg-02",
+          "claim:vo:seg-03",
+          "claim:vo:seg-04",
+          "claim:vo:seg-05",
+          "claim:vo:seg-06",
+          "claim:vo:seg-07",
+          "claim:vo:seg-08"
+        ],
+        "declared_delta_claim_ids": [
+          "claim:delta:slide-1",
+          "claim:delta:slide-2",
+          "claim:delta:slide-3",
+          "claim:delta:slide-4",
+          "claim:delta:slide-5",
+          "claim:delta:slide-6"
+        ],
+        "declared_ability_ids": [
+          "lo-g0-001",
+          "lo-g0-002",
+          "lo-g0-003",
+          "lo-g0-004",
+          "lo-g0-005",
+          "lo-g0-006",
+          "lo-g0-007",
+          "lo-g0-008",
+          "lo-g0-009",
+          "lo-g0-010"
+        ],
+        "declared_span_ids": [
+          "vo:seg-01",
+          "vo:seg-02",
+          "vo:seg-03",
+          "vo:seg-04",
+          "vo:seg-05",
+          "vo:seg-06",
+          "vo:seg-07",
+          "vo:seg-08",
+          "delta:slide-1",
+          "delta:slide-2",
+          "delta:slide-3",
+          "delta:slide-4",
+          "delta:slide-5",
+          "delta:slide-6"
+        ],
+        "status": "pass",
+        "covered_vo_claim_ids": [
+          "claim:vo:seg-01",
+          "claim:vo:seg-02",
+          "claim:vo:seg-03",
+          "claim:vo:seg-04",
+          "claim:vo:seg-05",
+          "claim:vo:seg-06",
+          "claim:vo:seg-07",
+          "claim:vo:seg-08"
+        ],
+        "missing_vo_claim_ids": [],
+        "used_delta_claim_ids": [
+          "claim:delta:slide-1",
+          "claim:delta:slide-2",
+          "claim:delta:slide-3"
+        ],
+        "unknown_claim_refs": [],
+        "unknown_source_refs": [],
+        "unknown_ability_refs": [],
+        "failures": [],
+        "operator_warnings": [
+          "full_semantic_equivalence_non_contradiction_and_depth_require_operator_spot_check"
+        ]
+      }
+    },
+    "deep_dive_writer_receipt": {
+      "schema_version": "deep-dive-execution-receipt.v1",
+      "writer": "deep_dive",
+      "mode": "live",
+      "calls": 1,
+      "idempotency_key": "sha256:f4999c8014ed54ff6a912b834d1d1f238f189cb6d86016766b54cf26a24283ab",
+      "prior_payload_digest": null,
+      "slide_authority_map_digest": "sha256:2851338177625b0241411a953e1edfc369efc1e358eeaeb13e2169da4485e8e2",
+      "model": "gpt-5",
+      "model_config_digest": "sha256:210ae10dfb3065a39a693a1c253fb20473cca5d7d67ed8c7471b5e37dd460c3b",
+      "request_id": null,
+      "latency_ms": 106473.53840002324,
+      "input_tokens": 3757,
+      "output_tokens": 12184,
+      "cost_usd": 0.12653625000000002,
+      "cost_unavailable_reason": null,
+      "fallback_engaged": false,
+      "fallback_reason": null
+    }
+  },
+  "payload_digest": "sha256:165fcbfcc54089e28ae9699a7d96da4389ac2dd8eeacb322adaa1654b04f38ac"
+}

@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -14,6 +15,7 @@ from contextlib import suppress
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
@@ -25,11 +27,18 @@ from app.composers.section_02a.composer import (
     assert_lesson_corpus_leaf,
 )
 from app.marcus.cli.front_door import FrontDoorError, front_door_select
+from app.marcus.cli.hil_tabular_projector import (
+    build_gate_surface,
+    emit_gate_surface,
+    render_gate_content,
+    resolve_content_type,
+)
 from app.marcus.cli.marcus_spoc import (
     DEGRADED_PUBLISH_URL_SCRIPTED,
     commit_picker_pick,
     run_picker_preflight,
 )
+from app.marcus.cli.next_action import build_next_action
 from app.marcus.lesson_plan.bundle_catalog import get_bundle
 from app.marcus.lesson_plan.collateral_selection import (
     CollateralSelectionError,
@@ -52,6 +61,7 @@ from app.marcus.orchestrator.production_runner import (
     resume_batch_production_trial,
     resume_production_trial,
     run_production_trial,
+    write_prewalk_settings_confirm_sentinel,
 )
 from app.marcus.orchestrator.styleguide_picker import PickerError
 from app.marcus.orchestrator.workbook_wiring import (
@@ -62,6 +72,8 @@ from app.models.state.component_selection import ComponentSelection
 from app.models.state.operator_verdict import OperatorVerdict
 from app.models.state.run_state import RunState
 from app.runtime.economics import RUNS_ROOT
+
+LOGGER = logging.getLogger(__name__)
 
 
 class DirectiveConfirmationRequiredError(RuntimeError):
@@ -113,6 +125,72 @@ def _has_langsmith_env() -> bool:
     return bool(os.getenv("LANGSMITH_API_KEY") and os.getenv("LANGSMITH_PROJECT"))
 
 
+def _require_live_env_unless_offline(
+    *,
+    allow_offline_cost_report: bool,
+    context: str,
+    trial_id: UUID | None = None,
+) -> None:
+    """Fail loud when a LIVE trial start/continuation lacks the live LLM env.
+
+    Single implementation shared by ``start`` / ``resume`` / ``recover`` /
+    ``resume-batch`` so the four front doors never drift (story 41-1). The gate
+    predicate is byte-identical to the original ``start_trial`` preflight and to
+    ``production_runner._has_live_openai`` / ``_has_langsmith_env``: when the run
+    will dispatch live (``allow_offline_cost_report`` is False), a missing
+    ``OPENAI_API_KEY`` OR missing LangSmith env raises a ``RuntimeError`` BEFORE
+    any walk runs — so a preflight PASS guarantees the walk's dispatch guard is
+    live. ``allow_offline_cost_report=True`` short-circuits (offline harness stays
+    keyless), exactly as start does.
+
+    The resume/recover paths previously had NO preflight: a keyless resume from a
+    fresh shell (frozen trial ``bc747b51``) silently skipped live specialist
+    dispatch and stranded the run three nodes later. ``context`` tailors the
+    actionable message; ``trial_id`` names the run on the continuation paths.
+    """
+    if allow_offline_cost_report:
+        return
+    if os.getenv("OPENAI_API_KEY") and _has_langsmith_env():
+        return
+    if context == "start":
+        raise RuntimeError(
+            "OPENAI_API_KEY plus LANGSMITH_API_KEY and LANGSMITH_PROJECT are required "
+            "before production trial start. Use --allow-offline-cost-report only "
+            "for local harness checks; offline reports do not close production "
+            "clone-launch equivalence."
+        )
+    trial_ref = f" {trial_id}" if trial_id is not None else ""
+    raise RuntimeError(
+        f"OPENAI_API_KEY (and LANGSMITH_API_KEY/LANGSMITH_PROJECT) are required to "
+        f"{context} production trial{trial_ref}: a keyless {context} would silently "
+        "skip live specialist dispatch and strand the run at a downstream node. "
+        "Export the key (and LangSmith env), or use --allow-offline-cost-report for "
+        "offline harness checks."
+    )
+
+
+def _persisted_allow_offline_cost_report(pause_path: Path) -> bool:
+    """Read ``allow_offline_cost_report`` from a persisted pause record's runner.
+
+    Reads the SAME field ``_continue_production_walk`` reads on resume
+    (``runner.get("allow_offline_cost_report", False)``) from the pause record a
+    given continuation rehydrates (``checkpoint.json`` for a gate pause,
+    ``error-pause.json`` for an error pause, ``provider-batch-pause.json`` for a
+    batch wait), so the front-door preflight decision matches the walk's decision
+    exactly. A missing/unreadable record — or a runner without the key — defaults
+    to False (live): when the mode cannot be confirmed offline, require the live
+    env rather than silently degrade.
+    """
+    try:
+        record = json.loads(pause_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    runner = record.get("runner") if isinstance(record, dict) else None
+    if not isinstance(runner, dict):
+        return False
+    return bool(runner.get("allow_offline_cost_report", False))
+
+
 def _resolve_editor() -> str:
     """Windows-portable editor resolution (P-R6, hardened per Codex P6 review).
 
@@ -154,9 +232,9 @@ def _g0_prompt_text(directive_path: Path) -> str:
     return (
         "G0 — Directive Composition\n"
         f"Composed directive written to: {directive_path}\n"
-        "Review the directive (printed above). Choose:\n"
+        "Review the source-inventory table (printed above). Choose:\n"
         "  [c] confirm and proceed\n"
-        "  [e] edit in $EDITOR, then reload and re-prompt\n"
+        "  [e] edit the raw directive YAML in $EDITOR, then reload and re-prompt\n"
         "  [s] save and show path; exit without running the trial\n"
         "  [x] cancel trial (no specialist dispatch)\n"
         "At-gate context: docs/conversational-gates/g0-directive-composition.md\n"
@@ -174,6 +252,114 @@ def _utf8_safe_print(msg: str) -> None:
         return
     sys.stdout.write(text + "\n")
     sys.stdout.flush()
+
+
+def _read_json_quiet(path: Path) -> dict[str, Any] | None:
+    """Best-effort JSON read for the operator-facing gate projection.
+
+    Returns ``None`` (never raises) on any error — the tabular surface is a
+    display convenience layered on top of the authoritative dense artifacts, so a
+    missing/garbage file must degrade to "render what we have", not sink the CLI.
+    """
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _emit_gate_surface_if_paused(payload: dict[str, Any], *, runs_root: Path) -> None:
+    """Story 42.1 (finding C + AC-3/AC-6): project a ``paused-at-gate`` payload as
+    operator-facing TABLES on stderr (stdout stays the dense machine JSON).
+
+    Reads the on-disk artifacts (``operator-surface.json`` for gate identity,
+    ``g0-enrichment.json`` for the enrichment metrics + ungrounded-advisory +
+    provisional-LO tables, ``decision-card-<gate>.json`` for the ask + the neutral
+    next-action). This REPLACES the anti-pattern where the enrichment ``... NOT
+    grounded ...`` log sheaf + a bare JSON blob were the only operator surface.
+
+    Best-effort: any failure is logged and swallowed so the machine emit is never
+    blocked (mirrors the assembler's next-action guard).
+    """
+    try:
+        if payload.get("status") != "paused-at-gate":
+            return
+        trial_id = str(payload.get("trial_id") or "")
+        run_reg = payload.get("run_registry_path")
+        run_dir = Path(run_reg).parent if run_reg else runs_root / trial_id
+
+        gate = payload.get("paused_gate")
+        operator_id = payload.get("operator_id")
+        surface_json = _read_json_quiet(run_dir / "operator-surface.json")
+        ask = ""
+        if surface_json:
+            env = surface_json.get("envelope") or {}
+            ident = surface_json.get("identity") or {}
+            gate = gate or env.get("paused_gate")
+            operator_id = operator_id or ident.get("operator_id")
+        gate = str(gate or "")
+
+        card_json = _read_json_quiet(run_dir / f"decision-card-{gate}.json") if gate else None
+        card_path = run_dir / f"decision-card-{gate}.json" if gate else None
+        gate_content: dict[str, Any] | None = None
+        if card_json:
+            card = card_json.get("card") or {}
+            ask = str(card.get("operator_prompt") or "")
+            # AC-3: feed the PAUSED GATE'S OWN content (its decision-card body) into
+            # the projector via the renderer registry (generic fallback until a
+            # bespoke renderer registers), so every paused gate — G1, G0E, G0R and
+            # beyond — tables its content instead of raw-dumping a JSON blob.
+            #
+            # Story 43-3, AC-0 — the gate→content_type BRIDGE. 43-10's canonical
+            # renderer keys (per_slide_mode / variant_ab / …) are SEMANTIC, not
+            # gate_ids, so resolving content_type to the raw gate_id/gate string
+            # would NEVER dispatch a bespoke renderer registered under a semantic
+            # key. Resolve through GATE_TO_CONTENT_TYPE instead: the PAUSED_GATE
+            # string (G2B/G2M) is the disambiguator — the G2B/G2M cards both carry
+            # decision-card gate_id "G2C". An unmapped gate resolves to None →
+            # generic fallback (behavior unchanged for every gate not yet mapped).
+            if isinstance(card, dict) and card:
+                gate_key = str(gate or card.get("gate_id") or "")
+                gate_content = {
+                    "content": card,
+                    "content_type": resolve_content_type(gate_key),
+                    "title": f"Gate {gate} content" if gate else "Gate content",
+                }
+
+        enrichment = _read_json_quiet(run_dir / "g0-enrichment.json")
+        identity = {
+            "trial": trial_id,
+            "status": "paused-at-gate",
+            "gate": gate,
+            "ask": ask,
+        }
+        surface = build_gate_surface(
+            gate_identity=identity,
+            enrichment=enrichment,
+            gate_content=gate_content,
+        )
+        raw_artifact = str(run_dir / "operator-surface.json")
+
+        next_action: str | None = None
+        try:
+            env_obj = SimpleNamespace(
+                status="paused-at-gate",
+                trial_id=trial_id,
+                paused_gate=gate,
+                operator_id=str(operator_id or "operator"),
+            )
+            next_action = build_next_action(env_obj, card_path=card_path)
+        except Exception:  # noqa: BLE001 — a next-action failure must not sink the table emit
+            LOGGER.exception("gate-surface: neutral next-action build failed")
+
+        emit_gate_surface(
+            surface,
+            stream=sys.stderr,
+            next_action=next_action,
+            shell_context="your shell prompt (PowerShell on Windows)",
+            raw_artifact=raw_artifact,
+        )
+    except Exception:  # noqa: BLE001 — display layer must never break the machine emit
+        LOGGER.exception("gate-surface projection failed; machine JSON emit unaffected")
 
 
 def _confirm_or_edit_directive(
@@ -207,7 +393,13 @@ def _confirm_or_edit_directive(
             "directive composition cannot be silently auto-confirmed"
         )
     while True:
-        print_fn(directive_path.read_text(encoding="utf-8"))
+        # Story 43-1 — table is the DEFAULT G0 review surface: parse the composed
+        # directive and project it as the operator-approved source-inventory table
+        # (which sources, what roles, what floors), instead of the old raw
+        # ``print_fn(directive_path.read_text())`` YAML dump. The raw directive
+        # stays one keystroke away via [e]dit. yaml is imported at module top.
+        directive_dict = yaml.safe_load(directive_path.read_text(encoding="utf-8")) or {}
+        print_fn(render_gate_content(directive_dict, content_type="directive"))
         choice = (input_fn(_g0_prompt_text(directive_path)) or "").strip().lower()
         if choice == "c":
             return "confirmed"
@@ -343,6 +535,7 @@ def start_trial(
     hud: Literal["on", "off"] = "on",
     course_source_root: Path | None = None,
     encounter_mode: Literal["recorded", "live"] | None = None,
+    prewalk_settings_confirm: bool = False,
 ) -> dict[str, Any]:
     _ensure_utf8_io()
     if not input_path.exists():
@@ -387,15 +580,10 @@ def start_trial(
         # only the code + the SSOT; the commit still runs post-compose against
         # the composed directive). A stale/foreign/unpickable code aborts here.
         decode_picker_selection_code(selection_code, expected_run_tag=trial_id.hex)
-    if not allow_offline_cost_report and (
-        not os.getenv("OPENAI_API_KEY") or not _has_langsmith_env()
-    ):
-        raise RuntimeError(
-            "OPENAI_API_KEY plus LANGSMITH_API_KEY and LANGSMITH_PROJECT are required "
-            "before production trial start. Use --allow-offline-cost-report only "
-            "for local harness checks; offline reports do not close production "
-            "clone-launch equivalence."
-        )
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=allow_offline_cost_report,
+        context="start",
+    )
     effective_trial_id = trial_id or uuid4()
     run_dir = runs_root / str(effective_trial_id)
     gamma_settings = _load_gamma_settings_file(gamma_settings_file)
@@ -623,6 +811,14 @@ def start_trial(
     runner_kwargs: dict[str, Any] = {}
     if max_specialist_calls is not None:
         runner_kwargs["max_specialist_calls"] = max_specialist_calls
+    # Story 42.6 (rider R1): the operator CLI start path writes the per-run G0S
+    # wake sentinel by DEFAULT (the CLI flag defaults ON) so the pre-walk
+    # settings confirm gate SHOWS without exporting an env flag. The function
+    # default is OFF, so direct `start_trial(...)` test callers write no sentinel
+    # and G0S stays dormant (byte-identical) — the whole reason for the sentinel.
+    # OR semantics with MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE preserved.
+    if prewalk_settings_confirm:
+        write_prewalk_settings_confirm_sentinel(run_dir)
     envelope = run_production_trial(
         corpus_path=input_path,
         preset=preset,
@@ -813,6 +1009,10 @@ def start_trial_cli(args: argparse.Namespace) -> int:
                 Path(args.course_source_root) if getattr(args, "course_source_root", None) else None
             ),
             encounter_mode=getattr(args, "encounter_mode", None),
+            # Story 42.6: default ON for the operator CLI path — writes the per-run
+            # wake sentinel so G0S pauses pre-walk. `--no-prewalk-settings-confirm`
+            # opts out (fast keyless run). Namespaces without the attr default ON.
+            prewalk_settings_confirm=getattr(args, "prewalk_settings_confirm", True),
         )
     except PreflightGateFailed as exc:
         # AD-7/AD-11: pre-flight blocked SPOC spawn. The projection is left at
@@ -841,6 +1041,9 @@ def start_trial_cli(args: argparse.Namespace) -> int:
         # to resume — surface it and let the operator re-run start.
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
+    )
     print(json.dumps(payload, sort_keys=True))
     if payload.get("status") == "cancelled-at-g0":
         return 2
@@ -865,6 +1068,17 @@ def resume_trial(
     continuation, which rehydrates from the run directory on disk.
     """
     _load_env_if_available()
+    # Live-env preflight parity with start (story 41-1): a keyless resume of a
+    # live gate-paused run fails loud here — before _continue_production_walk —
+    # instead of silently skipping live specialist dispatch. The offline flag is
+    # read from the SAME persisted runner the walk reads (checkpoint.json).
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=_persisted_allow_offline_cost_report(
+            runs_root / str(trial_id) / "checkpoint.json"
+        ),
+        context="resume",
+        trial_id=trial_id,
+    )
     if (verdict_file is None) == (verdict is None):
         raise ValueError(
             "resume_trial requires exactly one of verdict_file or verdict "
@@ -985,6 +1199,9 @@ def resume_trial_cli(args: argparse.Namespace) -> int:
         runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
         max_specialist_calls=args.max_specialist_calls,
     )
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
+    )
     print(json.dumps(payload, sort_keys=True))
     return 0
 
@@ -1008,6 +1225,17 @@ def recover_trial(
     when the fix is before the failed node (Mine-next trust T2).
     """
     _load_env_if_available()
+    # Live-env preflight parity with start (story 41-1): a keyless recover of a
+    # live error-paused run fails loud here — before _continue_production_walk —
+    # instead of silently skipping live specialist dispatch. The offline flag is
+    # read from the SAME persisted runner the walk reads (error-pause.json).
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=_persisted_allow_offline_cost_report(
+            runs_root / str(trial_id) / "error-pause.json"
+        ),
+        context="recover",
+        trial_id=trial_id,
+    )
     migration_requested = course_source_root is not None or encounter_mode is not None
     if migration_requested:
         if course_source_root is None or encounter_mode is None:
@@ -1065,6 +1293,11 @@ def recover_trial_cli(args: argparse.Namespace) -> int:
     except (ValueError, RuntimeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
+    # AC-4: close the recover front-door hole — a re-pause on recover must table
+    # its gate content on stderr too (mirrors start/resume at :1006/:1164).
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
+    )
     print(json.dumps(payload, sort_keys=True))
     return 0
 
@@ -1142,6 +1375,17 @@ def resume_batch_trial(
     """Poll existing provider Batch and continue when completed (B3)."""
 
     _load_env_if_available()
+    # Live-env preflight parity with start (story 41-1): batch continuation still
+    # dispatches live specialists after the batch completes, so a keyless resume
+    # fails loud here — before _continue_production_walk. The offline flag is read
+    # from the SAME persisted runner the walk reads (provider-batch-pause.json).
+    _require_live_env_unless_offline(
+        allow_offline_cost_report=_persisted_allow_offline_cost_report(
+            runs_root / str(trial_id) / "provider-batch-pause.json"
+        ),
+        context="resume-batch",
+        trial_id=trial_id,
+    )
     envelope = resume_batch_production_trial(
         trial_id=trial_id,
         runs_root=runs_root,
@@ -1173,6 +1417,11 @@ def resume_batch_trial_cli(args: argparse.Namespace) -> int:
         trial_id=args.trial_id,
         runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT,
         max_specialist_calls=getattr(args, "max_specialist_calls", None),
+    )
+    # AC-4: close the resume-batch front-door hole — a re-pause after a batch
+    # continuation must table its gate content on stderr (mirrors start/resume).
+    _emit_gate_surface_if_paused(
+        payload, runs_root=Path(args.runs_root) if args.runs_root else RUNS_ROOT
     )
     print(json.dumps(payload, sort_keys=True))
     return 0
@@ -1207,10 +1456,11 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         required=False,
         type=int,
         help=(
-            "Maximum live specialist calls during the start walk (G0 to the "
-            "first gate). Production starts should open the throttle: under "
-            "per-node keying, resumes never revisit pre-checkpoint nodes, so "
-            "a starved start cannot be repaired downstream."
+            "ADVISORY / TEST SEAM ONLY (Story 41-3): the call-count throttle "
+            "was removed, so this no longer starves a production start. Omit it "
+            "(the default) for unbounded dispatch; a specialist node dispatches "
+            "whenever live is available. Spend is bounded by the finite composed "
+            "graph, per-node idempotency, and human gate-pauses."
         ),
     )
     start.add_argument(
@@ -1298,6 +1548,19 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
             "(default: on, per AD-7). Pre-flight/heartbeats are runtime-owned "
             "and run regardless of this flag; only the server/notifier launches "
             "are gated. Use 'off' to run the pre-flight gate without the HUD."
+        ),
+    )
+    start.add_argument(
+        "--prewalk-settings-confirm",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help=(
+            "Story 42.6: pause pre-walk at the settings-confirm gate (G0S) so you "
+            "can confirm or change your ~16 run settings before the walk spends "
+            "(default: ON for a real operator start). Use "
+            "'--no-prewalk-settings-confirm' for a fast keyless run that skips the "
+            "pause. The MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE env flag remains an "
+            "independent override (OR semantics)."
         ),
     )
     start.add_argument(

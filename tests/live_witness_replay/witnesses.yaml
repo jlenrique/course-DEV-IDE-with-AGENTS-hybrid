@@ -1,0 +1,100 @@
+# Standing live-witness replay registry (wave-3940 party record D3, amendment
+# M-D3-1a). Auto-enrolling: adding a frozen witness is a one-line row here.
+# Pre-flight before every paid run replays ALL enrolled witnesses; STRICT mode
+# (WITNESS_REPLAY_STRICT=1) turns any skip into a FAILURE (skip ≠ green).
+#
+# Founding disposition (Story 37.2b, amendment A3/12 — zero undeclared
+# omissions): THREE deep-dive witness dirs exist on disk at founding.
+#   - deep-dive-38-3a-live-cd98f7e5 — the PASSING 38.3a live attempt
+#     (completed journal, authored skeleton, gate pass). ENROLLED as the
+#     replayable completed-journal witness for the 07W.1 family.
+#   - deep-dive-38-3a-live-7ed48f8a — preserved FAILED first-run attempt
+#     (journal frozen at call_in_progress). ENROLLED as an ambiguity-shape
+#     witness: replay pins the state classification + journal identity
+#     (immutability is separately pinned by the 38.3a evidence script).
+#   - deep-dive-38-3a-live-b6fc76ea — preserved FAILED first-run attempt,
+#     same classification as 7ed48f8a. ENROLLED as an ambiguity-shape witness.
+schema_version: witness-replay-registry.v1
+families:
+  - family: workbook-deep-dive-call.v1
+    node_id: "07W.1"
+    witnesses:
+      - id: deep-dive-38-3a-live-cd98f7e5
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-cd98f7e5/run/workbook-deep-dive-call.v1.json
+        state: completed
+        disposition: enrolled
+        capture:
+          model: gpt-5
+          model_config_digest: sha256:676faca379fc2da624912d3e10a6955e12d7a74d683eb6676c0d15659e77945a
+          idempotency_key: sha256:8a5cd8811aa6bf06ee90c93733784ef441af1638226fafb42159dcb933745b79
+      - id: deep-dive-38-3a-live-7ed48f8a
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-7ed48f8a/run/workbook-deep-dive-call.v1.json
+        state: call_in_progress
+        disposition: enrolled
+        capture:
+          idempotency_key: sha256:de31a3f58b4987fbb87e88df8f72acc04de1e564a454ed6c13e584137027f32f
+      - id: deep-dive-38-3a-live-b6fc76ea
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-38-3a-live-b6fc76ea/run/workbook-deep-dive-call.v1.json
+        state: call_in_progress
+        disposition: enrolled
+        capture:
+          idempotency_key: sha256:a0ac1ea3e7340f6650fb29fe499bf09b99f8e3b2d4e120925766470bf0de6fb6
+  - family: workbook-deep-dive-enrichment-call.v1
+    node_id: "07W.3"
+    # Zero-witness rule SATISFIED 2026-07-15: probe-37-2b-deep-dive-enrichment-001
+    # attempt 2 (838524b8) PASSED — machine judge pass=true, outcome ENRICHED,
+    # all three named gates green (A2 coverage / AC4 parity+trace / numeric
+    # fidelity), exactly one provider call, zero-recall replay proven, zero
+    # normalizations (the v2 first-appearance-order prompt line held at source).
+    # Attempt 1 (aa1ddff9) stays enrolled as the failed-attempt shape witness
+    # (order-variant bold_terms under normalizer v1; v2 reorders that exact
+    # shape, pinned by the aa1ddff9 fixture test).
+    witnesses:
+      - id: deep-dive-enrichment-37-2b-838524b8
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-enrichment-37-2b-838524b8/run/workbook-deep-dive-enrichment-call.v1.json
+        state: completed
+        disposition: enrolled
+        capture:
+          model_config_digest: sha256:adeb7759a5edc554dcb6eb5424d6b6a3d930fd2e0dca058beb36d7f4d0dcfa6b
+          idempotency_key: sha256:2792cf57692aa8e03a7abecfa8e642afd718758dcf11e1bf4109872e68aed7b6
+      - id: deep-dive-enrichment-37-2b-aa1ddff9
+        path: _bmad-output/implementation-artifacts/evidence/deep-dive-enrichment-37-2b-aa1ddff9/run/workbook-deep-dive-enrichment-call.v1.json
+        state: call_in_progress
+        disposition: enrolled
+        capture:
+          idempotency_key: sha256:509649873f74b0ef84c51b24c5cfd87c1f68c22434f0176240cdc173c161269e
+  - family: ask-b-hot-topics-call.v1
+    node_id: "07W.4"
+    # Zero-witness rule SATISFIED 2026-07-16: probe-38-2-ask-b-hot-topics-001
+    # attempt 79f1920e PASSED (verdict PASS_USABLE_MINT, 9/9 machine-judge
+    # checks green, exactly one dispatcher invocation, packet-digest reload
+    # equality + zero-call replay proven). First witness frozen from evidence
+    # pack ask-b-38-2-live-79f1920e per the R10 machine-forced pending→enrolled
+    # flip (the per-family replay module fails a still-pending row once any
+    # probe evidence pack exists on disk). No failed attempts — no
+    # ambiguity-shape witnesses owed for this family.
+    witnesses:
+      - id: ask-b-38-2-live-79f1920e
+        path: _bmad-output/implementation-artifacts/evidence/ask-b-38-2-live-79f1920e/run/ask-b-hot-topics-call.v1.json
+        state: completed
+        disposition: enrolled
+        capture:
+          idempotency_key: sha256:3bcdbcb680c935a5d571d718c7740ba034ef440cd5eaab61da243e38d3a549c3
+          provider_config_fingerprint: sha256:fd4d1879a182ffa1c92fac6ee6353a6b27c22b04d104b1bcfad9c50eb23dba41
+  - family: workbook-glossary-render.v1
+    node_id: "07W"
+    # Deterministic replay-render witness (no LLM surface — probe
+    # probe-39-1-glossary-render-001 attempt fdbed233 PASSED 2026-07-15:
+    # 7/7 judge checks, zero provider calls, zero input-digest drift,
+    # renderer identity spans 4 modules). Note: the probe's synthetic run dir
+    # reproduces the a940c5eb LO-overlay degrade (observable warning fired) —
+    # expected for the replay sandbox; outside this witness's licensed claim.
+    witnesses:
+      - id: glossary-render-39-1-fdbed233
+        path: _bmad-output/implementation-artifacts/evidence/glossary-render-39-1-fdbed233/verdict.json
+        state: completed
+        disposition: enrolled
+        capture:
+          renderer_config_identity: sha256:e6ebc5ddce0159b8a39b9e31450f367a606535716158bf3403c13335459a723c
+          bold_term_set_digest: sha256:4ce52399549769d417504938f18cc4d1870e07e040c4e57b43ad80bf3963e824
+

@@ -1,0 +1,147 @@
+run_id: bc747b51-7009-4742-9f65-8de6abc29ca4
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call
+sources:
+- ref_id: src-001
+  locator: assessments/chapter-1-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: Chapter 1 Knowledge Check quiz (5 questions) to assess understanding
+    of the material covered in the slides.
+  expected_min_words: 300
+  excluded_reason: null
+- ref_id: src-002
+  locator: references/master-references.md
+  provider: local_file
+  role: supporting
+  description: Consolidated reference list for C1M1 Part 1, providing citations and
+    sources that support the slide content.
+  expected_min_words: 100
+  excluded_reason: null
+- ref_id: src-003
+  locator: slides/slide-1-welcome-on-camera.md
+  provider: local_file
+  role: primary
+  description: Opening slide with on-camera script welcoming learners and setting
+    the context for the Modern Clinician's Era/introduction.
+  expected_min_words: 100
+  excluded_reason: null
+- ref_id: src-004
+  locator: slides/slide-10-part1-summary.md
+  provider: local_file
+  role: primary
+  description: Slide 10 markdown summarizing Part 1 (Setting the Stage), consolidating
+    key takeaways and preparing the transition to subsequent sections.
+  expected_min_words: 100
+  excluded_reason: null
+- ref_id: src-005
+  locator: slides/slide-11-growth-mindset.md
+  provider: local_file
+  role: primary
+  description: Markdown slide content for Slide 11 covering expectations around the
+    Growth Mindset within the course.
+  expected_min_words: 70
+  excluded_reason: null
+- ref_id: src-006
+  locator: slides/slide-12-psychological-safety.md
+  provider: local_file
+  role: primary
+  description: Slide 12 markdown covering expectations around psychological safety
+    within the course, part of the core slide deck content.
+  expected_min_words: 100
+  excluded_reason: null
+- ref_id: src-007
+  locator: slides/slide-2-trained-to-follow.md
+  provider: local_file
+  role: primary
+  description: Core slide (Slide 2) titled 'Trained to Follow, Not Yet to Create,'
+    introducing the mindset shift theme early in the deck for physician innovators.
+  expected_min_words: 40
+  excluded_reason: null
+- ref_id: src-008
+  locator: slides/slide-3-designer-of-the-system.md
+  provider: local_file
+  role: primary
+  description: Slide 3 presenting the shift from being a clinical reactor to a systemic
+    innovator, positioning clinicians as designers of the healthcare system and introducing
+    key framing for innovation mindset.
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-009
+  locator: slides/slide-4-the-solution-is-you.md
+  provider: local_file
+  role: primary
+  description: 'Markdown for Slide 4: ''The Solution Lies Dormant Within You'' (Intro
+    Beat 4). Presents the core empowerment message that the learner is the solution/agent
+    within the innovation journey, as part of the main slide deck.'
+  expected_min_words: 50
+  excluded_reason: null
+- ref_id: src-010
+  locator: slides/slide-5-heros-journey.md
+  provider: local_file
+  role: primary
+  description: Slide 5 of the course deck introducing the Innovator's 'Hero's Journey'
+    metaphor, outlining stages of the innovation journey for clinicians with key points
+    and visuals.
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-011
+  locator: slides/slide-6-lineage-of-physician-innovators.md
+  provider: local_file
+  role: primary
+  description: "Slide 6: The Lineage of Physician Innovators \u2014 a slide outlining\
+    \ historical and modern physician innovators and their contributions, connecting\
+    \ learners to a tradition of medical innovation."
+  expected_min_words: 120
+  excluded_reason: null
+- ref_id: src-012
+  locator: slides/slide-7-innovation-lexicon.md
+  provider: local_file
+  role: primary
+  description: Markdown slide outlining the Innovation Lexicon, likely defining key
+    innovation terms and concepts for the course (Slide 7).
+  expected_min_words: 180
+  excluded_reason: null
+- ref_id: src-013
+  locator: slides/slide-8-tightrope-and-net.md
+  provider: local_file
+  role: primary
+  description: "Slide 8: The Tightrope & The Net \u2014 a psychological safety deep-dive\
+    \ using the tightrope/net metaphor to discuss balancing risk-taking with safety\
+    \ in innovation teams; likely includes key points and notes."
+  expected_min_words: 120
+  excluded_reason: null
+- ref_id: src-014
+  locator: slides/slide-9-track-vs-jungle.md
+  provider: local_file
+  role: primary
+  description: Slide 9 contrasts the predictable, structured 'Track' with the ambiguous,
+    emergent 'Jungle' to illustrate functional flexibility in innovation. It explains
+    how moving off the track requires comfort with uncertainty, adaptive problem-solving,
+    and new navigation strategies, framing the mindset and skills needed to operate
+    beyond standardized pathways.
+  expected_min_words: 120
+  excluded_reason: null
+composed_at: '2026-07-16T22:18:46.362725Z'
+schema_version: 1
+gamma_settings:
+- variant_id: A
+  styleguide: hil-2026-apc-videographic-glance
+- variant_id: B
+  styleguide: hil-2026-apc-crossroads-magazine
+styleguide_picker_provenance:
+  picked_at: '2026-07-16T22:27:53.214755+00:00'
+  picker_version: '1.0'
+  ssot_sha256: de1928b4fe4747224daa9d8e055167e1b5ca27d0f999f2b6122272882d1556a4
+  picks:
+  - variant_id: A
+    styleguide: hil-2026-apc-videographic-glance
+  - variant_id: B
+    styleguide: hil-2026-apc-crossroads-magazine
+  written_by: styleguide_picker
+  picked_by: Juanl
+  publish_url: https://jlenrique.github.io/assets/styleguide-picker/bc747b51700947429f658de6abc29ca4/index.html
+  roster_sha256: c1bbe84a102e821715dada63a751eb20646b5498e50f0a3d8e0898c445e9375d
+  version_count: 2
+  selection_code: SGP-bc747b51700947429f658de6abc29ca4-A:hil-2026-apc-videographic-glance
+    B:hil-2026-apc-crossroads-magazine
+  run_tag: bc747b51700947429f658de6abc29ca4

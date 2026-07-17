@@ -250,3 +250,8 @@ Post-hoc `ask-a-live-verdict.v1` emitted for the winning trial at story closure 
 from the frozen journal — closure-party Winston Rider 1). Closure ceremony: 4-seat party
 (Winston/John/Amelia/Murat) unanimous CLOSE-WITH-RIDERS + per-fix Blind/Edge adversarial reviews;
 record at `party-closure-record-38-1-38-3a-2026-07-15.md`.
+
+**Cross-ref (2026-07-16, 38-2 AC 3 ruling-d item 5):** the AC 4 interim-leniency pin on the Ask-B
+reader ("Generic `04.55` and Ask B retain their current entry semantics") was consciously retired by
+Story 38-2 AC 3 — the exact `ask_b_hot_topics@07W.4` coordinate is now strict, mirroring the Ask-A
+branch; generic `04.55` leniency remains untouched and re-pinned.

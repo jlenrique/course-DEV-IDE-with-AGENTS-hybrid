@@ -510,9 +510,12 @@ def test_unicode_bullet_can_prefix_exact_speaker_note_header(tmp_path: Path) -> 
 
 
 def test_cross_layer_coordinates_remain_exact() -> None:
+    # 37.2b: 07W.3 activated at the exact coordinate (legacy stub id retained
+    # only for the same-coordinate upgrade walk).
     assert workbook_wiring.WORKBOOK_BAND_SPECIALIST_IDS == {
         "07W.1": "workbook_brief",
         ASK_A_ENRICHMENT_NODE_ID: ASK_A_ENRICHMENT_SPECIALIST_ID,
-        "07W.3": "workbook_review_stub",
+        "07W.3": "workbook_review",
         ASK_B_HOT_TOPICS_NODE_ID: ASK_B_HOT_TOPICS_SPECIALIST_ID,
     }
+    assert workbook_wiring.LEGACY_WORKBOOK_REVIEW_SPECIALIST_ID == "workbook_review_stub"

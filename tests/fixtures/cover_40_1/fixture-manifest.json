@@ -1,0 +1,10 @@
+{
+  "schema_version": "cover-render-fixture.v1",
+  "source_run": "runs/8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+  "derivation": "40-1 M-5/M-6 derived fixture: replay copy of the frozen live run with the legacy Ask-B stub dropped (39-1b precedent); build_workbook_inputs + WorkbookProducer.produce emitted the cover-bearing deliverable; _sidecar_refs injected into the 07W contribution; run.json trimmed to the clause-read contributions (mutated copy of the frozen live shape \u2014 never synthetic).",
+  "files": {
+    "u01@1.cover.md": "db7c2ffeb61b029323e727082919e536f252d447e465b6bd6fdc4faf26c5b80c",
+    "u01@1.cover-art-brief.json": "f7f54d443f3c3bf90af593ffad065e2c5fc3244183282a35377d9e64c44e2a1b",
+    "run-8b275e5b.trimmed.run.json": "a0c2054e0b40856fc75453c700b65d89a64ed26cef14f2d2a82df7d5decd6aac"
+  }
+}

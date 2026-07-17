@@ -745,6 +745,186 @@ PERMITTED_PYTHON_DIFFS = {
     # payload run_dir override — NO live dispatch (production_runner.py already
     # rostered above).
     "tests/specialists/workbook_producer/test_run_dir_threading_503e54c1.py",
+    # Story 41-2 (specialist-dispatch fail-loud on silent skip — both walks;
+    # green-lit 5/5 2026-07-16): the new fail-loud invariant test, plus the
+    # existing tests updated from the OLD silent-skip / §06-misattribution
+    # contract to the NEW fail-loud-at-node contract. All are deterministic /
+    # OFFLINE (fake ProductionDispatchAdapter + stubbed preflight/cost) — NO
+    # live dispatch (production_runner.py already rostered above).
+    "tests/marcus/orchestrator/test_dispatch_fail_loud_silent_skip.py",
+    "tests/integration/marcus/test_workbook_band_wiring.py",
+    "tests/integration/marcus/test_pre_gate_marcus_langsmith_trace.py",
+    "tests/integration/marcus/test_runner_threads_pre_fill_to_decision_card.py",
+    # Story 41-3 (REMOVE the max_specialist_calls throttle — Option R, party 4/4
+    # 2026-07-16): the call-count throttle that starved CD @ 4.75 (trial
+    # bc747b51) is removed from both walk specialist branches; a specialist node
+    # dispatches whenever live is available, with no per-call budget gate. The
+    # inert None=unbounded parameter is retained as a test-injection seam.
+    # ``dispatch.budget-exhausted`` retires; ``dispatch.live-unavailable`` stays.
+    # The interlocutor's now-moot =12 default is dropped to None=unbounded
+    # (cosmetic; the value is inert). NO new live-dispatch call site — the
+    # semantic detector stays GREEN. production_runner.py + trial.py + the two
+    # test files already rostered above; this adds only the interlocutor path.
+    "app/marcus/cli/marcus_interlocutor.py",
+    # Story 42-2 (HUD lifecycle survives gate pause + no stray console windows;
+    # green-lit 5/5 2026-07-16). Localhost-only lifecycle fix: the HUD-server
+    # child's atexit teardown became status-aware (survives a gate pause, tears
+    # down only on terminal status / explicit operator stop with a grace) and
+    # spawns with CREATE_NO_WINDOW on win32; the notifier gains an AC-7 no-window
+    # rationale comment (already detached ⇒ no console window). Deterministic /
+    # OFFLINE — every spawn is an injected fake, no real socket/child; NO new
+    # live-dispatch call site.
+    "app/marcus/orchestrator/preflight.py",
+    "app/notify/__main__.py",
+    "tests/hud/test_hud_lifecycle_survives_pause.py",
+    "tests/notify/test_main.py",
+    # Story 42-1 (tabular HIL projection + neutral next-action verb; green-lit
+    # 5/5 2026-07-16). CLI/display-layer only: a new pure tabular projector
+    # (app/marcus/cli/hil_tabular_projector.py), the neutral multi-verb
+    # next-action rewrite (app/marcus/cli/next_action.py — no longer preselects
+    # --verb approve), and the trial CLI wiring (trial.py already rostered above)
+    # that routes the paused-at-gate print path through the projector on stderr.
+    # Deterministic / OFFLINE — replays against the frozen bc747b51 artifacts +
+    # a committed trimmed fixture; NO new live-dispatch call site. NO change to
+    # gate semantics / machine JSON on disk (operator_surface / assembler
+    # untouched — trigger-path, deferred to 42-3).
+    "app/marcus/cli/hil_tabular_projector.py",
+    "app/marcus/cli/next_action.py",
+    "tests/marcus/cli/test_hil_tabular_projector.py",
+    "tests/marcus/cli/test_next_action_neutral_verb.py",
+    "tests/unit/marcus/cli/test_next_action.py",
+    # Epic 43 (HIL Surface Tabular Coverage; green-lit 5/5 SIGN-WITH-RIDERS
+    # 2026-07-17; party-greenlight-epic-43-2026-07-17.md). CLI/display-layer
+    # only, extending the 42-1 projector: a renderer registry + generic
+    # gate-content table (43-2), the coverage-ratchet + canonical SSOT (43-10),
+    # the G0 directive source-inventory renderer replacing the trial.py raw-YAML
+    # dump (43-1), and the frozen replay fixtures (43-0). Deterministic / OFFLINE
+    # — replays the 43-0 fixtures; NO new live-dispatch call site; the projector
+    # stays stdlib-pure. app/marcus/cli/{trial.py,hil_tabular_projector.py}
+    # already rostered above (42-1).
+    "tests/marcus/cli/test_hil_generic_gate_content_43_2.py",
+    "tests/marcus/cli/test_projector_coverage_ratchet_43_10.py",
+    "tests/marcus/cli/test_g0_directive_table_43_1.py",
+    "tests/unit/marcus/cli/test_hil_projector_fixtures.py",
+    # Story 43-3 (G2B per-slide-mode + G2M A/B variant renderers + the
+    # gate→content_type bridge; the FIRST bespoke renderers to fire on the
+    # paused-at-gate path). Deterministic / OFFLINE — replays the two SYNTHETIC
+    # poll-surface fixtures (.json, outside the *.py fence); NO new live-dispatch
+    # call site; the projector stays stdlib-pure. hil_tabular_projector.py +
+    # trial.py already rostered above (42-1).
+    "tests/marcus/cli/test_variant_mode_renderers_43_3.py",
+    # Story 43-4 (G4A voice-candidate selection renderer + the G4A gate→content_type
+    # bridge entry; the THIRD allowlist→registry move). Deterministic / OFFLINE —
+    # replays the SYNTHETIC poll-voice-candidates fixture (.json, outside the *.py
+    # fence, generated by invoking the real G4ACard model); NO new live-dispatch call
+    # site; the projector stays stdlib-pure. hil_tabular_projector.py + trial.py +
+    # test_projector_coverage_ratchet_43_10.py + test_variant_mode_renderers_43_3.py
+    # already rostered above (state-pin lockstep edits).
+    "tests/marcus/cli/test_voice_candidates_renderer_43_4.py",
+    # Story 43-5 (plan-unit G1A + estimator G1.5 + run-constants G1.5 renderers + the
+    # bridge entries; the FOURTH allowlist→registry move). Deterministic / OFFLINE —
+    # replays three SYNTHETIC poll-surface fixtures (.json, outside the *.py fence,
+    # each generated by invoking the real section_04a/04_5/04_55 display_* functions);
+    # NO new live-dispatch call site; the projector stays stdlib-pure.
+    # hil_tabular_projector.py + trial.py + test_projector_coverage_ratchet_43_10.py +
+    # test_variant_mode_renderers_43_3.py already rostered above (state-pin lockstep edits).
+    "tests/marcus/cli/test_plan_unit_estimator_constants_renderers_43_5.py",
+    # Story 43-6 (literal-visual 06B + storyboard-targets 07C + G3B storyboard/live-URL
+    # renderers + the bridge entries; the FIFTH allowlist→registry move). Deterministic
+    # / OFFLINE — replays three SYNTHETIC poll-surface fixtures (.json, outside the *.py
+    # fence, each generated by invoking the real section_06b/07c/08b display_* functions
+    # / G3Card model); NO new live-dispatch call site; the projector stays stdlib-pure.
+    # hil_tabular_projector.py + trial.py + test_projector_coverage_ratchet_43_10.py +
+    # test_variant_mode_renderers_43_3.py already rostered above (state-pin lockstep edits).
+    "tests/marcus/cli/test_build_target_renderers_43_6.py",
+    # Story 43-8 (G4B input-package preview + G5 final-handoff renderers + the bridge
+    # entries; the SIXTH allowlist→registry move). Deterministic / OFFLINE — replays two
+    # SYNTHETIC poll-surface fixtures (.json, outside the *.py fence, each generated by
+    # invoking the real section_11b/section_15 display_* functions against a constructed
+    # G4Card/G5Card model); NO new live-dispatch call site; the projector stays
+    # stdlib-pure. hil_tabular_projector.py + trial.py + test_projector_coverage_ratchet_43_10.py
+    # + test_variant_mode_renderers_43_3.py already rostered above (state-pin lockstep edits).
+    "tests/marcus/cli/test_input_package_final_handoff_renderers_43_8.py",
+    # Story 43-7 (G2.5 motion-plan + G2F motion-clip renderers + the bridge entries;
+    # the SEVENTH allowlist→registry move). Deterministic / OFFLINE — replays two
+    # SYNTHETIC poll-surface fixtures (.json, outside the *.py fence, each generated by
+    # invoking the real section_07d/section_07f display_* functions against a constructed
+    # G2CCard model); NO new live-dispatch call site; the projector stays stdlib-pure.
+    # hil_tabular_projector.py + trial.py + test_projector_coverage_ratchet_43_10.py
+    # + test_variant_mode_renderers_43_3.py already rostered above (state-pin lockstep edits).
+    "tests/marcus/cli/test_motion_plan_clip_renderers_43_7.py",
+    # Story 43-11 (SPOC narration <-> tabular projector anti-drift parity guard).
+    # PURE TEST-ONLY: a new parity test feeding the frozen 43-0 fixtures
+    # (g0-enrichment + G0E/G0R decision cards) to BOTH marcus_spoc.narrate_gate and
+    # the projector renderers, asserting they agree on the load-bearing G0E/G0R facts
+    # (typed/provisional/refined LO totals + LO identity sets). Deterministic / OFFLINE
+    # — NO new live-dispatch call site; NO source change (parity-test route, per the
+    # story's lower-risk default); the projector stays stdlib-pure.
+    "tests/unit/marcus/cli/test_spoc_projector_parity_43_11.py",
+    # Story 42-3 (full run-settings standing readout — all ~16 toggles; green-lit
+    # 5/5 2026-07-16, dual-gate, LOCKSTEP operator-surface projection). ADDITIVE
+    # within v1: a new RunSettingsSection on the operator-surface contract + a
+    # deterministic resolver in the sole-writer assembler (reads env / directive
+    # / run_summary / prior surface — NEVER run_state, no new dispatch surface) +
+    # the HUD render readout panel. Deterministic / OFFLINE; schema regenerated
+    # with shape-pin + parity in the same diff. production_runner.py untouched.
+    "app/models/runtime/operator_surface.py",
+    "app/marcus/orchestrator/operator_surface_assembler.py",
+    "app/hud/render/page.py",
+    "tests/unit/models/test_operator_surface_shape_pin.py",
+    "tests/contracts/test_operator_surface_parity.py",
+    "tests/contracts/test_operator_surface_projection_demands_parity.py",
+    "tests/unit/marcus/orchestrator/test_operator_surface_run_settings.py",
+    "tests/hud/test_settings_readout_panel.py",
+    # Story 42-5 (pre-walk settings confirm-or-change gate; green-lit 5/5
+    # 2026-07-16, dual-gate, LOCKSTEP start-path + operator-surface). A NEW
+    # pre-G0 HIL pause: the real GSettingsCard DecisionCard subclass (option B —
+    # pre-pipeline pause, NOT a manifest node), the start-path pause insertion +
+    # confirm/change/cancel resume handling in production_runner.py, and the ONE
+    # resolution point (run-settings-overrides.json) write-back + walk-entry
+    # projection in the sole-writer assembler. Reuses the canonical DecisionCard
+    # pause -> OperatorVerdict -> resume_from_verdict machinery (no bespoke pause);
+    # NO new live-dispatch call site (the pause halts BEFORE the first spend).
+    # production_runner.py + operator_surface_assembler.py + decision_cards/__init__.py
+    # already rostered above.
+    "app/models/decision_cards/g_settings.py",
+    # Option A wiring (operator-authorized): G0S is a real manifest HEAD gate, so
+    # the compiler's runtime gate-id set gains G0S (the operator gate-shim surface
+    # `_shim_parser.py` + the `test_marcus_duality_boundary.py` gate-set pin are
+    # already rostered above). No live-dispatch surface — the gate pauses BEFORE the
+    # first spend (production_trial_envelope.py + the two orchestrator/assembler
+    # modules already rostered above).
+    "app/manifest/compiler.py",
+    "tests/marcus/orchestrator/test_pre_walk_settings_gate.py",
+    "tests/unit/models/decision_cards/test_g_settings_card_shape.py",
+    # Story 42-4 (public read-only HUD at a stable URL; green-lit 5/5 2026-07-16,
+    # dual-gate, LOCKSTEP app/hud/** + own non-leak/identity security bar). A NEW
+    # tunnel-facing public overlay app (a positive-allowlist projection of the
+    # same live run file — no secret route, no raw bytes) + its operator-gated,
+    # config-driven NAMED tunnel plumbing in preflight.py (already rostered
+    # above). No live-dispatch surface: the overlay is a read-only GET view; the
+    # tunnel is operator-gated live evidence, not a dispatch path.
+    "app/hud/public.py",
+    "tests/hud/test_public_surface_readonly_and_nonleak.py",
+    # Story 42-6 (G0S default-ON for operator-steered runs via a per-run WAKE
+    # SENTINEL; rider R1, green-lit 5/5, dual-gate, LOCKSTEP). Additive to 42-5:
+    # a per-run marker file (`<run_dir>/.prewalk-settings-confirm`) that the
+    # operator CLI start path writes by DEFAULT so G0S wakes without exporting the
+    # env flag (OR semantics preserved) — WITHOUT the os.environ.setdefault leak
+    # that would push the pause into the ~13 direct start_trial test callers (the
+    # function default stays OFF). production_runner.py + trial.py already rostered
+    # above. NO new live-dispatch call site — the sentinel only flips the WAKE
+    # condition of a pause that halts BEFORE the first spend.
+    "tests/marcus/orchestrator/test_prewalk_settings_wake_sentinel.py",
+    # Story 41-4 (dollar-budget enforced stop — MARCUS_TRIAL_BUDGET_USD becomes a
+    # brake, not a gauge; dual-gate, LOCKSTEP production_runner.py). Additive to
+    # 41-2/41-3: a shared PRE-spend + POST-spend dollar brake in BOTH walk
+    # specialist branches that pauses-at-error with the distinct `budget.exceeded`
+    # tag via the same check_trial_budget SSOT that feeds BudgetStatus. No-cap/
+    # unset stays byte-identical (41-3 interim preserved). Deterministic / OFFLINE
+    # (fake ProductionDispatchAdapter with a per-dispatch cost + stubbed preflight)
+    # — NO new live-dispatch call site; production_runner.py already rostered above.
+    "tests/marcus/orchestrator/test_dollar_budget_enforced_stop.py",
 }
 
 

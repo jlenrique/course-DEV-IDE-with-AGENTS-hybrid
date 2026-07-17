@@ -28,11 +28,15 @@ def _manifest(nodes: list[NodeSpec]) -> PipelineManifest:
 def test_production_gate_ids_from_live_manifest() -> None:
     manifest = load(LIVE_MANIFEST)
 
-    # Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken into the surfaced set.
-    # G0-S2 (2026-06-26): G0E source-enrichment confirm-gate #1 added (surfaced;
-    # runtime-traversed when the brick is asleep, MARCUS_G0_ENRICHMENT_ACTIVE).
+    # Intentional change-DETECTOR (kept hardcoded per Story 42-7 AC-3; the DYNAMIC
+    # sync guard below already derives — this pin forces a conscious update when the
+    # surfaced set changes). Arc 2 (2026-06-18): G2B (variant) + G4A (voice) woken.
+    # G0-S2 (2026-06-26): G0E source-enrichment confirm-gate #1 (surfaced; runtime-
+    # traversed when the brick is asleep, MARCUS_G0_ENRICHMENT_ACTIVE). g0-enrichment
+    # S3 (b59679ce): G0R ratify-gate #2. Story 42-5 (8d485ace): G0S pre-walk settings
+    # confirm-or-change gate.
     assert production_gate_ids(manifest) == frozenset(
-        {"G0E", "G1", "G2B", "G2C", "G3", "G4A", "G4"}
+        {"G0E", "G0R", "G0S", "G1", "G2B", "G2C", "G3", "G4A", "G4"}
     )
 
 

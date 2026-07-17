@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import stat
 import sys
 import time
@@ -1233,6 +1234,1146 @@ def _assert_conformant_workbook_docx(path: Path) -> None:
         raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed") from exc
 
 
+_ASK_A_CITE_MARKER_RE = re.compile(r"\[(ask-a-cite-[0-9]{3})\]")
+_ASK_A_REFERENCE_ENTRY_RE = re.compile(r"citation_id: `(ask-a-cite-[0-9]{3})`")
+_PRESENTATION_SUPPORT_MD_SENTINEL = "This presentation-support workbook carries"
+_DEEP_DIVE_HEADING = "## Deep Dive"
+_DEEP_DIVE_LOSS_NOTE = "Deep Dive enrichment loss:"
+
+# --- 39.1 glossary conformance clause (same-diff bar extension, plank 5) ---
+_GLOSSARY_HEADING = "## Research Glossary"
+_GLOSSARY_AUTHORITY_ABSENT_REASON = "bold-term authority absent"
+_GLOSSARY_UNCOVERED_LINE = (
+    "Key term from the Deep Dive. No research row in this run's pool covers "
+    "it; no definition is invented."
+)
+# P2 (row d′ truthfulness): the state-accurate lean line for a term that a
+# PRESENT pool row association-covers but degradation forced uncovered.
+_GLOSSARY_UNCOVERED_DEGRADED_LINE = (
+    "Enrichment was degraded this run; a research row associates with this "
+    "term but was not composed."
+)
+_GLOSSARY_COVERAGE_RE = re.compile(
+    r"Research coverage this run: ([0-9]+) of ([0-9]+) terms\."
+)
+_GLOSSARY_ENTRY_HEADING_RE = re.compile(r"^### (.+?)\s*$", re.MULTILINE)
+_GLOSSARY_TIER_RE = re.compile(r"tier=([A-Za-z0-9_]+)")
+# The glossary entry's citation idiom (``**Provenance:** `ask-a-cite-###` …``)
+# is DISTINCT from the References-block idiom (``citation_id: `…```) so the
+# glossary can never satisfy its own row-j resolvability claim.
+_GLOSSARY_PROVENANCE_RE = re.compile(r"\*\*Provenance:\*\* `(ask-a-cite-[0-9]{3})`")
+# P4: EVERY ask-a-cite token in a covered entry's body (any idiom, any line)
+# must attribute to one of that entry's covering citation ids.
+_ASK_A_CITE_TOKEN_RE = re.compile(r"ask-a-cite-[0-9]{3}")
+_REFERENCES_HEADING = "## References"
+_CITED_ENTRIES_BLOCK_HEADING = "#### Deep Dive cited entries"
+
+# --- M-R3 LO shippability clause (closure rider; structured-channel-first) ---
+_WORKBOOK_PRODUCER_SPECIALIST_ID = "workbook_producer"
+_WORKBOOK_PRODUCER_NODE_ID = "07W"
+# The producer's degraded-LO placeholder statement copy (composed into the
+# ``## Learning Objectives`` section) and the visible loss callout it renders
+# when ``lo_overlay_loss`` is populated — MD-floor witnesses ONLY; the
+# persisted structured record is the primary assertion surface.
+_LO_PLACEHOLDER_COPY = "objective statement unresolved"
+_LO_OVERLAY_LOSS_CALLOUT = "Enrichment overlay loss:"
+
+# --- 39.2 trends / Door-Ajar conformance clause (same-diff bar, plank 5) ---
+_TRENDS_HEADING = "## Research Trends"
+_TRENDS_CLAIMS_SUBHEADING = "#### Research trends"
+_TRENDS_HOT_TOPICS_SUBHEADING = "#### Hot topics"
+_TRENDS_REJECTED_SUBHEADING = "#### Rejected / unusable topics"
+_TRENDS_ANTI_THEATER_LINE = (
+    "*Bounded callout from wrangled evidence — not trend-forecasting theater.*"
+)
+# W-2 (defaults-drift pin): these recompute defaults are asserted EQUAL to the
+# ``_act.py`` L1217 effective call defaults (``trends_inputs_from_run(run_dir)``
+# with the signature defaults) by a named test — if either side drifts, the pin
+# fails, so the bar's recompute authority can never silently diverge from the
+# production call it stands in for.
+_TRENDS_BAR_MAX_TRENDS = 5
+_TRENDS_BAR_MAX_HOT_TOPICS = 3
+_TRENDS_BAR_INJECTED_TOPICS: tuple[str, ...] = ()
+# Rendered-line idioms of ``render_trends_markdown`` the clause parses (the
+# bar re-derives claims/topics from the recompute, never from these lines).
+_TRENDS_PROVENANCE_RE = re.compile(
+    r"^  - \*\*Provenance:\*\* `([^`]+)` · `([^`]+)` · tier=[^\n]*?"
+    r"confidence=([a-z]+)",
+    re.MULTILINE,
+)
+_TRENDS_CLAIM_LINE_RE = re.compile(r"^- (.+)$", re.MULTILINE)
+_TRENDS_TOPIC_LINE_RE = re.compile(
+    r"^- \*\*(.+?)\*\* \(confidence=([a-z]+)\) — .*?"
+    r"Supporting: (.*?); source_refs: (.*?)\.$",
+    re.MULTILINE,
+)
+_TRENDS_REJECTED_LINE_RE = re.compile(r"^- \*\*(.+?)\*\* — ", re.MULTILINE)
+_ASK_B_CITE_TOKEN_RE = re.compile(r"ask-b-cite-[0-9]{3,}")
+
+# --- 40.1 cover conformance clause (same-diff bar extension, plank 5) ---
+# Rendered-line idioms of the producer's cover composer the clause parses
+# (values compared against persisted artifacts only — M-1 anti-tautology
+# fence: heading/marker/schema-version STRINGS are imported from the producer
+# module inside the clause; every assertion VALUE comes from run.json, the
+# rendered MD, or the art-brief sidecar file).
+_COVER_TOC_ENTRY_RE = re.compile(r"^- .+ — `([^`]+)`$", re.MULTILINE)
+_COVER_RUN_ID_LINE_RE = re.compile(r"^Production run: (\S+)$", re.MULTILINE)
+_COVER_GENERATED_LINE_RE = re.compile(r"^Generated: (\S+)$", re.MULTILINE)
+_MD_H2_RE = re.compile(r"(?m)^## (.*?)\s*$")
+
+
+def _md_section_body(text: str, heading: str) -> str | None:
+    """The body of an H2 section (between ``## <heading>`` and the next H2)."""
+    marker = f"\n{heading}\n"
+    start = text.find(marker)
+    if start == -1:
+        return None
+    body_start = start + len(marker)
+    rest = text[body_start:]
+    nxt = rest.find("\n## ")
+    return rest if nxt == -1 else rest[:nxt]
+
+
+def _cited_entries_block(text: str) -> str:
+    """P5 (row j): the ``#### Deep Dive cited entries`` block INSIDE the
+    ``## References`` section — the ONLY surface a covered glossary citation
+    may resolve against (never the glossary's own provenance lines, never a
+    stray line elsewhere in the document)."""
+    references = _md_section_body(text, _REFERENCES_HEADING)
+    if references is None:
+        return ""
+    marker_match = re.search(
+        rf"^{re.escape(_CITED_ENTRIES_BLOCK_HEADING)}.*$", references, re.MULTILINE
+    )
+    if marker_match is None:
+        return ""
+    block = references[marker_match.end() :]
+    nxt = block.find("\n#### ")
+    return block if nxt == -1 else block[:nxt]
+
+
+def _assert_glossary_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
+    """39.1 deliverable bar: glossary conformance, structured-artifact-first.
+
+    Authority comes from the SAME 07W.3 contribution the deep-dive clause
+    revalidates (status-dependent per AC-A3): enriched ⇒ ``result.bold_terms``;
+    non-enriched with a skeleton ⇒ ``result.request.skeleton.bold_terms`` and
+    EVERY entry must be uncovered-honest; no contribution / no result ⇒ the
+    section must be explicitly-empty carrying the literal reason
+    ``bold-term authority absent``. MD floor on presentation-support
+    deliverables: exactly ONE glossary section + ONE coverage line (P9,
+    counted, not first-match), headword-identity association EXACT (order +
+    byte-exact — rejects mangled title-derived headwords, missing entries,
+    orphan entries), reconciled coverage counts (a present authority with zero
+    terms renders the honest "0 of 0" line — P1), uncovered entries carry
+    EXACTLY the one state-accurate honest line and NOTHING else (P2/P3: the
+    degraded-association line when a present pool row associates but
+    degradation forced uncovered, the plain line otherwise; any extra body is
+    a fabricated definition ⇒ REJECT), covered entries cite only pool rows
+    that association-cover the term with the row's tier VERBATIM (negative
+    pin v) and every ask-a-cite token in a covered body attributes to one of
+    that entry's covering citation ids (P4), and every covered citation_id
+    resolves into the cited-entries block INSIDE ``## References`` (matrix
+    row j, P5). A presentation-support MD carrying the glossary section with
+    NO ``run.json`` structured authority is REJECTED (P15 — mirror the R3
+    stray-marker rule; never a silent skip). Test-harness-side only;
+    production runtime is untouched.
+    """
+    text_by_path: dict[Path, str] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        # Platform-newline normalization (write_text translates \n -> \r\n on
+        # Windows); section/heading anchors below are LF-based.
+        text_by_path[path] = text.replace("\r\n", "\n")
+    if not (run_dir / "run.json").is_file():
+        # P15: a presentation-support deliverable carrying a Research Glossary
+        # section with no structured authority behind it is a refusal —
+        # mirror the R3 stray-marker rule, never a silent skip.
+        for text in text_by_path.values():
+            if (
+                _PRESENTATION_SUPPORT_MD_SENTINEL in text
+                and _GLOSSARY_HEADING in text
+            ):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+        return
+    try:
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            load_workbook_review_contribution,
+        )
+
+        contribution = load_workbook_review_contribution(run_dir)
+    except Exception as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    result = contribution.deep_dive_enrichment if contribution is not None else None
+    for text in text_by_path.values():
+        if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+            continue  # legacy-profile deliverable: 39.1 clause does not apply
+        # P9 singularity: exactly ONE glossary section heading (counted).
+        if len(re.findall(rf"(?m)^{re.escape(_GLOSSARY_HEADING)}\s*$", text)) != 1:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        section = _md_section_body(text, _GLOSSARY_HEADING)
+        if section is None:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        if result is None:
+            # Matrix row d: explicitly-empty with the literal reason — and no
+            # entries / citations may masquerade under an absent authority.
+            if (
+                _GLOSSARY_AUTHORITY_ABSENT_REASON not in section
+                or _GLOSSARY_ENTRY_HEADING_RE.search(section)
+                or "ask-a-cite-" in section
+            ):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            continue
+        enriched = result.status == "enriched"
+        expected_terms = [
+            marker.term
+            for marker in (
+                result.bold_terms if enriched else result.request.skeleton.bold_terms
+            )
+        ]
+        rows_by_id = {row.citation_id: row for row in result.request.pool_rows}
+        headwords = _GLOSSARY_ENTRY_HEADING_RE.findall(section)
+        # Headword-identity association: EXACT (missing entry / orphan entry /
+        # mangled title-derived headword / reorder all REJECT).
+        if headwords != expected_terms:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        # P9 singularity: exactly ONE coverage line inside the section
+        # (counted, not first-match). P1: zero terms reconcile as "0 of 0".
+        coverage_matches = _GLOSSARY_COVERAGE_RE.findall(section)
+        if len(coverage_matches) != 1:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        expected_covered = {
+            term
+            for term in expected_terms
+            if enriched
+            and any(term in row.supports_bold_terms for row in rows_by_id.values())
+        }
+        # P2: a degraded (non-enriched) authority forces every term uncovered;
+        # a term a PRESENT pool row association-covers must carry the
+        # state-accurate degraded line, a genuinely-uncovered term the plain
+        # line.
+        degraded_association_terms = (
+            set()
+            if enriched
+            else {
+                term
+                for term in expected_terms
+                if any(term in row.supports_bold_terms for row in rows_by_id.values())
+            }
+        )
+        if (
+            int(coverage_matches[0][0]) != len(expected_covered)
+            or int(coverage_matches[0][1]) != len(expected_terms)
+        ):
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        # Per-entry checks over the section split by ### headings.
+        chunks = _GLOSSARY_ENTRY_HEADING_RE.split(section)
+        # chunks = [lead, term1, body1, term2, body2, ...]
+        entry_bodies = dict(zip(chunks[1::2], chunks[2::2], strict=True))
+        covered_citation_ids: set[str] = set()
+        for term, body in entry_bodies.items():
+            cited = _GLOSSARY_PROVENANCE_RE.findall(body)
+            if term not in expected_covered:
+                # J-1 lean uncovered honesty, STRUCTURAL (P3): the entry body
+                # is EXACTLY the one permitted state-accurate line — nothing
+                # else may ride an uncovered term (no citation / tier /
+                # capability note / appended fabricated definition).
+                expected_line = (
+                    _GLOSSARY_UNCOVERED_DEGRADED_LINE
+                    if term in degraded_association_terms
+                    else _GLOSSARY_UNCOVERED_LINE
+                )
+                body_lines = [line for line in body.splitlines() if line.strip()]
+                if body_lines != [expected_line]:
+                    raise RunnerRefusal(
+                        "workbook-deliverable-nonconforming-despite-completed"
+                    )
+                continue
+            if not cited:
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            for line in body.splitlines():
+                line_ids = _GLOSSARY_PROVENANCE_RE.findall(line)
+                if not line_ids:
+                    continue
+                for citation_id in line_ids:
+                    row = rows_by_id.get(citation_id)
+                    # Citation must resolve to a pool row that association-
+                    # covers THIS term.
+                    if row is None or term not in row.supports_bold_terms:
+                        raise RunnerRefusal(
+                            "workbook-deliverable-nonconforming-despite-completed"
+                        )
+                    # Tier verbatim (negative pin v): the rendered tier token
+                    # on the citation's provenance line equals the row's.
+                    tier_match = _GLOSSARY_TIER_RE.search(line)
+                    if (
+                        tier_match is None
+                        or tier_match.group(1) != row.evidence_hierarchy_tier
+                    ):
+                        raise RunnerRefusal(
+                            "workbook-deliverable-nonconforming-despite-completed"
+                        )
+                    covered_citation_ids.add(citation_id)
+            # P4 attribution sweep: EVERY ask-a-cite token anywhere in THIS
+            # covered entry's body (any idiom, provenance line or prose) must
+            # be one of THIS entry's covering citation ids validated above —
+            # another entry's id does not attribute here.
+            if not set(_ASK_A_CITE_TOKEN_RE.findall(body)) <= set(cited):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+        # Matrix row j (P5): every covered citation_id resolves into the
+        # cited-entries block INSIDE ``## References`` (AC-A9 seam) — the
+        # glossary's own provenance lines must never satisfy their own
+        # resolvability claim, and a reference line outside that block does
+        # not count.
+        reference_ids = set(_ASK_A_REFERENCE_ENTRY_RE.findall(_cited_entries_block(text)))
+        if not covered_citation_ids <= reference_ids:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+
+def _assert_lo_overlay_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """M-R3 LO shippability bar: degraded Learning Objectives never ship.
+
+    STRUCTURED channel first (Amelia F2, closure record): the producer's
+    ``lo_overlay_loss`` record on the persisted 07W ``workbook_producer``
+    contribution in ``run.json`` is the assertion surface — a present record
+    with ``unresolved_count > 0`` (or malformed) REFUSES the completed
+    deliverable, naming the unresolved objectives; the placeholder prose is
+    never the primary witness. MD floor (P15/R3 mirror) on
+    presentation-support deliverables: the ``Enrichment overlay loss:``
+    callout can only be minted by a populated record, so a callout with no
+    record backing it refuses in EVERY branch; the placeholder copy
+    (``objective statement unresolved``) while the persisted contribution
+    carries a null/clean record is a prose/structured desync ⇒ REFUSE. Clean
+    MD + absent/clean record = pass. A run with NO persisted 07W contribution
+    (harness rig / legacy stub) keeps R3's tolerance for the by-design
+    card-less degrade — the callout floor still applies. Test-harness-side
+    only; production runtime is untouched.
+    """
+    placeholder_seen = False
+    callout_seen = False
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+            continue  # legacy-profile deliverable: M-R3 clause does not apply
+        placeholder_seen = placeholder_seen or _LO_PLACEHOLDER_COPY in text
+        callout_seen = callout_seen or _LO_OVERLAY_LOSS_CALLOUT in text
+    if not (run_dir / "run.json").is_file():
+        # No structured authority at all: a loss callout is a fabricated
+        # claim (never a silent skip; P15 mirror).
+        if callout_seen:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        return
+    try:
+        from app.marcus.lesson_plan.workbook_enrichment import (  # noqa: PLC0415
+            load_run_envelope,
+        )
+
+        envelope = load_run_envelope(run_dir)
+    except Exception as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    contribution = (
+        envelope.get_contribution(
+            _WORKBOOK_PRODUCER_SPECIALIST_ID, node_id=_WORKBOOK_PRODUCER_NODE_ID
+        )
+        if envelope is not None
+        else None
+    )
+    if contribution is None:
+        # R3-style tolerance: no persisted 07W contribution (rig / legacy) —
+        # but a loss callout no record can back still refuses.
+        if callout_seen:
+            raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+        return
+    output = contribution.output if isinstance(contribution.output, dict) else {}
+    workbook_refs = output.get("workbook")
+    loss = (
+        workbook_refs.get("lo_overlay_loss")
+        if isinstance(workbook_refs, dict)
+        else None
+    )
+    if loss is not None:
+        # Structured channel: a persisted loss record must be well-formed and
+        # zero-loss to ship; unresolved objectives refuse BY NAME.
+        unresolved = loss.get("unresolved_count") if isinstance(loss, dict) else None
+        if (
+            not isinstance(unresolved, int)
+            or isinstance(unresolved, bool)
+            or unresolved > 0
+        ):
+            refusal = RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            )
+            objectives = (
+                loss.get("unresolved_objectives") if isinstance(loss, dict) else None
+            )
+            if isinstance(objectives, list) and objectives:
+                refusal.add_note(
+                    "unresolved learning objectives: "
+                    + ", ".join(str(objective) for objective in objectives)
+                )
+            raise refusal
+    if placeholder_seen or callout_seen:
+        # Prose/structured desync: the deliverable claims an LO degrade the
+        # persisted record does not back (record absent or clean).
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+
+def _assert_exercise_composition_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """39.1b deliverable bar: exercise-composition clause, structured-first.
+
+    The producer's persisted ``exercise_composition`` receipt +
+    ``exercise_overlay_loss`` record on the 07W ``workbook_producer``
+    contribution in ``run.json`` are the primary assertion surface; the MD is
+    the conformance floor. Asserts (AC 8): (i) the per-unit provenance group
+    labels ("Practice" / "Course Check — drawn from this course's own
+    assessments") are present whenever the corresponding origin class has
+    items; (ii) any collateral trim is accompanied by a structured
+    ``exercise_overlay_loss`` record that matches the receipt tally (silent
+    trim = REJECT); (iii) overlay-never-trimmed holds — every course-check id
+    the receipt carries must render (an overlay item absent from the render =
+    REJECT). MD floor in EVERY branch: an ``Exercise overlay loss:`` callout
+    no structured record backs is a fabricated claim ⇒ REFUSE; a populated
+    record whose callout is missing is a prose/structured desync ⇒ REFUSE.
+    A run with no persisted receipt (pre-39.1b shape / harness rig) keeps the
+    R3-style tolerance — the callout floor still applies. Test-harness-side
+    only; production runtime is untouched.
+    """
+    from app.marcus.lesson_plan.workbook_producer import (  # noqa: PLC0415
+        COURSE_CHECK_GROUP_LABEL,
+        EXERCISE_OVERLAY_LOSS_CALLOUT,
+        PRACTICE_GROUP_LABEL,
+    )
+
+    texts: list[str] = []
+    for path in md_paths:
+        try:
+            texts.append(_retry_transient_read(path.read_bytes).decode("utf-8"))
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+    callout_seen = any(EXERCISE_OVERLAY_LOSS_CALLOUT in text for text in texts)
+
+    def _refuse() -> None:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+    if not (run_dir / "run.json").is_file():
+        if callout_seen:
+            _refuse()  # a callout can only be minted by a populated record
+        return
+    try:
+        from app.marcus.lesson_plan.workbook_enrichment import (  # noqa: PLC0415
+            load_run_envelope,
+        )
+
+        envelope = load_run_envelope(run_dir)
+    except Exception as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    contribution = (
+        envelope.get_contribution(
+            _WORKBOOK_PRODUCER_SPECIALIST_ID, node_id=_WORKBOOK_PRODUCER_NODE_ID
+        )
+        if envelope is not None
+        else None
+    )
+    output = (
+        contribution.output
+        if contribution is not None and isinstance(contribution.output, dict)
+        else {}
+    )
+    workbook_refs = output.get("workbook")
+    refs = workbook_refs if isinstance(workbook_refs, dict) else {}
+    receipt = refs.get("exercise_composition")
+    loss = refs.get("exercise_overlay_loss")
+    if receipt is None:
+        # R3-style tolerance: pre-39.1b persisted shape (or rig) makes no
+        # composition claim — but a loss record/callout with no receipt to
+        # back it is a half-written claim, never a silent pass.
+        if callout_seen or loss is not None:
+            _refuse()
+        return
+    # Receipt well-formedness (a malformed receipt is a refusal, not a skip).
+    sections = receipt.get("sections") if isinstance(receipt, dict) else None
+    trimmed_count = (
+        receipt.get("collateral_trimmed_count") if isinstance(receipt, dict) else None
+    )
+    if (
+        not isinstance(sections, list)
+        or not isinstance(trimmed_count, int)
+        or isinstance(trimmed_count, bool)
+        or trimmed_count < 0
+    ):
+        _refuse()
+    # (ii) trim <-> loss-record consistency: silent trim = REJECT.
+    loss_ids: list | None = None
+    if trimmed_count > 0:
+        loss_trimmed = loss.get("trimmed_count") if isinstance(loss, dict) else None
+        loss_ids = (
+            loss.get("trimmed_exercise_ids") if isinstance(loss, dict) else None
+        )
+        if (
+            loss_trimmed != trimmed_count
+            or not isinstance(loss_ids, list)
+            or len(loss_ids) != trimmed_count
+        ):
+            _refuse()
+    elif loss is not None:
+        _refuse()  # a loss record with a zero-trim receipt is a desync
+    # (ii-independent, T4 F2): the receipt's trim tally is producer-authored
+    # alongside the loss record, so tally⇔loss alone cannot catch a cap bug
+    # that trims WITHOUT recording. Irene's collateral blueprint on run.json
+    # is the independent authority: kept Practice ids ∪ trimmed ids must
+    # EQUAL the blueprint's authored collateral exercise ids. Tolerant when
+    # the blueprint is absent (rig / declaration none) — never when it
+    # contradicts the receipt.
+    try:
+        from app.marcus.lesson_plan.workbook_enrichment import (  # noqa: PLC0415
+            collateral_from_run,
+        )
+
+        blueprint = collateral_from_run(run_dir)
+    except Exception:
+        blueprint = None
+    if isinstance(blueprint, dict) and blueprint.get("declaration") == "present":
+        workbook = blueprint.get("workbook")
+        blueprint_sections = (
+            workbook.get("sections") if isinstance(workbook, dict) else None
+        )
+        if isinstance(blueprint_sections, list) and blueprint_sections:
+            authored_ids = {
+                str(exercise.get("exercise_id"))
+                for row in blueprint_sections
+                if isinstance(row, dict)
+                for exercise in (row.get("exercises") or [])
+                if isinstance(exercise, dict) and exercise.get("exercise_id")
+            }
+            receipt_practice_ids = {
+                str(exercise_id)
+                for row in sections
+                if isinstance(row, dict)
+                for exercise_id in (
+                    row.get("practice") if isinstance(row.get("practice"), list) else []
+                )
+            }
+            trimmed_ids = {str(t) for t in loss_ids} if loss_ids else set()
+            if receipt_practice_ids & trimmed_ids:
+                _refuse()  # an id cannot be both kept and trimmed
+            if receipt_practice_ids | trimmed_ids != authored_ids:
+                _refuse()  # kept ∪ trimmed must account for EVERY authored id
+    for text in texts:
+        # MD floor both directions: callout ⇔ populated record.
+        if (EXERCISE_OVERLAY_LOSS_CALLOUT in text) != (loss is not None):
+            _refuse()
+        # (ii-render): a trimmed id still rendering means the recorded trim
+        # was not actually applied (record/prose desync).
+        for trimmed_id in loss_ids or []:
+            if f"#### Exercise `{trimmed_id}`" in text:
+                _refuse()
+        for row in sections:
+            if not isinstance(row, dict):
+                _refuse()
+            section_id = row.get("section_id")
+            practice = row.get("practice")
+            course_check = row.get("course_check")
+            if (
+                not isinstance(section_id, str)
+                or not isinstance(practice, list)
+                or not isinstance(course_check, list)
+            ):
+                _refuse()
+            # (i) origin-labeled group headings present when the class has
+            # items — required in BOTH the Exercises block and its Answer Key
+            # mirror (T4 F9: the render emits the identical heading in each,
+            # so a single occurrence means one block lost its label).
+            if practice and (
+                text.count(f"### {PRACTICE_GROUP_LABEL} — section `{section_id}`") < 2
+            ):
+                _refuse()
+            if course_check and (
+                text.count(
+                    f"### {COURSE_CHECK_GROUP_LABEL} — section `{section_id}`"
+                )
+                < 2
+            ):
+                _refuse()
+            # (iii) overlay-never-trimmed: every course-check id renders; and
+            # (T4 F10) every kept Practice id renders too — receipt/prose
+            # desync refuses on BOTH origin classes.
+            for exercise_id in (*practice, *course_check):
+                if f"#### Exercise `{exercise_id}`" not in text:
+                    _refuse()
+
+
+def _assert_trends_door_ajar_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """39.2 deliverable bar: trends / Door-Ajar conformance, recompute-first.
+
+    Substrate-forced difference from the glossary/exercise idiom, declared
+    honestly: NO trends receipt is persisted on the 07W contribution
+    (``_sidecar_refs``), and the projection is a pure deterministic function
+    of ``run.json`` — so the structured authority is the deterministic
+    RECOMPUTE: ``resolve_for_hot_topics(run_dir)`` →
+    ``project_trends_from_packet(packet)`` with the ``_act.py`` production
+    defaults (``max_trends=5``, ``max_hot_topics=3``, no injected topics;
+    the W-2 pin asserts that equality), compared against the rendered
+    ``## Research Trends`` section. Floor (presentation-support sentinel MDs
+    only, mirroring the 39.1 scope — legacy-profile deliverables are out of
+    clause scope, M-4): exactly ONE section per deliverable (counted, P9);
+    recompute NOT usable ⇒ the section is the explicit-empty render (the
+    recomputed ``empty_reason`` verbatim inside ``*(...)*``; NO claim list,
+    NO usable hot-topic lines, NO ``ask-b-cite-`` tokens, NO ``Provenance:``
+    lines, NO DOIs; the Rejected/unusable honesty block is permitted);
+    recompute usable ⇒ rendered claims/topics reconcile EXACTLY with the
+    recompute (claim texts, citation_id/source_ref/confidence order,
+    topic/supporting/source_refs order — a missing rendered claim (M-1
+    silent-loss direction), an extra/fabricated claim, or a reordered/
+    rewritten confidence label all REJECT), every rendered citation_id /
+    source_ref / supporting id resolves into the recomputed packet entries
+    (AC 5 anti-theater formulation), the anti-theater sentinel line is
+    present, and unusable topics appear ONLY under the Rejected block.
+    The fabrication scan is WHOLE-SECTION (T4 F1/F3): a ``Provenance:``
+    line outside the claims region, an unbacked provenance triple parsed
+    anywhere in the section, and any raw ``ask-b-cite-`` token anywhere
+    in the section that is not a member of the recomputed packet's
+    citation ids all REJECT — region relocation is never an escape.
+    No ``run.json`` ⇒ a presentation-support MD whose section carries any
+    grounded-claim content (claim list / hot-topic lines /
+    ``ask-b-cite-`` tokens / ``Provenance:`` lines / DOIs — the SAME set
+    the empty branch applies, T4 F2) is REJECTED (P15 mirror: no structured authority
+    may back no claims); an explicit-empty section is tolerated (R3-style
+    tolerance — the section renders in every profile/run shape, so bare
+    presence is never the refusal trigger, unlike the glossary heading).
+
+    Residual named honestly (M-6): bar-time and render-time share
+    ``project_trends_from_packet`` — a bug INSIDE that pure function is
+    invisible to this recompute comparison; it is covered by the
+    deterministic unit pins (39.2 ACs 3–5), not by this bar. Likewise
+    out of scope BY DESIGN (T4 F3 residual): free-prose forecast
+    SEMANTICS — a hand-written prediction sentence carrying no parseable
+    claim/topic/provenance idiom and no ``ask-b-cite-`` token is not
+    detected; this bar is a parse floor, not a semantic audit (semantic
+    honesty is owned by the AC 5 render-honesty unit pins and the
+    run-B judged witness, never by this deterministic clause).
+    Test-harness-side only; production runtime is untouched.
+    """
+
+    def _refuse() -> None:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+    text_by_path: dict[Path, str] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        # LF-normalize (write_text translates \n -> \r\n on Windows); the
+        # section/heading anchors below are LF-based.
+        text_by_path[path] = text.replace("\r\n", "\n")
+
+    if not (run_dir / "run.json").is_file():
+        # P15 mirror: grounded-claim content with no structured authority
+        # behind it refuses; a bare / explicit-empty section is tolerated.
+        for text in text_by_path.values():
+            if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+                continue
+            section = _md_section_body(text, _TRENDS_HEADING)
+            if section is None:
+                continue
+            if (
+                _TRENDS_CLAIMS_SUBHEADING in section
+                or _TRENDS_TOPIC_LINE_RE.search(section)
+                or "**Provenance:**" in section
+                or _ASK_B_CITE_TOKEN_RE.search(section)
+                or "https://doi.org/" in section
+            ):
+                # T4 F2: the no-authority branch applies the SAME grounded-
+                # content set as the empty branch (topic lines + DOIs
+                # included) — a confidence-labeled hot-topic line with
+                # generic (non-ask-b) cite ids and no run.json REJECTS.
+                _refuse()
+        return
+
+    try:
+        from app.marcus.lesson_plan.research_packet import (  # noqa: PLC0415
+            resolve_for_hot_topics,
+        )
+        from app.marcus.lesson_plan.trends_projection import (  # noqa: PLC0415
+            project_trends_from_packet,
+        )
+
+        packet = resolve_for_hot_topics(run_dir)
+        brief = project_trends_from_packet(
+            packet,
+            max_trends=_TRENDS_BAR_MAX_TRENDS,
+            max_hot_topics=_TRENDS_BAR_MAX_HOT_TOPICS,
+            injected_topics=_TRENDS_BAR_INJECTED_TOPICS,
+        )
+    except Exception as exc:
+        # A forged/malformed Ask-B contribution (ResearchPacketShapeError) or
+        # corrupt envelope fails the recompute — reject, never trust prose.
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+
+    packet_citation_ids = {str(entry.get("citation_id")) for entry in packet.entries}
+    packet_source_refs = {str(entry.get("source_ref")) for entry in packet.entries}
+    expected_claims = [claim.claim_text for claim in brief.trends]
+    expected_provenance = [
+        (claim.citation_id, claim.source_ref, claim.confidence)
+        for claim in brief.trends
+    ]
+    expected_topics = [
+        (topic.topic, topic.confidence, topic.supporting_citation_ids, topic.source_refs)
+        for topic in brief.hot_topics
+        if topic.confidence != "unusable"
+    ]
+    expected_rejected = [
+        topic.topic for topic in brief.hot_topics if topic.confidence == "unusable"
+    ]
+
+    for text in text_by_path.values():
+        if _PRESENTATION_SUPPORT_MD_SENTINEL not in text:
+            continue  # legacy-profile deliverable: 39.2 clause does not apply (M-4)
+        # P9 singularity: exactly ONE Research Trends section (counted).
+        if len(re.findall(rf"(?m)^{re.escape(_TRENDS_HEADING)}\s*$", text)) != 1:
+            _refuse()
+        section = _md_section_body(text, _TRENDS_HEADING)
+        if section is None:
+            _refuse()
+        if not brief.usable:
+            # Explicit-empty render: the recomputed reason verbatim, and no
+            # grounded/fabricated content of any kind (Rejected block allowed).
+            if brief.empty_reason is None or f"*({brief.empty_reason})*" not in section:
+                _refuse()
+            if (
+                _TRENDS_CLAIMS_SUBHEADING in section
+                or _TRENDS_TOPIC_LINE_RE.search(section)
+                or "**Provenance:**" in section
+                or _ASK_B_CITE_TOKEN_RE.search(section)
+                or "https://doi.org/" in section
+            ):
+                _refuse()
+            continue
+        # Usable branch: split into the renderer's fixed subregion order.
+        claims_at = section.find(_TRENDS_CLAIMS_SUBHEADING)
+        topics_at = section.find(_TRENDS_HOT_TOPICS_SUBHEADING)
+        rejected_at = section.find(_TRENDS_REJECTED_SUBHEADING)
+        if claims_at == -1 or topics_at == -1 or topics_at < claims_at:
+            _refuse()
+        if rejected_at != -1 and rejected_at < topics_at:
+            _refuse()
+        topics_end = rejected_at if rejected_at != -1 else len(section)
+        claims_region = section[claims_at:topics_at]
+        topics_region = section[topics_at:topics_end]
+        rejected_region = section[rejected_at:] if rejected_at != -1 else ""
+        if _TRENDS_ANTI_THEATER_LINE not in topics_region:
+            _refuse()
+        # T4 F1: the fabrication scan is WHOLE-SECTION, never region-scoped.
+        # (i) A ``**Provenance:**`` line may appear ONLY inside the claims
+        # region — a fabricated block relocated after the anti-theater line
+        # (Hot-topics region) or parked under an injected Rejected heading
+        # REJECTS on placement alone; (ii) every provenance triple parsed
+        # ANYWHERE in the section must be packet-backed.
+        if "**Provenance:**" in section[:claims_at] or (
+            "**Provenance:**" in section[topics_at:]
+        ):
+            _refuse()
+        for citation_id, source_ref, _confidence in _TRENDS_PROVENANCE_RE.findall(
+            section
+        ):
+            if citation_id not in packet_citation_ids:
+                _refuse()
+            if source_ref not in packet_source_refs:
+                _refuse()
+        # T4 F3: symmetric raw-token sweep (the empty branch already refuses
+        # on ANY token) — every ``ask-b-cite-`` token ANYWHERE in the section,
+        # including free prose, must be a member of the recomputed packet's
+        # citation ids, else REJECT.
+        for token in _ASK_B_CITE_TOKEN_RE.findall(section):
+            if token not in packet_citation_ids:
+                _refuse()
+        # Trend claims reconcile exactly (order + text + provenance triple).
+        rendered_claims = _TRENDS_CLAIM_LINE_RE.findall(claims_region)
+        rendered_provenance = _TRENDS_PROVENANCE_RE.findall(claims_region)
+        if rendered_claims != expected_claims:
+            _refuse()
+        if [tuple(row) for row in rendered_provenance] != expected_provenance:
+            _refuse()
+        # Usable hot topics reconcile exactly; unusable never renders here.
+        rendered_topics = [
+            (
+                match[0],
+                match[1],
+                tuple(re.findall(r"`([^`]+)`", match[2])),
+                tuple(re.findall(r"`([^`]+)`", match[3])),
+            )
+            for match in _TRENDS_TOPIC_LINE_RE.findall(topics_region)
+        ]
+        if rendered_topics != expected_topics:
+            _refuse()
+        if any(confidence == "unusable" for _, confidence, _, _ in rendered_topics):
+            _refuse()
+        # Rejected block reconciles (production defaults inject nothing, so a
+        # populated Rejected block with an empty recompute is a desync).
+        if _TRENDS_REJECTED_LINE_RE.findall(rejected_region) != expected_rejected:
+            _refuse()
+        # AC 5 packet-membership: every rendered claim/topic is backed by a
+        # packet row — anything unbacked is fabricated ⇒ REJECT.
+        for citation_id, source_ref, _confidence in rendered_provenance:
+            if citation_id not in packet_citation_ids:
+                _refuse()
+            if source_ref not in packet_source_refs:
+                _refuse()
+        for _topic, _confidence, supporting_ids, source_refs in rendered_topics:
+            if not set(supporting_ids) <= packet_citation_ids:
+                _refuse()
+            if not set(source_refs) <= packet_source_refs:
+                _refuse()
+
+
+def _assert_cover_conformant(run_dir: Path, md_paths: list[Path]) -> None:
+    """40.1 deliverable bar: cover conformance, structured-receipt-first.
+
+    The persisted ``cover`` receipt on the 07W ``workbook_producer``
+    contribution in ``run.json`` is the primary assertion surface; the MD is
+    the conformance floor. **Receipt-present branch only (A-2):** every cover
+    assert below executes ONLY when the receipt exists — receipt-absent
+    presentation-support MDs (RENDERED_WORKBOOK_FIXTURE and every existing
+    bar-test fixture) keep passing UNCHANGED (R3-style tolerance).
+
+    Anti-tautology fence (M-1): the clause imports ONLY exported constants
+    from the producer module (heading/marker strings + the art-brief
+    schema-version literal); it NEVER calls ``compose_workbook`` and NEVER
+    reads ``doc.blocks`` — every assertion VALUE comes from persisted
+    artifacts (``run.json``, the rendered MD, the art-brief sidecar file), so
+    the bar can fail the producer.
+
+    Receipt-present asserts (AC 6): (i) BIDIRECTIONAL TOC coverage (M-2) —
+    every rendered ``## `` heading (cover headings excluded; the
+    renderer-appended footer included) has exactly one TOC entry in the
+    receipt AND in the rendered ``Contents`` section, AND every TOC entry's
+    target names a verbatim-matching rendered heading (missing entry =
+    REJECT; phantom entry = REJECT; duplicate-H2 ambiguity = fail-loud
+    REJECT); (ii) hero honesty — the ``Cover`` body carries the exported
+    placeholder marker and NO ``![`` image reference while the receipt claims
+    ``placeholder``; (iii) provenance run-id — receipt AND rendered run id
+    both equal ``run.json`` ``trial_id``; (iv) the art-brief sidecar exists
+    beside the MD at the receipt filename, parses, carries the pinned
+    ``schema_version``, and its self-digest RECOMPUTES (canonical
+    sort-keys/ascii/compact JSON over the non-digest fields) and matches the
+    receipt digest; (v) date VALUE-match (M-3) — rendered and receipt
+    generation dates both equal the ``started_at`` VALUE of the trial
+    envelope THIS clause loads from ``run.json`` (a source-of-truth value
+    comparison, never a format check; wall-clock backfill REJECTS).
+    Test-harness-side only; production runtime is untouched.
+    """
+    from app.marcus.lesson_plan.workbook_producer import (  # noqa: PLC0415
+        ABOUT_HEADING,
+        CONTENTS_HEADING,
+        COVER_ART_BRIEF_SCHEMA_VERSION,
+        COVER_HEADING,
+        COVER_HERO_PLACEHOLDER_MARKER,
+    )
+
+    def _refuse() -> None:
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+
+    text_by_path: dict[Path, str] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        # LF-normalize (write_text translates \n -> \r\n on Windows); the
+        # heading/line anchors below are LF-based.
+        text_by_path[path] = text.replace("\r\n", "\n")
+
+    run_json = run_dir / "run.json"
+    if not run_json.is_file():
+        # A-2: no structured authority ⇒ no receipt can exist; tolerance.
+        return
+    if run_json.is_symlink():
+        _refuse()
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(
+            run_json.read_text(encoding="utf-8")
+        )
+    except Exception as exc:  # corrupt envelope: reject, never trust prose
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    contribution = trial.production_envelope.get_contribution(
+        _WORKBOOK_PRODUCER_SPECIALIST_ID, node_id=_WORKBOOK_PRODUCER_NODE_ID
+    )
+    output = (
+        contribution.output
+        if contribution is not None and isinstance(contribution.output, dict)
+        else {}
+    )
+    workbook_refs = output.get("workbook")
+    refs = workbook_refs if isinstance(workbook_refs, dict) else {}
+    receipt = refs.get("cover")
+    if receipt is None:
+        # A-2 (BLOCKING): receipt-absent shapes (pre-40.1 runs, legacy
+        # renders, every existing bar-test fixture) pass UNCHANGED.
+        return
+    # --- receipt-present branch: well-formedness first (malformed = refusal).
+    if not isinstance(receipt, dict) or receipt.get("hero") != "placeholder":
+        _refuse()
+    toc = receipt.get("toc")
+    art_brief_ref = receipt.get("art_brief")
+    provenance = receipt.get("provenance")
+    if (
+        not isinstance(toc, list)
+        or not toc
+        or not isinstance(art_brief_ref, dict)
+        or not isinstance(provenance, dict)
+    ):
+        _refuse()
+    receipt_targets = [
+        entry.get("target") for entry in toc if isinstance(entry, dict)
+    ]
+    if len(receipt_targets) != len(toc) or not all(
+        isinstance(target, str) and target for target in receipt_targets
+    ):
+        _refuse()
+    if len(set(receipt_targets)) != len(receipt_targets):
+        _refuse()  # duplicate receipt entries: one entry per heading (AC 3)
+    # (iii) + (v): source-of-truth values loaded by THIS clause.
+    trial_run_id = str(trial.trial_id)
+    if provenance.get("run_id") != trial_run_id:
+        _refuse()  # negative pin (c): receipt run id must equal trial_id
+    receipt_date = provenance.get("generated_at")
+    if not isinstance(receipt_date, str):
+        _refuse()
+    try:
+        receipt_dt = datetime.fromisoformat(receipt_date)
+    except ValueError as exc:
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    if receipt_dt != trial.started_at:
+        _refuse()  # negative pin (d): wall-clock-mutated receipt date (M-3)
+    filename = art_brief_ref.get("filename")
+    receipt_digest = art_brief_ref.get("digest")
+    if (
+        not isinstance(filename, str)
+        or not filename
+        or not isinstance(receipt_digest, str)
+        or not receipt_digest
+    ):
+        _refuse()
+    covered = [
+        (path, text)
+        for path, text in text_by_path.items()
+        if _PRESENTATION_SUPPORT_MD_SENTINEL in text
+    ]
+    if not covered:
+        _refuse()  # a cover receipt with no presentation-support render behind it
+    for path, text in covered:
+        h2_headings = _MD_H2_RE.findall(text)
+        for cover_heading in (COVER_HEADING, CONTENTS_HEADING, ABOUT_HEADING):
+            if h2_headings.count(cover_heading) != 1:
+                _refuse()  # cover sections present exactly once (counted)
+        section_targets = [
+            heading
+            for heading in h2_headings
+            if heading not in (COVER_HEADING, CONTENTS_HEADING, ABOUT_HEADING)
+        ]
+        if len(set(section_targets)) != len(section_targets):
+            _refuse()  # duplicate-H2 ambiguity resolved FAIL-LOUD (M-2)
+        contents_body = _md_section_body(text, f"## {CONTENTS_HEADING}")
+        cover_body = _md_section_body(text, f"## {COVER_HEADING}")
+        about_body = _md_section_body(text, f"## {ABOUT_HEADING}")
+        if contents_body is None or cover_body is None or about_body is None:
+            _refuse()
+            continue
+        # (i) BIDIRECTIONAL TOC coverage (M-2), receipt AND render surfaces:
+        # a rendered section with no TOC entry = REJECT (missing direction);
+        # a TOC entry naming no rendered heading = REJECT (phantom direction).
+        rendered_targets = _COVER_TOC_ENTRY_RE.findall(contents_body)
+        if len(set(rendered_targets)) != len(rendered_targets):
+            _refuse()  # exactly one entry per heading, rendered surface
+        if set(rendered_targets) != set(section_targets):
+            _refuse()
+        if set(receipt_targets) != set(section_targets):
+            _refuse()
+        # (ii) hero honesty: the exported placeholder marker, and NO image
+        # reference inside the Cover body while the receipt claims
+        # ``placeholder`` — an ``![`` here is a fabricated hero claim.
+        if COVER_HERO_PLACEHOLDER_MARKER not in cover_body:
+            _refuse()
+        if "![" in cover_body:
+            _refuse()
+        # (iii) rendered run id equals run.json trial_id (VALUE).
+        run_match = _COVER_RUN_ID_LINE_RE.search(about_body)
+        if run_match is None or run_match.group(1) != trial_run_id:
+            _refuse()
+        # (v) rendered generation date equals envelope started_at (M-3 VALUE
+        # match — a degraded/absent Generated line on a receipt-present
+        # completed run is equally a refusal: the value cannot match).
+        date_match = _COVER_GENERATED_LINE_RE.search(about_body)
+        if date_match is None:
+            _refuse()
+            continue
+        try:
+            rendered_dt = datetime.fromisoformat(date_match.group(1))
+        except ValueError as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        if rendered_dt != trial.started_at:
+            _refuse()
+        # (iv) art-brief sidecar: exists beside the MD at the receipt
+        # filename, regular file, parses, pinned schema_version, self-digest
+        # recomputes and matches the receipt digest (stale/corrupt = REJECT).
+        brief_path = path.parent / filename
+        if brief_path.is_symlink() or not brief_path.is_file():
+            _refuse()
+        try:
+            brief = json.loads(brief_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        if (
+            not isinstance(brief, dict)
+            or brief.get("schema_version") != COVER_ART_BRIEF_SCHEMA_VERSION
+        ):
+            _refuse()
+        recomputed = hashlib.sha256(
+            json.dumps(
+                {key: value for key, value in brief.items() if key != "self_digest"},
+                sort_keys=True,
+                ensure_ascii=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        if brief.get("self_digest") != recomputed or receipt_digest != recomputed:
+            _refuse()
+
+
+def _assert_deep_dive_conformant_markdown(run_dir: Path, md_paths: list[Path]) -> None:
+    """37.2b deliverable bar: deep-dive conformance, structured-artifact-first.
+
+    The 07W.3 contribution + gate receipt from ``run.json`` are the primary
+    assertion surface (Amelia-F2 idiom): the strict contract revalidation
+    (constructed-model gate recompute) rejects phantom-citation and
+    enriched-with-zero-citations mutants before any prose grep. The MD check is
+    the minimal floor: an enriched claim requires the ``## Deep Dive`` heading,
+    at least one inline ``ask-a-cite-`` marker, and every marker resolving to a
+    rendered reference entry; a degraded claim requires the honest typed-loss
+    note and ZERO ``ask-a-cite-`` markers (amendment M4).
+
+    R3: the M4 stray-marker scan runs in EVERY branch — ``run.json`` absent,
+    contribution absent (legacy stub / pre-37.2b), and degraded alike: an
+    inline ``ask-a-cite-`` marker without an activated ENRICHED contribution is
+    always a refusal (a marker can only be minted by cited enrichment).
+    Test-harness-side only; production runtime is untouched.
+    """
+    text_by_path: dict[Path, str] = {}
+    markers_by_path: dict[Path, set[str]] = {}
+    for path in md_paths:
+        try:
+            text = _retry_transient_read(path.read_bytes).decode("utf-8")
+        except (OSError, UnicodeError) as exc:
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            ) from exc
+        text_by_path[path] = text
+        markers_by_path[path] = set(_ASK_A_CITE_MARKER_RE.findall(text))
+
+    def _refuse_any_marker() -> None:
+        if any(markers_by_path.values()):
+            raise RunnerRefusal(
+                "workbook-deliverable-nonconforming-despite-completed"
+            )
+
+    if not (run_dir / "run.json").is_file():
+        _refuse_any_marker()  # R3 branch: run.json absent
+        return
+    try:
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            load_workbook_review_contribution,
+        )
+
+        contribution = load_workbook_review_contribution(run_dir)
+    except Exception as exc:
+        # A present-but-nonconforming activated contribution (phantom citation,
+        # enriched-status-with-zero-citations, digest mismatch) fails strict
+        # revalidation here — reject, never trust the prose.
+        raise RunnerRefusal(
+            "workbook-deliverable-nonconforming-despite-completed"
+        ) from exc
+    if contribution is None:
+        # R3 branch: legacy stub / pre-37.2b run — the prior bar is otherwise
+        # unchanged, but a stray marker still refuses.
+        _refuse_any_marker()
+        return
+    result = contribution.deep_dive_enrichment
+    enriched = result is not None and result.status == "enriched"
+    if enriched and (
+        result.gate.status != "pass" or not result.gate.used_citation_ids
+    ):
+        raise RunnerRefusal("workbook-deliverable-nonconforming-despite-completed")
+    if not enriched:
+        _refuse_any_marker()  # R3 branch: contribution degraded / not authored (M4)
+    for path in md_paths:
+        text = text_by_path[path]
+        markers = markers_by_path[path]
+        if enriched:
+            if _DEEP_DIVE_HEADING not in text or not markers:
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            if not markers <= set(result.gate.used_citation_ids):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+            rendered_reference_ids = set(_ASK_A_REFERENCE_ENTRY_RE.findall(text))
+            if not markers <= rendered_reference_ids:
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+        else:
+            # Degraded / not-run: the honest note is mandatory on the
+            # presentation-support deliverable (stray markers already refused
+            # above in every branch).
+            if _PRESENTATION_SUPPORT_MD_SENTINEL in text and (
+                _DEEP_DIVE_HEADING not in text or _DEEP_DIVE_LOSS_NOTE not in text
+            ):
+                raise RunnerRefusal(
+                    "workbook-deliverable-nonconforming-despite-completed"
+                )
+
+
 def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> None:
     """Kill the ``status == completed`` false-green: prove a real workbook was emitted.
 
@@ -1266,6 +2407,45 @@ def _assert_completed_workbook_deliverable(trial_id: UUID, run_dir: Path) -> Non
     for stem in paired:
         _assert_conformant_workbook_markdown(run_dir / md_by_stem[stem])
         _assert_conformant_workbook_docx(run_dir / docx_by_stem[stem])
+    # 37.2b: deep-dive conformance bar (structured artifacts first, then the
+    # minimal MD floor) — same-diff extension per protocol plank 5.
+    _assert_deep_dive_conformant_markdown(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # 39.1: glossary conformance clause (same-diff extension, plank 5) —
+    # status-dependent bold-term authority, headword-identity association,
+    # uncovered honesty, tier-verbatim, citation resolvability.
+    _assert_glossary_conformant_markdown(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # M-R3 closure rider: LO shippability bar — a completed presentation-
+    # support workbook whose Learning Objectives degraded (the producer's
+    # persisted ``lo_overlay_loss`` record on the 07W contribution, structured
+    # channel first) is REFUSED; prose desync is the MD floor, never the
+    # primary witness.
+    _assert_lo_overlay_conformant(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # 39.1b: exercise-composition clause (same-diff extension, plank 5) —
+    # origin-labeled groups, trim ⇔ exercise_overlay_loss record consistency,
+    # overlay-never-trimmed; structured receipt first, MD floor second.
+    _assert_exercise_composition_conformant(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # 39.2: trends / Door-Ajar clause (same-diff extension, plank 5) —
+    # deterministic-recompute authority off run.json (no persisted trends
+    # receipt), presentation-support MD floor, conforming-empty accepted.
+    _assert_trends_door_ajar_conformant(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
+    # 40.1: cover clause (same-diff extension, plank 5) — receipt-present
+    # branch ONLY (A-2): bidirectional journey-TOC (M-2), hero-placeholder
+    # honesty, run-id + generation-date VALUE-match against run.json (M-3),
+    # art-brief sidecar digest recompute. Appended AFTER the 39.2 trends
+    # clause per the serialize rider (W-3/J-3); current spine tail.
+    _assert_cover_conformant(
+        run_dir, [run_dir / md_by_stem[stem] for stem in paired]
+    )
 
 
 def _drive_paused_trial_impl(

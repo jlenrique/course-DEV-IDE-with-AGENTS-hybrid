@@ -40,7 +40,7 @@ import logging
 import os
 import threading
 import time
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from contextlib import contextmanager, suppress
 from datetime import UTC, datetime
 from pathlib import Path
@@ -65,6 +65,7 @@ from app.models.runtime.operator_surface import (
     OperatorSurfaceProjection,
     PreflightItem,
     PreflightSection,
+    RunSettingsSection,
     SpecialistEntry,
     SpecialistsSection,
     StepEntry,
@@ -88,9 +89,24 @@ PROJECTION_FILENAME = "operator-surface.json"
 #: ``None`` section, never a raise into the walk (greenlight amendment 8).
 ERROR_PAUSE_FILENAME = "error-pause.json"
 RUN_SUMMARY_FILENAME = "run_summary.yaml"
+DIRECTIVE_FILENAME = "directive.yaml"
 COST_REPORT_FILENAME = "cost-report.json"
 COST_REPORT_TRANSACTION_FILENAME = "cost-report-transaction.v1.json"
 EXPORTS_DIRNAME = "exports"
+
+#: Env truthiness convention (matches udac_wiring / g0_enrichment_wiring /
+#: enrichment_consumption verbatim). A toggle env var is "on" iff its stripped
+#: lowercased value is in this set; absent/anything-else → "off" (never a
+#: missing key — Story 42.3 AC-3).
+_ENV_TRUTHY: frozenset[str] = frozenset({"1", "true", "yes", "on"})
+
+#: Environment-var name for the voice-direction toggle (run config; folded into
+#: the run-settings readout as an on/off resolved default when the directive
+#: carries no explicit ``voice_direction`` value).
+_VOICE_DIRECTION_ENV = "MARCUS_NARRATION_VOICE_DIRECTION_ACTIVE"
+
+#: Bound on any resolved run-settings display string (AD-16 anti-bloat).
+_RUN_SETTING_MAX_CHARS = 240
 
 #: Bounds so the additive sections cannot reopen the 525KB run.json trap (AD-16).
 _CONTEXT_ENTRY_MAX_CHARS = 240
@@ -132,6 +148,281 @@ def _sha256_text(text: str) -> str:
 def _run_json_digest(envelope: Any) -> str:
     """Digest of the exact bytes ``_persist_envelope`` writes to run.json (AD-17)."""
     return _sha256_text(envelope.model_dump_json(indent=2) + "\n")
+
+
+# --------------------------------------------------------------------------
+# Run-settings resolver (Story 42.3) — the ONE deterministic place mapping each
+# of the 16 canonical toggles to its resolved display value.
+#
+# Pure + I/O-guarded: reads env + the run-dir ``directive.yaml`` /
+# ``run_summary.yaml`` + the prior projection (for run_state-carried values
+# already on the surface — llm_execution_mode, preset). It NEVER reaches into
+# ``run_state`` directly (that lives in the runner, off the assembler's sole-
+# writer lane) and NEVER raises. The section it returns is a pure projection of
+# resolved settings, so a double-emit on identical inputs is byte-identical
+# apart from ``as_of`` (AC-3). One source of truth with the canonical list:
+# ``RUN_SETTINGS_TOGGLES`` names the fields; this resolver fills them.
+# --------------------------------------------------------------------------
+
+
+def _safe_yaml_mapping(path: Path) -> dict[str, Any]:
+    """Read a YAML file into a mapping; missing/garbage → ``{}`` (never raises)."""
+    try:
+        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — a missing/garbage artifact is not fatal
+        return {}
+    return raw if isinstance(raw, dict) else {}
+
+
+def _env_flag(env: Mapping[str, str], name: str) -> str:
+    """Resolve an env toggle to an explicit ``"on"``/``"off"`` (never missing)."""
+    return "on" if (env.get(name) or "").strip().lower() in _ENV_TRUTHY else "off"
+
+
+def _str_or_unset(value: Any) -> str:
+    """A present non-empty scalar → its bounded str; otherwise ``"unset"``."""
+    if value is None:
+        return "unset"
+    text = str(value).strip()
+    return text[:_RUN_SETTING_MAX_CHARS] if text else "unset"
+
+
+def _component_state(selection: Mapping[str, Any], key: str) -> str:
+    """Component-selection bool → ``"on"``/``"off"``; missing → ``"unset"``."""
+    value = selection.get(key)
+    if isinstance(value, bool):
+        return "on" if value else "off"
+    return "unset"
+
+
+def _treatment_slots(directive: Mapping[str, Any]) -> str:
+    """Styleguide picks (treatment slots A/B) from the directive; else ``unset``."""
+    names: list[str] = []
+    raw = directive.get("gamma_settings")
+    if isinstance(raw, list):
+        for item in raw:
+            if isinstance(item, dict):
+                styleguide = item.get("styleguide")
+                if isinstance(styleguide, str) and styleguide.strip():
+                    names.append(styleguide.strip())
+    joined = ", ".join(dict.fromkeys(names))
+    if joined:
+        return joined[:_RUN_SETTING_MAX_CHARS]
+    return _str_or_unset(directive.get("treatment_slots"))
+
+
+def resolve_run_settings(
+    run_dir: Path,
+    prev: OperatorSurfaceProjection | None,
+    now: datetime,
+    *,
+    env: Mapping[str, str] | None = None,
+) -> RunSettingsSection:
+    """Resolve all 16 run-defining toggles into a ``RunSettingsSection`` (AC-1/3).
+
+    Deterministic given (env, run_dir artifacts, prev). Every field resolves to
+    an explicit value — env-absent toggles read ``"off"``, unknown non-env
+    settings read ``"unset"`` — so the readout never carries a missing key.
+    """
+    env = os.environ if env is None else env
+    directive = _safe_yaml_mapping(run_dir / DIRECTIVE_FILENAME)
+    run_summary = _safe_yaml_mapping(run_dir / RUN_SUMMARY_FILENAME)
+    selection = run_summary.get("component_selection")
+    selection = selection if isinstance(selection, dict) else {}
+
+    # Preset + llm_execution_mode are already resolved onto the surface by the
+    # envelope/modalities writers (run_state-sourced); prefer them, then the
+    # directive, then an explicit default — never reaching into run_state here.
+    preset = directive.get("preset")
+    if prev is not None:
+        preset = prev.identity.preset
+    llm_mode = None
+    if prev is not None and prev.modalities is not None:
+        llm_mode = prev.modalities.llm_execution_mode
+    if not llm_mode:
+        llm_mode = directive.get("llm_execution_mode")
+
+    voice = directive.get("voice_direction")
+    voice_direction = (
+        _str_or_unset(voice)
+        if voice not in (None, "")
+        else _env_flag(env, _VOICE_DIRECTION_ENV)
+    )
+    coverage = directive.get("coverage_gate")
+    if coverage in (None, ""):
+        coverage = directive.get("coverage_gate_family")
+
+    section = RunSettingsSection(
+        as_of=now,
+        component_deck=_component_state(selection, "deck"),
+        component_motion=_component_state(selection, "motion"),
+        component_workbook=_component_state(selection, "workbook"),
+        preset=_str_or_unset(preset),
+        encounter_mode=_str_or_unset(directive.get("encounter_mode")),
+        llm_execution_mode=_str_or_unset(llm_mode),
+        g0_dispatch_live=_env_flag(env, "MARCUS_G0_DISPATCH_LIVE"),
+        research_dispatch_live=_env_flag(env, "MARCUS_RESEARCH_DISPATCH_LIVE"),
+        research_detective_live=_env_flag(env, "MARCUS_RESEARCH_DETECTIVE_LIVE"),
+        narration_figure_fidelity_active=_env_flag(
+            env, "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE"
+        ),
+        voice_direction=voice_direction,
+        deck_enrichment_active=_env_flag(env, "MARCUS_DECK_ENRICHMENT_ACTIVE"),
+        udac_active=_env_flag(env, "MARCUS_UDAC_ACTIVE"),
+        coverage_gate=_str_or_unset(coverage),
+        trial_budget_usd=_str_or_unset(env.get("MARCUS_TRIAL_BUDGET_USD")),
+        treatment_slots=_treatment_slots(directive),
+    )
+    # Story 42.5 (AC-3): the operator's pre-walk CHANGE verdicts persist to the ONE
+    # resolution point — the run-dir override file — and the readout reflects them
+    # for the rest of the run. Overlay the persisted overrides LAST so a changed
+    # value wins over the base env/directive resolution. `_overlaid_run_settings`
+    # is a pure display projection; the env/directive write-back that makes the WALK
+    # observe the change is applied separately at walk entry (`apply_run_settings_
+    # overrides_to_run`).
+    return _overlaid_run_settings(section, run_dir)
+
+
+# --------------------------------------------------------------------------
+# Pre-walk settings CHANGE write-back (Story 42.5) — the ONE resolution point.
+#
+# The operator's CHANGE verdict at the pre-walk settings gate (Story 42.5) is
+# persisted to a SINGLE run-dir artifact, ``run-settings-overrides.json`` — a
+# flat ``{RunSettingsSection field -> resolved display value}`` map. That file is
+# the sole source of truth for operator changes (NO shadow/duplicate state):
+#
+#   * the READOUT reflects it — ``resolve_run_settings`` overlays it last (above),
+#     so the 42.3 standing readout shows the changed value for the rest of the run;
+#   * the WALK observes it — ``apply_run_settings_overrides_to_run`` projects each
+#     override onto the single place the walk resolves that setting FIRST, at the
+#     walk-entry seam (env vars for the ``MARCUS_*`` toggles + budget; the run-dir
+#     ``directive.yaml`` for directive-sourced settings). This is NOT a transient
+#     re-export of process env used as a cross-pause channel (that would not survive
+#     the resume process boundary) — the persisted file is the durable channel and
+#     is projected once, at walk entry, in the resume process.
+#
+# ``RUN_SETTINGS_OVERRIDE_TARGETS`` documents the resolution point PER setting.
+# Component-selection toggles carry a ``"run_state"`` target: they are reflected in
+# the readout (overlay) and applied to ``run_state.component_selection`` by the
+# runner at resume (the walk recomposes from run_state) — never re-read from env.
+# --------------------------------------------------------------------------
+
+RUN_SETTINGS_OVERRIDES_FILENAME = "run-settings-overrides.json"
+
+#: field -> (target_kind, target_key). target_kind is the SINGLE place the walk
+#: resolves that setting; the CHANGE write-back projects the override there.
+RUN_SETTINGS_OVERRIDE_TARGETS: dict[str, tuple[str, str]] = {
+    "component_deck": ("run_state", "deck"),
+    "component_motion": ("run_state", "motion"),
+    "component_workbook": ("run_state", "workbook"),
+    "preset": ("directive", "preset"),
+    "encounter_mode": ("directive", "encounter_mode"),
+    "llm_execution_mode": ("directive", "llm_execution_mode"),
+    "g0_dispatch_live": ("env", "MARCUS_G0_DISPATCH_LIVE"),
+    "research_dispatch_live": ("env", "MARCUS_RESEARCH_DISPATCH_LIVE"),
+    "research_detective_live": ("env", "MARCUS_RESEARCH_DETECTIVE_LIVE"),
+    "narration_figure_fidelity_active": ("env", "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE"),
+    "voice_direction": ("env", _VOICE_DIRECTION_ENV),
+    "deck_enrichment_active": ("env", "MARCUS_DECK_ENRICHMENT_ACTIVE"),
+    "udac_active": ("env", "MARCUS_UDAC_ACTIVE"),
+    "coverage_gate": ("directive", "coverage_gate"),
+    "trial_budget_usd": ("env", "MARCUS_TRIAL_BUDGET_USD"),
+    "treatment_slots": ("directive", "treatment_slots"),
+}
+
+
+class UnknownRunSettingError(ValueError):
+    """A CHANGE verdict named a toggle outside the canonical run-settings set."""
+
+
+def load_run_settings_overrides(run_dir: Path) -> dict[str, str]:
+    """Return the persisted pre-walk overrides (or ``{}``); never raises."""
+    try:
+        raw = json.loads(
+            (run_dir / RUN_SETTINGS_OVERRIDES_FILENAME).read_text(encoding="utf-8")
+        )
+    except Exception:  # noqa: BLE001 — missing/garbage override file is not fatal
+        return {}
+    if not isinstance(raw, dict):
+        return {}
+    return {
+        str(k): str(v)
+        for k, v in raw.items()
+        if str(k) in RunSettingsSection.model_fields
+    }
+
+
+def _overlaid_run_settings(section: RunSettingsSection, run_dir: Path) -> RunSettingsSection:
+    """Overlay the persisted CHANGE overrides onto a resolved section (display)."""
+    overrides = load_run_settings_overrides(run_dir)
+    if not overrides:
+        return section
+    return section.model_copy(update=overrides)
+
+
+def apply_run_settings_change(
+    run_dir: Path, changes: Mapping[str, Any]
+) -> dict[str, str]:
+    """Persist a pre-walk CHANGE verdict to the ONE resolution point (Story 42.5 AC-3).
+
+    Validates every key against the canonical ``RunSettingsSection`` field set
+    (fail loud on an unknown toggle — no partial write), merges over any prior
+    overrides, and writes ``run-settings-overrides.json``. Returns the merged map.
+    """
+    unknown = sorted(set(changes) - set(RunSettingsSection.model_fields))
+    if unknown:
+        raise UnknownRunSettingError(
+            f"CHANGE verdict named unknown run-setting(s) {unknown}; "
+            f"valid toggles: {sorted(RunSettingsSection.model_fields)}"
+        )
+    merged = load_run_settings_overrides(run_dir)
+    for key, value in changes.items():
+        merged[str(key)] = str(value)
+    run_dir.mkdir(parents=True, exist_ok=True)
+    (run_dir / RUN_SETTINGS_OVERRIDES_FILENAME).write_text(
+        json.dumps(merged, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    return merged
+
+
+def apply_run_settings_overrides_to_run(run_dir: Path) -> dict[str, list[str]]:
+    """Project persisted overrides onto the walk's resolution points at walk entry.
+
+    Env-target overrides (the ``MARCUS_*`` toggles + budget) are written to
+    ``os.environ`` so the scattered env readers observe the changed value FIRST;
+    directive-target overrides are merged into the run-dir ``directive.yaml``.
+    Component / run_state targets are NOT touched here — the runner applies those
+    to ``run_state.component_selection`` at resume. Returns the applied keys by
+    kind (for the runner's explicit trace/log). Never raises into the walk.
+    """
+    applied: dict[str, list[str]] = {"env": [], "directive": []}
+    overrides = load_run_settings_overrides(run_dir)
+    if not overrides:
+        return applied
+    directive_updates: dict[str, str] = {}
+    for field, value in overrides.items():
+        target = RUN_SETTINGS_OVERRIDE_TARGETS.get(field)
+        if target is None:
+            continue
+        kind, key = target
+        if kind == "env":
+            os.environ[key] = value
+            applied["env"].append(key)
+        elif kind == "directive":
+            directive_updates[key] = value
+            applied["directive"].append(key)
+    if directive_updates:
+        try:
+            directive = _safe_yaml_mapping(run_dir / DIRECTIVE_FILENAME)
+            directive.update(directive_updates)
+            (run_dir / DIRECTIVE_FILENAME).write_text(
+                yaml.safe_dump(directive, sort_keys=True), encoding="utf-8"
+            )
+        except Exception:  # noqa: BLE001 — directive write must not break the walk
+            LOGGER.exception(
+                "run-settings directive override write failed for %s", run_dir
+            )
+    return applied
 
 
 class OperatorSurfaceAssembler:
@@ -749,6 +1040,20 @@ class OperatorSurfaceAssembler:
                 prev: OperatorSurfaceProjection | None, now: datetime
             ) -> dict[str, Any]:
                 built: dict[str, Any] = {}
+                # Story 42.3 — the standing run-settings readout rides EVERY
+                # ambient refresh (both walks call this same path), so all ~16
+                # toggles are present from launch through terminal. Resolution
+                # is independently guarded: a failure here must never drop the
+                # other ambient sections (amendment 8).
+                try:
+                    built["run_settings"] = resolve_run_settings(
+                        self.run_dir, prev, now
+                    ).model_dump(mode="json")
+                except Exception:  # noqa: BLE001 — never sink the ambient write
+                    LOGGER.exception(
+                        "run-settings resolve failed for trial %s — readout skipped",
+                        self.trial_id,
+                    )
                 if tile_dicts is not None:
                     built["health"] = HealthSection(
                         as_of=now, tiles=[]
@@ -896,4 +1201,5 @@ __all__ = [
     "DEFAULT_HUD_CONFIG_PATH",
     "OperatorSurfaceAssembler",
     "PROJECTION_FILENAME",
+    "resolve_run_settings",
 ]

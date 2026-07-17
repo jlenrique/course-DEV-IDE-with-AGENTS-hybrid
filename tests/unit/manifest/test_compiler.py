@@ -170,12 +170,18 @@ def test_compile_real_repo_root_with_migrated_v42_manifest() -> None:
     m = load(repo_root / "state" / "config" / "pipeline-manifest.yaml")
     g = compile(m)
     assert isinstance(g, StateGraph)
+    # Drift history (this is an intentional change-DETECTOR pin — kept hardcoded
+    # per Story 42-7 AC-3 so any manifest node add/remove is a conscious pin bump):
     # 37 → 40: Arc 1a (2026-06-18) split the 3 co-located voice/variant HIL
     # gates into content node + content-free folded gate node (07B-gate,
     # 11-gate, 11B-gate). 40 → 43: 07G PNG-vision + 07D.5 motion-planner + 07W
     # workbook bricks (this pin had drifted stale at 40). 43 → 45: G0-S2
     # (2026-06-26) g0-enrichment node + g0-enrichment-gate (confirm-gate #1).
-    assert len(m.nodes) == 45
+    # 45 → 47: g0-enrichment S3 (b59679ce) irene-refinement node + g0-ratify-gate
+    # (G0R, confirm-gate #2). 47 → 51: 07W workbook topology band closed
+    # (fc108553, Story 38-3b) — 07W.1/07W.2/07W.3/07W.4 sub-bricks. 51 → 52:
+    # 42-5 pre-walk-settings-gate (G0S) confirm-or-change settings gate.
+    assert len(m.nodes) == 52
 
 
 def _prepare_runtime_graphs_dir(root: Path) -> None:

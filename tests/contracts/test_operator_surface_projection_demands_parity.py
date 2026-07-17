@@ -174,6 +174,32 @@ PROJECTION_DEMANDS: tuple[Demand, ...] = (
         ),
     ),
     Demand(
+        "run-settings-standing-readout",
+        "full run-settings standing readout: all ~16 run-defining toggles "
+        "(component selection deck/motion/workbook, preset, encounter mode, "
+        "llm execution mode, the MARCUS_* live/active env flags, voice "
+        "direction, coverage-gate family, trial budget, treatment slots) as "
+        "resolved values (Story 42.3 / E42-AC3 part a)",
+        (
+            "RunSettingsSection.component_deck",
+            "RunSettingsSection.component_motion",
+            "RunSettingsSection.component_workbook",
+            "RunSettingsSection.preset",
+            "RunSettingsSection.encounter_mode",
+            "RunSettingsSection.llm_execution_mode",
+            "RunSettingsSection.g0_dispatch_live",
+            "RunSettingsSection.research_dispatch_live",
+            "RunSettingsSection.research_detective_live",
+            "RunSettingsSection.narration_figure_fidelity_active",
+            "RunSettingsSection.voice_direction",
+            "RunSettingsSection.deck_enrichment_active",
+            "RunSettingsSection.udac_active",
+            "RunSettingsSection.coverage_gate",
+            "RunSettingsSection.trial_budget_usd",
+            "RunSettingsSection.treatment_slots",
+        ),
+    ),
+    Demand(
         "state-trace-events",
         "state-trace events (append-only)",
         (

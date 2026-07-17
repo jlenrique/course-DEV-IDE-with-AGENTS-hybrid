@@ -130,7 +130,13 @@ def resolve_enrichment_mode(model_id: str) -> str:
 # generous output ceiling was bound — reasoning models spend budget on hidden
 # reasoning first, then truncate the visible JSON). The DEFAULT (None-fallback)
 # chat-model factory binds these; an injected harness factory may bind its own.
-G0_EXTRACTION_MAX_COMPLETION_TOKENS = 32000
+# 2026-07-16 (run-A attempt eea3555e): BOTH live G0 calls on the frozen tejal
+# corpus truncated at the 32000 ceiling (51/40 components salvaged, 0
+# provisional LOs -> start refused). 32000 was the 2026-06-29 root-cause
+# floor; verbose-variance now exceeds it. Doubled per the runner's own
+# diagnostic ("Raise G0_EXTRACTION_MAX_COMPLETION_TOKENS if truncation
+# recurs"); the parse-tolerance floor test asserts >= 32000 (still true).
+G0_EXTRACTION_MAX_COMPLETION_TOKENS = 64000
 G0_EXTRACTION_REQUEST_TIMEOUT_S = 300.0
 
 # Thin contract key (the frozen enrichment result on the contribution output).

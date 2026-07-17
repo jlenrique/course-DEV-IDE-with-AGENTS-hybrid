@@ -45,6 +45,22 @@ def _env(status: str, **kw):
     return SimpleNamespace(**base)
 
 
+def _resume_line(surface: str, verb: str) -> str:
+    """Extract the single ``trial resume ... --verb <verb> ...`` paste line from
+    the Story-42.1 NEUTRAL multi-verb next-action surface.
+
+    ``build_next_action`` for a ``paused-at-gate`` no longer returns ONE approve-
+    prefilled command — it returns a neutral surface with one paste line per
+    allowed verb. The F-E2E-1 round-trip proof (executable-shaped, builds a valid
+    OperatorVerdict) now applies to each extracted per-verb line.
+    """
+    for raw in surface.splitlines():
+        line = raw.strip()
+        if line.startswith("trial resume") and f" --verb {verb} " in f"{line} ":
+            return line
+    raise AssertionError(f"no resume line for verb {verb!r} in surface:\n{surface}")
+
+
 def test_paused_at_gate_command_round_trips(tmp_path: Path) -> None:
     """F-E2E-1: the gate-class next-action must be EXECUTABLE-shaped, not merely
     parseable. It now targets `trial resume` inline-verdict mode, and the round
@@ -62,7 +78,8 @@ def test_paused_at_gate_command_round_trips(tmp_path: Path) -> None:
         json.dumps({"card": {"card_id": card_id}, "digest": digest}),
         encoding="utf-8",
     )
-    cmd = build_next_action(env, card_path=card_path)
+    surface = build_next_action(env, card_path=card_path)
+    cmd = _resume_line(surface, "approve")  # round-trip the approve paste line
     tokens = shlex.split(cmd)
 
     # (1) The command routes through the REAL `trial resume` grammar.
@@ -105,7 +122,8 @@ def test_gate_command_reaches_resume_walk_cross_process(
     card_path.write_text(
         json.dumps({"card": {"card_id": card_id}, "digest": digest}), encoding="utf-8"
     )
-    tokens = shlex.split(build_next_action(env, card_path=card_path))
+    surface = build_next_action(env, card_path=card_path)
+    tokens = shlex.split(_resume_line(surface, "approve"))
     ns = _trial_parser().parse_args(tokens[1:])
 
     captured: dict = {}
@@ -215,7 +233,9 @@ def test_non_pause_status_raises() -> None:
 
 def test_missing_card_degrades_without_raising() -> None:
     # No card file present: builder returns empty card fields rather than raising.
+    # The neutral surface still emits the per-verb resume paste lines.
     env = _env("paused-at-gate", paused_gate="G1")
-    cmd = build_next_action(env, card_path=Path("does-not-exist.json"))
-    assert cmd.startswith("trial resume")
-    assert "--gate-id G1" in cmd
+    surface = build_next_action(env, card_path=Path("does-not-exist.json"))
+    approve = _resume_line(surface, "approve")
+    assert approve.startswith("trial resume")
+    assert "--gate-id G1" in surface

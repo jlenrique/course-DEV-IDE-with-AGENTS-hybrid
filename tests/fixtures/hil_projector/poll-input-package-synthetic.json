@@ -1,0 +1,42 @@
+{
+  "decision_card": {
+    "artifact_paths": [
+      "runs/synthetic-43-8/decision-card-G0E.json",
+      "runs/synthetic-43-8/checkpoint.json",
+      "runs/synthetic-43-8/cost-report.json",
+      "runs/synthetic-43-8/run_summary.yaml",
+      "runs/synthetic-43-8/decision-card-G3.json"
+    ],
+    "card_id": "66666666-6666-4666-8666-666666666666",
+    "created_at": "2026-05-06T09:00:00Z",
+    "decision_card_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "final_status": "completed",
+    "gate_focus": "fidelity_gate",
+    "gate_id": "G4",
+    "meta": {
+      "affected_nodes": [
+        "11B"
+      ],
+      "cache_state": "mixed",
+      "override_trail": []
+    },
+    "outcome_summary": "Input package assembled for ElevenLabs audio synthesis handoff.",
+    "schema_version": "v1",
+    "trial_id": "44444444-4444-4444-8444-444444444444",
+    "verb": "approve"
+  },
+  "decision_card_digest": "cad4e3fd2883060a75ecbba6bb2d34d01c694c2fe40c1b189090b125865f5dd6",
+  "input_package_id": "66666666-6666-4666-8666-666666666666",
+  "input_package_payload": {
+    "artifact_paths": [
+      "runs/synthetic-43-8/decision-card-G0E.json",
+      "runs/synthetic-43-8/checkpoint.json",
+      "runs/synthetic-43-8/cost-report.json",
+      "runs/synthetic-43-8/run_summary.yaml",
+      "runs/synthetic-43-8/decision-card-G3.json"
+    ],
+    "final_status": "completed",
+    "outcome_summary": "Input package assembled for ElevenLabs audio synthesis handoff."
+  },
+  "surface_id": "section_11b_g4b_input_package"
+}

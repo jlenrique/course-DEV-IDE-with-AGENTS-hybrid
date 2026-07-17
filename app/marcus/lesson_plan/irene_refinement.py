@@ -32,16 +32,75 @@ Pydantic-v2 idioms (docs/dev-guide/pydantic-v2-schema-checklist.md):
 from __future__ import annotations
 
 import hashlib
+import logging
 from typing import Any, Final, Literal, get_args
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.marcus.lesson_plan.learning_objective import (
+    AdequacyFollowup,
     BloomLevel,
     LearningObjective,
     SourceAdequacy,
     advance_lo,
 )
+
+logger = logging.getLogger(__name__)
+
+# The closed advisory-followup vocabulary (single-sourced from the Literal).
+_ADEQUACY_FOLLOWUP_LITERALS: Final[tuple[str, ...]] = get_args(AdequacyFollowup)
+
+
+def _normalize_adequacy_followups(adequacy_row: Any) -> Any:
+    """Normalize live-model ``suggested_followups`` decorations pre-validate.
+
+    Witnessed on trial 1bc3bc4e (2026-07-16): the live refinement model
+    decorates the advisory literals ("external-content-expected: expect a
+    separate guide or workbook") and the strict ``AdequacyFollowup`` Literal
+    red-rejects the WHOLE refinement continuation, stranding the G0E->G0R
+    walk. The field is advisory by contract ("Never an action"), so the
+    normalization is provably safe: an entry prefix-matching a known literal
+    is truncated to the bare literal; an unknown entry is DROPPED with a
+    visible warning — never invented, never silently kept. Non-dict /
+    non-list shapes pass through untouched so strict validation still owns
+    every other malformation.
+    """
+    if not isinstance(adequacy_row, dict):
+        return adequacy_row
+    raw = adequacy_row.get("suggested_followups")
+    if not isinstance(raw, list):
+        return adequacy_row
+    normalized: list[str] = []
+    for entry in raw:
+        text = str(entry).strip()
+        match = next(
+            (
+                literal
+                for literal in _ADEQUACY_FOLLOWUP_LITERALS
+                if text == literal
+                or text.startswith(literal + ":")
+                or text.startswith(literal + " ")
+            ),
+            None,
+        )
+        if match is None:
+            logger.warning(
+                "irene refinement: dropping unknown advisory followup %r "
+                "(not one of %s)",
+                text[:80],
+                list(_ADEQUACY_FOLLOWUP_LITERALS),
+            )
+            continue
+        if match != text:
+            logger.warning(
+                "irene refinement: normalizing decorated advisory followup "
+                "%r -> %r",
+                text[:80],
+                match,
+            )
+        if match not in normalized:
+            normalized.append(match)
+    return {**adequacy_row, "suggested_followups": normalized}
 
 SCHEMA_VERSION: Final[str] = "1.0"
 
@@ -553,7 +612,9 @@ def _parse_live_refinement(
         base = by_id.get(oid)
         if base is None:
             continue  # fabricated id — dropped (ledger validation owns the BLOCK)
-        adequacy = SourceAdequacy.model_validate(row["adequacy"])
+        adequacy = SourceAdequacy.model_validate(
+            _normalize_adequacy_followups(row["adequacy"])
+        )
         bloom = row.get("bloom_level") or _deterministic_bloom(oid)
         staged = base.model_copy(update={"bloom_level": bloom, "adequacy": adequacy})
         refined = advance_lo(staged, "refined", actor="irene")

@@ -175,7 +175,11 @@ def test_presentation_support_frontmatter_and_fr17_cut(
     )
     md = render_markdown(doc)
     headings = [heading for _, heading, _ in doc.blocks]
-    assert headings[:4] == ["Pre-work", "Scene", "Friction Scale", "Promise"]
+    # FLIP-1 (40-1 AC 8, CLOSED A-1 inventory): the cover blocks render FIRST
+    # on the presentation_support profile — Cover / Contents / About This
+    # Workbook prepend ahead of the pre-work sections.
+    assert headings[:4] == ["Cover", "Contents", "About This Workbook", "Pre-work"]
+    assert headings[4:7] == ["Scene", "Friction Scale", "Promise"]
     assert "Before the live presentation" in md
     assert "patient transport delay" in md
     assert "Transcript-narrative" not in headings
@@ -220,8 +224,21 @@ def test_recorded_live_parity_is_exactly_one_label_in_md_and_docx(
         for left, right in zip(md_lines["recorded"], md_lines["live"], strict=True)
         if left != right
     ]
+    # FLIP-2 (40-1 AC 8, CLOSED A-1 inventory; consciously EXTENDED per A-3):
+    # the cover TOC adds two encounter-copy lines — the Before-you-watch group
+    # label and the [presentation] divider. Each copy variant is exactly ONE
+    # line with EQUAL line counts across modes, so ``zip(strict=True)`` stays
+    # valid and the diff set is exactly the three encounter-copy pairs.
     assert differences == [
-        ("Before you watch the recorded presentation", "Before the live presentation")
+        (
+            "**Before you watch** — ahead of the recorded presentation",
+            "**Before you watch** — ahead of the live presentation",
+        ),
+        (
+            "*[The presentation — watch the recording]*",
+            "*[The presentation — attend the live session]*",
+        ),
+        ("Before you watch the recorded presentation", "Before the live presentation"),
     ]
     paragraphs = {}
     for mode, doc in docs.items():
@@ -234,7 +251,15 @@ def test_recorded_live_parity_is_exactly_one_label_in_md_and_docx(
         if left != right
     ]
     assert differences == [
-        ("Before you watch the recorded presentation", "Before the live presentation")
+        (
+            "Before you watch — ahead of the recorded presentation",
+            "Before you watch — ahead of the live presentation",
+        ),
+        (
+            "[The presentation — watch the recording]",
+            "[The presentation — attend the live session]",
+        ),
+        ("Before you watch the recorded presentation", "Before the live presentation"),
     ]
 
 

@@ -1,0 +1,17 @@
+{
+  "surface_id": "section_04_55_g1_5_run_constants",
+  "run_constants_id": "RUN-CONSTANTS-001",
+  "decision_card_digest": "3e90ea52567f73f84107df49cb3058833e5483f62fc398005a354cc40b8886db",
+  "run_constants": {
+    "run_id": "RUN-CONSTANTS-001",
+    "lesson_slug": "agentic-production-platform",
+    "experience_profile": "visual-led",
+    "cluster_density": {
+      "establish": 0.2,
+      "tension": 0.3,
+      "develop": 0.3,
+      "resolve": 0.2
+    },
+    "motion_enabled": false
+  }
+}

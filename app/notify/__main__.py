@@ -88,6 +88,14 @@ def _detached_popen_kwargs(logfile: Path) -> dict:
     Windows: ``DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP`` — no inherited
     console, own process group. POSIX: ``start_new_session=True``. stdout/stderr
     go to ``logfile`` in append mode so a detached child stays debuggable.
+
+    Story 42.2 AC-7 (no stray console windows): ``DETACHED_PROCESS`` already
+    runs the child with NO console at all, so the notifier never pops an empty
+    terminal window — it is the "equivalent no-window" mechanism the AC calls
+    out. (``CREATE_NO_WINDOW`` is redundant here and is ignored by Windows when
+    combined with ``DETACHED_PROCESS``, so it is deliberately not OR-ed in; the
+    HUD-server child, which is NOT detached, is the spawn that gains
+    ``CREATE_NO_WINDOW`` — see ``preflight._no_window_creationflags``.)
     """
     logfile.parent.mkdir(parents=True, exist_ok=True)
     handle = open(logfile, "ab")  # noqa: SIM115 — child owns this handle for its life

@@ -1,0 +1,30 @@
+{
+  "schema_version": "exercise-merge-composition-fixture.v1",
+  "derived_from_run": "8b275e5b-ed8a-4720-8217-8ddaca4c6627",
+  "note": "Live-shape fixture (Paid-Run Economy plank 2): the REAL 8b275e5b pre-cap merged composition — 6 attachable overlay (course-check) exercises + 8 collateral (Practice) exercises = 14, capped to 12 by the J-3 round-robin rule (every unit keeps >=1 Practice before any keeps 2; stable-id order within a unit; overlay never trimmed). The 39-1b story spec's '18-exercise (6 overlay + 12 collateral)' figure was an authoring-time estimate; this fixture pins the frozen run's actual shape per the live-shape rule. The ratified 18->12 arithmetic is pinned separately as a synthetic row-c case in the test module.",
+  "sections": [
+    {"section_id": "sec-u01", "learning_objective_id": "u01", "collateral": ["ex-u01-1"], "overlay_component_ids": ["src-001-c002"]},
+    {"section_id": "sec-u02", "learning_objective_id": "u02", "collateral": ["ex-u02-1"], "overlay_component_ids": ["src-001-c003"]},
+    {"section_id": "sec-u03", "learning_objective_id": "u03", "collateral": ["ex-u03-1", "ex-u03-2"], "overlay_component_ids": ["src-001-c005"]},
+    {"section_id": "sec-u04", "learning_objective_id": "u04", "collateral": ["ex-u04-1"], "overlay_component_ids": ["src-002-c001"]},
+    {"section_id": "sec-u05", "learning_objective_id": "u05", "collateral": ["ex-u05-1", "ex-u05-2"], "overlay_component_ids": ["src-002-c002"]},
+    {"section_id": "sec-u06", "learning_objective_id": "u06", "collateral": ["ex-u06-1"], "overlay_component_ids": ["src-002-c003"]}
+  ],
+  "expected": {
+    "kept_by_section": {
+      "sec-u01": ["ex-u01-1", "g0-src-001-c002"],
+      "sec-u02": ["ex-u02-1", "g0-src-001-c003"],
+      "sec-u03": ["ex-u03-1", "g0-src-001-c005"],
+      "sec-u04": ["ex-u04-1", "g0-src-002-c001"],
+      "sec-u05": ["ex-u05-1", "g0-src-002-c002"],
+      "sec-u06": ["ex-u06-1", "g0-src-002-c003"]
+    },
+    "trimmed_exercise_ids": ["ex-u03-2", "ex-u05-2"],
+    "loss": {
+      "trimmed_count": 2,
+      "collateral_count": 8,
+      "kept_collateral_count": 6,
+      "overlay_count": 6
+    }
+  }
+}

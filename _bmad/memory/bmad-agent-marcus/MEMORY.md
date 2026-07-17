@@ -56,3 +56,10 @@ _Anchors that help me understand "why things are the way they are" across sessio
 - **2026-04-17**: Legacy SKILL.md (249 lines) split into this sanctum (identity/doctrine) + `references/` (operational runbooks). New SKILL.md is a terse router.
 - **Epic 25 (2026-04-17):** Texas runtime wrangling runner shipped. My Prompt-3 delegation now invokes `skills/bmad-agent-texas/scripts/run_wrangler.py` directly with exit codes 0/10/20/30 driving halt-vs-proceed. `--legacy-prose` fallback is the safety net.
 - **Epic 23 (2026-04-15):** Cluster-aware Irene Pass 2 closed. Live mode is cluster-aware refinement, not structural-coherence-check.
+
+## Run-history learnings (2026-07-16, C1M1-P1 concierge run)
+- Corpus leaves MUST mirror the proven shape: slides/ (one md per production unit, # Slide N title + Visual Format + narration + References line), references/*.md (feeds the workbook S6 channel), assessments/*.md (feeds course-check instruments). A monolithic extract passes ingestion but Irene Pass-1 refuses at 04A (no primary slide rows).
+- Trial CLI registers runs under state/config/runs/<id>/ (the governed test runner uses runs/). Check the start payload's run_registry_path.
+- HUD: engine launches it on the start path bound by nonce; a stale manual instance on 8791 makes the NEXT start refuse (healthz). Stop manual instances before new starts. Standalone relaunch: python -m app.hud.server with HUD_TRIAL_ID/HUD_RUN_DIR/HUD_LAUNCH_NONCE/HUD_PORT.
+- plan-dialogue --script closed vocabularies: workflow in {narrated-deck, narrated-deck-with-motion, narrated-deck-with-workbook} (the LAST maps to deck+motion+workbook — full bundle); gap-fill considered from {synthesize, wait, ask_operator, ask_sme, lighter_collateral} with chosen allowed 'none'; LOs semicolon-separated; workbook workflow REQUIRES --collateral-spec (declaration=present).
+- Operator preferences (Juanl): one elicitation question at a time; in-flow decisions at native surfaces (picker/gates), not front-loaded; two slide treatments is his default lean; 'Style and Variant Selection' is his name for G2B.

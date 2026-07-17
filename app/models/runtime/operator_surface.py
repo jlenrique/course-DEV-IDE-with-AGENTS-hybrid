@@ -414,6 +414,75 @@ class ModalitiesSection(_Section):
     styleguide_provenance: str | None = None
 
 
+# --------------------------------------------------------------------------
+# Run-settings standing readout (Story 42.3) — the ~16 run-defining toggles.
+#
+# ADDITIVE within v1 (AD-4: new OPTIONAL section, NO schema_version literal
+# bump). The v1 literal is the back-compat hinge — the lenient reader hard-
+# requires ``schema_version == "v1"`` and strip-then-validates unknown ADDED
+# fields, so a run carrying only the old ``modalities`` slice (pre-42.3 frozen
+# surface) still parses (AC-6). "Bump the schema" here means the REGENERATED
+# JSON Schema artifact (a new ``$def`` + a new root property), byte-pinned in
+# the same diff — the governance discipline, not a breaking version flip
+# (which would make every prior v1 surface Unrecognized and contradict AC-6).
+#
+# ``RUN_SETTINGS_TOGGLES`` is the ONE canonical (field, label) source of truth
+# shared by the resolver (assembler), the keep-in-sync guard test (AC-5), and
+# the HUD render — so a future new knob that isn't added here fails loudly.
+# --------------------------------------------------------------------------
+
+#: Canonical ordered ``(field_name, operator_label)`` for the run-settings
+#: readout. The tuple ORDER is the render order. Every field named here MUST
+#: exist on ``RunSettingsSection`` and vice-versa (pinned by AC-5).
+RUN_SETTINGS_TOGGLES: tuple[tuple[str, str], ...] = (
+    ("component_deck", "Component · Deck"),
+    ("component_motion", "Component · Motion"),
+    ("component_workbook", "Component · Workbook"),
+    ("preset", "Preset"),
+    ("encounter_mode", "Encounter mode"),
+    ("llm_execution_mode", "LLM execution mode"),
+    ("g0_dispatch_live", "MARCUS_G0_DISPATCH_LIVE"),
+    ("research_dispatch_live", "MARCUS_RESEARCH_DISPATCH_LIVE"),
+    ("research_detective_live", "MARCUS_RESEARCH_DETECTIVE_LIVE"),
+    ("narration_figure_fidelity_active", "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE"),
+    ("voice_direction", "Voice direction"),
+    ("deck_enrichment_active", "MARCUS_DECK_ENRICHMENT_ACTIVE"),
+    ("udac_active", "MARCUS_UDAC_ACTIVE"),
+    ("coverage_gate", "Coverage-gate family"),
+    ("trial_budget_usd", "MARCUS_TRIAL_BUDGET_USD"),
+    ("treatment_slots", "Treatment slots A/B"),
+)
+
+
+class RunSettingsSection(_Section):
+    """The ~16 run-defining toggles as a standing readout (Story 42.3, AD-1).
+
+    Every field is a REQUIRED resolved display string — env-absent toggles
+    render an explicit resolved default (``"off"`` / ``"unset"``), never a
+    missing key (AC-3). The assembler's deterministic resolver populates all
+    sixteen from env / directive / run_summary / the prior projection, so the
+    section is a pure projection of resolved run settings (double-emit on
+    identical inputs is byte-identical modulo ``as_of``).
+    """
+
+    component_deck: str
+    component_motion: str
+    component_workbook: str
+    preset: str
+    encounter_mode: str
+    llm_execution_mode: str
+    g0_dispatch_live: str
+    research_dispatch_live: str
+    research_detective_live: str
+    narration_figure_fidelity_active: str
+    voice_direction: str
+    deck_enrichment_active: str
+    udac_active: str
+    coverage_gate: str
+    trial_budget_usd: str
+    treatment_slots: str
+
+
 class TraceEvent(BaseModel):
     """One state-trace event."""
 
@@ -573,6 +642,8 @@ class OperatorSurfaceProjection(BaseModel):
     health: HealthSection | None = None
     specialists: SpecialistsSection | None = None
     modalities: ModalitiesSection | None = None
+    # Story 42.3 — additive within v1 (AD-4): the standing run-settings readout.
+    run_settings: RunSettingsSection | None = None
     trace: TraceSection | None = None
 
     # Story 35.9 — additive within v1 (AD-4): decision card at a gate pause,
@@ -892,6 +963,8 @@ __all__ = [
     "PreflightItemState",
     "PreflightSection",
     "QuotaConfidence",
+    "RUN_SETTINGS_TOGGLES",
+    "RunSettingsSection",
     "SCHEMA_PATH",
     "SpecialistEntry",
     "SpecialistsSection",

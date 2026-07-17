@@ -224,7 +224,10 @@ class MarcusInterlocutor:
         operator_id: str = DEFAULT_OPERATOR_ID,
         grounding: GroundingContext | None = None,
         resume_fn: Callable[..., Any] = resume_production_trial,
-        max_specialist_calls: int = 12,
+        # Story 41-3: the call-count throttle was removed; None = unbounded.
+        # The old =12 default is moot (a specialist node dispatches whenever
+        # live is available, with no per-call budget gate).
+        max_specialist_calls: int | None = None,
     ) -> None:
         self.trial_id = trial_id
         self.runs_root = runs_root
@@ -435,7 +438,7 @@ def run_marcus_interlocutor(
     runs_root: Path = RUNS_ROOT,
     grounding: GroundingContext | None = None,
     resume_fn: Callable[..., Any] = resume_production_trial,
-    max_specialist_calls: int = 12,
+    max_specialist_calls: int | None = None,  # Story 41-3: None = unbounded.
 ) -> list[TranscriptEntry]:
     """Convenience wrapper: construct + run a :class:`MarcusInterlocutor`."""
     return MarcusInterlocutor(

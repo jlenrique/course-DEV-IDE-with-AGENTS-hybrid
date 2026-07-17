@@ -1,0 +1,50 @@
+{
+  "decision_card_digest": "2425b74f63a5ca5811da8054803e72e99043b9e87636111191110185b89b36f6",
+  "literal_visual_targets": [
+    {
+      "caption": "Enrollment funnel",
+      "slide_index": 1,
+      "specification": "Show the enrollment funnel as a left-to-right flowchart.",
+      "visual_kind": "flowchart"
+    },
+    {
+      "caption": "Retention by quarter",
+      "slide_index": 2,
+      "specification": "Bar chart of quarterly retention deltas per cohort.",
+      "visual_kind": "bar-chart"
+    },
+    {
+      "caption": "Pipeline overview",
+      "slide_index": 3,
+      "specification": "Annotated system diagram of the production pipeline.",
+      "visual_kind": "diagram"
+    }
+  ],
+  "plan_unit_id": "unit-06b-synthetic",
+  "source_payload": {
+    "plan_unit_id": "unit-06b-synthetic",
+    "slide_specifications": [
+      {
+        "caption": "Enrollment funnel",
+        "slide_index": 1,
+        "specification": "Show the enrollment funnel as a left-to-right flowchart.",
+        "visual_kind": "flowchart"
+      },
+      {
+        "caption": "Retention by quarter",
+        "slide_index": 2,
+        "specification": "Bar chart of quarterly retention deltas per cohort.",
+        "visual_kind": "bar-chart"
+      },
+      {
+        "caption": "Pipeline overview",
+        "slide_index": 3,
+        "specification": "Annotated system diagram of the production pipeline.",
+        "visual_kind": "diagram"
+      }
+    ],
+    "target_section": "section-06b"
+  },
+  "surface_id": "section_06b_literal_visual_build",
+  "target_section": "section-06b"
+}

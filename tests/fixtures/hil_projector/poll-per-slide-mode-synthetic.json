@@ -1,0 +1,44 @@
+{
+  "decision_card": {
+    "blocking_issues": [],
+    "card_id": "11111111-1111-4111-8111-111111111111",
+    "created_at": "2026-07-17T21:46:47.477048Z",
+    "decision_card_digest": "0000000000000000000000000000000000000000000000000000000000000000",
+    "gate_focus": "pre_composition_qa",
+    "gate_id": "G2C",
+    "meta": {
+      "affected_nodes": [
+        "slide-node-01",
+        "slide-node-02",
+        "slide-node-03"
+      ],
+      "cache_state": "healthy",
+      "override_trail": []
+    },
+    "readiness_status": "ready",
+    "ready_nodes": [
+      "slide-node-01",
+      "slide-node-02",
+      "slide-node-03"
+    ],
+    "schema_version": "v1",
+    "trial_id": "22222222-2222-4222-8222-222222222222",
+    "verb": "approve"
+  },
+  "decision_card_digest": "8b5922f30c51fa1494b43a68393168f2c048fe153b05e102d94d46aa4c2dcf5f",
+  "per_slide_mode_payload": {
+    "available_modes": [
+      "narrated-deck",
+      "motion-enabled-narrated-lesson"
+    ],
+    "blocking_issues": [],
+    "readiness_status": "ready",
+    "ready_nodes": [
+      "slide-node-01",
+      "slide-node-02",
+      "slide-node-03"
+    ]
+  },
+  "slide_id": "11111111-1111-4111-8111-111111111111",
+  "surface_id": "section_05_5_g2b_per_slide_mode"
+}

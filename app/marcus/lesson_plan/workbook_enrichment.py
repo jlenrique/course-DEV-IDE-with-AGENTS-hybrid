@@ -247,6 +247,226 @@ def _lo_bloom_map(annotations: list[dict[str, Any]]) -> dict[str, str]:
     return out
 
 
+# --- Answer-leak hygiene (wave 39/40 D2.7) -------------------------------
+#
+# Live run 8b275e5b surfaced quiz excerpts that carry the corpus answer INLINE
+# on the prompt line, e.g.::
+#
+#     - **Prompt:** ...question text... - **Correct Answer:** 25%
+#
+# ``answer_keys`` (the workbook's Answer Key section) is the DESIGNATED answer
+# channel — the projected exercise PROMPT must never leak the answer ahead of
+# it. Deterministic string processing only; CONSERVATIVE by design (RATIFIED):
+# only a line/segment that unambiguously carries the answer label ("Correct
+# Answer" — or the "Answer" synonym in the emphasized / line-anchored-marked
+# forms only — followed by an ASCII or fullwidth colon, optionally
+# bold/italic/emphasis-wrapped, optionally behind a list marker) AND carries
+# real answer text is stripped. Prose that merely mentions the words (e.g.
+# "the correct answer depends on ...", no label-colon form) stays put,
+# byte-identical. Ambiguity keeps + warns; an answer is NEVER lost silently.
+
+_EMPH = r"(?:\*{1,3}|_{1,3})"
+_COLON = r"[:：]"  # ASCII or fullwidth colon
+# "**Correct Answer:**" / "**Correct Answer**:" / "**Answer:**" (colon inside
+# or outside the emphasis wrapper) — the emphasized label form. The bare
+# "Answer" synonym is admitted ONLY here and in the line-anchored marked form.
+_ANSWER_LABEL_EMPH = (
+    rf"{_EMPH}\s*(?:correct\s+)?answer\s*(?:{_COLON}\s*{_EMPH}|{_EMPH}\s*{_COLON})"
+)
+# "Correct Answer:" — the bare plain label form (colon mandatory; the "Answer"
+# synonym is NEVER admitted bare — too prose-ambiguous).
+_ANSWER_LABEL_PLAIN = rf"correct\s+answer\s*{_COLON}"
+# "Answer:" / "Correct Answer:" — plain form admitted ONLY behind a
+# line-anchored list marker (dash/bullet/number).
+_ANSWER_LABEL_MARKED_PLAIN = rf"(?:correct\s+)?answer\s*{_COLON}"
+# Line-anchored marker class: dashes, unicode bullets, numbers, blockquote.
+# Post-marker whitespace is OPTIONAL (the glued "-**Correct Answer:**" shape).
+_LINE_MARKER = r"(?:[-*+–—•‣▪·]\s*|\d+[.)]\s*|>\s*)"
+# Mid-line marker class: en/em dashes EXCLUDED — mid-line they read as prose
+# punctuation ("Burnout is high — correct answer: varies") and must not strip.
+_INLINE_MARKER = r"(?:[-*+]\s*|\d+[.)]\s*|>\s*)"
+
+# A whole line that IS an answer line: the emphasized/plain label at line
+# start, or the label behind one-or-more list markers. The un-marked branch is
+# tried FIRST (and markers lazily) so emphasis asterisks are parsed as
+# emphasis, not consumed as `*` list markers.
+_ANSWER_LINE_RE = re.compile(
+    rf"^\s*(?:(?:{_ANSWER_LABEL_EMPH}|{_ANSWER_LABEL_PLAIN})"
+    rf"|{_LINE_MARKER}+?(?:{_ANSWER_LABEL_EMPH}|{_ANSWER_LABEL_MARKED_PLAIN}))"
+    rf"\s*(?P<answer>.*)$",
+    re.IGNORECASE,
+)
+# A trailing inline answer segment (the live 8b275e5b leak shape). Mid-line the
+# bar is higher: the label must ride behind a list marker OR be
+# emphasis-wrapped — a bare mid-sentence "correct answer:" is ambiguous prose
+# and stays put. The segment may be preceded by whitespace OR glued directly
+# after sentence punctuation ("What time?**Correct Answer:** 25%").
+_ANSWER_INLINE_RE = re.compile(
+    rf"(?:\s+|(?<=[?.!,;)]))"
+    rf"(?:{_INLINE_MARKER}(?:{_ANSWER_LABEL_EMPH}|{_ANSWER_LABEL_PLAIN})"
+    rf"|{_ANSWER_LABEL_EMPH})\s*(?P<answer>.*)$",
+    re.IGNORECASE,
+)
+# A captured "answer" that is only blank markers / underscores / a
+# parenthetical hint (e.g. "____ (fill in the blank)") is a fill-in-the-blank
+# PROMPT, not a leak — the line is kept.
+_BLANK_ANSWER_RE = re.compile(r"^(?:\([^)]*\)|[\s_\-–—.…*])*$")
+# An emphasized label-shaped token ("**Prompt:**", "**…**:") INSIDE a captured
+# answer signals answer-first ordering — stripping would destroy the question.
+_EMPH_LABEL_TOKEN_RE = re.compile(
+    rf"{_EMPH}\s*[^\s*_][^*_\n]*?(?:{_COLON}\s*{_EMPH}|{_EMPH}\s*{_COLON})",
+    re.IGNORECASE,
+)
+# A captured answer longer than this smells like a truncated prompt (a mid-line
+# label MENTION swallowing the rest of the question) — ambiguous; keep + warn.
+_AMBIGUOUS_ANSWER_MAX_CHARS = 120
+
+# Kept as prompt text when everything else is empty (P2 last-resort fallback).
+_PROMPT_UNAVAILABLE = "(exercise prompt unavailable)"
+
+
+def _strip_answer_leak(prompt: str) -> tuple[str, str | None]:
+    """Strip unambiguously-labeled answer lines/segments from an exercise prompt.
+
+    Returns ``(clean_prompt, leaked_answer)``.
+
+    NO-MATCH PATH: the prompt is returned BYTE-IDENTICAL (the original object)
+    and ``leaked_answer`` is ``None``. MATCH PATH: the surviving prompt is
+    newline-NORMALIZED (``splitlines`` → LF rejoin → outer ``strip``) — byte
+    identity is promised ONLY when nothing matched. Multiple stripped answers
+    join with ``"; "`` (never embedded newlines).
+
+    Stripped shapes (the closed set): the "Correct Answer"/"Answer" label with
+    a mandatory (ASCII or fullwidth) colon, emphasis-wrapped anywhere, plain
+    behind a line-anchored list marker, or plain-``correct answer:`` bare at
+    line start / behind an inline dash marker. A label line whose answer group
+    is empty consumes the FOLLOWING non-empty line as the answer (both
+    removed).
+
+    ACCEPTED-KEPT shapes (deliberately conservative): bare mid-prose
+    ``correct answer:`` mentions; the bare un-marked ``Answer:`` synonym;
+    labels outside the closed set (e.g. ``Solution:``); labels whose captured
+    answer is only blank markers (fill-in-the-blank prompts); and AMBIGUOUS
+    matches — a strip that would empty the prompt while the captured answer
+    carries another emphasized label token (answer-first ordering), or a
+    captured answer over ~120 chars — which are kept UNTOUCHED with a
+    ``logger.warning``. An answer is never lost silently.
+    """
+    lines = prompt.splitlines()
+    # Plan pass: classify each line before mutating anything, so the P3
+    # ambiguity guard can veto a strip and restore the original lines.
+    entries: list[dict[str, Any]] = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        full = _ANSWER_LINE_RE.match(line)
+        if full is not None:
+            answer = full.group("answer").strip()
+            if answer and not _BLANK_ANSWER_RE.match(answer):
+                entries.append({"kind": "strip", "lines": [line], "answer": answer})
+                i += 1
+                continue
+            if not answer:
+                # Wrapped answer: the label line carries no answer text; the
+                # answer rides on the FOLLOWING non-empty line. Consume both
+                # (plus intervening blanks). A trailing label with nothing
+                # after it stays untouched (never orphan an answer elsewhere).
+                j = i + 1
+                while j < len(lines) and not lines[j].strip():
+                    j += 1
+                if j < len(lines):
+                    wrapped = lines[j].strip()
+                    if (
+                        _ANSWER_LINE_RE.match(lines[j]) is None
+                        and not _BLANK_ANSWER_RE.match(wrapped)
+                    ):
+                        entries.append(
+                            {
+                                "kind": "strip",
+                                "lines": lines[i : j + 1],
+                                "answer": wrapped,
+                            }
+                        )
+                        i = j + 1
+                        continue
+            # Label with a blank-marker answer (fill-in-the-blank prompt) or
+            # an empty answer and no consumable follow-on line: keep as-is.
+            entries.append({"kind": "keep", "lines": [line]})
+            i += 1
+            continue
+        inline = _ANSWER_INLINE_RE.search(line)
+        if inline is not None:
+            answer = inline.group("answer").strip()
+            if answer and not _BLANK_ANSWER_RE.match(answer):
+                entries.append(
+                    {
+                        "kind": "inline",
+                        "lines": [line],
+                        "answer": answer,
+                        "remainder": line[: inline.start()].rstrip(),
+                    }
+                )
+                i += 1
+                continue
+        entries.append({"kind": "keep", "lines": [line]})
+        i += 1
+
+    def _rendered() -> str:
+        out: list[str] = []
+        for entry in entries:
+            if entry["kind"] == "keep":
+                out.extend(entry["lines"])
+            elif entry["kind"] == "inline" and entry["remainder"]:
+                out.append(entry["remainder"])
+        return "\n".join(out).strip()
+
+    def _revert(entry: dict[str, Any]) -> None:
+        logger.warning(
+            "answer-label detected but kept — ambiguous shape (conservative "
+            "posture: never lose an answer silently): %r",
+            entry["answer"][:160],
+        )
+        entry["kind"] = "keep"
+
+    # P3 guard (a): an over-long capture smells like a truncated prompt.
+    for entry in entries:
+        if (
+            entry["kind"] in ("strip", "inline")
+            and len(entry["answer"]) > _AMBIGUOUS_ANSWER_MAX_CHARS
+        ):
+            _revert(entry)
+    # P3 guard (b): a strip that EMPTIES the prompt while the captured answer
+    # still carries another emphasized label token is answer-first ordering
+    # ("- **Correct Answer:** 25% - **Prompt:** Q?") — keep, never destroy the
+    # question. An empty-prompt strip whose answer is CLEAN still strips (the
+    # caller's fallback chain supplies the prompt).
+    if not _rendered():
+        for entry in entries:
+            if entry["kind"] in ("strip", "inline") and _EMPH_LABEL_TOKEN_RE.search(
+                entry["answer"]
+            ):
+                _revert(entry)
+
+    answers = [e["answer"] for e in entries if e["kind"] in ("strip", "inline")]
+    if not answers:
+        return prompt, None
+    return _rendered(), "; ".join(answers)
+
+
+def _route_answer_key(answer_keys: dict[str, str], exercise_id: str, worked: str) -> bool:
+    """Route a worked answer into the ``answer_keys`` channel — NEVER overwrite.
+
+    An existing NON-EMPTY key for ``exercise_id`` always wins; the routed text
+    lands when the slot is absent OR holds only an empty string (the D2.7
+    no-overwrite contract, truthiness-gated). Returns ``True`` iff the routed
+    text landed.
+    """
+    if answer_keys.get(exercise_id):
+        return False
+    answer_keys[exercise_id] = worked
+    return True
+
+
 def _project_exercises(
     typed_components: list[dict[str, Any]],
     annotation_by_id: dict[str, dict[str, Any]],
@@ -276,20 +496,67 @@ def _project_exercises(
         lo_refs = [str(r) for r in (ann.get("lo_refs") or ())]
         assessed = ann.get("assessment_link")
         answer_ref = str(assessed) if assessed else (lo_refs[0] if lo_refs else cid)
+        # D2.7: the prompt must not leak the corpus answer — strip the labeled
+        # answer segment and route it to the answer_keys channel instead.
+        prompt, leaked_answer = _strip_answer_leak(
+            str(comp.get("excerpt") or comp.get("label") or cid)
+        )
+        leaks: list[str] = [leaked_answer] if leaked_answer else []
+        if not prompt:
+            # The excerpt was ONLY an answer line -> fall back. The label is
+            # RE-STRIPPED through the same hygiene (a label like
+            # "Correct Answer: 25%" must not re-leak verbatim), then cid, then
+            # the honest literal when even cid is empty.
+            label_prompt, label_leak = _strip_answer_leak(str(comp.get("label") or ""))
+            if label_leak and label_leak not in leaks:
+                leaks.append(label_leak)
+            prompt = label_prompt or cid or _PROMPT_UNAVAILABLE
         exercise = Exercise(
             exercise_id=cid,
             bloom_level=ann["bloom"],  # type: ignore[arg-type]
-            prompt_intent=str(comp.get("excerpt") or comp.get("label") or cid),
+            prompt_intent=prompt,
             answer_key_source_ref=answer_ref,
+            # D2 MERGE (39.1b): overlay-projected exercises are course-check
+            # instruments — provenance is a field, never a list position.
+            origin="enrichment",
         )
         # Home section: the first served LO that is surfaced, else the first LO.
         home = next((r for r in lo_refs if r in surfaced), None) or (
             surfaced_ids[0] if surfaced_ids else cid
         )
         by_section[home].append(exercise)
-        answer_keys[cid] = (
+        # The Answer Key channel: the source-provided answer (when the prompt
+        # leaked one) takes the slot iff it is still empty; otherwise the
+        # source_ref grounding note. Never overwrite an existing key; never
+        # lose the stripped answer. Multiple stripped answers join with "; "
+        # and the grounding suffix appends ONCE at the end.
+        if leaks:
+            routed = _route_answer_key(
+                answer_keys,
+                cid,
+                f"{'; '.join(leaks)} (source-provided correct answer; "
+                f"grounded by source_ref `{answer_ref}`).",
+            )
+            if not routed:
+                logger.warning(
+                    "answer-leak routing: stripped answer for exercise %r could "
+                    "not be routed — the answer-key slot is already claimed "
+                    "(duplicate component_id?)",
+                    cid,
+                )
+            if home not in surfaced:
+                logger.warning(
+                    "answer-leak routing: exercise %r routes its stripped answer "
+                    "to home section %r, which is not in the surfaced LO set — "
+                    "the answer lands in an unrendered section",
+                    cid,
+                    home,
+                )
+        _route_answer_key(
+            answer_keys,
+            cid,
             f"Worked answer is grounded by source_ref `{answer_ref}` "
-            "(P3-linked assessment target)."
+            "(P3-linked assessment target).",
         )
     return dict(by_section), answer_keys
 
@@ -412,10 +679,17 @@ def load_run_envelope(run_dir: Path) -> Any | None:
     model classes (M3-safe: the MODEL, never the orchestrator).
 
     - Missing file → ``None`` (genuine absence; producer may skip).
+    - Symlinked ``run.json`` → :class:`RunEnvelopeCorruptError` (38-2 T4 R9 /
+      B5: the sole-writer envelope coordinate must be a regular file —
+      additive containment guard mirroring every other Ask-B disk guard).
     - Present but unreadable / invalid JSON / ValidationError →
       :class:`RunEnvelopeCorruptError` (fail-loud; never silent no-op).
     """
     artifact = run_dir / _RUN_ENVELOPE_BASENAME
+    if artifact.is_symlink():
+        raise RunEnvelopeCorruptError(
+            f"run.json coordinate is a symlink at {artifact}"
+        )
     if not artifact.is_file():
         return None
     # Function-local import keeps the module import-graph thin and the M3 edge
@@ -439,6 +713,89 @@ def load_run_envelope(run_dir: Path) -> Any | None:
             f"run.json corrupt at {artifact}: {exc}"
         ) from exc
     return trial.production_envelope
+
+
+def run_identity_from_run(run_dir: Path) -> dict[str, Any]:
+    """READ-ONLY run-identity reader for the 40.1 cover provenance block.
+
+    Reads ``<run_dir>/run.json`` and projects the OUTER
+    :class:`ProductionTrialEnvelope` identity fields the cover renders/persists:
+    ``trial_id`` / ``started_at`` (the generation-date source — NEVER
+    wall-clock) / ``corpus_path``, plus the sorted distinct
+    (``specialist_id``, ``node_id``, ``model_used``) pairs off the inner
+    envelope's contributions (**receipt-only** per the 40-1 J-2 orchestrator
+    ruling — never rendered).
+
+    Precise fail-shape contract (40-1 W-1 — deliberately STRICTER than
+    :func:`corpus_root_from_run`, which swallows corrupt→None and has no
+    symlink guard): the reader is **reasoned non-raising** — it never raises
+    on bad input, and its degrade result DISTINGUISHES the three fail shapes
+    so the provenance renderer can emit distinct honest absent-REASON lines:
+
+    - ``{"status": "absent", "reason": ...}`` — ``run.json`` does not exist;
+    - ``{"status": "symlink", "reason": ...}`` — the coordinate is a symlink
+      (untrusted; mirrors the ``load_run_envelope`` containment guard);
+    - ``{"status": "corrupt", "reason": ...}`` — present but unreadable /
+      invalid JSON / model-invalid;
+    - ``{"status": "ok", "trial_id": ..., "started_at": <isoformat>,
+      "corpus_path": ..., "models_used": [...]}`` on success.
+
+    ``load_run_envelope``'s contract is NOT widened — this is a sibling
+    reader over the OUTER envelope (only ``corpus_root_from_run`` previously
+    deserialized it).
+    """
+    artifact = run_dir / _RUN_ENVELOPE_BASENAME
+    if artifact.is_symlink():
+        return {
+            "status": "symlink",
+            "reason": f"run.json coordinate is a symlink at {artifact}",
+        }
+    if not artifact.is_file():
+        return {"status": "absent", "reason": f"run.json absent at {artifact}"}
+    from pydantic import ValidationError  # noqa: PLC0415
+
+    from app.models.runtime.production_trial_envelope import (  # noqa: PLC0415
+        ProductionTrialEnvelope,
+    )
+
+    try:
+        raw = artifact.read_text(encoding="utf-8")
+    except OSError as exc:
+        return {
+            "status": "corrupt",
+            "reason": f"run.json unreadable at {artifact}: {exc}",
+        }
+    try:
+        trial = ProductionTrialEnvelope.model_validate_json(raw)
+    except (ValidationError, ValueError) as exc:
+        return {
+            "status": "corrupt",
+            "reason": f"run.json corrupt at {artifact}: {exc}",
+        }
+    models_used = sorted(
+        {
+            (
+                contribution.specialist_id,
+                contribution.node_id or "",
+                contribution.model_used,
+            )
+            for contribution in trial.production_envelope.contributions
+        }
+    )
+    return {
+        "status": "ok",
+        "trial_id": str(trial.trial_id),
+        "started_at": trial.started_at.isoformat(),
+        "corpus_path": trial.corpus_path,
+        "models_used": [
+            {
+                "specialist_id": specialist_id,
+                "node_id": node_id or None,
+                "model_used": model_used,
+            }
+            for specialist_id, node_id, model_used in models_used
+        ],
+    }
 
 
 def lesson_plan_from_run(run_dir: Path) -> dict[str, Any] | None:
@@ -612,4 +969,5 @@ __all__ = [
     "load_run_envelope",
     "project_enrichment_to_workbook_inputs",
     "research_entries_from_run",
+    "run_identity_from_run",
 ]

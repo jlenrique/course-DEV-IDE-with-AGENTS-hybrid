@@ -1,0 +1,40 @@
+{
+  "decision_card": {
+    "bundle_run_id": "88888888-8888-4888-8888-888888888888",
+    "card_id": "77777777-7777-4777-8777-777777777777",
+    "created_at": "2026-05-06T09:00:00Z",
+    "decision_card_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "gate_focus": "final_operator_handoff",
+    "gate_id": "G5",
+    "handoff_artifact_paths": [
+      "runs/synthetic-43-8/bundle/final-video.mp4",
+      "runs/synthetic-43-8/bundle/transcript.docx",
+      "runs/synthetic-43-8/bundle/workbook.docx",
+      "runs/synthetic-43-8/bundle/manifest.json"
+    ],
+    "handoff_summary": "Final operator handoff bundle: composited lesson video plus companions.",
+    "meta": {
+      "affected_nodes": [
+        "13"
+      ],
+      "cache_state": "healthy",
+      "override_trail": []
+    },
+    "schema_version": "v1",
+    "trial_id": "44444444-4444-4444-8444-444444444444",
+    "verb": "approve"
+  },
+  "decision_card_digest": "c478afa59bc8fed9ffd9d61f952bd282d57279d42efa4b7fb28724d6494207e0",
+  "final_handoff_payload": {
+    "bundle_run_id": "88888888-8888-4888-8888-888888888888",
+    "handoff_artifact_paths": [
+      "runs/synthetic-43-8/bundle/final-video.mp4",
+      "runs/synthetic-43-8/bundle/transcript.docx",
+      "runs/synthetic-43-8/bundle/workbook.docx",
+      "runs/synthetic-43-8/bundle/manifest.json"
+    ],
+    "handoff_summary": "Final operator handoff bundle: composited lesson video plus companions."
+  },
+  "handoff_id": "77777777-7777-4777-8777-777777777777",
+  "surface_id": "section_15_g5_final_handoff"
+}

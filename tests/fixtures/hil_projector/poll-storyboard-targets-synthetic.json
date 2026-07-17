@@ -1,0 +1,51 @@
+{
+  "decision_card_digest": "be9975785111245eb190066356f29aa844293b46f12ad669c9b3e786e85fb5a3",
+  "plan_unit_id": "unit-07c-synthetic",
+  "slide_count": 3,
+  "source_payload": {
+    "plan_unit_id": "unit-07c-synthetic",
+    "slides": [
+      {
+        "body": "Introduce the operator build flow.",
+        "caption": "Storyboard opening",
+        "slide_index": 1,
+        "title": "Opening"
+      },
+      {
+        "body": "Explain the material partition between source and lesson.",
+        "caption": "Material partition",
+        "slide_index": 2,
+        "title": "Core concept"
+      },
+      {
+        "body": "Summarize the enrollment funnel takeaways.",
+        "caption": "Summary",
+        "slide_index": 3,
+        "title": "Wrap-up"
+      }
+    ],
+    "target_section": "section-07c"
+  },
+  "storyboard_targets": [
+    {
+      "body": "Introduce the operator build flow.",
+      "caption": "Storyboard opening",
+      "slide_index": 1,
+      "title": "Opening"
+    },
+    {
+      "body": "Explain the material partition between source and lesson.",
+      "caption": "Material partition",
+      "slide_index": 2,
+      "title": "Core concept"
+    },
+    {
+      "body": "Summarize the enrollment funnel takeaways.",
+      "caption": "Summary",
+      "slide_index": 3,
+      "title": "Wrap-up"
+    }
+  ],
+  "surface_id": "section_07c_storyboard_build",
+  "target_section": "section-07c"
+}

@@ -22,9 +22,11 @@ from uuid import UUID
 # G0E (G0-S2 source-enrichment confirm-gate #1, 2026-06-26) is the front-door
 # pause when the brick is woken (MARCUS_G0_ENRICHMENT_ACTIVE); same gate-agnostic
 # shim surface. G0R (G0-S3 Irene LO ratify-gate #2) follows G0E under the same
-# wake flag — same gate-agnostic shim surface.
+# wake flag — same gate-agnostic shim surface. G0S (Story 42.5 pre-walk settings
+# confirm-or-change gate) is the HEAD-of-walk pause when woken
+# (MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE) — same gate-agnostic shim surface.
 ACTIVE_TERMINAL_GATES: tuple[str, ...] = (
-    "G0E", "G0R", "G1", "G2B", "G2C", "G3", "G4A", "G4",
+    "G0E", "G0R", "G0S", "G1", "G2B", "G2C", "G3", "G4A", "G4",
 )
 
 _HELP_TEMPLATE = """\

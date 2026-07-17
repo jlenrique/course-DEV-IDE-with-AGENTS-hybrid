@@ -1,3 +1,23 @@
+# Current Context Addendum - 2026-07-17 (session WRAPUP: EPICS 41 + 42 COMPLETE — bc747b51 fixed + ngrok public HUD)
+
+**Session class:** S. Branch `dev/workbook-wave-3940-2026-07-15` (origin `4ca3d19b`; 14 commits, pushed).
+
+**Landed:** Two epics start-to-finish from the parked `bc747b51` diagnosis. **Epic 41 — Resume-Walk Dispatch Integrity** (41-1 resume/recover live-env preflight; 41-2 fail-loud on silent specialist skip both walks; 41-3 REMOVE the `max_specialist_calls` throttle — the ACTUAL bc747b51 cause was `cap=1` starvation, not keyless; 41-4 `MARCUS_TRIAL_BUDGET_USD` dollar-budget enforced-stop). **Epic 42 — Operator Surface Next-Pass** (party-signed 5/5): 42-1 tabular HIL + neutral next-action verb; 42-2 HUD-survives-gate-pause + `CREATE_NO_WINDOW`; 42-3 16-toggle run-settings standing readout (additive-within-v1); 42-4 public read-only HUD non-leak overlay; 42-5 G0S pre-walk settings gate (convention-conforming manifest HEAD gate); 42-6 G0S default-ON wake-sentinel; 42-7 manifest-pin refresh (live 52-node); 42-8 ngrok reserved-domain public HUD. Operator's public HUD wired + live-proven at `https://deplete-courier-blurt.ngrok-free.dev`.
+
+**Next:** operator live steered run (R2 — the only owed witness); KG/ONBOARDING regen + master consolidation (owed); Story 40-2 workbook cover-art trove selection (operator-directed, queued). Do NOT reopen Epic 41/42.
+
+---
+
+# Current Context Addendum - 2026-07-15 (session WRAPUP: Epic 38 CLOSED + first complete workbook + 39/40 wave opened under the Paid-Run Economy Protocol)
+
+**Session class:** S. Branches: `codex/workbook-enhanced-epics-36-40` (consolidated to master `2d5b7493`) then `dev/workbook-wave-3940-2026-07-15`.
+
+**Landed:** First complete runner-verified WORKBOOK (trial `a940c5eb`) + LO-verified follow-up (`8b275e5b`, 6/6 real statements) after two same-day fix cycles (LO-overlay authority-map join `9d4f0593`; Pass-1 head-self-parent normalization `2147ad4d`). Stories 38.1+38.3a CLOSED (party 4/4); Epic-38 retrospective DONE; 38.2 re-homed to the 39-wave; Epic 38 CLOSED. KG+ONBOARDING regenerated at `b24b2aed`; all guides aligned; SOTA §11 refreshed with the Epic-38 close DoD. **Paid-Run Economy Protocol ratified + binding** (witness-replay pre-flight STRICT, probe→freeze→replay→spend, live-shape fixtures, batched governed runs, machine bars with negative pins — `wave-3940-kickoff-party-record-2026-07-15.md`). Wave execution: answer-leak strip (`c0811817`), Story 37-2b (07W.3 deep-dive enrichment; probe attempt 1 froze→normalizer v2→attempt `838524b8` PASS ENRICHED) and Story 39-1 (term-keyed glossary; deterministic probe `fdbed233` PASS 7/7) both `done-awaiting-live-witness`. `tests/live_witness_replay/` FOUNDED (STRICT 19/19, three families witnessed).
+
+**Next:** 39-1b (exercise MERGE, ready-for-dev, strict-serialized) → governed batch run A (witnesses 37-2b+39-1+39-1b; STRICT pre-flight satisfiable) → 38-2 + 39-2 + 40-1 → run B → off-frozen-lesson re-proof finale. HAI cross-SME exploration pre-authorized when AFK at Phase-2 lane 1.
+
+---
+
 # Current Context Addendum - 2026-07-14 (session WRAPUP: Workbook Epics 36–38 advanced; live acceptance next)
 
 **Session class:** S. Branch `codex/workbook-enhanced-epics-36-40`.

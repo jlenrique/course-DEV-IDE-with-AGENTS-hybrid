@@ -1,0 +1,835 @@
+{
+  "schema_version": "v1",
+  "seq": 361,
+  "progress_seq": 35,
+  "last_progress_at": "2026-07-16T22:54:19.928877Z",
+  "envelope_digest": "ea5464adf7cc562de377a57f6750f10d8da3d0032a50f0adb6a3de59229b6f9e",
+  "as_of": "2026-07-16T22:54:19.928877Z",
+  "identity": {
+    "as_of": "2026-07-16T22:54:19.928877Z",
+    "trial_id": "bc747b51-7009-4742-9f65-8de6abc29ca4",
+    "lesson": "course-content/courses/tejal-apc-c1m1-p1-call",
+    "preset": "production",
+    "operator_id": "Juanl"
+  },
+  "envelope": {
+    "as_of": "2026-07-16T22:54:19.928877Z",
+    "status": "paused-at-error",
+    "paused_gate": null,
+    "paused_error_tag": "builder.gary.upstream-missing",
+    "waiting_batch_id": null,
+    "completed_at": null
+  },
+  "notifications_echo": {
+    "as_of": "2026-07-16T22:28:09.357570Z",
+    "config": {
+      "notifications": {
+        "paused_at_gate": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        },
+        "paused_at_error": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        },
+        "batch_pause_resumed": {
+          "enabled": true,
+          "sound": true,
+          "push": false
+        },
+        "health_threshold": {
+          "enabled": true,
+          "sound": false,
+          "push": false
+        },
+        "run_stalled": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        }
+      },
+      "staleness_budget_seconds": 5,
+      "stall_budget_seconds": 600,
+      "hud_port": 8791
+    },
+    "parse_status": "ok"
+  },
+  "next_action": {
+    "as_of": "2026-07-16T22:54:19.928877Z",
+    "command": "trial recover --trial-id bc747b51-7009-4742-9f65-8de6abc29ca4",
+    "pause_class": "paused-at-error"
+  },
+  "steps": {
+    "as_of": "2026-07-16T22:54:19.751245Z",
+    "manifest_digest": "ea4bfc55aaa0df542c6e2b63bbc3dc2150211e8eb8e284fb246cf0626a828b19",
+    "node_count": 51,
+    "walk_index": 19,
+    "walk_generation": 0,
+    "reentered_from": null,
+    "entries": [
+      {
+        "step_id": "directive-composer",
+        "label": "G0 — Directive Composition (Slab 7a / Story 7a.1)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "pre-gate-marcus",
+        "label": "Pre-Gate Marcus - C1 template-with-slots pre-fill (Slab 7a / Story 7a.3)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "per-slide-subgraph",
+        "label": "Per-Slide Subgraph Fan-Out (Slab 7a / Story 7a.4)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "html-review-pack-emitter",
+        "label": "HTML Review-Pack Emitter (Slab 7a / Story 7a.4)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "g0-enrichment",
+        "label": "G0 Source-Content Enrichment (Story G0-S2)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "g0-enrichment-gate",
+        "label": "G0 Source-Enrichment Confirm Gate",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "irene-refinement",
+        "label": "Irene Refinement Loop (Story G0-S3)",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "g0-ratify-gate",
+        "label": "Operator LO Ratify Gate",
+        "stage": "stage-1",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "01",
+        "label": "Activation + Preflight",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "02",
+        "label": "Source Authority Map",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "02A",
+        "label": "Operator Directives",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "03",
+        "label": "Ingestion + Evidence Log",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04",
+        "label": "Ingestion Quality Gate + Irene Packet",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04A",
+        "label": "Lesson Plan Coauthoring + Scope Lock (Marcus <-> HIL)",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04.5",
+        "label": "Parent Slide Count Polling",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "04.55",
+        "label": "Estimator + Run Constants Lock",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "4.75",
+        "label": "Creative Directive Resolution (CD)",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "05",
+        "label": "Irene Pass 1 + Gate 1 Fidelity",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "05B",
+        "label": "Cluster Plan G1.5 Gate",
+        "stage": "stage-2",
+        "status": "complete",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "06",
+        "label": "Pre-Dispatch Package Build",
+        "stage": "stage-2",
+        "status": "active",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "6.2",
+        "label": "Cluster Prompt Engineering (Conditional)",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "6.3",
+        "label": "Cluster Dispatch Sequencing (Conditional)",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "06B",
+        "label": "Literal-Visual Operator Build",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07",
+        "label": "Gary Dispatch + Export",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "7.5",
+        "label": "Cluster Coherence G2.5 Gate (Conditional)",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07B",
+        "label": "Variant Selection Gate",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07B-gate",
+        "label": "Variant Selection HIL Gate",
+        "stage": "stage-1",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07C",
+        "label": "Storyboard A + Gate 2 Approval + Winner Authorization",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07D",
+        "label": "Gate 2M Motion Designation",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07D.5",
+        "label": "Motion Planning",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07E",
+        "label": "Motion Generation / Import",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07F",
+        "label": "Motion Gate",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07G",
+        "label": "PNG-Grounded Vision Perception",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "08",
+        "label": "Irene Pass 2 + Segment Manifest",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "08B",
+        "label": "Storyboard B + HIL Review",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "09",
+        "label": "Gate 3 - Lock Pass 2 Package",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "10",
+        "label": "Fidelity + Quality Pre-Spend",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11",
+        "label": "ElevenLabs Voice Selection HIL",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11-gate",
+        "label": "Voice Selection HIL Gate",
+        "stage": "stage-1",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11B",
+        "label": "ElevenLabs Input Package HIL",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "11B-gate",
+        "label": "Input Package HIL Gate",
+        "stage": "stage-1",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "12",
+        "label": "ElevenLabs Audio Generation",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "13",
+        "label": "Quinn-R Pre-Composition QA",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "14",
+        "label": "Compositor Assembly Bundle",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "14.5",
+        "label": "Desmond Run-Scoped Operator Brief",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "15",
+        "label": "Operator Handoff - Descript Ready",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07W.1",
+        "label": "Workbook Brief Orchestration Seam",
+        "stage": "stage-1",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07W.2",
+        "label": "Ask-A Enrichment Orchestration Seam",
+        "stage": "stage-1",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07W.3",
+        "label": "Workbook Review Orchestration Seam",
+        "stage": "stage-1",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07W.4",
+        "label": "Ask-B Hot Topics Orchestration Seam",
+        "stage": "stage-1",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      },
+      {
+        "step_id": "07W",
+        "label": "Companion Workbook Producer",
+        "stage": "stage-2",
+        "status": "pending",
+        "conditions": [],
+        "blockers": [],
+        "locked_artifact_summary": null
+      }
+    ]
+  },
+  "preflight": {
+    "as_of": "2026-07-16T22:28:11.622678Z",
+    "items": [
+      {
+        "name": "env-keys-present",
+        "state": "pass",
+        "output": "OPENAI_API_KEY + LANGSMITH_API_KEY present",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "runs-root-writable",
+        "state": "pass",
+        "output": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/config/runs",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "coordination-db-readable",
+        "state": "pass",
+        "output": "C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/state/runtime/coordination.db",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "litellm-importable",
+        "state": "pass",
+        "output": "import ok",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "cascade-config-validates",
+        "state": "pass",
+        "output": "cascade + pricing validated",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "hud-server-healthz",
+        "state": "pass",
+        "output": "identity matched (bc747b51-7009-4742-9f65-8de6abc29ca4)",
+        "latency_ms": 1031.0000000172295,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "notifier-process-alive",
+        "state": "pass",
+        "output": "notifier child alive",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "openai",
+        "state": "pass",
+        "output": "GET /v1/models 200 (no rate-limit headers)",
+        "latency_ms": 844.0000000118744,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      },
+      {
+        "name": "gamma",
+        "state": "pass",
+        "output": "list_themes 200 (1 theme(s) reachable)",
+        "latency_ms": 155.99999998812564,
+        "quota_reading": "credits not exposed by /themes",
+        "quota_confidence": "proxy"
+      },
+      {
+        "name": "langsmith",
+        "state": "pass",
+        "output": "LANGSMITH_API_KEY present (project=course-content-production)",
+        "latency_ms": null,
+        "quota_reading": null,
+        "quota_confidence": "unknown"
+      }
+    ]
+  },
+  "health": {
+    "as_of": "2026-07-16T22:54:19.774136Z",
+    "tiles": [
+      {
+        "as_of": "2026-07-16T22:54:19.755289Z",
+        "label": "run cost",
+        "value": 0.000268,
+        "unit": "USD",
+        "confidence": "proxy",
+        "threshold_state": "unknown",
+        "history": []
+      },
+      {
+        "as_of": "2026-07-16T22:54:19.755289Z",
+        "label": "openai quota",
+        "value": "unknown",
+        "unit": null,
+        "confidence": "unknown",
+        "threshold_state": "unknown",
+        "history": []
+      },
+      {
+        "as_of": "2026-07-16T22:54:19.755289Z",
+        "label": "gamma quota",
+        "value": "unknown",
+        "unit": null,
+        "confidence": "unknown",
+        "threshold_state": "unknown",
+        "history": []
+      }
+    ]
+  },
+  "specialists": {
+    "as_of": "2026-07-16T22:54:19.774136Z",
+    "roster": [
+      {
+        "name": "g0_enrichment",
+        "status": "contributed",
+        "current_node": "g0-enrichment",
+        "model": "marcus",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "irene_refinement",
+        "status": "contributed",
+        "current_node": "irene-refinement",
+        "model": "marcus",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "texas",
+        "status": "contributed",
+        "current_node": "02",
+        "model": "gpt-5-nano",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "irene_pass1",
+        "status": "contributed",
+        "current_node": "04A",
+        "model": "gpt-5.4",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      },
+      {
+        "name": "research_wiring",
+        "status": "contributed",
+        "current_node": "04.55",
+        "model": "deterministic-research-wiring",
+        "last_artifact": null,
+        "cost_usd": 0.0
+      }
+    ]
+  },
+  "modalities": {
+    "as_of": "2026-07-16T22:54:19.774136Z",
+    "llm_execution_mode": "batch",
+    "detective_disposition": null,
+    "styleguide": "hil-2026-apc-videographic-glance, hil-2026-apc-crossroads-magazine",
+    "styleguide_provenance": null
+  },
+  "trace": {
+    "as_of": "2026-07-16T22:54:19.774136Z",
+    "events": [
+      {
+        "at": "2026-07-16T22:28:11.899770Z",
+        "event": "walk-start",
+        "detail": "specialist walk starting"
+      },
+      {
+        "at": "2026-07-16T22:28:11.949832Z",
+        "event": "node-enter",
+        "detail": "directive-composer"
+      },
+      {
+        "at": "2026-07-16T22:28:11.982631Z",
+        "event": "node-enter",
+        "detail": "pre-gate-marcus"
+      },
+      {
+        "at": "2026-07-16T22:28:12.016113Z",
+        "event": "node-enter",
+        "detail": "per-slide-subgraph"
+      },
+      {
+        "at": "2026-07-16T22:28:12.049201Z",
+        "event": "node-enter",
+        "detail": "html-review-pack-emitter"
+      },
+      {
+        "at": "2026-07-16T22:28:12.084579Z",
+        "event": "node-enter",
+        "detail": "g0-enrichment"
+      },
+      {
+        "at": "2026-07-16T22:34:17.379574Z",
+        "event": "node-enter",
+        "detail": "g0-enrichment-gate"
+      },
+      {
+        "at": "2026-07-16T22:38:35.105100Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 6"
+      },
+      {
+        "at": "2026-07-16T22:38:35.137532Z",
+        "event": "node-enter",
+        "detail": "irene-refinement"
+      },
+      {
+        "at": "2026-07-16T22:39:57.257428Z",
+        "event": "node-enter",
+        "detail": "g0-ratify-gate"
+      },
+      {
+        "at": "2026-07-16T22:50:34.385618Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 8"
+      },
+      {
+        "at": "2026-07-16T22:50:34.426360Z",
+        "event": "node-enter",
+        "detail": "01"
+      },
+      {
+        "at": "2026-07-16T22:50:34.458777Z",
+        "event": "node-enter",
+        "detail": "02"
+      },
+      {
+        "at": "2026-07-16T22:50:37.984227Z",
+        "event": "node-enter",
+        "detail": "02A"
+      },
+      {
+        "at": "2026-07-16T22:50:38.017303Z",
+        "event": "node-enter",
+        "detail": "03"
+      },
+      {
+        "at": "2026-07-16T22:50:38.050340Z",
+        "event": "node-enter",
+        "detail": "04"
+      },
+      {
+        "at": "2026-07-16T22:53:28.441926Z",
+        "event": "walk-continue",
+        "detail": "resuming at index 13"
+      },
+      {
+        "at": "2026-07-16T22:53:28.478196Z",
+        "event": "node-enter",
+        "detail": "04A"
+      },
+      {
+        "at": "2026-07-16T22:54:05.306460Z",
+        "event": "node-enter",
+        "detail": "04.5"
+      },
+      {
+        "at": "2026-07-16T22:54:05.339287Z",
+        "event": "node-enter",
+        "detail": "04.55"
+      },
+      {
+        "at": "2026-07-16T22:54:19.532683Z",
+        "event": "node-enter",
+        "detail": "4.75"
+      },
+      {
+        "at": "2026-07-16T22:54:19.706999Z",
+        "event": "node-enter",
+        "detail": "05"
+      },
+      {
+        "at": "2026-07-16T22:54:19.738123Z",
+        "event": "node-enter",
+        "detail": "05B"
+      },
+      {
+        "at": "2026-07-16T22:54:19.774136Z",
+        "event": "node-enter",
+        "detail": "06"
+      }
+    ]
+  },
+  "decision_card": null,
+  "error_message": {
+    "as_of": "2026-07-16T22:54:19.928877Z",
+    "message": "§06 builder missing upstream contribution(s): cd",
+    "node_index": 19,
+    "tag": "builder.gary.upstream-missing"
+  },
+  "deliverables": null
+}

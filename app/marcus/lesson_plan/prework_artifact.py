@@ -184,6 +184,13 @@ class WorkbookBriefRuntimeContext(_Strict):
     deep_dive_writer: Callable[[DeepDiveSkeletonRequest], DeepDiveWriterCandidate] | None = Field(
         default=None, exclude=True
     )
+    # 37.2b — the 07W.3 enrichment writer. Typed structurally (not by the
+    # deep_dive_enrichment models) because deep_dive_enrichment imports this
+    # module for the brief read seam; the wiring validates the callable's
+    # output through the strict enrichment contracts on every call.
+    deep_dive_enrichment_writer: Callable[..., object] | None = Field(
+        default=None, exclude=True
+    )
 
     @model_validator(mode="after")
     def _valid_origin(self) -> WorkbookBriefRuntimeContext:

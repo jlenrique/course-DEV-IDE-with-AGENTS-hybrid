@@ -1602,6 +1602,154 @@ class SlideMatchResult:
         self.unmatched_keys: list[str] = []
         self.unmatched_pages: list[dict[str, Any]] = []
         self.ambiguous: list[dict[str, Any]] = []
+        # Machine-readable residual-bind records (W-5/M-8, party 2026-07-16,
+        # trial 648de559). One record per residual bind with a ``reason`` that
+        # DISTINGUISHES the semantic soft bind ("residual-soft-bind") from the
+        # order-consistent positional bind ("residual-positional-order-bind")
+        # (M-2), plus brief title / page title / page_index / slot position.
+        # Surfaced on the result object — never log-only — so the consumer's
+        # GammaDispatchError diagnostics can carry per-attempt match detail
+        # without this module knowing about the error family (M-9).
+        self.binds: list[dict[str, Any]] = []
+
+
+def _apply_residual_positional_binds(
+    *,
+    pages: list[dict[str, Any]],
+    expected_slots: list[tuple[str, str]],
+    slot_tokens: dict[str, frozenset[str]],
+    page_tokens: dict[int, frozenset[str]],
+    page_candidates: dict[int, list[str]],
+    anchor_pid_by_sid: dict[str, int],
+    result: SlideMatchResult,
+    matched_pids: set[int],
+) -> None:
+    """Order-consistent residual positional bind (party-ratified 2026-07-16,
+    Winston + Murat RATIFY-WITH-CONDITIONS 2/2; live-trial witness 648de559).
+
+    Gamma sometimes FREE-TITLES a literal numeral-hero slide (witnessed:
+    briefed "Knowledge Growth Outpaces Static Training" exported as page
+    ``73``; "The Leadership Gap" exported as ``18percent``) — zero token
+    overlap, so neither containment nor the soft bind can fire, and an
+    otherwise-perfect export dies ``gamma.export.brief-unmatched`` after 3/3
+    retries. When the export is structurally exact (count parity, monotone
+    anchors, residues sitting in exactly their briefed slots' gaps), the
+    residue admits a safe positional bind.
+
+    Runs AFTER the 1:1 residual soft bind and BEFORE cover-drop
+    classification (M-1); consumes only the post-soft residue (M-2). ALL
+    preconditions below must hold; if ANY fails this helper returns without
+    mutating the result — byte-identical fall-through to cover-drop (W-4).
+    The preconditions are party-tunable ONLY — never loosen under dev-agent
+    authority:
+
+    - page count == slot count (merged/injected exports fall through);
+    - anchors (committed matches, soft bind included) strictly monotone in
+      page_index vs slot order;
+    - M-3 anchor floor: m >= 2 and m >= k (k = residue size) — a zero-anchor
+      degenerate is impossible, preserving the lone-PNG N=1 arm untouched;
+    - M-4 gap alignment (positional-BETWEEN-ANCHORS, not cardinality): each
+      unmatched page's index lies in the exact anchor-bounded gap of its
+      target unmatched slot (rejects the F8 6/6-count shape: leading
+      cover-gap vs trailing summary-gap);
+    - W-1 leading-gap exclusion: no positional bind in the gap before the
+      first anchor (cover-injection guard);
+    - W-2 one residual pair per gap: two unmatched pages sharing one gap
+      stay fail-loud;
+    - W-3 no-ambiguity gate: requires ``result.ambiguous == []``;
+    - M-5 token-contradiction veto: an unmatched page whose tokens (digits
+      included) overlap a DIFFERENT unmatched slot's brief and not its
+      positional target's refuses fail-loud.
+
+    Each committed bind is recorded machine-readably on ``result.binds``
+    with reason ``"residual-positional-order-bind"`` (W-5/M-8).
+    """
+    if result.ambiguous:  # W-3
+        return
+    if len(pages) != len(expected_slots):  # count parity (merged-page shape)
+        return
+    residual_sids = [sid for sid, _ in expected_slots if sid in result.unmatched_keys]
+    page_ids = list(range(len(pages)))
+    residual_pids = [
+        pid for pid in page_ids if pid not in matched_pids and not page_candidates[pid]
+    ]
+    k = len(residual_sids)
+    if k == 0 or len(residual_pids) != k:
+        return
+    m = len(anchor_pid_by_sid)
+    if m < 2 or m < k:  # M-3 anchor floor
+        return
+
+    slot_pos = {sid: i for i, (sid, _) in enumerate(expected_slots)}
+
+    def _page_index(pid: int) -> int | None:
+        v = pages[pid].get("page_index")
+        return v if isinstance(v, int) else None
+
+    # Anchors sorted by slot order; page_index must strictly increase.
+    anchor_slot_positions: list[int] = []
+    anchor_page_indices: list[int] = []
+    for sid, pid in sorted(anchor_pid_by_sid.items(), key=lambda it: slot_pos[it[0]]):
+        pidx = _page_index(pid)
+        if pidx is None:
+            return
+        anchor_slot_positions.append(slot_pos[sid])
+        anchor_page_indices.append(pidx)
+    if any(b <= a for a, b in zip(anchor_page_indices, anchor_page_indices[1:], strict=False)):
+        return  # non-monotone anchors
+
+    # Gap index g = number of anchors strictly before; g == 0 is the leading
+    # gap (before the first anchor), g == m the trailing gap.
+    gap_slots: dict[int, list[str]] = {}
+    for sid in residual_sids:
+        g = sum(1 for pos in anchor_slot_positions if pos < slot_pos[sid])
+        gap_slots.setdefault(g, []).append(sid)
+    gap_pages: dict[int, list[int]] = {}
+    for pid in residual_pids:
+        pidx = _page_index(pid)
+        if pidx is None or pidx in anchor_page_indices:  # unordered/degenerate
+            return
+        g = sum(1 for a in anchor_page_indices if a < pidx)
+        gap_pages.setdefault(g, []).append(pid)
+
+    if set(gap_slots) != set(gap_pages):
+        return  # M-4: a residual page outside its slot's anchor-bounded gap
+    tentative: list[tuple[str, int]] = []
+    for g, sids_in_gap in gap_slots.items():
+        pids_in_gap = gap_pages[g]
+        if g == 0:  # W-1 leading-gap exclusion (cover-injection guard)
+            return
+        if len(sids_in_gap) != len(pids_in_gap):  # M-4 gap alignment
+            return
+        if len(sids_in_gap) > 1:  # W-2 one residual pair per gap
+            return
+        tentative.append((sids_in_gap[0], pids_in_gap[0]))
+
+    # M-5 token-contradiction veto (digit tokens participate).
+    for sid, pid in tentative:
+        ptoks = page_tokens[pid]
+        if not (ptoks & slot_tokens[sid]) and any(
+            ptoks & slot_tokens[other] for other in residual_sids if other != sid
+        ):
+            return
+
+    brief_by_sid = dict(expected_slots)
+    bound_sids: set[str] = set()
+    for sid, pid in tentative:
+        result.matched[sid] = str(pages[pid]["path"])
+        matched_pids.add(pid)
+        bound_sids.add(sid)
+        result.binds.append(
+            {
+                "reason": "residual-positional-order-bind",  # W-5/M-8
+                "slide_id": sid,
+                "slot_position": slot_pos[sid],
+                "brief_title": brief_by_sid[sid],
+                "page_title": pages[pid].get("title"),
+                "page_index": pages[pid].get("page_index"),
+            }
+        )
+    result.unmatched_keys = [s for s in result.unmatched_keys if s not in bound_sids]
 
 
 def match_pages_to_slots(
@@ -1626,6 +1774,18 @@ def match_pages_to_slots(
     2026-07-09) when exactly one unmatched slot and one unmatched page remain
     and ``_residual_soft_compatible`` passes. Cover-drop runs only after that
     attempt, so a sole content residue is never muted as a leading cover.
+
+    Amendment lineage: bijective containment (party 2026-06-18) ->
+    apostrophe-family deletion-joining (party 2026-07-07) -> 1:1 residual
+    soft bind (party 2026-07-09) -> order-consistent residual positional
+    bind (party 2026-07-16, Winston + Murat RATIFY-WITH-CONDITIONS, live
+    trial 648de559). Frozen precedence (W-4): bijective -> soft bind ->
+    positional -> cover-drop. The soft (semantic) bind ALWAYS attempts
+    first; the positional bind consumes only the post-soft residue, and
+    ``result.binds`` reasons distinguish the two (M-2). Positional
+    preconditions live in ``_apply_residual_positional_binds`` and are
+    party-tunable ONLY. bc0f81c4 soft-bind semantics and the lone-PNG N=1
+    arm are untouched (M-1).
     """
     slot_tokens = {
         sid: _distinctive_tokens(normalize_title(title)) for sid, title in expected_slots
@@ -1697,6 +1857,13 @@ def match_pages_to_slots(
         and len(slot_candidates[page_candidates[pid][0]]) == 1
     }
 
+    # Anchor map (sid -> pid) for the positional bind's monotonicity / gap
+    # preconditions. Bijective commits recover pid via the unique candidate;
+    # a soft bind adds its pair below (soft-bound pages count as anchors).
+    anchor_pid_by_sid: dict[str, int] = {
+        page_candidates[pid][0]: pid for pid in matched_pids
+    }
+
     # Residual soft bind: only when bijective left a strict 1:1 residue.
     # Attempt BEFORE cover-drop so a sole unmatched content page is not muted
     # as unmatched-leading-page (live trial bc0f81c4 Completion↔Complete).
@@ -1708,6 +1875,33 @@ def match_pages_to_slots(
             result.matched[sid] = str(pages[pid]["path"])
             result.unmatched_keys = []
             matched_pids.add(pid)
+            anchor_pid_by_sid[sid] = pid
+            slot_positions = {s: i for i, (s, _) in enumerate(expected_slots)}
+            result.binds.append(
+                {
+                    "reason": "residual-soft-bind",  # M-2: distinct from positional
+                    "slide_id": sid,
+                    "slot_position": slot_positions[sid],
+                    "brief_title": dict(expected_slots)[sid],
+                    "page_title": pages[pid].get("title"),
+                    "page_index": pages[pid].get("page_index"),
+                }
+            )
+
+    # Order-consistent residual positional bind (party 2026-07-16, trial
+    # 648de559). M-1: AFTER the 1:1 residual soft bind, BEFORE cover-drop.
+    # All preconditions (M-3/M-4/M-5, W-1/W-2/W-3) enforced inside; any
+    # failure falls through byte-identically (W-4).
+    _apply_residual_positional_binds(
+        pages=pages,
+        expected_slots=expected_slots,
+        slot_tokens=slot_tokens,
+        page_tokens=page_tokens,
+        page_candidates=page_candidates,
+        anchor_pid_by_sid=anchor_pid_by_sid,
+        result=result,
+        matched_pids=matched_pids,
+    )
 
     min_matched_index = (
         min(pages[pid].get("page_index", 0) for pid in matched_pids) if matched_pids else None

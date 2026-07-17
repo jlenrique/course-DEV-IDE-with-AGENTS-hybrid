@@ -53,6 +53,10 @@ from app.marcus.orchestrator.dispatch_adapter import ProductionDispatchAdapter
 from app.marcus.orchestrator.operator_surface_assembler import (
     DEFAULT_HUD_CONFIG_PATH,
     OperatorSurfaceAssembler,
+    apply_run_settings_change,
+    apply_run_settings_overrides_to_run,
+    load_run_settings_overrides,
+    resolve_run_settings,
 )
 from app.marcus.orchestrator.pre_gate_marcus import PreFillProposal
 from app.marcus.orchestrator.research_citation import CitationFidelityError
@@ -71,6 +75,7 @@ from app.models.decision_cards import (
     G3Card,
     G4ACard,
     G4Card,
+    GSettingsCard,
 )
 from app.models.decision_cards._base import DecisionCardMeta as DecisionCardBaseMeta
 from app.models.runtime.production_envelope import (
@@ -95,6 +100,7 @@ from app.runtime.cascade_config import (
 )
 from app.runtime.economics import (
     RUNS_ROOT,
+    check_trial_budget,
     measure_trial_cost,
     record_trial_cost_report,
 )
@@ -137,6 +143,70 @@ RESEARCH_DISPATCH_LIVE_ENV = "MARCUS_RESEARCH_DISPATCH_LIVE"
 # code contract (mirrors S5's g0_enrichment F-1802 kill-switch model), NOT
 # ``value in TRUTHY`` (which would wrongly stay OFF on the canonical unset run).
 RESEARCH_DISPATCH_LIVE_KILL_SWITCH: frozenset[str] = frozenset({"0", "false", "no", "off"})
+
+# Story 42.5: the synthetic gate id for the PRE-WALK settings confirm-or-change
+# pause. It is deliberately NOT a `pipeline-manifest.yaml` node / `production_gate_ids`
+# member — it gates ENTRY to the pipeline (before G0 / the first spend), has no
+# specialist and produces no artifact (option B; see g_settings.py + the story
+# Dev Notes). It reuses the canonical pause -> OperatorVerdict -> resume_from_verdict
+# machinery every production gate uses.
+PRE_WALK_SETTINGS_GATE_ID = "G0S"
+
+# Story 42.5: the pre-walk settings gate wake flag. Mirrors the G0E/G0R wake-flag
+# convention — the content-free G0S gate node is ALWAYS in the manifest but PAUSES
+# only when woken; otherwise the walk TRAVERSES it byte-identically (so the default
+# start walk is unchanged). Default ASLEEP (truthy-set semantics, NOT the
+# kill-switch inverse): the operator entrypoint (`start_trial`) wakes it for real
+# operator-steered runs (AC-1), while harness / offline / scripted paths leave it
+# unset ⇒ traversed (AC-6 opt-out is the absence-of-wake, made explicit + logged).
+PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV = "MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE"
+_PREWALK_SETTINGS_TRUTHY: frozenset[str] = frozenset({"1", "true", "yes", "on"})
+
+# Story 42.6 (rider R1): the per-run WAKE SENTINEL. The env flag above is a
+# global override; the sentinel is a per-run marker file the operator CLI start
+# path (`start_trial(..., prewalk_settings_confirm=True)`) writes into the run
+# dir so G0S wakes by DEFAULT on a real steered run — WITHOUT the env leak that
+# `os.environ.setdefault` would push into the ~13 direct `start_trial` test
+# callers. Direct `start_trial(...)` calls (tests) keep the function default OFF
+# ⇒ no sentinel ⇒ G0S dormant ⇒ byte-identical traversal. Presence is the
+# signal (content is advisory provenance only).
+PREWALK_SETTINGS_CONFIRM_SENTINEL_NAME = ".prewalk-settings-confirm"
+
+
+def _prewalk_settings_sentinel_path(run_dir: Path) -> Path:
+    """Return the per-run G0S wake-sentinel path inside ``run_dir``."""
+    return run_dir / PREWALK_SETTINGS_CONFIRM_SENTINEL_NAME
+
+
+def write_prewalk_settings_confirm_sentinel(run_dir: Path) -> Path:
+    """Write the per-run G0S wake sentinel into ``run_dir`` (Story 42.6, AC-2).
+
+    Called by the operator CLI start path so the pre-walk settings confirm gate
+    wakes by default on a real steered run. Idempotent; presence is the signal.
+    """
+    run_dir.mkdir(parents=True, exist_ok=True)
+    path = _prewalk_settings_sentinel_path(run_dir)
+    path.write_text(
+        json.dumps({"written_by": "start_trial", "at": _now().isoformat()}) + "\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def _prewalk_settings_confirm_active(run_dir: Path | None = None) -> bool:
+    """Return True iff the pre-walk settings confirm gate is woken (default OFF).
+
+    OR semantics (Story 42.6 AC-1): the gate wakes when EITHER the global env
+    override :data:`PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV` is truthy OR a per-run
+    wake sentinel exists in ``run_dir``. Callers without a run dir pass ``None``
+    (env-only overload).
+    """
+    if (
+        os.environ.get(PREWALK_SETTINGS_CONFIRM_ACTIVE_ENV, "").strip().lower()
+        in _PREWALK_SETTINGS_TRUTHY
+    ):
+        return True
+    return run_dir is not None and _prewalk_settings_sentinel_path(run_dir).exists()
 
 
 def _research_dispatch_live() -> bool:
@@ -1020,6 +1090,7 @@ def _build_decision_card(
     production_envelope: Any = None,
     pre_fill: PreFillProposal | None = None,
     runs_root: Path = RUNS_ROOT,
+    run_settings: dict[str, Any] | None = None,
 ) -> Any:
     drafted_proposal: dict[str, Any] = {"node_id": node_id, "operator_id": operator_id}
     if pre_fill is not None:
@@ -1214,6 +1285,25 @@ def _build_decision_card(
                 "recommend-drop / proposed-new. Marcus proposes; you decide."
             ),
         )
+    if gate_id == PRE_WALK_SETTINGS_GATE_ID:
+        # Story 42.5: pre-walk settings confirm-or-change gate. Carries the resolved
+        # 16-toggle readout (Story 42.3) the operator confirms (verb=approve) or
+        # changes (verb=edit). `allowed_verbs` threads the neutral confirm/change
+        # pair onto the next-action surface (no preselected verdict — 42.1 finding G).
+        return GSettingsCard(
+            card_id=common["card_id"],
+            trial_id=common["trial_id"],
+            created_at=common["created_at"],
+            decision_card_digest="0" * 64,
+            meta=_base_card_meta(common["meta"]),
+            verb=common["verb"],
+            run_settings=run_settings or {},
+            allowed_verbs=["approve", "edit"],
+            operator_prompt=(
+                "Confirm the resolved run settings, or change one before the walk "
+                "spends. Marcus proposes; you decide."
+            ),
+        )
     raise RuntimeError(f"unsupported production gate id: {gate_id}")
 
 
@@ -1382,7 +1472,7 @@ def _write_checkpoint(
     envelope: ProductionTrialEnvelope,
     manifest_path: Path,
     allow_offline_cost_report: bool,
-    max_specialist_calls: int,
+    max_specialist_calls: int | None,
     directive_path: Path | None,
     bundle_dir: Path | None,
 ) -> Path:
@@ -2482,7 +2572,7 @@ def _pause_at_gate(
     manifest_path: Path,
     runs_root: Path,
     allow_offline_cost_report: bool,
-    max_specialist_calls: int,
+    max_specialist_calls: int | None,
     directive_path: Path | None,
     bundle_dir: Path | None,
 ) -> ProductionTrialEnvelope:
@@ -2627,6 +2717,147 @@ def _pause_at_gate(
     return envelope
 
 
+def _prewalk_settings_gate_disposition(
+    *,
+    trial_id: UUID,
+    runs_root: Path,
+    pause_at_gates: bool,
+    allow_offline_cost_report: bool,
+) -> str:
+    """Decide how the G0S pre-walk settings gate is handled at a walk (Story 42.5).
+
+    Returns one of:
+
+    * ``"traverse"`` — neither wake signal is present (env flag unset AND no
+      per-run sentinel — Story 42.6): the content-free gate is dormant, traversed
+      byte-identically (exactly like G0E/G0R when their wake flag is off). No
+      surface mutation, so a direct ``start_trial`` (test) walk is unchanged.
+    * ``"skip-explicit"`` — the gate is WOKEN but a non-interactive
+      (``pause_at_gates=False``) or offline-harness (``allow_offline_cost_report``)
+      mode overrides the pause. AC-6 opt-out: EXPLICIT + logged/traced — never a
+      silent skip of a spend-gating confirm. (This helper appends the trace.)
+    * ``"pause"`` — woken + interactive + not offline: PAUSE (AC-1).
+
+    Invariant helper called from BOTH walks (start + continuation) so the
+    disposition can never drift between them (two-walk trap).
+    """
+    if not _prewalk_settings_confirm_active(_run_dir(trial_id, runs_root)):
+        return "traverse"
+    if not pause_at_gates or allow_offline_cost_report:
+        reason = (
+            "non-interactive (pause_at_gates=False)"
+            if not pause_at_gates
+            else "offline-harness (allow_offline_cost_report=True)"
+        )
+        LOGGER.info(
+            "trial %s: pre-walk settings confirm gate WOKEN but SKIPPED — %s "
+            "(opt-out is explicit; never a silent skip of a spend-gating confirm)",
+            trial_id,
+            reason,
+        )
+        _append_operator_surface_trace(
+            trial_id, runs_root, "prewalk-settings-skipped", detail=reason
+        )
+        return "skip-explicit"
+    return "pause"
+
+
+def _pause_at_prewalk_settings(
+    *,
+    trial_id: UUID,
+    operator_id: str,
+    envelope: ProductionTrialEnvelope,
+    production_envelope: ProductionEnvelope,
+    run_state: RunState,
+    node_index: int,
+    manifest_path: Path,
+    runs_root: Path,
+    allow_offline_cost_report: bool,
+    max_specialist_calls: int | None,
+    directive_path: Path | None,
+    bundle_dir: Path | None,
+) -> ProductionTrialEnvelope:
+    """Pause the trial at the pre-walk settings gate (Story 42.5, gate G0S).
+
+    Reuses the canonical DecisionCard pause primitive — build card, register,
+    checkpoint, persist paused-at-gate, emit surface — exactly like ``_pause_at_gate``,
+    but for the content-free HEAD gate node (``pre-walk-settings-gate``) that is
+    crossed ONCE at the very start (before G0 / the first spend). The checkpoint is
+    written at the gate's ``node_index`` so ``next_node_index=node_index+1`` — an
+    ``approve`` (confirm) resume re-enters the walk PAST the settings gate through
+    ``_continue_production_walk`` (both-walk safe). NO pre-gate-Marcus, NO storyboard,
+    NO cost/trace machinery: nothing has been spent, and there is no model proposal —
+    the operator confirms resolved values (mirrors the G0E/G0R content-free gates).
+    """
+    run_dir = _run_dir(trial_id, runs_root)
+    # Refresh the ambient sections so the 16-toggle standing readout (Story 42.3)
+    # is present on the operator surface + HUD at the pause, and reflects any prior
+    # CHANGE override (the resolver overlays run-settings-overrides.json).
+    _refresh_operator_surface_ambient(
+        trial_id,
+        runs_root,
+        run_state,
+        trace_event=("prewalk-settings-pause", "awaiting settings confirm/change"),
+    )
+    readout = resolve_run_settings(run_dir, None, _now()).model_dump(mode="json")
+    card = _build_decision_card(
+        gate_id=PRE_WALK_SETTINGS_GATE_ID,
+        trial_id=trial_id,
+        node_id="__prewalk__",
+        operator_id=operator_id,
+        pending_nodes=[],
+        artifact_paths=envelope.artifact_paths,
+        production_envelope=production_envelope,
+        runs_root=runs_root,
+        run_settings=readout,
+    )
+    stored = register_decision_card(card)
+    checkpoint = _write_checkpoint(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        node_index=node_index,
+        gate_id=PRE_WALK_SETTINGS_GATE_ID,
+        run_state=run_state,
+        envelope=envelope,
+        manifest_path=manifest_path,
+        allow_offline_cost_report=allow_offline_cost_report,
+        max_specialist_calls=max_specialist_calls,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
+    )
+    decision_path = run_dir / f"decision-card-{PRE_WALK_SETTINGS_GATE_ID}.json"
+    _write_json(
+        decision_path,
+        {
+            "card": card.model_dump(mode="json"),
+            "digest": stored.digest,
+            "issued_at": stored.issued_at.astimezone(UTC).isoformat().replace("+00:00", "Z"),
+            "server_nonce": stored.server_nonce,
+            "checkpoint_path": checkpoint.as_posix(),
+        },
+    )
+    envelope = envelope.model_copy(
+        update={
+            "status": "paused-at-gate",
+            "paused_gate": PRE_WALK_SETTINGS_GATE_ID,
+            "paused_error_tag": None,
+            "production_clone_launch_evidence": False,
+            "production_clone_launch_evidence_reason": "paused-before-live-specialist-call",
+            "production_envelope": production_envelope,
+            "artifact_paths": _merge_artifact_paths(
+                envelope.artifact_paths,
+                decision_path,
+                checkpoint,
+            ),
+        }
+    )
+    _persist_envelope(envelope, runs_root)
+    # Emit the operator surface so the paused-at-gate next_action (the neutral
+    # confirm/change menu, threaded from the card's allowed_verbs) is present.
+    _emit_operator_surface(envelope, runs_root)
+    return envelope
+
+
 def _dispatch_specialist_at_node(
     *,
     adapter: Any,
@@ -2767,7 +2998,7 @@ def _pause_at_error(
     manifest_path: Path,
     runs_root: Path,
     allow_offline_cost_report: bool,
-    max_specialist_calls: int,
+    max_specialist_calls: int | None,
     directive_path: Path | None,
     bundle_dir: Path | None,
 ) -> ProductionTrialEnvelope:
@@ -2884,7 +3115,7 @@ def _pause_at_provider_batch(
     manifest_path: Path,
     runs_root: Path,
     allow_offline_cost_report: bool,
-    max_specialist_calls: int,
+    max_specialist_calls: int | None,
     directive_path: Path | None,
     bundle_dir: Path | None,
 ) -> ProductionTrialEnvelope:
@@ -2994,7 +3225,7 @@ def _dispatch_specialist_catching_batch_wait(
     specialist_calls: int,
     manifest_path: Path,
     allow_offline_cost_report: bool,
-    max_specialist_calls: int,
+    max_specialist_calls: int | None,
 ) -> tuple[ProductionEnvelope, RunState] | ProductionTrialEnvelope:
     """Shared two-walk chokepoint: dispatch, provider-batch wait, or error-pause."""
 
@@ -3058,6 +3289,130 @@ def _dispatch_specialist_catching_batch_wait(
         )
 
 
+def _assert_specialist_dispatched_or_raise(
+    *,
+    dispatched: bool,
+    allow_offline_cost_report: bool,
+    specialist_id: str,
+    node_id: str,
+) -> None:
+    """Fail loud when an ENTERED, not-already-carrying specialist did not dispatch.
+
+    Story 41-2 binding invariant (BOTH walks — the shared chokepoint so the two
+    node walks cannot drift): in a production run
+    (``allow_offline_cost_report=False``) a specialist node that is entered and is
+    NOT already-carrying its contribution MUST emit a contribution or fail loud AT
+    that node. A silent advance lets a required specialist (e.g. CD @ 4.75)
+    resurface as a MISATTRIBUTED downstream error
+    (``builder.gary.upstream-missing`` @ §06, three nodes away — trial bc747b51)
+    instead of halting honestly where the omission happened.
+
+    Callers invoke this right where ``graph_step_completed = True`` was previously
+    set unconditionally. The already-carrying idempotency skip (S2 per-node keying)
+    is handled by the caller BEFORE this guard and never reaches here, so a resumed
+    node that already holds its contribution still advances cleanly with no raise.
+
+    Story 41-3 (REMOVE the throttle): the call-count budget
+    (``max_specialist_calls``) is gone, so ``dispatch.budget-exhausted`` was
+    retired — there is no call-count starvation to name. The single remaining
+    honest stop is ``dispatch.live-unavailable``: a production run reached a
+    specialist node, live OpenAI was unavailable, and the offline dispatch-skip is
+    forbidden. Offline-harness runs (``allow_offline_cost_report=True``) never
+    dispatch live and legitimately skip WITHOUT raising (AC-5).
+    """
+    if allow_offline_cost_report or dispatched:
+        return
+    raise SpecialistDispatchError(
+        f"specialist {specialist_id!r} at node {node_id} was ENTERED but not "
+        "dispatched: live OpenAI unavailable while allow_offline_cost_report=False "
+        "— a required specialist node must emit a contribution or fail loud at the "
+        "node (Story 41-2 invariant)",
+        tag="dispatch.live-unavailable",
+    )
+
+
+def _resolve_trial_budget_usd() -> float | None:
+    """Read ``MARCUS_TRIAL_BUDGET_USD`` as the run's dollar cap, or ``None``.
+
+    Mirrors the report-side cap read (``app.runtime.economics`` §resolved_budget):
+    an unset / blank / unparseable value means **no cap** — the 41-3 interim
+    (spend bounded only by the finite graph + idempotency + gate-pauses) is
+    preserved and enforcement never fires.
+    """
+    raw = (os.getenv("MARCUS_TRIAL_BUDGET_USD") or "").strip()
+    if not raw:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def _accumulated_run_spend_usd(production_envelope: ProductionEnvelope) -> float:
+    """Sum the accumulated per-contribution ``cost_usd`` in the live envelope.
+
+    This is the SAME mid-walk live-partial computation the operator-surface cost
+    reading falls back to (``_operator_surface_cost_reading``) — the real, known
+    partial spend accrued so far this walk. It is the accumulated-spend input the
+    dollar brake feeds into ``check_trial_budget`` (the BudgetStatus SSOT).
+    """
+    total = 0.0
+    for contribution in getattr(production_envelope, "contributions", ()) or ():
+        value = getattr(contribution, "cost_usd", 0.0)
+        total += float(value) if isinstance(value, (int, float)) else 0.0
+    return total
+
+
+def _assert_within_dollar_budget_or_raise(
+    *,
+    production_envelope: ProductionEnvelope,
+    node_id: str,
+    specialist_id: str,
+) -> None:
+    """Fail loud (``budget.exceeded``) when accumulated spend crosses the cap.
+
+    Story 41-4 — the dollar brake (BOTH walks, the shared chokepoint adjacent to
+    ``_assert_specialist_dispatched_or_raise``). ``MARCUS_TRIAL_BUDGET_USD`` was a
+    SOFT-cap gauge (``BudgetStatus`` warned at cost-report time but the walk never
+    stopped); this makes it a real economic brake.
+
+    ONE SOURCE OF TRUTH (AC-3): the enforcement decision is
+    ``check_trial_budget(accumulated, cap)`` — the identical posture computation
+    that produces the ``BudgetStatus`` in the trial economics report. The report
+    and the brake therefore agree by construction: the hard stop fires exactly
+    when that computation returns ``over-budget-warning`` (accumulated spend has
+    crossed the cap).
+
+    Callers invoke this at TWO points around a specialist dispatch:
+      * PRE-spend — before dispatching, so an already-over-budget run pauses
+        WITHOUT spending the crossing call (the preferred stop).
+      * POST-spend — after a dispatch, so a single call that overshoots the cap
+        is still caught honestly at its node.
+
+    No-cap / unset budget (AC-2 back-compat): ``_resolve_trial_budget_usd``
+    returns ``None`` and this is a no-op — a no-cap run NEVER budget-pauses,
+    byte-identical to the 41-3 interim.
+    """
+    budget_usd = _resolve_trial_budget_usd()
+    if budget_usd is None or budget_usd < 0.0:
+        # No cap (unset/blank/unparseable) OR a misconfigured negative cap: do
+        # not enforce (a negative cap is not a real economic bound — the report
+        # path treats <0 as an operator error, never as a tighter brake).
+        return
+    accumulated = _accumulated_run_spend_usd(production_envelope)
+    status = check_trial_budget(accumulated, budget_usd)
+    if status.state != "over-budget-warning":
+        return
+    raise SpecialistDispatchError(
+        f"dollar budget exceeded at node {node_id} (specialist {specialist_id!r}): "
+        f"accumulated ${accumulated:.6f} of ${budget_usd:.6f} cap "
+        f"(over by ${status.over_by_usd:.6f}) — pausing before further spend so "
+        "MARCUS_TRIAL_BUDGET_USD is a real brake, not just an after-the-fact "
+        "report (Story 41-4 dollar-budget enforced stop)",
+        tag="budget.exceeded",
+    )
+
+
 def run_production_trial(
     corpus_path: Path,
     preset: Literal["production", "explore"],
@@ -3067,7 +3422,7 @@ def run_production_trial(
     runs_root: Path = RUNS_ROOT,
     allow_offline_cost_report: bool = False,
     manifest_path: Path = DEFAULT_MANIFEST_PATH,
-    max_specialist_calls: int = 1,
+    max_specialist_calls: int | None = None,
     pause_at_gates: bool = True,
     directive_path: Path | None = None,
     component_selection: ComponentSelection | None = None,
@@ -3213,6 +3568,35 @@ def run_production_trial(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
+                if gate_id == PRE_WALK_SETTINGS_GATE_ID:
+                    # Story 42.5: the pre-walk settings confirm-or-change gate (G0S)
+                    # at the HEAD of the walk. Pauses ONLY when woken; traverses
+                    # byte-identically otherwise (start-walk leg).
+                    _disposition = _prewalk_settings_gate_disposition(
+                        trial_id=effective_trial_id,
+                        runs_root=runs_root,
+                        pause_at_gates=pause_at_gates,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                    )
+                    if _disposition == "pause":
+                        return _pause_at_prewalk_settings(
+                            trial_id=effective_trial_id,
+                            operator_id=operator_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            node_index=index,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                    last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, effective_trial_id, runs_root)
+                    graph_step_completed = True
+                    continue
                 if (
                     gate_id == g0_enrichment_wiring.G0_ENRICHMENT_GATE_CODE
                     and not g0_enrichment_wiring.g0_enrichment_active()
@@ -3592,7 +3976,7 @@ def run_production_trial(
                 graph_step_completed = True
                 continue
 
-            if node_kind == "specialist" and specialist_calls < max_specialist_calls:
+            if node_kind == "specialist":
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying (SCP 2026-06-11): the skip rule guards
                 # node revisits, not specialist revisits — the per-specialist
@@ -3607,6 +3991,57 @@ def run_production_trial(
                     )
                     graph_step_completed = True
                     continue
+                # Story 41-2: track whether dispatch ACTUALLY ran so an entered,
+                # not-already-carrying specialist that produced no contribution
+                # fails loud AT this node (shared guard, both walks) rather than
+                # setting graph_step_completed unconditionally and misattributing
+                # downstream.
+                # Story 41-3 (REMOVE the throttle): the call-count cap
+                # (max_specialist_calls) is gone — a specialist node dispatches
+                # whenever live is available and the run is not an offline cost
+                # report, with no per-call budget gate.
+                # Story 41-4 (the dollar brake landed): 41-3 said "spend is bounded
+                # by the finite composed graph, per-node idempotency, and human
+                # gate-pauses; there is no early dollar cutoff until the
+                # budget-enforcement follow-on lands." THIS is that follow-on —
+                # MARCUS_TRIAL_BUDGET_USD is now a real economic brake. The dollar
+                # cutoff is enforced by _assert_within_dollar_budget_or_raise
+                # (shared, both walks) PRE-spend (below, before this dispatch) and
+                # POST-spend (after it) via the same check_trial_budget SSOT that
+                # feeds BudgetStatus. No-cap/unset budget stays byte-identical.
+                #
+                # Story 41-4 PRE-spend brake: if accumulated spend has already
+                # crossed the cap, pause BEFORE spending this node's dispatch (do
+                # not spend the crossing call). No-op when no-cap/unset.
+                try:
+                    _assert_within_dollar_budget_or_raise(
+                        production_envelope=production_envelope,
+                        node_id=node.id,
+                        specialist_id=specialist_id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                dispatched_specialist = False
                 if _has_live_openai() and not allow_offline_cost_report:
                     dispatched = _dispatch_specialist_catching_batch_wait(
                         adapter=adapter,
@@ -3634,6 +4069,67 @@ def run_production_trial(
                         return dispatched
                     production_envelope, run_state = dispatched
                     specialist_calls += 1
+                    dispatched_specialist = True
+                    # Story 41-4 POST-spend brake: catch a single dispatch that
+                    # overshot the cap (the pre-spend check cannot know this
+                    # call's cost in advance). Same SSOT; distinct budget.exceeded.
+                    try:
+                        _assert_within_dollar_budget_or_raise(
+                            production_envelope=production_envelope,
+                            node_id=node.id,
+                            specialist_id=specialist_id,
+                        )
+                    except SpecialistDispatchError as exc:
+                        return _pause_at_error(
+                            error=exc,
+                            node_id=node.id,
+                            node_index=index,
+                            specialist_id=specialist_id,
+                            trial_id=effective_trial_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trace_metadata=trace_metadata,
+                            last_gate_crossed=last_gate_crossed,
+                            graph_step_completed=graph_step_completed,
+                            specialist_calls=specialist_calls,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                try:
+                    _assert_specialist_dispatched_or_raise(
+                        dispatched=dispatched_specialist,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        specialist_id=specialist_id,
+                        node_id=node.id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 graph_step_completed = True
 
     completed_at = _now()
@@ -3701,6 +4197,124 @@ def run_production_trial(
     return envelope
 
 
+def _apply_component_overrides_to_run_state(run_dir: Path, run_state: RunState) -> RunState:
+    """Project any pre-walk component-selection CHANGE onto run_state (Story 42.5).
+
+    Component toggles resolve at ``run_state.component_selection`` (the walk
+    recomposes the manifest from it), so a changed component is applied here at
+    confirm — never re-read from env. A no-op when no component override exists.
+    """
+    overrides = load_run_settings_overrides(run_dir)
+    updates: dict[str, bool] = {}
+    for field, value in overrides.items():
+        if not field.startswith("component_"):
+            continue
+        name = field[len("component_") :]
+        if name in ComponentSelection.model_fields:
+            updates[name] = str(value).strip().lower() in {"on", "1", "true", "yes"}
+    if not updates:
+        return run_state
+    selection = run_state.component_selection or ComponentSelection.production_default()
+    return run_state.model_copy(
+        update={"component_selection": selection.model_copy(update=updates)}
+    )
+
+
+def _resume_prewalk_settings(
+    *,
+    trial_id: UUID,
+    verdict: OperatorVerdict,
+    envelope: ProductionTrialEnvelope,
+    run_state: RunState,
+    runner: dict[str, Any],
+    checkpoint: dict[str, Any],
+    runs_root: Path,
+    max_specialist_calls: int | None,
+) -> ProductionTrialEnvelope:
+    """Answer the pre-walk settings gate (Story 42.5): confirm / change / cancel.
+
+    Reuses the canonical resume machinery (the caller already validated the verdict
+    via ``resume_from_verdict`` — digest + nonce + card_id). ``approve``==CONFIRM
+    continues the walk at index 0 through the shared ``_continue_production_walk``
+    (both-walk-safe; env/directive overrides project at that entry seam);
+    ``edit``==CHANGE persists the toggle change to the one resolution point and
+    RE-PRESENTS the updated surface (loop until confirm); ``reject``==CANCEL fails
+    the run before any spend.
+    """
+    run_dir = _run_dir(trial_id, runs_root)
+    manifest_path = Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)
+    directive_path = _resolve_resume_directive_path(runner, trial_id=trial_id, runs_root=runs_root)
+    bundle_dir = _resolve_resume_bundle_dir(
+        runner, trial_id=trial_id, runs_root=runs_root, directive_path=directive_path
+    )
+    allow_offline = bool(runner.get("allow_offline_cost_report", False))
+
+    if verdict.verb == "reject":
+        run_summary_path = _emit_run_summary_yaml(
+            trial_id=trial_id,
+            terminal_gate=verdict.gate_id,
+            runs_root=runs_root,
+            manifest_path=manifest_path,
+            langsmith_trace_id=envelope.langsmith_trace_id,
+            selection=run_state.component_selection,
+        )
+        updated = envelope.model_copy(
+            update={
+                "status": "failed",
+                "completed_at": _now(),
+                "production_clone_launch_evidence_reason": (
+                    "operator-cancelled-at-prewalk-settings"
+                ),
+                "artifact_paths": _merge_artifact_paths(
+                    envelope.artifact_paths, run_summary_path
+                ),
+            }
+        )
+        _persist_envelope(updated, runs_root)
+        return updated
+
+    if verdict.verb == "edit":
+        # CHANGE: write to the ONE resolution point, then re-present the surface at
+        # the SAME G0S node index (checkpoint next_node_index-1 = the gate's index).
+        apply_run_settings_change(run_dir, verdict.edit_payload or {})
+        return _pause_at_prewalk_settings(
+            trial_id=trial_id,
+            operator_id=envelope.operator_id,
+            envelope=envelope,
+            production_envelope=envelope.production_envelope,
+            run_state=run_state,
+            node_index=int(checkpoint["next_node_index"]) - 1,
+            manifest_path=manifest_path,
+            runs_root=runs_root,
+            allow_offline_cost_report=allow_offline,
+            max_specialist_calls=runner.get("max_specialist_calls"),
+            directive_path=directive_path,
+            bundle_dir=bundle_dir,
+        )
+
+    # CONFIRM (approve): apply component-selection changes to run_state, then walk.
+    run_state = _apply_component_overrides_to_run_state(run_dir, run_state)
+    resumed_max = (
+        max_specialist_calls
+        if max_specialist_calls is not None
+        else runner.get("max_specialist_calls")
+    )
+    return _continue_production_walk(
+        trial_id=trial_id,
+        envelope=envelope,
+        run_state=run_state,
+        runner=runner,
+        manifest_path=manifest_path,
+        runs_root=runs_root,
+        start_index=int(checkpoint["next_node_index"]),
+        last_gate_crossed=None,
+        max_specialist_calls=resumed_max,
+        directive_path=directive_path,
+        bundle_dir=bundle_dir,
+        non_evidence_reason="resumed-after-prewalk-settings",
+    )
+
+
 def resume_production_trial(
     *,
     trial_id: UUID,
@@ -3752,6 +4366,23 @@ def resume_production_trial(
     runner = checkpoint.get("runner") or {}
     run_state = RunState.model_validate_json(json.dumps(checkpoint["run_state"]))
     run_state = run_state.model_copy(update={"production_envelope": envelope.production_envelope})
+    if verdict.gate_id == PRE_WALK_SETTINGS_GATE_ID:
+        # Story 42.5: the pre-walk settings gate reuses this verdict-validation +
+        # resume machinery (card rehydrate + resume_from_verdict digest/nonce checks
+        # above), but its confirm/change/cancel semantics differ from a pipeline
+        # gate — it does NOT feed the generic `_apply_verdict_to_run_state`
+        # (edit-payload is a toggle change, not a cache-prefix overwrite). Dispatch
+        # to the dedicated handler.
+        return _resume_prewalk_settings(
+            trial_id=trial_id,
+            verdict=verdict,
+            envelope=envelope,
+            run_state=run_state,
+            runner=runner,
+            checkpoint=checkpoint,
+            runs_root=runs_root,
+            max_specialist_calls=max_specialist_calls,
+        )
     run_state = _apply_verdict_to_run_state(run_state, verdict)
     if (
         verdict.gate_id == irene_refinement_wiring.IRENE_REFINEMENT_GATE_CODE
@@ -3795,10 +4426,13 @@ def resume_production_trial(
         return updated
 
     manifest_path = Path(runner.get("manifest_path") or DEFAULT_MANIFEST_PATH)
+    # Story 41-3: the call-count throttle is removed. A continuation must not
+    # silently re-throttle, so an absent persisted value resolves to None
+    # (unbounded) — never the old ``or 1`` re-default that starved CD @ 4.75.
     resumed_max_specialist_calls = (
         max_specialist_calls
         if max_specialist_calls is not None
-        else int(runner.get("max_specialist_calls") or 1)
+        else runner.get("max_specialist_calls")
     )
     directive_path = _resolve_resume_directive_path(runner, trial_id=trial_id, runs_root=runs_root)
     bundle_dir = _resolve_resume_bundle_dir(
@@ -3960,9 +4594,10 @@ def resume_batch_production_trial(
         start_index=int(pause["node_index"]),
         last_gate_crossed=pause.get("last_gate_crossed"),
         max_specialist_calls=(
+            # Story 41-3: unbounded (None) fallback — no ``or 1`` re-throttle.
             max_specialist_calls
             if max_specialist_calls is not None
-            else int(runner.get("max_specialist_calls") or 1)
+            else runner.get("max_specialist_calls")
         ),
         directive_path=directive_path,
         bundle_dir=bundle_dir,
@@ -4089,9 +4724,10 @@ def recover_production_trial(
         start_index=start_index,
         last_gate_crossed=error_pause.get("last_gate_crossed"),
         max_specialist_calls=(
+            # Story 41-3: unbounded (None) fallback — no ``or 1`` re-throttle.
             max_specialist_calls
             if max_specialist_calls is not None
-            else int(runner.get("max_specialist_calls") or 1)
+            else runner.get("max_specialist_calls")
         ),
         directive_path=directive_path,
         bundle_dir=bundle_dir,
@@ -4109,7 +4745,7 @@ def _continue_production_walk(
     runs_root: Path,
     start_index: int,
     last_gate_crossed: str | None,
-    max_specialist_calls: int,
+    max_specialist_calls: int | None,
     directive_path: Path | None = None,
     bundle_dir: Path | None = None,
     extra_artifacts: tuple[Path, ...] = (),
@@ -4124,6 +4760,21 @@ def _continue_production_walk(
     Winston d.2).
     """
     run_dir = _run_dir(trial_id, runs_root)
+    # Story 42.5 (AC-3): project any persisted pre-walk CHANGE overrides onto the
+    # walk's resolution points BEFORE it resolves anything — env vars for the
+    # MARCUS_* toggles + budget, the directive.yaml for directive-sourced settings.
+    # This is the single walk-entry seam (both walks call it), and each resume is a
+    # fresh process, so the change must be re-projected from the durable override
+    # file every continuation for it to hold "for the rest of the run". No-op when
+    # no override exists (byte-identical). Never raises into the walk.
+    _applied_overrides = apply_run_settings_overrides_to_run(run_dir)
+    if _applied_overrides.get("env") or _applied_overrides.get("directive"):
+        LOGGER.info(
+            "trial %s: applied pre-walk settings overrides at walk entry — env=%s directive=%s",
+            trial_id,
+            _applied_overrides.get("env"),
+            _applied_overrides.get("directive"),
+        )
     # Two-walk trap: REHYDRATE the frozen component_selection from the run record
     # and recompose the SAME graph — never re-default. run_state was loaded from
     # the persisted checkpoint/error-pause by the caller, so its component_selection
@@ -4200,6 +4851,37 @@ def _continue_production_walk(
             node_kind = getattr(handler, "__production_node_kind__", None)
             if node_kind == "gate":
                 gate_id = handler.__production_gate_id__
+                if gate_id == PRE_WALK_SETTINGS_GATE_ID:
+                    # Story 42.5 (continuation-walk leg, two-walk parity): normally
+                    # the settings gate is crossed on the START walk and the resume
+                    # re-enters PAST it, but a recover re-entering at index 0 must
+                    # honor the SAME disposition. A resume/recover is operator-driven
+                    # (interactive), so pause_at_gates=True here.
+                    _disposition = _prewalk_settings_gate_disposition(
+                        trial_id=trial_id,
+                        runs_root=runs_root,
+                        pause_at_gates=True,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                    )
+                    if _disposition == "pause":
+                        return _pause_at_prewalk_settings(
+                            trial_id=trial_id,
+                            operator_id=runner.get("operator_id") or envelope.operator_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            node_index=index,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                    last_gate_crossed = gate_id
+                    _udac_ratify_gate(gate_id, trial_id, runs_root)
+                    graph_step_completed = True
+                    continue
                 if (
                     gate_id == g0_enrichment_wiring.G0_ENRICHMENT_GATE_CODE
                     and not g0_enrichment_wiring.g0_enrichment_active()
@@ -4584,7 +5266,7 @@ def _continue_production_walk(
                 graph_step_completed = True
                 continue
 
-            if node_kind == "specialist" and specialist_calls < max_specialist_calls:
+            if node_kind == "specialist":
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying — see start-walker note.
                 if production_envelope.get_contribution(specialist_id, node_id=node.id) is not None:
@@ -4597,6 +5279,55 @@ def _continue_production_walk(
                     )
                     graph_step_completed = True
                     continue
+                # Story 41-2 (resume/recover leg — two-walk parity): identical
+                # fail-loud invariant via the SHARED guard. This is the walk the
+                # bc747b51 misattribution surfaced on — CD @ 4.75 starved (cap=1
+                # spent upstream), silently advanced, then §06 raised
+                # builder.gary.upstream-missing three nodes later.
+                # Story 41-3 (REMOVE the throttle): the call-count cap
+                # (max_specialist_calls) is gone — a specialist node dispatches
+                # whenever live is available and the run is not an offline cost
+                # report, with no per-call budget gate.
+                # Story 41-4 (the dollar brake landed — resume/recover leg, two-walk
+                # parity): 41-3's "no early dollar cutoff until the follow-on lands"
+                # interim is closed here. MARCUS_TRIAL_BUDGET_USD is enforced by the
+                # SHARED _assert_within_dollar_budget_or_raise PRE-spend (below) and
+                # POST-spend (after dispatch) via the same check_trial_budget SSOT
+                # that feeds BudgetStatus. Resume-safe: a resume that is still over
+                # the cap re-pauses PRE-spend (no silent double-spend); a resume with
+                # a RAISED cap continues. No-cap/unset stays byte-identical.
+                #
+                # Story 41-4 PRE-spend brake: pause BEFORE spending this node's
+                # dispatch if accumulated spend has already crossed the cap.
+                try:
+                    _assert_within_dollar_budget_or_raise(
+                        production_envelope=production_envelope,
+                        node_id=node.id,
+                        specialist_id=specialist_id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
+                dispatched_specialist = False
                 if _has_live_openai() and not allow_offline_cost_report:
                     dispatched = _dispatch_specialist_catching_batch_wait(
                         adapter=adapter,
@@ -4624,6 +5355,66 @@ def _continue_production_walk(
                         return dispatched
                     production_envelope, run_state = dispatched
                     specialist_calls += 1
+                    dispatched_specialist = True
+                    # Story 41-4 POST-spend brake: catch a single dispatch that
+                    # overshot the cap. Same SSOT; distinct budget.exceeded.
+                    try:
+                        _assert_within_dollar_budget_or_raise(
+                            production_envelope=production_envelope,
+                            node_id=node.id,
+                            specialist_id=specialist_id,
+                        )
+                    except SpecialistDispatchError as exc:
+                        return _pause_at_error(
+                            error=exc,
+                            node_id=node.id,
+                            node_index=index,
+                            specialist_id=specialist_id,
+                            trial_id=trial_id,
+                            envelope=envelope,
+                            production_envelope=production_envelope,
+                            run_state=run_state,
+                            child_runs=child_runs,
+                            trace_metadata=trace_metadata,
+                            last_gate_crossed=last_gate_crossed,
+                            graph_step_completed=graph_step_completed,
+                            specialist_calls=specialist_calls,
+                            manifest_path=manifest_path,
+                            runs_root=runs_root,
+                            allow_offline_cost_report=allow_offline_cost_report,
+                            max_specialist_calls=max_specialist_calls,
+                            directive_path=directive_path,
+                            bundle_dir=bundle_dir,
+                        )
+                try:
+                    _assert_specialist_dispatched_or_raise(
+                        dispatched=dispatched_specialist,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        specialist_id=specialist_id,
+                        node_id=node.id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 graph_step_completed = True
 
     completed_at = _now()

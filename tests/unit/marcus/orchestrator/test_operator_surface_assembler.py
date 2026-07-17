@@ -322,13 +322,20 @@ def test_paused_at_gate_emits_next_action_command(tmp_path: Path) -> None:
     proj = _read(asm)
     assert proj.next_action is not None
     assert proj.next_action.pause_class == "paused-at-gate"
-    # F-E2E-1: gate-class next-action now emits the cross-process `trial resume`
-    # inline-verdict command (the former `gate decide` read an empty in-memory
-    # card store cross-shell and failed card_missing).
-    assert proj.next_action.command.startswith("trial resume")
-    assert "--verb approve" in proj.next_action.command
-    assert f"--trial-id {tid}" in proj.next_action.command
-    assert "--gate-id G1" in proj.next_action.command
+    # 42-1 (neutral next-action): the gate-class next-action no longer preselects
+    # a verb — it emits one `trial resume … --verb <v>` paste line PER allowed verb
+    # (approve|edit|reject) under a "Marcus proposes; you decide" header, so the
+    # operator picks (F-E2E-1 cross-process `trial resume` inline-verdict path is
+    # preserved on every verb line).
+    cmd = proj.next_action.command
+    assert "Marcus proposes; you decide" in cmd
+    assert "trial resume" in cmd
+    for _verb in ("approve", "edit", "reject"):
+        assert f"--verb {_verb}" in cmd
+    assert f"--trial-id {tid}" in cmd
+    assert "--gate-id G1" in cmd
+    # neutrality (finding G): a per-verb menu, never a single preselected command
+    assert not cmd.startswith("trial resume")
 
 
 def test_error_and_batch_pause_next_actions(tmp_path: Path) -> None:

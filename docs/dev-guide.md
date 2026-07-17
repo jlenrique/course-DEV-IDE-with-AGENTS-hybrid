@@ -137,6 +137,15 @@ Invariants (hold these under any refactor):
 - **First-run-stands.** Governed paid runs use a fresh immutable trial id each time; negative witnesses are frozen, never resumed or retried-to-green (witnesses `399bcd61`, `7dd3e6ed`, `503e54c1`, `4614f21f`, `dfc372b7` preserved under `_bmad-output/implementation-artifacts/evidence/workbook-live-hil/`).
 - **Known deferred:** `production_runner.py` budget-guard (a silent specialist-budget skip of the terminal 07W band can reach `completed` with no workbook — currently caught after-the-fact by the runner's verdict assertion; production-side fix owed via block-mode path), and a deliverable replay / reload-equality assertion in the runner verdict.
 
+### Epics-39/40 Wave — Paid-Run Economy Protocol (2026-07-15, BINDING)
+
+The wave runs under the ratified protocol at [`_bmad-output/planning-artifacts/wave-3940-kickoff-party-record-2026-07-15.md`](../_bmad-output/planning-artifacts/wave-3940-kickoff-party-record-2026-07-15.md) §D3. Builder-facing surfaces:
+
+- **Witness-replay registry:** `tests/live_witness_replay/` (`witnesses.yaml` — one-line enrollment per frozen witness; per-family replay modules; `WITNESS_REPLAY_STRICT=1` turns any skip into FAIL — armed values {1,true,yes,on}, anything else raises). Run it STRICT before ANY paid run.
+- **Component probes:** pre-registered in the story spec BEFORE running (probe id + exact licensed claim + deterministic named judge + evidence pack + first-run-stands); vehicle pattern `scripts/utilities/run_*_probe.py` (see `run_deep_dive_enrichment_37_2b_probe.py` for the live-call shape, `run_glossary_render_39_1_probe.py` for the deterministic replay-render shape with pinned input digests + drift-fail). A new LLM path's first probe PASS freezes as that path's first witness (probe→freeze→replay→spend).
+- **Deliverable bars grow per story:** `_assert_completed_workbook_deliverable` gains each new section's conformance clause IN THE SAME DIFF, with negative-witness pins (feed frozen failures; assert REJECT).
+- **Status vocabulary:** `done-awaiting-live-witness` = deterministic+review+probe green, full-run witness owed by a named batch run; flip to `done` cites the witnessing run id.
+
 ### BMAD Harness v6.10.0 — uv + Windows Notes (2026-07-11)
 
 The BMAD methodology harness was upgraded to v6.10.0 stable (bmb 2.1.0, tea 1.19.0, cis 0.2.1) on 2026-07-11 — record + party gate at [`_bmad-output/implementation-artifacts/bmad-harness-upgrade-v6.10.0-2026-07-11.md`](../_bmad-output/implementation-artifacts/bmad-harness-upgrade-v6.10.0-2026-07-11.md). Three standing facts for anyone touching harness scripts:

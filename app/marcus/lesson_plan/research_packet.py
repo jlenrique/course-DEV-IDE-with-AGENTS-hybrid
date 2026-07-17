@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, Final, Literal
 
 from app.marcus.lesson_plan.ask_a_enrichment import AskAContributionOutputV1
+from app.marcus.lesson_plan.ask_b_hot_topics import AskBContributionOutputV1
 from app.marcus.lesson_plan.workbook_enrichment import (
     RunEnvelopeCorruptError,
     load_run_envelope,
@@ -174,6 +175,25 @@ def load_research_packet(
             known_losses=("run_json_absent",),
         )
 
+    # 38-2 T4 R4b (B9): at the strict Ask-B coordinate, DUPLICATE
+    # contributions are forged authority — the strict reader mirrors the
+    # demand resolver's coordinate-collision paranoia instead of silently
+    # reading the first match.
+    if (
+        specialist_id == ASK_B_HOT_TOPICS_SPECIALIST_ID
+        and node_id == ASK_B_HOT_TOPICS_NODE_ID
+    ):
+        ask_b_matches = tuple(
+            contribution
+            for contribution in envelope.contributions
+            if contribution.specialist_id == ASK_B_HOT_TOPICS_SPECIALIST_ID
+            and contribution.node_id == ASK_B_HOT_TOPICS_NODE_ID
+        )
+        if len(ask_b_matches) > 1:
+            raise ResearchPacketShapeError(
+                "duplicate Ask-B contributions at ask_b_hot_topics@07W.4"
+            )
+
     contribution = envelope.get_contribution(specialist_id, node_id=node_id)
     if contribution is None:
         missing_loss = (
@@ -205,6 +225,23 @@ def load_research_packet(
                 f"Ask-A contribution contract is invalid: {exc}"
             ) from exc
         output = strict_output.model_dump(mode="json")
+    # 38-2 AC 3 (decided mandate — W-1/J-1/M-6/M-8/A-2): the exact Ask-B
+    # coordinate is strict, mirroring the Ask-A branch above. The interim
+    # lenient read that 38-1 AC 4 pinned as "current semantics" is consciously
+    # retired here; generic ``04.55`` leniency is untouched (coordinate-exact).
+    if (
+        specialist_id == ASK_B_HOT_TOPICS_SPECIALIST_ID
+        and node_id == ASK_B_HOT_TOPICS_NODE_ID
+    ):
+        try:
+            strict_ask_b = AskBContributionOutputV1.model_validate_json(
+                json.dumps(output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise ResearchPacketShapeError(
+                f"Ask-B contribution contract is invalid: {exc}"
+            ) from exc
+        output = strict_ask_b.model_dump(mode="json")
     raw_entries = output.get(_RESEARCH_ENTRIES_KEY)
     if raw_entries is None:
         return _empty_packet(

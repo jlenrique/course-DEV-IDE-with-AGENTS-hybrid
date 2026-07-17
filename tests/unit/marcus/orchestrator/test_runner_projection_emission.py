@@ -128,10 +128,16 @@ def test_paused_at_gate_projection_carries_next_action(tmp_path: Path) -> None:
     _persist_envelope(_envelope(tid, "paused-at-gate", paused_gate="G1"), tmp_path)
     proj = _projection(run_dir)
     assert proj.next_action is not None
-    # F-E2E-1: gate-class next-action emits the cross-process `trial resume`
-    # inline-verdict command (former `gate decide` read an empty in-memory card
-    # store cross-shell and failed card_missing).
-    assert proj.next_action.command.startswith("trial resume")
+    # 42-1 (neutral next-action): gate-class next-action emits a neutral per-verb
+    # menu (one `trial resume … --verb <v>` line each) under a "Marcus proposes;
+    # you decide" header — no preselected verb (F-E2E-1 cross-process `trial
+    # resume` inline-verdict path preserved on every line).
+    cmd = proj.next_action.command
+    assert "trial resume" in cmd
+    for _verb in ("approve", "edit", "reject"):
+        assert f"--verb {_verb}" in cmd
+    # neutrality (finding G): a per-verb menu, never a single preselected command
+    assert not cmd.startswith("trial resume")
 
 
 # --------------------------------------------------------------------------

@@ -417,7 +417,14 @@ Authority: `beta-phase-1-closure-ratification-2026-06-19.md` (forward path) + `e
        ├ Stories 38.1 + 38.3a party + code-review close ⏸ then
        ├ Epic-38 retrospective (REQUIRED) ......... ⏸ then → post-close roadmap conversation
        └ 38.2 Ask-B hot-topics .................... ❌ backlog (disposition = post-close conversation)
-  Epic 39 glossary/trends render (39.1/39.2) ...... ❌ backlog
+  ── Epics-39/40 wave (opened 2026-07-15 EVE; branch dev/workbook-wave-3940-2026-07-15; Paid-Run Economy Protocol binding) ──
+  Answer-leak strip (§D2.7 precondition) .......... ✅ done (c0811817; T4-hardened, 47-pin hygiene module)
+  Story 37-2b deep-dive enrichment-cited (07W.3) .. ✅ done-awaiting-live-witness — probe attempt 838524b8 PASS (ENRICHED, judge 3/3, 1 call; failed attempt aa1ddff9 froze -> normalizer v2); witness owed by batch run A
+  Story 39-1 glossary downstream render ........... ✅ done-awaiting-live-witness — deterministic probe fdbed233 PASS (7/7 judge, 0 provider calls); witness owed by batch run A
+  Story 39-1b exercise MERGE composition (D2) ..... ❌ ready-for-dev (split-ratified; strict-serialized after 39-1) — NEXT
+  Governed batch run A (witnesses 37-2b + 39-1 + 39-1b) ⏸ next-session opener (STRICT witness-replay pre-flight satisfiable, 19/19)
+  Story 38-2 Ask-B (re-homed) + 39.2 Door-Ajar .... ❌ backlog (after run A)
+  Epic 39 trends render (39.2) .................... ❌ backlog
   Epic 40 cover/TOC/provenance (40.1) ............. ❌ backlog
   Master consolidation (branch → master) .......... ⏸ owed at arc close
 

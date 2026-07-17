@@ -1,0 +1,257 @@
+# HIL tabular-projector replay fixtures (Epic 43, Story 43-0)
+
+Frozen, version-controlled **render inputs** for `app/marcus/cli/hil_tabular_projector.py`
+and every gate renderer Epic 43 adds. Captured per green-light **rider R2** (party
+2026-07-17): *"capture real `directive.yaml` / `decision-card-*.json` / poll-surface
+dicts from runs `5169a872` + `bc747b51` as frozen test inputs BEFORE any renderer."*
+
+`state/config/runs/` is **gitignored**, so these copies exist to make the two real runs
+durable, replay-testable inputs (Epic 43 §5: *pure-render, replay-testable, zero live
+spend*). Everything here is a faithful copy of what a real run wrote to disk, with the
+scrub in §3 applied.
+
+## (a) Provenance
+
+| Fixture | Source run | Source file | Gate / surface it feeds |
+|---|---|---|---|
+| `directive-5169a872.yaml` | `5169a872-6421-4e75-b07e-6a3bda42a4cc` | `directive.yaml` | **G0 directive composition** (the raw-YAML-dump surface 43-1 replaces) |
+| `operator-surface-5169a872.json` | `5169a872-…` | `operator-surface.json` | G0 operator surface — run **cancelled at G0** (`trial-cancelled-at-g0`) |
+| `directive-bc747b51.yaml` | `bc747b51-7009-4742-9f65-8de6abc29ca4` | `directive.yaml` | **G0 directive composition** (2nd real directive, different gamma variants) |
+| `g0-enrichment-bc747b51.json` | `bc747b51-…` | `g0-enrichment.json` | **G0 enrichment** — 64 typed_components, 14 provisional_los, reconcile, dissents |
+| `decision-card-g0e-bc747b51.json` | `bc747b51-…` | `decision-card-G0E.json` | **G0E enrichment decision card** — operator_prompt, typed_components, provisional_los, coverage_plan |
+| `decision-card-g0r-bc747b51.json` | `bc747b51-…` | `decision-card-G0R.json` | **G0R refinement decision card** — operator_prompt, refined_los, lo_delta, reconcile |
+| `decision-card-g1-bc747b51.json` | `bc747b51-…` | `decision-card-G1.json` | **G1 trial-open decision card** — drafted_proposal, evidence, verb |
+| `operator-surface-bc747b51.json` | `bc747b51-…` | `operator-surface.json` | G1 operator surface — **paused/recover** state (`next_action.command = trial recover …`) |
+
+Run `bc747b51` is the fuller run: it reached **G1** (paused there, then error-paused).
+Run `5169a872` was **declined at G0** — it never got past the directive confirm, so its
+only durable HIL artifacts are the directive + a cancelled-at-G0 operator surface.
+
+## (b) Coverage — what is REAL here vs. what each downstream story must still capture
+
+Between the two runs, the **only** gates that ever produced real on-disk operator content
+are **G0 (directive), G0 enrichment, G0E, G0R, and G1**. No real run in this corpus
+reached any later gate, so those renderer stories must capture their own fixtures when
+they build (their poll-surface dicts do not exist on disk yet).
+
+| Gate content type | Story | Real fixture here? |
+|---|---|---|
+| G0 directive / `sources[]` inventory | 43-1 | ✅ `directive-5169a872.yaml`, `directive-bc747b51.yaml` |
+| G0 enrichment (metrics / ungrounded / provisional LOs) | 42-1 (done) | ✅ `g0-enrichment-bc747b51.json` |
+| G0E enrichment decision card | 43-2/43-1 | ✅ `decision-card-g0e-bc747b51.json` |
+| G0R refinement decision card | 43-2 | ✅ `decision-card-g0r-bc747b51.json` |
+| G1 trial-open decision card | 43-2 | ✅ `decision-card-g1-bc747b51.json` |
+| Operator-surface projection (G0 cancel + G1 recover) | 43-2 | ✅ both `operator-surface-*.json` |
+| G1.5 estimator / run-constants (section_04_5 / 04_55) | 43-5 | ❌ must capture on its own |
+| G1A plan-unit ratification (section_04a) | 43-5 | ❌ must capture on its own |
+| G2B per-slide mode (section_05_5) | 43-3 | ❌ must capture on its own |
+| G2M A/B variant (section_07b) | 43-3 | ❌ must capture on its own |
+| G4A voice-candidate selection (section_11) | 43-4 | ❌ must capture on its own |
+| literal-visual build targets (section_06b) | 43-6 | ❌ must capture on its own |
+| storyboard build targets (section_07c) | 43-6 | ❌ must capture on its own |
+| G3B storyboard / live-URL (section_08b) | 43-6 | ❌ must capture on its own |
+| G2.5 motion-plan (section_07d) | 43-7 | ❌ must capture on its own |
+| G2F motion-clip (section_07f) | 43-7 | ❌ must capture on its own |
+| G4B input-package (section_11b) | 43-8 | ❌ must capture on its own |
+| G5 final handoff (section_15) | 43-8 | ❌ must capture on its own |
+| ~~research packets~~ | 43-9 | ➖ **DE-SCOPED — no fixture** (not a HIL surface; see §b.2) |
+| ~~workbook content~~ | 43-9 | ➖ **DE-SCOPED — no fixture** (not a HIL surface; see §b.2) |
+
+**Rider-R2 discipline note:** because no real run reached the later gates, a downstream
+story cannot lean on this corpus to close its named surface — it must add its own real
+fixture (or a documented hand-built one) alongside. This corpus is exactly the "G0E-only
+replay corpus" §3 pin 3 warns must never be able to re-close the whole requirement.
+
+## (b.2) Story 43-9 — `research_packet` + `workbook` DE-SCOPED (no fixtures, no renderers)
+
+Unlike 43-1..43-8, Story 43-9 renders **nothing** and captures **no fixture**. Its job
+was to investigate whether `research_packet` and `workbook` (which 43-10 provisionally
+listed in the canonical set but which have **no `poll_surface`**) are operator-reviewed
+HIL surfaces at a paused gate. The finding for **both is NO**, so both were **removed from
+`GATE_CONTENT_TYPES` and `KNOWN_UNRENDERED_ALLOWLIST`** (an honest correction of 43-10's
+provisional set, AC-D1) rather than given phantom renderers:
+
+| De-scoped type | Where it runs | Why it is NOT a HIL surface (evidence) |
+|---|---|---|
+| `workbook` | 07W band (`07W.1`–`07W.4`, `07W`), wired in `app/marcus/orchestrator/workbook_wiring.py` | Deterministic orchestration seam authoring artifacts (brief / Ask-A research / review / Ask-B research / MD+DOCX producer). Runs **post-G5** (after node 15 handoff). Every 07W node has `gate: false` / `Gate="—"` (static-validation report §3 walk), no `poll_surface`, no decision card. Not in the woken `ProductionGateId` set `{G0E,G0R,G0S,G1,G2B,G2C,G3,G4,G4A}`; no `decision-card-workbook*.json` is ever written. |
+| `research_packet` | research dispatch at node `04.55` (+ the workbook Ask-A/Ask-B research seams) | Consumed **internally** (feeds enrichment / the workbook band). No gate, no `poll_surface`, no decision card. Node 04.55's only *gated* surface is the G1.5 **estimator / run-constants** — already covered as the separate `estimator` / `run_constants` content types (Story 43-5). |
+
+**Net effect:** after 43-9 the canonical `GATE_CONTENT_TYPES` is exactly the **14** rendered
+types, `KNOWN_UNRENDERED_ALLOWLIST` is **empty**, and the 43-12 governance-close assertion
+(`allowlist == frozenset()`) holds. No `poll-research-*.json` / `poll-workbook-*.json`
+fixture exists **by design** — there is no operator render surface to feed.
+
+## (b.1) SYNTHETIC fixtures (no real run reached the gate)
+
+Some gates were **never reached by any real run** in this corpus (see the ❌ rows in
+the table above), so per the rider-R2 discipline note a downstream story that cannot
+lean on a real capture must add its own **documented hand-built** fixture. These are
+clearly labelled SYNTHETIC and are built to match the exact `display_*` return shape
+of the named `poll_surface` — they are **generated by running the real
+`display_*(...)` function against a constructed decision card**, so the shape is
+guaranteed faithful (only the identity UUIDs / timestamp / node ids are synthetic).
+
+| Fixture | Shape source (`poll_surface`) | Gate / surface it feeds | Real run? |
+|---|---|---|---|
+| `poll-per-slide-mode-synthetic.json` | `app/gates/section_05_5/poll_surface.py::display_per_slide_mode` | **G2B per-slide mode** selection (Story 43-3) | ❌ SYNTHETIC — no real run reached G2B |
+| `poll-variant-ab-synthetic.json` | `app/gates/section_07b/poll_surface.py::display_per_slide_variant` | **G2M A/B variant** selection (Story 43-3) | ❌ SYNTHETIC — no real run reached G2M |
+| `poll-voice-candidates-synthetic.json` | `app/gates/section_11/poll_surface.py::display_voice_candidates` (surface) / `app/models/decision_cards/g4a.py::G4ACard` (shape) | **G4A voice-candidate** selection (Story 43-4) | ❌ SYNTHETIC — no real run reached G4A |
+| `poll-plan-unit-synthetic.json` | `app/gates/section_04a/poll_surface.py::display_plan_unit` | **G1A plan-unit** ratification (Story 43-5) | ❌ SYNTHETIC — no real run reached G1A |
+| `poll-estimator-synthetic.json` | `app/gates/section_04_5/poll_surface.py::display_estimator` | **G1.5 run-budget estimator** (Story 43-5) | ❌ SYNTHETIC — no real run reached G1.5 |
+| `poll-run-constants-synthetic.json` | `app/gates/section_04_55/poll_surface.py::display_run_constants` | **G1.5 run-constants lock** (Story 43-5) | ❌ SYNTHETIC — no real run reached G1.5 |
+| `poll-literal-visual-synthetic.json` | `app/gates/section_06b/poll_surface.py::display_literal_visual_targets` | **06B literal-visual build targets** (Story 43-6) | ❌ SYNTHETIC — 06B is a non-gate node; no real run captured its poll surface |
+| `poll-storyboard-targets-synthetic.json` | `app/gates/section_07c/poll_surface.py::display_storyboard_targets` | **07C storyboard build targets** (Story 43-6) | ❌ SYNTHETIC — no real run captured the section_07c poll surface |
+| `poll-storyboard-b-synthetic.json` | `app/gates/section_08b/poll_surface.py::display_storyboard_b` / `app/models/decision_cards/g3.py::G3Card` (shape) | **G3B storyboard / live-URL review** (Story 43-6) | ❌ SYNTHETIC — G3B folds into G3; no `decision-card-G3B.json` exists |
+| `poll-input-package-synthetic.json` | `app/gates/section_11b/poll_surface.py::display_input_package` / `app/models/decision_cards/g4.py::G4Card` (shape) | **G4B input-package preview** (Story 43-8) | ❌ SYNTHETIC — G4B folds into G4; no `decision-card-G4B.json` exists |
+| `poll-final-handoff-synthetic.json` | `app/gates/section_15/poll_surface.py::display_final_handoff` / `app/models/decision_cards/g5.py::G5Card` (shape) | **G5 final handoff** (Story 43-8) | ❌ SYNTHETIC — G5 folds into G4 and is not a woken gate; no `decision-card-G5.json` exists |
+| `poll-motion-plan-synthetic.json` | `app/gates/section_07d/poll_surface.py::display_motion_plan_status` / `app/models/decision_cards/g2c.py::G2CCard` (shape) | **G2.5 motion-plan status** (Story 43-7) | ❌ SYNTHETIC — node 07D (G2M) folds into G2C; the motion review has no dedicated `decision-card-G2.5.json` |
+| `poll-motion-clip-synthetic.json` | `app/gates/section_07f/poll_surface.py::display_motion_clip` / `app/models/decision_cards/g2c.py::G2CCard` (shape) | **G2F motion-clip** (Story 43-7) | ❌ SYNTHETIC — node 07F (G2F) folds into G3; no `decision-card-G2F.json` exists |
+
+The G2B / G2M fixtures carry the full `display_*` top-level keys (`surface_id`,
+`slide_id`, `decision_card_digest`, `decision_card`, and the `per_slide_mode_payload`
+/ `per_slide_variant_payload` sub-map). The `surface_id`
+(`section_05_5_g2b_per_slide_mode` / `section_07b_g2m_per_slide_variant`) doubles as
+the **routing key** through `hil_tabular_projector.GATE_TO_CONTENT_TYPE` → the bespoke
+`per_slide_mode` / `variant_ab` renderer (Story 43-3 AC-0 bridge). No credential is
+present (the source is a constructed model, not a live run), so no scrub applies.
+
+**`poll-voice-candidates-synthetic.json` (Story 43-4) — G4A shape note.** The
+section_11 `poll_surface.py::display_voice_candidates` is the NAMED source surface,
+but it is bound to the `G4Card` FIDELITY-CLOSEOUT model (`extra="forbid"`; no
+`voice_candidates` / `pick_context` fields), so it does NOT carry the voice candidates
+this story tables. The card that actually flows at a paused G4A `11-gate` — and that
+the renderer receives as `decision-card-G4A.json`'s `card` body — is the **`G4ACard`**
+(`app/models/decision_cards/g4a.py`), proven by the on-disk evidence card
+`_bmad-output/implementation-artifacts/evidence/s8-tejal-p4-terminal-walk-20260709T004657/decision-card-G4A.json`.
+This fixture is therefore the real `G4ACard.model_dump(mode="json")` shape (bare card
+body: `voice_candidates` id list + a `pick_context` entry `{kind: "voice-options",
+voices: [...]}` + `selected_voice_id`), generated by invoking the real Pydantic model
+(shape fidelity by construction, zero spend). The `G4A` paused-gate string / the
+`section_11_g4a_voice_selection` surface_id are the routing keys through
+`GATE_TO_CONTENT_TYPE` → the bespoke `voice_candidates` renderer. The four voices
+mirror the evidence card's options block; the `sample_audio_url`s are replaced with
+`https://example.invalid/...` placeholders — no live credential is present, so no
+scrub applies.
+
+**`poll-plan-unit-synthetic.json` / `poll-estimator-synthetic.json` /
+`poll-run-constants-synthetic.json` (Story 43-5) — G1A / G1.5 shape note.** These are
+faithful `display_*` return shapes, each generated by invoking the real
+`section_04a` / `section_04_5` / `section_04_55` `display_*` function against a
+constructed decision card / model (mirroring the section's own
+`tests/gates/section_04*/_helpers.py` fixtures; zero spend). No live run reached
+these gates — G1A and G1.5 are manifest `RUNTIME_GATE_IDS` but are NOT in the woken
+production pause set (`ProductionGateId` = G0E/G0R/G0S/G1/G2B/G2C/G3/G4/G4A), so no
+`decision-card-G1A.json` / `decision-card-G1.5.json` exists on disk. The estimator
+reuses `G1Card` as its decision card and carries the budget line items in the
+free-form `drafted_proposal` (there is no dedicated estimator model), so the renderer
+tables `drafted_proposal`. **Shared-gate disambiguation:** estimator and run_constants
+BOTH pause at the single "G1.5" gate string, so the poll-surface `surface_id`
+(`section_04_5_g1_5_estimator` / `section_04_55_g1_5_run_constants`) is the routing key
+through `GATE_TO_CONTENT_TYPE` → the bespoke renderer; the bare "G1.5" string is
+deliberately unmapped (would mis-route). No credential is present (constructed models),
+so no scrub applies.
+
+**`poll-literal-visual-synthetic.json` / `poll-storyboard-targets-synthetic.json` /
+`poll-storyboard-b-synthetic.json` (Story 43-6) — 06B / 07C / G3B shape note.** These
+are faithful `display_*` return shapes, each generated by invoking the real
+`section_06b` / `section_07c` / `section_08b` `display_*` function against a constructed
+payload / `G3Card` (mirroring the section's own `tests/gates/section_0*/_helpers.py`
+fixtures; zero spend). The 06B (`display_literal_visual_targets`) and 07C
+(`display_storyboard_targets`) surfaces return **plain build-target dicts** (no bound
+Pydantic model), so the renderers table their `literal_visual_targets` / `storyboard_targets`
+rows. **G3B (`display_storyboard_b`) binds `G3Card`, and the card that actually flows at
+the paused gate IS a `G3Card`** — proven by the on-disk evidence
+`state/config/runs/*/decision-card-G3.json` (node 08B / gate G3B declares `fold_with: G3`,
+so G3B never pauses on its own; the G3 pause absorbs the Storyboard-B review). SAME model,
+fields present — so unlike 43-4 there is **no model-binding mismatch to file**. The G3Card
+carries no dedicated live-URL field (the live URL is a published side-artifact, not a card
+field), so `render_storyboard_b` tables the real G3Card review attributes. **Shared-gate
+disambiguation:** node 08B (`G3B` → storyboard_b) and node 07F (`G2F` → motion-clip, Story
+43-7) BOTH fold into the "G3" pause, and node 07C's gate_code is the SHARED "G2C" fold-target
+(G2B/G2M also fold there) — so both "G2C" and "G3" are deliberately unmapped; the
+poll-surface `surface_id` (`section_06b_literal_visual_build` /
+`section_07c_storyboard_build` / `section_08b_g3b_poll`) plus the unambiguous "G3B" gate_code
+are the routing keys through `GATE_TO_CONTENT_TYPE`. No credential is present (constructed
+payloads / models), so no scrub applies.
+
+**`poll-input-package-synthetic.json` / `poll-final-handoff-synthetic.json` (Story 43-8) —
+G4B / G5 shape note.** These are faithful `display_*` return shapes, each generated by
+invoking the real `section_11b` / `section_15` `display_*` function against a constructed
+`G4Card` / `G5Card` (zero spend). **G4B (`display_input_package`) binds `G4Card`, and the
+card that actually flows at the paused gate IS a `G4Card`** — proven by the on-disk evidence
+`runs/*/decision-card-G4.json` (manifest node `11B-gate` gate_code `G4B` declares
+`fold_with: G4`, so G4B never pauses on its own; the G4 pause absorbs the input-package
+preview, and the curated `input_package_payload` reads exactly the G4Card's `artifact_paths`
+/ `outcome_summary` / `final_status`). SAME model, fields present — so like 43-6 there is
+**no model-binding mismatch to file**. **G5 (`display_final_handoff`) binds `G5Card`**, whose
+`final_handoff_payload` reads exactly the G5Card's `handoff_artifact_paths` / `handoff_summary`
+/ `bundle_run_id` — the tabled fields are present on the bound model, so again **no mismatch to
+file**. No real run reached G5 (it is NOT a woken `ProductionGateId`; manifest node 13 gate_code
+`G5` declares `fold_with: G4`, so no `decision-card-G5.json` exists on disk). **Shared-gate
+disambiguation:** nodes `11B-gate` (`G4B`) and `13` (`G5`) BOTH fold into the "G4" pause — and
+the G4 fidelity closeout itself pauses at "G4" — so the shared "G4" string is deliberately
+unmapped (mapping it would mis-route); the poll-surface `surface_id`
+(`section_11b_g4b_input_package` / `section_15_g5_final_handoff`) plus the unambiguous
+"G4B" / "G5" gate_codes are the routing keys through `GATE_TO_CONTENT_TYPE`. No credential is
+present (constructed models), so no scrub applies.
+
+**`poll-motion-plan-synthetic.json` / `poll-motion-clip-synthetic.json` (Story 43-7) —
+G2.5 / G2F shape note.** These are faithful `display_*` return shapes, each generated by
+invoking the real `section_07d` / `section_07f` `display_*` function against a constructed
+`G2CCard` (mirroring `tests/gates/section_07d/_helpers.py::fixture_motion_plan_card`; zero
+spend). **Both surfaces bind the same `G2CCard` model**, and the card that actually flows at
+each paused motion gate IS a `G2CCard` — node 07D (gate_code `G2M`) declares `fold_with: G2C`
+and node 07F (gate_code `G2F`) declares `fold_with: G3`, so the motion reviews are absorbed by
+the shared "G2C" / "G3" pauses (proven by the on-disk `runs/*/decision-card-G2C.json` /
+`decision-card-G3.json` evidence). SAME model, fields present — so like 43-6/43-8 there is **no
+model-binding mismatch to file**. The generic G2C sanity card carries no dedicated
+motion-plan-detail / clip-detail field (the motion plan is an internal producer→consumer
+envelope, not a card field), so `render_motion_plan` / `render_motion_clip` table the real G2C
+review attributes (readiness, blocking-issue / ready-node counts, gate focus, verb) rather than
+an imaginary detail field — mirroring 43-6's `storyboard_b`, which tables the G3Card's
+attributes rather than a non-existent live-URL field. **Shared-gate disambiguation:**
+`motion_plan` is keyed by its poll-surface `surface_id` ONLY
+(`section_07d_g2_5_motion_plan_polling`) — node 07D's gate_code `G2M` is already claimed by
+43-3's `variant_ab`, its fold-target `G2C` is shared, and the bare `G2.5` gate_code belongs to
+the DIFFERENT cluster-coherence node (manifest `7.5`), so no gate string is mapped.
+`motion_clip` is keyed by the unambiguous `G2F` gate_code (never itself pauses, but a valid
+semantic identifier) plus its `surface_id` (`section_07f_g2f_motion_gate`); the shared "G3"
+fold-target is deliberately unmapped (43-6 already pinned it). No credential is present
+(constructed models), so no scrub applies.
+
+## (c) Scrub policy applied
+
+Per rider R2 and the `app/hud/public.py` positive-allowlist reference, the goal is a
+**faithful render input with no live credential**:
+
+1. **Credentials / nonces — MANDATORY redaction.** Each decision card carried a top-level
+   `server_nonce` (the resume-authorization secret). Its value is replaced with the stable
+   placeholder `REDACTED-NONCE`. The **key is kept** (its presence is schema-relevant); only
+   the value is redacted. No `launch_nonce` / `token` / `api_key` / `secret` value appears
+   anywhere in these two runs.
+2. **Resume-authorization digest — redacted.** The top-level `digest` on each decision card
+   is the checkpoint digest that pairs with `server_nonce` to authorize a resume — the
+   "resume paste string with pre-filled digest" that `public.py` forbids on any shareable
+   surface. Replaced with `REDACTED-DIGEST`. It is **not** a projector render input, so no
+   render fidelity is lost.
+3. **Everything the projector renders is preserved verbatim:** directive header
+   (`run_id` / `corpus_dir` / `gamma_settings`) and full `sources[]`
+   (`ref_id` / `role` / `locator` / `description` / `expected_min_words` / `excluded_reason`);
+   decision-card `card.*` (`operator_prompt`, `drafted_proposal`, `pick_context`,
+   `refined_los`, `lo_delta`, `evidence`, `verb`, `gate_id`); enrichment
+   `typed_components` / `provisional_los` / `reconcile` / `dissents`.
+4. **Non-credential content hashes and local paths are kept** (`envelope_digest`,
+   `ssot_sha256` / `roster_sha256`, `decision_card_digest`, `corpus_fingerprint`,
+   `publish_url`, `checkpoint_path`, `locator` paths, `operator_id`/`picked_by = Juanl`).
+   These are render/provenance inputs already present throughout the repo, not live secrets.
+   This deliberately differs from `public.py`, whose stricter denylist governs a **public
+   tunnel wire**; these fixtures are **private, version-controlled test inputs**, so
+   faithfulness to render structure wins over public-wire minimization — provided no
+   credential survives (it does not; see the guard test).
+
+Verbatim-copied (no scrub needed — no secret present): both `directive-*.yaml`, both
+`operator-surface-*.json`, `g0-enrichment-bc747b51.json`.
+
+Guard: `tests/unit/marcus/cli/test_hil_projector_fixtures.py` asserts every fixture parses,
+carries its expected top-level keys, and that **no raw `server_nonce` / resume-auth digest
+literal survives** in any file.

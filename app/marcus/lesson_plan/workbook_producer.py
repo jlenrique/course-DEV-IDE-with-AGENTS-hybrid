@@ -39,6 +39,8 @@ Discipline notes:
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 import zipfile
 from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -50,7 +52,11 @@ from typing import TYPE_CHECKING, Any, Final, Literal
 import yaml
 from docx import Document
 
-from app.marcus.lesson_plan.collateral_spec import WorkbookSpec
+from app.marcus.lesson_plan.collateral_spec import (
+    Exercise,
+    WorkbookSection,
+    WorkbookSpec,
+)
 from app.marcus.lesson_plan.modality_producer import ModalityProducer
 from app.marcus.lesson_plan.prework_projection import PreWorkBrief, render_prework_markdown
 from app.marcus.lesson_plan.produced_asset import ProducedAsset, ProductionContext
@@ -100,6 +106,99 @@ NO_READING_PATH_HALO_NOTE: Final[str] = (
     "<!-- G4: no reading-path halo; this workbook advances no "
     "fresh-naive-holdout / reading-path generalization claim -->"
 )
+
+# ---------------------------------------------------------------------------
+# 40.1 Cover — exported heading/marker constants (the runner's cover
+# deliverable-bar clause imports THESE as its only producer-module surface —
+# the PRACTICE_GROUP_LABEL anti-drift idiom + the M-1 anti-tautology fence:
+# the bar takes every assertion VALUE from persisted artifacts, never from
+# ``compose_workbook`` / ``doc.blocks``).
+# ---------------------------------------------------------------------------
+
+COVER_HEADING: Final[str] = "Cover"
+CONTENTS_HEADING: Final[str] = "Contents"
+ABOUT_HEADING: Final[str] = "About This Workbook"
+COVER_HEADINGS: Final[tuple[str, str, str]] = (
+    COVER_HEADING,
+    CONTENTS_HEADING,
+    ABOUT_HEADING,
+)
+# The honest hero placeholder — a named TEXT slot, NEVER image syntax
+# (``_render_docx_body`` silently skips ``![…](…)`` lines, so an image-syntax
+# "placeholder" would vanish from the DOCX) and never a fabricated final-art
+# claim. A later Gamma step swaps a real image into this named slot with no
+# layout change (§13.2: Gamma generation is a NON-goal this pass).
+COVER_HERO_PLACEHOLDER_MARKER: Final[str] = (
+    "HERO ILLUSTRATION — PLACEHOLDER — Gamma generation deferred"
+)
+# Closed schema literal for the machine-readable art-brief sidecar (bump =
+# tripwire per the D3 drift-flag discipline).
+COVER_ART_BRIEF_SCHEMA_VERSION: Final[str] = "workbook-cover-art-brief.v1"
+
+# §10 journey rhythm — the fixed deterministic heading→phase map. Enumerated
+# "Before you watch" keys (W-2): the pre-work container heading plus its three
+# sub-headings. EVERY other heading — declared or unknown — deterministically
+# falls to "After you watch" (never dropped; matrix row k is the witness).
+_TOC_BEFORE_HEADINGS: Final[frozenset[str]] = frozenset(
+    {"Pre-work", "Scene", "Friction Scale", "Promise"}
+)
+# Fixed heading→friendly-label map (§12 Part 2: "Test yourself," not
+# "S6 Check on Learning"); the verbatim heading is the pinned fallback.
+_TOC_FRIENDLY_LABELS: Final[Mapping[str, str]] = {
+    "Pre-work": "Before you begin",
+    "Scene": "The scene",
+    "Friction Scale": "Your friction scale",
+    "Promise": "The promise",
+    "Overview": "How to use this workbook",
+    "Learning Objectives": "What you'll be able to do",
+    "Deep Dive": "Read deeper",
+    "Depth-delta narrative": "Beyond the slides",
+    "Exercises": "Test yourself",
+    "Answer Key": "Check your answers",
+    "Research Glossary": "Key terms",
+    "References": "Sources & further reading",
+    "Research Trends": "What's next in the field",
+    "Human Review Checkpoint": "Review status",
+}
+# Encounter-mode copy (A6 mode parity: mechanism identical, ONLY the
+# encounter-label copy differs; A-3: each variant is exactly ONE line and the
+# recorded/live variants have EQUAL line counts, preserving the parity test's
+# ``zip(strict=True)``).
+_TOC_BEFORE_GROUP_LABEL: Final[Mapping[str, str]] = {
+    "recorded": "**Before you watch** — ahead of the recorded presentation",
+    "live": "**Before you watch** — ahead of the live presentation",
+}
+_TOC_PRESENTATION_DIVIDER: Final[Mapping[str, str]] = {
+    "recorded": "*[The presentation — watch the recording]*",
+    "live": "*[The presentation — attend the live session]*",
+}
+_TOC_AFTER_GROUP_LABEL: Final[str] = "**After you watch**"
+# The renderer-appended footer heading (lives OUTSIDE ``doc.blocks``; both
+# renderers append it) — it gets one fixed TOC entry.
+_TOC_FOOTER_HEADING: Final[str] = "Human Review Checkpoint"
+
+# Small fixed deterministic palette-hint mapping (dev latitude exercised once,
+# pinned by tests): keyed on the pre-work scene archetype; deterministic
+# default when no archetype is derivable.
+# T4 40-1 finding 1: keys MUST be the real SceneBrief.archetype Literal
+# members (prework_projection.py) — the earlier "internal_friction" key was
+# unreachable dead config and two real archetypes silently took the default.
+_COVER_PALETTE_HINTS: Final[Mapping[str, tuple[str, str]]] = {
+    "external_friction": ("deep teal", "warm amber accent"),
+    "introspective_threshold": ("indigo", "soft coral accent"),
+    "difficulty_practice": ("forest green", "warm amber accent"),
+}
+_COVER_PALETTE_DEFAULT: Final[tuple[str, str]] = ("slate blue", "warm neutral accent")
+
+# W-1 degrade-reason copy — the provenance renderer emits DISTINCT honest
+# absent-REASON lines per fail shape (matrix row g asserts the reason lines,
+# not mere degradation). Never wall-clock backfilled, never fabricated.
+_RUN_IDENTITY_DEGRADE_COPY: Final[Mapping[str, str]] = {
+    "absent": "run.json is absent for this render",
+    "corrupt": "run.json is corrupt or unparseable",
+    "symlink": "run.json coordinate is a symlink (untrusted)",
+}
+_RUN_IDENTITY_NOT_SUPPLIED: Final[str] = "no run identity was supplied to this render"
 
 
 # ``prose_revoicer`` seam: given a segment's id + verbatim narration text,
@@ -408,6 +507,47 @@ def audit_citation_fidelity(
     return report
 
 
+_DEEP_DIVE_CITE_MARKER_RE: Final[re.Pattern[str]] = re.compile(
+    r"\[(ask-a-cite-[0-9]{3})\]"
+)
+
+
+def deep_dive_g2_citation_entries(
+    markdown: str, deep_dive_review: Any
+) -> list[dict[str, str]]:
+    """G2 deep-dive leg (37.2b, non-tautological by construction).
+
+    PROSE side: every inline ``[ask-a-cite-###]`` marker parsed from the
+    RENDERED workbook markdown. STRUCTURED side: the citation_id -> source_ref
+    map built from the contribution's USED pool rows. A marker whose id has no
+    used row (prose/structure divergence, a stray marker on a degraded or
+    absent contribution, or a corrupted render) maps to a deliberately
+    unresolvable ref and therefore FAILS ``audit_citation_fidelity``. What this
+    leg does NOT prove: structured used-rows lacking prose markers (row g of
+    the A2 gate owns that direction) and semantic claim<->source support
+    (operator WARN).
+    """
+    rows_by_citation: dict[str, str] = {}
+    if deep_dive_review is not None:
+        result = getattr(deep_dive_review, "deep_dive_enrichment", None)
+        if result is not None and result.status == "enriched":
+            from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+                used_pool_rows,
+            )
+
+            rows_by_citation = {
+                row.citation_id: row.source_ref for row in used_pool_rows(result)
+            }
+    return [
+        {
+            "source_ref": rows_by_citation.get(
+                marker_id, f"deep-dive-citation-unresolved:{marker_id}"
+            )
+        }
+        for marker_id in sorted(set(_DEEP_DIVE_CITE_MARKER_RE.findall(markdown)))
+    ]
+
+
 def assert_exercise_fidelity(spec: WorkbookSpec) -> None:
     """G3: every exercise carries a Bloom level + a present answer-key source_ref."""
     for section in spec.sections:
@@ -493,10 +633,438 @@ class _ComposedDoc:
     # image resolved against the bundle dir (None when the figure file is absent,
     # so the DOCX renderer skips the picture but still records the caption).
     figures: list[tuple[str | None, str, str]] = field(default_factory=list)
+    # 40.1: the cover receipt + art-brief, derived FROM the same composed
+    # blocks the render walks (structure cannot diverge from the deliverable).
+    # ``None`` on the legacy profile (no cover renders, no receipt is claimed).
+    cover_receipt: dict[str, Any] | None = None
+    cover_art_brief: dict[str, Any] | None = None
 
 
 def _segment_anchor(segment_id: str) -> str:
     return f"<!-- {SEGMENT_ANCHOR_PREFIX}{segment_id} -->"
+
+
+# 39.1b (D2 MERGE): per-unit exercise group labels — provenance rides the
+# ``origin`` FIELD, and the render groups key on it (never list position).
+# The runner's deliverable-bar exercise clause imports these as the single
+# source of the label text (label drift = pin flip, never silent divergence).
+PRACTICE_GROUP_LABEL = "Practice"
+COURSE_CHECK_GROUP_LABEL = "Course Check — drawn from this course's own assessments"
+# The visible collateral-trim callout prefix (mirror of the LO-overlay
+# "Enrichment overlay loss:" degrade-with-record idiom).
+EXERCISE_OVERLAY_LOSS_CALLOUT = "Exercise overlay loss:"
+
+
+def _exercise_composition_receipt(
+    spec: WorkbookSpec, exercise_overlay_loss: dict[str, object] | None
+) -> dict[str, object]:
+    """The persisted exercise-composition receipt (39.1b AC 8, structured side).
+
+    Per-section Practice / Course Check ids keyed on the ``origin`` field plus
+    the trim tally — the runner's deliverable-bar exercise clause asserts this
+    record first and the rendered prose second (a receipt/prose desync or a
+    trim tally no ``exercise_overlay_loss`` record backs is a refusal).
+    """
+    sections: list[dict[str, object]] = []
+    practice_total = 0
+    course_check_total = 0
+    for section in spec.sections:
+        practice = [
+            ex.exercise_id for ex in section.exercises if ex.origin == "collateral"
+        ]
+        course_check = [
+            ex.exercise_id for ex in section.exercises if ex.origin == "enrichment"
+        ]
+        practice_total += len(practice)
+        course_check_total += len(course_check)
+        sections.append(
+            {
+                "section_id": section.section_id,
+                "practice": practice,
+                "course_check": course_check,
+            }
+        )
+    # T4 F11: the tally is copied VERBATIM from the loss record (never coerced
+    # to a clean-looking 0) — a malformed loss must read as malformed so the
+    # runner bar's well-formedness check refuses it instead of trusting a
+    # producer-laundered claim.
+    return {
+        "sections": sections,
+        "practice_total": practice_total,
+        "course_check_total": course_check_total,
+        "collateral_trimmed_count": (
+            exercise_overlay_loss.get("trimmed_count")
+            if exercise_overlay_loss is not None
+            else 0
+        ),
+    }
+
+
+def _exercise_origin_groups(
+    section: WorkbookSection,
+) -> list[tuple[str, list[Exercise]]]:
+    """The section's non-empty (label, exercises) origin groups, Practice first.
+
+    Grouping keys on the ``origin`` FIELD (D2-2): a group with no items is
+    omitted (no phantom "Practice" / "Course Check" headings — matrix rows
+    f/g). Item order inside each group is preserved from the composed spec
+    (the attach seam establishes provenance-class + stable-id order).
+    """
+    practice = [ex for ex in section.exercises if ex.origin == "collateral"]
+    course_check = [ex for ex in section.exercises if ex.origin == "enrichment"]
+    return [
+        (label, group)
+        for label, group in (
+            (PRACTICE_GROUP_LABEL, practice),
+            (COURSE_CHECK_GROUP_LABEL, course_check),
+        )
+        if group
+    ]
+
+
+# ---------------------------------------------------------------------------
+# 40.1 Cover — placeholder hero + art-brief, journey-TOC, provenance colophon
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class CoverInputs:
+    """Read-only run-identity inputs for the cover provenance block.
+
+    ``run_identity`` is the ``run_identity_from_run`` result dict (W-1
+    reasoned non-raising contract: status ``ok`` | ``absent`` | ``corrupt`` |
+    ``symlink``); ``None`` means no identity was supplied to this compose
+    (direct/unit callers) and every identity-derived line degrades honestly.
+    ``models_used`` inside the identity is RECEIPT-ONLY (J-2) — never rendered.
+    """
+
+    run_identity: Mapping[str, Any] | None = None
+    sme_name: str | None = None
+    deck_reference: str | None = None
+
+
+def cover_art_brief_digest(brief: Mapping[str, Any]) -> str:
+    """Self-digest over the canonical serialization of every non-digest field.
+
+    The ``cache_prefix`` idiom: ``sort_keys=True, ensure_ascii=True,
+    separators=(",", ":")`` — recomputable by any consumer from the persisted
+    JSON alone (the runner bar recomputes it without importing this function).
+    """
+    payload = {key: value for key, value in brief.items() if key != "self_digest"}
+    return hashlib.sha256(
+        json.dumps(
+            payload, sort_keys=True, ensure_ascii=True, separators=(",", ":")
+        ).encode("utf-8")
+    ).hexdigest()
+
+
+def build_cover_art_brief(
+    *,
+    stem: str,
+    display_title: str,
+    unit_id: str,
+    event_type: str,
+    themes: Sequence[str],
+    palette_hints: Sequence[str],
+    alt_text: str,
+) -> dict[str, Any]:
+    """The machine-readable art-brief for the FUTURE Gamma hero step.
+
+    Deterministic from run-artifact inputs only; ``hero_slot: "placeholder"``
+    — this brief makes NO generation claim of any kind.
+    """
+    brief: dict[str, Any] = {
+        "schema_version": COVER_ART_BRIEF_SCHEMA_VERSION,
+        "workbook_stem": stem,
+        "display_title": display_title,
+        "lesson_identity": {"unit_id": unit_id, "event_type": event_type},
+        "themes": list(themes),
+        "palette_hints": list(palette_hints),
+        "alt_text": alt_text,
+        "hero_slot": "placeholder",
+    }
+    brief["self_digest"] = cover_art_brief_digest(brief)
+    return brief
+
+
+def _cover_themes(
+    spec: WorkbookSpec,
+    learning_objectives: Sequence[LearningObjectiveBrief],
+    pre_work: PreWorkBrief | None,
+) -> tuple[str, ...]:
+    """Deterministic content hints: Scene brief (when present) + section
+    titles + LO statements — run-artifact inputs only, order-stable, deduped."""
+    themes: list[str] = []
+    if (
+        pre_work is not None
+        and pre_work.scene.status == "authored"
+        and (pre_work.scene.text or "").strip()
+    ):
+        themes.append(pre_work.scene.text.strip())
+    themes.extend(
+        section.title.strip() for section in spec.sections if section.title.strip()
+    )
+    themes.extend(
+        obj.statement.strip() for obj in learning_objectives if obj.statement.strip()
+    )
+    return tuple(dict.fromkeys(theme for theme in themes if theme))
+
+
+def _cover_palette_hints(pre_work: PreWorkBrief | None) -> tuple[str, str]:
+    archetype = (
+        pre_work.scene.archetype
+        if pre_work is not None and pre_work.scene is not None
+        else None
+    )
+    return _COVER_PALETTE_HINTS.get(archetype or "", _COVER_PALETTE_DEFAULT)
+
+
+def _cover_alt_text(display_title: str, themes: Sequence[str]) -> str:
+    lead = "; ".join(themes[:3]) if themes else "the lesson's core topics"
+    return (
+        f'Placeholder hero illustration for "{display_title}" — '
+        f"visual themes: {lead}."
+    )
+
+
+def _identity_line(
+    prefix: str,
+    value: str | None,
+    identity_status: str | None,
+) -> str:
+    """One provenance line: the value, or the DISTINCT honest degrade reason."""
+    if value:
+        return f"{prefix}: {value}"
+    reason = _RUN_IDENTITY_DEGRADE_COPY.get(
+        identity_status or "", _RUN_IDENTITY_NOT_SUPPLIED
+    )
+    return f"{prefix}: not recorded — {reason}"
+
+
+def compose_cover_sections(
+    body_headings: Sequence[str],
+    *,
+    title_label: str,
+    unit_id: str,
+    event_type: str,
+    fulfills: str,
+    stem: str,
+    encounter_mode: Literal["recorded", "live"],
+    themes: Sequence[str],
+    palette_hints: Sequence[str],
+    bound_objective_ids: Sequence[str],
+    cover_inputs: CoverInputs | None,
+) -> tuple[list[tuple[int, str, str]], dict[str, Any], dict[str, Any]]:
+    """Compose the three cover blocks + receipt + art-brief.
+
+    Pure function of the FINAL composed level-2 heading list (``body_headings``
+    — the composer passes ``doc.blocks`` headings AFTER every section landed,
+    so the TOC follows the final section set and updates when it changes) plus
+    the run-identity inputs. Returns ``(blocks, receipt, art_brief)`` where
+    ``blocks`` are ``(2, heading, body)`` triples for ``doc.blocks[0:0]``,
+    ``receipt`` is the persisted cover receipt (``art_brief.path`` is filled
+    by ``produce()`` at write time), and ``art_brief`` is the full sidecar
+    payload including its self-digest.
+
+    TOC contract (AC 3): every level-2 heading gets EXACTLY ONE entry (the
+    three cover headings excluded; the renderer-appended Human Review
+    Checkpoint footer added); entries are grouped by the §10 journey rhythm;
+    an UNKNOWN heading falls to "After you watch" with the verbatim heading as
+    its label — never dropped. Entries render as list items only (never lines
+    beginning ``## ``); each carries the friendly label AND the exact rendered
+    heading text (exact-string anchor; MD hyperlinks are a declared non-goal).
+    """
+    alt_text = _cover_alt_text(title_label, themes)
+    art_brief = build_cover_art_brief(
+        stem=stem,
+        display_title=title_label,
+        unit_id=unit_id,
+        event_type=event_type,
+        themes=themes,
+        palette_hints=palette_hints,
+        alt_text=alt_text,
+    )
+    brief_filename = f"{stem}.cover-art-brief.json"
+
+    # --- run identity (W-1 degrade shapes; J-2 models receipt-only) ---
+    identity = cover_inputs.run_identity if cover_inputs is not None else None
+    identity_status = (
+        str(identity.get("status")) if isinstance(identity, Mapping) else None
+    )
+    identity_ok = identity_status == "ok"
+    run_id = str(identity["trial_id"]) if identity_ok else None
+    generated_at = str(identity["started_at"]) if identity_ok else None
+    corpus_path = str(identity["corpus_path"]) if identity_ok else None
+    models_used = list(identity.get("models_used", ())) if identity_ok else []
+    identity_degrade: dict[str, Any] | None = None
+    if not identity_ok:
+        identity_degrade = {
+            "status": identity_status or "not_supplied",
+            "reason": (
+                str(identity.get("reason"))
+                if isinstance(identity, Mapping) and identity.get("reason")
+                else _RUN_IDENTITY_NOT_SUPPLIED
+            ),
+        }
+    sme_name = cover_inputs.sme_name if cover_inputs is not None else None
+    deck_reference = cover_inputs.deck_reference if cover_inputs is not None else None
+
+    # --- Part 2: journey-TOC entries from the FINAL composed section set ---
+    entries: list[dict[str, str]] = []
+    for heading in (*body_headings, _TOC_FOOTER_HEADING):
+        if heading in COVER_HEADINGS:
+            continue  # defensive: the cover never lists itself
+        entries.append(
+            {
+                "label": _TOC_FRIENDLY_LABELS.get(heading, heading),
+                "target": heading,
+                "phase": "before" if heading in _TOC_BEFORE_HEADINGS else "after",
+            }
+        )
+    contents_lines: list[str] = [_TOC_BEFORE_GROUP_LABEL[encounter_mode], ""]
+    contents_lines.extend(
+        f"- {entry['label']} — `{entry['target']}`"
+        for entry in entries
+        if entry["phase"] == "before"
+    )
+    contents_lines.extend(
+        ["", _TOC_PRESENTATION_DIVIDER[encounter_mode], "", _TOC_AFTER_GROUP_LABEL, ""]
+    )
+    contents_lines.extend(
+        f"- {entry['label']} — `{entry['target']}`"
+        for entry in entries
+        if entry["phase"] == "after"
+    )
+    contents_body = "\n".join(contents_lines).strip()
+
+    # --- Part 1: identity + honest placeholder hero (TEXT, never image syntax) ---
+    cover_body = "\n".join(
+        [
+            f"**{title_label}**",
+            "",
+            f"Unit: `{unit_id}` · fulfills `{fulfills}`",
+            _identity_line("Course corpus", corpus_path, identity_status),
+            "",
+            COVER_HERO_PLACEHOLDER_MARKER,
+            f"Alt-text: {alt_text}",
+            f"Art-brief: `{brief_filename}` (sha256: {art_brief['self_digest']})",
+        ]
+    )
+
+    # --- Part 3: provenance as a learner-plain colophon (J-1: no gate ids,
+    # no date_source keys, no raw pipeline internals in the RENDERED text;
+    # machine detail rides the receipt below). Generation date = run.json
+    # ``started_at`` — NEVER wall-clock (byte-determinism wrt run artifacts).
+    objective_note = (
+        " It serves learning objective(s): "
+        + ", ".join(f"`{oid}`" for oid in bound_objective_ids)
+        + "."
+        if bound_objective_ids
+        else ""
+    )
+    about_body = "\n".join(
+        [
+            f"This workbook supports unit `{unit_id}` "
+            f"(fulfills `{fulfills}`).{objective_note}",
+            f"Lesson: {title_label}",
+            _identity_line("Production run", run_id, identity_status),
+            _identity_line("Generated", generated_at, identity_status),
+            (
+                f"Subject-matter expert: {sme_name}"
+                if sme_name
+                else "Subject-matter expert: not recorded in this run's artifacts"
+            ),
+            (
+                f"Source deck: {deck_reference}"
+                if deck_reference
+                else "Source deck: not recorded in this run's artifacts"
+            ),
+            "",
+            # G2/G1 fidelity stamp as an enforced-gate DECLARATION (audits run
+            # after compose; never a claimed-pass this step cannot know).
+            "This workbook is covered by numeric-fidelity and citation checks "
+            "— a shipped workbook has passed by construction.",
+            "",
+            # §12 Part 3 dual-coding note (S0/S7 stay in place UNCHANGED this
+            # pass — additive; dedupe is the filed J-4 follow-on).
+            "How to use this workbook with the deck: glance the deck for the "
+            "visual claim; read here for the depth — the deck and this "
+            "workbook are dual-coded partners.",
+        ]
+    )
+
+    receipt: dict[str, Any] = {
+        "hero": "placeholder",
+        "hero_marker": COVER_HERO_PLACEHOLDER_MARKER,
+        "encounter_mode": encounter_mode,
+        "toc": entries,
+        "art_brief": {
+            "filename": brief_filename,
+            "path": None,  # filled by produce() at write time
+            "digest": art_brief["self_digest"],
+            "schema_version": COVER_ART_BRIEF_SCHEMA_VERSION,
+        },
+        "provenance": {
+            "run_id": run_id,
+            "generated_at": generated_at,
+            "date_source": "run.json:started_at",
+            "corpus_path": corpus_path,
+            "sme_name": sme_name,
+            "deck_reference": deck_reference,
+            # J-2 (orchestrator ruling): models-used is RECEIPT-ONLY —
+            # collected and persisted here, never rendered in the colophon.
+            "models_used": models_used,
+            "identity_degrade": identity_degrade,
+            "fidelity_stamp": {
+                "gates": ["G1", "G2"],
+                "posture": "enforced-by-construction",
+            },
+        },
+    }
+    blocks = [
+        (2, COVER_HEADING, cover_body),
+        (2, CONTENTS_HEADING, contents_body),
+        (2, ABOUT_HEADING, about_body),
+    ]
+    return blocks, receipt, art_brief
+
+
+def _compose_cover_blocks(
+    doc: _ComposedDoc,
+    *,
+    plan_unit: PlanUnit,
+    context: ProductionContext,
+    spec: WorkbookSpec,
+    learning_objectives: Sequence[LearningObjectiveBrief],
+    pre_work: PreWorkBrief | None,
+    encounter_mode: Literal["recorded", "live"],
+    title_label: str,
+    cover_inputs: CoverInputs | None,
+) -> None:
+    """Post-composition pass: prepend Cover/Contents/About at ``doc.blocks[0:0]``.
+
+    Runs at the END of ``compose_workbook`` so the TOC walks the FINAL section
+    set; the receipt derives from the same composed blocks the render walks.
+    """
+    stem = f"{plan_unit.unit_id}@{context.lesson_plan_revision}"
+    blocks, receipt, art_brief = compose_cover_sections(
+        [heading for _level, heading, _body in doc.blocks],
+        title_label=title_label,
+        unit_id=plan_unit.unit_id,
+        event_type=plan_unit.event_type,
+        fulfills=stem,
+        stem=stem,
+        encounter_mode=encounter_mode,
+        themes=_cover_themes(spec, learning_objectives, pre_work),
+        palette_hints=_cover_palette_hints(pre_work),
+        bound_objective_ids=list(
+            dict.fromkeys(section.learning_objective_id for section in spec.sections)
+        ),
+        cover_inputs=cover_inputs,
+    )
+    doc.blocks[0:0] = blocks
+    doc.cover_receipt = receipt
+    doc.cover_art_brief = art_brief
 
 
 def compose_workbook(
@@ -515,11 +1083,15 @@ def compose_workbook(
     research_omitted_note: str | None = None,
     glossary_articles: Sequence[GlossaryArticleBrief] = (),
     glossary_empty_reason: str | None = None,
+    glossary: Any | None = None,
     research_trends: ResearchTrendsBrief | None = None,
     pre_work: PreWorkBrief | None = None,
     encounter_mode: Literal["recorded", "live"] = "recorded",
     render_profile: Literal["legacy", "presentation_support"] = "legacy",
     lo_overlay_loss_note: str | None = None,
+    exercise_overlay_loss_note: str | None = None,
+    deep_dive_review: Any | None = None,
+    cover_inputs: CoverInputs | None = None,
 ) -> _ComposedDoc:
     """Compose the canonical workbook model from the spec + transcript backbone.
 
@@ -590,9 +1162,11 @@ def compose_workbook(
                     "",
                     (
                         "Use this workbook before and alongside the presentation: "
-                        "complete the pre-work, work the self-check exercises, and "
-                        "follow the cited sources. Traceable Deep Dive read-prose "
-                        "arrives in Story 37.2a and is not claimed here."
+                        "complete the pre-work, read the Deep Dive, work the "
+                        "self-check exercises, and follow the cited sources. The "
+                        "Deep Dive section carries the traceable read-prose for "
+                        "this lesson; when the run's cited research pool authored "
+                        "enrichment, its sentences cite that pool inline."
                         if render_profile == "presentation_support"
                         else "How to use this workbook with the deck: watch the "
                         "glance-deck for the perception-tuned claim per card, then "
@@ -639,6 +1213,18 @@ def compose_workbook(
         objective_lines.append("")
         objective_lines.append(f"> _Enrichment overlay loss: {lo_overlay_loss_note}_")
     doc.blocks.append((2, "Learning Objectives", "\n".join(objective_lines).rstrip()))
+
+    # --- Deep Dive (37.2b): cited, pool-grounded read-prose at the enrichment
+    # seam. Deterministic-consume and model-free: the section renders the
+    # persisted 07W.3 contribution (enriched prose with inline
+    # ``[ask-a-cite-###]`` markers) or the honest typed-loss note — never a
+    # silent absence. Presentation-support profile only.
+    if render_profile == "presentation_support":
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            render_deep_dive_markdown,
+        )
+
+        doc.blocks.append((2, "Deep Dive", render_deep_dive_markdown(deep_dive_review)))
 
     # --- S2 Transcript-narrative (the prose-delegation seam + segment backbone) ---
     if render_profile == "legacy":
@@ -698,51 +1284,83 @@ def compose_workbook(
     else:
         doc.figures.clear()
 
-    # --- Exercises (Bloom level + source-grounded answer key) ---
+    # --- Exercises (Bloom level + source-grounded answer key). 39.1b (D2
+    # MERGE): grouped per unit by the ``origin`` FIELD (never list position) —
+    # "Practice" (Irene collateral) then "Course Check — drawn from this
+    # course's own assessments" (enrichment overlay); a group with no items
+    # renders no phantom heading. Any collateral the composition cap trimmed
+    # is a visible callout (degrade-with-record; never a silent drop). ---
     exercise_lines: list[str] = []
     for section in spec.sections:
-        for exercise in section.exercises:
-            exercise_lines.append(f"### Exercise `{exercise.exercise_id}`")
-            exercise_lines.append(f"Bloom level: **{exercise.bloom_level}**")
-            exercise_lines.append(exercise.prompt_intent)
-            exercise_lines.append(f"Answer key (source_ref: `{exercise.answer_key_source_ref}`)")
-            exercise_lines.append("")
+        for group_label, group in _exercise_origin_groups(section):
+            exercise_lines.append(
+                f"### {group_label} — section `{section.section_id}`"
+            )
+            for exercise in group:
+                exercise_lines.append(f"#### Exercise `{exercise.exercise_id}`")
+                exercise_lines.append(f"Bloom level: **{exercise.bloom_level}**")
+                exercise_lines.append(exercise.prompt_intent)
+                exercise_lines.append(
+                    f"Answer key (source_ref: `{exercise.answer_key_source_ref}`)"
+                )
+                exercise_lines.append("")
+    if exercise_overlay_loss_note:
+        exercise_lines.append(
+            f"> _{EXERCISE_OVERLAY_LOSS_CALLOUT} {exercise_overlay_loss_note}_"
+        )
+        exercise_lines.append("")
     doc.blocks.append((2, "Exercises", "\n".join(exercise_lines).rstrip()))
 
     # --- S5b Answer Key (worked answers, source-grounded; G1/G3). The worked
     # answer prose is a produce-time input (the corpus "Correct Answer" line);
     # the spec carries only the answer_key_source_ref slot. When no worked answer
     # is supplied the producer emits an explicit pending note + the source_ref
-    # (never a fabricated answer). ---
+    # (never a fabricated answer). 39.1b: carries the SAME origin group labels
+    # as the Exercises block (D2-2 / John F2). ---
     answer_lines: list[str] = []
     for section in spec.sections:
-        for exercise in section.exercises:
-            answer_lines.append(f"### Answer — `{exercise.exercise_id}`")
-            worked = answer_keys.get(exercise.exercise_id, "").strip()
-            if worked:
-                answer_lines.append(worked)
-            else:
+        for group_label, group in _exercise_origin_groups(section):
+            answer_lines.append(
+                f"### {group_label} — section `{section.section_id}`"
+            )
+            for exercise in group:
+                answer_lines.append(f"#### Answer — `{exercise.exercise_id}`")
+                worked = answer_keys.get(exercise.exercise_id, "").strip()
+                if worked:
+                    answer_lines.append(worked)
+                else:
+                    answer_lines.append(
+                        "*(worked answer pending writer; grounded by the "
+                        f"source_ref below — source_ref: `{exercise.answer_key_source_ref}`)*"
+                    )
                 answer_lines.append(
-                    "*(worked answer pending writer; grounded by the "
-                    f"source_ref below — source_ref: `{exercise.answer_key_source_ref}`)*"
+                    f"Answer key source_ref: `{exercise.answer_key_source_ref}`"
                 )
-            answer_lines.append(f"Answer key source_ref: `{exercise.answer_key_source_ref}`")
-            answer_lines.append("")
+                answer_lines.append("")
     doc.blocks.append((2, "Answer Key", "\n".join(answer_lines).rstrip()))
 
-    # --- W2 Research Glossary (encyclopedia articles from wrangled research).
-    # Produce-time briefs only — not CollateralSpec. Placed after Answer Key and
-    # before References so W3 trends can stack after References later.
-    doc.blocks.append(
-        (
-            2,
-            "Research Glossary",
-            render_glossary_markdown(
-                glossary_articles,
-                empty_reason=glossary_empty_reason,
-            ),
+    # --- W2 Research Glossary. 39.1 (the learner-deliverable path): the
+    # TERM-KEYED projection renders one entry per bolded Deep Dive term with
+    # headword-identity association (AC-A5/A-6) — supplied as ``glossary``.
+    # The _act intake supplies a projection on EVERY profile (legacy included;
+    # its 07W.3 disk read is profile-agnostic — P7 legacy honesty), so a
+    # legacy-profile run with an activated contribution renders real entries,
+    # never a false absent-reason. Only callers that pass ``glossary_articles``
+    # WITHOUT a projection (the frozen W2/W4 evidence scripts) take the
+    # pre-39.1 article render below. Placed after Answer Key and before
+    # References so W3 trends can stack after References later.
+    if glossary is not None:
+        from app.marcus.lesson_plan.glossary_projection import (  # noqa: PLC0415
+            render_glossary_projection_markdown,
         )
-    )
+
+        glossary_body = render_glossary_projection_markdown(glossary)
+    else:
+        glossary_body = render_glossary_markdown(
+            glossary_articles,
+            empty_reason=glossary_empty_reason,
+        )
+    doc.blocks.append((2, "Research Glossary", glossary_body))
 
     # --- S6 References / Further reading (rendered bibliography). Three tiers:
     # (a) per-segment source_ref traceability lines (the thin substrate),
@@ -822,6 +1440,41 @@ def compose_workbook(
     # provenance (never a bare/broken ``https://doi.org/`` link).
     if research_omitted_note:
         reference_lines.append(f"- *({research_omitted_note})*")
+    # --- 37.2b resolvability floor (A8): every inline ``ask-a-cite-###`` marker
+    # in the Deep Dive prose resolves to a rendered reference entry carrying its
+    # citation_id, DOI, tier, and provenance. Full References assemble/dedupe/
+    # render ownership stays with Story 37.5.
+    if render_profile == "presentation_support":
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            render_deep_dive_reference_lines,
+        )
+
+        deep_dive_reference_lines = list(
+            render_deep_dive_reference_lines(deep_dive_review)
+        )
+        # 39.1 AC-A9 (W2/M1): APPEND glossary-covered rows into the SAME
+        # cited-entries block, deduped by citation_id against the
+        # enrichment-emitted lines (a citation cited by both the deep dive and
+        # a glossary entry appears ONCE). Resolvability floor only — the 37.5
+        # References assemble/dedupe ownership fence stands.
+        glossary_reference_line_items: list[str] = []
+        if glossary is not None:
+            from app.marcus.lesson_plan.glossary_projection import (  # noqa: PLC0415
+                glossary_reference_lines,
+            )
+
+            emitted_ids: tuple[str, ...] = ()
+            review_result = getattr(deep_dive_review, "deep_dive_enrichment", None)
+            if review_result is not None and review_result.status == "enriched":
+                emitted_ids = tuple(review_result.gate.used_citation_ids)
+            glossary_reference_line_items = list(
+                glossary_reference_lines(glossary, exclude_citation_ids=emitted_ids)
+            )
+        if deep_dive_reference_lines or glossary_reference_line_items:
+            reference_lines.append("")
+            reference_lines.append("#### Deep Dive cited entries (Ask-A, DOI)")
+            reference_lines.extend(deep_dive_reference_lines)
+            reference_lines.extend(glossary_reference_line_items)
     doc.blocks.append((2, "References", "\n".join(reference_lines).rstrip()))
 
     # --- W3 Research Trends + hot-topics (after References backmatter).
@@ -836,6 +1489,23 @@ def compose_workbook(
             ),
         )
     doc.blocks.append((2, "Research Trends", render_trends_markdown(trends_brief)))
+
+    # --- 40.1 Cover (presentation_support only; the §10 model IS the
+    # presentation-support workbook — legacy renders stay the frozen
+    # pre-redesign artifact, no cover and no receipt). Post-composition insert
+    # at the HEAD so the AC-3 journey-TOC derives from the FINAL section set.
+    if render_profile == "presentation_support":
+        _compose_cover_blocks(
+            doc,
+            plan_unit=plan_unit,
+            context=context,
+            spec=spec,
+            learning_objectives=learning_objectives,
+            pre_work=pre_work,
+            encounter_mode=encounter_mode,
+            title_label=title_label,
+            cover_inputs=cover_inputs,
+        )
 
     return doc
 
@@ -996,6 +1666,22 @@ class WorkbookSidecar:
     # resolve (statement/Bloom degraded to a placeholder). ``None`` when every
     # bound objective resolved (no loss to record).
     lo_overlay_loss: dict[str, object] | None = None
+    # 39.1b (D2 MERGE): the exercise-composition receipt — per-section Practice
+    # / Course Check ids keyed on the ``origin`` field — the structured surface
+    # the runner's deliverable-bar exercise clause asserts FIRST (prose second).
+    exercise_composition: dict[str, object] | None = None
+    # 39.1b: visible record of collateral (Practice) exercises the composition
+    # cap trimmed (mirror of ``lo_overlay_loss``); ``None`` when nothing was
+    # trimmed. Course-check (overlay) items are never trimmed.
+    exercise_overlay_loss: dict[str, object] | None = None
+    # 40.1: the cover receipt (hero placeholder + journey-TOC entries +
+    # provenance incl. the J-2 receipt-only models-used pairs) — the
+    # structured surface the runner's cover deliverable-bar clause asserts
+    # FIRST (MD floor second). ``None`` on legacy renders (no cover claimed).
+    cover: dict[str, object] | None = None
+    # 40.1: repo-relative path of the written art-brief sidecar (``None`` when
+    # no cover rendered).
+    art_brief_path: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -1038,6 +1724,7 @@ class WorkbookProducer(ModalityProducer):
         research_omitted_note: str | None = None,
         glossary_articles: Sequence[GlossaryArticleBrief] = (),
         glossary_empty_reason: str | None = None,
+        glossary: Any | None = None,
         research_trends: ResearchTrendsBrief | None = None,
         research_supplements: set[str] | None = None,
         diff_files: Iterable[str] | None = None,
@@ -1047,6 +1734,9 @@ class WorkbookProducer(ModalityProducer):
         render_profile: Literal["legacy", "presentation_support"] = "legacy",
         workbook_brief_receipt: dict[str, object] | None = None,
         lo_overlay_loss: dict[str, object] | None = None,
+        exercise_overlay_loss: dict[str, object] | None = None,
+        deep_dive_review: Any | None = None,
+        cover_inputs: CoverInputs | None = None,
     ) -> WorkbookSidecar:
         """Produce the workbook artifacts on the frozen deck inputs.
 
@@ -1077,6 +1767,7 @@ class WorkbookProducer(ModalityProducer):
             research_omitted_note=research_omitted_note,
             glossary_articles=glossary_articles,
             glossary_empty_reason=glossary_empty_reason,
+            glossary=glossary,
             research_trends=research_trends,
             pre_work=pre_work,
             encounter_mode=encounter_mode,
@@ -1084,6 +1775,22 @@ class WorkbookProducer(ModalityProducer):
             lo_overlay_loss_note=(
                 str(lo_overlay_loss.get("note")) if lo_overlay_loss else None
             ),
+            # T4 F8: the callout must accompany EVERY persisted loss record
+            # (the runner bar asserts callout ⇔ record) and must never render
+            # a literal "None" — a record with a missing/empty note falls back
+            # to an honest generic line instead of desyncing the deliverable.
+            exercise_overlay_loss_note=(
+                (
+                    str(exercise_overlay_loss.get("note") or "")
+                    or "collateral (Practice) exercises were trimmed by the "
+                    "exercise cap (see the persisted exercise_overlay_loss "
+                    "record for the trimmed ids)"
+                )
+                if exercise_overlay_loss is not None
+                else None
+            ),
+            deep_dive_review=deep_dive_review,
+            cover_inputs=cover_inputs,
         )
         markdown = render_markdown(doc)
 
@@ -1105,9 +1812,33 @@ class WorkbookProducer(ModalityProducer):
         # W3 trend/hot-topic source_refs likewise.
         audited_citations = list(citations or [])
         audited_citations.extend({"source_ref": entry.source_ref} for entry in research_entries)
-        audited_citations.extend(
-            {"source_ref": article.source_ref} for article in glossary_articles
-        )
+        # 39.1: the term-keyed projection's COVERED articles ride the same G2
+        # gate (uncovered terms carry NO citation by construction — J-1). When
+        # a projection is supplied it is the single glossary authority (the
+        # ``glossary_articles`` param duplicates its covered articles on the
+        # _act path — do not double-audit).
+        if glossary is not None:
+            audited_citations.extend(
+                {"source_ref": article.source_ref}
+                for entry in glossary.entries
+                for article in entry.articles
+            )
+        else:
+            audited_citations.extend(
+                {"source_ref": article.source_ref} for article in glossary_articles
+            )
+        # 37.2b (R7, non-tautological): the deep-dive G2 leg audits the
+        # citation ids parsed from the RENDERED markdown (prose side) against
+        # the manifest entries built from the contribution's used rows
+        # (structured side, joined in _act.py) — prose/structure divergence
+        # FAILS G2. NOTE the honest scope: a used row whose source_ref simply
+        # rode into the manifest alongside it cannot fail here (both sides
+        # share the used-rows origin); what fails is a rendered marker that no
+        # used row backs, or a manifest entry the render contradicts.
+        if render_profile == "presentation_support":
+            audited_citations.extend(
+                deep_dive_g2_citation_entries(markdown, deep_dive_review)
+            )
         if research_trends is not None:
             for claim in research_trends.trends:
                 if claim.confidence != "unusable" and claim.source_ref:
@@ -1168,6 +1899,27 @@ class WorkbookProducer(ModalityProducer):
         md_path.write_text(markdown, encoding="utf-8")
         render_docx_from_model(doc, docx_path)
 
+        # --- 40.1: write the machine-readable art-brief sidecar beside the
+        # MD/DOCX (canonical bytes — sort_keys/ensure_ascii/compact — so a
+        # double-produce on identical inputs is byte-identical and the
+        # self-digest recomputes; the D3 carrier discipline). Emitted only
+        # when the compose pass built a cover (presentation_support).
+        art_brief_path_value: str | None = None
+        if doc.cover_art_brief is not None:
+            art_brief_path = self._output_root / f"{stem}.cover-art-brief.json"
+            art_brief_path.write_text(
+                json.dumps(
+                    doc.cover_art_brief,
+                    sort_keys=True,
+                    ensure_ascii=True,
+                    separators=(",", ":"),
+                ),
+                encoding="utf-8",
+            )
+            art_brief_path_value = _relative_asset_path(art_brief_path)
+            if doc.cover_receipt is not None:
+                doc.cover_receipt["art_brief"]["path"] = art_brief_path_value
+
         asset = ProducedAsset(
             asset_ref=f"workbook-{stem}",
             modality_ref=self.modality_ref,
@@ -1207,6 +1959,18 @@ class WorkbookProducer(ModalityProducer):
                 else None
             ),
             lo_overlay_loss=lo_overlay_loss,
+            # 39.1b: the exercise-composition receipt derives from the SAME
+            # composed spec the render walked (origin-field groups), so the
+            # structured channel cannot diverge from the deliverable.
+            exercise_composition=_exercise_composition_receipt(
+                spec, exercise_overlay_loss
+            ),
+            exercise_overlay_loss=exercise_overlay_loss,
+            # 40.1: the cover receipt derives from the SAME composed blocks
+            # the render walked (structure cannot diverge from the
+            # deliverable); ``None`` on legacy renders — no cover is claimed.
+            cover=doc.cover_receipt,
+            art_brief_path=art_brief_path_value,
         )
 
     @staticmethod
@@ -1294,11 +2058,18 @@ def _tokenize(text: str) -> list[str]:
 
 
 __all__ = [
+    "ABOUT_HEADING",
+    "CONTENTS_HEADING",
+    "COVER_ART_BRIEF_SCHEMA_VERSION",
+    "COVER_HEADING",
+    "COVER_HEADINGS",
+    "COVER_HERO_PLACEHOLDER_MARKER",
     "DEFAULT_WORKBOOK_OUTPUT_ROOT",
     "HUMAN_REVIEW_SECTION_HEADING",
     "IRENE_REVIEW_MARKER",
     "NO_READING_PATH_HALO_NOTE",
     "REVOICE_REQUIRED_MARKER",
+    "CoverInputs",
     "DuplicateCollateralIdError",
     "FurtherReadingEntry",
     "LearningObjectiveBrief",
@@ -1314,7 +2085,10 @@ __all__ = [
     "assert_unique_collateral_ids",
     "audit_citation_fidelity",
     "audit_workbook_numeric_fidelity",
+    "build_cover_art_brief",
+    "compose_cover_sections",
     "compose_workbook",
+    "cover_art_brief_digest",
     "default_prose_revoicer",
     "load_transcript_segments",
     "render_docx_from_model",

@@ -1,0 +1,93 @@
+{
+  "surface_id": "section_04a_g1a_poll",
+  "decision_card_digest": "78dcbf522e0165970bab58faa2c27e64c7396ce4c57e7d3ef7d837890dcd5e7d",
+  "decision_card": {
+    "decision_card_digest": "78dcbf522e0165970bab58faa2c27e64c7396ce4c57e7d3ef7d837890dcd5e7d",
+    "meta": {
+      "cache_state": "healthy",
+      "affected_nodes": [
+        "gagne-event-3"
+      ],
+      "override_trail": []
+    },
+    "schema_version": "v1",
+    "card_id": "b4976a31-7dff-4934-ae1c-3372328aeb46",
+    "trial_id": "157986cb-67c9-47b0-944b-d70766af9fc5",
+    "gate_id": "G1",
+    "gate_focus": "trial_open",
+    "created_at": "2026-05-05T12:00:00Z",
+    "drafted_proposal": {
+      "plan_unit": {
+        "unit_id": "gagne-event-3",
+        "event_type": "present-content",
+        "source_fitness_diagnosis": "Primary source (Tejal Part 4) supports this unit with strong coverage.",
+        "scope_decision": {
+          "state": "ratified",
+          "scope": "in-scope",
+          "proposed_by": "system",
+          "ratified_by": "maya",
+          "locked_at": null
+        },
+        "weather_band": "green",
+        "modality_ref": "slides",
+        "rationale": "This unit is ready for ratification; the source carries the concept fully.",
+        "blueprint_signoff": null,
+        "gaps": [
+          {
+            "gap_id": "gap-1",
+            "description": "Add a worked numeric example",
+            "suggested_posture": "embellish"
+          },
+          {
+            "gap_id": "gap-2",
+            "description": "Corroborate the 2024 figure",
+            "suggested_posture": "corroborate"
+          }
+        ],
+        "dials": {
+          "enrichment": 0.6,
+          "corroboration": 0.4
+        }
+      }
+    },
+    "evidence": [],
+    "trial_summary": "Ratify plan unit gagne-event-3: present-content",
+    "opened_by": "marcus",
+    "next_nodes": [
+      "present-content"
+    ],
+    "verb": "approve"
+  },
+  "plan_unit": {
+    "unit_id": "gagne-event-3",
+    "event_type": "present-content",
+    "source_fitness_diagnosis": "Primary source (Tejal Part 4) supports this unit with strong coverage.",
+    "scope_decision": {
+      "state": "ratified",
+      "scope": "in-scope",
+      "proposed_by": "system",
+      "ratified_by": "maya",
+      "locked_at": null
+    },
+    "weather_band": "green",
+    "modality_ref": "slides",
+    "rationale": "This unit is ready for ratification; the source carries the concept fully.",
+    "blueprint_signoff": null,
+    "gaps": [
+      {
+        "gap_id": "gap-1",
+        "description": "Add a worked numeric example",
+        "suggested_posture": "embellish"
+      },
+      {
+        "gap_id": "gap-2",
+        "description": "Corroborate the 2024 figure",
+        "suggested_posture": "corroborate"
+      }
+    ],
+    "dials": {
+      "enrichment": 0.6,
+      "corroboration": 0.4
+    }
+  }
+}

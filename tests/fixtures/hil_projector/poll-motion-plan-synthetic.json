@@ -1,0 +1,30 @@
+{
+  "decision_card": {
+    "blocking_issues": [],
+    "card_id": "11111111-1111-4111-8111-111111111111",
+    "created_at": "2026-07-17T12:00:00Z",
+    "decision_card_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "gate_focus": "pre_composition_qa",
+    "gate_id": "G2C",
+    "meta": {
+      "affected_nodes": [
+        "07D"
+      ],
+      "cache_state": "healthy",
+      "override_trail": []
+    },
+    "readiness_status": "ready",
+    "ready_nodes": [
+      "07E",
+      "07F",
+      "07G"
+    ],
+    "schema_version": "v1",
+    "trial_id": "1a1a1a1a-1a1a-41a1-81a1-1a1a1a1a1a1a",
+    "verb": "approve"
+  },
+  "decision_card_digest": "112847912a1f4c63873c0e45bbe8425d2b9092bcec4a7f0e475200686491ed2d",
+  "motion_plan_id": "11111111-1111-4111-8111-111111111111",
+  "motion_plan_status": "completed",
+  "surface_id": "section_07d_g2_5_motion_plan_polling"
+}

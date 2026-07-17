@@ -116,7 +116,10 @@ WORKBOOK_BRIEF_NODE_ID: Final[str] = "07W.1"
 WORKBOOK_REVIEW_NODE_ID: Final[str] = "07W.3"
 WORKBOOK_BRIEF_SPECIALIST_ID: Final[str] = "workbook_brief"
 LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID: Final[str] = "workbook_brief_stub"
-WORKBOOK_REVIEW_SPECIALIST_ID: Final[str] = "workbook_review_stub"
+# 37.2b same-coordinate upgrade (mirror 38.1 AC6): the legacy stub contribution
+# upgrades at the exact 07W.3 coordinate; the activated id owns the node.
+WORKBOOK_REVIEW_SPECIALIST_ID: Final[str] = "workbook_review"
+LEGACY_WORKBOOK_REVIEW_SPECIALIST_ID: Final[str] = "workbook_review_stub"
 WORKBOOK_BAND_MODEL_MARKER: Final[str] = "deterministic-workbook-band-stub"
 WORKBOOK_BAND_NODE_IDS: Final[tuple[str, ...]] = (
     WORKBOOK_BRIEF_NODE_ID,
@@ -132,6 +135,22 @@ WORKBOOK_BAND_SPECIALIST_IDS: Final[dict[str, str]] = {
     WORKBOOK_REVIEW_NODE_ID: WORKBOOK_REVIEW_SPECIALIST_ID,
     ASK_B_HOT_TOPICS_NODE_ID: ASK_B_HOT_TOPICS_SPECIALIST_ID,
 }
+
+# 38-2 AC 6 (W-2 resume-skip hardening): the reconcile-not-skip set. A node in
+# this set is NEVER short-circuit-skipped by the exact-coordinate lookup when
+# running under the default registry — its persisted stub/typed-retryable
+# output must upgrade at the same coordinate once prerequisites become ready,
+# while completed outputs reconcile and are never recalled. This trap has
+# recurred once per band-node activation (38.1 → 37.2b → 38.2); the named
+# set-equality pin over this constant makes any future band-node omission
+# fail loud at activation time instead of silently skipping forever.
+WORKBOOK_BAND_RECONCILE_NODE_IDS: Final[frozenset[str]] = frozenset(
+    {
+        ASK_A_ENRICHMENT_NODE_ID,
+        WORKBOOK_REVIEW_NODE_ID,
+        ASK_B_HOT_TOPICS_NODE_ID,
+    }
+)
 
 
 def _canonical_json(value: object) -> str:
@@ -1174,27 +1193,66 @@ def _ask_a_factory(
     ).model_dump(mode="json")
 
 
-def _review_stub(_node_id: str, _envelope: ProductionEnvelope) -> dict[str, object]:
-    return {
-        "stub_status": "not_yet_wired",
-        "review_payload": {},
-        "known_losses": ["semantic_writers_not_yet_wired"],
-    }
+def _review_factory(
+    _node_id: str,
+    envelope: ProductionEnvelope,
+    *,
+    runtime_context: WorkbookBriefRuntimeContext,
+) -> dict[str, object]:
+    """Activated 07W.3 review node — deep-dive-enrichment leg only (37.2b)."""
+    from app.marcus.orchestrator.deep_dive_enrichment_wiring import (  # noqa: PLC0415
+        run_workbook_review,
+    )
+
+    return run_workbook_review(
+        run_dir=runtime_context.run_dir,
+        trial_id=envelope.trial_id,
+        runtime_context=runtime_context,
+    )
 
 
-def _ask_b_stub(_node_id: str, _envelope: ProductionEnvelope) -> dict[str, object]:
-    return {
-        "research_entries": [],
-        "stub_status": "not_yet_wired",
-        "known_losses": ["ask_b_not_yet_wired"],
-    }
+def _ask_b_factory(
+    _node_id: str,
+    envelope: ProductionEnvelope,
+    *,
+    runtime_context: WorkbookBriefRuntimeContext,
+    dispatch_live: bool,
+) -> dict[str, object]:
+    """Activated 07W.4 Ask-B hot-topics seam (38.2) — replaces the 38.3b stub."""
+    from app.marcus.orchestrator.ask_b_research_wiring import (  # noqa: PLC0415
+        run_ask_b_research,
+    )
+
+    return run_ask_b_research(
+        run_dir=runtime_context.run_dir,
+        trial_id=envelope.trial_id,
+        dispatch_live=dispatch_live,
+    ).model_dump(mode="json")
 
 
 DEFAULT_WORKBOOK_BAND_FACTORIES: Final[dict[str, WorkbookBandFactory]] = {
     WORKBOOK_BRIEF_NODE_ID: _brief_factory,
     ASK_A_ENRICHMENT_NODE_ID: _ask_a_factory,
-    WORKBOOK_REVIEW_NODE_ID: _review_stub,
-    ASK_B_HOT_TOPICS_NODE_ID: _ask_b_stub,
+    WORKBOOK_REVIEW_NODE_ID: _review_factory,
+    ASK_B_HOT_TOPICS_NODE_ID: _ask_b_factory,
+}
+
+# 38-2 T4 R3 (B2, live-repro'd) — stub detection keys on FULL stub-shape
+# EQUALITY (the exact honest-empty output the retired band stubs emitted),
+# never on the single `stub_status` magic key: a forged completed-claiming
+# contribution carrying the magic key must fall through to strict contract
+# validation (→ `ask-{a,b}.reconciliation-failed`), never be treated as a
+# stub and re-dispatched. The Ask-A constant is a CONSCIOUS SYMMETRIC
+# HARDENING: its gate mirrored the same flaw (B2).
+_ASK_A_LEGACY_STUB_OUTPUT: Final[dict[str, object]] = {
+    "research_entries": [],
+    "stub_status": "not_yet_wired",
+    "known_losses": ["ask_a_not_yet_wired"],
+}
+_ASK_B_LEGACY_STUB_OUTPUT: Final[dict[str, object]] = {
+    "research_entries": [],
+    "stub_status": "not_yet_wired",
+    "known_losses": ["ask_b_not_yet_wired"],
 }
 
 
@@ -1240,6 +1298,20 @@ def runtime_context_for_run(
                 raise SpecialistDispatchError(
                     f"Deep Dive writer initialization failed: {exc}",
                     tag="workbook-brief.deep-dive-writer-init-failed",
+                ) from exc
+        if context.writer_execution_mode == "live" and node_id == WORKBOOK_REVIEW_NODE_ID:
+            from app.marcus.orchestrator.workbook_prework_writers import (  # noqa: PLC0415
+                LiveDeepDiveEnrichmentWriter,
+            )
+
+            try:
+                return context.model_copy(
+                    update={"deep_dive_enrichment_writer": LiveDeepDiveEnrichmentWriter()}
+                )
+            except Exception as exc:
+                raise SpecialistDispatchError(
+                    f"Deep Dive enrichment writer initialization failed: {exc}",
+                    tag="workbook-review.enrichment-writer-init-failed",
                 ) from exc
         return context
     return WorkbookBriefRuntimeContext(
@@ -1496,10 +1568,50 @@ def run_workbook_band_node(
                 tag="workbook-brief.sidecar-mismatch",
             )
         existing = real_matches[0] if real_matches else None
+    elif node_id == WORKBOOK_REVIEW_NODE_ID:
+        review_real_matches = tuple(
+            contribution
+            for contribution in production_envelope.contributions
+            if contribution.specialist_id == WORKBOOK_REVIEW_SPECIALIST_ID
+            and contribution.node_id == WORKBOOK_REVIEW_NODE_ID
+        )
+        review_legacy_matches = tuple(
+            contribution
+            for contribution in production_envelope.contributions
+            if contribution.specialist_id == LEGACY_WORKBOOK_REVIEW_SPECIALIST_ID
+            and contribution.node_id == WORKBOOK_REVIEW_NODE_ID
+        )
+        review_allowed = {
+            WORKBOOK_REVIEW_SPECIALIST_ID,
+            LEGACY_WORKBOOK_REVIEW_SPECIALIST_ID,
+        }
+        review_collisions = tuple(
+            contribution
+            for contribution in production_envelope.contributions
+            if (
+                contribution.node_id == WORKBOOK_REVIEW_NODE_ID
+                and contribution.specialist_id not in review_allowed
+            )
+            or (
+                contribution.specialist_id in review_allowed
+                and contribution.node_id != WORKBOOK_REVIEW_NODE_ID
+            )
+        )
+        if (
+            review_collisions
+            or len(review_real_matches) > 1
+            or len(review_legacy_matches) > 1
+            or (review_real_matches and review_legacy_matches)
+        ):
+            raise SpecialistDispatchError(
+                "workbook review coordinate collision",
+                tag="workbook-review.coordinate-collision",
+            )
+        existing = review_real_matches[0] if review_real_matches else None
     else:
         existing = production_envelope.get_contribution(specialist_id, node_id=node_id)
     if existing is not None and not (
-        node_id == ASK_A_ENRICHMENT_NODE_ID and factories is None
+        node_id in WORKBOOK_BAND_RECONCILE_NODE_IDS and factories is None
     ):
         if node_id == WORKBOOK_BRIEF_NODE_ID:
             if runtime_context is None:
@@ -1671,7 +1783,9 @@ def run_workbook_band_node(
         node_id == ASK_A_ENRICHMENT_NODE_ID
         and factory is _ask_a_factory
         and existing is not None
-        and existing.output.get("stub_status") != "not_yet_wired"
+        # R3 (B2, symmetric hardening): full stub-shape equality — a forged
+        # output carrying only the magic key goes to strict validation below.
+        and existing.output != _ASK_A_LEGACY_STUB_OUTPUT
     ):
         from app.marcus.lesson_plan.ask_a_enrichment import (  # noqa: PLC0415
             AskAContributionOutputV1,
@@ -1698,6 +1812,90 @@ def run_workbook_band_node(
                 "completed Ask-A contribution has no call journal",
                 tag="ask-a.split-brain",
             )
+    prior_ask_b = None
+    if (
+        node_id == ASK_B_HOT_TOPICS_NODE_ID
+        and factory is _ask_b_factory
+        and existing is not None
+        # R3 (B2, live-repro'd): full stub-shape equality — never the single
+        # `stub_status` magic key (a forged completed-claiming contribution
+        # carrying that key must REJECT below, never re-dispatch).
+        and existing.output != _ASK_B_LEGACY_STUB_OUTPUT
+    ):
+        from app.marcus.lesson_plan.ask_b_hot_topics import (  # noqa: PLC0415
+            AskBContributionOutputV1,
+        )
+        from app.marcus.orchestrator.ask_b_research_wiring import (  # noqa: PLC0415
+            JOURNAL_FILENAME as ASK_B_JOURNAL_FILENAME,
+        )
+
+        try:
+            prior_ask_b = AskBContributionOutputV1.model_validate_json(
+                json.dumps(existing.output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"existing Ask-B output is invalid: {exc}",
+                tag="ask-b.reconciliation-failed",
+            ) from exc
+        if (
+            prior_ask_b.disposition.startswith("completed")
+            and runtime_context is not None
+            and not (runtime_context.run_dir / ASK_B_JOURNAL_FILENAME).exists()
+        ):
+            raise SpecialistDispatchError(
+                "completed Ask-B contribution has no call journal",
+                tag="ask-b.split-brain",
+            )
+    prior_review = None
+    if (
+        node_id == WORKBOOK_REVIEW_NODE_ID
+        and factory is _review_factory
+        and existing is not None
+    ):
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            WorkbookReviewContributionV1,
+        )
+        from app.marcus.orchestrator.deep_dive_enrichment_wiring import (  # noqa: PLC0415
+            DEEP_DIVE_ENRICHMENT_JOURNAL_FILENAME,
+        )
+
+        try:
+            prior_review = WorkbookReviewContributionV1.model_validate_json(
+                json.dumps(existing.output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"existing workbook review output is invalid: {exc}",
+                tag="workbook-review.enrichment-reconciliation-failed",
+            ) from exc
+        prior_receipt = prior_review.deep_dive_enrichment_receipt
+        if (
+            prior_receipt is not None
+            and prior_receipt.mode == "live"
+            and prior_receipt.calls == 1
+            and runtime_context is not None
+        ):
+            # R14: journal↔envelope agreement requires a journal whose state is
+            # ``completed`` — bare existence is NOT evidence (a call_in_progress
+            # or corrupt journal beside a calls=1 contribution is split-brain).
+            journal_path = (
+                runtime_context.run_dir / DEEP_DIVE_ENRICHMENT_JOURNAL_FILENAME
+            )
+            journal_state: object = None
+            if journal_path.is_file() and not journal_path.is_symlink():
+                try:
+                    journal_state = json.loads(
+                        journal_path.read_text(encoding="utf-8")
+                    ).get("state")
+                except (OSError, UnicodeDecodeError, ValueError):
+                    journal_state = None
+            if journal_state != "completed":
+                raise SpecialistDispatchError(
+                    "completed live enrichment contribution has no COMPLETED "
+                    f"call journal (journal state: {journal_state!r})",
+                    tag="workbook-review.enrichment-split-brain",
+                )
     try:
         if node_id == WORKBOOK_BRIEF_NODE_ID:
             requires_context = factory is DEFAULT_WORKBOOK_BAND_FACTORIES[node_id]
@@ -1717,6 +1915,25 @@ def run_workbook_band_node(
                 raise SpecialistDispatchError(
                     "07W.2 requires explicit runtime context",
                     tag="ask-a.runtime-context-missing",
+                )
+            output = factory(
+                node_id,
+                production_envelope,
+                runtime_context=runtime_context,
+                dispatch_live=bool(dispatch_live),
+            )
+        elif node_id == WORKBOOK_REVIEW_NODE_ID and factory is _review_factory:
+            if runtime_context is None:
+                raise SpecialistDispatchError(
+                    "07W.3 requires explicit runtime context",
+                    tag="workbook-review.runtime-context-missing",
+                )
+            output = factory(node_id, production_envelope, runtime_context=runtime_context)
+        elif node_id == ASK_B_HOT_TOPICS_NODE_ID and factory is _ask_b_factory:
+            if runtime_context is None:
+                raise SpecialistDispatchError(
+                    "07W.4 requires explicit runtime context",
+                    tag="ask-b.runtime-context-missing",
                 )
             output = factory(
                 node_id,
@@ -1760,17 +1977,61 @@ def run_workbook_band_node(
                 )
             }
         )
-    model_used = (
-        "deterministic-ask-a-research-wiring"
-        if node_id == ASK_A_ENRICHMENT_NODE_ID and factory is _ask_a_factory
-        else WORKBOOK_BAND_MODEL_MARKER
-    )
+    if node_id == WORKBOOK_REVIEW_NODE_ID and review_legacy_matches:
+        # R13: the legacy stub row is deleted ONLY for a payload that strictly
+        # validates as the activated contribution contract — a garbage upgrade
+        # payload must never destroy the recorded legacy row.
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            WorkbookReviewContributionV1,
+        )
+
+        try:
+            WorkbookReviewContributionV1.model_validate_json(
+                json.dumps(output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"workbook review upgrade payload validation failed: {exc}",
+                tag="workbook-review.output-invalid",
+            ) from exc
+        # Same-coordinate upgrade (mirror 38.1 AC6): the legacy stub row is
+        # replaced by the activated contribution at the exact coordinate.
+        updated = updated.model_copy(
+            update={
+                "contributions": tuple(
+                    contribution
+                    for contribution in updated.contributions
+                    if not (
+                        contribution.specialist_id == LEGACY_WORKBOOK_REVIEW_SPECIALIST_ID
+                        and contribution.node_id == WORKBOOK_REVIEW_NODE_ID
+                    )
+                )
+            }
+        )
+    if node_id == ASK_A_ENRICHMENT_NODE_ID and factory is _ask_a_factory:
+        model_used = "deterministic-ask-a-research-wiring"
+    elif node_id == ASK_B_HOT_TOPICS_NODE_ID and factory is _ask_b_factory:
+        model_used = "deterministic-ask-b-hot-topics-wiring"
+    else:
+        model_used = WORKBOOK_BAND_MODEL_MARKER
     if node_id == WORKBOOK_BRIEF_NODE_ID and runtime_context is not None:
         if runtime_context.writer_execution_mode == "live":
             config = getattr(runtime_context.scene_writer, "model_config", None)
             model_used = getattr(config, "default_model", None) or "workbook-writer-live"
         else:
             model_used = "workbook-brief-offline"
+    if (
+        node_id == WORKBOOK_REVIEW_NODE_ID
+        and factory is _review_factory
+        and runtime_context is not None
+    ):
+        if runtime_context.writer_execution_mode == "live":
+            config = getattr(
+                runtime_context.deep_dive_enrichment_writer, "model_config", None
+            )
+            model_used = getattr(config, "default_model", None) or "workbook-review-live"
+        else:
+            model_used = "workbook-review-offline"
     if (
         existing is not None
         and node_id == ASK_A_ENRICHMENT_NODE_ID
@@ -1809,6 +2070,92 @@ def run_workbook_band_node(
                 )
             }
         )
+    if (
+        existing is not None
+        and node_id == ASK_B_HOT_TOPICS_NODE_ID
+        and factory is _ask_b_factory
+    ):
+        from app.marcus.lesson_plan.ask_b_hot_topics import (  # noqa: PLC0415
+            AskBContributionOutputV1,
+        )
+
+        try:
+            resolved_ask_b = AskBContributionOutputV1.model_validate_json(
+                json.dumps(output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"Ask-B output validation failed: {exc}", tag="ask-b.output-invalid"
+            ) from exc
+        if prior_ask_b is not None and prior_ask_b.disposition.startswith("completed"):
+            if prior_ask_b != resolved_ask_b:
+                raise SpecialistDispatchError(
+                    "completed Ask-B contribution conflicts with journal replay",
+                    tag="ask-b.split-brain",
+                )
+            return production_envelope
+        if prior_ask_b == resolved_ask_b and prior_ask_b is not None:
+            return production_envelope
+        updated = updated.model_copy(
+            update={
+                "contributions": tuple(
+                    item
+                    for item in updated.contributions
+                    if not (
+                        item.specialist_id == ASK_B_HOT_TOPICS_SPECIALIST_ID
+                        and item.node_id == ASK_B_HOT_TOPICS_NODE_ID
+                    )
+                )
+            }
+        )
+    if (
+        existing is not None
+        and node_id == WORKBOOK_REVIEW_NODE_ID
+        and factory is _review_factory
+    ):
+        from app.marcus.lesson_plan.deep_dive_enrichment import (  # noqa: PLC0415
+            WorkbookReviewContributionV1,
+        )
+
+        try:
+            resolved_review = WorkbookReviewContributionV1.model_validate_json(
+                json.dumps(output, separators=(",", ":")), strict=True
+            )
+        except ValueError as exc:
+            raise SpecialistDispatchError(
+                f"workbook review output validation failed: {exc}",
+                tag="workbook-review.output-invalid",
+            ) from exc
+        prior_receipt = (
+            prior_review.deep_dive_enrichment_receipt if prior_review is not None else None
+        )
+        if (
+            prior_review is not None
+            and prior_receipt is not None
+            and prior_receipt.mode == "live"
+            and prior_receipt.calls == 1
+        ):
+            # Completed live output reconciles and is never recalled.
+            if prior_review != resolved_review:
+                raise SpecialistDispatchError(
+                    "completed workbook review contribution conflicts with replay",
+                    tag="workbook-review.enrichment-split-brain",
+                )
+            return production_envelope
+        if prior_review == resolved_review:
+            return production_envelope
+        updated = updated.model_copy(
+            update={
+                "contributions": tuple(
+                    item
+                    for item in updated.contributions
+                    if not (
+                        item.specialist_id == WORKBOOK_REVIEW_SPECIALIST_ID
+                        and item.node_id == WORKBOOK_REVIEW_NODE_ID
+                    )
+                )
+            }
+        )
     updated.add_contribution(
         SpecialistContribution.from_output(
             specialist_id=specialist_id,
@@ -1824,10 +2171,12 @@ __all__ = [
     "DEFAULT_WORKBOOK_BAND_FACTORIES",
     "WORKBOOK_BAND_MODEL_MARKER",
     "WORKBOOK_BAND_NODE_IDS",
+    "WORKBOOK_BAND_RECONCILE_NODE_IDS",
     "WORKBOOK_BAND_SPECIALIST_IDS",
     "WORKBOOK_BRIEF_NODE_ID",
     "WORKBOOK_BRIEF_SPECIALIST_ID",
     "LEGACY_WORKBOOK_BRIEF_SPECIALIST_ID",
+    "LEGACY_WORKBOOK_REVIEW_SPECIALIST_ID",
     "WORKBOOK_REVIEW_NODE_ID",
     "WORKBOOK_REVIEW_SPECIALIST_ID",
     "WorkbookBandFactory",

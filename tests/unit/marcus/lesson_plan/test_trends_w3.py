@@ -226,7 +226,17 @@ def test_compose_empty_trends_not_fabricated() -> None:
 
 
 def test_trends_inputs_from_run(tmp_path: Path) -> None:
+    """Matrix row 3 — CONSCIOUS FLIP #2 (39-2 AC 2): the J-3 grooming note
+    declared the trends consumer re-points to Ask-B at 39-2, so a
+    generic-``04.55``-only run (no Ask-B contribution) now yields an
+    EMPTY-HONEST brief through ``trends_inputs_from_run`` (empty class (a):
+    packet-contribution-absent) — the inverse of the pre-re-point assertion
+    that such a run yielded a usable ``cite-001`` brief."""
     _write_run(tmp_path, [_entry()])
     brief = trends_inputs_from_run(tmp_path)
-    assert brief.usable
-    assert brief.trends[0].citation_id == "cite-001"
+    assert not brief.usable
+    assert brief.trends == ()
+    assert brief.empty_reason is not None
+    assert (
+        "packet_contribution_absent:ask_b_hot_topics@07W.4" in brief.known_losses
+    )

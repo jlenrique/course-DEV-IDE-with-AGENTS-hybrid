@@ -5,6 +5,13 @@ MUST be grounded in wrangled packet rows — model-prior-only topics are rejecte
 or marked ``unusable`` (never polished fabricate). Bounded hot-topics callout
 (not forecasting theater).
 
+39.2 (Door-Ajar re-point): the run-level intake ``trends_inputs_from_run``
+reads the finely-focused Ask-B hot-topics packet at the exact
+``ask_b_hot_topics@07W.4`` coordinate via ``resolve_for_hot_topics`` (strict
+reader; fail-loud on a forged/malformed contribution) — no longer the broad
+generic ``research_wiring@04.55`` smear. The packet-object projection
+(``project_trends_from_packet``) stays coordinate-agnostic.
+
 M3-safe: imports ``research_packet`` (lesson_plan), not ``marcus.orchestrator``.
 """
 
@@ -18,7 +25,7 @@ from typing import Any, Literal
 
 from app.marcus.lesson_plan.research_packet import (
     ResearchPacket,
-    resolve_for_trends_projector,
+    resolve_for_hot_topics,
 )
 
 TRENDS_WRITER_REQUIRED_MARKER = "<!-- TRENDS-WRITER-REQUIRED -->"
@@ -309,8 +316,15 @@ def trends_inputs_from_run(
     max_hot_topics: int = 3,
     injected_topics: Sequence[str] = (),
 ) -> ResearchTrendsBrief:
-    """W3 intake: resolve trends consumer packet → backmatter brief."""
-    packet = resolve_for_trends_projector(run_dir, require_usable=False)
+    """W3 intake: resolve the Ask-B hot-topics packet → backmatter brief.
+
+    39.2 re-point (J-3 obligation 1): resolves ``ask_b_hot_topics@07W.4`` via
+    the strict Ask-B reader (``resolve_for_hot_topics``). A forged/malformed
+    Ask-B contribution raises ``ResearchPacketShapeError`` fail-loud (W-1/M-2
+    strictness upgrade over the retired lenient generic read); an absent /
+    ``completed_empty`` packet projects an empty-honest brief.
+    """
+    packet = resolve_for_hot_topics(run_dir, require_usable=False)
     return project_trends_from_packet(
         packet,
         max_trends=max_trends,

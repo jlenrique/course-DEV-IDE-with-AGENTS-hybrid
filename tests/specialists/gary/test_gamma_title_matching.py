@@ -454,3 +454,240 @@ def test_weak_overlap_leading_page_still_cover_drops() -> None:
     assert r.unmatched_keys == []
     assert r.unmatched_pages == []
 
+
+# ---------------------------------------------------------------------------
+# Order-consistent residual positional bind (party-ratified 2026-07-16,
+# Winston + Murat RATIFY-WITH-CONDITIONS 2/2; live-trial witness 648de559).
+# Gamma FREE-TITLED two literal numeral-hero slides ("Knowledge Growth
+# Outpaces Static Training" -> page `73`; "The Leadership Gap" ->
+# `18percent`): zero token overlap, gamma.export.brief-unmatched after 3/3
+# retries on an otherwise-perfect export (7 pages / 7 briefs, sequential
+# stems, 5 title-matched anchors, residues in exactly their briefed slots'
+# gaps). Fixtures below are the REAL trial 648de559 export stems + briefed
+# titles verbatim (M-6): storyboard A-literal cohort slide-01,02,04,05,06,
+# 07,08 from runs/648de559-786f-450b-9378-b86649bf7705/run.json; stems from
+# the failed export attempts (3/3, tag gamma.export.brief-unmatched).
+# ---------------------------------------------------------------------------
+
+# Briefed titles verbatim (trial 648de559 run.json storyboard, A-literal
+# cohort — slide-03 excluded from the cohort).
+T648_BRIEFS: list[tuple[str, str]] = [
+    ("slide-01", "The Economic & Structural Reality"),
+    ("slide-02", "The Human Cost: System Waste & Burnout"),
+    ("slide-04", "Knowledge Growth Outpaces Static Training"),
+    ("slide-05", "AI Use Is Common, but Oversight Training Lags"),
+    ("slide-06", "The Consumer Shift & The Digital Front Door"),
+    ("slide-07", "The Leadership Gap"),
+    ("slide-08", "Part 2 Summary & Knowledge Check"),
+]
+# Real trial 648de559 export stems verbatim (M-6).
+T648_STEMS = [
+    "1_The-Economic-and-Structural-Reality",
+    "2_The-Human-Cost-System-Waste-and-Burnout",
+    "3_73",
+    "4_AI-Use-Is-Common-but-Oversight-Training-Lags",
+    "5_The-Consumer-Shift-and-The-Digital-Front-Door",
+    "6_18percent",
+    "7_Part-2-Summary-and-Knowledge-Check",
+]
+
+
+def _positional_binds(r) -> list[dict]:
+    return [b for b in r.binds if b["reason"] == "residual-positional-order-bind"]
+
+
+def _soft_binds(r) -> list[dict]:
+    return [b for b in r.binds if b["reason"] == "residual-soft-bind"]
+
+
+def test_648de559_witnessed_k2_positional_binds_all_seven() -> None:
+    """(a)+(e-k2) Central positive pin — the witnessed 648de559 shape: all 7
+    bind; the two free-titled numeral heroes bind positionally with recorded
+    machine-readable reasons (W-5/M-8)."""
+    r = match_pages_to_slots(pages=_pages(T648_STEMS), expected_slots=T648_BRIEFS)
+    assert r.matched["slide-04"].endswith("/exp/3_73.png")
+    assert r.matched["slide-07"].endswith("/exp/6_18percent.png")
+    assert sorted(r.matched) == [s for s, _ in T648_BRIEFS]
+    assert r.unmatched_keys == []
+    assert r.unmatched_pages == []
+    assert r.dropped_pages == []
+    assert r.ambiguous == []
+    pos = sorted(_positional_binds(r), key=lambda b: b["page_index"])
+    assert [
+        (b["slide_id"], b["brief_title"], b["page_title"], b["page_index"], b["slot_position"])
+        for b in pos
+    ] == [
+        ("slide-04", "Knowledge Growth Outpaces Static Training", "73", 3, 2),
+        ("slide-07", "The Leadership Gap", "18percent", 6, 5),
+    ]
+
+
+def test_f8_cover_leading_gap_rejects_positional_not_cardinality() -> None:
+    """(b) F8 negative per M-4/W-1 (with W-6's correction): count parity HOLDS
+    on the F8 shape (6 pages / 6 briefs), so cardinality alone would ADMIT it —
+    what rejects is gap alignment: the unmatched page sits in the LEADING
+    cover-gap (before the first anchor, W-1) while the unmatched slot
+    (slide-06) sits in the TRAILING summary-gap (M-4 mismatch). Behavior must
+    be byte-identical fall-through (W-4): cover drops, slide-06 unmatched."""
+    assert len(F8_STEMS) == len(F8_BRIEFS)  # parity holds — not the rejector
+    r = match_pages_to_slots(pages=_pages(F8_STEMS), expected_slots=F8_BRIEFS)
+    assert _positional_binds(r) == []
+    assert r.unmatched_keys == ["slide-06"]
+    assert "slide-06" not in r.matched
+    assert [d["page_index"] for d in r.dropped_pages] == [1]
+    assert r.dropped_pages[0]["reason"] == "unmatched-leading-page"
+
+
+def test_merged_page_count_mismatch_never_positional_binds() -> None:
+    """(c) Merged-page count-mismatch negative unchanged: 648de559 shape minus
+    the final export page (Gamma merge) → page count != slot count → positional
+    precondition fails → byte-identical fall-through (W-4), residues fail-loud."""
+    stems = T648_STEMS[:-1]  # 6 pages vs 7 briefs
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=T648_BRIEFS)
+    assert _positional_binds(r) == []
+    assert "slide-04" not in r.matched
+    assert "slide-07" not in r.matched
+    assert sorted(r.unmatched_keys) == ["slide-04", "slide-07", "slide-08"]
+
+
+def test_token_contradiction_veto_digit_page_vs_wrong_slot() -> None:
+    """(d) M-5 token-contradiction veto (derived from the 648de559 fixture):
+    the digit page `73` positionally targets slide-04, but its token overlaps
+    a DIFFERENT unmatched slot's brief (slide-07 re-briefed to carry "73")
+    and not its positional target's → refuse fail-loud, no positional binds."""
+    briefs = [
+        (sid, "The 73 Percent Leadership Gap" if sid == "slide-07" else title)
+        for sid, title in T648_BRIEFS
+    ]
+    r = match_pages_to_slots(pages=_pages(T648_STEMS), expected_slots=briefs)
+    assert _positional_binds(r) == []
+    assert "slide-04" not in r.matched
+    assert "slide-07" not in r.matched
+    assert sorted(r.unmatched_keys) == ["slide-04", "slide-07"]
+
+
+def test_k1_soft_fail_then_positional_binds() -> None:
+    """(e) k=1 pin: a single zero-overlap residue (the real `73` numeral hero)
+    fails the SOFT gate first (M-2 attempts semantic always), then binds
+    POSITIONALLY — reason distinguishes the lane."""
+    briefs = T648_BRIEFS[:4]  # slide-01, 02, 04, 05
+    stems = T648_STEMS[:4]  # anchors 1,2,4; residue page 3 (`73`)
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=briefs)
+    assert r.matched["slide-04"].endswith("/exp/3_73.png")
+    assert r.unmatched_keys == []
+    assert _soft_binds(r) == []
+    pos = _positional_binds(r)
+    assert len(pos) == 1
+    assert pos[0]["slide_id"] == "slide-04"
+    assert pos[0]["page_index"] == 3
+    assert pos[0]["slot_position"] == 2
+
+
+def test_soft_bind_precedence_over_positional_bc0f81c4() -> None:
+    """(f) M-2 precedence pin: the bc0f81c4-class 1:1 residue binds via the
+    SOFT (semantic) lane — recorded reason "residual-soft-bind", zero
+    positional records. A disable-soft mutant cannot hide behind positional:
+    slide-01 sits in the LEADING gap (before the first anchor), which W-1
+    excludes, so killing soft turns this red."""
+    briefs = [
+        ("slide-01", "Module 1 Completion and Mindset Closure"),
+        ("slide-02", "Assessment Bridge Overview"),
+        ("slide-03", "Practice Checkpoint One"),
+        ("slide-04", "Practice Checkpoint Two"),
+        ("slide-05", "Next Steps and Resources"),
+    ]
+    stems = [
+        "1_Module-1-Complete-The-Mindset-is-Set",
+        "2_Assessment-Bridge-Overview",
+        "3_Practice-Checkpoint-One",
+        "4_Practice-Checkpoint-Two",
+        "5_Next-Steps-and-Resources",
+    ]
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=briefs)
+    assert r.matched["slide-01"].endswith("Module-1-Complete-The-Mindset-is-Set.png")
+    assert r.unmatched_keys == []
+    assert _positional_binds(r) == []
+    soft = _soft_binds(r)
+    assert len(soft) == 1
+    assert soft[0]["slide_id"] == "slide-01"
+    assert soft[0]["page_index"] == 1
+
+
+def test_m_lt_k_anchor_floor_rejects() -> None:
+    """(g) M-3 rejection pin: k residues exceeding m anchors (m=2, k=3) must
+    not positional-bind (also pigeonhole-forced by W-1/W-2: 3 residues cannot
+    occupy 2 usable gaps one-pair-each). All residues stay fail-loud."""
+    briefs = [
+        ("s1", "Alpha Anchor Topic Detail"),
+        ("s2", "Free Brief Residual One"),
+        ("s3", "Beta Anchor Topic Detail"),
+        ("s4", "Free Brief Residual Two"),
+        ("s5", "Free Brief Residual Three"),
+    ]
+    stems = [
+        "1_Alpha-Anchor-Topic-Detail",
+        "2_73",
+        "3_Beta-Anchor-Topic-Detail",
+        "4_18percent",
+        "5_42graph",
+    ]
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=briefs)
+    assert _positional_binds(r) == []
+    assert sorted(r.unmatched_keys) == ["s2", "s4", "s5"]
+    assert "s2" not in r.matched and "s4" not in r.matched and "s5" not in r.matched
+
+
+def test_non_monotone_anchors_reject_positional() -> None:
+    """(h) Non-monotone-anchors negative: anchor pages arrive SWAPPED relative
+    to slot order (page_index vs slot order not strictly monotone) → export
+    order is untrustworthy → no positional bind, residues fail-loud."""
+    briefs = [
+        ("s1", "Alpha Anchor Topic Detail"),
+        ("s2", "Free Brief Residual One"),
+        ("s3", "Beta Anchor Topic Detail"),
+        ("s4", "Free Brief Residual Two"),
+    ]
+    stems = [
+        "1_Beta-Anchor-Topic-Detail",  # anchors swapped: s3 -> page 1
+        "2_73",
+        "3_Alpha-Anchor-Topic-Detail",  # s1 -> page 3
+        "4_18percent",
+    ]
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=briefs)
+    assert _positional_binds(r) == []
+    assert sorted(r.unmatched_keys) == ["s2", "s4"]
+
+
+def test_two_residual_pages_sharing_one_gap_stay_fail_loud() -> None:
+    """(W-2 pin) Two unmatched pages + two unmatched slots sharing ONE
+    anchor-bounded gap must NOT bind (no intra-gap order guessing)."""
+    briefs = [
+        ("s1", "Alpha Anchor Topic Detail"),
+        ("s2", "Free Brief Residual One"),
+        ("s3", "Free Brief Residual Two"),
+        ("s4", "Beta Anchor Topic Detail"),
+    ]
+    stems = [
+        "1_Alpha-Anchor-Topic-Detail",
+        "2_73",
+        "3_18percent",
+        "4_Beta-Anchor-Topic-Detail",
+    ]
+    r = match_pages_to_slots(pages=_pages(stems), expected_slots=briefs)
+    assert _positional_binds(r) == []
+    assert sorted(r.unmatched_keys) == ["s2", "s3"]
+
+
+def test_positional_bind_order_independent() -> None:
+    """(i) Shuffled-input rerun: positional binds are computed from page_index
+    (and slot order), never from input-list order — identical bindings and
+    identical bind records after a shuffle."""
+    base = match_pages_to_slots(pages=_pages(T648_STEMS), expected_slots=T648_BRIEFS)
+    shuffled = _pages(T648_STEMS)
+    random.Random(11).shuffle(shuffled)
+    r = match_pages_to_slots(pages=shuffled, expected_slots=T648_BRIEFS)
+    assert r.matched == base.matched
+    assert r.unmatched_keys == base.unmatched_keys == []
+    key = lambda b: (b["slide_id"], b["page_index"])  # noqa: E731
+    assert sorted(_positional_binds(r), key=key) == sorted(_positional_binds(base), key=key)
+

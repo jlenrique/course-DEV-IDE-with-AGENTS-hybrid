@@ -1,0 +1,89 @@
+{
+  "_provenance": "trimmed from state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/g0-enrichment.json (Story 42.1 committed derived fixture)",
+  "corpus_fingerprint": "771399f071bf0102d37fbbfd450cf8fabe7675cc472b49c1f563f6a935daafd3",
+  "model_id": "marcus",
+  "typed_components": [
+    {
+      "component_id": "src-001-c001",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "label": "Knowledge Check Overview",
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c002",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "label": "Q1: Intrapreneurship (MC, Remember)",
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c003",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "label": "Q2: First Principles Thinking (MC, Understand)",
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-001-c004",
+      "parent_source_id": "src-001",
+      "source_type": "quiz",
+      "label": "Q3: Innovation Mindset (MC, Understand)",
+      "flagged_ungrounded": false,
+      "kind": null
+    },
+    {
+      "component_id": "src-003-c005",
+      "parent_source_id": "src-003",
+      "source_type": "narration",
+      "label": "Slide 1 Narration",
+      "flagged_ungrounded": true,
+      "kind": null
+    },
+    {
+      "component_id": "src-004-c004",
+      "parent_source_id": "src-004",
+      "source_type": "narration",
+      "label": "Slide 10 Narration",
+      "flagged_ungrounded": true,
+      "kind": null
+    },
+    {
+      "component_id": "src-005-c004",
+      "parent_source_id": "src-005",
+      "source_type": "narration",
+      "label": "Slide 11 Narration",
+      "flagged_ungrounded": true,
+      "kind": null
+    }
+  ],
+  "provisional_los": [
+    {
+      "objective_id": "lo-g0-001",
+      "statement": "Define intrapreneurship as utilizing entrepreneurial principles to drive change and implement innovative solutions from inside an existing organization.",
+      "status": "provisional"
+    },
+    {
+      "objective_id": "lo-g0-002",
+      "statement": "Identify Epstein\u2019s Range as the source for the Kind vs. Wicked learning-environments framing and Functional Flexibility.",
+      "status": "provisional"
+    },
+    {
+      "objective_id": "lo-g0-003",
+      "statement": "Describe the current clinical era as one of immense technological advancement and increasing system complexity.",
+      "status": "provisional"
+    }
+  ],
+  "reconcile": {
+    "n_files_in": 3,
+    "n_files_covered": 3,
+    "n_files_ignored": 0,
+    "n_components": 7,
+    "n_flagged": 3,
+    "n_ungrounded": 3
+  },
+  "enrichment_mode": "live"
+}

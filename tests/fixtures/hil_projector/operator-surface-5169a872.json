@@ -1,0 +1,79 @@
+{
+  "schema_version": "v1",
+  "seq": 1,
+  "progress_seq": 0,
+  "last_progress_at": "2026-07-17T16:12:51.328119Z",
+  "envelope_digest": "bf722772017ccf6488cf9cb3e2f469ef192e22ed5c240234eddcfd4602c6edf0",
+  "as_of": "2026-07-17T16:12:51.340593Z",
+  "identity": {
+    "as_of": "2026-07-17T16:12:51.328119Z",
+    "trial_id": "5169a872-6421-4e75-b07e-6a3bda42a4cc",
+    "lesson": "course-content/courses/tejal-apc-c1m1-p1-call",
+    "preset": "production",
+    "operator_id": "Juanl"
+  },
+  "envelope": {
+    "as_of": "2026-07-17T16:12:51.328119Z",
+    "status": "registered",
+    "paused_gate": null,
+    "paused_error_tag": null,
+    "waiting_batch_id": null,
+    "completed_at": null
+  },
+  "notifications_echo": {
+    "as_of": "2026-07-17T16:12:51.328119Z",
+    "config": {
+      "notifications": {
+        "paused_at_gate": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        },
+        "paused_at_error": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        },
+        "batch_pause_resumed": {
+          "enabled": true,
+          "sound": true,
+          "push": false
+        },
+        "health_threshold": {
+          "enabled": true,
+          "sound": false,
+          "push": false
+        },
+        "run_stalled": {
+          "enabled": true,
+          "sound": true,
+          "push": true
+        }
+      },
+      "staleness_budget_seconds": 5,
+      "stall_budget_seconds": 600,
+      "hud_port": 8791
+    },
+    "parse_status": "ok"
+  },
+  "next_action": null,
+  "steps": null,
+  "preflight": null,
+  "health": null,
+  "specialists": null,
+  "modalities": null,
+  "run_settings": null,
+  "trace": {
+    "as_of": "2026-07-17T16:12:51.340593Z",
+    "events": [
+      {
+        "at": "2026-07-17T16:12:51.332526Z",
+        "event": "trial-cancelled-at-g0",
+        "detail": "directive composition declined at G0"
+      }
+    ]
+  },
+  "decision_card": null,
+  "error_message": null,
+  "deliverables": null
+}

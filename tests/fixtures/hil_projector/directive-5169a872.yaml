@@ -1,0 +1,148 @@
+run_id: 5169a872-6421-4e75-b07e-6a3bda42a4cc
+corpus_dir: C:/Users/juanl/Documents/GitHub/course-DEV-IDE-with-AGENTS-hybrid/course-content/courses/tejal-apc-c1m1-p1-call
+sources:
+- ref_id: src-001
+  locator: assessments/chapter-1-knowledge-check.md
+  provider: local_file
+  role: supporting
+  description: Chapter 1 Knowledge Check markdown with five questions assessing 'Setting
+    the Stage' concepts; a quiz used to reinforce and evaluate understanding.
+  expected_min_words: 300
+  excluded_reason: null
+- ref_id: src-002
+  locator: references/master-references.md
+  provider: local_file
+  role: supporting
+  description: Master reference list/bibliography for the module (C1M1 Part 1), providing
+    citations and source links related to the slide content.
+  expected_min_words: 170
+  excluded_reason: null
+- ref_id: src-003
+  locator: slides/slide-1-welcome-on-camera.md
+  provider: local_file
+  role: primary
+  description: "Slide 1 markdown: Welcome/on-camera introduction to the course, setting\
+    \ the tone for 'The Modern Clinician\u2019s Era' and the intro beat."
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-004
+  locator: slides/slide-10-part1-summary.md
+  provider: local_file
+  role: primary
+  description: "Markdown slide content for Slide 10: Part 1 Summary \u2014 Setting\
+    \ the Stage, with bullet-point recap, visual notes, and key takeaways transitioning\
+    \ to the next section."
+  expected_min_words: 100
+  excluded_reason: null
+- ref_id: src-005
+  locator: slides/slide-11-growth-mindset.md
+  provider: local_file
+  role: primary
+  description: "Slide 11 covering course expectations around adopting a Growth Mindset\u2014\
+    definition, practical behaviors, reframing challenges and failures, and how learners\
+    \ should approach the material."
+  expected_min_words: 100
+  excluded_reason: null
+- ref_id: src-006
+  locator: slides/slide-12-psychological-safety.md
+  provider: local_file
+  role: primary
+  description: "Slide 12 markdown covering Expectations \u2013 Psychological Safety:\
+    \ norms, definitions, and guidance for fostering psychological safety in the course/team\
+    \ context."
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-007
+  locator: slides/slide-2-trained-to-follow.md
+  provider: local_file
+  role: primary
+  description: "Markdown slide content for Slide 2: 'Trained to Follow, Not Yet to\
+    \ Create'\u2014core instructional text within the slide deck."
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-008
+  locator: slides/slide-3-designer-of-the-system.md
+  provider: local_file
+  role: primary
+  description: Slide 3 markdown detailing the shift from a reactive clinician to a
+    systemic innovator/designer of the system, with title and key bullet points as
+    part of the main instructional slide deck.
+  expected_min_words: 60
+  excluded_reason: null
+- ref_id: src-009
+  locator: slides/slide-4-the-solution-is-you.md
+  provider: local_file
+  role: primary
+  description: "Slide 4 markdown: 'The Solution Lies Dormant Within You'\u2014a core\
+    \ message framing the learner as the solution and reinforcing personal agency\
+    \ within the course."
+  expected_min_words: 40
+  excluded_reason: null
+- ref_id: src-010
+  locator: slides/slide-5-heros-journey.md
+  provider: local_file
+  role: primary
+  description: 'Markdown slide presenting Slide 5: The Innovator''s ''Hero''s Journey'',
+    outlining the metaphor and key stages for learners within the innovation course.'
+  expected_min_words: 80
+  excluded_reason: null
+- ref_id: src-011
+  locator: slides/slide-6-lineage-of-physician-innovators.md
+  provider: local_file
+  role: primary
+  description: 'Markdown slide presenting ''Slide 6: The Lineage of Physician Innovators,''
+    likely summarizing historical context/examples and key points about physician
+    innovators within the course slide deck.'
+  expected_min_words: 100
+  excluded_reason: null
+- ref_id: src-012
+  locator: slides/slide-7-innovation-lexicon.md
+  provider: local_file
+  role: primary
+  description: "Markdown slide providing the 'Innovation Lexicon'\u2014key terms and\
+    \ definitions used in the course (Slide 7 of the deck)."
+  expected_min_words: 150
+  excluded_reason: null
+- ref_id: src-013
+  locator: slides/slide-8-tightrope-and-net.md
+  provider: local_file
+  role: primary
+  description: "Slide 8 presents the Tightrope and Net metaphor to illustrate psychological\
+    \ safety\u2014how a supportive environment (the net) enables wise risk-taking\
+    \ and learning (the tightrope). It likely offers guidance, examples, and prompts\
+    \ for fostering safety while encouraging innovation."
+  expected_min_words: 200
+  excluded_reason: null
+- ref_id: src-014
+  locator: slides/slide-9-track-vs-jungle.md
+  provider: local_file
+  role: primary
+  description: "Slide 9 Markdown: The Track vs. The Jungle\u2014contrasts predictable,\
+    \ rules-based 'track' work with adaptive, ambiguous 'jungle' innovation; introduces\
+    \ functional flexibility and guidance."
+  expected_min_words: 180
+  excluded_reason: null
+composed_at: '2026-07-17T16:07:16.965666Z'
+schema_version: 1
+gamma_settings:
+- variant_id: A
+  styleguide: hil-2026-apc-crossroads-blueprint
+- variant_id: B
+  styleguide: hil-2026-apc-videographic-glance
+styleguide_picker_provenance:
+  picked_at: '2026-07-17T16:11:58.492282+00:00'
+  picker_version: '1.0'
+  ssot_sha256: de1928b4fe4747224daa9d8e055167e1b5ca27d0f999f2b6122272882d1556a4
+  picks:
+  - variant_id: A
+    styleguide: hil-2026-apc-crossroads-blueprint
+  - variant_id: B
+    styleguide: hil-2026-apc-videographic-glance
+  written_by: styleguide_picker
+  picked_by: Juanl
+  publish_url: https://jlenrique.github.io/assets/styleguide-picker/5169a87264214e75b07e6a3bda42a4cc/index.html
+  roster_sha256: c1bbe84a102e821715dada63a751eb20646b5498e50f0a3d8e0898c445e9375d
+  version_count: 2
+  selection_code: SGP-5169a87264214e75b07e6a3bda42a4cc-A:hil-2026-apc-crossroads-blueprint
+    B:hil-2026-apc-videographic-glance
+  run_tag: 5169a87264214e75b07e6a3bda42a4cc

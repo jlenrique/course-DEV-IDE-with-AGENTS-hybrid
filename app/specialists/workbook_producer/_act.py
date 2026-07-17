@@ -16,8 +16,10 @@ sequence:
    enrichment card is a RESOLUTION OVERLAY (exercises, further-reading, answer
    keys, LO statements) layered on top — it may NOT author sections;
 5. read the S6 ``research_entries`` (from ``run.json``) and render them under the
-   G2 citation manifest; W2 also projects encyclopedia glossary articles from the
-   shared research packet (``resolve_for_glossary_writer``); W3 projects
+   G2 citation manifest; W2 (39.1) projects the TERM-KEYED encyclopedia glossary
+   off the 07W.3 review contribution (status-dependent bold-term authority +
+   the digest-verified embedded Ask-A pool rows — the legacy generic-packet
+   glossary path is retired from the deliverable); W3 projects
    research-trends + hot-topics (``resolve_for_trends_projector``);
 6. honor the ``declaration`` discriminant (present+blueprint => produce;
    none/absent => explicit no-op skip);
@@ -40,6 +42,7 @@ import json
 import logging
 import os
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal
@@ -47,10 +50,25 @@ from typing import Any, Literal
 import yaml
 from pydantic import ValidationError
 
-from app.marcus.lesson_plan.collateral_spec import CollateralSpec, WorkbookSpec
+from app.marcus.lesson_plan.collateral_spec import (
+    CollateralSpec,
+    Exercise,
+    WorkbookSection,
+    WorkbookSpec,
+)
+from app.marcus.lesson_plan.deep_dive_enrichment import (
+    WorkbookReviewContributionV1,
+    load_workbook_review_contribution,
+    render_deep_dive_markdown,
+    used_pool_rows,
+)
 from app.marcus.lesson_plan.glossary_projection import (
+    GLOSSARY_CAPABILITY_NOTE,
+    GLOSSARY_UNCOVERED_DEGRADED_ENTRY_LINE,
+    GLOSSARY_UNCOVERED_ENTRY_LINE,
     GlossaryArticleBrief,
-    glossary_inputs_from_run,
+    GlossaryProjection,
+    glossary_projection_from_contribution,
 )
 from app.marcus.lesson_plan.prework_artifact import (
     WORKBOOK_BRIEF_FILENAME,
@@ -77,9 +95,11 @@ from app.marcus.lesson_plan.workbook_enrichment import (
     load_enrichment_card,
     project_enrichment_to_workbook_inputs,
     research_entries_from_run,
+    run_identity_from_run,
 )
 from app.marcus.lesson_plan.workbook_producer import (
     DEFAULT_WORKBOOK_OUTPUT_ROOT,
+    CoverInputs,
     DuplicateCollateralIdError,
     FurtherReadingEntry,
     LearningObjectiveBrief,
@@ -390,6 +410,54 @@ def _derive_display_title(lesson_plan: dict[str, Any] | None, run_dir: Path) -> 
     return summary
 
 
+def _sme_name_from_corpus(corpus_root: Path | None) -> str | None:
+    """Cheap READ-ONLY SME derivation off the corpus ``course.yaml`` (40.1).
+
+    The course registry record carries ``sme.name`` (the source of
+    ``CoursePlanningProfile.sme_name``, ``input_bundle.py``). A corpus without
+    a ``course.yaml`` — or any read/parse failure — yields ``None`` and the
+    cover renders the explicit honest "SME not recorded in this run's
+    artifacts" line. Never fabricated, never raising.
+    """
+    if corpus_root is None:
+        return None
+    course_yaml = corpus_root / "course.yaml"
+    if not course_yaml.is_file():
+        return None
+    try:
+        data = yaml.safe_load(course_yaml.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return None
+    if not isinstance(data, dict):
+        return None
+    sme = data.get("sme")
+    name = sme.get("name") if isinstance(sme, dict) else data.get("sme_name")
+    return str(name).strip() if isinstance(name, str) and name.strip() else None
+
+
+def _deck_reference(run_dir: Path, manifest_relpath: str) -> str:
+    """Deck/source-bundle reference for the cover provenance block (40.1).
+
+    The configured ``segment_manifest_relpath`` plus the frozen source
+    bundle's identity (its ``directive_sha256`` prefix) when cheaply readable
+    — READ-ONLY and non-raising; degrades to the bare relpath.
+    """
+    metadata = run_dir / "bundle" / "metadata.json"
+    if metadata.is_file():
+        try:
+            payload = json.loads(metadata.read_text(encoding="utf-8"))
+            digest = (
+                str(payload.get("directive_sha256") or "")
+                if isinstance(payload, dict)
+                else ""
+            )
+        except (OSError, ValueError):
+            digest = ""
+        if digest:
+            return f"{manifest_relpath} (source bundle {digest[:12]})"
+    return manifest_relpath
+
+
 def _plan_unit_and_context(
     run_dir: Path,
     run_id: str | None,
@@ -418,6 +486,124 @@ def _plan_unit_and_context(
 # Author the produce() inputs from Irene's collateral + the enrichment overlay
 # ---------------------------------------------------------------------------
 
+# 39.1b (D2 MERGE, ratified 2026-07-15): exercise-composition constants.
+# Overlay (course-check) exercise ids are prefixed at attach so a cross-source
+# ``exercise_id`` collision is structurally impossible unless the collateral
+# itself authored a ``g0-``-prefixed id — which then fails loud in
+# ``assert_unique_collateral_ids`` (never silent-dropped).
+_OVERLAY_EXERCISE_ID_PREFIX = "g0-"
+# D2-5 cap: target total <=12 exercises per workbook; per-unit collateral cap 2.
+_EXERCISE_TOTAL_CAP = 12
+_UNIT_COLLATERAL_CAP = 2
+
+
+def _apply_exercise_composition_cap(
+    sections: list[WorkbookSection],
+) -> tuple[list[WorkbookSection], dict[str, object] | None]:
+    """D2-5 cap + J-3 round-robin collateral trim (39.1b ACs 4/9).
+
+    Target total <= ``_EXERCISE_TOTAL_CAP`` exercises per workbook; per-unit
+    (per-section) collateral cap ``_UNIT_COLLATERAL_CAP``; overlay
+    (course-check) items are NEVER trimmed. When the caps force collateral
+    trimming, retention is round-robin by unit then stable ``exercise_id``:
+    every unit keeps >=1 Practice item before any unit keeps 2; within a unit,
+    retention follows stable-id order. Also establishes the row-b total
+    ordering inside every section — provenance class (collateral before
+    enrichment), then stable id — so the composition is byte-deterministic.
+
+    "Stable id" is plain LEXICOGRAPHIC string order (the ratified determinism
+    floor) — numeric suffixes are NOT natural-sorted (``ex-10`` sorts before
+    ``ex-2``); authors wanting numeric retention priority should zero-pad.
+
+    Returns the rebuilt sections + the visible ``exercise_overlay_loss``
+    record (mirror of ``lo_overlay_loss``; ``None`` when nothing was trimmed).
+    Degrade-with-record: ANY trimmed collateral is recorded — never silent.
+    """
+    per_section_collateral: list[list[Exercise]] = []
+    per_section_overlay: list[list[Exercise]] = []
+    for sec in sections:
+        per_section_collateral.append(
+            sorted(
+                (ex for ex in sec.exercises if ex.origin == "collateral"),
+                key=lambda ex: ex.exercise_id,
+            )
+        )
+        per_section_overlay.append(
+            sorted(
+                (ex for ex in sec.exercises if ex.origin == "enrichment"),
+                key=lambda ex: ex.exercise_id,
+            )
+        )
+    overlay_total = sum(len(items) for items in per_section_overlay)
+    collateral_total = sum(len(items) for items in per_section_collateral)
+    budget = max(0, _EXERCISE_TOTAL_CAP - overlay_total)
+    if overlay_total > _EXERCISE_TOTAL_CAP:
+        # T4 F6: overlay (course-check) items are never trimmed by ratified
+        # design, so an overlay set alone exceeding the target cap ships >12
+        # exercises — visible in the log + the receipt's course_check_total,
+        # never a silent reshape.
+        logger.warning(
+            "workbook exercise composition: %d course-check (overlay) "
+            "exercise(s) alone exceed the total cap %d — overlay is never "
+            "trimmed (ratified D2-5); the workbook ships over target",
+            overlay_total,
+            _EXERCISE_TOTAL_CAP,
+        )
+
+    # Round-robin retention (J-3): round r grants each unit (in section order)
+    # its (r+1)-th collateral item while budget remains — so every unit keeps
+    # one Practice item before any unit keeps two. The per-unit cap is the
+    # round count; items beyond it are trimmed even with slack budget.
+    keep_counts = [0] * len(sections)
+    remaining = budget
+    for round_index in range(_UNIT_COLLATERAL_CAP):
+        for i, items in enumerate(per_section_collateral):
+            if remaining <= 0:
+                break
+            if len(items) > round_index:
+                keep_counts[i] += 1
+                remaining -= 1
+        if remaining <= 0:
+            break
+
+    trimmed_ids: list[str] = []
+    rebuilt: list[WorkbookSection] = []
+    for i, sec in enumerate(sections):
+        kept = per_section_collateral[i][: keep_counts[i]]
+        trimmed_ids.extend(
+            ex.exercise_id for ex in per_section_collateral[i][keep_counts[i] :]
+        )
+        merged = [*kept, *per_section_overlay[i]]
+        if merged != list(sec.exercises):
+            sec = sec.model_copy(update={"exercises": merged})
+        rebuilt.append(sec)
+
+    if not trimmed_ids:
+        return rebuilt, None
+    logger.warning(
+        "workbook exercise composition: %d of %d collateral (Practice) "
+        "exercise(s) trimmed by the cap (total<=%d, per-unit collateral "
+        "cap %d; round-robin by unit then stable id): %s",
+        len(trimmed_ids),
+        collateral_total,
+        _EXERCISE_TOTAL_CAP,
+        _UNIT_COLLATERAL_CAP,
+        trimmed_ids,
+    )
+    return rebuilt, {
+        "trimmed_count": len(trimmed_ids),
+        "collateral_count": collateral_total,
+        "kept_collateral_count": collateral_total - len(trimmed_ids),
+        "overlay_count": overlay_total,
+        "trimmed_exercise_ids": list(trimmed_ids),
+        "note": (
+            f"{len(trimmed_ids)} of {collateral_total} collateral (Practice) "
+            "exercise(s) trimmed by the exercise cap (round-robin by unit "
+            "then stable id; course-check items are never trimmed): "
+            + ", ".join(trimmed_ids)
+        ),
+    }
+
 
 @dataclass(frozen=True)
 class WorkbookInputs:
@@ -443,10 +629,22 @@ class WorkbookInputs:
     research_trends: ResearchTrendsBrief
     research_supplements: set[str] = field(default_factory=set)
     lo_overlay_loss: dict[str, object] | None = None
+    # 39.1b (D2 MERGE): visible record of collateral (Practice) exercises the
+    # composition cap trimmed — mirror of ``lo_overlay_loss``; ``None`` when
+    # nothing was trimmed. Course-check (overlay) items are never trimmed.
+    exercise_overlay_loss: dict[str, object] | None = None
     pre_work: PreWorkBrief | None = None
     encounter_mode: Literal["recorded", "live"] = "recorded"
     render_profile: Literal["legacy", "presentation_support"] = "legacy"
     workbook_brief_receipt: dict[str, object] | None = None
+    # 37.2b: the persisted 07W.3 review contribution (deep-dive enrichment leg).
+    deep_dive_review: WorkbookReviewContributionV1 | None = None
+    # 39.1: the term-keyed glossary projection (bold-term authority is the
+    # SAME 07W.3 contribution read — one disk read, A-3 hoist).
+    glossary: GlossaryProjection | None = None
+    # 40.1: read-only run-identity inputs for the cover provenance block
+    # (presentation_support branch only; ``None`` on legacy — no cover).
+    cover_inputs: CoverInputs | None = None
 
 
 def _research_inputs(
@@ -669,7 +867,11 @@ def _research_figure_supplements(
         parts.append(reading.title or "")
         parts.append(reading.locator or "")
     for article in glossary_articles:
-        parts.append(" ".join(filter(None, (article.term, article.headline, article.body))))
+        # 39.1 remediation P6: ONLY the headword (== the gate-proven bolded
+        # term) is declared. The article title/headline/body carry pool-row
+        # prose the enrichment gate never checked — a numeral appearing only
+        # there must still fail G1 (see _glossary_figure_supplements).
+        parts.append(article.term)
     if research_trends is not None:
         for claim in research_trends.trends:
             parts.append(claim.claim_text or "")
@@ -678,6 +880,35 @@ def _research_figure_supplements(
             parts.append(topic.topic or "")
             parts.append(topic.rationale or "")
     return _figures("\n".join(parts))
+
+
+def _glossary_figure_supplements(
+    glossary: GlossaryProjection,
+    deep_dive_review: WorkbookReviewContributionV1 | None,
+) -> set[str]:
+    """Glossary B5 supplements — GATE-PROVEN content only (39.1 remediation P6).
+
+    The declaration set is restricted to: (a) the bold-term authority set (the
+    enrichment gate checked bold-term continuity, and the terms already render
+    in the gate-proven Deep Dive prose), (b) the USED pool rows' evidence
+    excerpts (the enrichment gate checked every used row's excerpt against its
+    cited claim), and (c) the fixed glossary template prose. Pool-row TITLES
+    and any UNUSED-row content are NEVER declared: a numeral that appears only
+    in un-gated pool prose rendered into the glossary must still fail G1
+    (pinned: an unused-row title numeral does not enter the supplement set).
+    """
+    parts: list[str] = [
+        GLOSSARY_CAPABILITY_NOTE,
+        GLOSSARY_UNCOVERED_ENTRY_LINE,
+        GLOSSARY_UNCOVERED_DEGRADED_ENTRY_LINE,
+    ]
+    parts.extend(entry.term for entry in glossary.entries)
+    review_result = (
+        deep_dive_review.deep_dive_enrichment if deep_dive_review is not None else None
+    )
+    if review_result is not None and review_result.status == "enriched":
+        parts.extend(row.evidence_excerpt for row in used_pool_rows(review_result))
+    return _figures("\n".join(p for p in parts if p))
 
 
 def _authored_prose_figure_supplements(
@@ -849,7 +1080,12 @@ def build_workbook_inputs(
                 citations.append({"source_ref": entry.source_ref})
 
     # Sections: collateral is authoritative; overlay exercises (when present)
-    # resolve into their HOME section by learning_objective_id.
+    # MERGE into their HOME section by learning_objective_id (39.1b, D2
+    # ratified 2026-07-15: collateral exercises first, overlay appended —
+    # REPLACE forced a false choice between two authorities with different
+    # pedagogical jobs). The merge lives at THIS attach seam only;
+    # ``project_enrichment_to_workbook_inputs`` stays a pure single-source
+    # projector (Winston D2-1).
     #
     # Remediation item-1 (MUST-FIX): two collateral sections may legally bind the
     # SAME learning_objective_id (the model does not forbid it). Attaching the
@@ -869,9 +1105,59 @@ def build_workbook_inputs(
         # SAME overlay LO must not both attach the same exercise objects (that
         # duplicates exercise_id and crashes assert_unique_collateral_ids).
         if overlay_ex and overlay_key not in overlay_attached:
-            sec = sec.model_copy(update={"exercises": list(overlay_ex)})
+            # D2-3 collision guard: prefix overlay exercise ids at attach and
+            # re-key their worked-answer entries in lockstep (row-e keyed
+            # lookups resolve on the RENDERED id). A residual cross-source
+            # collision still fails loud in assert_unique_collateral_ids.
+            attached: list[Exercise] = []
+            for overlay_exercise in overlay_ex:
+                if overlay_exercise.exercise_id.startswith(
+                    _OVERLAY_EXERCISE_ID_PREFIX
+                ):
+                    # T4 F7: a corpus component id that itself begins with the
+                    # prefix double-prefixes deterministically — legal, but
+                    # anomalous enough to surface (it is the enabling condition
+                    # for a re-key collision below).
+                    logger.warning(
+                        "workbook exercise attach: overlay exercise id %r "
+                        "already carries the %r prefix — double-prefixing "
+                        "deterministically",
+                        overlay_exercise.exercise_id,
+                        _OVERLAY_EXERCISE_ID_PREFIX,
+                    )
+                prefixed_id = (
+                    _OVERLAY_EXERCISE_ID_PREFIX + overlay_exercise.exercise_id
+                )
+                if overlay_exercise.exercise_id in answer_keys:
+                    if prefixed_id not in answer_keys:
+                        answer_keys[prefixed_id] = answer_keys.pop(
+                            overlay_exercise.exercise_id
+                        )
+                    else:
+                        # T4 F7: the target slot is already claimed (two
+                        # components whose ids differ only by the prefix) —
+                        # never silently mis-attribute a worked answer.
+                        logger.warning(
+                            "workbook exercise attach: worked answer for %r "
+                            "could not be re-keyed to %r — the slot is already "
+                            "claimed; the rendered exercise reads the claimant "
+                            "and the original stays under its raw key",
+                            overlay_exercise.exercise_id,
+                            prefixed_id,
+                        )
+                attached.append(
+                    overlay_exercise.model_copy(update={"exercise_id": prefixed_id})
+                )
+            sec = sec.model_copy(
+                update={"exercises": [*sec.exercises, *attached]}
+            )
             overlay_attached.add(overlay_key)
         sections.append(sec)
+    # 39.1b (D2-5 + J-3): apply the composition cap — total<=12, per-unit
+    # collateral cap 2, overlay never trimmed, round-robin retention — and
+    # record ANY trimmed collateral in the visible exercise_overlay_loss
+    # structure (mirror of lo_overlay_loss; never silent).
+    sections, exercise_overlay_loss = _apply_exercise_composition_cap(sections)
     # Remediation item-6: carry the blueprint's kind through the rebuild (single
     # value today; explicit so a future closed-set growth cannot silently revert).
     spec = WorkbookSpec(sections=sections, kind=blueprint.kind)
@@ -945,11 +1231,41 @@ def build_workbook_inputs(
     for source_ref, source_hash in research_manifest.items():
         source_ref_manifest.setdefault(source_ref, source_hash)
 
-    # W2: encyclopedia glossary from shared research packet (same SSOT as W1).
-    glossary_articles, glossary_empty_reason, _glossary_losses = glossary_inputs_from_run(run_dir)
+    # 37.2b/39.1 (A-3 hoist): ONE disk read of the persisted 07W.3 review
+    # contribution serves BOTH the glossary bold-term authority
+    # (status-dependent, AC-A3 W1/A-2) and the deep-dive render/manifest legs
+    # below — never read the artifact twice. P7 (legacy honesty): the load is
+    # PROFILE-AGNOSTIC — a legacy-profile run dir carrying an activated
+    # contribution must never project a factually false "no activated
+    # workbook-review contribution exists" absent-reason. Only the DEEP-DIVE
+    # SECTION render stays presentation-support-gated (the validated brief is
+    # the profile switch); a present-but-invalid activated contribution fails
+    # loud on every profile.
+    deep_dive_review: WorkbookReviewContributionV1 | None
+    try:
+        deep_dive_review = load_workbook_review_contribution(run_dir)
+    except ValueError as exc:
+        raise WorkbookProducerActError(
+            f"workbook review contribution is invalid: {exc}",
+            tag="workbook-review.contribution-invalid",
+        ) from exc
+
+    # W2 (39.1): TERM-KEYED encyclopedia glossary — exactly one entry per
+    # bolded Deep Dive term, entries joined from the digest-verified EMBEDDED
+    # Ask-A pool rows on the contribution (A-3; A5 packet-digest witness rides
+    # the projection). The legacy generic-packet path
+    # (resolve_for_glossary_writer -> _term_from_title) is REMOVED from the
+    # learner deliverable (J-F3). No research dispatch of any kind.
+    glossary = glossary_projection_from_contribution(deep_dive_review)
+    glossary_articles = glossary.covered_articles
+    glossary_empty_reason = glossary.empty_reason
     for article in glossary_articles:
         if article.source_ref and article.source_ref not in source_ref_manifest:
-            source_ref_manifest[article.source_ref] = _hash(article.source_ref)
+            # Prefer the pool row's own content hash so the later deep-dive
+            # used-rows join (R19) agrees instead of warning on disagreement.
+            source_ref_manifest[article.source_ref] = article.source_hash or _hash(
+                article.source_ref
+            )
 
     research_trends = trends_inputs_from_run(run_dir)
     for claim in research_trends.trends:
@@ -994,7 +1310,50 @@ def build_workbook_inputs(
         brief.payload.pre_work if brief else None,
     )
 
+    # 37.2b: the persisted 07W.3 contribution (loaded ONCE above, A-3 hoist)
+    # feeds the G2 structured-side manifest join + the G1 render supplements.
+    if brief is not None:
+        review_result = deep_dive_review.deep_dive_enrichment if deep_dive_review else None
+        if review_result is not None and review_result.status == "enriched":
+            # G2 structured side: the used Ask-A rows' source_refs join the
+            # manifest; the producer's deep-dive G2 leg then audits the
+            # citation ids PARSED FROM THE RENDERED MARKDOWN against these
+            # entries (prose-vs-structure divergence fails G2 there — the
+            # manifest join alone proves nothing about the prose).
+            _merge_deep_dive_source_refs(
+                source_ref_manifest, used_pool_rows(review_result)
+            )
+        # G1: Deep Dive prose numerals are gate-proven against their cited
+        # evidence excerpts (enrichment) or verbatim skeleton claims — declare
+        # the rendered section as an authored supplement (B5 idiom).
+        research_supplements = research_supplements | _figures(
+            render_deep_dive_markdown(deep_dive_review)
+        )
+
+    # 39.1 (remediation P6): glossary supplements derive ONLY from gate-proven
+    # content — the bold-term authority set (figure-class headwords like
+    # ``25%``), the USED rows' gate-checked evidence excerpts, and the fixed
+    # template prose. Never the full rendered section (pool-row titles /
+    # unused-row prose are un-gated and must still fail G1 if they smuggle a
+    # numeral).
+    research_supplements = research_supplements | _glossary_figure_supplements(
+        glossary, deep_dive_review
+    )
+
     display_title = _derive_display_title(lesson_plan, run_dir)
+
+    # 40.1: cover inputs — presentation_support branch ONLY (the cover is the
+    # §10 model's front door; a legacy render emits no cover and claims no
+    # receipt). All derivations are READ-ONLY over persisted run artifacts:
+    # the W-1 run-identity reader (reasoned non-raising degrades), the cheap
+    # corpus SME probe, and the configured deck-manifest reference.
+    cover_inputs: CoverInputs | None = None
+    if brief is not None:
+        cover_inputs = CoverInputs(
+            run_identity=run_identity_from_run(run_dir),
+            sme_name=_sme_name_from_corpus(corpus_root),
+            deck_reference=_deck_reference(run_dir, manifest_relpath),
+        )
 
     return WorkbookInputs(
         plan_unit=plan_unit,
@@ -1014,12 +1373,16 @@ def build_workbook_inputs(
         research_omitted_note=research_omitted_note,
         glossary_articles=glossary_articles,
         glossary_empty_reason=glossary_empty_reason,
+        glossary=glossary,
         research_trends=research_trends,
         research_supplements=research_supplements,
         lo_overlay_loss=lo_overlay_loss,
+        exercise_overlay_loss=exercise_overlay_loss,
         pre_work=brief.payload.pre_work if brief else None,
         encounter_mode=brief.payload.encounter_mode if brief else "recorded",
         render_profile="presentation_support" if brief else "legacy",
+        deep_dive_review=deep_dive_review,
+        cover_inputs=cover_inputs,
         workbook_brief_receipt=(
             {
                 "path": WORKBOOK_BRIEF_FILENAME,
@@ -1040,6 +1403,29 @@ def build_workbook_inputs(
             else None
         ),
     )
+
+
+def _merge_deep_dive_source_refs(
+    source_ref_manifest: dict[str, str], rows: Iterable[Any]
+) -> None:
+    """Join used Ask-A rows into the G2 manifest (structured side).
+
+    R19: when a deep-dive row's ``source_hash`` DISAGREES with an existing
+    manifest entry for the same ``source_ref``, the disagreement is surfaced
+    via ``logger.warning`` — never a silent ``setdefault``. The earlier
+    (research-leg) entry is retained deterministically either way.
+    """
+    for row in rows:
+        existing_hash = source_ref_manifest.get(row.source_ref)
+        if existing_hash is not None and existing_hash != row.source_hash:
+            logger.warning(
+                "deep-dive manifest hash disagreement for source_ref %s: "
+                "manifest=%s deep_dive=%s (manifest entry retained)",
+                row.source_ref,
+                existing_hash,
+                row.source_hash,
+            )
+        source_ref_manifest.setdefault(row.source_ref, row.source_hash)
 
 
 def _skip_output() -> dict[str, Any]:
@@ -1118,13 +1504,17 @@ def produce_workbook(state: RunState, payload: dict[str, Any]) -> WorkbookSideca
             research_omitted_note=inputs.research_omitted_note,
             glossary_articles=inputs.glossary_articles,
             glossary_empty_reason=inputs.glossary_empty_reason,
+            glossary=inputs.glossary,
             research_trends=inputs.research_trends,
             research_supplements=inputs.research_supplements,
             lo_overlay_loss=inputs.lo_overlay_loss,
+            exercise_overlay_loss=inputs.exercise_overlay_loss,
             pre_work=inputs.pre_work,
             encounter_mode=inputs.encounter_mode,
             render_profile=inputs.render_profile,
             workbook_brief_receipt=inputs.workbook_brief_receipt,
+            deep_dive_review=inputs.deep_dive_review,
+            cover_inputs=inputs.cover_inputs,
             # DP6 (spec landmine): workbook-only diff justifies reuse; do not force
             # a spurious fresh-gamma. Stamp the in-graph run id.
             diff_files=["app/marcus/lesson_plan/workbook_producer.py"],
@@ -1268,6 +1658,16 @@ def _sidecar_refs(sidecar: WorkbookSidecar) -> dict[str, Any]:
         "workbook_brief": sidecar.workbook_brief_receipt,
         "depth_receipt": sidecar.depth_receipt,
         "lo_overlay_loss": sidecar.lo_overlay_loss,
+        # 39.1b (D2 MERGE): the exercise-composition receipt + collateral-trim
+        # loss record — the structured assertion surface for the runner's
+        # exercise deliverable-bar clause (AC 8).
+        "exercise_composition": sidecar.exercise_composition,
+        "exercise_overlay_loss": sidecar.exercise_overlay_loss,
+        # 40.1: the cover receipt (additive key) — the structured assertion
+        # surface for the runner's cover deliverable-bar clause (AC 6). The
+        # art-brief path + digest ride INSIDE the receipt; models-used pairs
+        # are receipt-only per the J-2 orchestrator ruling.
+        "cover": sidecar.cover,
     }
 
 

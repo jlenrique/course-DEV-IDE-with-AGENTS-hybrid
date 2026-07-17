@@ -128,8 +128,8 @@
   evidence: T4 Blind Hunter on the 38-3a normalization diff — _act.py ~L1217 ordering (identity check precedes normalization); not on the governed workbook run's critical path (delegated HIL policy never triggers Pass-1 refinement), so deferred rather than batched.
 
 - source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
-  summary: Fold the LO shippability bar (0 placeholder statements AND no "Enrichment overlay loss" callout) into the runner's `_assert_completed_workbook_deliverable` so it is machine-asserted, not human-verified, at the next 07W touch (closure rider M-R3).
-  evidence: Closure-party Murat — the verdict-honesty check asserts presence + basic conformance only; the J-A bar for trial 8b275e5b was verified by human audit.
+  summary: ✅ RESOLVED 2026-07-15 EVE — LO shippability bar folded into `_assert_completed_workbook_deliverable` (`_assert_lo_overlay_conformant`): structured lo_overlay_loss record refuses with named objectives (real a940c5eb REFUSES 6/6; 8b275e5b PASSES); MD floors for callout/placeholder desync; 4 pins incl. verbatim negative witness (closure rider M-R3).
+  evidence: Closure-party Murat — the verdict-honesty check asserts presence + basic conformance only; the J-A bar for trial 8b275e5b was verified by human audit. Resolved before governed run A so the bar machine-asserts every learner-facing section.
 
 - source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
   summary: BINDING RIDER (M-R2) on the earlier Pass-1 refinement-path defer — the refinement-identity normalization gap must ride into the NEXT Pass-1-touching story's T1 readiness reading, not sit passively in this register.
@@ -138,3 +138,55 @@
 - source_spec: `_bmad-output/implementation-artifacts/party-closure-record-38-1-38-3a-2026-07-15.md`
   summary: Workbook exercise path variance + answer leakage — 8b275e5b rendered 6 knowledge-check-lifted exercises (vs 13 authored per-unit on a940c5eb) and 2 prompts carry their Correct Answer inline before the Answer Key; adjudicate fix-induced vs live variance at the epic-38 retrospective and file the answer-strip fix (Epic 39 grooming).
   evidence: Closure-party John F2 — direct diff of the two passing runs' rendered workbooks.
+
+- source_spec: `_bmad-output/implementation-artifacts/37-2b-deep-dive-enrichment-cited.md`
+  summary: Scope B5 figure-supplement clearing to the section that proved the figure — today deep-dive (and research/glossary/trends) supplements are a GLOBAL normalized-token set, so a numeral proven cited in one section also clears an identical unsourced numeral anywhere in the workbook body.
+  evidence: T4 Blind Hunter on 37-2b — consistent with the existing B5 design (research titles/trends already union globally), so deferred as a design-level hardening for the next fidelity-audit batch rather than patched piecemeal.
+
+- source_spec: `_bmad-output/implementation-artifacts/37-2b-deep-dive-enrichment-cited.md`
+  summary: Populate excluded_citation_ids from 38.1 — Ask-A records credibility exclusions by raw row index and never mints citation ids for excluded rows, so the gate's excluded-vs-invented distinguishability (amendment M2a) is fixture-only until 38.1 mints ids for excluded rows.
+  evidence: T4 Blind Hunter on 37-2b — upstream 38.1-side enhancement; the gate field + distinguishable row exist and are mutation-tested; production packets carry an empty list today.
+
+- source_spec: `_bmad-output/implementation-artifacts/39-1b-exercise-merge-composition.md`
+  summary: Full-tree serial suite carries ~325 inherited reds at baseline 6edf563e (manifest G0R fold/schema pins, tests/test_progress_map.py, production-runner/Gary integration fixtures with Pass-1 authority-receipt drift, styleguide/irene wiring modules, the known cost-tile red) — the per-story "suite green" claims are scoped batteries + witness replay, not full-tree green. Needs its own attribution/repair arc (likely fixture drift from the G0R gate + Pass-1 authority-receipt regime landings).
+  evidence: 39-1b dev-cycle attribution 2026-07-16 — full default suite 199 failed under xdist, 195 serial; clean baseline worktree at 6edf563e reproduces the same set with the 39-1b diff absent (0 new failures attributable); details in the story Debug Log.
+
+- source_spec: `_bmad-output/implementation-artifacts/evidence/workbook-live-hil/run-a-preflight-authorization-2026-07-16.md`
+  summary: 07W.3 enrichment-writer shape hardening (BLOCKS run-A attempt 3) — the live writer emitted claims missing required fields (role/source_claim_refs) on a long (11-section) lesson; normalizer-v2-class fix required, PLUS a party ruling on failure semantics: should writer-output-invalid degrade honestly (typed recorded loss, enrichment=degraded, walk continues to 07W) instead of error-pausing and stranding the paid trial into the PARK trap? The Option B PARK policy makes every 07W.3 hard failure terminal for the trial — the degrade path would convert enrichment failures from trial-killers into visible honest losses (enrichment is an enhancement, not a walk-blocker). Interacts with the parked `07w3-provider-failure-journal-archive-recovery` design item.
+  evidence: run-A attempt 2 (648de559) 2026-07-16 — full pydantic error frozen in runs/648de559.../error-pause.json; the richer 64k G0 extraction (801135a5) produces longer lessons than every prior 07W.3 witness, so this variance class will recur.
+
+- source_spec: `_bmad-output/implementation-artifacts/40-1-cover-placeholder-hero-toc-provenance.md`
+  summary: 40-1 T4 low/info hardening follow-ons (finding 1 MEDIUM fixed in-session): (2) bar does not parse the learner-visible art-brief pointer line (ghost filename/digest shown to learner passes); (3) receipt art_brief.filename not validated as bare basename (path-confusion door); (4) _identity_line mislabels ok-but-empty corpus_path; (5) hero ![ scan is Cover-section-only; (6) dangling-symlink run.json takes tolerance branch (is_file before is_symlink asymmetry); (7) dead continue after _refuse x2 in the cover clause; (8-party) rendered "Course corpus:" carries an absolute local path w/ username (J-1 tension) + Scene paragraph as theme #1 duplicates paragraph-length alt-text; duplicate NON-cover-H2 fail-loud unpinned.
+  evidence: 40-1 combined T4 review 2026-07-16 (diff 681eddfb..6c6ef653) — module survives M-D3-2b; none gate the status flip.
+
+- source_spec: operator-feedback (Juanl, live run ffa19af3, 2026-07-16)
+  summary: Rename the G2B HIL surface from "Variant Selection" to "Style and Variant Selection" across HUD/decision-card/docs vocabulary — the surface couples style-slot picks (A/B treatments, each with its own styleguide) with per-slide variant selection, and the current name undersells the style half.
+  evidence: Operator naming directive issued during the C1M1-P1 concierge run; pairs naturally with the hud-pre-run-settings-confirmation-surface requirement (deferred-inventory).
+
+- source_spec: live trial 1bc3bc4e (C1M1-P1 concierge run, 2026-07-16)
+  summary: LO-refinement adequacy followup normalization (BLOCKS resuming trial 1bc3bc4e and recurs on any live LO-refinement) — the live refinement model decorates AdequacyFollowup literals with annotations ("external-content-expected: expect a separate guide or workbook") and the strict parse at app/marcus/lesson_plan/irene_refinement.py L556 (SourceAdequacy.model_validate(row["adequacy"])) refuses, stranding the G0E->G0R continuation. FIX DESIGN (variance-first seam, normalizer-v2 class): normalize suggested_followups pre-validate — truncate entries prefix-matching a known literal (optionally followed by ':' / whitespace annotation) to the bare literal; DROP unknown entries with logger.warning (field is advisory-by-contract, "Never an action"). Add a parse-seam test with the witnessed decorated shapes.
+  evidence: trial 1bc3bc4e resume output (pydantic literal_error on suggested_followups.1/.2); AdequacyFollowup literal at learning_objective.py L116.
+
+- source_spec: live trials ffa19af3 + 1bc3bc4e (2026-07-16)
+  summary: Corpus-shape validation belongs at pre-flight/plan-time — a slides/-less corpus leaf passed PR-PF, plan-dialogue, G0, and THREE gates before Irene Pass-1 refused it at node 04A (source.bundle.metadata-invalid: no primary slide rows). Add a corpus-shape check (slides/ presence + per-slide parse floor) to PR-PF and/or the plan-dialogue corpus intake so shape errors surface at minute one, not node 13.
+  evidence: trial ffa19af3 error-pause.json; the proven corpus convention at course-content/courses/tejal-apc-c1-m1-p2-trends/.
+
+- source_spec: live trial 3b1a9f5a (2026-07-16)
+  summary: HUD stale-instance collision — a manually relaunched HUD holding port 8791 (bound to a dead trial) made the NEXT trial start fail pre-flight (hud-server-healthz=fail) with no hint about the foreign instance. The start pre-flight should detect a live-but-foreign-nonce HUD on the port and say so (or reap/supersede it); pairs with the hud-pre-run-settings-confirmation-surface requirement.
+  evidence: trial 3b1a9f5a start refusal; manual HUD relaunch precedent earlier the same session.
+
+- source_spec: session observation (2026-07-16)
+  summary: Run-registry root inconsistency — the trial CLI defaults runs to state/config/runs/ while the governed runner uses runs/ (and plan-dialogue writes companions to runs/<uuid>/); monitors/evidence tooling aimed at the wrong root silently see nothing. Unify the default or surface the effective root in the start payload prominently.
+  evidence: ffa19af3/1bc3bc4e registered under state/config/runs/ vs 648de559 under runs/.
+
+- source_spec: live production trial bc747b51 (C1M1-P1 Marcus-SPOC, 2026-07-16) + operator directive mid-G0E
+  summary: Bundle of HIGH operator-surface requirements for post-trial code — (1) `hil-operator-surfaces-must-be-tabular` — CLI/HUD/SPOC HIL review must use tables/containers (G0 dump + enrichment log sheaf failed reviewability; chat tables worked as exemplar); (2) `hud-lifecycle-survives-gate-pause` — HUD disconnected when trial start returned at G0E pause (8791 dead); keep HUD alive across pauses; (3) reaffirm `hud-stable-public-live-url` — public read-only page, any computer, unchanging URL; (4) expand `hud-pre-run-settings-confirmation-surface` — HUD must standing-show all ~14–16 run-defining toggles (not thin modalities slice) plus pre-walk confirm/change. Full capture + acceptance checklist + toggle table in evidence note.
+  evidence: `_bmad-output/implementation-artifacts/evidence/operator-hil-display-requirements-2026-07-16.md`; trial `state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/` (g0-enrichment.json, operator-surface.json, terminal `c` CommandNotFound after JSON exit); deferred-inventory rows updated same day.
+
+- source_spec: live production trial bc747b51 (G0R pause, 2026-07-16) + operator question on approve paste
+  summary: `next-action-must-not-preselect-approve` — `build_next_action` hardcodes `--verb approve` for all paused-at-gate next_action strings; HUD/agents that paste it bias HIL toward Approve despite DecisionCard verbs approve|edit|reject. Emit neutral verb choice first; never a sole approve-prefilled resume as the implied next step.
+  evidence: `app/marcus/cli/next_action.py` L71-79 (`" --verb approve"`); G0R card verb Literal in `app/models/decision_cards/g0r.py`; operator-surface next_action on trial bc747b51 at G0R; deferred-inventory row + evidence note §5.
+
+- source_spec: live production trial bc747b51 (post-G1, 2026-07-16 WRAPUP) — BLOCKING next session
+  summary: `cd-contribution-missing-before-06-builder` — node 06 error-paused `builder.gary.upstream-missing` (cd absent). Node 4.75 entered; no `cd` specialist contribution on envelope; irene_pass1 present. Diagnose why Creative Director path no-ops without fail-loud; fix so §06 never sees silent CD absence (emit contribution OR refuse earlier). Do not burn recover loops until root cause known.
+  evidence: `state/config/runs/bc747b51-7009-4742-9f65-8de6abc29ca4/error-pause.json` (message §06 builder missing upstream contribution(s): cd; node_id 06); run.json specialist_ids lack cd; trace-fixture has no cd dispatch; deferred-inventory row same id.

@@ -1,0 +1,270 @@
+{
+  "bold_terms": [
+    {
+      "term": "spending"
+    },
+    {
+      "term": "$5.2 trillion"
+    },
+    {
+      "term": "4th Industrial Revolution"
+    },
+    {
+      "term": "73 days"
+    },
+    {
+      "term": "25%"
+    },
+    {
+      "term": "Digital health tools"
+    },
+    {
+      "term": "adaptive learning infrastructure"
+    },
+    {
+      "term": "governance"
+    },
+    {
+      "term": "burnout"
+    },
+    {
+      "term": "AI"
+    },
+    {
+      "term": "digital front door"
+    },
+    {
+      "term": "67%"
+    },
+    {
+      "term": "Incremental"
+    }
+  ],
+  "known_losses": [],
+  "marker": null,
+  "sections": [
+    {
+      "ability_id": "lo-g0-001",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:01",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:delta:slide-1"
+          ],
+          "text": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare **spending** continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n"
+        },
+        {
+          "citation_refs": [
+            "ask-a-cite-001"
+          ],
+          "enriched_claim_id": "enc:sk:01:e1",
+          "role": "enrichment",
+          "source_claim_refs": [],
+          "text": "Amid these shifts, the **4th Industrial Revolution** is reshaping healthcare through rapid transformations driven by information technology, data volume, ubiquity, and increased computer processing power, even as sector inefficiencies remain a barrier to the quadruple aim [ask-a-cite-001]."
+        }
+      ],
+      "prose": "\"To understand our current environment, we must first look at the structural forces at play. U.S. healthcare **spending** continues to rise exponentially, now accounting for nearly one-fifth of the nation's economy and reaching $5.2 trillion in 2024. Alongside this financial pressure is a massive structural shift in how we work. Between 2012 and 2022, independent private practice fell drastically, while the share of physicians employed by large health systems surged. We are increasingly working within massive, complex organizations, which fundamentally changes our autonomy and decision-making authority. To effect change now, you cannot just optimize your own clinic; you must know how to navigate and influence a large enterprise.\"\n Amid these shifts, the **4th Industrial Revolution** is reshaping healthcare through rapid transformations driven by information technology, data volume, ubiquity, and increased computer processing power, even as sector inefficiencies remain a barrier to the quadruple aim [ask-a-cite-001]."
+    },
+    {
+      "ability_id": "lo-g0-002",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:02",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:delta:slide-3"
+          ],
+          "text": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just **73 days**. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n"
+        }
+      ],
+      "prose": "\"At the same time, the tools we use are evolving faster than our ability to adapt. In 1950, it took 50 years for medical knowledge to double; today, that doubling time is projected at just **73 days**. We can no longer rely on static training. Furthermore, 66% of physicians are now using some form of AI in practice, yet formal training on how to oversee these tools safely remains severely limited. But the upside is tremendous. We see digital health innovations, like the SMART remote monitoring program, significantly reducing ER visits for COPD and heart failure by shifting care from reactive to proactive. We also see virtual reality transforming procedural training by allowing learners to rehearse complex scenarios without patient risk. Technology will reshape care, but it requires clinical innovators to ensure it does so safely and effectively.\"\n"
+    },
+    {
+      "ability_id": "lo-g0-003",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:03",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-02"
+          ],
+          "text": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about **25%** of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes."
+        },
+        {
+          "citation_refs": [
+            "ask-a-cite-001"
+          ],
+          "enriched_claim_id": "enc:sk:03:e1",
+          "role": "enrichment",
+          "source_claim_refs": [],
+          "text": "Yet the inefficiencies that impede progress toward healthcare quality persist, and realizing the promise of **Digital health tools** requires overcoming many challenges and hurdles [ask-a-cite-001]."
+        }
+      ],
+      "prose": "If the dollars and consolidation set the backdrop, the lived cost is waste and human strain. Here’s the hard number: about **25%** of total spending—more than $1 trillion—goes to administrative costs and waste, not care. Burnout is the human expression of that friction, and it isn’t a resilience problem; it’s a design problem. When documentation eclipses patient time, prior auths swallow clinical hours, and the EHR blocks instead of supports, the system itself is generating harm. Wellness apps treat symptoms; redesigning workflows, reducing burden, and restoring clinical autonomy go after causes. Yet the inefficiencies that impede progress toward healthcare quality persist, and realizing the promise of **Digital health tools** requires overcoming many challenges and hurdles [ask-a-cite-001]."
+    },
+    {
+      "ability_id": "lo-g0-004",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:04",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-04"
+          ],
+          "text": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an **adaptive learning infrastructure**—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface."
+        },
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:05",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-05"
+          ],
+          "text": "Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping **governance**, and surfacing risks before they reach patients."
+        }
+      ],
+      "prose": "Here’s the pivot: static, point‑in‑time training can’t keep pace with how quickly evidence shifts and tools evolve. The practical need is an **adaptive learning infrastructure**—continuous, modular, and wired for real‑time updates—so you can evaluate, adopt, and govern new tools as they emerge rather than memorize yesterday’s interface. Because 66% of physicians are already using AI in live workflows, safe innovation is a core clinical responsibility, not a side project. Adoption without oversight invites failure modes—bias goes undetected, limitations get misunderstood, and judgment can be deferred to automation. Clinical innovators add disproportionate value by evaluating tools against clinical evidence, shaping **governance**, and surfacing risks before they reach patients."
+    },
+    {
+      "ability_id": "lo-g0-005",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:06",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-01"
+          ],
+          "text": "The starting point is the sheer scale of spending: **$5.2 trillion** refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it."
+        },
+        {
+          "citation_refs": [
+            "ask-a-cite-001"
+          ],
+          "enriched_claim_id": "enc:sk:06:e1",
+          "role": "enrichment",
+          "source_claim_refs": [],
+          "text": "System-level choices now intersect with the **4th Industrial Revolution**’s applications and challenges for healthcare quality, which stakeholders must actively navigate [ask-a-cite-001]."
+        }
+      ],
+      "prose": "The starting point is the sheer scale of spending: **$5.2 trillion** refocuses every structural decision in medicine. At that scale, capital concentrates and organizations consolidate, which means fewer independent practices and more employment within large health systems. That shift rewires accountability, autonomy, and the levers you can actually pull—moving many of you from entrepreneur to navigator inside a complex enterprise. To make change now, optimizing one clinic isn’t enough; the job is learning how to influence the enterprise that surrounds it. System-level choices now intersect with the **4th Industrial Revolution**’s applications and challenges for healthcare quality, which stakeholders must actively navigate [ask-a-cite-001]."
+    },
+    {
+      "ability_id": "lo-g0-006",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:07",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:delta:slide-2"
+          ],
+          "text": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of **burnout**. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n"
+        },
+        {
+          "citation_refs": [
+            "ask-a-cite-001"
+          ],
+          "enriched_claim_id": "enc:sk:07:e1",
+          "role": "enrichment",
+          "source_claim_refs": [],
+          "text": "Because inefficiencies remain a barrier to achieving the quadruple aim, stakeholders need strategies to navigate the challenges of **Digital health tools** instead of compounding burden [ask-a-cite-001]."
+        }
+      ],
+      "prose": "\"These massive, complex systems are currently incredibly inefficient. Roughly 25% of total U.S. healthcare spending goes toward administrative costs and waste, not patient care. But the true cost of this inefficiency is human. Over half of physicians report symptoms of **burnout**. Crucially, the top driver of this burnout is not patient volume; it is bureaucratic tasks and administrative bloat. This is a profound insight. The burnout epidemic is not a personal failing of resilience; it is a system design problem. The workarounds we invent daily to survive a poorly designed EHR or a broken admission process are the exact friction points that are ripe for innovation.\"\n Because inefficiencies remain a barrier to achieving the quadruple aim, stakeholders need strategies to navigate the challenges of **Digital health tools** instead of compounding burden [ask-a-cite-001]."
+    },
+    {
+      "ability_id": "lo-g0-007",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:08",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-03"
+          ],
+          "text": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. **AI** isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address."
+        },
+        {
+          "citation_refs": [
+            "ask-a-cite-001"
+          ],
+          "enriched_claim_id": "enc:sk:08:e1",
+          "role": "enrichment",
+          "source_claim_refs": [],
+          "text": "Within the **4th Industrial Revolution**, rapid transformations from information technology, data volume, ubiquity, and increased computer processing power heighten both the promise of digital tools and the challenges to safe, effective use [ask-a-cite-001]."
+        }
+      ],
+      "prose": "Against that backdrop, our knowledge base now turns over in weeks, not years, and the tools are arriving faster than training keeps up. **AI** isn’t hypothetical—66% of physicians already use some form of it in practice—yet formal oversight training sits near 0%. That gap between adoption and oversight isn’t a minor inconvenience; it’s a patient-safety, liability, and professional-competency issue that clinical leaders must address. Within the **4th Industrial Revolution**, rapid transformations from information technology, data volume, ubiquity, and increased computer processing power heighten both the promise of digital tools and the challenges to safe, effective use [ask-a-cite-001]."
+    },
+    {
+      "ability_id": "lo-g0-008",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:09",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-06"
+          ],
+          "text": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true **digital front door** is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it."
+        },
+        {
+          "citation_refs": [
+            "ask-a-cite-001"
+          ],
+          "enriched_claim_id": "enc:sk:09:e1",
+          "role": "enrichment",
+          "source_claim_refs": [],
+          "text": "Designing a digital front door should reflect that **Digital health tools** offer quality potential but face many challenges and hurdles that stakeholders must navigate [ask-a-cite-001]."
+        }
+      ],
+      "prose": "We’ve talked about tools and oversight; the other force reshaping care is consumer expectation. A true **digital front door** is not a portal login—it’s a designed, frictionless journey that starts before the first appointment and continues between encounters. It includes how people discover you, schedule, prepare, communicate in real time, access their data, and stay engaged afterward. Every friction point is a drop‑off. Designing this journey is a strategic imperative because access, outcomes, satisfaction, and competitiveness ride on it. Designing a digital front door should reflect that **Digital health tools** offer quality potential but face many challenges and hurdles that stakeholders must navigate [ask-a-cite-001]."
+    },
+    {
+      "ability_id": "lo-g0-009",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:10",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-07"
+          ],
+          "text": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: **67%** of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale."
+        }
+      ],
+      "prose": "Delivering consumer‑grade access and safe technology use requires clinicians at the decision table. Here’s the gap: **67%** of physicians want leadership roles, but only 18% receive executive or business training. That mismatch leaves brilliant clinicians underprepared for budgets, technology evaluations, and coalition‑building. This isn’t a talent shortage; it’s a training gap. Bridging clinical practice with business and technology strategy turns your expertise into impact at scale."
+    },
+    {
+      "ability_id": "lo-g0-010",
+      "claims": [
+        {
+          "citation_refs": [],
+          "enriched_claim_id": "enc:sk:11",
+          "role": "skeleton",
+          "source_claim_refs": [
+            "claim:vo:seg-08"
+          ],
+          "text": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. **Incremental** tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires."
+        },
+        {
+          "citation_refs": [
+            "ask-a-cite-001"
+          ],
+          "enriched_claim_id": "enc:sk:11:e1",
+          "role": "enrichment",
+          "source_claim_refs": [],
+          "text": "Healthcare’s shift toward data-driven operations sits within the **4th Industrial Revolution**, where rising data volume and computing power can improve quality even as persistent inefficiencies pose obstacles [ask-a-cite-001]."
+        }
+      ],
+      "prose": "To bring this together, healthcare is shifting on three fronts at once: decisions and measurement are data‑driven, patients expect consumer‑grade access and transparency, and operations have become extraordinarily complex and interdependent. **Incremental** tweaks won’t carry that load. Leaders who understand these system dynamics are best positioned to drive sustainable, patient‑centered change—and your daily practice under uncertainty is exactly the preparation that work requires. Healthcare’s shift toward data-driven operations sits within the **4th Industrial Revolution**, where rising data volume and computing power can improve quality even as persistent inefficiencies pose obstacles [ask-a-cite-001]."
+    }
+  ],
+  "status": "enriched"
+}
