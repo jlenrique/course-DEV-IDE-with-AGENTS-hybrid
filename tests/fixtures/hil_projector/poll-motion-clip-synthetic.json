@@ -1,0 +1,28 @@
+{
+  "decision_card": {
+    "blocking_issues": [],
+    "card_id": "22222222-2222-4222-8222-222222222222",
+    "created_at": "2026-07-17T12:00:00Z",
+    "decision_card_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "gate_focus": "pre_composition_qa",
+    "gate_id": "G2C",
+    "meta": {
+      "affected_nodes": [
+        "07F"
+      ],
+      "cache_state": "healthy",
+      "override_trail": []
+    },
+    "readiness_status": "ready",
+    "ready_nodes": [
+      "07G",
+      "08"
+    ],
+    "schema_version": "v1",
+    "trial_id": "2b2b2b2b-2b2b-42b2-82b2-2b2b2b2b2b2b",
+    "verb": "approve"
+  },
+  "decision_card_digest": "d6e20190099dc2ba578d3223366e6d2db5e0170decb7b28588c2d14a76c3e500",
+  "motion_clip_id": "22222222-2222-4222-8222-222222222222",
+  "surface_id": "section_07f_g2f_motion_gate"
+}

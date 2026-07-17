@@ -241,7 +241,8 @@ def test_bridge_is_the_full_declared_map() -> None:
     and the poll-surface ``surface_id`` forms), nothing stale. State pin — updated in
     lockstep as each bespoke story adds its gate (43-4 added the two G4A forms; 43-5
     added G1A + the two G1.5 surface_id forms; 43-6 added the two build-target
-    surface_ids + the G3B gate_code; 43-8 added the G4B/G5 gate_codes + surface_ids,
+    surface_ids + the G3B gate_code; 43-8 added the G4B/G5 gate_codes + surface_ids;
+    43-7 added the motion-plan surface_id + the G2F gate_code + surface_id,
     with the shared "G2C"/"G3"/"G4"/"G1.5" strings deliberately unmapped)."""
     assert GATE_TO_CONTENT_TYPE == {
         "G2B": "per_slide_mode",
@@ -274,4 +275,12 @@ def test_bridge_is_the_full_declared_map() -> None:
         "section_11b_g4b_input_package": "input_package",
         "G5": "final_handoff",
         "section_15_g5_final_handoff": "final_handoff",
+        # Story 43-7 — G2.5 motion-plan (section_07d, keyed by surface_id only: its
+        # gate_code "G2M" is claimed by variant_ab, its fold-target "G2C" is shared, and
+        # the bare "G2.5" belongs to the cluster-coherence node) + G2F motion-clip
+        # (section_07f, both the unambiguous "G2F" gate_code and the surface_id; the shared
+        # "G3" fold-target string is deliberately NOT mapped).
+        "section_07d_g2_5_motion_plan_polling": "motion_plan",
+        "G2F": "motion_clip",
+        "section_07f_g2f_motion_gate": "motion_clip",
     }

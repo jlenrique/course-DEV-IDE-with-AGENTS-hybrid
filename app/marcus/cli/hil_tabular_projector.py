@@ -100,6 +100,13 @@ _INPUT_PACKAGE_SUMMARY_WIDTH: int = 72
 _FINAL_HANDOFF_PATH_WIDTH: int = 72
 _FINAL_HANDOFF_SUMMARY_WIDTH: int = 72
 
+#: Fixed display width (chars) for the value cells of the two Story 43-7 motion-band
+#: renderers (rider R5 — width-aware columns). The G2C sanity card carries only short
+#: review cells (UUID ids, a readiness word, issue/node counts, verb) — no long
+#: free-text — but every value cell is still hard-capped so a fat id can never wrap
+#: ugly at 80 cols.
+_MOTION_VALUE_WIDTH: int = 60
+
 #: Human-facing one-line descriptions distinguishing the two per-slide presentation
 #: modes (Story 43-3). Sourced from ``app/gates/section_05_5/poll_surface.py``'s
 #: closed ``_AVAILABLE_MODES`` tuple — the two modes the operator compares at G2B.
@@ -1214,6 +1221,132 @@ def render_final_handoff(
     return "\n".join(parts)
 
 
+def _seq_count(value: Any) -> int:
+    """Length of a list-like value (a JSON array), else 0 for a scalar / missing /
+    string value. Small shared helper for the count cells of the motion renderers.
+    """
+    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+        return len(value)
+    return 0
+
+
+def render_motion_plan(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G2.5 motion-plan status",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G2.5 motion-plan status** renderer (Story 43-7, AC-1) — table the
+    motion-plan review card's sanity attributes (plan id, generation status, readiness,
+    blocking-issue / ready-node counts, gate focus, verb) as named rows, instead of the
+    generic ``Field | Value`` dump, so the operator reviews the motion plan on its merits.
+
+    ``content`` is the ``app/gates/section_07d/poll_surface.py::display_motion_plan_status``
+    return shape (``surface_id`` / ``motion_plan_id`` / ``motion_plan_status`` /
+    ``decision_card_digest`` / ``decision_card`` = a ``G2CCard`` dump), or the bare
+    ``G2CCard`` card body handed directly — :func:`_unwrap_payload` drills into
+    ``decision_card`` either way. Registered under ``content_type="motion_plan"``.
+
+    NB (Story 43-7 judgment call): the section_07d poll-surface binds the
+    ``app/models/decision_cards/g2c.py::G2CCard`` model, and the card that ACTUALLY flows
+    at the paused motion gate IS a ``G2CCard`` (manifest node "07D" gate_code "G2M"
+    declares ``fold_with: G2C``, so the motion review is absorbed by the shared "G2C"
+    pause — proven by the on-disk ``runs/*/decision-card-G2C.json`` evidence). SAME model,
+    fields present — so like 43-6/43-8 there is NO field-absent model-binding mismatch to
+    file. The generic G2C sanity card carries no dedicated motion-plan-detail field (the
+    motion plan itself is an internal producer→consumer envelope, not a card field), so
+    this renderer tables the real G2C review attributes rather than an imaginary detail
+    field (mirrors 43-6's storyboard_b, which tables the G3Card's attributes rather than a
+    non-existent live-URL field). The top-level ``motion_plan_status`` (present only in the
+    ``display_*`` return, not on the bare card) falls back to a readiness-derived status
+    when absent. Routing: node 07D's gate_code "G2M" is already claimed by 43-3's
+    ``variant_ab`` and its fold-target "G2C" is SHARED (07C/G2B/G2M all fold there), and
+    the bare "G2.5" gate_code belongs to the DIFFERENT cluster-coherence node (manifest
+    "7.5"), so NO gate string is mapped for motion_plan — the unambiguous poll-surface
+    ``surface_id`` (``section_07d_g2_5_motion_plan_polling``) is the sole routing key
+    (mirrors 43-5's surface_id-only estimator / run_constants discipline).
+
+    Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5); projector stays
+    stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    card = _unwrap_payload(content, "decision_card")
+    plan_id = content.get("motion_plan_id") or card.get("card_id") or "—"
+    status = content.get("motion_plan_status")
+    if not status:
+        status = "completed" if card.get("readiness_status") == "ready" else "pending"
+    readiness = card.get("readiness_status") or "—"
+    banner = f"G2.5 motion-plan status   plan {plan_id} · status {status}"
+    rows: list[Sequence[Any]] = [
+        ["motion_plan_id", plan_id],
+        ["status", status],
+        ["readiness", readiness],
+        ["blocking_issues", f"{_seq_count(card.get('blocking_issues'))} issue(s)"],
+        ["ready_nodes", f"{_seq_count(card.get('ready_nodes'))} node(s)"],
+        ["gate_focus", card.get("gate_focus") or "—"],
+        ["verb", card.get("verb") or "—"],
+    ]
+    rows = [[k, _truncate_cell(str(v), _MOTION_VALUE_WIDTH)] for k, v in rows]
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["Attribute", "Value"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
+def render_motion_clip(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G2F motion-clip",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G2F motion-clip** renderer (Story 43-7, AC-1) — table the motion-clip
+    review card's sanity attributes (clip id, readiness, blocking-issue / ready-node
+    counts, gate focus, verb) as named rows, instead of the generic ``Field | Value``
+    dump, so the operator reviews the generated motion clip on its merits.
+
+    ``content`` is the ``app/gates/section_07f/poll_surface.py::display_motion_clip``
+    return shape (``surface_id`` / ``motion_clip_id`` / ``decision_card_digest`` /
+    ``decision_card`` = a ``G2CCard`` dump), or the bare ``G2CCard`` card body handed
+    directly — :func:`_unwrap_payload` drills into ``decision_card`` either way.
+    Registered under ``content_type="motion_clip"``.
+
+    NB (Story 43-7 judgment call): the section_07f poll-surface binds the same
+    ``G2CCard`` model, and the card that ACTUALLY flows IS a ``G2CCard`` (manifest node
+    "07F" gate_code "G2F" declares ``fold_with: G3``, so the motion-clip review is
+    absorbed by the shared "G3" pause; the bound model has all fields present) — so, like
+    43-6/43-8, there is NO model-binding mismatch to file. The G2C sanity card carries no
+    dedicated clip-detail field, so this renderer tables the real G2C review attributes.
+    Routing: node 07F's fold-target "G3" is SHARED (node 08B/G3B also folds there, and
+    43-6 already pinned "G3" as deliberately unmapped), so the unambiguous "G2F" gate_code
+    (never itself pauses, but a valid semantic identifier — mirrors 43-6's "G3B" and
+    43-8's "G4B"/"G5") and the poll-surface ``surface_id`` (``section_07f_g2f_motion_gate``)
+    are the routing keys.
+
+    Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5); projector stays
+    stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    card = _unwrap_payload(content, "decision_card")
+    clip_id = content.get("motion_clip_id") or card.get("card_id") or "—"
+    readiness = card.get("readiness_status") or "—"
+    banner = f"G2F motion-clip   clip {clip_id} · readiness {readiness}"
+    rows: list[Sequence[Any]] = [
+        ["motion_clip_id", clip_id],
+        ["readiness", readiness],
+        ["blocking_issues", f"{_seq_count(card.get('blocking_issues'))} issue(s)"],
+        ["ready_nodes", f"{_seq_count(card.get('ready_nodes'))} node(s)"],
+        ["gate_focus", card.get("gate_focus") or "—"],
+        ["verb", card.get("verb") or "—"],
+    ]
+    rows = [[k, _truncate_cell(str(v), _MOTION_VALUE_WIDTH)] for k, v in rows]
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["Attribute", "Value"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
 #: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
 #: (43-1, 43-3…43-9) register against this contract; the generic fallback above
 #: satisfies it for every content type with no bespoke renderer yet.
@@ -1301,6 +1434,11 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: (G4B) and ``final_handoff`` (G5) here in the same change that registers
 #: :func:`render_input_package` + :func:`render_final_handoff` — both now covered by
 #: bespoke renderers, NOT waived.
+#:
+#: Story 43-7 (the SEVENTH allowlist→registry move) additionally deletes ``motion_plan``
+#: (G2.5) and ``motion_clip`` (G2F) here in the same change that registers
+#: :func:`render_motion_plan` + :func:`render_motion_clip` — both now covered by bespoke
+#: renderers, NOT waived.
 KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
     GATE_CONTENT_TYPES
     - {
@@ -1316,6 +1454,8 @@ KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
         "storyboard_b",
         "input_package",
         "final_handoff",
+        "motion_plan",
+        "motion_clip",
     }
 )
 
@@ -1386,6 +1526,19 @@ GATE_TO_CONTENT_TYPE: dict[str, str] = {
     "section_11b_g4b_input_package": "input_package",
     "G5": "final_handoff",
     "section_15_g5_final_handoff": "final_handoff",
+    # Story 43-7 — G2.5 motion-plan status (section_07d) + G2F motion-clip (section_07f).
+    # motion_plan: node 07D's gate_code "G2M" is already claimed by 43-3's ``variant_ab``,
+    # its fold-target "G2C" is SHARED (07C/G2B/G2M all fold there), and the bare "G2.5"
+    # gate_code belongs to the DIFFERENT cluster-coherence node (manifest "7.5") — so NO
+    # gate string is mapped for motion_plan; the unambiguous poll-surface ``surface_id`` is
+    # the sole routing key (mirrors 43-5's surface_id-only estimator / run_constants split).
+    "section_07d_g2_5_motion_plan_polling": "motion_plan",
+    # motion_clip: node 07F declares ``fold_with: G3`` and "G3" is SHARED (node 08B/G3B also
+    # folds there; 43-6 already pinned "G3" as deliberately unmapped), so the unambiguous
+    # "G2F" gate_code (never itself pauses, but a valid semantic identifier — mirrors 43-6's
+    # "G3B" and 43-8's "G4B"/"G5") and the poll-surface ``surface_id`` are the routing keys.
+    "G2F": "motion_clip",
+    "section_07f_g2f_motion_gate": "motion_clip",
 }
 
 
@@ -1487,6 +1640,14 @@ register_renderer("storyboard_b", render_storyboard_b)
 #: paused G4B / G5 surfaces table their artifact packages instead of raw-dumping.
 register_renderer("input_package", render_input_package)
 register_renderer("final_handoff", render_final_handoff)
+
+#: Story 43-7 — register the two bespoke motion-band renderers at import time (the
+#: SEVENTH allowlist→registry move). ``motion_plan`` (G2.5) and ``motion_clip`` (G2F)
+#: leave ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gain bespoke renderers here, so the
+#: paused motion surfaces (folded into G2C / G3) table their review card instead of
+#: raw-dumping.
+register_renderer("motion_plan", render_motion_plan)
+register_renderer("motion_clip", render_motion_clip)
 
 
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
@@ -1637,6 +1798,8 @@ __all__ = [
     "render_input_package",
     "render_learning_objectives",
     "render_literal_visual",
+    "render_motion_clip",
+    "render_motion_plan",
     "render_per_slide_mode",
     "render_plan_unit",
     "render_run_constants",

@@ -126,18 +126,18 @@ def test_registry_and_allowlist_are_disjoint() -> None:
 
 
 def test_allowlist_is_shrinking_registry_is_growing_at_43_3() -> None:
-    """State pin (updated at 43-8, the sixth allowlist→registry move): the
+    """State pin (updated at 43-7, the seventh allowlist→registry move): the
     allowlist tightens as each bespoke story registers a renderer. This assertion
-    INTENTIONALLY tracks the CURRENT state, not a hard-coded full set — later
-    stories (43-7, 43-9) move more types registry-ward and update this witness in
+    INTENTIONALLY tracks the CURRENT state, not a hard-coded full set — the last
+    remaining story (43-9) moves more types registry-ward and updates this witness in
     lockstep, and 43-12 empties the allowlist entirely.
     """
     # 43-1 registered ``directive`` (G0); 43-3 added ``per_slide_mode`` (G2B) +
     # ``variant_ab`` (G2M); 43-4 added ``voice_candidates`` (G4A); 43-5 added
     # ``plan_unit`` (G1A) + ``estimator`` (G1.5) + ``run_constants`` (G1.5); 43-6 added
     # ``literal_visual`` (06B) + ``storyboard_targets`` (07C) + ``storyboard_b`` (G3B);
-    # 43-8 adds ``input_package`` (G4B) + ``final_handoff`` (G5) — the sixth
-    # allowlist→registry move.
+    # 43-8 added ``input_package`` (G4B) + ``final_handoff`` (G5); 43-7 adds
+    # ``motion_plan`` (G2.5) + ``motion_clip`` (G2F) — the seventh allowlist→registry move.
     registered = frozenset(
         {
             "directive",
@@ -152,11 +152,13 @@ def test_allowlist_is_shrinking_registry_is_growing_at_43_3() -> None:
             "storyboard_b",
             "input_package",
             "final_handoff",
+            "motion_plan",
+            "motion_clip",
         }
     )
     assert registered_content_types() == registered
-    # …hence those three have LEFT the allowlist; every other canonical type is
-    # still waived (disjoint invariant: registry ∩ allowlist == ∅).
+    # …hence those have LEFT the allowlist; every other canonical type is still
+    # waived (disjoint invariant: registry ∩ allowlist == ∅).
     expected_waived = GATE_CONTENT_TYPES - registered
     assert expected_waived == KNOWN_UNRENDERED_ALLOWLIST
 
