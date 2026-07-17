@@ -54,7 +54,7 @@
 # - Set story key to `done` here only after the above Ã¢â‚¬â€  this file is authoritative for status.
 
 generated: 2026-03-25
-last_updated: 2026-07-16  # Epic 41 (Resume-Walk Dispatch Integrity, BLOCKING) + Epic 42 (Operator Surface Next-Pass) green-lit 5/5 from trial bc747b51 diagnosis; 7 stories filed ready-for-dev (41-1/41-2 + 42-1..42-5). 41-1 dispatches first (unblocks resuming any paid walk past G1). Prior: 39-1b dev complete -> review. Governed batch runs A/B still owed for the 39/40 wave (done-awaiting-live-witness).
+last_updated: 2026-07-16  # 41-1 + 41-2 DONE (resume-walk dispatch integrity: front-door live-env preflight + both-walk fail-loud invariant, dual-gate reviewed). DIAGNOSIS CORRECTION during 41-2: real bc747b51 cause = max_specialist_calls=1 starvation, not keyless -> 41-3 (REMOVE the throttle, operator steer) is the completion fix, PROPOSED pending Winston green-light. Epic 42 (5 stories) ready-for-dev. Governed batch runs A/B still owed for the 39/40 wave.
 
 project: course-DEV-IDE-with-AGENTS
 project_key: NOKEY
@@ -1817,7 +1817,8 @@ development_status:
   # === Epic 41 — Resume-Walk Dispatch Integrity (green-lit 5/5 2026-07-16; BLOCKING; surfaced by trial bc747b51 §06 CD-miss diagnosis) ===
   epic-41-resume-walk-dispatch-integrity: in-progress  # party-greenlight-post-trial-bc747b51-arc-2026-07-16.md; epics-resume-walk-dispatch-integrity-2026-07-16.md
   41-1-resume-recover-live-env-preflight: done  # 2026-07-16 dev complete (fresh Claude dev agent) + bmad-code-review 3-layer PASS-after-remediation (1 Med test-hermeticity fixed + re-verified without .env; 1 Med LangSmith-strictness adjudicated intended; lows dismissed/documented). trial.py shared preflight for start/resume/recover/resume-batch; production_runner.py untouched (41-2 owns node-level fail-loud). Unblocks resuming paid walks past G1.
-  41-2-specialist-dispatch-fail-loud-silent-skip: ready-for-dev  # depends 41-1; dual-gate; LOCKSTEP (production_runner.py both walks); invariant: entered+not-carrying specialist in a production run MUST emit or fail loud at the node; RED-first vs bc747b51 (raise at 4.75 not §06)
+  41-2-specialist-dispatch-fail-loud-silent-skip: done  # 2026-07-16 dev complete (fail-loud invariant both walks via shared _assert_specialist_dispatched_or_raise; RED-first vs bc747b51 proven — live-unavailable AND budget-exhausted @4.75 not §06) + dual-gate review PASS (inline adversarial + spot-verify; 8/8 new tests, lockstep 0, TW-7c-4 pass, ruff/import-linter clean, baseline-diff net-new=0). 6 old-contract tests aligned + TW-7c-4 registered. DIAGNOSIS CORRECTION: real bc747b51 cause was max_specialist_calls=1 starvation, not keyless -> 41-3 is the completion fix.
+  41-3-remove-max-specialist-calls-throttle: proposed  # 2026-07-16 NEW finding during 41-2 dev; OPERATOR STEER "why have max_specialist_calls at all?" -> LEADING OPTION = REMOVE the call-count throttle (dollar budget is the guard; per-node idempotency prevents loops). The REAL bc747b51 completion fix. Needs party (Winston) green-light for the safety-rail removal; land after 41-2 (shared file production_runner.py).
   epic-41-retrospective: optional
 
   # === Epic 42 — Operator Surface Next-Pass (green-lit 5/5 2026-07-16; Epic 35 successor; HUD + HIL usability from trial bc747b51) ===

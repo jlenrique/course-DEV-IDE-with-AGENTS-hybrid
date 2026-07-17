@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 from uuid import UUID
 
 import pytest
@@ -119,26 +120,46 @@ def _verdict(tmp_path: Path, verb: str, *, gate_id: str = "G1", **overrides) -> 
     )
 
 
-def test_starved_resume_pauses_at_error_at_06_builder(
+def test_starved_resume_fails_loud_budget_exhausted_at_cd_node(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """Finding-#8 made flesh — intent preserved across a mechanism migration.
+    """Story 41-2 — the bc747b51 misattribution fixed at the source.
 
-    Originally pinned as a crash (Murat + Amelia MUST-FIX, party review
-    2026-06-12): a cap-starved resume reaching §06 without the cd contribution
-    must REFUSE and must not silently re-feed the path. WAVE-0 tranche 2
-    (party-ratified 2026-06-17, Winston/Murat/John) migrated the HALT MECHANISM
-    crash→error-pause — the contract is unchanged: the refusal is non-silent
-    (tagged), halts AT §06, and opens no gate. The original 'no refactor
-    re-feeds the path silently' guarantee is now carried by the recover
-    assertions: recover re-enters §06 and re-pauses while still starved, never
-    skipping forward into §07. (Old crash-mechanism pin retired, NOT the
-    contract.)"""
+    This is the durable regression pin for the fixed behavior. Trial bc747b51
+    ran with ``max_specialist_calls=1`` (budget spent upstream by irene_pass1),
+    which STARVED CD @ node 4.75; the old specialist branch set
+    ``graph_step_completed = True`` unconditionally, so CD silently advanced and
+    the failure MISATTRIBUTED three nodes later at §06 as
+    ``builder.gary.upstream-missing``. 41-2 makes an entered, not-already-
+    carrying specialist that fails to dispatch FAIL LOUD AT ITS NODE.
+
+    The contract this test now pins: a cap-starved resume fails loud with the
+    DISTINCT ``dispatch.budget-exhausted`` tag AT node 4.75 (cd) — not
+    ``builder.gary.upstream-missing`` at 06 — and opens no gate. The
+    no-silent-refeed guarantee is preserved: recover re-enters at the failed
+    node, retries it (cd now contributes), and re-pauses budget-exhausted at the
+    next starved node rather than walking a hollow brief forward into a §07 gate.
+
+    (Predecessor `test_starved_resume_pauses_at_error_at_06_builder` retired: it
+    pinned the pre-41-2 misattributed §06 halt, the exact bug 41-2 eliminates.
+    Preflight + cost recording are stubbed so this pins the walk contract in the
+    sandbox, exactly as the fake-adapter behavioral suites do; the fail-loud
+    invariant itself is what is under test, not the live preflight/cost paths.)
+    """
+    monkeypatch.setattr(
+        production_runner,
+        "_run_start_preflight_gate",
+        lambda *_a, **_k: SimpleNamespace(all_green=True, blocking_items=lambda: []),
+    )
+    monkeypatch.setattr(
+        production_runner,
+        "_record_cost",
+        lambda **_k: tmp_path / str(TRIAL_ID) / "cost-report.json",
+    )
     _pause(tmp_path, monkeypatch)
 
-    # (1) No exception escapes — the §06 wrap caught it. This is the inverse of
-    # the old crash pin: an un-wrap regression would raise BuilderInputError
-    # out of resume and this call would error instead of returning.
+    # (1) No exception escapes — the fail-loud is routed through the shared
+    # error-pause channel (an un-wrap regression would raise out of resume).
     errored = production_runner.resume_production_trial(
         trial_id=TRIAL_ID,
         verdict=_verdict(tmp_path, "approve"),
@@ -146,29 +167,37 @@ def test_starved_resume_pauses_at_error_at_06_builder(
         max_specialist_calls=1,
     )
 
-    # (2) Exact terminal status + (3) the SPECIFIC tag, persisted non-silently.
+    # (2) Exact terminal status + (3) the DISTINCT budget tag, AT node 4.75 (cd)
+    # — NOT the downstream builder misattribution.
     assert errored.status == "paused-at-error"
     assert errored.paused_gate is None
-    assert errored.paused_error_tag == "builder.gary.upstream-missing"
+    assert errored.paused_error_tag == "dispatch.budget-exhausted"
     error_pause = json.loads(
         (tmp_path / str(TRIAL_ID) / "error-pause.json").read_text(encoding="utf-8")
     )
-    assert error_pause["specialist_id"] == "package_builder"
-    assert error_pause["tag"] == "builder.gary.upstream-missing"
+    assert error_pause["node_id"] == "4.75"
+    assert error_pause["specialist_id"] == "cd"
+    assert error_pause["tag"] == "dispatch.budget-exhausted"
+    # The misattribution is gone: never §06, never the builder tag.
+    assert error_pause["node_id"] != "06"
+    assert error_pause["tag"] != "builder.gary.upstream-missing"
 
-    # (4) No gate opened over the starved brief: §06 halts BEFORE the gate, so
-    # no G2C DecisionCard exists (anti-quality-theater core preserved).
+    # (4) No gate opened over the starved brief (anti-quality-theater preserved).
     assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
 
-    # (5)+(6) Determinism / no-silent-refeed (Murat MUST-FIX): recover
-    # re-enters §06 (still starved under the persisted cap=1) and re-pauses
-    # with the SAME tag — it never walks past the refusal into §07.
+    # (5)+(6) No-silent-refeed: recover re-enters at the failed node (4.75),
+    # RETRIES it (cd now contributes — the node is retried, not skipped), then
+    # re-pauses budget-exhausted at the next starved node under the persisted
+    # cap=1; it never walks the hollow brief forward into a §07 gate.
     recovered = production_runner.recover_production_trial(
         trial_id=TRIAL_ID,
         runs_root=tmp_path,
     )
     assert recovered.status == "paused-at-error"
-    assert recovered.paused_error_tag == "builder.gary.upstream-missing"
+    assert recovered.paused_error_tag == "dispatch.budget-exhausted"
+    assert (
+        recovered.production_envelope.get_contribution("cd", node_id="4.75") is not None
+    )
     assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
 
 

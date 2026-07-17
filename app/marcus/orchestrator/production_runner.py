@@ -3058,6 +3058,61 @@ def _dispatch_specialist_catching_batch_wait(
         )
 
 
+def _assert_specialist_dispatched_or_raise(
+    *,
+    dispatched: bool,
+    budget_available: bool,
+    allow_offline_cost_report: bool,
+    specialist_id: str,
+    node_id: str,
+) -> None:
+    """Fail loud when an ENTERED, not-already-carrying specialist did not dispatch.
+
+    Story 41-2 binding invariant (BOTH walks — the shared chokepoint so the two
+    node walks cannot drift): in a production run
+    (``allow_offline_cost_report=False``) a specialist node that is entered and is
+    NOT already-carrying its contribution MUST emit a contribution or fail loud AT
+    that node. A silent advance lets a starved required specialist (e.g. CD @
+    4.75) resurface as a MISATTRIBUTED downstream error
+    (``builder.gary.upstream-missing`` @ §06, three nodes away — trial bc747b51)
+    instead of halting honestly where the omission happened.
+
+    Callers invoke this right where ``graph_step_completed = True`` was previously
+    set unconditionally. The already-carrying idempotency skip (S2 per-node keying)
+    is handled by the caller BEFORE this guard and never reaches here, so a resumed
+    node that already holds its contribution still advances cleanly with no raise.
+
+    Two DISTINCT honest stops (Murat AC-6 — never conflated, never double-raised):
+
+    - ``dispatch.budget-exhausted`` — the specialist-call budget
+      (``max_specialist_calls``) was already spent before this node. This is the
+      actual bc747b51 cause: ``max_specialist_calls=1`` was consumed upstream, so
+      CD @ 4.75 was starved while live was fully available.
+    - ``dispatch.live-unavailable`` — budget remained but live OpenAI was
+      unavailable while a production run forbids the offline dispatch-skip.
+
+    Offline-harness runs (``allow_offline_cost_report=True``) never dispatch live
+    and legitimately skip WITHOUT raising (AC-5).
+    """
+    if allow_offline_cost_report or dispatched:
+        return
+    if not budget_available:
+        raise SpecialistDispatchError(
+            f"specialist {specialist_id!r} at node {node_id} was ENTERED but not "
+            "dispatched: specialist-call budget (max_specialist_calls) was already "
+            "exhausted before this node — a required specialist node must not "
+            "silently advance (Story 41-2 invariant; distinct from live-unavailable)",
+            tag="dispatch.budget-exhausted",
+        )
+    raise SpecialistDispatchError(
+        f"specialist {specialist_id!r} at node {node_id} was ENTERED but not "
+        "dispatched: live OpenAI unavailable while allow_offline_cost_report=False "
+        "— a required specialist node must emit a contribution or fail loud at the "
+        "node (Story 41-2 invariant; distinct from budget-exhausted)",
+        tag="dispatch.live-unavailable",
+    )
+
+
 def run_production_trial(
     corpus_path: Path,
     preset: Literal["production", "explore"],
@@ -3592,7 +3647,7 @@ def run_production_trial(
                 graph_step_completed = True
                 continue
 
-            if node_kind == "specialist" and specialist_calls < max_specialist_calls:
+            if node_kind == "specialist":
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying (SCP 2026-06-11): the skip rule guards
                 # node revisits, not specialist revisits — the per-specialist
@@ -3607,7 +3662,19 @@ def run_production_trial(
                     )
                     graph_step_completed = True
                     continue
-                if _has_live_openai() and not allow_offline_cost_report:
+                # Story 41-2: track whether dispatch ACTUALLY ran so an entered,
+                # not-already-carrying specialist that produced no contribution
+                # fails loud AT this node (shared guard, both walks) rather than
+                # setting graph_step_completed unconditionally and misattributing
+                # downstream. The outer budget guard moved inside as an explicit
+                # local so budget-exhaustion is a distinct honest stop (AC-6).
+                budget_available = specialist_calls < max_specialist_calls
+                dispatched_specialist = False
+                if (
+                    budget_available
+                    and _has_live_openai()
+                    and not allow_offline_cost_report
+                ):
                     dispatched = _dispatch_specialist_catching_batch_wait(
                         adapter=adapter,
                         node=node,
@@ -3634,6 +3701,37 @@ def run_production_trial(
                         return dispatched
                     production_envelope, run_state = dispatched
                     specialist_calls += 1
+                    dispatched_specialist = True
+                try:
+                    _assert_specialist_dispatched_or_raise(
+                        dispatched=dispatched_specialist,
+                        budget_available=budget_available,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        specialist_id=specialist_id,
+                        node_id=node.id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=effective_trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 graph_step_completed = True
 
     completed_at = _now()
@@ -4584,7 +4682,7 @@ def _continue_production_walk(
                 graph_step_completed = True
                 continue
 
-            if node_kind == "specialist" and specialist_calls < max_specialist_calls:
+            if node_kind == "specialist":
                 specialist_id = handler.__production_specialist_id__
                 # S2 per-node keying — see start-walker note.
                 if production_envelope.get_contribution(specialist_id, node_id=node.id) is not None:
@@ -4597,7 +4695,18 @@ def _continue_production_walk(
                     )
                     graph_step_completed = True
                     continue
-                if _has_live_openai() and not allow_offline_cost_report:
+                # Story 41-2 (resume/recover leg — two-walk parity): identical
+                # fail-loud invariant via the SHARED guard. This is the walk the
+                # bc747b51 misattribution surfaced on — CD @ 4.75 starved (cap=1
+                # spent upstream), silently advanced, then §06 raised
+                # builder.gary.upstream-missing three nodes later.
+                budget_available = specialist_calls < max_specialist_calls
+                dispatched_specialist = False
+                if (
+                    budget_available
+                    and _has_live_openai()
+                    and not allow_offline_cost_report
+                ):
                     dispatched = _dispatch_specialist_catching_batch_wait(
                         adapter=adapter,
                         node=node,
@@ -4624,6 +4733,37 @@ def _continue_production_walk(
                         return dispatched
                     production_envelope, run_state = dispatched
                     specialist_calls += 1
+                    dispatched_specialist = True
+                try:
+                    _assert_specialist_dispatched_or_raise(
+                        dispatched=dispatched_specialist,
+                        budget_available=budget_available,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        specialist_id=specialist_id,
+                        node_id=node.id,
+                    )
+                except SpecialistDispatchError as exc:
+                    return _pause_at_error(
+                        error=exc,
+                        node_id=node.id,
+                        node_index=index,
+                        specialist_id=specialist_id,
+                        trial_id=trial_id,
+                        envelope=envelope,
+                        production_envelope=production_envelope,
+                        run_state=run_state,
+                        child_runs=child_runs,
+                        trace_metadata=trace_metadata,
+                        last_gate_crossed=last_gate_crossed,
+                        graph_step_completed=graph_step_completed,
+                        specialist_calls=specialist_calls,
+                        manifest_path=manifest_path,
+                        runs_root=runs_root,
+                        allow_offline_cost_report=allow_offline_cost_report,
+                        max_specialist_calls=max_specialist_calls,
+                        directive_path=directive_path,
+                        bundle_dir=bundle_dir,
+                    )
                 graph_step_completed = True
 
     completed_at = _now()

@@ -24,8 +24,14 @@ Enforced in **both** walks (`run_production_trial` start walk + `_continue_produ
 |---|---|---|---|---|
 | **41-1** | Resume/recover live-env preflight | single | — | no (`trial.py`) |
 | **41-2** | Specialist-dispatch fail-loud on silent skip (both walks) | dual | 41-1 | **yes** (`production_runner.py`) |
+| **41-3** | Remove the max_specialist_calls throttle (dollar budget is the guard) | dual (candidate) | 41-2 | **yes** (`production_runner.py`) — PROPOSED, needs Winston green-light |
 
-**Sequence:** 41-1 → 41-2. 41-1 is the fix that would have saved the trial (loud "no key" at the resume front door); 41-2 makes the whole class of bug impossible.
+**Sequence:** 41-1 → 41-2 → 41-3. 41-1 fixes a real but *different* mode (keyless resume). 41-2 makes the silent-skip class fail loud at the node.
+
+> **⚠️ DIAGNOSIS CORRECTION (2026-07-16, during 41-2 dev):** the ORIGINAL diagnosis (keyless resume) was **incomplete**. The frozen `bc747b51` runner shows **`max_specialist_calls = 1`** — the operator HAD the live key (texas + irene_pass1 dispatched real models); the composed run was starved by the call-count throttle, and CD@4.75 never got a slot. So:
+> - **41-1** fixes a real but *different* failure mode (keyless resume) — it does NOT fix `bc747b51`.
+> - **41-2** correctly makes the starvation fail **loud at 4.75** (`dispatch.budget-exhausted`) instead of misattributing at §06 — but the run still can't complete.
+> - **41-3** is the actual "let the operator complete a composed trial" fix. Operator steer: **remove** the throttle (the dollar budget is the real guard; a starved start is unrecoverable), not merely re-default it. The CLI help already warns "production starts should open the throttle… a starved start cannot be repaired downstream," yet the default resolves to 1 — a documented, unrecoverable footgun.
 
 ## Acceptance (epic-level)
 

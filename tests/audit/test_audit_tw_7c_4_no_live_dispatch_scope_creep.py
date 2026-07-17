@@ -745,6 +745,16 @@ PERMITTED_PYTHON_DIFFS = {
     # payload run_dir override — NO live dispatch (production_runner.py already
     # rostered above).
     "tests/specialists/workbook_producer/test_run_dir_threading_503e54c1.py",
+    # Story 41-2 (specialist-dispatch fail-loud on silent skip — both walks;
+    # green-lit 5/5 2026-07-16): the new fail-loud invariant test, plus the
+    # existing tests updated from the OLD silent-skip / §06-misattribution
+    # contract to the NEW fail-loud-at-node contract. All are deterministic /
+    # OFFLINE (fake ProductionDispatchAdapter + stubbed preflight/cost) — NO
+    # live dispatch (production_runner.py already rostered above).
+    "tests/marcus/orchestrator/test_dispatch_fail_loud_silent_skip.py",
+    "tests/integration/marcus/test_workbook_band_wiring.py",
+    "tests/integration/marcus/test_pre_gate_marcus_langsmith_trace.py",
+    "tests/integration/marcus/test_runner_threads_pre_fill_to_decision_card.py",
 }
 
 

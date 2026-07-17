@@ -42,6 +42,7 @@ from app.models.runtime.production_trial_envelope import ProductionTrialEnvelope
 from app.models.specialist_model_config import SpecialistModelConfig
 from app.specialists.dispatch_errors import SpecialistDispatchError
 from tests.helpers.workbook_slide_authority import (
+    _plan_authority_receipt,
     install_single_slide_authority,
     single_slide_authority_payloads,
     write_single_slide_plan_sidecar,
@@ -968,7 +969,17 @@ def test_real_start_then_continuation_reaches_band_in_order(
             }
             effective_id = "irene_pass1" if node_id == "05B" else specialist_id
             output = (
-                {"lesson_plan": lesson_plan}
+                # Story 41-2: with the walk now KEYED (so texas@02 dispatches
+                # instead of silently skipping), the §06 builder actually runs on
+                # the live [False-None] continuation and validates the Pass-1
+                # authority receipt — so the fake §05B irene contribution must
+                # carry a matching receipt (mirrors install_single_slide_authority).
+                {
+                    "lesson_plan": lesson_plan,
+                    "plan_authority_receipt": _plan_authority_receipt(
+                        lesson_plan, COURSE_SOURCE_ROOT
+                    ),
+                }
                 if node_id == "05B"
                 else outputs.get(specialist_id, {"specialist_id": specialist_id})
             )
@@ -1024,7 +1035,14 @@ def test_real_start_then_continuation_reaches_band_in_order(
         return real_hook(**kwargs)  # type: ignore[arg-type]
 
     clear_resume_registry()
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    # Story 41-2: a production run (allow_offline_cost_report=False) now fails
+    # loud at any entered, not-already-carrying specialist that does not
+    # dispatch. This behavioral proof installs a fake ProductionDispatchAdapter,
+    # so the walk must be KEYED for that adapter to dispatch texas@02 (and the
+    # post-G1 specialists) — the prior keyless setup relied on the now-removed
+    # silent-skip of texas to reach G1. Keying is the valid production-run config
+    # for this fake-adapter behavioral test.
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-test")
     monkeypatch.setenv("MARCUS_G0_ENRICHMENT_ACTIVE", "0")
     monkeypatch.setenv("MARCUS_RESEARCH_DISPATCH_LIVE", "0")
     monkeypatch.setattr(production_runner, "ProductionDispatchAdapter", _Adapter)

@@ -42,6 +42,7 @@ so that when `trial start` returns at a gate (e.g. G0E) I can keep browsing the 
 4. **Idle honesty.** Between a pause and resume the HUD serves the live run surface (it already reads the live file — AD-2/6, zero-lie). When no run is active it may honestly show `HUD offline / no active run`.
 5. **`--hud off` unchanged.** With `--hud off`, nothing launches and nothing changes (the preflight items stay omitted per L103-104).
 6. **Never-raises preserved.** The lifecycle change keeps `launch_hud_server`'s NEVER-raises contract — a HUD/notifier lifecycle failure degrades the surface, never the run.
+7. **No stray console windows on Windows (operator requirement 2026-07-16).** HUD-server + notifier child processes (and any other spawned children in this path — e.g. clone launches) MUST spawn with `creationflags=subprocess.CREATE_NO_WINDOW` (or an equivalent no-window `STARTUPINFO`) on Windows so a run/dev session does not litter the desktop with empty terminal windows. Pin: on `win32`, the spawn call passes the no-window flag; cross-platform code paths are unaffected. This bit the operator repeatedly during dev sessions (integration suites spawn these children); it is a real ergonomics defect, not cosmetic.
 
 ## Scope Fences (hard NO)
 
