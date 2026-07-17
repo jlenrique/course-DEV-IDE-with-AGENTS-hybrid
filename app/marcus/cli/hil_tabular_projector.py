@@ -298,6 +298,56 @@ GateContentRenderer = Callable[..., str]
 #: 43-10 structural-coverage test enumerates it via ``registered_content_types``.
 _RENDERER_REGISTRY: dict[str, GateContentRenderer] = {}
 
+#: SSOT — the canonical universe of operator-facing gate content types (Story
+#: 43-10, AC-1). Sourced verbatim from the Epic 43 audit inventory
+#: (``_bmad-output/planning-artifacts/epic-43-hil-surface-tabular-coverage.md``
+#: §2) — every gate content type the operator reviews. This is the SINGLE set that
+#: BOTH the 43-10 coverage-ratchet test and every future bespoke
+#: ``register_renderer`` call reference; a new gate content type is added HERE
+#: first, which forces the coverage test to demand a renderer or an explicit
+#: waiver. Gate mapping (audit §2): ``directive`` G0 · ``estimator`` G1.5 ·
+#: ``run_constants`` G1.5 · ``plan_unit`` G1A · ``per_slide_mode`` G2B ·
+#: ``variant_ab`` G2M · ``literal_visual`` 06B · ``storyboard_targets`` 07C ·
+#: ``motion_plan`` G2.5 · ``motion_clip`` G2F · ``storyboard_b`` G3B ·
+#: ``voice_candidates`` G4A · ``input_package`` G4B · ``final_handoff`` G5 ·
+#: ``research_packet`` · ``workbook``. Additive data only, no behavior change
+#: (rider R7).
+GATE_CONTENT_TYPES: frozenset[str] = frozenset(
+    {
+        "directive",  # G0 directive composition / sources[] material-partition
+        "estimator",  # G1.5 run-budget estimator
+        "run_constants",  # G1.5 run-constants lock
+        "plan_unit",  # G1A PlanUnit ratification
+        "per_slide_mode",  # G2B per-slide mode selection
+        "variant_ab",  # G2M A/B variant selection
+        "literal_visual",  # 06B literal-visual build targets
+        "storyboard_targets",  # 07C storyboard build targets
+        "motion_plan",  # G2.5 motion-plan status
+        "motion_clip",  # G2F motion-clip card
+        "storyboard_b",  # G3B storyboard / live-URL card
+        "voice_candidates",  # G4A voice-candidate selection
+        "input_package",  # G4B input-package preview
+        "final_handoff",  # G5 final handoff artifacts + summary
+        "research_packet",  # research packet content
+        "workbook",  # workbook content
+    }
+)
+
+#: SHRINK-ONLY waiver list (Story 43-10, AC-2/AC-3). A canonical gate content type
+#: appears here ONLY while it still lacks a bespoke renderer; the coverage-ratchet
+#: test (``tests/marcus/cli/test_projector_coverage_ratchet_43_10.py``) accepts a
+#: type as "covered" iff it is EITHER in ``registered_content_types()`` OR waived
+#: here. At 43-2 (zero bespoke renderers) this is the FULL canonical set: every
+#: type falls back to the generic renderer, so every type is waived and the test is
+#: green. INVARIANT — this list only ever SHRINKS: each bespoke-renderer story
+#: (43-1, 43-3…43-9) MUST delete its type's row here in the SAME change that calls
+#: ``register_renderer`` (the test enforces registry ∩ allowlist == ∅ — you cannot
+#: both register and waive). Do NOT add a new entry to "quiet" the test for a newly
+#: added gate; add the renderer instead. **Empty-at-epic-close:** Story 43-12
+#: (governance close) asserts ``KNOWN_UNRENDERED_ALLOWLIST == frozenset()`` — the
+#: last bespoke story empties this, and the epic cannot close while any row remains.
+KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(GATE_CONTENT_TYPES)
+
 
 def register_renderer(content_type: str, renderer: GateContentRenderer) -> None:
     """Register a bespoke renderer for a gate ``content_type`` (AC-1 extension
@@ -467,6 +517,8 @@ def emit_gate_surface(
 
 
 __all__ = [
+    "GATE_CONTENT_TYPES",
+    "KNOWN_UNRENDERED_ALLOWLIST",
     "PAGE_SIZE",
     "GateContentRenderer",
     "build_gate_surface",
