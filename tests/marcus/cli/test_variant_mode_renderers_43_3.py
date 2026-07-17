@@ -241,8 +241,8 @@ def test_bridge_is_the_full_declared_map() -> None:
     and the poll-surface ``surface_id`` forms), nothing stale. State pin — updated in
     lockstep as each bespoke story adds its gate (43-4 added the two G4A forms; 43-5
     added G1A + the two G1.5 surface_id forms; 43-6 added the two build-target
-    surface_ids + the G3B gate_code, with the shared "G2C"/"G3" strings deliberately
-    unmapped)."""
+    surface_ids + the G3B gate_code; 43-8 added the G4B/G5 gate_codes + surface_ids,
+    with the shared "G2C"/"G3"/"G4"/"G1.5" strings deliberately unmapped)."""
     assert GATE_TO_CONTENT_TYPE == {
         "G2B": "per_slide_mode",
         "section_05_5_g2b_per_slide_mode": "per_slide_mode",
@@ -266,4 +266,12 @@ def test_bridge_is_the_full_declared_map() -> None:
         "section_07c_storyboard_build": "storyboard_targets",
         "G3B": "storyboard_b",
         "section_08b_g3b_poll": "storyboard_b",
+        # Story 43-8 — G4B input-package (section_11b) + G5 final handoff (section_15),
+        # both keyed by the unambiguous gate_code AND the surface_id. Nodes 11B-gate
+        # ("G4B") and 13 ("G5") both fold into "G4" (as does the G4 closeout), so the
+        # shared "G4" string is deliberately NOT mapped.
+        "G4B": "input_package",
+        "section_11b_g4b_input_package": "input_package",
+        "G5": "final_handoff",
+        "section_15_g5_final_handoff": "final_handoff",
     }

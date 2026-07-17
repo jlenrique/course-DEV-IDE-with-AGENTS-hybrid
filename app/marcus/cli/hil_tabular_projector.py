@@ -90,6 +90,16 @@ _STORYBOARD_TARGET_TITLE_WIDTH: int = 28
 _STORYBOARD_TARGET_BODY_WIDTH: int = 48
 _STORYBOARD_B_TEXT_WIDTH: int = 60
 
+#: Fixed display widths (chars) for the long free-text cells of the two Story 43-8
+#: final-handoff renderers (rider R5 — width-aware columns). The G4B input-package
+#: ``artifact_paths`` locators / G5 ``handoff_artifact_paths`` locators and the
+#: ``outcome_summary`` / ``handoff_summary`` free text are the only unbounded cells;
+#: every value cell is hard-capped via :func:`_truncate_cell`.
+_INPUT_PACKAGE_PATH_WIDTH: int = 72
+_INPUT_PACKAGE_SUMMARY_WIDTH: int = 72
+_FINAL_HANDOFF_PATH_WIDTH: int = 72
+_FINAL_HANDOFF_SUMMARY_WIDTH: int = 72
+
 #: Human-facing one-line descriptions distinguishing the two per-slide presentation
 #: modes (Story 43-3). Sourced from ``app/gates/section_05_5/poll_surface.py``'s
 #: closed ``_AVAILABLE_MODES`` tuple — the two modes the operator compares at G2B.
@@ -1043,6 +1053,167 @@ def render_storyboard_b(
     return "\n".join(parts)
 
 
+def _input_package_body(content: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Return the input-package field mapping from whatever shape we are handed.
+
+    Tolerates (a) the ``section_11b/poll_surface.py::display_input_package`` return
+    shape (the curated ``input_package_payload`` sub-map carrying ``artifact_paths`` /
+    ``outcome_summary`` / ``final_status``), (b) the full ``decision_card`` (a
+    ``G4Card`` dump, which carries the SAME three fields), or (c) a bare payload /
+    ``G4Card`` card body handed directly — so the renderer never raw-dumps regardless
+    of shape.
+    """
+    payload = content.get("input_package_payload")
+    if isinstance(payload, Mapping):
+        return payload
+    decision_card = content.get("decision_card")
+    if isinstance(decision_card, Mapping):
+        return decision_card
+    return content
+
+
+def render_input_package(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G4B input-package preview",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G4B input-package preview** renderer (Story 43-8, AC-1) — table the
+    input package's artifact paths ONE ROW PER ARTIFACT, with the final status in the
+    banner and the outcome summary in a footer, instead of the generic ``Field | Value``
+    dump, so the operator reviews the package handed to audio synthesis on its merits.
+
+    ``content`` is the ``section_11b/poll_surface.py::display_input_package`` return
+    shape (``surface_id`` / ``input_package_id`` / ``decision_card_digest`` /
+    ``decision_card`` = a ``G4Card`` dump / ``input_package_payload`` with
+    ``artifact_paths`` + ``outcome_summary`` + ``final_status``), the bare
+    ``input_package_payload`` sub-map, or the bare ``G4Card`` card body —
+    :func:`_input_package_body` drills to the fields either way. Registered under
+    ``content_type="input_package"``.
+
+    NB (Story 43-8 judgment call): the section_11b poll-surface binds the
+    ``app/models/decision_cards/g4.py::G4Card`` model, and the card that ACTUALLY flows
+    at the paused gate IS a ``G4Card`` (proven by the on-disk ``runs/*/decision-card-G4.json``
+    evidence — manifest node 11B-gate gate_code "G4B" declares ``fold_with: G4``, so G4B
+    never pauses on its own; the G4 pause absorbs the input-package preview, and the
+    curated ``input_package_payload`` reads exactly the G4Card's ``artifact_paths`` /
+    ``outcome_summary`` / ``final_status``). SAME model, fields present — so like 43-6
+    there is NO model-binding mismatch to file. Routing: node 11B-gate "G4B" and node 13
+    "G5" (final handoff) BOTH fold into the shared "G4" pause (as does the G4 closeout
+    itself), so the bare "G4" gate string is SHARED and deliberately NOT mapped (mirrors
+    43-5/43-6's shared-gate discipline); the unambiguous "G4B" gate_code + the
+    poll-surface ``surface_id`` are the routing keys.
+
+    Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5); projector stays
+    stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    body = _input_package_body(content)
+    package_id = content.get("input_package_id") or body.get("card_id") or "—"
+    final_status = body.get("final_status") or "—"
+    paths = body.get("artifact_paths")
+    if not (isinstance(paths, Sequence) and not isinstance(paths, (str, bytes))):
+        paths = []
+    rows: list[Sequence[Any]] = [
+        [idx, _truncate_cell(str(path), _INPUT_PACKAGE_PATH_WIDTH)]
+        for idx, path in enumerate(paths, start=1)
+    ]
+    n = len(rows)
+    banner = (
+        f"G4B input-package preview   package {package_id} · "
+        f"{n} artifact(s) · status {final_status}"
+    )
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["#", "Artifact path"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    summary = body.get("outcome_summary")
+    if summary:
+        parts.extend(
+            ["", f"summary: {_truncate_cell(str(summary), _INPUT_PACKAGE_SUMMARY_WIDTH)}"]
+        )
+    return "\n".join(parts)
+
+
+def _final_handoff_body(content: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Return the final-handoff field mapping from whatever shape we are handed.
+
+    Tolerates (a) the ``section_15/poll_surface.py::display_final_handoff`` return shape
+    (the curated ``final_handoff_payload`` sub-map carrying ``handoff_artifact_paths`` /
+    ``handoff_summary`` / ``bundle_run_id``), (b) the full ``decision_card`` (a ``G5Card``
+    dump, which carries the SAME three fields), or (c) a bare payload / ``G5Card`` card
+    body handed directly — so the renderer never raw-dumps regardless of shape.
+    """
+    payload = content.get("final_handoff_payload")
+    if isinstance(payload, Mapping):
+        return payload
+    decision_card = content.get("decision_card")
+    if isinstance(decision_card, Mapping):
+        return decision_card
+    return content
+
+
+def render_final_handoff(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G5 final handoff",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G5 final handoff** renderer (Story 43-8, AC-1) — table the final
+    operator-handoff bundle's artifact paths ONE ROW PER ARTIFACT, with the bundle run
+    in the banner and the handoff summary in a footer, instead of the generic
+    ``Field | Value`` dump, so the operator reviews the delivered bundle on its merits.
+
+    ``content`` is the ``section_15/poll_surface.py::display_final_handoff`` return shape
+    (``surface_id`` / ``handoff_id`` / ``decision_card_digest`` / ``decision_card`` = a
+    ``G5Card`` dump / ``final_handoff_payload`` with ``bundle_run_id`` +
+    ``handoff_artifact_paths`` + ``handoff_summary``), the bare ``final_handoff_payload``
+    sub-map, or the bare ``G5Card`` card body — :func:`_final_handoff_body` drills to the
+    fields either way. Registered under ``content_type="final_handoff"``.
+
+    NB (Story 43-8 judgment call): the section_15 poll-surface binds the
+    ``app/models/decision_cards/g5.py::G5Card`` model, and its ``final_handoff_payload``
+    reads exactly the G5Card's ``handoff_artifact_paths`` / ``handoff_summary`` /
+    ``bundle_run_id`` — the fields this renderer tables ARE present on the bound model, so
+    there is NO field-absent model-binding mismatch to file (like 43-5/43-6). No real run
+    reached G5 in the fixture corpus (G5 is NOT a woken ``ProductionGateId``; manifest node
+    13 gate_code "G5" declares ``fold_with: G4``, so no ``decision-card-G5.json`` exists on
+    disk), so this fixture is SYNTHETIC — built by invoking the real ``display_final_handoff``
+    against a constructed ``G5Card`` (shape fidelity by construction, zero spend). Routing:
+    the shared "G4" fold-target is deliberately NOT mapped (mirrors the shared-gate discipline);
+    the unambiguous "G5" gate_code + the poll-surface ``surface_id`` are the routing keys.
+
+    Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5); projector stays
+    stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    body = _final_handoff_body(content)
+    handoff_id = content.get("handoff_id") or body.get("card_id") or "—"
+    bundle_run_id = body.get("bundle_run_id") or "—"
+    paths = body.get("handoff_artifact_paths")
+    if not (isinstance(paths, Sequence) and not isinstance(paths, (str, bytes))):
+        paths = []
+    rows: list[Sequence[Any]] = [
+        [idx, _truncate_cell(str(path), _FINAL_HANDOFF_PATH_WIDTH)]
+        for idx, path in enumerate(paths, start=1)
+    ]
+    n = len(rows)
+    banner = (
+        f"G5 final handoff   handoff {handoff_id} · "
+        f"{n} artifact(s) · run {bundle_run_id}"
+    )
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["#", "Handoff artifact"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    summary = body.get("handoff_summary")
+    if summary:
+        parts.extend(
+            ["", f"summary: {_truncate_cell(str(summary), _FINAL_HANDOFF_SUMMARY_WIDTH)}"]
+        )
+    return "\n".join(parts)
+
+
 #: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
 #: (43-1, 43-3…43-9) register against this contract; the generic fallback above
 #: satisfies it for every content type with no bespoke renderer yet.
@@ -1125,6 +1296,11 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: (06B), ``storyboard_targets`` (07C) and ``storyboard_b`` (G3B) here in the same change
 #: that registers :func:`render_literal_visual` + :func:`render_storyboard_targets` +
 #: :func:`render_storyboard_b` — all three now covered by bespoke renderers, NOT waived.
+#:
+#: Story 43-8 (the SIXTH allowlist→registry move) additionally deletes ``input_package``
+#: (G4B) and ``final_handoff`` (G5) here in the same change that registers
+#: :func:`render_input_package` + :func:`render_final_handoff` — both now covered by
+#: bespoke renderers, NOT waived.
 KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
     GATE_CONTENT_TYPES
     - {
@@ -1138,6 +1314,8 @@ KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
         "literal_visual",
         "storyboard_targets",
         "storyboard_b",
+        "input_package",
+        "final_handoff",
     }
 )
 
@@ -1196,6 +1374,18 @@ GATE_TO_CONTENT_TYPE: dict[str, str] = {
     # are the routing keys.
     "G3B": "storyboard_b",
     "section_08b_g3b_poll": "storyboard_b",
+    # Story 43-8 — G4B input-package preview (section_11b) + G5 final handoff
+    # (section_15). Manifest node 11B-gate gate_code "G4B" and node 13 gate_code "G5"
+    # BOTH declare ``fold_with: G4``, and the G4 closeout itself pauses at "G4" too — so
+    # the bare "G4" gate string is SHARED by three surfaces and deliberately NOT mapped
+    # (mapping it would mis-route; mirrors 43-5's G1.5 and 43-6's G3 shared-fold discipline).
+    # "G4" is also the only one of the three in the woken ProductionGateId set. The
+    # unambiguous "G4B" / "G5" gate_codes (never themselves pause, but are valid semantic
+    # identifiers) and the poll-surface ``surface_id``s are the routing keys.
+    "G4B": "input_package",
+    "section_11b_g4b_input_package": "input_package",
+    "G5": "final_handoff",
+    "section_15_g5_final_handoff": "final_handoff",
 }
 
 
@@ -1290,6 +1480,13 @@ register_renderer("run_constants", render_run_constants)
 register_renderer("literal_visual", render_literal_visual)
 register_renderer("storyboard_targets", render_storyboard_targets)
 register_renderer("storyboard_b", render_storyboard_b)
+
+#: Story 43-8 — register the two bespoke final-handoff renderers at import time (the
+#: SIXTH allowlist→registry move). ``input_package`` (G4B) and ``final_handoff`` (G5)
+#: leave ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gain bespoke renderers here, so the
+#: paused G4B / G5 surfaces table their artifact packages instead of raw-dumping.
+register_renderer("input_package", render_input_package)
+register_renderer("final_handoff", render_final_handoff)
 
 
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
@@ -1432,10 +1629,12 @@ __all__ = [
     "render_directive_sources",
     "render_enrichment_metrics",
     "render_estimator",
+    "render_final_handoff",
     "render_gate_content",
     "render_gate_identity",
     "render_generic_gate_content",
     "render_hil_tables",
+    "render_input_package",
     "render_learning_objectives",
     "render_literal_visual",
     "render_per_slide_mode",
