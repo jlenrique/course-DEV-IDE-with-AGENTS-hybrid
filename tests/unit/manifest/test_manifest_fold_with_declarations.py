@@ -12,6 +12,8 @@ EXPECTED_FOLD_WITH = {
     "G0A": "G1",
     "G0B": "G1",
     "G0E": None,  # G0-S2 (2026-06-26): source-enrichment confirm-gate #1 (surfaced)
+    "G0R": None,  # g0-enrichment S3 (b59679ce): ratify-gate #2 (surfaced)
+    "G0S": None,  # Story 42-5 (8d485ace): pre-walk settings confirm gate (surfaced)
     "G1": None,
     "G1A": "G2C",
     "G2": "G2C",

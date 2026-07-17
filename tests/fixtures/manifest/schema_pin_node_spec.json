@@ -1,5 +1,29 @@
 {
   "$defs": {
+    "ProjectionSpec": {
+      "additionalProperties": false,
+      "description": "One projected key on a dependency edge: producer output key -> consumer input key.",
+      "properties": {
+        "from": {
+          "description": "Producer specialist id (canonical or manifest spelling).",
+          "minLength": 1,
+          "title": "From",
+          "type": "string"
+        },
+        "key": {
+          "description": "Key inside the producer's contribution output to project.",
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "from",
+        "key"
+      ],
+      "title": "ProjectionSpec",
+      "type": "object"
+    },
     "StepLearningEventsConfig": {
       "additionalProperties": false,
       "description": "Per-node learning-event emission metadata (v4.2 inventory delta).",
@@ -39,6 +63,51 @@
   "additionalProperties": false,
   "description": "One node in the compiled `StateGraph`.\n\nArchitecture-canonical fields: `id`, `specialist_id`, `scaffold_node`,\n`model_config_ref`. v4.2 inventory deltas ride under the explicit\nextensibility trailing from AC-1.4-A: `label`, `gate`, `gate_code`,\n`sub_phase_of`, `insertion_after`, `hud_tracked`, `pack_section_anchor`,\n`pack_version`, `rationale`, `learning_events`.",
   "properties": {
+    "id": {
+      "description": "Node identifier (unique within the manifest).",
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "specialist_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Specialist identifier the compiler resolves to a callable. Slab 1 uses a passthrough stub; full resolution is Slab 2 Story 2a.1 scope.",
+      "title": "Specialist Id"
+    },
+    "scaffold_node": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Which scaffold-node slot (of the 9-node specialist scaffold) this node represents. Slab 2 concept; optional in Slab 1.",
+      "title": "Scaffold Node"
+    },
+    "model_config_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Repo-relative path to a `model_config.yaml` file. Compiler validates presence at compile time (NFR-M2 / FR25). `None` skips the lint pass.",
+      "title": "Model Config Ref"
+    },
     "dependencies": {
       "anyOf": [
         {
@@ -52,8 +121,37 @@
         }
       ],
       "default": null,
-      "description": "Manifest-declared dependency map for production composition. Keys are downstream specialist input keys; values are upstream specialist ids. Missing or empty maps use the runner's permanent fallback resolution.",
+      "description": "Manifest-declared dependency map for production composition. Keys are downstream specialist input keys; values are upstream specialist ids. Missing or empty maps use the runner's permanent fallback resolution. Delivers the WHOLE upstream output dict under the input key \u2014 for granular consumers use dependency_projections instead.",
       "title": "Dependencies"
+    },
+    "dependency_projections": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/ProjectionSpec"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Edge-level key projection (party review 2026-06-12, Winston Deviation-2 ruling: projection, not spread). Keys are downstream consumer input keys; values name the producer specialist and the producer OUTPUT key to project. Projected input keys are validated against the consumer's CONSUMED_PAYLOAD_KEYS by the Ratchet-D contract test; governed by data_plane_vocabulary_version.",
+      "title": "Dependency Projections"
+    },
+    "fold_with": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Gate code for an upstream/surfaced pause point this node folds into. Mutually exclusive with fold_target.",
+      "title": "Fold With"
     },
     "fold_target": {
       "anyOf": [
@@ -68,7 +166,7 @@
       "description": "Named subgraph target for compile-time folding. Mutually exclusive with fold_with.",
       "title": "Fold Target"
     },
-    "fold_with": {
+    "label": {
       "anyOf": [
         {
           "type": "string"
@@ -78,8 +176,8 @@
         }
       ],
       "default": null,
-      "description": "Gate code for an upstream/surfaced pause point this node folds into. Mutually exclusive with fold_target.",
-      "title": "Fold With"
+      "description": "Human-readable step label (v4.2 manifest).",
+      "title": "Label"
     },
     "gate": {
       "anyOf": [
@@ -107,24 +205,18 @@
       "description": "HIL gate identifier (e.g., 'G0', 'G2C'); v4.2 manifest.",
       "title": "Gate Code"
     },
-    "hud_tracked": {
+    "sub_phase_of": {
       "anyOf": [
         {
-          "type": "boolean"
+          "type": "string"
         },
         {
           "type": "null"
         }
       ],
       "default": null,
-      "description": "Whether `run_hud` surfaces this step (v4.2 manifest).",
-      "title": "Hud Tracked"
-    },
-    "id": {
-      "description": "Node identifier (unique within the manifest).",
-      "minLength": 1,
-      "title": "Id",
-      "type": "string"
+      "description": "Parent step id for nested sub-phases (v4.2 manifest).",
+      "title": "Sub Phase Of"
     },
     "insertion_after": {
       "anyOf": [
@@ -139,43 +231,18 @@
       "description": "Prior step id for linear-chain ordering (v4.2 manifest). Story 1.6 synthesizes `EdgeSpec` entries from this field when migrating the real v4.2 manifest.",
       "title": "Insertion After"
     },
-    "label": {
+    "hud_tracked": {
       "anyOf": [
         {
-          "type": "string"
+          "type": "boolean"
         },
         {
           "type": "null"
         }
       ],
       "default": null,
-      "description": "Human-readable step label (v4.2 manifest).",
-      "title": "Label"
-    },
-    "learning_events": {
-      "anyOf": [
-        {
-          "$ref": "#/$defs/StepLearningEventsConfig"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Per-step learning-event emission config (v4.2 manifest)."
-    },
-    "model_config_ref": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Repo-relative path to a `model_config.yaml` file. Compiler validates presence at compile time (NFR-M2 / FR25). `None` skips the lint pass.",
-      "title": "Model Config Ref"
+      "description": "Whether `run_hud` surfaces this step (v4.2 manifest).",
+      "title": "Hud Tracked"
     },
     "pack_section_anchor": {
       "anyOf": [
@@ -209,44 +276,17 @@
       "title": "Rationale",
       "type": "string"
     },
-    "scaffold_node": {
+    "learning_events": {
       "anyOf": [
         {
-          "type": "string"
+          "$ref": "#/$defs/StepLearningEventsConfig"
         },
         {
           "type": "null"
         }
       ],
       "default": null,
-      "description": "Which scaffold-node slot (of the 9-node specialist scaffold) this node represents. Slab 2 concept; optional in Slab 1.",
-      "title": "Scaffold Node"
-    },
-    "specialist_id": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Specialist identifier the compiler resolves to a callable. Slab 1 uses a passthrough stub; full resolution is Slab 2 Story 2a.1 scope.",
-      "title": "Specialist Id"
-    },
-    "sub_phase_of": {
-      "anyOf": [
-        {
-          "type": "string"
-        },
-        {
-          "type": "null"
-        }
-      ],
-      "default": null,
-      "description": "Parent step id for nested sub-phases (v4.2 manifest).",
-      "title": "Sub Phase Of"
+      "description": "Per-step learning-event emission config (v4.2 manifest)."
     }
   },
   "required": [

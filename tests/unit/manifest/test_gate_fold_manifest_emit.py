@@ -16,6 +16,8 @@ EXPECTED = {
     "G0A": ("fold_with", "G1"),
     "G0B": ("fold_with", "G1"),
     "G0E": ("pause_point", None),  # G0-S2 (2026-06-26): confirm-gate #1 (surfaced)
+    "G0R": ("pause_point", None),  # g0-enrichment S3 (b59679ce): ratify-gate #2
+    "G0S": ("pause_point", None),  # Story 42-5 (8d485ace): pre-walk settings gate
     "G1": ("pause_point", None),
     "G1A": ("fold_with", "G2C"),
     "G2": ("fold_with", "G2C"),
@@ -63,7 +65,10 @@ def test_emit_lists_all_declared_gate_codes(tmp_path: Path) -> None:
     emit_gate_fold_manifest(DEFAULT_MANIFEST_PATH, output)
     text = output.read_text(encoding="utf-8")
 
-    assert text.count("- code:") == 19  # +G0E (G0-S2 confirm-gate #1)
+    # Story 42-7 AC-3: DERIVED from the EXPECTED mapping (this module's SSOT for the
+    # declared gate codes) so the count self-maintains as gates are added — one
+    # "- code:" line is emitted per declared gate (21 at the 52-node manifest).
+    assert text.count("- code:") == len(EXPECTED)
 
 
 def test_gate_fold_entries_have_non_null_mechanisms() -> None:
