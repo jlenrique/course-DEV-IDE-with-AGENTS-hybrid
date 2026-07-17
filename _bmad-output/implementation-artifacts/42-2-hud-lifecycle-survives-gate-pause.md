@@ -5,12 +5,43 @@ status: ready-for-dev
 depends_on: null   # independent; can open first in Epic 42
 gate_mode: single-gate
 anchor_provenance: HEAD 23480353
+baseline_commit: d8fb959b  # dev-open baseline 2026-07-16 (post-Epic-41)
 lockstep: true   # touches app/hud/** and/or app/notify/** (block_mode_trigger_paths globs)
 ---
 
 # Story 42.2: HUD lifecycle survives gate pause
 
-Status: ready-for-dev  # green-lit 5/5 2026-07-16; single-gate; LOCKSTEP (app/hud/** glob)
+Status: done  # 2026-07-16 dev complete (fresh Claude dev agent) + review PASS; single-gate; LOCKSTEP; carries the CREATE_NO_WINDOW fix
+
+## Dev Agent Record
+
+**Dev complete 2026-07-16 (fresh Claude dev agent). Baseline `d8fb959b`. Status → review → done.**
+
+### File List
+- `app/marcus/orchestrator/preflight.py` (M) — AC-7 `_no_window_creationflags()` (win32-guarded `CREATE_NO_WINDOW`, POSIX→0/unchanged) applied to the HUD-server Popen (L668-670 — the culprit had NO creationflags); status-aware teardown (`_status_aware_teardown`/`_read_run_status`/`_terminate_with_grace`, `TERMINAL_RUN_STATUSES={completed,failed}`, `.hud-stop` sentinel via `request_hud_stop`) replaces the blanket `atexit` terminate; `reattach_or_launch_hud_server` + `probe_hud_identity` for resume reuse (no double-launch).
+- `app/notify/__main__.py` (M) — AC-7 rationale comment only (already `DETACHED_PROCESS` = no console).
+- `tests/hud/test_hud_lifecycle_survives_pause.py` (A) — 25 hermetic tests (fake popen/TestClient — no real subprocess, no windows).
+- `tests/notify/test_main.py` (M) — 1 AC-7 notifier pin.
+- `tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py` (M) — allowlisted the 4 touched `.py`.
+
+### Completion Notes
+- **AC-7 (the operator's window fix):** the HUD server child now spawns with `CREATE_NO_WINDOW` on Windows — no more empty console windows from HUD launches during runs/dev. POSIX byte-unchanged.
+- **Lifecycle (Option b, status-aware teardown):** chosen because the launcher lives in fenced `production_runner.py`; the fix lives entirely in `preflight.py`. On CLI-process exit, teardown reads run status: terminal (`completed`/`failed`) or explicit stop → terminate+grace(5s)+kill; `paused-at-gate`/`paused-at-error`/unknown → NO-OP (child stays alive — the pause-survives fix; unknown = safe default). NEVER-raises preserved throughout. Resume never double-launches (`resume_production_trial` never calls `launch_hud_server`; `reattach_or_launch_hud_server` is the robust reuse contract).
+
+### Change Log
+- 2026-07-16: CREATE_NO_WINDOW on HUD spawn (AC-7) + status-aware HUD teardown (pause≠teardown) + resume reuse; done.
+
+## Senior Developer Review (AI) — 2026-07-16
+
+**Reviewer:** orchestrator, inline adversarial review (no parallel test-agents, per the operator's window constraint). **Outcome: APPROVE.**
+
+**Correctness:** `CREATE_NO_WINDOW` verified applied to the real Popen (L668-670 via the win32-guarded helper) — not merely defined. Status-aware teardown verified: `else` branch is a clean no-op (`# parked at a pause → leave the child ALIVE`), wrapped in a fault-swallowing try/except (never-raises). `TERMINAL_RUN_STATUSES={completed,failed}` mirrors the notifier. "status unknown → alive" is the correct safe direction (a transient run.json read glitch must not kill a live surface). Resume-reuse sound (launch is start-path-only by construction; reattach handshakes the nonce/port).
+
+**Full spawn audit (orchestrator):** confirmed `production_clone_launch` is an evidence field, NOT a subprocess — `production_runner.py` spawns no window-popping child. Notifier already `DETACHED_PROCESS` (no console). The HUD popen was the sole confirmed culprit; fixed.
+
+**Verification:** 32 hermetic tests pass (lifecycle 25 + notifier); `tests/hud`+`tests/notify` 125 passed; lockstep exit 0; ruff clean; import-linter 18/0; TW-7c-4 pass. Baseline-diff net-new=0 (the 1 failure `test_health_tiles_prefer_persisted_cost_report` is the known pre-existing inherited baseline failure, stash-witnessed).
+
+**Findings:** none blocking. **Residual (filed, not blocking):** three *blocking* `subprocess.run` git/texas spawns (`manifest_scan.py`, `gh_pages_publish.py`, `retrieval_dispatch.py`) inherit the parent console (low window risk) but aren't `CREATE_NO_WINDOW`-guarded — filed as `repo-wide-no-window-spawn-sweep` in case any window persists. **Live proof owed:** the "no window on a real HUD spawn" is empirically confirmed only by the flag-pin (both dev and review used mocked popen); the operator's next real run is the live witness.
 
 ## Story
 

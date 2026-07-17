@@ -104,6 +104,33 @@ def test_detached_popen_kwargs_platform_flags(tmp_path):
         kwargs["stdout"].close()
 
 
+def test_notifier_no_window_on_win32_via_detached_process(tmp_path):
+    """Story 42.2 AC-7 — the notifier child never pops an empty console window.
+
+    On Windows ``DETACHED_PROCESS`` runs the child with NO console at all (the
+    "equivalent no-window" mechanism the AC calls out; ``CREATE_NO_WINDOW`` is
+    redundant and ignored when combined with it). On POSIX ``start_new_session``
+    detaches from the controlling terminal — no window to speak of. (AC-1/AC-2
+    for the notifier — survives a pause, self-exits on terminal + grace — are
+    pinned by ``test_run_forever_exits_after_terminal_plus_grace`` above; the
+    notifier is already detached and was never coupled to the CLI-process exit.)
+    """
+    logfile = tmp_path / "state" / "notify" / "trial.log"
+    kwargs = _detached_popen_kwargs(logfile)
+    try:
+        if sys.platform == "win32":
+            detached = getattr(subprocess, "DETACHED_PROCESS", 0x00000008)
+            # DETACHED_PROCESS bit is set → the child gets no console window.
+            assert kwargs["creationflags"] & detached == detached
+            create_no_window = getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
+            # Deliberately NOT OR-ed in (Windows ignores it with DETACHED_PROCESS).
+            assert kwargs["creationflags"] & create_no_window == 0
+        else:
+            assert kwargs["start_new_session"] is True
+    finally:
+        kwargs["stdout"].close()
+
+
 def test_arg_parser_requires_trial_and_run_dir():
     parser = _build_arg_parser()
     ns = parser.parse_args(["--trial-id", "t1", "--run-dir", "/tmp/run", "--config", "c.yaml"])

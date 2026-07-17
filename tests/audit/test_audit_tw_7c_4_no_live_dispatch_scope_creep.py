@@ -766,6 +766,18 @@ PERMITTED_PYTHON_DIFFS = {
     # semantic detector stays GREEN. production_runner.py + trial.py + the two
     # test files already rostered above; this adds only the interlocutor path.
     "app/marcus/cli/marcus_interlocutor.py",
+    # Story 42-2 (HUD lifecycle survives gate pause + no stray console windows;
+    # green-lit 5/5 2026-07-16). Localhost-only lifecycle fix: the HUD-server
+    # child's atexit teardown became status-aware (survives a gate pause, tears
+    # down only on terminal status / explicit operator stop with a grace) and
+    # spawns with CREATE_NO_WINDOW on win32; the notifier gains an AC-7 no-window
+    # rationale comment (already detached ⇒ no console window). Deterministic /
+    # OFFLINE — every spawn is an injected fake, no real socket/child; NO new
+    # live-dispatch call site.
+    "app/marcus/orchestrator/preflight.py",
+    "app/notify/__main__.py",
+    "tests/hud/test_hud_lifecycle_survives_pause.py",
+    "tests/notify/test_main.py",
 }
 
 

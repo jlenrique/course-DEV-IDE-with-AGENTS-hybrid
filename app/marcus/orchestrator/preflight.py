@@ -14,9 +14,14 @@ heartbeats (phase 02) and gates SPOC spawn on them. This module owns:
 * ``launch_hud_server(...)`` — launches the GET-only HUD server (Story 35.4,
   committed) as a subprocess child with the pinned env contract
   (``HUD_TRIAL_ID`` / ``HUD_RUN_DIR`` / ``HUD_LAUNCH_NONCE`` / ``HUD_PORT`` /
-  ``HUD_MODE``), registers an ``atexit`` terminate, and NEVER raises: a launch
-  failure returns ``None`` so the caller records a pre-flight FAIL instead
-  (AD-7: a child bind failure is a pre-flight FAIL, never a fall-through).
+  ``HUD_MODE``), and NEVER raises: a launch failure returns ``None`` so the
+  caller records a pre-flight FAIL instead (AD-7: a child bind failure is a
+  pre-flight FAIL, never a fall-through). On Windows the child spawns with
+  ``CREATE_NO_WINDOW`` so it never pops an empty console window (Story 42.2
+  AC-7). Its ``atexit`` teardown is **status-aware** (Story 42.2 AC-1/AC-2):
+  when the CLI process exits at a *gate pause* the child is LEFT ALIVE and
+  LISTENING so the operator keeps browsing the surface; it is torn down (with a
+  short grace) only on a terminal run status or an explicit operator stop.
 
 Live calls (OpenAI, Gamma, the healthz identity probe) are injectable seams so
 unit tests run hermetic with fakes; the real defaults do real network calls
@@ -28,6 +33,7 @@ under the AD-13 falter-surface regression rule.
 from __future__ import annotations
 
 import atexit
+import json
 import logging
 import os
 import sqlite3
@@ -62,6 +68,25 @@ HEALTHZ_RETRY_BACKOFF_S = 0.25
 
 #: Items whose absence is informational, not a spawn blocker (AD-11 soft set).
 SOFT_ITEM_NAMES = frozenset({"coordination-db-readable"})
+
+#: Run statuses that authorize HUD teardown when the CLI process exits (Story
+#: 42.2 AC-2). A gate PAUSE (``paused-at-gate`` / ``paused-at-error``) is NOT
+#: terminal — the run is parked awaiting the operator, so the HUD child must
+#: stay alive and LISTENING across the pause (AC-1). Mirrors the notifier's own
+#: ``TERMINAL_STATUSES``; the epic's ``cancelled`` / ``abandoned`` map onto the
+#: envelope's ``failed`` status, and ``paused-at-error`` stays parked (there is
+#: no post-ack signal in the envelope, and keeping the surface up is the
+#: never-hide-the-run-from-the-operator default).
+TERMINAL_RUN_STATUSES = frozenset({"completed", "failed"})
+
+#: An explicit operator stop drops this sentinel file in the run dir to authorize
+#: HUD teardown at the next CLI-process exit even before a terminal status
+#: (Story 42.2 AC-2 explicit-stop path).
+HUD_STOP_SENTINEL_NAME = ".hud-stop"
+
+#: Grace (seconds) between ``terminate()`` and ``kill()`` when a teardown IS
+#: authorized (Story 42.2 AC-2 short grace).
+HUD_TEARDOWN_GRACE_S = 5.0
 
 #: Deterministic item order (phase-01 local checks, then phase-02 live heartbeats).
 PHASE_01_LOCAL_ITEMS = (
@@ -500,10 +525,99 @@ def run_preflight(
 # --------------------------------------------------------------------------
 
 
-def _terminate_quietly(proc: subprocess.Popen) -> None:
+def _no_window_creationflags() -> int:
+    """``CREATE_NO_WINDOW`` on Windows, else ``0`` (Story 42.2 AC-7).
+
+    A console child spawned without this flag pops an empty terminal window on
+    Windows — the ergonomics defect the operator hit repeatedly during dev
+    sessions. Non-Windows platforms (and Pythons lacking the flag) are
+    unaffected: the return is ``0`` and no ``creationflags`` are applied.
+    """
+    if sys.platform == "win32":
+        return getattr(subprocess, "CREATE_NO_WINDOW", 0x08000000)
+    return 0
+
+
+def _read_run_status(run_dir: Path) -> str | None:
+    """Best-effort read of the run's current status from the persisted envelope.
+
+    Reads ``run.json`` (the envelope) first, then the ``operator-surface.json``
+    projection's nested ``envelope.status``. NEVER raises: an absent, unreadable,
+    or corrupt file yields ``None``, which the teardown treats as *non-terminal*
+    (child left ALIVE) — the safe default that never kills the surface out from
+    under an operator who is still parked at a gate (Story 42.2 AC-1).
+    """
+    run_dir = Path(run_dir)
+    for name, extract in (
+        ("run.json", lambda d: d.get("status")),
+        ("operator-surface.json", lambda d: (d.get("envelope") or {}).get("status")),
+    ):
+        try:
+            data = json.loads((run_dir / name).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(data, dict):
+            status = extract(data)
+            if isinstance(status, str):
+                return status
+    return None
+
+
+def _terminate_with_grace(proc: subprocess.Popen, grace: float) -> None:
+    """Terminate ``proc``, wait up to ``grace`` seconds, then hard-kill. Quiet."""
     with suppress(Exception):
-        if proc.poll() is None:
-            proc.terminate()
+        if proc.poll() is not None:
+            return
+        proc.terminate()
+        try:
+            proc.wait(timeout=grace)
+        except Exception:  # noqa: BLE001 — TimeoutExpired (or a fake proc) → hard kill
+            with suppress(Exception):
+                proc.kill()
+
+
+def _status_aware_teardown(
+    proc: subprocess.Popen,
+    run_dir: Path,
+    *,
+    grace: float = HUD_TEARDOWN_GRACE_S,
+) -> None:
+    """``atexit`` hook that ties the HUD child's death to the RUN, not the CLI.
+
+    The old contract blindly terminated the child when the ``trial start``
+    process exited — so a gate pause (the process returning to the shell) killed
+    the HUD. This hook instead tears the child down ONLY when the run is in a
+    terminal status (:data:`TERMINAL_RUN_STATUSES`) OR an explicit operator stop
+    was requested (:func:`request_hud_stop`), each with a short grace. A gate
+    pause (or any non-terminal / unknown status) leaves the child ALIVE and
+    LISTENING so the operator keeps the surface across pause→resume (Story 42.2
+    AC-1/AC-2). NEVER raises (AC-6): a teardown fault is swallowed at exit.
+    """
+    try:
+        if proc.poll() is not None:
+            return  # already gone
+        stop_requested = False
+        with suppress(Exception):
+            stop_requested = (Path(run_dir) / HUD_STOP_SENTINEL_NAME).exists()
+        status = _read_run_status(run_dir)
+        if status in TERMINAL_RUN_STATUSES or stop_requested:
+            _terminate_with_grace(proc, grace)
+        # else: parked at a pause (or status unknown) → leave the child ALIVE.
+    except Exception:  # noqa: BLE001 — a teardown fault must never surface at exit
+        LOGGER.debug("HUD status-aware teardown swallowed a fault", exc_info=True)
+
+
+def request_hud_stop(run_dir: Path) -> None:
+    """Authorize HUD teardown at the next CLI-process exit (Story 42.2 AC-2).
+
+    Drops the explicit-stop sentinel in ``run_dir`` so :func:`_status_aware_teardown`
+    tears the child down (with a grace) even before the run reaches a terminal
+    status. Idempotent; NEVER raises.
+    """
+    with suppress(Exception):
+        run_dir = Path(run_dir)
+        run_dir.mkdir(parents=True, exist_ok=True)
+        (run_dir / HUD_STOP_SENTINEL_NAME).write_text("stop", encoding="utf-8")
 
 
 def launch_hud_server(
@@ -521,9 +635,15 @@ def launch_hud_server(
     Returns the :class:`subprocess.Popen` handle, or ``None`` on launch
     failure (the caller then records the healthz pre-flight item as FAIL —
     AD-7: a child bind failure is a pre-flight FAIL, never a raise or a
-    fall-through to whatever else answers the port). Registers an ``atexit``
-    terminate so the child dies with the runtime session (AD-7 lifecycle).
-    ``popen`` is injectable so unit tests never spawn a real process.
+    fall-through to whatever else answers the port).
+
+    Windows: the child spawns with ``CREATE_NO_WINDOW`` so it never pops an
+    empty console window (Story 42.2 AC-7). Lifecycle: registers a
+    **status-aware** ``atexit`` teardown (:func:`_status_aware_teardown`) so the
+    child survives a gate pause and is stopped only on a terminal run status or
+    an explicit operator stop (Story 42.2 AC-1/AC-2) — it is no longer coupled
+    to the CLI process's exit. ``popen`` is injectable so unit tests never spawn
+    a real process.
     """
     run_dir = Path(run_dir)
     env = {
@@ -539,31 +659,115 @@ def launch_hud_server(
     try:
         run_dir.mkdir(parents=True, exist_ok=True)
         handle = open(run_dir / "hud-server.log", "ab")  # noqa: SIM115 — child owns it
-        proc = popen(
-            argv,
-            env=env,
-            stdout=handle,
-            stderr=handle,
-            stdin=subprocess.DEVNULL,
-        )
+        popen_kwargs: dict[str, object] = {
+            "env": env,
+            "stdout": handle,
+            "stderr": handle,
+            "stdin": subprocess.DEVNULL,
+        }
+        creationflags = _no_window_creationflags()
+        if creationflags:
+            popen_kwargs["creationflags"] = creationflags
+        proc = popen(argv, **popen_kwargs)
     except Exception as exc:  # noqa: BLE001 — launch failure is a FAIL, never a raise
         LOGGER.exception("HUD server child failed to launch: %s", exc)
         if handle is not None:
             with suppress(Exception):
                 handle.close()
         return None
-    atexit.register(_terminate_quietly, proc)
+    atexit.register(_status_aware_teardown, proc, run_dir)
     LOGGER.info("launched HUD server child for trial %s on port %s", trial_id, port)
     return proc
 
 
+def probe_hud_identity(
+    port: int,
+    *,
+    timeout: float = HEALTHZ_TIMEOUT_S,
+    get: Callable[..., object] | None = None,
+) -> tuple[str | None, object] | None:
+    """Best-effort ``GET /healthz`` on the loopback ``port`` (Story 42.2 AC-3).
+
+    Returns ``(canonical_trial_id, launch_nonce)`` a live HUD reports, or
+    ``None`` when nothing healthy answers. NEVER raises — a connection failure,
+    non-200, or non-JSON body all resolve to ``None`` (nothing to reattach to).
+    """
+    getter = get or httpx.get
+    url = f"http://127.0.0.1:{port}/healthz"
+    try:
+        resp = getter(url, timeout=timeout)
+        if getattr(resp, "status_code", None) != 200:
+            return None
+        body = resp.json()
+    except Exception:  # noqa: BLE001 — probe is advisory; any failure = no reattach
+        return None
+    if not isinstance(body, dict):
+        return None
+    found_id = _canonical_trial_id(body.get("trial_id"))
+    if found_id is None:
+        return None
+    return found_id, body.get("launch_nonce")
+
+
+def reattach_or_launch_hud_server(
+    *,
+    trial_id: UUID | str,
+    run_dir: Path,
+    launch_nonce: str,
+    port: int,
+    mode: str = "session",
+    python_executable: str | None = None,
+    popen: Callable[..., subprocess.Popen] = subprocess.Popen,
+    probe: Callable[[], tuple[str | None, object] | None] | None = None,
+) -> tuple[subprocess.Popen | None, str]:
+    """Reuse an already-live HUD for this trial instead of double-launching.
+
+    Story 42.2 AC-3 (no orphaned/duplicate HUD across pause→resume). Health-checks
+    the port first: if a live HUD already reports THIS ``trial_id``, it is reused
+    (returns ``(None, "reused")`` — no new child spawned). Otherwise a fresh child
+    is launched (``(proc, "launched")`` or ``(None, "failed")`` on launch failure).
+    A foreign identity on the port is NOT reused — a fresh launch proceeds and the
+    pre-flight healthz identity check catches the genuine wrong-server-on-port
+    conflict (AD-8). NEVER raises (AC-6).
+    """
+    probe_fn = probe or (lambda: probe_hud_identity(port))
+    identity = None
+    with suppress(Exception):
+        identity = probe_fn()
+    if identity is not None:
+        found_id, _found_nonce = identity
+        if found_id == _canonical_trial_id(str(trial_id)):
+            LOGGER.info(
+                "HUD already live for trial %s on port %s — reusing (no double-launch)",
+                trial_id,
+                port,
+            )
+            return None, "reused"
+    proc = launch_hud_server(
+        trial_id=trial_id,
+        run_dir=run_dir,
+        launch_nonce=launch_nonce,
+        port=port,
+        mode=mode,
+        python_executable=python_executable,
+        popen=popen,
+    )
+    return proc, ("launched" if proc is not None else "failed")
+
+
 __all__ = [
     "COORDINATION_DB_PATH",
+    "HUD_STOP_SENTINEL_NAME",
+    "HUD_TEARDOWN_GRACE_S",
     "PHASE_01_LOCAL_ITEMS",
     "PHASE_02_HEARTBEAT_ITEMS",
     "SOFT_ITEM_NAMES",
+    "TERMINAL_RUN_STATUSES",
     "PreflightDeps",
     "PreflightResult",
     "launch_hud_server",
+    "probe_hud_identity",
+    "reattach_or_launch_hud_server",
+    "request_hud_stop",
     "run_preflight",
 ]
