@@ -78,6 +78,18 @@ _ESTIMATOR_VALUE_WIDTH: int = 60
 _ESTIMATOR_SUMMARY_WIDTH: int = 72
 _RUN_CONSTANTS_VALUE_WIDTH: int = 60
 
+#: Fixed display widths (chars) for the long free-text cells of the three Story
+#: 43-6 build-target renderers (rider R5 — width-aware columns). The 06B/07C
+#: ``specification`` / ``body`` free text and the ``title`` / ``caption`` cells are
+#: the only unbounded columns; ``slide_index`` / ``visual_kind`` are naturally short.
+#: The G3B renderer's one long cell is the ``operator_prompt``. Every value cell is
+#: hard-capped via :func:`_truncate_cell`.
+_LITERAL_VISUAL_SPEC_WIDTH: int = 48
+_LITERAL_VISUAL_CAPTION_WIDTH: int = 28
+_STORYBOARD_TARGET_TITLE_WIDTH: int = 28
+_STORYBOARD_TARGET_BODY_WIDTH: int = 48
+_STORYBOARD_B_TEXT_WIDTH: int = 60
+
 #: Human-facing one-line descriptions distinguishing the two per-slide presentation
 #: modes (Story 43-3). Sourced from ``app/gates/section_05_5/poll_surface.py``'s
 #: closed ``_AVAILABLE_MODES`` tuple — the two modes the operator compares at G2B.
@@ -838,6 +850,199 @@ def render_run_constants(
     return "\n".join(parts)
 
 
+def _literal_visual_rows(content: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    """Return the literal-visual target rows from whatever shape we are handed.
+
+    Tolerates the ``section_06b/poll_surface.py::display_literal_visual_targets``
+    return shape (rows under ``literal_visual_targets``) OR a bare build payload
+    (rows under ``slide_specifications`` / ``cards``) handed directly. The key
+    precedence mirrors the poll-surface's own ``_target_rows``, replicated here so
+    the projector stays stdlib-pure (no poll_surface import).
+    """
+    for key in ("literal_visual_targets", "slide_specifications", "cards"):
+        rows = content.get(key)
+        if isinstance(rows, Sequence) and not isinstance(rows, (str, bytes)):
+            return [r for r in rows if isinstance(r, Mapping)]
+    return []
+
+
+def render_literal_visual(
+    content: Mapping[str, Any],
+    *,
+    title: str = "06B literal-visual build targets",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **06B literal-visual build targets** renderer (Story 43-6, AC-1) —
+    table each literal-visual build target ONE ROW PER SLIDE with its distinguishing
+    fields (slide index + visual kind + specification + caption), instead of the
+    generic ``Field | Value`` dump, so the operator reviews the build list on its
+    merits.
+
+    ``content`` is the ``section_06b/poll_surface.py::display_literal_visual_targets``
+    return shape (``surface_id`` / ``plan_unit_id`` / ``target_section`` /
+    ``literal_visual_targets`` rows / ``source_payload``), or a bare build payload
+    (``slide_specifications`` / ``cards``) — :func:`_literal_visual_rows` drills to the
+    rows either way. Registered under ``content_type="literal_visual"``. The 06B
+    poll-surface returns a plain dict (no bound Pydantic model / decision card — the
+    manifest node "06B" is ``gate: false`` and never pauses at a gate string), so the
+    routing key is the poll-surface ``surface_id``. Reuses :func:`_md_table` +
+    :func:`_truncate_cell` (rider R5); projector stays stdlib-pure.
+    """
+    rows_src = _literal_visual_rows(content)
+    plan_unit_id = content.get("plan_unit_id") or "—"
+    rows: list[Sequence[Any]] = []
+    for idx, row in enumerate(rows_src, start=1):
+        slide = row.get("slide_index")
+        if slide is None:
+            slide = row.get("slide_id") or idx
+        rows.append(
+            [
+                idx,
+                slide,
+                row.get("visual_kind") or "—",
+                _truncate_cell(
+                    str(row.get("specification") or "—"), _LITERAL_VISUAL_SPEC_WIDTH
+                ),
+                _truncate_cell(str(row.get("caption") or "—"), _LITERAL_VISUAL_CAPTION_WIDTH),
+            ]
+        )
+    n = len(rows)
+    banner = f"06B literal-visual build targets   {n} target(s) · unit {plan_unit_id}"
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["#", "slide", "Visual kind", "Specification", "Caption"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
+def _storyboard_target_rows(content: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    """Return the storyboard target rows from whatever shape we are handed.
+
+    Tolerates the ``section_07c/poll_surface.py::display_storyboard_targets`` return
+    shape (rows under ``storyboard_targets``) OR a bare payload (rows under
+    ``slides``) handed directly. Mirrors the poll-surface's own ``_slide_rows`` key
+    precedence, replicated here so the projector stays stdlib-pure.
+    """
+    for key in ("storyboard_targets", "slides"):
+        rows = content.get(key)
+        if isinstance(rows, Sequence) and not isinstance(rows, (str, bytes)):
+            return [r for r in rows if isinstance(r, Mapping)]
+    return []
+
+
+def render_storyboard_targets(
+    content: Mapping[str, Any],
+    *,
+    title: str = "07C storyboard build targets",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **07C storyboard build targets** renderer (Story 43-6, AC-1) — table
+    each storyboard slide ONE ROW PER SLIDE with its distinguishing fields (slide
+    index + title + body + caption), instead of the generic ``Field | Value`` dump.
+
+    ``content`` is the ``section_07c/poll_surface.py::display_storyboard_targets``
+    return shape (``surface_id`` / ``plan_unit_id`` / ``storyboard_targets`` rows /
+    ``slide_count`` / ``source_payload``), or a bare payload (``slides``) —
+    :func:`_storyboard_target_rows` drills to the rows either way. Registered under
+    ``content_type="storyboard_targets"``. The 07C poll-surface returns a plain dict
+    (no bound Pydantic model); node "07C" pauses at the SHARED "G2C" fold-target
+    (G2B/G2M also fold into G2C), so the poll-surface ``surface_id`` is the
+    disambiguating routing key (mirrors 43-5's shared-G1.5 discipline). Reuses
+    :func:`_md_table` + :func:`_truncate_cell` (rider R5); projector stays stdlib-pure.
+    """
+    rows_src = _storyboard_target_rows(content)
+    plan_unit_id = content.get("plan_unit_id") or "—"
+    rows: list[Sequence[Any]] = []
+    for idx, row in enumerate(rows_src, start=1):
+        slide = row.get("slide_index")
+        if slide is None:
+            slide = row.get("slide_id") or idx
+        rows.append(
+            [
+                idx,
+                slide,
+                _truncate_cell(str(row.get("title") or "—"), _STORYBOARD_TARGET_TITLE_WIDTH),
+                _truncate_cell(str(row.get("body") or "—"), _STORYBOARD_TARGET_BODY_WIDTH),
+                _truncate_cell(str(row.get("caption") or "—"), _STORYBOARD_TARGET_TITLE_WIDTH),
+            ]
+        )
+    n = len(rows)
+    banner = f"07C storyboard build targets   {n} slide(s) · unit {plan_unit_id}"
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["#", "slide", "Title", "Body", "Caption"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
+def render_storyboard_b(
+    content: Mapping[str, Any],
+    *,
+    title: str = "G3B storyboard / live-URL review",
+    page_size: int = PAGE_SIZE,
+) -> str:
+    """Bespoke **G3B storyboard / live-URL review** renderer (Story 43-6, AC-1) — table
+    the G3 card's review attributes (storyboard id, gate focus, progress, active node,
+    pending count, verb, operator prompt) as named rows, instead of the generic
+    ``Field | Value`` dump, so the operator reviews Storyboard B (published at G3) on
+    its merits.
+
+    ``content`` is the ``section_08b/poll_surface.py::display_storyboard_b`` return
+    shape (``surface_id`` / ``storyboard_id`` / ``decision_card_digest`` /
+    ``decision_card`` = a ``G3Card`` dump), or the bare ``G3Card`` ``card`` body —
+    :func:`_unwrap_payload` drills into ``decision_card`` either way. Registered under
+    ``content_type="storyboard_b"``.
+
+    NB (Story 43-6 judgment call): the section_08b poll-surface binds the
+    ``app/models/decision_cards/g3.py::G3Card`` model, and the card that ACTUALLY
+    flows at the paused gate IS a ``G3Card`` (proven by the on-disk
+    ``decision-card-G3.json`` evidence — node 08B/G3B ``fold_with: G3``, so G3B never
+    pauses on its own; the G3 pause absorbs the Storyboard-B review). SAME model,
+    fields present — so unlike 43-4 there is NO model-binding mismatch to file. The
+    G3Card carries no dedicated "live-URL" field (the live URL is a published
+    side-artifact, not a card field), so this renderer tables the real G3Card review
+    attributes rather than an imaginary URL field. Routing: node 08B gate_code "G3B"
+    and node 07F gate_code "G2F" (motion-clip, Story 43-7) BOTH fold into "G3", so the
+    bare "G3" gate string is SHARED and deliberately NOT mapped (mirrors 43-5's
+    shared-G1.5 discipline); the unambiguous "G3B" gate_code + the poll-surface
+    ``surface_id`` are the routing keys.
+
+    Reuses :func:`_md_table` + :func:`_truncate_cell` (rider R5); projector stays
+    stdlib-pure — the caller parses any on-disk YAML/JSON.
+    """
+    card = _unwrap_payload(content, "decision_card")
+    storyboard_id = content.get("storyboard_id") or card.get("card_id") or "—"
+    progress = card.get("progress_percent")
+    progress_cell = "—" if progress is None else f"{progress}%"
+    pending = card.get("pending_nodes")
+    n_pending = (
+        len(pending)
+        if isinstance(pending, Sequence) and not isinstance(pending, (str, bytes))
+        else 0
+    )
+    banner = f"G3B storyboard / live-URL review   {storyboard_id} · {progress_cell}"
+    rows: list[Sequence[Any]] = [
+        ["storyboard_id", storyboard_id],
+        ["gate_focus", card.get("gate_focus") or "—"],
+        ["progress", progress_cell],
+        ["active_node", card.get("active_node_id") or "—"],
+        ["pending", f"{n_pending} pending node(s)"],
+        ["verb", card.get("verb") or "—"],
+        [
+            "operator_prompt",
+            _truncate_cell(str(card.get("operator_prompt") or "—"), _STORYBOARD_B_TEXT_WIDTH),
+        ],
+    ]
+    shown, remaining = _paginate(rows, page_size)
+    table = _md_table(["Attribute", "Value"], shown)
+    parts = [banner, "", table]
+    if remaining:
+        parts.append(_pagination_footer(remaining))
+    return "\n".join(parts)
+
+
 #: Renderer signature: ``(content, *, title, page_size) -> str``. Bespoke renderers
 #: (43-1, 43-3…43-9) register against this contract; the generic fallback above
 #: satisfies it for every content type with no bespoke renderer yet.
@@ -915,6 +1120,11 @@ GATE_CONTENT_TYPES: frozenset[str] = frozenset(
 #: (G1A), ``estimator`` (G1.5) and ``run_constants`` (G1.5) here in the same change
 #: that registers :func:`render_plan_unit` + :func:`render_estimator` +
 #: :func:`render_run_constants` — all three now covered by bespoke renderers, NOT waived.
+#:
+#: Story 43-6 (the FIFTH allowlist→registry move) additionally deletes ``literal_visual``
+#: (06B), ``storyboard_targets`` (07C) and ``storyboard_b`` (G3B) here in the same change
+#: that registers :func:`render_literal_visual` + :func:`render_storyboard_targets` +
+#: :func:`render_storyboard_b` — all three now covered by bespoke renderers, NOT waived.
 KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
     GATE_CONTENT_TYPES
     - {
@@ -925,6 +1135,9 @@ KNOWN_UNRENDERED_ALLOWLIST: frozenset[str] = frozenset(
         "plan_unit",
         "estimator",
         "run_constants",
+        "literal_visual",
+        "storyboard_targets",
+        "storyboard_b",
     }
 )
 
@@ -965,6 +1178,24 @@ GATE_TO_CONTENT_TYPE: dict[str, str] = {
     # None → the generic fallback, which still TABLES the content (no raw dump).
     "section_04_5_g1_5_estimator": "estimator",
     "section_04_55_g1_5_run_constants": "run_constants",
+    # Story 43-6 — three build-target list gates.
+    # 06B literal-visual build (section_06b) is a NON-gate operator-build node
+    # (manifest node "06B" is ``gate: false``), so it never pauses at a gate string —
+    # the poll-surface ``surface_id`` is the ONLY routing key.
+    "section_06b_literal_visual_build": "literal_visual",
+    # 07C storyboard build (section_07c) pauses at the SHARED "G2C" fold-target (node
+    # 07C gate_code G2C; G2B/G2M also fold into G2C), so — like 43-5's G1.5 — "G2C" is
+    # deliberately NOT mapped (mapping it would mis-route) and the surface_id is the
+    # disambiguator.
+    "section_07c_storyboard_build": "storyboard_targets",
+    # G3B storyboard/live-URL (section_08b) folds into the SHARED "G3" pause (manifest
+    # node 08B gate_code G3B ``fold_with: G3``; node 07F gate_code G2F motion-clip ALSO
+    # folds into G3), so the bare "G3" gate string is SHARED and deliberately NOT mapped
+    # (mirrors 43-5's shared-G1.5 discipline). The unambiguous "G3B" gate_code (never
+    # itself pauses, but a valid semantic identifier) and the poll-surface ``surface_id``
+    # are the routing keys.
+    "G3B": "storyboard_b",
+    "section_08b_g3b_poll": "storyboard_b",
 }
 
 
@@ -1050,6 +1281,15 @@ register_renderer("voice_candidates", render_voice_candidates)
 register_renderer("plan_unit", render_plan_unit)
 register_renderer("estimator", render_estimator)
 register_renderer("run_constants", render_run_constants)
+
+#: Story 43-6 — register the three bespoke build-target renderers at import time (the
+#: FIFTH allowlist→registry move). ``literal_visual`` (06B), ``storyboard_targets`` (07C)
+#: and ``storyboard_b`` (G3B) leave ``KNOWN_UNRENDERED_ALLOWLIST`` (above) and gain
+#: bespoke renderers here, so the paused 06B / 07C / G3B surfaces table their build-target
+#: lists instead of raw-dumping.
+register_renderer("literal_visual", render_literal_visual)
+register_renderer("storyboard_targets", render_storyboard_targets)
+register_renderer("storyboard_b", render_storyboard_b)
 
 
 def render_hil_tables(surface: Mapping[str, Any], *, page_size: int = PAGE_SIZE) -> str:
@@ -1197,9 +1437,12 @@ __all__ = [
     "render_generic_gate_content",
     "render_hil_tables",
     "render_learning_objectives",
+    "render_literal_visual",
     "render_per_slide_mode",
     "render_plan_unit",
     "render_run_constants",
+    "render_storyboard_b",
+    "render_storyboard_targets",
     "render_ungrounded_advisories",
     "render_variant_ab",
     "render_voice_candidates",

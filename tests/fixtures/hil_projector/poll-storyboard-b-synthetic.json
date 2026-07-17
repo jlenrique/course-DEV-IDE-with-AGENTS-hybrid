@@ -1,0 +1,29 @@
+{
+  "decision_card": {
+    "active_node_id": "storyboard-b-live-url-review",
+    "card_id": "55555555-5555-4555-8555-555555555555",
+    "created_at": "2026-05-06T09:00:00Z",
+    "decision_card_digest": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "gate_focus": "motion_clip_approval",
+    "gate_id": "G3",
+    "meta": {
+      "affected_nodes": [
+        "08B"
+      ],
+      "cache_state": "healthy",
+      "override_trail": []
+    },
+    "operator_prompt": "Review Storyboard B and the published live URL before voice selection.",
+    "pending_nodes": [
+      "voice-selection",
+      "input-package"
+    ],
+    "progress_percent": 62.5,
+    "schema_version": "v1",
+    "trial_id": "44444444-4444-4444-8444-444444444444",
+    "verb": "approve"
+  },
+  "decision_card_digest": "bb81529e79d1320d45e01a8fe72a68373a930f3c3d109ee1e37b4036c738cdd1",
+  "storyboard_id": "55555555-5555-4555-8555-555555555555",
+  "surface_id": "section_08b_g3b_poll"
+}

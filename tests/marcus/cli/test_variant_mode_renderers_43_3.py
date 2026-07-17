@@ -240,7 +240,9 @@ def test_bridge_is_the_full_declared_map() -> None:
     """AC-0: the bridge maps exactly the declared gates (both the paused-gate string
     and the poll-surface ``surface_id`` forms), nothing stale. State pin — updated in
     lockstep as each bespoke story adds its gate (43-4 added the two G4A forms; 43-5
-    added G1A + the two G1.5 surface_id forms)."""
+    added G1A + the two G1.5 surface_id forms; 43-6 added the two build-target
+    surface_ids + the G3B gate_code, with the shared "G2C"/"G3" strings deliberately
+    unmapped)."""
     assert GATE_TO_CONTENT_TYPE == {
         "G2B": "per_slide_mode",
         "section_05_5_g2b_per_slide_mode": "per_slide_mode",
@@ -256,4 +258,12 @@ def test_bridge_is_the_full_declared_map() -> None:
         # is shared/ambiguous, so it is deliberately NOT mapped).
         "section_04_5_g1_5_estimator": "estimator",
         "section_04_55_g1_5_run_constants": "run_constants",
+        # Story 43-6 — literal-visual (06B, a non-gate node) + storyboard targets (07C,
+        # keyed by surface_id since gate_code "G2C" is a shared fold-target) + G3B
+        # storyboard/live-URL (both the unambiguous "G3B" gate_code and the surface_id;
+        # the shared "G3" fold-target string is deliberately NOT mapped).
+        "section_06b_literal_visual_build": "literal_visual",
+        "section_07c_storyboard_build": "storyboard_targets",
+        "G3B": "storyboard_b",
+        "section_08b_g3b_poll": "storyboard_b",
     }

@@ -126,16 +126,17 @@ def test_registry_and_allowlist_are_disjoint() -> None:
 
 
 def test_allowlist_is_shrinking_registry_is_growing_at_43_3() -> None:
-    """State pin (updated at 43-5, the fourth allowlist→registry move): the
+    """State pin (updated at 43-6, the fifth allowlist→registry move): the
     allowlist tightens as each bespoke story registers a renderer. This assertion
     INTENTIONALLY tracks the CURRENT state, not a hard-coded full set — later
-    stories (43-6…43-9) move more types registry-ward and update this witness in
+    stories (43-7…43-9) move more types registry-ward and update this witness in
     lockstep, and 43-12 empties the allowlist entirely.
     """
     # 43-1 registered ``directive`` (G0); 43-3 added ``per_slide_mode`` (G2B) +
-    # ``variant_ab`` (G2M); 43-4 added ``voice_candidates`` (G4A); 43-5 adds
-    # ``plan_unit`` (G1A) + ``estimator`` (G1.5) + ``run_constants`` (G1.5) — the
-    # fourth allowlist→registry move.
+    # ``variant_ab`` (G2M); 43-4 added ``voice_candidates`` (G4A); 43-5 added
+    # ``plan_unit`` (G1A) + ``estimator`` (G1.5) + ``run_constants`` (G1.5); 43-6 adds
+    # ``literal_visual`` (06B) + ``storyboard_targets`` (07C) + ``storyboard_b`` (G3B) —
+    # the fifth allowlist→registry move.
     registered = frozenset(
         {
             "directive",
@@ -145,6 +146,9 @@ def test_allowlist_is_shrinking_registry_is_growing_at_43_3() -> None:
             "plan_unit",
             "estimator",
             "run_constants",
+            "literal_visual",
+            "storyboard_targets",
+            "storyboard_b",
         }
     )
     assert registered_content_types() == registered
