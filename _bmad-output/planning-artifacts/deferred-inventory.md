@@ -41,6 +41,8 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+- 🔴 **`production-runner-dollar-budget-enforced-stop`** (filed 2026-07-16 by Story 41-3 green-light, W-2 — Winston/Murat binding): make `MARCUS_TRIAL_BUDGET_USD` an ENFORCED economic **brake** — pause-at-error when a dispatch would cross the budget — not just the advisory `BudgetStatus` report it is today. This is the replacement rail for the `max_specialist_calls` throttle that 41-3 removes: 41-3 declares the interim (spend bounded by finite graph + per-node idempotency + human gate-pauses; no early dollar cutoff) and files THIS as the real brake. Supersedes/absorbs the older 🟢 [[production-runner-07w-budget-guard]] (which was the after-the-fact verdict-assertion catch, not a hard stop). **Reactivation trigger: immediately after 41-3 lands (the tripwire is gone; the brake is owed), or the next production_runner robustness batch. Priority HIGH — 41-3's interim is explicitly gauge-only.**
+
 ### Story 40-1 green-light follow-ons (filed 2026-07-16 at the 40-1 green-light round, amendment J-4; spec = 40-1-cover-placeholder-hero-toc-provenance.md)
 
 - ✅ **FILED 2026-07-16 as Stories 42-3 (standing readout) + 42-5 (pre-walk confirm gate)** — Epic 42 Operator Surface Next-Pass, green-lit 5/5 (`party-greenlight-post-trial-bc747b51-arc-2026-07-16.md`). Row retained for the toggle-table reference; direction may flip if the toggle set evolves.

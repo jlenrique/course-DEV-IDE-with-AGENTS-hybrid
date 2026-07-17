@@ -120,31 +120,34 @@ def _verdict(tmp_path: Path, verb: str, *, gate_id: str = "G1", **overrides) -> 
     )
 
 
-def test_starved_resume_fails_loud_budget_exhausted_at_cd_node(
+def test_cap_that_used_to_starve_cd_now_dispatches_it_on_resume(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """Story 41-2 — the bc747b51 misattribution fixed at the source.
+    """Story 41-3 — the bc747b51 STARVATION is removed (Option R, party 4/4).
 
-    This is the durable regression pin for the fixed behavior. Trial bc747b51
-    ran with ``max_specialist_calls=1`` (budget spent upstream by irene_pass1),
-    which STARVED CD @ node 4.75; the old specialist branch set
-    ``graph_step_completed = True`` unconditionally, so CD silently advanced and
-    the failure MISATTRIBUTED three nodes later at §06 as
-    ``builder.gary.upstream-missing``. 41-2 makes an entered, not-already-
-    carrying specialist that fails to dispatch FAIL LOUD AT ITS NODE.
+    Durable regression pin, repurposed from 41-2's retired
+    ``test_starved_resume_fails_loud_budget_exhausted_at_cd_node``. Trial
+    bc747b51 ran with ``max_specialist_calls=1`` (spent upstream by irene_pass1),
+    which STARVED CD @ node 4.75 — the call-count throttle footgun. 41-2 made that
+    starvation fail loud at 4.75 with ``dispatch.budget-exhausted``; 41-3 REMOVES
+    the throttle entirely, so that tag can no longer fire and the *same* cap value
+    that used to starve CD now dispatches it.
 
-    The contract this test now pins: a cap-starved resume fails loud with the
-    DISTINCT ``dispatch.budget-exhausted`` tag AT node 4.75 (cd) — not
-    ``builder.gary.upstream-missing`` at 06 — and opens no gate. The
-    no-silent-refeed guarantee is preserved: recover re-enters at the failed
-    node, retries it (cd now contributes), and re-pauses budget-exhausted at the
-    next starved node rather than walking a hollow brief forward into a §07 gate.
+    The contract this test now pins: a resume passing the formerly-starving
+    ``max_specialist_calls=1`` no longer starves CD — CD DISPATCHES, carries its
+    contribution at node 4.75, and the walk ADVANCES PAST 4.75. No
+    ``dispatch.budget-exhausted`` error-pause is ever written, and the run never
+    halts AT 4.75 for a call-count reason. This is the durable "cd is no longer
+    starved on resume" signal: if the throttle ever returned, cd would starve at
+    4.75 and these assertions would flip.
 
-    (Predecessor `test_starved_resume_pauses_at_error_at_06_builder` retired: it
-    pinned the pre-41-2 misattributed §06 halt, the exact bug 41-2 eliminates.
-    Preflight + cost recording are stubbed so this pins the walk contract in the
-    sandbox, exactly as the fake-adapter behavioral suites do; the fail-loud
-    invariant itself is what is under test, not the live preflight/cost paths.)
+    (The walk advances into the §06 package builder, which — with the fake
+    adapter that writes no live Pass-1 plan-authority receipt — pauses on its own
+    input contract three nodes past cd. That downstream pause is a receipt-less-
+    fixture artifact, NOT starvation: the anti-starvation contract is that cd
+    dispatched and the walk left 4.75, asserted directly below. Preflight + cost
+    recording are stubbed so this pins the walk contract in the sandbox, exactly
+    as the fake-adapter behavioral suites do.)
     """
     monkeypatch.setattr(
         production_runner,
@@ -158,47 +161,28 @@ def test_starved_resume_fails_loud_budget_exhausted_at_cd_node(
     )
     _pause(tmp_path, monkeypatch)
 
-    # (1) No exception escapes — the fail-loud is routed through the shared
-    # error-pause channel (an un-wrap regression would raise out of resume).
-    errored = production_runner.resume_production_trial(
+    # Resume passing the cap value (1) that STARVED CD pre-41-3. The throttle is
+    # gone, so it is inert: CD dispatches and the walk advances past 4.75.
+    resumed = production_runner.resume_production_trial(
         trial_id=TRIAL_ID,
         verdict=_verdict(tmp_path, "approve"),
         runs_root=tmp_path,
         max_specialist_calls=1,
     )
 
-    # (2) Exact terminal status + (3) the DISTINCT budget tag, AT node 4.75 (cd)
-    # — NOT the downstream builder misattribution.
-    assert errored.status == "paused-at-error"
-    assert errored.paused_gate is None
-    assert errored.paused_error_tag == "dispatch.budget-exhausted"
-    error_pause = json.loads(
-        (tmp_path / str(TRIAL_ID) / "error-pause.json").read_text(encoding="utf-8")
-    )
-    assert error_pause["node_id"] == "4.75"
-    assert error_pause["specialist_id"] == "cd"
-    assert error_pause["tag"] == "dispatch.budget-exhausted"
-    # The misattribution is gone: never §06, never the builder tag.
-    assert error_pause["node_id"] != "06"
-    assert error_pause["tag"] != "builder.gary.upstream-missing"
-
-    # (4) No gate opened over the starved brief (anti-quality-theater preserved).
-    assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
-
-    # (5)+(6) No-silent-refeed: recover re-enters at the failed node (4.75),
-    # RETRIES it (cd now contributes — the node is retried, not skipped), then
-    # re-pauses budget-exhausted at the next starved node under the persisted
-    # cap=1; it never walks the hollow brief forward into a §07 gate.
-    recovered = production_runner.recover_production_trial(
-        trial_id=TRIAL_ID,
-        runs_root=tmp_path,
-    )
-    assert recovered.status == "paused-at-error"
-    assert recovered.paused_error_tag == "dispatch.budget-exhausted"
+    # (1) CD @ 4.75 dispatched — the starvation cause is eliminated at the source.
     assert (
-        recovered.production_envelope.get_contribution("cd", node_id="4.75") is not None
+        resumed.production_envelope.get_contribution("cd", node_id="4.75") is not None
     )
-    assert not (tmp_path / str(TRIAL_ID) / "decision-card-G2C.json").exists()
+    # (2) The retired budget tag never fires anywhere.
+    assert resumed.paused_error_tag != "dispatch.budget-exhausted"
+    # (3) The run did NOT halt AT 4.75 for a call-count reason — it advanced past
+    # cd. (Any pause is downstream of 4.75; here the receipt-less §06 builder.)
+    error_pause_path = tmp_path / str(TRIAL_ID) / "error-pause.json"
+    if error_pause_path.exists():
+        error_pause = json.loads(error_pause_path.read_text(encoding="utf-8"))
+        assert error_pause["node_id"] != "4.75"
+        assert error_pause["tag"] != "dispatch.budget-exhausted"
 
 
 def test_approve_verdict_resumes_execution_then_pauses_at_g2b(

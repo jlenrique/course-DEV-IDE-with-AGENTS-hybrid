@@ -1301,10 +1301,11 @@ def build_trial_parser(parser: argparse.ArgumentParser) -> None:
         required=False,
         type=int,
         help=(
-            "Maximum live specialist calls during the start walk (G0 to the "
-            "first gate). Production starts should open the throttle: under "
-            "per-node keying, resumes never revisit pre-checkpoint nodes, so "
-            "a starved start cannot be repaired downstream."
+            "ADVISORY / TEST SEAM ONLY (Story 41-3): the call-count throttle "
+            "was removed, so this no longer starves a production start. Omit it "
+            "(the default) for unbounded dispatch; a specialist node dispatches "
+            "whenever live is available. Spend is bounded by the finite composed "
+            "graph, per-node idempotency, and human gate-pauses."
         ),
     )
     start.add_argument(

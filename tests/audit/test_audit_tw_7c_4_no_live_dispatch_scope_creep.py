@@ -755,6 +755,17 @@ PERMITTED_PYTHON_DIFFS = {
     "tests/integration/marcus/test_workbook_band_wiring.py",
     "tests/integration/marcus/test_pre_gate_marcus_langsmith_trace.py",
     "tests/integration/marcus/test_runner_threads_pre_fill_to_decision_card.py",
+    # Story 41-3 (REMOVE the max_specialist_calls throttle — Option R, party 4/4
+    # 2026-07-16): the call-count throttle that starved CD @ 4.75 (trial
+    # bc747b51) is removed from both walk specialist branches; a specialist node
+    # dispatches whenever live is available, with no per-call budget gate. The
+    # inert None=unbounded parameter is retained as a test-injection seam.
+    # ``dispatch.budget-exhausted`` retires; ``dispatch.live-unavailable`` stays.
+    # The interlocutor's now-moot =12 default is dropped to None=unbounded
+    # (cosmetic; the value is inert). NO new live-dispatch call site — the
+    # semantic detector stays GREEN. production_runner.py + trial.py + the two
+    # test files already rostered above; this adds only the interlocutor path.
+    "app/marcus/cli/marcus_interlocutor.py",
 }
 
 
