@@ -33,7 +33,17 @@
 
 ## Artifact update checklist
 
-spec ✓ (all tasks closed/descoped; Change Log + party record) · SESSION-HANDOFF ✓ (this) · bmm-workflow-status ✓ · sprint-status ✓ (T8 reconcile) · deferred-work ✓ (base-doc-slim) · protocol docs START+WRAPUP ✓ (rewritten) · project-context + next-session ✓ (regenerated, Steps 5/7) · guides/ONBOARDING/KG — unchanged (dev-process/governance change; scripts under `scripts/utilities/` are graph-excluded) · push — Step 12.
+spec ✓ (all tasks closed/descoped; Change Log + party record) · SESSION-HANDOFF ✓ (this + post-close addendum) · bmm-workflow-status ✓ · sprint-status ✓ (T8 reconcile) · deferred-work ✓ (base-doc-slim) · protocol docs START+WRAPUP ✓ (rewritten + Cora de-personify) · project-context + next-session ✓ (regenerated) · guides ✓ (hygiene pass — see addendum) · ONBOARDING/KG — unchanged (scripts under `scripts/utilities/` are graph-excluded) · push + merge-to-master — Step 12.
+
+## Post-close follow-ons (operator-directed, same session)
+
+Three operator-directed cleanups landed AFTER the initial WRAPUP (`739f1a72`), each committed + pushed on this branch:
+
+1. **Cora persona dissolution reconciled (`53167408`).** A thorough read-only audit (subagent) confirmed persona-Cora is bindingly DISSOLVED (`DR-SLAB-1-CLOSE-2026-04-24.md` DR-2, party-ratified 5/5; de-registered; generator denylist). But the canonical protocol pair still *invoked* her (dangling) and her WRAPUP ref file contradicted the generated-view regime. Fix: **de-personified** START Step 1a + WRAPUP Step 0 (kept the coherence gate, dropped the persona; tripwire record relocated to the SESSION-HANDOFF Step-0 skip-notes); **archived** `skills/bmad-agent-cora/references/session-{start,wrapup}-protocol.md` → `references/_archive/` with a dissolution header; SKILL.md SS/SW rows marked DISSOLVED. Left untouched (still-live substrate): `preclosure_hook.py`, the `app/cora/` block-mode runtime (a DIFFERENT thing from the persona), and the §Sanctum FR112 anchor.
+2. **Guide hygiene pass (`c589afad`).** Brought user/dev/admin guides into the regime's spirit without deleting reference: de-dated the `## Current Status (2026-07-17)` heading → stable reference heading + a **SOTA §11 product-truth pointer**; archived each `## Legacy Context` (pre-migration banners) → `docs/<name>.history.md`. Preserved all durable reference (dev seam maps, admin checklists, user capabilities/fences). `how-to-add-a-specialist.md` was already clean (untouched). Guides remain living reference docs, NOT on the mechanical roll-down.
+3. **This WRAPUP re-run + merge to master** (operator-directed close): regenerated the two views off this addendum, then merged the branch to `master`.
+
+**Reporting note (guides regime):** the guides are classified as living reference docs (contract-table row) — reviewed each Class S, updated at Step 9 — deliberately NOT SSOTs-per-question / generated views / roll-down, because they're read on-demand (Step 4) and pay no per-session coherence tax. `STATE-OF-THE-APP.md` §11 is now the single product-truth SSOT the guides point to.
 
 ---
 

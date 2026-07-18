@@ -120,12 +120,20 @@ def test_hot_ssot_stays_trimmed_and_points_to_existing_sibling(rel_path, ceiling
     )
 
     text = path.read_text(encoding="utf-8")
-    # A resolvable 'archived' pointer naming a *.history.md sibling that exists.
-    pointer_lines = [
-        ln for ln in text.splitlines() if "archived" in ln.lower() and ".history.md" in ln
+    # At least one 'archived to … <file>.history.md' line must resolve to an existing
+    # sibling. Scan ALL candidate lines rather than assuming the first is the pointer —
+    # prose that merely mentions *.history.md files (e.g. an addendum listing archives)
+    # names non-existent tokens and is harmlessly skipped; the real pointer resolves.
+    candidates = [
+        ln for ln in text.splitlines() if "archived to" in ln.lower() and ".history.md" in ln
     ]
-    assert pointer_lines, f"{rel_path} has no 'archived to …' history pointer"
-    token = _HISTORY_TOKEN_RE.search(pointer_lines[0])
-    assert token, f"{rel_path} pointer names no *.history.md sibling"
-    sibling = path.parent / Path(token.group(1)).name
-    assert sibling.exists(), f"{rel_path} points to missing sibling {sibling}"
+    assert candidates, f"{rel_path} has no 'archived to …' history pointer"
+    resolved = any(
+        (path.parent / Path(tok).name).exists()
+        for ln in candidates
+        for tok in _HISTORY_TOKEN_RE.findall(ln)
+    )
+    assert resolved, (
+        f"{rel_path} has no 'archived to …' pointer resolving to an existing "
+        "*.history.md sibling"
+    )
