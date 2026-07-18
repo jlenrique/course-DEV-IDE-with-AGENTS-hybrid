@@ -35,9 +35,7 @@ Usage::
 from __future__ import annotations
 
 import argparse
-import os
 import re
-import subprocess
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -47,11 +45,12 @@ _DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 BASE_DOC_MARKER = "<!-- BASE-DOC (hand-authored, preserved — do not delete this marker) -->"
 BASE_DOC_MARKER_PREFIX = "<!-- BASE-DOC"
 BASE_DOC_HEADING = "# Project Context: Multi-Agent Course Content Production System"
+# Line-start anchor for the base-doc heading. Bootstrap asserts EXACTLY ONE
+# occurrence so a spurious earlier restatement cannot mis-slice the boundary.
+BASE_DOC_HEADING_ANCHOR = "# Project Context:"
 
-_ENV_BRANCH = "GENERATE_VIEW_GIT_BRANCH"
-_ENV_HEAD = "GENERATE_VIEW_GIT_HEAD"
-
-_SECTION_RE = re.compile(r"^#\s+Session\s+(?:close|handoff)\b.*$", re.IGNORECASE | re.MULTILINE)
+# Broadened to match ANY ``# Session …`` variant so the newest section wins.
+_SECTION_RE = re.compile(r"^#\s+Session\b.*$", re.IGNORECASE | re.MULTILINE)
 
 
 class GenerationError(RuntimeError):
@@ -63,47 +62,32 @@ class GenerationError(RuntimeError):
 # ---------------------------------------------------------------------------
 
 
-def _git_info(root: Path) -> tuple[str, str]:
-    env_branch = os.environ.get(_ENV_BRANCH)
-    env_head = os.environ.get(_ENV_HEAD)
-    if env_branch and env_head:
-        return env_branch, env_head
-
-    def _run(args: list[str]) -> str | None:
-        try:
-            out = subprocess.run(
-                args, cwd=str(root), capture_output=True, text=True, timeout=15
-            )
-        except (OSError, subprocess.SubprocessError):
-            return None
-        if out.returncode != 0:
-            return None
-        return out.stdout.strip() or None
-
-    branch = env_branch or _run(["git", "rev-parse", "--abbrev-ref", "HEAD"]) or "unknown"
-    head = env_head or _run(["git", "rev-parse", "--short", "HEAD"]) or "unknown"
-    return branch, head
-
-
 def _latest_handoff(root: Path) -> tuple[str, str]:
     """Return (heading_line, what_is_next_body) from the latest handoff section.
 
-    Missing handoff / missing sections degrade gracefully to placeholders — the
-    handoff is not a hard input for project-context (the base doc is the SSOT).
+    FAIL-LOUD: a missing SESSION-HANDOFF.md or a file with no ``# Session …``
+    section raises rather than writing a silent placeholder — consistent with
+    the generator's fail-loud contract (never emit a degraded header).
     """
     handoff_path = root / "SESSION-HANDOFF.md"
     if not handoff_path.exists():
-        return "(SESSION-HANDOFF.md not found)", ""
+        raise GenerationError(
+            f"generate_project_context: SESSION-HANDOFF.md not found at "
+            f"{handoff_path} (required header input; target NOT overwritten)."
+        )
     text = handoff_path.read_text(encoding="utf-8")
     matches = list(_SECTION_RE.finditer(text))
     if not matches:
-        return "(no session section in SESSION-HANDOFF.md)", ""
+        raise GenerationError(
+            "generate_project_context: no '# Session …' section found in "
+            "SESSION-HANDOFF.md (required header input; target NOT overwritten)."
+        )
     start = matches[0].start()
     end = matches[1].start() if len(matches) > 1 else len(text)
     section = text[start:end]
     heading = section.splitlines()[0].lstrip("# ").strip()
     m = re.search(
-        r"^##\s+What is next[^\n]*$(.*?)(?=^#{1,6}\s|\Z)",
+        r"^##\s+What is next[^\n]*$(.*?)(?=^##\s|\Z)",
         section,
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
@@ -131,8 +115,6 @@ def _you_are_here(root: Path) -> str:
 
 
 def _render_header(root: Path) -> str:
-    branch, head = _git_info(root)
-    generated = datetime.now(tz=UTC).replace(microsecond=0).isoformat()
     heading, what_next = _latest_handoff(root)
     you_are_here = _you_are_here(root)
 
@@ -143,8 +125,11 @@ def _render_header(root: Path) -> str:
         "scripts/utilities/generate_project_context.py. Everything from the "
         "BASE-DOC marker to EOF is hand-authored and preserved verbatim. -->",
         "",
-        f"**Branch:** `{branch}` · **HEAD (short):** `{head}` · "
-        f"**Generated:** {generated}",
+        # STABLE line (no timestamp / branch / HEAD sha): this file is
+        # git-tracked and glob-loaded by ~59 skills, so a volatile header would
+        # churn it on every regen. Idempotent header = no spurious diffs.
+        "> GENERATED thin header — regenerate with "
+        "scripts/utilities/generate_project_context.py",
         "",
         "## Current Session State",
         "",
@@ -160,6 +145,10 @@ def _render_header(root: Path) -> str:
             you_are_here,
             "",
         ]
+    else:
+        # Honest degrade: name the missing input rather than emit a silent
+        # empty subsection.
+        parts += ["<!-- STATE-OF-THE-APP §11.1 unavailable at generation -->", ""]
     parts += [
         "> Dated context-addendum history archived to "
         "`docs/project-context.history.md`. The hand-authored base doc is "
@@ -201,10 +190,20 @@ def build(root: Path) -> tuple[str, str | None]:
         preserved = text[_line_start_of(text, marker_idx):]
         return header + "\n" + preserved, None
 
-    heading_match = re.search(rf"^{re.escape(BASE_DOC_HEADING)}", text, re.MULTILINE)
-    if heading_match is not None:
+    anchors = list(
+        re.finditer(rf"^{re.escape(BASE_DOC_HEADING_ANCHOR)}", text, re.MULTILINE)
+    )
+    if len(anchors) > 1:
+        raise GenerationError(
+            "generate_project_context: found "
+            f"{len(anchors)} '{BASE_DOC_HEADING_ANCHOR}' headings in "
+            "docs/project-context.md — ambiguous base-doc boundary (a spurious "
+            "earlier restatement would mis-slice the archive). Refusing to "
+            "overwrite."
+        )
+    if len(anchors) == 1:
         # BOOTSTRAP — archive the addendum stack, insert the marker.
-        base_start = _line_start_of(text, heading_match.start())
+        base_start = _line_start_of(text, anchors[0].start())
         addendum_stack = text[:base_start]
         base_doc = text[base_start:]
         new_text = header + "\n" + BASE_DOC_MARKER + "\n" + base_doc
@@ -241,8 +240,10 @@ def generate(root: Path, *, check: bool = False) -> Path | None:
             # Never lose prior archives — append a fresh dated block.
             prior = history_path.read_text(encoding="utf-8").rstrip()
             history_text = prior + "\n\n---\n\n" + history_text
-        history_path.write_text(history_text, encoding="utf-8")
-    target_path.write_text(new_text, encoding="utf-8")
+        # newline="" disables win32 LF→CRLF translation so the preserved base
+        # doc round-trips its original (LF) line endings byte-for-byte.
+        history_path.write_text(history_text, encoding="utf-8", newline="")
+    target_path.write_text(new_text, encoding="utf-8", newline="")
     return target_path
 
 

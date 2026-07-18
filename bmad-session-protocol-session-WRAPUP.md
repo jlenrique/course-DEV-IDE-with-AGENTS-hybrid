@@ -14,7 +14,7 @@ The startup protocol **reads** certain files; the wrapup protocol **writes** the
 | `_bmad-output/planning-artifacts/deferred-inventory.md` | Step 4 (governance) | governance events | **Authored register — governance.** Closed entries roll to its `## Closed Entries — Archived` section at retrospective / multi-slab milestones (its own hygiene rule). |
 | `bmm-workflow-status.yaml` | Step 4 | Step 3 | BMAD phase (structured YAML — zero parsers). Append-only comment history → `bmm-workflow-status.history.md`; keep title + newest-1-prior entry. |
 | `next-session-start-here.md` | If present (per-clone cache) | Step 7 = **GENERATED** | **Generated view (fail-loud)** — `scripts/utilities/generate_next_session.py`. Gitignored. Falls back to SESSION-HANDOFF if generation fails; do not hand-maintain as source of truth. |
-| `docs/project-context.md` | Step 1 | Step 5 = **GENERATED** | **Generated view (thin header)** — `scripts/utilities/generate_project_context.py`. The base doc below the `<!-- BASE-DOC … -->` marker is hand-authored + preserved. Glob-loaded as a persistent-fact by ~59 skills — NEVER move/rename it, never create a second `project-context.md`. |
+| `docs/project-context.md` | Step 1 | Step 5 = **GENERATED** | **Generated view (thin header)** — `scripts/utilities/generate_project_context.py`. The base doc below the `<!-- BASE-DOC … -->` marker is hand-authored + preserved. Addendum history → `project-context.history.md` (generator-fed, not manual). Glob-loaded as a persistent-fact by ~59 skills — NEVER move/rename it, never create a second `project-context.md`. |
 | `docs/ONBOARDING.md` | Once per fresh agent context | Step 9 if regenerated | **Architectural mental model** — knowledge-graph-derived structural ramp. |
 | `docs/agent-environment.md` | Step 1 | Step 5 | MCP / API / tool / skill inventory for agents. |
 | Guides (user/admin/dev/specialist) | Step 4 on-demand | Step 9 | **Living docs — evolve WITH the app.** Reviewed for currency every Class S session; MUST update when a change (especially a bug / live-run insight) alters how the app is used, operated, developed, or how agents/services/functions integrate. |
@@ -163,10 +163,11 @@ This file is the tracked record that survives across clones. **Prepend** a new s
 
 If `next-session-start-here.md` is missing on a fresh clone next session, the next session's agent can reconstruct it from this file's latest section + recent commit messages.
 
-**Arc-close roll-down (retention discipline).** At an **arc/epic close** — not every session — roll cold history out of the hot SSOTs so they stay small (the "current arc + 1 prior stays hot" rule from the retention contract above):
-- `SESSION-HANDOFF.md` → move session sections older than the current arc + 1 prior to the TOP of `SESSION-HANDOFF.history.md`; leave a `> History archived to …` pointer in the hot file.
+**Arc-close roll-down (retention discipline).** At an **arc/epic close** — not every session — roll cold history out of the hot SSOTs so they stay small (the "current arc + 1 prior stays hot" rule from the retention contract above). A practical boundary for "current arc": the sections since the **last epic/retrospective close marker** (plus the one immediately prior) stay hot; everything older rolls down.
+- `SESSION-HANDOFF.md` → move session sections older than the current arc + 1 prior to the TOP of `SESSION-HANDOFF.history.md`; leave a `> History archived to SESSION-HANDOFF.history.md` pointer in the hot file.
 - `docs/STATE-OF-THE-APP.md` → move superseded top-banners + §11.1/§11.5 you-are-here snapshots older than current + 1 prior to `STATE-OF-THE-APP.history.md` (keep the FRAMING PRINCIPLE banner permanently).
 - `bmm-workflow-status.yaml` → demote any comment entry beyond newest-1-prior to `bmm-workflow-status.history.md`.
+- `docs/project-context.md` → its dated addendum history is demoted to `project-context.history.md` **automatically by `generate_project_context.py`** (Step 5), NOT by manual roll-down — the generator archives everything above the `<!-- BASE-DOC -->` marker. Do not hand-roll it.
 - `deferred-inventory.md` closed-entry sweep and `sprint-status.yaml` done-block archival happen on their own governance cadence (retrospective milestone; value-only reconcile), not as a routine roll-down.
 
 Do the roll-down **only** at arc close; a per-session roll-down would churn the files needlessly.

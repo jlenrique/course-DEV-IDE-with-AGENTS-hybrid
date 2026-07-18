@@ -163,3 +163,110 @@ def test_fail_loud_missing_handoff_file(tmp_path, capsys):
     assert rc == 1
     assert "SESSION-HANDOFF.md not found" in capsys.readouterr().err
     assert not (root / "next-session-start-here.md").exists()
+
+
+_HANDOFF_NO_SESSION = """\
+# Some Unrelated Top Heading
+
+## What is next
+
+Content that must NOT be lifted (no '# Session' section present).
+"""
+
+
+def test_fail_loud_zero_session_sections_does_not_write(tmp_path, capsys):
+    """T-failloud (1): HANDOFF present but ZERO '# Session' sections → rc=1."""
+    root = _make_root(tmp_path, _HANDOFF_NO_SESSION)
+    target = root / "next-session-start-here.md"
+    target.write_text("AUTHORED FALLBACK\n", encoding="utf-8")
+
+    rc = gen.main(["--root", str(root)])
+
+    assert rc == 1
+    assert "Session" in capsys.readouterr().err
+    assert target.read_text(encoding="utf-8") == "AUTHORED FALLBACK\n"
+
+
+_HANDOFF_PREFIXED = """\
+# Preamble heading that is NOT a session
+
+Some intro text.
+
+# Session close 2026-07-17 (NIGHT) — latest
+
+## What is next
+
+Real next action.
+"""
+
+
+def test_fail_loud_first_top_heading_not_a_session(tmp_path, capsys):
+    """P3a: a non-Session first '# ' heading must refuse (no stale lift)."""
+    root = _make_root(tmp_path, _HANDOFF_PREFIXED)
+    target = root / "next-session-start-here.md"
+    target.write_text("AUTHORED FALLBACK\n", encoding="utf-8")
+
+    rc = gen.main(["--root", str(root)])
+
+    assert rc == 1
+    assert "first top-level" in capsys.readouterr().err
+    assert target.read_text(encoding="utf-8") == "AUTHORED FALLBACK\n"
+
+
+_HANDOFF_WITH_SUBSTEPS = """\
+# Session close 2026-07-17 (NIGHT) — latest
+
+## What is next
+
+Lead-in sentence.
+
+### Sub-step A
+
+- do A first
+
+### Sub-step B
+
+- then do B
+
+## Unresolved issues / risks
+
+- A risk.
+"""
+
+
+def test_substeps_do_not_truncate_what_is_next(tmp_path):
+    """P3b: '### sub-steps' under the heading are part of the body, not a break."""
+    root = _make_root(tmp_path, _HANDOFF_WITH_SUBSTEPS)
+    rc = gen.main(["--root", str(root)])
+    assert rc == 0
+    out = (root / "next-session-start-here.md").read_text(encoding="utf-8")
+    assert "Sub-step A" in out
+    assert "then do B" in out
+
+
+_DEFERRED_WITH_ARCHIVE = """\
+# Deferred Inventory
+
+| Epic | Focus | Stories | Count | Trigger |
+|---|---|---|---|---|
+| **Epic 15** | Learning | 15-1 | 1 | trigger |
+| **Epic 16** | Autonomy | 16-1 | 1 | trigger |
+
+## Closed Entries — Archived (preserved for audit trail)
+
+| **Epic 99** | Closed | 99-1 | 1 | closed |
+| **Epic 98** | Closed | 98-1 | 1 | closed |
+"""
+
+
+def test_deferred_count_excludes_archived_rows(tmp_path):
+    """P3c: only LIVE '| **' rows (before Closed Entries) are counted."""
+    root = _make_root(tmp_path, _HANDOFF_HAPPY)
+    (root / "_bmad-output" / "planning-artifacts" / "deferred-inventory.md").write_text(
+        _DEFERRED_WITH_ARCHIVE, encoding="utf-8"
+    )
+    rc = gen.main(["--root", str(root)])
+    assert rc == 0
+    out = (root / "next-session-start-here.md").read_text(encoding="utf-8")
+    # 2 live rows counted; the 2 archived rows excluded.
+    assert "2 register rows" in out

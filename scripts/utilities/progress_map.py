@@ -40,6 +40,17 @@ NEXT_SESSION = ROOT / "next-session-start-here.md"
 PIPELINE_STEPS = hud_steps(load_manifest())
 
 # ---------------------------------------------------------------------------
+# Canonical heading strings — ONE source of truth (producer + consumer)
+# ---------------------------------------------------------------------------
+#
+# These are the load-bearing ``## <heading>`` strings the next-session
+# generated view MUST emit and that ``_extract_section`` keys on. Defining them
+# here (and importing them into ``generate_next_session.py``) kills the 4-copies
+# drift where producer and consumer hard-coded the same literals independently.
+IMMEDIATE_NEXT_ACTION_HEADING = "Immediate Next Action"
+KEY_RISKS_HEADING = "Key Risks / Unresolved Issues"
+
+# ---------------------------------------------------------------------------
 # Status classification
 # ---------------------------------------------------------------------------
 
@@ -348,7 +359,7 @@ def _qualify_markdown(filepath: Path, expected_headings: list[str]) -> list[dict
     # 3. Expected headings
     found = [
         h for h in expected_headings
-        if re.search(rf"^##\s+{re.escape(h)}", text, re.MULTILINE)
+        if re.search(rf"^##\s+{re.escape(h)}", text, re.MULTILINE | re.IGNORECASE)
     ]
     missing = [h for h in expected_headings if h not in found]
     if missing:
@@ -371,10 +382,10 @@ def qualify_sources() -> dict[str, Any]:
     all_findings.extend(_qualify_markdown(
         SESSION_HANDOFF, ["What Is Next", "Unresolved Issues"]))
     all_findings.extend(_qualify_markdown(
-        NEXT_SESSION, ["Immediate Next Action", "Key Risks / Unresolved Issues"]))
+        NEXT_SESSION, [IMMEDIATE_NEXT_ACTION_HEADING, KEY_RISKS_HEADING]))
 
     handoff_next = _extract_section(SESSION_HANDOFF, "What Is Next")
-    next_action = _extract_section(NEXT_SESSION, "Immediate Next Action")
+    next_action = _extract_section(NEXT_SESSION, IMMEDIATE_NEXT_ACTION_HEADING)
     if handoff_next and next_action:
         handoff_norm = " ".join(handoff_next.split())
         next_norm = " ".join(next_action.split())
@@ -575,12 +586,16 @@ def _extract_section(filepath: Path, heading: str) -> str:
     Necessary because load-bearing handoff files (SESSION-HANDOFF.md,
     next-session-start-here.md) evolve their heading text session-to-session;
     exact-match would silently drop content when a heading gets a suffix.
+
+    Matching is CASE-INSENSITIVE: live handoff files use sentence-case
+    (``## What is next``) while the lookup keys are Title-Case (``What Is
+    Next``); without ``re.IGNORECASE`` the parser silently extracted nothing.
     """
     if not filepath.exists():
         return ""
     text = filepath.read_text(encoding="utf-8")
     pattern = rf"^##\s+{re.escape(heading)}(?:[ \t][^\n]*)?$(.*?)(?=^##\s|\Z)"
-    match = re.search(pattern, text, re.MULTILINE | re.DOTALL)
+    match = re.search(pattern, text, re.MULTILINE | re.DOTALL | re.IGNORECASE)
     return match.group(1).strip() if match else ""
 
 
@@ -658,9 +673,9 @@ def build_report(*, json_mode: bool = False) -> dict[str, Any]:
 
     # Context from markdown files
     what_is_next = _extract_section(SESSION_HANDOFF, "What Is Next")
-    immediate_action = _extract_section(NEXT_SESSION, "Immediate Next Action")
+    immediate_action = _extract_section(NEXT_SESSION, IMMEDIATE_NEXT_ACTION_HEADING)
     unresolved = _extract_section(SESSION_HANDOFF, "Unresolved Issues")
-    risks = _extract_section(NEXT_SESSION, "Key Risks / Unresolved Issues")
+    risks = _extract_section(NEXT_SESSION, KEY_RISKS_HEADING)
     next_up = immediate_action or what_is_next
 
     report = {

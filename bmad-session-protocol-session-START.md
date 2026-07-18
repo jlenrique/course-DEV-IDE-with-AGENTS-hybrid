@@ -41,7 +41,7 @@ The startup protocol **reads** certain files; the WRAPUP protocol **writes** the
 | `deferred-inventory.md` | Step 4 (governance) | governance events | **Authored register — governance.** Closed entries → `## Closed Entries — Archived` at retrospective milestones. |
 | `bmm-workflow-status.yaml` | Step 4 | WRAPUP Step 3 | BMAD phase (structured YAML). Comment history → `bmm-workflow-status.history.md`. |
 | `next-session-start-here.md` | If present (per-clone cache) | WRAPUP Step 7 = **GENERATED** | **Generated view (fail-loud)** via `generate_next_session.py`; gitignored. Falls back to SESSION-HANDOFF. |
-| `docs/project-context.md` | Step 1 | WRAPUP Step 5 = **GENERATED** | **Generated view (thin header)** via `generate_project_context.py`; base doc below the `<!-- BASE-DOC -->` marker is hand-authored. Glob-loaded by ~59 skills — never move it. |
+| `docs/project-context.md` | Step 1 | WRAPUP Step 5 = **GENERATED** | **Generated view (thin header)** via `generate_project_context.py`; base doc below the `<!-- BASE-DOC -->` marker is hand-authored; addendum history → `project-context.history.md` (generator-fed). Glob-loaded by ~59 skills — never move it. |
 | `docs/ONBOARDING.md` | Once per fresh agent context | WRAPUP Step 9 if regenerated | **Architectural mental model** — knowledge-graph-derived. |
 | `docs/agent-environment.md` | Step 1 | WRAPUP Step 5 | MCP / API / tool / skill inventory. |
 | Guides (user/admin/dev) | Step 4 on-demand | WRAPUP Step 9 | Large stable living docs. |

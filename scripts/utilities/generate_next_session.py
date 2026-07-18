@@ -9,11 +9,12 @@ WRAPUP from authoritative sources:
 * ``_bmad-output/planning-artifacts/deferred-inventory.md`` — a rough deferred
   count (CLAUDE.md mandate).
 
-Contract (parsed by ``scripts/utilities/progress_map.py`` via CASE-SENSITIVE
+Contract (parsed by ``scripts/utilities/progress_map.py`` via a case-insensitive
 ``^##\\s+<heading>`` prefix match): the output MUST carry the Title-Case
 headings ``## Immediate Next Action`` and ``## Key Risks / Unresolved Issues``
-verbatim, plus the ``**Expected class for next session:**`` and deferred-count
-lines mandated by CLAUDE.md.
+verbatim (sourced from the shared ``progress_map`` heading constants), plus the
+``**Expected class for next session:**`` and deferred-count lines mandated by
+CLAUDE.md.
 
 FAIL-LOUD: if ``SESSION-HANDOFF.md`` is missing, no ``# Session`` section is
 found, or the latest section has no extractable "what is next" content, the
@@ -42,14 +43,29 @@ from pathlib import Path
 
 _DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 
+# The canonical next-session heading strings live ONCE in progress_map.py (the
+# consumer). Import them so producer + consumer cannot drift apart. Ensure the
+# repo root is importable when this file is run as a standalone script.
+if str(_DEFAULT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_DEFAULT_ROOT))
+from scripts.utilities.progress_map import (  # noqa: E402
+    IMMEDIATE_NEXT_ACTION_HEADING,
+    KEY_RISKS_HEADING,
+)
+
 DEFAULT_CLASS = "<carry-forward — set at WRAPUP>"
 
 # Env overrides let tests inject deterministic git identity without a real repo.
 _ENV_BRANCH = "GENERATE_VIEW_GIT_BRANCH"
 _ENV_HEAD = "GENERATE_VIEW_GIT_HEAD"
 
-# Top-level session delimiters in SESSION-HANDOFF.md.
-_SECTION_RE = re.compile(r"^#\s+Session\s+(?:close|handoff)\b.*$", re.IGNORECASE | re.MULTILINE)
+# Top-level session delimiters in SESSION-HANDOFF.md. Broadened to match ANY
+# ``# Session …`` variant (close / Handoff / WRAPUP / Summary / …) so the
+# newest section is always the one picked regardless of its suffix.
+_SECTION_RE = re.compile(r"^#\s+Session\b.*$", re.IGNORECASE | re.MULTILINE)
+# Any top-level (single ``#``) heading — used to assert the FIRST top-level
+# heading is a Session section (else an older matching section could be lifted).
+_TOP_HEADING_RE = re.compile(r"^#\s+\S[^\n]*$", re.MULTILINE)
 
 
 class GenerationError(RuntimeError):
@@ -66,8 +82,18 @@ def _latest_handoff_section(handoff_text: str) -> str:
     matches = list(_SECTION_RE.finditer(handoff_text))
     if not matches:
         raise GenerationError(
-            "generate_next_session: no '# Session close' / '# Session Handoff' "
-            "section found in SESSION-HANDOFF.md (cannot determine latest session)."
+            "generate_next_session: no '# Session …' section found in "
+            "SESSION-HANDOFF.md (cannot determine latest session)."
+        )
+    # The newest section MUST be the first top-level heading in the file. If an
+    # unrelated `# ` heading precedes it, refuse rather than silently lift an
+    # older matching section as if it were current.
+    top_headings = list(_TOP_HEADING_RE.finditer(handoff_text))
+    if not top_headings or top_headings[0].start() != matches[0].start():
+        raise GenerationError(
+            "generate_next_session: the first top-level '# ' heading in "
+            "SESSION-HANDOFF.md is not a '# Session …' section — refusing to "
+            "lift a non-newest section (target NOT overwritten)."
         )
     start = matches[0].start()
     end = matches[1].start() if len(matches) > 1 else len(handoff_text)
@@ -77,11 +103,13 @@ def _latest_handoff_section(handoff_text: str) -> str:
 def _extract_subsection(section_text: str, heading: str) -> str:
     """Lift the body under ``## <heading>...`` (case-insensitive prefix match).
 
-    Stops at the next ``#``/``##`` heading or end-of-section. The HANDOFF file
-    uses sentence-case headings (``## What is next`` / ``## Unresolved issues /
-    risks``); this reads them case-insensitively.
+    Stops at the next ``##`` heading or end-of-section (matching
+    progress_map._extract_section semantics), so ``### sub-steps`` under the
+    heading do NOT truncate the body. The HANDOFF file uses sentence-case
+    headings (``## What is next`` / ``## Unresolved issues / risks``); this
+    reads them case-insensitively.
     """
-    pattern = rf"^##\s+{heading}[^\n]*$(.*?)(?=^#{{1,6}}\s|\Z)"
+    pattern = rf"^##\s+{re.escape(heading)}[^\n]*$(.*?)(?=^##\s|\Z)"
     match = re.search(pattern, section_text, re.MULTILINE | re.DOTALL | re.IGNORECASE)
     return match.group(1).strip() if match else ""
 
@@ -114,11 +142,17 @@ def _git_info(root: Path) -> tuple[str, str]:
 
 
 def _deferred_count(deferred_path: Path) -> int | None:
-    """Rough deferred count = number of leading ``| **`` register rows."""
+    """Rough LIVE deferred count = ``| **`` register rows BEFORE the archive.
+
+    Rows under ``## Closed Entries — Archived`` are already-closed entries; they
+    are excluded so the count reflects the live backlog, not the audit trail.
+    """
     if not deferred_path.exists():
         return None
     text = deferred_path.read_text(encoding="utf-8")
-    return len(re.findall(r"^\|\s*\*\*", text, re.MULTILINE))
+    archived = re.search(r"^##\s+Closed Entries", text, re.MULTILINE | re.IGNORECASE)
+    region = text[: archived.start()] if archived else text
+    return len(re.findall(r"^\|\s*\*\*", region, re.MULTILINE))
 
 
 def _carry_forward_class(target_path: Path) -> str:
@@ -169,11 +203,11 @@ def render(
         "\n"
         f"**Expected class for next session:** {expected_class}\n"
         "\n"
-        "## Immediate Next Action\n"
+        f"## {IMMEDIATE_NEXT_ACTION_HEADING}\n"
         "\n"
         f"{what_is_next}\n"
         "\n"
-        "## Key Risks / Unresolved Issues\n"
+        f"## {KEY_RISKS_HEADING}\n"
         "\n"
         f"{unresolved_body}\n"
         "\n"

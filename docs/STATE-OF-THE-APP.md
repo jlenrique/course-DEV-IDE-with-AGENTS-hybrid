@@ -33,7 +33,7 @@
 > - **We do NOT design or shape the production codebase to make those off-the-books concierge/proofing runs work.** When a proofing run finds something, we fix it because it's a genuine production-codebase problem **for the product's (the SPOC runtime's) sake** — never to "make the concierge run pass." Every fix earns its place by improving the real product. Read every "concierge … arc" below through this lens: it names a **body of production-codebase hardening that proofing runs helped surface and prioritize**, *not* a design target of its own.
 
 
-> **Older status banners + superseded you-are-here snapshots archived** → [`STATE-OF-THE-APP.history.md`](STATE-OF-THE-APP.history.md) (2026-07-01 and earlier). Retention: current + 1 prior stays here (the FRAMING PRINCIPLE guardrail banner, referenced by session-START §0, stays permanently).
+> History archived to [`STATE-OF-THE-APP.history.md`](STATE-OF-THE-APP.history.md) — superseded status banners + §11.1/§11.5 you-are-here snapshots (2026-07-01 and earlier). Retention: current + 1 prior stays here (the FRAMING PRINCIPLE guardrail banner, referenced by session-START §0, stays permanently).
 
 ---
 

@@ -170,4 +170,4 @@ next-session-start-here.md ✓ · SESSION-HANDOFF.md ✓ (this) · deferred-inve
 ---
 
 
-> **Older sessions archived** → [`SESSION-HANDOFF.history.md`](SESSION-HANDOFF.history.md) (82 prior session-close sections, 2026-07-16 Epics-39/40 wave and earlier). Retention: current arc + 1 prior stays here; the WRAPUP roll-down step moves the rest.
+> History archived to [`SESSION-HANDOFF.history.md`](SESSION-HANDOFF.history.md) — 82 prior session-close sections (2026-07-16 Epics-39/40 wave and earlier). Retention: current arc + 1 prior stays here; the WRAPUP arc-close roll-down step moves the rest.
