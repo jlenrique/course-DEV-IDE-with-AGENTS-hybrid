@@ -73,7 +73,7 @@ Before running the steps below, name the expected session class. This determines
 
 | Class | Pattern | Steps engaged |
 |---|---|---|
-| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | All steps including Step 1a (Cora outstanding-findings gate). |
+| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | All steps including Step 1a (outstanding-findings gate). |
 | **D — Docs / Tooling** | Markdown-only edits, lint refactors, knowledge-graph refresh, tool/plugin install, session-meta edits | Steps 1, 2, 3, 10, 12. Step 1a SKIPPED — read `next-session-start-here.md` unresolved-issues block directly. |
 | **P — Planning** | PRD, architecture, epics/stories authoring; party-mode rounds; retrospectives | Steps 1, 2, 3, 7, 10, 11, 12. Step 1a only if prior session left invariant-touching findings. |
 
@@ -108,16 +108,16 @@ Execute these steps in order at the beginning of every session.
 
 **Class S only.** Skip for Class D and Class P (unless Class P inherits invariant-touching findings from the prior session).
 
-For Class S sessions, ask Cora to run her Session-START (SS) protocol: scan `next-session-start-here.md` (and `SESSION-HANDOFF.md` if referenced) for deferred Step 0a Audra L1/L2 findings and acknowledged-but-not-remediated Step 0b pre-closure gaps. Cora presents the list with three choices:
+For Class S sessions, run the outstanding-findings gate: scan `next-session-start-here.md` (and `SESSION-HANDOFF.md` if referenced) for deferred Step 0a L1/L2 coherence findings and acknowledged-but-not-remediated Step 0b pre-closure gaps. Present the list with three choices:
 - **Remediate first** — make findings the opening anchor; defer the originally-intended anchor.
 - **Run `/harmonize` full-repo now** — re-verify against whole-repo invariants + full change window since handoff anchor; recommended when the prior session's audit trail is incomplete.
 - **Proceed with original anchor, carrying findings forward** — findings must reappear in this session's WRAPUP Step 7.
 
 If `next-session-start-here.md` cites findings but no `reports/dev-coherence/` report exists for the prior session, treat as missing-audit-trail and recommend the full-repo sweep.
 
-**Tripwire pre-check:** if the most recent WRAPUP entry in Cora's `chronology.md` recorded a skipped Step 0, any `/harmonize` invoked in this session (mid-session or at WRAPUP) auto-promotes default scope from since-handoff to full-repo.
+**Tripwire pre-check:** if the most recent `SESSION-HANDOFF.md` section recorded a skipped Step 0 (the skip is logged there per WRAPUP Step 8), any `/harmonize` invoked in this session (mid-session or at WRAPUP) auto-promotes default scope from since-handoff to full-repo.
 
-**For Class D / P sessions:** read the unresolved-issues block of `next-session-start-here.md` directly and decide whether to remediate, carry forward, or proceed. Log the decision; Cora's tripwire still applies on the second consecutive skip.
+**For Class D / P sessions:** read the unresolved-issues block of `next-session-start-here.md` directly and decide whether to remediate, carry forward, or proceed. Log the decision; the coherence tripwire still applies on the second consecutive skip.
 
 ### 2. Confirm branch + worktree alignment
 

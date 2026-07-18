@@ -1,3 +1,13 @@
+> ⚠️ **ARCHIVED / DISSOLVED — do not follow.** The BMAD persona **Cora** was dissolved as a runtime
+> specialist (`_bmad-output/planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md` DR-2,
+> party-ratified 5/5, binding). Her session-coherence role was redistributed to the LangGraph CI stack
+> and the canonical session protocols. This file is retained for historical lineage only; parts of it
+> (e.g. hand-drafting `next-session-start-here.md`) now CONTRADICT the status-surface generated-view
+> regime. **Authoritative session procedure: [`bmad-session-protocol-session-START.md`](../../../../bmad-session-protocol-session-START.md)
+> + [`bmad-session-protocol-session-WRAPUP.md`](../../../../bmad-session-protocol-session-WRAPUP.md)** (the coherence gate lives at their Step 1a / Step 0).
+
+---
+
 # Session-WRAPUP Protocol (SW)
 
 Cora's closing move on every dev session. This protocol is invoked by the canonical BMAD Wrapup (`bmad-session-protocol-session-WRAPUP.md`) as **Step 0c** — the draft phase of the hot-start pair. Steps 7 and 8 of the canonical Wrapup finalize those drafts after Steps 1–6 have run. Goal: a clean hot-start pair for the next session, plus a memory-sidecar update.

@@ -18,7 +18,7 @@ The startup protocol **reads** certain files; the wrapup protocol **writes** the
 | `docs/ONBOARDING.md` | Once per fresh agent context | Step 9 if regenerated | **Architectural mental model** — knowledge-graph-derived structural ramp. |
 | `docs/agent-environment.md` | Step 1 | Step 5 | MCP / API / tool / skill inventory for agents. |
 | Guides (user/admin/dev/specialist) | Step 4 on-demand | Step 9 | **Living docs — evolve WITH the app.** Reviewed for currency every Class S session; MUST update when a change (especially a bug / live-run insight) alters how the app is used, operated, developed, or how agents/services/functions integrate. |
-| `reports/dev-coherence/<ts>/` | — | Step 0 (Class S only) | Audit trail for Cora-orchestrated sweeps. |
+| `reports/dev-coherence/<ts>/` | — | Step 0 (Class S only) | Audit trail for the pre-wrapup coherence sweeps. |
 
 > **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth (tracked). Every risk, blocker, or unresolved finding MUST appear in SESSION-HANDOFF.md (Step 8); the generated `next-session-start-here.md` mirrors what's needed for the fastest next-session ramp.
 
@@ -39,7 +39,7 @@ Before running the steps below, name the session class. This determines which st
 
 | Class | Pattern | Steps engaged |
 |---|---|---|
-| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | **All 13 steps.** Cora orchestrates Step 0. |
+| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | **All 13 steps.** Step 0 = the pre-wrapup coherence sweep. |
 | **D — Docs / Tooling** | Markdown-only edits, lint refactors, knowledge-graph refresh, tool/plugin install, session-meta edits | **Minimum-viable: Steps 1, 7, 8, 12.** All others default-SKIP with one-line rationale in Step 8. |
 | **P — Planning** | PRD, architecture, epics/stories authoring; party-mode rounds; retrospectives | **Steps 1, 2, 7, 8, 12.** Step 0 only if invariant files touched (pipeline-manifest, structural-walk, governance JSON, schemas). |
 
@@ -63,15 +63,17 @@ Three handoff points, in order:
 
 **Skip if Class D or P** (unless Class P touched invariant files).
 
-For Class S sessions, ask Cora to run her Session-WRAPUP (SW) protocol:
+For Class S sessions, run the pre-wrapup coherence sweep:
 
-- **0a Harmonization sweep:** `/harmonize` with scope `since-handoff` (default) or `full-repo` (on tripwire or operator request). Cora invokes Audra L1 deterministic + L2 agentic sweeps; report home at `reports/dev-coherence/YYYY-MM-DD-HHMM/`.
-- **0b Pre-closure audit** for any story flipping to `done` this session. Cora invokes Audra's closure-artifact audit; evidence at `{report_home}/evidence/ca-<story_id>.md`.
-- **0c Hot-start drafts:** Cora reads git log since the session-start anchor and drafts the hot-start pair (Steps 7 + 8) for operator review.
+- **0a Harmonization sweep:** `/harmonize` with scope `since-handoff` (default) or `full-repo` (on tripwire or operator request). Run the L1 deterministic + L2 agentic coherence checks; report home at `reports/dev-coherence/YYYY-MM-DD-HHMM/`.
+- **0b Pre-closure audit** for any story flipping to `done` this session. Run the closure-artifact audit; evidence at `{report_home}/evidence/ca-<story_id>.md`.
+- **0c Hot-start drafts:** read git log since the session-start anchor and draft `SESSION-HANDOFF.md` (Step 8) for operator review. (`next-session-start-here.md`, Step 7, is a GENERATED view — regenerated from the finalized SESSION-HANDOFF section, not hand-drafted.)
+
+> **Note (2026-07-18):** this pre-wrapup coherence sweep was formerly orchestrated by the **persona "Cora"**, which was **dissolved** as a runtime specialist (`DR-SLAB-1-CLOSE-2026-04-24.md` DR-2; her coherence role redistributed to the LangGraph CI stack + this protocol). The gate is retained — run it directly. Her SS/SW procedure references are archived at `skills/bmad-agent-cora/references/_archive/`.
 
 Outcomes for 0a/0b: remediate, queue for next session (record in Step 7), or proceed-with-acknowledged-gap (record in Step 8). L2 does not run until L1 is clean.
 
-**For Class D/P sessions:** record the skip in Step 8 with one-line rationale (e.g., "Class D — docs-only window; no substrate/schema/workflow files touched"). Cora's tripwire still fires per her chronology — two consecutive skips force a full sweep on the next session, even Class D.
+**For Class D/P sessions:** record the skip in Step 8 with one-line rationale (e.g., "Class D — docs-only window; no substrate/schema/workflow files touched"). The coherence tripwire still fires — two consecutive Step-0 skips (recorded in the SESSION-HANDOFF sections) force a full sweep on the next session, even Class D.
 
 ### 1. Run quality gate
 
@@ -141,7 +143,7 @@ Both files are read at startup Step 1 — stale content means the next session s
 Then **hand-set the one thing the generator cannot infer** — the `**Expected class for next session:**` forecast line (tied to the immediate next action) — and spot-check the output. The required content below is the validation checklist the generated file must satisfy:
 - **Expected class for next session** (one line near the top): `**Expected class for next session:** <S|D|P> — <one-line reason tied to the immediate next action>`. Forecast only — the next session's agent confirms at open and the operator can override.
 - **Immediate next action** (concrete, unambiguous — the first thing the next session should do).
-- **Unresolved issues or blockers** affecting the next session — including every Audra finding deferred from Step 0a and every pre-closure gap acknowledged-but-not-remediated from Step 0b.
+- **Unresolved issues or blockers** affecting the next session — including every L1/L2 coherence finding deferred from Step 0a and every pre-closure gap acknowledged-but-not-remediated from Step 0b.
 - Branch metadata: baseline branch + next working branch + exact checkout/create commands.
 - Hot-start notes (key file paths, gotchas discovered this session).
 - Course-content context (staging items pending review, workflow status, platform connection notes).
