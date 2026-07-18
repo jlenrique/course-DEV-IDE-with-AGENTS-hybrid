@@ -178,6 +178,9 @@ WAVE_LABELS: dict[str, str] = {
     "38-research-asks-graph": "Workbook Research Asks Graph",
     "39-glossary-trends-render": "Workbook Glossary & Trends Rendering",
     "40-cover": "Workbook Cover & Final Assembly",
+    "41-resume-walk-dispatch-integrity": "Resume-Walk Dispatch Integrity",
+    "42-operator-surface-next-pass": "Operator-Surface Next-Pass",
+    "43-hil-surface-tabular-coverage": "HIL Surface Tabular Coverage",
 }
 
 # ---------------------------------------------------------------------------
