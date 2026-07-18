@@ -1,3 +1,13 @@
+# Current Context Addendum - 2026-07-17 (NIGHT) (session WRAPUP: knowledge graph regenerated at bfefcc1b; doc chain deferred to fresh session)
+
+**Session class:** S. Branch `trial/c1m1-p1-2026-07-17` (origin synced).
+
+**Landed:** `.understand-anything/knowledge-graph.json` fully regenerated at HEAD `bfefcc1b` (2699 nodes / 5164 edges / 7 layers / 14-step tour; 894 files; fingerprints baseline rebuilt; validator clean) — Epics 41/42/43 substrate now in-graph. GCM account-picker neutralize fix committed (`b9b5029f`): gh-pages publish can no longer seed the `x-access-token` GCM identity; `ready_for_trial.ps1` purges any seeded identity pre-trial.
+
+**Next (fresh session, operator-directed):** ONBOARDING regen (pairing-completion commit for the graph — do NOT re-run `/understand`), then user/dev/admin/specialist guides + STATE-OF-THE-APP §11 (you-are-here, glyphs, progress table), then the R2 operator-steered live trial. Carried findings unchanged (3 production observations; S-1 party-gated; sandbox env fails).
+
+---
+
 # Current Context Addendum - 2026-07-17 (LATE) (session WRAPUP: EPIC 43 HIL Surface Tabular Coverage COMPLETE + master consolidated)
 
 **Session class:** S. Branches: consolidated `dev/workbook-wave-3940-2026-07-15` → `master` (`12775df6`, pushed); on fresh `trial/c1m1-p1-2026-07-17` (`12775df6`, synced).

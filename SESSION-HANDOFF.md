@@ -1,3 +1,40 @@
+# Session close 2026-07-17 (NIGHT) — KNOWLEDGE GRAPH REGENERATED at bfefcc1b + GCM account-picker fix landed; doc chain deferred to fresh session
+
+**Final class:** S (opened S per forecast; substrate touched via the committed GCM fix — no drift). **Branch:** `trial/c1m1-p1-2026-07-17` (origin synced). **Opened as:** BMAD session-START protocol; operator-directed KB-update session, closed early by operator choice to run the doc chain in a fresh session.
+
+## What was completed
+
+- **Knowledge graph REGENERATED** (`/understand --full` at HEAD `bfefcc1b`): 894 in-scope files → **2699 nodes / 5164 edges / 7 layers / 14-step tour**; assemble-review verified 894/894 file coverage + recovered 6 missing function nodes; inline validator 0 issues; fingerprints baseline rebuilt (894 files); `meta.json` stamped `bfefcc1b` (was `b24b2aed` — Epics 41/42/43 substrate now in-graph, incl. `hil_tabular_projector`, HUD/notify, operator_surface, G0S gate). Mid-run **Fable 5 usage credits exhausted** — remaining analyzer batches + review/layers/tour agents ran on Sonnet/Opus fallbacks; no validation flags.
+- **GCM account-picker neutralize fix COMMITTED `b9b5029f` + pushed** (found as uncommitted between-sessions work; verified: 25 tests passed + ruff clean): `gh_pages_publish._git` credential-helper disable (publish can no longer seed the `x-access-token` GCM identity), `ready_for_trial.ps1` neutralize pre-step, new operator script + runbook `docs/operator/github-gcm-account-picker.md`.
+- **Operator strategy consult** (this session, conversational): process-adequacy assessment delivered — governance adequate and self-correcting; watch status-surface proliferation (6+ hand-maintained ledgers) as the worst-scaling meta-debt; convert doc-only conventions to mechanical ratchets; define the MVP claim envelope before R2.
+
+## What is next
+
+1. **Fresh session (operator-directed): the doc-update chain** — ONBOARDING regen (`understand-onboard`; graph is FRESH, do NOT re-run `/understand`) as the **pairing-completion commit** for the graph committed this close (**pairing intentionally split across sessions at operator direction** — the commit-ONBOARDING+graph-together rule is satisfied by the next session's first commit), then user-guide → dev-guide → admin-guide → specialist docs → STATE-OF-THE-APP incl. §11.1 you-are-here + §11.2 glyphs + §11.5 progress table.
+2. **Then the R2 operator-steered live trial** on this branch (details unchanged — see next-session-start-here.md / prior section).
+
+## Unresolved issues / risks
+
+- Carried (unchanged from prior close): 3 production observations (voice G4Card binding MED; SPOC flagged-axis LOW; fold-gate/pause-set), static-validation S-1 PARTY-GATED + S-3/S-4/S-6, pre-existing sandbox env test fails.
+- **Step 0 Cora sweep skipped again** (Class-S rationale: no story work; touched substrate = one pre-verified fix commit with passing module tests + ruff; Cora dissolved per 2026-04-24 ratification). Second consecutive skip → tripwire: any `/harmonize` next session auto-promotes to full-repo.
+- Fable 5 usage credits exhausted this session — next session may need `/usage-credits` or model fallbacks for heavy agent work.
+
+## Key lessons
+
+- Analyzer-fleet model fallback (Fable→Sonnet/Opus) mid-pipeline worked cleanly because all state lived on disk (`intermediate/batch-*.json`) — the resumable-pipeline pattern paid off exactly as designed.
+- The `batch-input-*.json` parameter-file pattern (per-batch slices instead of inlining JSON into subagent prompts) kept 54 dispatches cheap; reuse for future fan-outs.
+
+## Validation summary
+
+- Step 1 quality gate (scoped to touched): `tests/marcus/orchestrator/test_gh_pages_publish.py` 25/25 passed; ruff clean on both touched Python files. KG artifacts: inline validator 0 issues / 111 benign orphan warnings; layer coverage exactly 894; imports parity 1359/1359 vs import map.
+- Steps 2/4a/4b/6 skipped (no planning-artifact, story-Kanban, agent/skill, or course-content changes).
+
+## Artifact update checklist
+
+KG trio (knowledge-graph/meta/fingerprints) ✓ committed this close · SESSION-HANDOFF ✓ (this) · next-session-start-here ✓ (rewritten) · bmm-workflow-status ✓ (line added) · project-context ✓ (addendum) · sprint-status — untouched (no story change) · guides/ONBOARDING — **deferred to next session by operator direction** · party memlog ✓ (one-line entry) · push ✓ (Step 12).
+
+---
+
 # Session close 2026-07-17 (LATE) — EPIC 43 HIL SURFACE TABULAR COVERAGE **COMPLETE** + master consolidated + fresh trial branch cut
 
 **Final class:** S. **Branches:** consolidated `dev/workbook-wave-3940-2026-07-15` → **`master` (`12775df6`, pushed)**; cut + on **`trial/c1m1-p1-2026-07-17`** (`12775df6`, pushed, synced). **Opened as:** BMAD session-START protocol; drove Epic 43 start-to-finish, then operator-directed master merge + fresh branch.
