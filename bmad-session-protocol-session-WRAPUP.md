@@ -6,19 +6,30 @@ Companion to `bmad-session-protocol-session-START.md`. Together these two files 
 
 The startup protocol **reads** certain files; the wrapup protocol **writes** them. Every read must have a corresponding write, or context is lost.
 
-| File | Startup reads | Wrapup writes | Role |
+| File | Startup reads | Wrapup writes | Role & SSOT status |
 |------|:---:|:---:|------|
-| `SESSION-HANDOFF.md` | Always (canonical) | Step 8 | **Cross-machine canonical record** — tracked. Survives across clones. Lessons, decisions, validation, permanent archive. |
-| `next-session-start-here.md` | If present (per-clone cache) | Step 7 | **Local hot-start cache** — gitignored per hybrid-clone policy. Action-oriented. If absent on a fresh clone, reconstruct from SESSION-HANDOFF.md + recent commits. |
+| `SESSION-HANDOFF.md` | Always (canonical) | Step 8 (+ roll-down) | **Authored SSOT — chronology.** Cross-machine, tracked. Current arc + 1 prior stay hot; older sections → `SESSION-HANDOFF.history.md`. |
+| `docs/STATE-OF-THE-APP.md` | §0 guardrail + on-demand | Step 9 | **Authored SSOT — product truth.** Current + 1 prior banners stay hot; older → `STATE-OF-THE-APP.history.md`. The FRAMING PRINCIPLE guardrail banner stays permanently (START §0 references it). |
+| `sprint-status.yaml` | Step 4 | Step 4a | **Authored SSOT — Kanban.** Value-reconcile only (line-regex + `tripwire_events` parsers — never structurally reformat); fully-done epic blocks may archive to `sprint-status.history.md`. |
+| `_bmad-output/planning-artifacts/deferred-inventory.md` | Step 4 (governance) | governance events | **Authored register — governance.** Closed entries roll to its `## Closed Entries — Archived` section at retrospective / multi-slab milestones (its own hygiene rule). |
+| `bmm-workflow-status.yaml` | Step 4 | Step 3 | BMAD phase (structured YAML — zero parsers). Append-only comment history → `bmm-workflow-status.history.md`; keep title + newest-1-prior entry. |
+| `next-session-start-here.md` | If present (per-clone cache) | Step 7 = **GENERATED** | **Generated view (fail-loud)** — `scripts/utilities/generate_next_session.py`. Gitignored. Falls back to SESSION-HANDOFF if generation fails; do not hand-maintain as source of truth. |
+| `docs/project-context.md` | Step 1 | Step 5 = **GENERATED** | **Generated view (thin header)** — `scripts/utilities/generate_project_context.py`. The base doc below the `<!-- BASE-DOC … -->` marker is hand-authored + preserved. Glob-loaded as a persistent-fact by ~59 skills — NEVER move/rename it, never create a second `project-context.md`. |
 | `docs/ONBOARDING.md` | Once per fresh agent context | Step 9 if regenerated | **Architectural mental model** — knowledge-graph-derived structural ramp. |
-| `docs/project-context.md` | Step 1 | Step 5 | Current state, key decisions, architecture summary. |
 | `docs/agent-environment.md` | Step 1 | Step 5 | MCP / API / tool / skill inventory for agents. |
-| `bmm-workflow-status.yaml` | Step 4 | Step 3 | BMAD phase and workflow transitions. |
-| `sprint-status.yaml` | Step 4 | Step 4a | **Canonical Kanban ledger** — epic/story progression through BMAD workflows. |
 | Guides (user/admin/dev/specialist) | Step 4 on-demand | Step 9 | **Living docs — evolve WITH the app.** Reviewed for currency every Class S session; MUST update when a change (especially a bug / live-run insight) alters how the app is used, operated, developed, or how agents/services/functions integrate. |
 | `reports/dev-coherence/<ts>/` | — | Step 0 (Class S only) | Audit trail for Cora-orchestrated sweeps. |
 
-> **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth (tracked). `next-session-start-here.md` is the local hot-start cache (gitignored). Every risk, blocker, or unresolved finding MUST appear in SESSION-HANDOFF.md (Step 8); next-session-start-here.md mirrors what's needed for the fastest next-session ramp.
+> **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth (tracked). Every risk, blocker, or unresolved finding MUST appear in SESSION-HANDOFF.md (Step 8); the generated `next-session-start-here.md` mirrors what's needed for the fastest next-session ramp.
+
+### Status-surface SSOT & retention contract (established 2026-07-17)
+
+The status surfaces are **three authored SSOTs + one governance register + generated/trimmed views** — one authority per question, everyone else reads. Do not re-accrete history into the hot files. (Full rationale + machine-consumer constraints: [`spec-status-surface-consolidation.md`](_bmad-output/implementation-artifacts/spec-status-surface-consolidation.md).)
+
+- **Authored SSOTs (hand-maintained):** `sprint-status.yaml` = Kanban · `SESSION-HANDOFF.md` = chronology · `docs/STATE-OF-THE-APP.md` = product truth. Plus `deferred-inventory.md` = governance register.
+- **Generated views (fail-loud, never the source of truth):** `next-session-start-here.md` and `docs/project-context.md`. Regenerate them (Steps 7, 5); if a generator fails it exits non-zero and does NOT overwrite — fall back to the authored SSOT.
+- **Retention = current arc + 1 prior stays hot.** Older content rolls to a dated `*.history.md` sibling via the **arc-close roll-down** (Step 8). Each trimmed hot file carries a `> History archived to <sibling>` pointer. Archive == move, never delete.
+- **Never structurally reformat `sprint-status.yaml`** — three consumers are line-regex (2-space indent, `epic-*` prefixes, `#`-comment stripping) and `tripwire_events` is a written+hashed ledger. Value edits + whole-block moves only.
 
 ---
 
@@ -85,7 +96,7 @@ Update content artifacts in `_bmad-output/`:
 
 **Skip if no phase / workflow transition this session.**
 
-Update `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` only for significant transitions (story started/completed, phase advanced). Do not update for minor in-session progress.
+Update `_bmad-output/implementation-artifacts/bmm-workflow-status.yaml` only for significant transitions (story started/completed, phase advanced). Do not update for minor in-session progress. Edit only the **structured YAML** and, if you prepend a dated `#` comment entry, keep only the title + newest-1-prior entry at the top — the older comment history lives in `bmm-workflow-status.history.md` (roll any demoted entry down there, do not let the blob re-accrete).
 
 ### 4a. Update sprint status
 
@@ -109,7 +120,7 @@ For new or modified agents/skills, confirm an Interaction test exists per the pr
 
 **Skip if no rules / phase / architecture / MCP / API / shared-skill / tool-tier changes this session.**
 
-- `docs/project-context.md` — update if rules, phase, or architecture changed.
+- `docs/project-context.md` — **GENERATED view.** Regenerate with `.venv/Scripts/python.exe scripts/utilities/generate_project_context.py` (rewrites the thin current-state header above the `<!-- BASE-DOC … -->` marker from the latest SESSION-HANDOFF section + SOTA §11.1). Edit the file **by hand only** to change the hand-authored base doc *below* the marker (genuine rules / architecture / tool-universe changes). Never move the file — ~59 skills glob-load it.
 - `docs/agent-environment.md` — update if MCP servers, API clients, shared skills, or tool tier classifications changed.
 - **Cursor dual-agent surfaces (when touched):** if `.cursor/rules/bmad-dual-agent-families.mdc`, `.cursor/agents/*.md`, or the Family A vs B note in `AGENTS.md` changed, record that in the handoff so the next Cursor session does not rediscover the dual-path cold-start. Custom agents remain `skills/bmad-agent-*` + sanctums (not installer `.cursor/skills/` mirrors).
 
@@ -123,13 +134,11 @@ Both files are read at startup Step 1 — stale content means the next session s
 - Update workflow status in `docs/workflow/`.
 - Log platform integration results.
 
-### 7. Finalize `next-session-start-here.md` (local hot-start cache)
+### 7. Finalize `next-session-start-here.md` (GENERATED local hot-start cache)
 
-For Class S: Cora drafted this in Step 0c — reconcile against anything added in Steps 1–6 and confirm final.
+**This is a generated view.** After Step 8's SESSION-HANDOFF section is written, regenerate it: `.venv/Scripts/python.exe scripts/utilities/generate_next_session.py`. It lifts the Immediate-Next-Action / Key-Risks content from the latest SESSION-HANDOFF section + branch/HEAD + deferred counts. If it exits non-zero (missing/malformed latest handoff section), fix the handoff section — do not hand-write the cache as a workaround.
 
-For Class D/P: author or update directly.
-
-Required content:
+Then **hand-set the one thing the generator cannot infer** — the `**Expected class for next session:**` forecast line (tied to the immediate next action) — and spot-check the output. The required content below is the validation checklist the generated file must satisfy:
 - **Expected class for next session** (one line near the top): `**Expected class for next session:** <S|D|P> — <one-line reason tied to the immediate next action>`. Forecast only — the next session's agent confirms at open and the operator can override.
 - **Immediate next action** (concrete, unambiguous — the first thing the next session should do).
 - **Unresolved issues or blockers** affecting the next session — including every Audra finding deferred from Step 0a and every pre-closure gap acknowledged-but-not-remediated from Step 0b.
@@ -141,7 +150,7 @@ This file is gitignored — local-only. It accelerates the next session's ramp b
 
 ### 8. Finalize `SESSION-HANDOFF.md` (cross-machine canonical record)
 
-This file is the tracked record that survives across clones. Append a new session-close section (preserve prior sessions as archive). Required content:
+This file is the tracked record that survives across clones. **Prepend** a new session-close section at the top (newest-first). Required content:
 - **Section header includes the final class** for this session (one line): `**Final class:** <S|D|P>` — with a note if the class drifted upward from the session-open declaration (e.g., `**Final class:** S (upgraded from D at HH:MM when <file> was touched)`).
 - What was completed (summary, not play-by-play).
 - What is next (broader than next-session-start-here; preserves multi-session context).
@@ -152,7 +161,15 @@ This file is the tracked record that survives across clones. Append a new sessio
 - Artifact update checklist.
 - For Class S: link to `reports/dev-coherence/YYYY-MM-DD-HHMM/`.
 
-If `next-session-start-here.md` is missing on a fresh clone next session, the next session's agent can reconstruct it from this file's last section + recent commit messages.
+If `next-session-start-here.md` is missing on a fresh clone next session, the next session's agent can reconstruct it from this file's latest section + recent commit messages.
+
+**Arc-close roll-down (retention discipline).** At an **arc/epic close** — not every session — roll cold history out of the hot SSOTs so they stay small (the "current arc + 1 prior stays hot" rule from the retention contract above):
+- `SESSION-HANDOFF.md` → move session sections older than the current arc + 1 prior to the TOP of `SESSION-HANDOFF.history.md`; leave a `> History archived to …` pointer in the hot file.
+- `docs/STATE-OF-THE-APP.md` → move superseded top-banners + §11.1/§11.5 you-are-here snapshots older than current + 1 prior to `STATE-OF-THE-APP.history.md` (keep the FRAMING PRINCIPLE banner permanently).
+- `bmm-workflow-status.yaml` → demote any comment entry beyond newest-1-prior to `bmm-workflow-status.history.md`.
+- `deferred-inventory.md` closed-entry sweep and `sprint-status.yaml` done-block archival happen on their own governance cadence (retrospective milestone; value-only reconcile), not as a routine roll-down.
+
+Do the roll-down **only** at arc close; a per-session roll-down would churn the files needlessly.
 
 ### 9. Update guides, reuse patterns, structural walks, knowledge graph (consolidated)
 
