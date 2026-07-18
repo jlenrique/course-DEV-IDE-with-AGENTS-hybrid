@@ -6,12 +6,14 @@
 
 ## Current Session State
 
-Latest session close: **Session close 2026-07-17 (NIGHT) — KNOWLEDGE GRAPH REGENERATED at bfefcc1b + GCM account-picker fix landed; doc chain deferred to fresh session**
+Latest session close: **Session close 2026-07-18 — DOC CHAIN (ONBOARDING+guides+SOTA) + STATUS-SURFACE CONSOLIDATION arc (bmad-quick-dev, party-confirmed COMPLETE)**
 
 **What is next:**
 
-1. **Fresh session (operator-directed): the doc-update chain** — ONBOARDING regen (`understand-onboard`; graph is FRESH, do NOT re-run `/understand`) as the **pairing-completion commit** for the graph committed this close (**pairing intentionally split across sessions at operator direction** — the commit-ONBOARDING+graph-together rule is satisfied by the next session's first commit), then user-guide → dev-guide → admin-guide → specialist docs → STATE-OF-THE-APP incl. §11.1 you-are-here + §11.2 glyphs + §11.5 progress table.
-2. **Then the R2 operator-steered live trial** on this branch (details unchanged — see next-session-start-here.md / prior section).
+1. **Push `dev/status-surface-consolidation-2026-07-17`** to origin (Step 12; new branch, no tracking yet) — consolidation arc is complete + party-confirmed; safe to push.
+2. **Merge decision (operator):** the consolidation branch is discrete governance substrate ready to merge to `master` (or fast-forward into the trial branch). Operator's call on timing.
+3. **The R2 operator-steered live trial** on `tejal-apc-c1m1-p1-call` remains the standing product frontier (unchanged; operator at the wheel).
+4. **Deferred follow-up filed:** `project-context-base-doc-slim` (deferred-work.md) — the 111KB hand-authored base doc is the real 59-skill payload + carries ~12 dated chronology paragraphs; a separate scoped decision (not this structural pass).
 
 ## You Are Here (from STATE-OF-THE-APP.md §11.1)
 

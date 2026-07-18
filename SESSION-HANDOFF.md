@@ -1,3 +1,42 @@
+# Session close 2026-07-18 — DOC CHAIN (ONBOARDING+guides+SOTA) + STATUS-SURFACE CONSOLIDATION arc (bmad-quick-dev, party-confirmed COMPLETE)
+
+**Final class:** S (session-governance protocol + scripts/tests + sprint-status touched). **Branches:** opened on `trial/c1m1-p1-2026-07-17` (doc chain, pushed `6d87f35b`); cut `dev/status-surface-consolidation-2026-07-17` off it for the consolidation arc (4 commits `497eb4dc`→`f382e651`, NOT yet pushed at this section-write — see Step 12). **Opened as:** BMAD session-START (doc chain) → operator-directed party-mode on the status-surface liability → `bmad-quick-dev` consolidation arc.
+
+## What was completed
+
+- **Doc chain (Class D, `trial/c1m1-p1-2026-07-17`, pushed `6d87f35b`):** ONBOARDING regen against the fresh `bfefcc1b` graph (8→7 layers, 2699 nodes; pairing-completion commit `6a7a9bea`); then user-guide → dev-guide → admin-guide → specialist docs (`how-to-add-a-specialist` pitfall #11) → STATE-OF-THE-APP (§11.1/§11.2/§11.5 + top banner) reconciled forward to Epics 41/42/43.
+- **Status-surface consolidation arc (Class S, `dev/status-surface-consolidation-2026-07-17`):** party-ratified frozen contract (`spec-status-surface-consolidation.md`). **3 authored SSOTs** (sprint-status/Kanban, SESSION-HANDOFF/chronology, STATE-OF-THE-APP/product-truth) + deferred-inventory (governance, untouched) + **2 fail-loud GENERATED views** (`next-session-start-here.md`, `docs/project-context.md`). Cold history archived to dated `*.history.md` siblings (bmm blob 37KB, SESSION-HANDOFF 547KB→20KB, SOTA 122KB→81KB, project-context addenda). START/WRAPUP session-protocol contract table rewritten (SSOT-of-SSOTs) + arc-close roll-down step. `sprint-status` value-reconciled to SOTA §11 (concierge-substrate→done; stale comments; WAVE_LABELS 41/42/43; tracker-reality note) — no structural reformat, tripwire_events untouched. Two generators built with fail-loud fixtures; a latent `progress_map` case-sensitivity bug (live SESSION-HANDOFF extracted 0 chars) fixed via case-insensitive matching + shared heading constants + integration/live/retention tripwire tests.
+- **Fully-spawned 6-voice confirmation party + adversarial patch batch:** Winston/John/Paige/Blind/Edge/Murat reviewed the real diff → no BLOCK, no intent/spec defect. Patch batch `f382e651` (broadened `# Session` match + fail-loud stale-lift; `newline=""` byte-for-byte; idempotent tracked header; anchored bootstrap; +12 tests). Re-convened critics: Murat **VERIFIED-COMPLETE**, Edge + Blind **CONFIRMED-RESOLVED** → full consensus COMPLETE (no Dr. Quinn needed). 201 tests green, ruff clean.
+
+## What is next
+
+1. **Push `dev/status-surface-consolidation-2026-07-17`** to origin (Step 12; new branch, no tracking yet) — consolidation arc is complete + party-confirmed; safe to push.
+2. **Merge decision (operator):** the consolidation branch is discrete governance substrate ready to merge to `master` (or fast-forward into the trial branch). Operator's call on timing.
+3. **The R2 operator-steered live trial** on `tejal-apc-c1m1-p1-call` remains the standing product frontier (unchanged; operator at the wheel).
+4. **Deferred follow-up filed:** `project-context-base-doc-slim` (deferred-work.md) — the 111KB hand-authored base doc is the real 59-skill payload + carries ~12 dated chronology paragraphs; a separate scoped decision (not this structural pass).
+
+## Unresolved issues / risks
+
+- **Two accepted LOWs** (party-dispositioned, by-design): `generate_next_session._carry_forward_class` silently defaults the Expected-class when the label is absent (operator hand-sets it anyway); `next-session-start-here.md` timestamp is non-idempotent (gitignored — no tracked churn).
+- **Ambient dirty files** (NOT session-owned, left untouched): shadow-monitor `.md`s, `state/config/gamma-styleguide-picks.jsonl`, `workbooks-*`, HAI/tejal corpus dirs, `goal-*.txt`, `state/runtime/notify/`.
+- Pre-existing `progress_map` / `audit_done_bmad_coverage` nonzero exits confirmed baseline (stash-verified), not introduced.
+
+## Key lessons
+
+- **The status-surface consolidation's own thesis (stop hand-maintained drift) was validated by the party:** Murat *reproduced* a live silent-drop (case-sensitive parser + sentence-case live file → 0 chars extracted), which the earlier passing suite masked — the fix (case-insensitive + shared constant + generate→parse integration test) makes the drift mechanically catchable.
+- **Discovery-first planning paid off:** the consumer audit corrected two wrong premises (project-context loaded by ~59 skills not 2; deferred-inventory archive section already existed) BEFORE any file moved — avoiding a broken cleanup.
+- **The fully-spawned party is a real gate:** it upgraded 3 CONCERNS/CONDITIONAL verdicts to confirmed only after a verified patch batch, not on assertion.
+
+## Validation summary
+
+- 201 targeted tests pass (utilities + progress_map + sprint_status + tripwire audits); ruff clean; +12 new tests (integration, live-file guard, retention tripwire, fail-loud coverage). sprint-status YAML valid, tripwire_events preserved. Base doc byte-identical (111,157 B). Step 0 Cora sweep: NOT run as a separate `/harmonize` — the 6-voice party + adversarial verify + green suite served as the coherence check (Cora dissolved per 2026-04-24; tripwire noted — next `/harmonize` auto-promotes to full-repo).
+
+## Artifact update checklist
+
+spec ✓ (all tasks closed/descoped; Change Log + party record) · SESSION-HANDOFF ✓ (this) · bmm-workflow-status ✓ · sprint-status ✓ (T8 reconcile) · deferred-work ✓ (base-doc-slim) · protocol docs START+WRAPUP ✓ (rewritten) · project-context + next-session ✓ (regenerated, Steps 5/7) · guides/ONBOARDING/KG — unchanged (dev-process/governance change; scripts under `scripts/utilities/` are graph-excluded) · push — Step 12.
+
+---
+
 # Session close 2026-07-17 (NIGHT) — KNOWLEDGE GRAPH REGENERATED at bfefcc1b + GCM account-picker fix landed; doc chain deferred to fresh session
 
 **Final class:** S (opened S per forecast; substrate touched via the committed GCM fix — no drift). **Branch:** `trial/c1m1-p1-2026-07-17` (origin synced). **Opened as:** BMAD session-START protocol; operator-directed KB-update session, closed early by operator choice to run the doc chain in a fresh session.
