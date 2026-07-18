@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "b24b2aed4539da6d71669a31f277570566b1fa9f",
-  "generatedAt": "2026-07-15T13:47:04.150Z",
+  "gitCommitHash": "bfefcc1b4a460cfb4804f32eb3d9232eacf7a158",
+  "generatedAt": "2026-07-18T01:09:23.901Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -4923,6 +4923,194 @@
       "totalLines": 136,
       "hasStructuralAnalysis": true
     },
+    "app/hud/public.py": {
+      "filePath": "app/hud/public.py",
+      "contentHash": "a42ee648feeb24f492de6240f4bbe6188930a6d2f2367b5f3776da9d4bdb33f5",
+      "functions": [
+        {
+          "name": "_copy_allowed",
+          "params": [
+            "src",
+            "allowed"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "build_public_view",
+          "params": [
+            "projection"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 83
+        },
+        {
+          "name": "_canonical_trial_id",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_offline_page",
+          "params": [
+            "message"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_now_iso",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_public_render_data",
+          "params": [
+            "run_dir",
+            "bound_trial_id",
+            "mode"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "create_public_hud_app",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "mode"
+          ],
+          "returnType": "FastAPI",
+          "exported": true,
+          "lineCount": 76
+        },
+        {
+          "name": "_required_env",
+          "params": [
+            "name"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "run_public_hud_server",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "port",
+            "mode",
+            "host"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Mapping"
+          ]
+        },
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "uuid",
+          "specifiers": [
+            "UUID"
+          ]
+        },
+        {
+          "source": "fastapi",
+          "specifiers": [
+            "FastAPI",
+            "Request",
+            "Response"
+          ]
+        },
+        {
+          "source": "fastapi.responses",
+          "specifiers": [
+            "HTMLResponse",
+            "JSONResponse"
+          ]
+        },
+        {
+          "source": "app.hud.data",
+          "specifiers": [
+            "projection_etag",
+            "read_snapshot"
+          ]
+        },
+        {
+          "source": "app.hud.render",
+          "specifiers": [
+            "render_page"
+          ]
+        },
+        {
+          "source": "app.hud.render.styles",
+          "specifiers": [
+            "CSS"
+          ]
+        },
+        {
+          "source": "app.models.runtime.operator_surface",
+          "specifiers": [
+            "RUN_SETTINGS_TOGGLES",
+            "OperatorSurfaceProjection"
+          ]
+        }
+      ],
+      "exports": [
+        "_copy_allowed",
+        "build_public_view",
+        "_canonical_trial_id",
+        "_offline_page",
+        "_now_iso",
+        "_public_render_data",
+        "create_public_hud_app",
+        "_required_env",
+        "run_public_hud_server"
+      ],
+      "totalLines": 454,
+      "hasStructuralAnalysis": true
+    },
     "app/hud/render/__init__.py": {
       "filePath": "app/hud/render/__init__.py",
       "contentHash": "5e78fa2ef0fd3ae72e43fdf6ced045a41ee15c434bce7fc50c7885effde0829b",
@@ -4954,7 +5142,7 @@
     },
     "app/hud/render/page.py": {
       "filePath": "app/hud/render/page.py",
-      "contentHash": "c7a15ab8a58b21d733b24f3ae7a878bdf93e1d7e339d7649e6417c42679ea4b9",
+      "contentHash": "a3f61224bfc9e0389aa4886751811fc16cb85529fea8a3cc10e5854afd22a2a2",
       "functions": [
         {
           "name": "_esc",
@@ -5057,7 +5245,25 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 42
+          "lineCount": 45
+        },
+        {
+          "name": "_rs_state",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_run_settings_panel",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
         },
         {
           "name": "_health_tile",
@@ -5332,6 +5538,12 @@
           "specifiers": [
             "CSS"
           ]
+        },
+        {
+          "source": "app.models.runtime.operator_surface",
+          "specifiers": [
+            "RUN_SETTINGS_TOGGLES"
+          ]
         }
       ],
       "exports": [
@@ -5346,6 +5558,8 @@
         "_zone_annunciator",
         "_chip",
         "_zone_identity",
+        "_rs_state",
+        "_run_settings_panel",
         "_health_tile",
         "_zone_health",
         "_step_kind",
@@ -5373,7 +5587,7 @@
         "render_zones",
         "render_page"
       ],
-      "totalLines": 942,
+      "totalLines": 987,
       "hasStructuralAnalysis": true
     },
     "app/hud/render/styles.py": {
@@ -6114,7 +6328,7 @@
     },
     "app/manifest/compiler.py": {
       "filePath": "app/manifest/compiler.py",
-      "contentHash": "18c46d83afbd321408ac9fa5a717ffccf40abce6ffbf69627710c21103a2c6ee",
+      "contentHash": "894a60b715b5ffaf622ca494bc350aef61276e554a3ccfdac9ebefb960cfde84",
       "functions": [
         {
           "name": "_repo_root",
@@ -6435,7 +6649,7 @@
         "compile",
         "compile_run_graph"
       ],
-      "totalLines": 489,
+      "totalLines": 490,
       "hasStructuralAnalysis": true
     },
     "app/manifest/conditions.py": {
@@ -7771,7 +7985,7 @@
     },
     "app/marcus/cli/gate_shims/_shim_parser.py": {
       "filePath": "app/marcus/cli/gate_shims/_shim_parser.py",
-      "contentHash": "b7417bcdceab93f68412992bfdcaa42818ab6633cf6a9e41357a78216efe68f3",
+      "contentHash": "b45dca12d2146c2ffaea8cbe0931202dc3b942688fe405402194a9f226e5b7ec",
       "functions": [
         {
           "name": "build_shim_parser",
@@ -7807,7 +8021,7 @@
       "exports": [
         "build_shim_parser"
       ],
-      "totalLines": 97,
+      "totalLines": 99,
       "hasStructuralAnalysis": true
     },
     "app/marcus/cli/gate_shims/g1_shim.py": {
@@ -8296,9 +8510,565 @@
       "totalLines": 68,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/cli/hil_tabular_projector.py": {
+      "filePath": "app/marcus/cli/hil_tabular_projector.py",
+      "contentHash": "ecb63b53c3143dd7b7424aded937ad704479ef6fc6c868729c82f34e28618bae",
+      "functions": [
+        {
+          "name": "_md_table",
+          "params": [
+            "headers",
+            "rows"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_paginate",
+          "params": [
+            "rows",
+            "page_size"
+          ],
+          "returnType": "tuple[list[Sequence[Any]], int]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_pagination_footer",
+          "params": [
+            "remaining"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_kind_label",
+          "params": [
+            "component"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "render_gate_identity",
+          "params": [
+            "identity"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_ungrounded_components",
+          "params": [
+            "enrichment"
+          ],
+          "returnType": "list[Mapping[str, Any]]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "render_enrichment_metrics",
+          "params": [
+            "enrichment"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "render_ungrounded_advisories",
+          "params": [
+            "enrichment",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "render_learning_objectives",
+          "params": [
+            "los",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_truncate_cell",
+          "params": [
+            "text",
+            "width"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_summarize_shallow",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_summarize_nested_value",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "render_generic_gate_content",
+          "params": [
+            "content",
+            "title",
+            "page_size",
+            "value_width"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "_source_is_excluded",
+          "params": [
+            "source"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_directive_variant_slugs",
+          "params": [
+            "gamma_settings"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_corpus_basename",
+          "params": [
+            "corpus_dir"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "render_directive_sources",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 73
+        },
+        {
+          "name": "_unwrap_payload",
+          "params": [
+            "content",
+            "payload_key"
+          ],
+          "returnType": "Mapping[str, Any]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "render_per_slide_mode",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "render_variant_ab",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "_voice_options",
+          "params": [
+            "card"
+          ],
+          "returnType": "list[Mapping[str, Any]]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "render_voice_candidates",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 79
+        },
+        {
+          "name": "_plan_unit_body",
+          "params": [
+            "content"
+          ],
+          "returnType": "Mapping[str, Any]",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "render_plan_unit",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "_estimator_body",
+          "params": [
+            "content"
+          ],
+          "returnType": "Mapping[str, Any]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "render_estimator",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 46
+        },
+        {
+          "name": "_run_constants_body",
+          "params": [
+            "content"
+          ],
+          "returnType": "Mapping[str, Any]",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "render_run_constants",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "_literal_visual_rows",
+          "params": [
+            "content"
+          ],
+          "returnType": "list[Mapping[str, Any]]",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "render_literal_visual",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "_storyboard_target_rows",
+          "params": [
+            "content"
+          ],
+          "returnType": "list[Mapping[str, Any]]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "render_storyboard_targets",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "render_storyboard_b",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "_input_package_body",
+          "params": [
+            "content"
+          ],
+          "returnType": "Mapping[str, Any]",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "render_input_package",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 61
+        },
+        {
+          "name": "_final_handoff_body",
+          "params": [
+            "content"
+          ],
+          "returnType": "Mapping[str, Any]",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "render_final_handoff",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "_seq_count",
+          "params": [
+            "value"
+          ],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "render_motion_plan",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "render_motion_clip",
+          "params": [
+            "content",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 51
+        },
+        {
+          "name": "resolve_content_type",
+          "params": [
+            "gate_key"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "register_renderer",
+          "params": [
+            "content_type",
+            "renderer"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "registered_content_types",
+          "params": [],
+          "returnType": "frozenset[str]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "get_renderer",
+          "params": [
+            "content_type"
+          ],
+          "returnType": "GateContentRenderer",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "render_gate_content",
+          "params": [
+            "content",
+            "content_type",
+            "title",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "render_hil_tables",
+          "params": [
+            "surface",
+            "page_size"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "build_gate_surface",
+          "params": [
+            "gate_identity",
+            "enrichment",
+            "learning_objectives",
+            "gate_content"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "emit_gate_surface",
+          "params": [
+            "surface",
+            "stream",
+            "next_action",
+            "shell_context",
+            "raw_artifact"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 41
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable",
+            "Mapping",
+            "Sequence"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "IO",
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "_md_table",
+        "_paginate",
+        "_pagination_footer",
+        "_kind_label",
+        "render_gate_identity",
+        "_ungrounded_components",
+        "render_enrichment_metrics",
+        "render_ungrounded_advisories",
+        "render_learning_objectives",
+        "_truncate_cell",
+        "_summarize_shallow",
+        "_summarize_nested_value",
+        "render_generic_gate_content",
+        "_source_is_excluded",
+        "_directive_variant_slugs",
+        "_corpus_basename",
+        "render_directive_sources",
+        "_unwrap_payload",
+        "render_per_slide_mode",
+        "render_variant_ab",
+        "_voice_options",
+        "render_voice_candidates",
+        "_plan_unit_body",
+        "render_plan_unit",
+        "_estimator_body",
+        "render_estimator",
+        "_run_constants_body",
+        "render_run_constants",
+        "_literal_visual_rows",
+        "render_literal_visual",
+        "_storyboard_target_rows",
+        "render_storyboard_targets",
+        "render_storyboard_b",
+        "_input_package_body",
+        "render_input_package",
+        "_final_handoff_body",
+        "render_final_handoff",
+        "_seq_count",
+        "render_motion_plan",
+        "render_motion_clip",
+        "resolve_content_type",
+        "register_renderer",
+        "registered_content_types",
+        "get_renderer",
+        "render_gate_content",
+        "render_hil_tables",
+        "build_gate_surface",
+        "emit_gate_surface"
+      ],
+      "totalLines": 1835,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/cli/marcus_interlocutor.py": {
       "filePath": "app/marcus/cli/marcus_interlocutor.py",
-      "contentHash": "3ddacc99ea480d6a73088ca509dfdca8fe0d6353b2ae6a368e68ae513504b65f",
+      "contentHash": "abc4c1cae40a7ef45f56e36c7dc41e80a598a999a1088f7aa23ebcf63ef1c459",
       "functions": [
         {
           "name": "validate_action_against_gate",
@@ -8446,7 +9216,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 214
+          "lineCount": 217
         }
       ],
       "imports": [
@@ -8554,7 +9324,7 @@
         "_overlay_is_stale",
         "main"
       ],
-      "totalLines": 542,
+      "totalLines": 545,
       "hasStructuralAnalysis": true
     },
     "app/marcus/cli/marcus_spoc.py": {
@@ -9162,16 +9932,30 @@
     },
     "app/marcus/cli/next_action.py": {
       "filePath": "app/marcus/cli/next_action.py",
-      "contentHash": "e0cd26a92cc7d3d1efafcb6a6ae0eb0f76e0659fc85a6ebb4dc4dc4ef27c956e",
+      "contentHash": "d69a373018968fa5a51e1c2fada757b53b4a28ce6c56cb44611f7a02632dd487",
       "functions": [
         {
           "name": "_read_card_fields",
           "params": [
             "card_path"
           ],
-          "returnType": "tuple[str, str]",
+          "returnType": "tuple[str, str, tuple[str, ...]]",
           "exported": true,
-          "lineCount": 21
+          "lineCount": 30
+        },
+        {
+          "name": "_render_neutral_gate_next_action",
+          "params": [
+            "trial_id",
+            "gate_id",
+            "card_id",
+            "digest",
+            "operator_id",
+            "allowed_verbs"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 36
         },
         {
           "name": "build_next_action",
@@ -9181,7 +9965,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 30
+          "lineCount": 29
         }
       ],
       "classes": [],
@@ -9219,9 +10003,10 @@
       ],
       "exports": [
         "_read_card_fields",
+        "_render_neutral_gate_next_action",
         "build_next_action"
       ],
-      "totalLines": 91,
+      "totalLines": 154,
       "hasStructuralAnalysis": true
     },
     "app/marcus/cli/plan_dialogue_cli.py": {
@@ -9610,7 +10395,7 @@
     },
     "app/marcus/cli/trial.py": {
       "filePath": "app/marcus/cli/trial.py",
-      "contentHash": "ded547779e264fa74fe2f05febab7a358b1324a3c63d04fadb47173d7f6b4ad3",
+      "contentHash": "45d08db1935071046a4ac49e3552c2eeba89897e9f2139ffe5a5831fcab64233",
       "functions": [
         {
           "name": "_load_env_if_available",
@@ -9632,6 +10417,26 @@
           "returnType": "bool",
           "exported": true,
           "lineCount": 2
+        },
+        {
+          "name": "_require_live_env_unless_offline",
+          "params": [
+            "allow_offline_cost_report",
+            "context",
+            "trial_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "_persisted_allow_offline_cost_report",
+          "params": [
+            "pause_path"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 20
         },
         {
           "name": "_resolve_editor",
@@ -9668,6 +10473,25 @@
           "lineCount": 10
         },
         {
+          "name": "_read_json_quiet",
+          "params": [
+            "path"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_emit_gate_surface_if_paused",
+          "params": [
+            "payload",
+            "runs_root"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 93
+        },
+        {
           "name": "_confirm_or_edit_directive",
           "params": [
             "directive_path",
@@ -9679,7 +10503,7 @@
           ],
           "returnType": "Literal[\"confirmed\", \"saved-only\"]",
           "exported": true,
-          "lineCount": 45
+          "lineCount": 51
         },
         {
           "name": "_write_cancellation_record",
@@ -9751,11 +10575,12 @@
             "llm_execution_mode",
             "hud",
             "course_source_root",
-            "encounter_mode"
+            "encounter_mode",
+            "prewalk_settings_confirm"
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 365
+          "lineCount": 369
         },
         {
           "name": "_resolve_bundle_selection",
@@ -9782,7 +10607,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 61
+          "lineCount": 68
         },
         {
           "name": "resume_trial",
@@ -9795,7 +10620,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 52
+          "lineCount": 63
         },
         {
           "name": "_build_inline_verdict",
@@ -9813,7 +10638,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 55
+          "lineCount": 58
         },
         {
           "name": "recover_trial",
@@ -9827,7 +10652,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 59
+          "lineCount": 70
         },
         {
           "name": "recover_trial_cli",
@@ -9836,7 +10661,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 17
+          "lineCount": 22
         },
         {
           "name": "_migrate_legacy_workbook_context",
@@ -9859,7 +10684,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 33
+          "lineCount": 44
         },
         {
           "name": "resume_batch_trial_cli",
@@ -9868,7 +10693,7 @@
           ],
           "returnType": "int",
           "exported": true,
-          "lineCount": 8
+          "lineCount": 13
         },
         {
           "name": "build_trial_parser",
@@ -9877,7 +10702,7 @@
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 260
+          "lineCount": 274
         }
       ],
       "classes": [
@@ -9942,6 +10767,12 @@
           ]
         },
         {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
           "source": "os",
           "specifiers": [
             "os"
@@ -9997,6 +10828,12 @@
           ]
         },
         {
+          "source": "types",
+          "specifiers": [
+            "SimpleNamespace"
+          ]
+        },
+        {
           "source": "typing",
           "specifiers": [
             "Any",
@@ -10037,11 +10874,26 @@
           ]
         },
         {
+          "source": "app.marcus.cli.hil_tabular_projector",
+          "specifiers": [
+            "build_gate_surface",
+            "emit_gate_surface",
+            "render_gate_content",
+            "resolve_content_type"
+          ]
+        },
+        {
           "source": "app.marcus.cli.marcus_spoc",
           "specifiers": [
             "DEGRADED_PUBLISH_URL_SCRIPTED",
             "commit_picker_pick",
             "run_picker_preflight"
+          ]
+        },
+        {
+          "source": "app.marcus.cli.next_action",
+          "specifiers": [
+            "build_next_action"
           ]
         },
         {
@@ -10083,7 +10935,8 @@
             "recover_production_trial",
             "resume_batch_production_trial",
             "resume_production_trial",
-            "run_production_trial"
+            "run_production_trial",
+            "write_prewalk_settings_confirm_sentinel"
           ]
         },
         {
@@ -10132,10 +10985,14 @@
         "_load_env_if_available",
         "_ensure_utf8_io",
         "_has_langsmith_env",
+        "_require_live_env_unless_offline",
+        "_persisted_allow_offline_cost_report",
         "_resolve_editor",
         "_edit_directive_in_editor",
         "_g0_prompt_text",
         "_utf8_safe_print",
+        "_read_json_quiet",
+        "_emit_gate_surface_if_paused",
         "_confirm_or_edit_directive",
         "_write_cancellation_record",
         "_default_picker_preflight",
@@ -10157,7 +11014,7 @@
         "resume_batch_trial_cli",
         "build_trial_parser"
       ],
-      "totalLines": 1458,
+      "totalLines": 1721,
       "hasStructuralAnalysis": true
     },
     "app/marcus/course_source/__init__.py": {
@@ -13099,6 +13956,273 @@
       "totalLines": 464,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/lesson_plan/ask_b_hot_topics.py": {
+      "filePath": "app/marcus/lesson_plan/ask_b_hot_topics.py",
+      "contentHash": "d6ed65abf055698ac8bcdac435f8cd04f8ca4fc5b2874dbe109e5f31321c63a0",
+      "functions": [
+        {
+          "name": "_nonblank_line",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_digest_str",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_query_display_text",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_scope_losses_for",
+          "params": [
+            "abilities",
+            "scene_bound"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "derive_hot_topics_query",
+          "params": [
+            "demand"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "build_scope",
+          "params": [
+            "demand",
+            "provider_config_fingerprint"
+          ],
+          "returnType": "AskBRetrievalScopeV1",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "match_ability_associations",
+          "params": [
+            "scope",
+            "title",
+            "body"
+          ],
+          "returnType": "tuple[tuple[str, ...], tuple[AskBAbilityTokenMatchV1, ...]]",
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [
+        {
+          "name": "_StrictModel",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "AskBAbilityTokenMatchV1",
+          "methods": [
+            "_tokens_nonempty"
+          ],
+          "properties": [
+            "ability_id",
+            "tokens"
+          ],
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "AskBRetrievalScopeV1",
+          "methods": [
+            "_bind"
+          ],
+          "properties": [
+            "schema_version",
+            "demand_digest",
+            "workbook_brief_payload_digest",
+            "abilities",
+            "scene_digest",
+            "scene_text",
+            "query",
+            "query_digest",
+            "posture",
+            "provider_config_fingerprint",
+            "association_algorithm",
+            "known_scope_losses",
+            "scope_digest"
+          ],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "AskBKnowledgeEntryV1",
+          "methods": [
+            "_entry_invariants"
+          ],
+          "properties": [
+            "schema_version",
+            "citation_id",
+            "source_ref",
+            "provider",
+            "source_id",
+            "title",
+            "source_hash",
+            "evidence_hierarchy_tier",
+            "peer_reviewed",
+            "provider_provenance",
+            "triangulation_status",
+            "reliability_score",
+            "evidence_excerpt",
+            "evidence_truncated",
+            "evidence_body_sha256",
+            "scope_digest",
+            "supports_ability_ids",
+            "association_algorithm",
+            "matched_ability_tokens"
+          ],
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "AskBExecutionReceiptV1",
+          "methods": [
+            "build",
+            "_receipt_bind"
+          ],
+          "properties": [
+            "schema_version",
+            "scope",
+            "scope_digest",
+            "dispatcher_invocations",
+            "provider_iterations",
+            "refinement_logs",
+            "provider_outcomes",
+            "provider_receipts",
+            "receipt_digest"
+          ],
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "AskBResearchIntakeV1",
+          "methods": [
+            "build",
+            "_intake_bind"
+          ],
+          "properties": [
+            "schema_version",
+            "scope",
+            "execution_receipt",
+            "covered_ability_ids",
+            "uncovered_ability_ids",
+            "intake_digest"
+          ],
+          "exported": true,
+          "lineCount": 54
+        },
+        {
+          "name": "AskBContributionOutputV1",
+          "methods": [
+            "build_retryable",
+            "build_completed",
+            "_disposition_rules"
+          ],
+          "properties": [
+            "schema_version",
+            "disposition",
+            "research_entries",
+            "known_losses",
+            "research_intake",
+            "dispatcher_invocations",
+            "output_digest"
+          ],
+          "exported": true,
+          "lineCount": 98
+        }
+      ],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Annotated",
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "AfterValidator",
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.ask_a_enrichment",
+          "specifiers": [
+            "ability_tokens",
+            "canonical_digest",
+            "evidence_for_body",
+            "normalize_match_text"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_projection",
+          "specifiers": [
+            "DeepDiveAbilityInput"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.research_demand",
+          "specifiers": [
+            "AskBHotTopicsDemandV1"
+          ]
+        }
+      ],
+      "exports": [
+        "_nonblank_line",
+        "_digest_str",
+        "_StrictModel",
+        "_query_display_text",
+        "_scope_losses_for",
+        "AskBAbilityTokenMatchV1",
+        "AskBRetrievalScopeV1",
+        "derive_hot_topics_query",
+        "build_scope",
+        "match_ability_associations",
+        "AskBKnowledgeEntryV1",
+        "AskBExecutionReceiptV1",
+        "AskBResearchIntakeV1",
+        "AskBContributionOutputV1"
+      ],
+      "totalLines": 562,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/lesson_plan/blueprint_coauthor.py": {
       "filePath": "app/marcus/lesson_plan/blueprint_coauthor.py",
       "contentHash": "b66eb69e13613bd186285be78f6a59081e6a82b9205ccad67827c8d0feddc9e6",
@@ -14220,7 +15344,7 @@
     },
     "app/marcus/lesson_plan/collateral_spec.py": {
       "filePath": "app/marcus/lesson_plan/collateral_spec.py",
-      "contentHash": "16782a88360726e67841d8d44630f8b8b013efddf7de4c882b99296a16d259df",
+      "contentHash": "b69ac220aa28c5e3a3fad86c7723a8cd67f66ba3ea09e359cf542a97c8c7be3a",
       "functions": [
         {
           "name": "_looks_like_raw_fetch_query",
@@ -14267,10 +15391,11 @@
             "exercise_id",
             "bloom_level",
             "prompt_intent",
-            "answer_key_source_ref"
+            "answer_key_source_ref",
+            "origin"
           ],
           "exported": true,
-          "lineCount": 54
+          "lineCount": 64
         },
         {
           "name": "WorkbookSection",
@@ -14370,7 +15495,7 @@
         "ResearchEnrichmentGoal",
         "CollateralSpec"
       ],
-      "totalLines": 476,
+      "totalLines": 490,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/component_type_registry.py": {
@@ -16044,6 +17169,686 @@
         "coverage_plan_view_from_dicts"
       ],
       "totalLines": 871,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/deep_dive_enrichment_provider_contract.py": {
+      "filePath": "app/marcus/lesson_plan/deep_dive_enrichment_provider_contract.py",
+      "contentHash": "c613efbbc621a4bdbdcc232319b2b02f5834a37dcbe2a4d5c94c1b66155ca2fa",
+      "functions": [
+        {
+          "name": "_prose_first_appearance_terms",
+          "params": [
+            "normalized"
+          ],
+          "returnType": "tuple[str, ...] | None",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "_reordered_to_first_appearance",
+          "params": [
+            "normalized",
+            "entries"
+          ],
+          "returnType": "list[object] | None",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "normalize_deep_dive_enrichment_provider_payload",
+          "params": [
+            "raw_payload"
+          ],
+          "returnType": "tuple[dict[str, Any], tuple[str, ...]]",
+          "exported": true,
+          "lineCount": 47
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Mapping"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_projection",
+          "specifiers": [
+            "BoldTermMarker",
+            "_marked_terms"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_provider_contract",
+          "specifiers": [
+            "canonical_json_mapping",
+            "provider_payload_digest"
+          ]
+        }
+      ],
+      "exports": [
+        "_prose_first_appearance_terms",
+        "_reordered_to_first_appearance",
+        "normalize_deep_dive_enrichment_provider_payload"
+      ],
+      "totalLines": 159,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/lesson_plan/deep_dive_enrichment.py": {
+      "filePath": "app/marcus/lesson_plan/deep_dive_enrichment.py",
+      "contentHash": "afae9d09c4e49d665b8b28bb682b2cf1d599f2b9defb919c4442b7d0fde1b363",
+      "functions": [
+        {
+          "name": "skeleton_not_authored_loss",
+          "params": [
+            "skeleton_status"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_non_blank",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_single_line",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_sha256_digest",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_bare_hex_digest",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_validate_json_payload",
+          "params": [
+            "model",
+            "payload"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "prose_citation_markers",
+          "params": [
+            "text"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "strip_citation_markers",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "skeleton_binding_from_result",
+          "params": [
+            "result"
+          ],
+          "returnType": "DeepDiveSkeletonBindingV1",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "enrichment_request_digest",
+          "params": [
+            "payload"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "offline_deep_dive_enrichment_writer",
+          "params": [
+            "request"
+          ],
+          "returnType": "DeepDiveEnrichedWriterResult",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_trailing_markers_only",
+          "params": [
+            "text"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_ordered_by_pool",
+          "params": [
+            "ids",
+            "pool_order"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "deep_dive_enrichment_gate",
+          "params": [
+            "request",
+            "candidate"
+          ],
+          "returnType": "DeepDiveEnrichmentGateReceipt",
+          "exported": true,
+          "lineCount": 268
+        },
+        {
+          "name": "_failed_enrichment_disposition",
+          "params": [
+            "receipt"
+          ],
+          "returnType": "tuple[Literal[\"degraded\", \"unavailable\"], str, tuple[EnrichmentResultLoss, ...]]",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "compose_deep_dive_enrichment",
+          "params": [
+            "request",
+            "writer"
+          ],
+          "returnType": "DeepDiveEnrichedResultV1",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "build_overlay_covered_input",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "DeepDiveOverlayCoveredInputV1",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "_pool_rows_from_packet",
+          "params": [
+            "packet"
+          ],
+          "returnType": "tuple[AskAKnowledgeEntryV1, ...]",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "build_deep_dive_enrichment_request",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "DeepDiveEnrichmentRequestV1",
+          "exported": true,
+          "lineCount": 60
+        },
+        {
+          "name": "build_workbook_review_contribution",
+          "params": [
+            "result",
+            "receipt",
+            "skeleton_loss"
+          ],
+          "returnType": "WorkbookReviewContributionV1",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "load_workbook_review_contribution",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "WorkbookReviewContributionV1 | None",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "render_deep_dive_markdown",
+          "params": [
+            "contribution"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "used_pool_rows",
+          "params": [
+            "result"
+          ],
+          "returnType": "tuple[AskAKnowledgeEntryV1, ...]",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "render_deep_dive_reference_lines",
+          "params": [
+            "contribution"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 33
+        }
+      ],
+      "classes": [
+        {
+          "name": "_StrictModel",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "DeepDiveEnrichmentAuthorityError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "DeepDiveSkeletonMissingError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "DeepDiveSkeletonNotAuthoredError",
+          "methods": [
+            "__init__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "OverlayCoveredObjective",
+          "methods": [],
+          "properties": [
+            "objective_id",
+            "statement"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "DeepDiveOverlayCoveredInputV1",
+          "methods": [
+            "_honest_empty"
+          ],
+          "properties": [
+            "schema_version",
+            "card_present",
+            "covered_learning_objectives",
+            "covered_exercise_facts"
+          ],
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "DeepDiveSkeletonBindingV1",
+          "methods": [
+            "_bound",
+            "source_claim_ref_set"
+          ],
+          "properties": [
+            "schema_version",
+            "authority_digest",
+            "candidate_payload_digest",
+            "sections",
+            "bold_terms",
+            "declared_vo_claim_ids",
+            "covered_vo_claim_ids"
+          ],
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "DeepDiveEnrichmentRequestV1",
+          "methods": [
+            "_bound"
+          ],
+          "properties": [
+            "schema_version",
+            "skeleton",
+            "pool_packet_digest",
+            "pool_status",
+            "pool_scope_digest",
+            "pool_rows",
+            "pool_known_losses",
+            "excluded_citation_ids",
+            "intake_covered_ability_ids",
+            "intake_uncovered_ability_ids",
+            "overlay_covered",
+            "request_digest"
+          ],
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "EnrichedDeepDiveClaim",
+          "methods": [
+            "_typed_boundary"
+          ],
+          "properties": [
+            "enriched_claim_id",
+            "text",
+            "role",
+            "source_claim_refs",
+            "citation_refs"
+          ],
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "EnrichedDeepDiveSection",
+          "methods": [
+            "_has_claims"
+          ],
+          "properties": [
+            "ability_id",
+            "prose",
+            "claims"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "DeepDiveEnrichedWriterResult",
+          "methods": [
+            "_honest_local_shape"
+          ],
+          "properties": [
+            "status",
+            "sections",
+            "bold_terms",
+            "known_losses",
+            "marker"
+          ],
+          "exported": true,
+          "lineCount": 52
+        },
+        {
+          "name": "DeepDiveEnrichmentWriter",
+          "methods": [
+            "__call__"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "EnrichedClaimBinding",
+          "methods": [],
+          "properties": [
+            "enriched_claim_id",
+            "ability_id",
+            "role",
+            "source_claim_refs",
+            "citation_refs"
+          ],
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "DeepDiveEnrichmentGateReceipt",
+          "methods": [
+            "_reconciled"
+          ],
+          "properties": [
+            "gate_version",
+            "request_digest",
+            "skeleton_authority_digest",
+            "skeleton_candidate_digest",
+            "pool_packet_digest",
+            "pool_scope_digest",
+            "status",
+            "disposition",
+            "available_citation_ids",
+            "used_citation_ids",
+            "unused_citation_ids",
+            "available_citation_count",
+            "used_citation_count",
+            "unused_citation_count",
+            "intake_covered_ability_ids",
+            "intake_uncovered_ability_ids",
+            "prose_association_covered_ability_ids",
+            "prose_association_uncovered_ability_ids",
+            "claim_bindings",
+            "unknown_citation_refs",
+            "excluded_citation_refs",
+            "cross_scope_citation_refs",
+            "failures",
+            "operator_warnings"
+          ],
+          "exported": true,
+          "lineCount": 106
+        },
+        {
+          "name": "DeepDiveEnrichedResultV1",
+          "methods": [
+            "_honest_result"
+          ],
+          "properties": [
+            "schema_version",
+            "status",
+            "sections",
+            "bold_terms",
+            "known_losses",
+            "marker",
+            "request",
+            "candidate_snapshot",
+            "enriched_payload_digest",
+            "gate"
+          ],
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "DeepDiveEnrichmentExecutionReceiptV1",
+          "methods": [
+            "_cost_posture"
+          ],
+          "properties": [
+            "schema_version",
+            "writer",
+            "mode",
+            "calls",
+            "idempotency_key",
+            "request_digest",
+            "pool_packet_digest",
+            "model",
+            "model_config_digest",
+            "request_id",
+            "latency_ms",
+            "input_tokens",
+            "output_tokens",
+            "cost_usd",
+            "cost_unavailable_reason"
+          ],
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "WorkbookReviewContributionV1",
+          "methods": [
+            "_reconciled"
+          ],
+          "properties": [
+            "schema_version",
+            "node_id",
+            "specialist_id",
+            "deep_dive_enrichment",
+            "deep_dive_enrichment_receipt",
+            "known_losses",
+            "output_digest"
+          ],
+          "exported": true,
+          "lineCount": 64
+        }
+      ],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Annotated",
+            "Any",
+            "Final",
+            "Literal",
+            "Protocol"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "AfterValidator",
+            "BaseModel",
+            "ConfigDict",
+            "Field",
+            "model_validator"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.ask_a_enrichment",
+          "specifiers": [
+            "AskAKnowledgeEntryV1"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_projection",
+          "specifiers": [
+            "BoldTermMarker",
+            "DeepDiveAbilitySection",
+            "DeepDiveSkeletonResult",
+            "_candidate_payload_digest",
+            "_canonical_digest",
+            "_marked_terms",
+            "_numeric_witnesses",
+            "_require_unique",
+            "_source_contains_term"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.prework_artifact",
+          "specifiers": [
+            "read_workbook_brief"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.research_packet",
+          "specifiers": [
+            "ResearchPacket",
+            "resolve_for_enrichment_pool"
+          ]
+        }
+      ],
+      "exports": [
+        "skeleton_not_authored_loss",
+        "_non_blank",
+        "_single_line",
+        "_sha256_digest",
+        "_bare_hex_digest",
+        "_StrictModel",
+        "DeepDiveEnrichmentAuthorityError",
+        "DeepDiveSkeletonMissingError",
+        "DeepDiveSkeletonNotAuthoredError",
+        "_validate_json_payload",
+        "prose_citation_markers",
+        "strip_citation_markers",
+        "OverlayCoveredObjective",
+        "DeepDiveOverlayCoveredInputV1",
+        "DeepDiveSkeletonBindingV1",
+        "skeleton_binding_from_result",
+        "DeepDiveEnrichmentRequestV1",
+        "enrichment_request_digest",
+        "EnrichedDeepDiveClaim",
+        "EnrichedDeepDiveSection",
+        "DeepDiveEnrichedWriterResult",
+        "DeepDiveEnrichmentWriter",
+        "offline_deep_dive_enrichment_writer",
+        "EnrichedClaimBinding",
+        "DeepDiveEnrichmentGateReceipt",
+        "_trailing_markers_only",
+        "_ordered_by_pool",
+        "deep_dive_enrichment_gate",
+        "_failed_enrichment_disposition",
+        "DeepDiveEnrichedResultV1",
+        "compose_deep_dive_enrichment",
+        "build_overlay_covered_input",
+        "_pool_rows_from_packet",
+        "build_deep_dive_enrichment_request",
+        "DeepDiveEnrichmentExecutionReceiptV1",
+        "WorkbookReviewContributionV1",
+        "build_workbook_review_contribution",
+        "load_workbook_review_contribution",
+        "render_deep_dive_markdown",
+        "used_pool_rows",
+        "render_deep_dive_reference_lines"
+      ],
+      "totalLines": 1467,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/deep_dive_from_run.py": {
@@ -17869,7 +19674,7 @@
     },
     "app/marcus/lesson_plan/glossary_projection.py": {
       "filePath": "app/marcus/lesson_plan/glossary_projection.py",
-      "contentHash": "05256b6aaa8f9bc8597dbedbba15f5c40670f1f642a80dfead2fc5d3a30fa276",
+      "contentHash": "5553c11a984778a212c39802b93f1eb84789dfc59de521f0d09ab5be061c595e",
       "functions": [
         {
           "name": "_term_from_title",
@@ -17879,7 +19684,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 14
+          "lineCount": 19
         },
         {
           "name": "default_glossary_writer",
@@ -17888,7 +19693,7 @@
           ],
           "returnType": "GlossaryArticleBrief",
           "exported": true,
-          "lineCount": 81
+          "lineCount": 85
         },
         {
           "name": "project_glossary_articles",
@@ -17899,7 +19704,7 @@
           ],
           "returnType": "tuple[tuple[GlossaryArticleBrief, ...], str | None, tuple[str, ...]]",
           "exported": true,
-          "lineCount": 43
+          "lineCount": 44
         },
         {
           "name": "glossary_inputs_from_run",
@@ -17910,7 +19715,85 @@
           ],
           "returnType": "tuple[tuple[GlossaryArticleBrief, ...], str | None, tuple[str, ...]]",
           "exported": true,
-          "lineCount": 11
+          "lineCount": 13
+        },
+        {
+          "name": "_row_payload",
+          "params": [
+            "row"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "default_term_glossary_writer",
+          "params": [
+            "term",
+            "entry"
+          ],
+          "returnType": "GlossaryArticleBrief",
+          "exported": true,
+          "lineCount": 73
+        },
+        {
+          "name": "project_glossary_entries_for_terms",
+          "params": [
+            "bold_terms",
+            "pool_rows",
+            "writer",
+            "force_uncovered_reason"
+          ],
+          "returnType": "tuple[tuple[GlossaryTermEntry, ...], tuple[str, ...]]",
+          "exported": true,
+          "lineCount": 131
+        },
+        {
+          "name": "glossary_projection_from_contribution",
+          "params": [
+            "contribution",
+            "writer"
+          ],
+          "returnType": "GlossaryProjection",
+          "exported": true,
+          "lineCount": 113
+        },
+        {
+          "name": "_article_doi_fragment",
+          "params": [
+            "article"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_article_provenance_line",
+          "params": [
+            "article"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "render_glossary_projection_markdown",
+          "params": [
+            "projection"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "glossary_reference_lines",
+          "params": [
+            "projection",
+            "exclude_citation_ids"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 55
         },
         {
           "name": "render_glossary_markdown",
@@ -17940,10 +19823,41 @@
             "provider_provenance",
             "triangulation_status",
             "reliability_score",
-            "title"
+            "title",
+            "source_hash"
           ],
           "exported": true,
-          "lineCount": 16
+          "lineCount": 19
+        },
+        {
+          "name": "GlossaryTermEntry",
+          "methods": [],
+          "properties": [
+            "term",
+            "covered",
+            "articles",
+            "degraded_association"
+          ],
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "GlossaryProjection",
+          "methods": [
+            "covered_articles"
+          ],
+          "properties": [
+            "authority",
+            "entries",
+            "covered_count",
+            "term_count",
+            "empty_reason",
+            "degradation_reason",
+            "known_losses",
+            "pool_packet_digest"
+          ],
+          "exported": true,
+          "lineCount": 22
         }
       ],
       "imports": [
@@ -17963,7 +19877,8 @@
         {
           "source": "dataclasses",
           "specifiers": [
-            "dataclass"
+            "dataclass",
+            "replace"
           ]
         },
         {
@@ -17975,7 +19890,8 @@
         {
           "source": "typing",
           "specifiers": [
-            "Any"
+            "Any",
+            "Literal"
           ]
         },
         {
@@ -17993,15 +19909,34 @@
         "default_glossary_writer",
         "project_glossary_articles",
         "glossary_inputs_from_run",
+        "GlossaryTermEntry",
+        "GlossaryProjection",
+        "_row_payload",
+        "default_term_glossary_writer",
+        "project_glossary_entries_for_terms",
+        "glossary_projection_from_contribution",
+        "_article_doi_fragment",
+        "_article_provenance_line",
+        "render_glossary_projection_markdown",
+        "glossary_reference_lines",
         "render_glossary_markdown"
       ],
-      "totalLines": 299,
+      "totalLines": 914,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/irene_refinement.py": {
       "filePath": "app/marcus/lesson_plan/irene_refinement.py",
-      "contentHash": "36d083643a07d37baeaee8c7d60875ae64d4a45dd16184fa84d5a11a307be124",
+      "contentHash": "54cb5bb07f0434ad03b21249f90a1b76a4bbd5ab7b88a6e11030668505c9952c",
       "functions": [
+        {
+          "name": "_normalize_adequacy_followups",
+          "params": [
+            "adequacy_row"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 50
+        },
         {
           "name": "_deterministic_bloom",
           "params": [
@@ -18061,7 +19996,7 @@
           ],
           "returnType": "tuple[list[LearningObjective], list[LODeltaEntry]]",
           "exported": true,
-          "lineCount": 45
+          "lineCount": 47
         },
         {
           "name": "assert_completeness",
@@ -18152,6 +20087,12 @@
           ]
         },
         {
+          "source": "logging",
+          "specifiers": [
+            "logging"
+          ]
+        },
+        {
           "source": "typing",
           "specifiers": [
             "Any",
@@ -18172,6 +20113,7 @@
         {
           "source": "app.marcus.lesson_plan.learning_objective",
           "specifiers": [
+            "AdequacyFollowup",
             "BloomLevel",
             "LearningObjective",
             "SourceAdequacy",
@@ -18180,6 +20122,7 @@
         }
       ],
       "exports": [
+        "_normalize_adequacy_followups",
         "LODeltaEntry",
         "LODeltaLedger",
         "IreneRefinementResult",
@@ -18193,7 +20136,7 @@
         "assert_completeness",
         "ratify_refined_los"
       ],
-      "totalLines": 690,
+      "totalLines": 751,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/learning_objective_adapters.py": {
@@ -20509,7 +22452,7 @@
     },
     "app/marcus/lesson_plan/prework_artifact.py": {
       "filePath": "app/marcus/lesson_plan/prework_artifact.py",
-      "contentHash": "4c1075ff23a7750651e213aaa371b715de9a7de8ca1f34750ed813d8748a5175",
+      "contentHash": "3131f34f505fc64fe69bc7747b76c52275a5bc0a2aa05029d8911678dc19d2cf",
       "functions": [
         {
           "name": "deep_dive_idempotency_key",
@@ -20734,10 +22677,11 @@
             "writer_evidence",
             "scene_writer",
             "promise_writer",
-            "deep_dive_writer"
+            "deep_dive_writer",
+            "deep_dive_enrichment_writer"
           ],
           "exported": true,
-          "lineCount": 44
+          "lineCount": 51
         },
         {
           "name": "WorkbookBriefPayloadV1",
@@ -20894,7 +22838,7 @@
         "validate_source_child",
         "_exclusive_atomic_text"
       ],
-      "totalLines": 511,
+      "totalLines": 518,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/prework_from_run.py": {
@@ -22806,7 +24750,7 @@
     },
     "app/marcus/lesson_plan/research_demand.py": {
       "filePath": "app/marcus/lesson_plan/research_demand.py",
-      "contentHash": "855faf7f2238764deb15a9ff2feaa3d410a90a206006fc6dc1ce2b01d3d8ce91",
+      "contentHash": "a3737688672cb94684adb251293bf9b0e170133944dd3787e9d0ae9fb3693920",
       "functions": [
         {
           "name": "_digest",
@@ -22856,6 +24800,32 @@
           "returnType": "AskAResearchDemandV1",
           "exported": true,
           "lineCount": 138
+        },
+        {
+          "name": "_make_ask_b",
+          "params": [],
+          "returnType": "AskBHotTopicsDemandV1",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_ask_b_non_ready",
+          "params": [
+            "loss",
+            "payload_digest"
+          ],
+          "returnType": "AskBHotTopicsDemandV1",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "resolve_hot_topics_demand",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "AskBHotTopicsDemandV1",
+          "exported": true,
+          "lineCount": 101
         }
       ],
       "classes": [
@@ -22887,6 +24857,26 @@
           ],
           "exported": true,
           "lineCount": 86
+        },
+        {
+          "name": "AskBHotTopicsDemandV1",
+          "methods": [
+            "_closed_shape"
+          ],
+          "properties": [
+            "schema_version",
+            "status",
+            "specialist_id",
+            "node_id",
+            "workbook_brief_payload_digest",
+            "abilities",
+            "scene_digest",
+            "scene_text",
+            "known_losses",
+            "demand_digest"
+          ],
+          "exported": true,
+          "lineCount": 66
         }
       ],
       "imports": [
@@ -22976,14 +24966,18 @@
         "_make",
         "_non_ready",
         "_reconcile_execution",
-        "resolve_enrichment_demand"
+        "resolve_enrichment_demand",
+        "AskBHotTopicsDemandV1",
+        "_make_ask_b",
+        "_ask_b_non_ready",
+        "resolve_hot_topics_demand"
       ],
-      "totalLines": 433,
+      "totalLines": 665,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/research_packet.py": {
       "filePath": "app/marcus/lesson_plan/research_packet.py",
-      "contentHash": "39308473a98ce4123e66a9d8e7b03c6cced7ac07bb092ee186b6ad1649849d7a",
+      "contentHash": "321d37b25ffcaeb3cbeba66bc81c8b619e86a1cb78e96086ec940eb819014db1",
       "functions": [
         {
           "name": "_digest_payload",
@@ -23024,7 +25018,7 @@
           ],
           "returnType": "ResearchPacket",
           "exported": true,
-          "lineCount": 137
+          "lineCount": 173
         },
         {
           "name": "resolve_for_consumer",
@@ -23148,6 +25142,12 @@
           ]
         },
         {
+          "source": "app.marcus.lesson_plan.ask_b_hot_topics",
+          "specifiers": [
+            "AskBContributionOutputV1"
+          ]
+        },
+        {
           "source": "app.marcus.lesson_plan.workbook_enrichment",
           "specifiers": [
             "RunEnvelopeCorruptError",
@@ -23168,7 +25168,7 @@
         "resolve_for_enrichment_pool",
         "resolve_for_hot_topics"
       ],
-      "totalLines": 379,
+      "totalLines": 416,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/retrieval_narration_grammar.py": {
@@ -24409,12 +26409,12 @@
     },
     "app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json": {
       "filePath": "app/marcus/lesson_plan/schema/collateral_spec.v1.schema.json",
-      "contentHash": "9069564e78a196acb4478d0102f2846171f2d2b682f65a85dcec8ed2e7e03c45",
+      "contentHash": "78d9eed81a65d027fcb37ce1f2be7130300c7ef16854fb815e2217b1037aedcc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 234,
+      "totalLines": 244,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/schema/coverage_manifest.v1.schema.json": {
@@ -25389,7 +27389,7 @@
     },
     "app/marcus/lesson_plan/trends_projection.py": {
       "filePath": "app/marcus/lesson_plan/trends_projection.py",
-      "contentHash": "674aea4661a4574b9f3a4ff271eab91de312f94590976866f45501eb513290a6",
+      "contentHash": "0247b3fc9ac6d9aff4682203479a5e16b6631aeb96ef0b18bba8d1a2f635f7d4",
       "functions": [
         {
           "name": "_topic_phrase",
@@ -25460,7 +27460,7 @@
           ],
           "returnType": "ResearchTrendsBrief",
           "exported": true,
-          "lineCount": 15
+          "lineCount": 22
         },
         {
           "name": "_strip_inline_comments",
@@ -25565,7 +27565,7 @@
           "source": "app.marcus.lesson_plan.research_packet",
           "specifiers": [
             "ResearchPacket",
-            "resolve_for_trends_projector"
+            "resolve_for_hot_topics"
           ]
         }
       ],
@@ -25583,12 +27583,12 @@
         "_strip_inline_comments",
         "render_trends_markdown"
       ],
-      "totalLines": 419,
+      "totalLines": 433,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/workbook_enrichment.py": {
       "filePath": "app/marcus/lesson_plan/workbook_enrichment.py",
-      "contentHash": "04d51331738cf00c71fd6eb5cd1cd8dc2726a4174b732a18dddd6adba9a286b1",
+      "contentHash": "4de7c79310f18f1ee807f4fdc7e5b12029f95a6894ab9b42691a4d0fdbc29908",
       "functions": [
         {
           "name": "load_enrichment_card",
@@ -25658,6 +27658,26 @@
           "lineCount": 10
         },
         {
+          "name": "_strip_answer_leak",
+          "params": [
+            "prompt"
+          ],
+          "returnType": "tuple[str, str | None]",
+          "exported": true,
+          "lineCount": 126
+        },
+        {
+          "name": "_route_answer_key",
+          "params": [
+            "answer_keys",
+            "exercise_id",
+            "worked"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
           "name": "_project_exercises",
           "params": [
             "typed_components",
@@ -25666,7 +27686,7 @@
           ],
           "returnType": "tuple[dict[str, list[Exercise]], dict[str, str]]",
           "exported": true,
-          "lineCount": 45
+          "lineCount": 92
         },
         {
           "name": "project_enrichment_to_workbook_inputs",
@@ -25684,7 +27704,16 @@
           ],
           "returnType": "Any | None",
           "exported": true,
-          "lineCount": 34
+          "lineCount": 41
+        },
+        {
+          "name": "run_identity_from_run",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 81
         },
         {
           "name": "lesson_plan_from_run",
@@ -25854,10 +27883,13 @@
         "_hash",
         "_project_further_reading",
         "_lo_bloom_map",
+        "_strip_answer_leak",
+        "_route_answer_key",
         "_project_exercises",
         "project_enrichment_to_workbook_inputs",
         "RunEnvelopeCorruptError",
         "load_run_envelope",
+        "run_identity_from_run",
         "lesson_plan_from_run",
         "collateral_from_run",
         "research_entries_from_run",
@@ -25866,12 +27898,12 @@
         "corpus_root_from_run",
         "corpus_native_further_reading"
       ],
-      "totalLines": 616,
+      "totalLines": 974,
       "hasStructuralAnalysis": true
     },
     "app/marcus/lesson_plan/workbook_producer.py": {
       "filePath": "app/marcus/lesson_plan/workbook_producer.py",
-      "contentHash": "7f6a69134d4acb65b0aded48804d42c78f3de783b92fcbd3f6e5357576d2e59d",
+      "contentHash": "c8a71efc9015e30d085b08a7f9fbda7ee8e8dbbbd6d98db3e6696f7da0090557",
       "functions": [
         {
           "name": "load_transcript_segments",
@@ -25923,6 +27955,16 @@
           "lineCount": 33
         },
         {
+          "name": "deep_dive_g2_citation_entries",
+          "params": [
+            "markdown",
+            "deep_dive_review"
+          ],
+          "returnType": "list[dict[str, str]]",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
           "name": "assert_exercise_fidelity",
           "params": [
             "spec"
@@ -25961,6 +28003,126 @@
           "lineCount": 2
         },
         {
+          "name": "_exercise_composition_receipt",
+          "params": [
+            "spec",
+            "exercise_overlay_loss"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "_exercise_origin_groups",
+          "params": [
+            "section"
+          ],
+          "returnType": "list[tuple[str, list[Exercise]]]",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "cover_art_brief_digest",
+          "params": [
+            "brief"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "build_cover_art_brief",
+          "params": [
+            "stem",
+            "display_title",
+            "unit_id",
+            "event_type",
+            "themes",
+            "palette_hints",
+            "alt_text"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_cover_themes",
+          "params": [
+            "spec",
+            "learning_objectives",
+            "pre_work"
+          ],
+          "returnType": "tuple[str, ...]",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_cover_palette_hints",
+          "params": [
+            "pre_work"
+          ],
+          "returnType": "tuple[str, str]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_cover_alt_text",
+          "params": [
+            "display_title",
+            "themes"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_identity_line",
+          "params": [
+            "prefix",
+            "value",
+            "identity_status"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "compose_cover_sections",
+          "params": [
+            "body_headings",
+            "title_label",
+            "unit_id",
+            "event_type",
+            "fulfills",
+            "stem",
+            "encounter_mode",
+            "themes",
+            "palette_hints",
+            "bound_objective_ids",
+            "cover_inputs"
+          ],
+          "returnType": "tuple[list[tuple[int, str, str]], dict[str, Any], dict[str, Any]]",
+          "exported": true,
+          "lineCount": 186
+        },
+        {
+          "name": "_compose_cover_blocks",
+          "params": [
+            "doc",
+            "plan_unit",
+            "context",
+            "spec",
+            "learning_objectives",
+            "pre_work",
+            "encounter_mode",
+            "title_label",
+            "cover_inputs"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 36
+        },
+        {
           "name": "compose_workbook",
           "params": [
             "plan_unit",
@@ -25977,15 +28139,19 @@
             "research_omitted_note",
             "glossary_articles",
             "glossary_empty_reason",
+            "glossary",
             "research_trends",
             "pre_work",
             "encounter_mode",
             "render_profile",
-            "lo_overlay_loss_note"
+            "lo_overlay_loss_note",
+            "exercise_overlay_loss_note",
+            "deep_dive_review",
+            "cover_inputs"
           ],
           "returnType": "_ComposedDoc",
           "exported": true,
-          "lineCount": 339
+          "lineCount": 441
         },
         {
           "name": "render_markdown",
@@ -26148,7 +28314,20 @@
           "properties": [
             "title",
             "blocks",
-            "figures"
+            "figures",
+            "cover_receipt",
+            "cover_art_brief"
+          ],
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "CoverInputs",
+          "methods": [],
+          "properties": [
+            "run_identity",
+            "sme_name",
+            "deck_reference"
           ],
           "exported": true,
           "lineCount": 13
@@ -26167,10 +28346,14 @@
             "deck_no_regression_eligible",
             "workbook_brief_receipt",
             "depth_receipt",
-            "lo_overlay_loss"
+            "lo_overlay_loss",
+            "exercise_composition",
+            "exercise_overlay_loss",
+            "cover",
+            "art_brief_path"
           ],
           "exported": true,
-          "lineCount": 22
+          "lineCount": 38
         },
         {
           "name": "WorkbookProducer",
@@ -26182,10 +28365,22 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 240
+          "lineCount": 318
         }
       ],
       "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
         {
           "source": "re",
           "specifiers": [
@@ -26251,6 +28446,8 @@
         {
           "source": "app.marcus.lesson_plan.collateral_spec",
           "specifiers": [
+            "Exercise",
+            "WorkbookSection",
             "WorkbookSpec"
           ]
         },
@@ -26307,11 +28504,23 @@
         "_reject_dupes",
         "audit_workbook_numeric_fidelity",
         "audit_citation_fidelity",
+        "deep_dive_g2_citation_entries",
         "assert_exercise_fidelity",
         "assert_learning_objective_bindings",
         "default_prose_revoicer",
         "_ComposedDoc",
         "_segment_anchor",
+        "_exercise_composition_receipt",
+        "_exercise_origin_groups",
+        "CoverInputs",
+        "cover_art_brief_digest",
+        "build_cover_art_brief",
+        "_cover_themes",
+        "_cover_palette_hints",
+        "_cover_alt_text",
+        "_identity_line",
+        "compose_cover_sections",
+        "_compose_cover_blocks",
         "compose_workbook",
         "render_markdown",
         "render_docx_from_model",
@@ -26324,7 +28533,7 @@
         "_narrative_body_text",
         "_tokenize"
       ],
-      "totalLines": 1323,
+      "totalLines": 2097,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/__init__.py": {
@@ -26618,6 +28827,271 @@
         "run_ask_a_research"
       ],
       "totalLines": 497,
+      "hasStructuralAnalysis": true
+    },
+    "app/marcus/orchestrator/ask_b_research_wiring.py": {
+      "filePath": "app/marcus/orchestrator/ask_b_research_wiring.py",
+      "contentHash": "ec9a0f6dcf295129be2a9e5e5974d7896efcf1f69d23afa73713e99ffba8ea81",
+      "functions": [
+        {
+          "name": "_provider_config_fingerprint",
+          "params": [],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_raise",
+          "params": [
+            "message",
+            "tag",
+            "cause"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_contained_regular",
+          "params": [
+            "path",
+            "root",
+            "allow_absent"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_fsync_dir",
+          "params": [
+            "path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_atomic_json",
+          "params": [
+            "path",
+            "payload"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_read_journal",
+          "params": [
+            "path",
+            "run_dir"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_build_intent",
+          "params": [
+            "scope"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_default_dispatch",
+          "params": [
+            "intent"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "_credentials_present",
+          "params": [],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "_clean_line",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_snapshot_row",
+          "params": [
+            "row"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_normalize_results",
+          "params": [
+            "result"
+          ],
+          "returnType": "tuple[\n    list[dict[str, Any]],\n    tuple[int, ...],\n    tuple[dict[str, Any], ...],\n    tuple[str, ...],\n    tuple[dict[str, Any], ...],\n]",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "_build_completed",
+          "params": [
+            "scope",
+            "raw_rows",
+            "provider_iterations",
+            "refinement_logs",
+            "provider_outcomes",
+            "provider_receipts"
+          ],
+          "returnType": "tuple[AskBContributionOutputV1, list[dict[str, Any]]]",
+          "exported": true,
+          "lineCount": 129
+        },
+        {
+          "name": "_idempotency_key",
+          "params": [
+            "trial_id",
+            "scope"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_replay_completed",
+          "params": [
+            "journal",
+            "scope",
+            "trial_id"
+          ],
+          "returnType": "AskBContributionOutputV1",
+          "exported": true,
+          "lineCount": 37
+        },
+        {
+          "name": "run_ask_b_research",
+          "params": [
+            "run_dir",
+            "trial_id",
+            "dispatch_live",
+            "provider_config_fingerprint",
+            "dispatch"
+          ],
+          "returnType": "AskBContributionOutputV1",
+          "exported": true,
+          "lineCount": 130
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Callable"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "types",
+          "specifiers": [
+            "SimpleNamespace"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.ask_b_hot_topics",
+          "specifiers": [
+            "AskBContributionOutputV1",
+            "AskBExecutionReceiptV1",
+            "AskBKnowledgeEntryV1",
+            "AskBResearchIntakeV1",
+            "AskBRetrievalScopeV1",
+            "build_scope",
+            "canonical_digest",
+            "evidence_for_body",
+            "match_ability_associations"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.research_demand",
+          "specifiers": [
+            "ResearchDemandShapeError",
+            "resolve_hot_topics_demand"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.research_citation",
+          "specifiers": [
+            "compute_source_hash",
+            "derive_source_ref"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.research_credibility",
+          "specifiers": [
+            "classify_evidence_hierarchy",
+            "provider_provenance_for_row"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        }
+      ],
+      "exports": [
+        "_provider_config_fingerprint",
+        "_raise",
+        "_contained_regular",
+        "_fsync_dir",
+        "_atomic_json",
+        "_read_journal",
+        "_build_intent",
+        "_default_dispatch",
+        "_credentials_present",
+        "_clean_line",
+        "_snapshot_row",
+        "_normalize_results",
+        "_build_completed",
+        "_idempotency_key",
+        "_replay_completed",
+        "run_ask_b_research"
+      ],
+      "totalLines": 608,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/chooser_publisher.py": {
@@ -27641,6 +30115,305 @@
       "totalLines": 670,
       "hasStructuralAnalysis": true
     },
+    "app/marcus/orchestrator/deep_dive_enrichment_wiring.py": {
+      "filePath": "app/marcus/orchestrator/deep_dive_enrichment_wiring.py",
+      "contentHash": "2a39752ca6ee6be4efc75d9752ece7fcb231550e1036e88013b1bb99a0d7785e",
+      "functions": [
+        {
+          "name": "_canonical_json",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_sha256",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_unique_json_object",
+          "params": [
+            "pairs"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_raise",
+          "params": [
+            "message",
+            "tag",
+            "cause"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "deep_dive_enrichment_idempotency_key",
+          "params": [
+            "trial_id",
+            "request_digest",
+            "pool_packet_digest",
+            "model_config_digest"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_atomic_json",
+          "params": [
+            "path",
+            "payload"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_journal_exists",
+          "params": [
+            "run_dir",
+            "journal_path"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_read_json",
+          "params": [
+            "path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_recover_journal_temporary",
+          "params": [
+            "run_dir",
+            "journal_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
+          "name": "_live_model_config_digest",
+          "params": [
+            "writer"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_execution_receipt",
+          "params": [
+            "writer",
+            "mode",
+            "calls",
+            "idempotency_key",
+            "model_config_digest",
+            "request"
+          ],
+          "returnType": "DeepDiveEnrichmentExecutionReceiptV1",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_provider_evidence",
+          "params": [
+            "writer",
+            "candidate"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 47
+        },
+        {
+          "name": "_persist_provider_failure",
+          "params": [
+            "path",
+            "base",
+            "writer",
+            "exc"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_check_journal_identity",
+          "params": [
+            "journal",
+            "request",
+            "idempotency_key",
+            "model_config_digest"
+          ],
+          "returnType": "DeepDiveEnrichmentRequestV1",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "_empty_pool_decline_candidate",
+          "params": [],
+          "returnType": "DeepDiveEnrichedWriterResult",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_replay_completed_without_dispatch",
+          "params": [
+            "journal",
+            "request",
+            "idempotency_key",
+            "model_config_digest",
+            "writer"
+          ],
+          "returnType": "tuple[DeepDiveEnrichedResultV1, DeepDiveEnrichmentExecutionReceiptV1]",
+          "exported": true,
+          "lineCount": 41
+        },
+        {
+          "name": "_replay_completed",
+          "params": [
+            "journal",
+            "request",
+            "idempotency_key",
+            "model_config_digest",
+            "writer"
+          ],
+          "returnType": "tuple[DeepDiveEnrichedResultV1, DeepDiveEnrichmentExecutionReceiptV1]",
+          "exported": true,
+          "lineCount": 69
+        },
+        {
+          "name": "run_workbook_review",
+          "params": [
+            "run_dir",
+            "trial_id",
+            "runtime_context"
+          ],
+          "returnType": "dict[str, object]",
+          "exported": true,
+          "lineCount": 314
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "hashlib",
+          "specifiers": [
+            "hashlib"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Final",
+            "Literal"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_enrichment",
+          "specifiers": [
+            "DEEP_DIVE_ENRICHMENT_DEGRADED_MARKER",
+            "POOL_EMPTY_LOSS",
+            "DeepDiveEnrichedResultV1",
+            "DeepDiveEnrichedWriterResult",
+            "DeepDiveEnrichmentAuthorityError",
+            "DeepDiveEnrichmentExecutionReceiptV1",
+            "DeepDiveEnrichmentRequestV1",
+            "DeepDiveSkeletonMissingError",
+            "DeepDiveSkeletonNotAuthoredError",
+            "build_deep_dive_enrichment_request",
+            "build_workbook_review_contribution",
+            "compose_deep_dive_enrichment",
+            "offline_deep_dive_enrichment_writer",
+            "skeleton_not_authored_loss"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_enrichment_provider_contract",
+          "specifiers": [
+            "DEEP_DIVE_ENRICHMENT_PROVIDER_CONTRACT_MODE",
+            "DEEP_DIVE_ENRICHMENT_PROVIDER_NORMALIZER_VERSION",
+            "normalize_deep_dive_enrichment_provider_payload"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.prework_artifact",
+          "specifiers": [
+            "WORKBOOK_BRIEF_FILENAME",
+            "WorkbookBriefRuntimeContext"
+          ]
+        },
+        {
+          "source": "app.marcus.orchestrator.workbook_prework_writers",
+          "specifiers": [
+            "DeepDiveEnrichmentProviderOutputError"
+          ]
+        },
+        {
+          "source": "app.specialists.dispatch_errors",
+          "specifiers": [
+            "SpecialistDispatchError"
+          ]
+        }
+      ],
+      "exports": [
+        "_canonical_json",
+        "_sha256",
+        "_unique_json_object",
+        "_raise",
+        "deep_dive_enrichment_idempotency_key",
+        "_atomic_json",
+        "_journal_exists",
+        "_read_json",
+        "_recover_journal_temporary",
+        "_live_model_config_digest",
+        "_execution_receipt",
+        "_provider_evidence",
+        "_persist_provider_failure",
+        "_check_journal_identity",
+        "_empty_pool_decline_candidate",
+        "_replay_completed_without_dispatch",
+        "_replay_completed",
+        "run_workbook_review"
+      ],
+      "totalLines": 815,
+      "hasStructuralAnalysis": true
+    },
     "app/marcus/orchestrator/dispatch_adapter.py": {
       "filePath": "app/marcus/orchestrator/dispatch_adapter.py",
       "contentHash": "60e099e29651493d3dd21da01af93a434583f1879d45d16cdc50ca4ef59efb2f",
@@ -28105,7 +30878,7 @@
     },
     "app/marcus/orchestrator/g0_enrichment_wiring.py": {
       "filePath": "app/marcus/orchestrator/g0_enrichment_wiring.py",
-      "contentHash": "62b7a1aab4654d23e792da2a708ab6813ca15e998eb2368ee9536b8ffdd9d080",
+      "contentHash": "e6d0a3b6dfb3f63190c11d0beb587d8765569ef2b06598be0a77bcdddbdfbb14",
       "functions": [
         {
           "name": "resolve_enrichment_mode",
@@ -28692,7 +31465,7 @@
         "_full_dump",
         "load_enrichment_result"
       ],
-      "totalLines": 1659,
+      "totalLines": 1665,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/gate_runner.py": {
@@ -28843,7 +31616,7 @@
     },
     "app/marcus/orchestrator/gh_pages_publish.py": {
       "filePath": "app/marcus/orchestrator/gh_pages_publish.py",
-      "contentHash": "6ec8725328170b79f8492f3fd1db97b1a0c555045b166f43dfd9b2ea32d208c6",
+      "contentHash": "b9897650a1499aca4cf2942d3016094061e49363c307c936a85d80b7aaeb7e73",
       "functions": [
         {
           "name": "_git",
@@ -28853,7 +31626,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 5
+          "lineCount": 34
         },
         {
           "name": "_scrub_token",
@@ -29242,7 +32015,7 @@
         "git_publish_dir",
         "load_hygiene_config"
       ],
-      "totalLines": 669,
+      "totalLines": 698,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/hil_intake.py": {
@@ -30522,7 +33295,7 @@
     },
     "app/marcus/orchestrator/operator_surface_assembler.py": {
       "filePath": "app/marcus/orchestrator/operator_surface_assembler.py",
-      "contentHash": "36253033f5385bd359d5e1526923942d7380ef956b44d1c2576f826ac7f5da82",
+      "contentHash": "a29d57b6873337e3aeac19a3f9c39a881f0b1d8bc55f252ddc2b3dec50ebfa83",
       "functions": [
         {
           "name": "_lock_for",
@@ -30557,9 +33330,113 @@
           "returnType": "str",
           "exported": true,
           "lineCount": 3
+        },
+        {
+          "name": "_safe_yaml_mapping",
+          "params": [
+            "path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_env_flag",
+          "params": [
+            "env",
+            "name"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_str_or_unset",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_component_state",
+          "params": [
+            "selection",
+            "key"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_treatment_slots",
+          "params": [
+            "directive"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "resolve_run_settings",
+          "params": [
+            "run_dir",
+            "prev",
+            "now",
+            "env"
+          ],
+          "returnType": "RunSettingsSection",
+          "exported": true,
+          "lineCount": 70
+        },
+        {
+          "name": "load_run_settings_overrides",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_overlaid_run_settings",
+          "params": [
+            "section",
+            "run_dir"
+          ],
+          "returnType": "RunSettingsSection",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "apply_run_settings_change",
+          "params": [
+            "run_dir",
+            "changes"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "apply_run_settings_overrides_to_run",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "dict[str, list[str]]",
+          "exported": true,
+          "lineCount": 38
         }
       ],
       "classes": [
+        {
+          "name": "UnknownRunSettingError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
         {
           "name": "OperatorSurfaceAssembler",
           "methods": [
@@ -30591,7 +33468,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 756
+          "lineCount": 770
         }
       ],
       "imports": [
@@ -30635,7 +33512,8 @@
           "source": "collections.abc",
           "specifiers": [
             "Callable",
-            "Iterator"
+            "Iterator",
+            "Mapping"
           ]
         },
         {
@@ -30694,6 +33572,7 @@
             "OperatorSurfaceProjection",
             "PreflightItem",
             "PreflightSection",
+            "RunSettingsSection",
             "SpecialistEntry",
             "SpecialistsSection",
             "StepEntry",
@@ -30711,9 +33590,20 @@
         "_now",
         "_sha256_text",
         "_run_json_digest",
+        "_safe_yaml_mapping",
+        "_env_flag",
+        "_str_or_unset",
+        "_component_state",
+        "_treatment_slots",
+        "resolve_run_settings",
+        "UnknownRunSettingError",
+        "load_run_settings_overrides",
+        "_overlaid_run_settings",
+        "apply_run_settings_change",
+        "apply_run_settings_overrides_to_run",
         "OperatorSurfaceAssembler"
       ],
-      "totalLines": 900,
+      "totalLines": 1206,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/package_builders.py": {
@@ -31453,7 +34343,7 @@
     },
     "app/marcus/orchestrator/preflight.py": {
       "filePath": "app/marcus/orchestrator/preflight.py",
-      "contentHash": "285d773c3a8af6423a84fed435586d0f9f6f60a7619cc5cd6667658b9dca6dd4",
+      "contentHash": "3c7cff3daf0abf71bad0ed93fb7a4550660c23dec0ebecb7b62a4dbd0cf27baf",
       "functions": [
         {
           "name": "_canonical_trial_id",
@@ -31572,13 +34462,50 @@
           "lineCount": 59
         },
         {
-          "name": "_terminate_quietly",
+          "name": "_no_window_creationflags",
+          "params": [],
+          "returnType": "int",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "_read_run_status",
           "params": [
-            "proc"
+            "run_dir"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_terminate_with_grace",
+          "params": [
+            "proc",
+            "grace"
           ],
           "returnType": "None",
           "exported": true,
-          "lineCount": 4
+          "lineCount": 11
+        },
+        {
+          "name": "_status_aware_teardown",
+          "params": [
+            "proc",
+            "run_dir",
+            "grace"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "request_hud_stop",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 11
         },
         {
           "name": "launch_hud_server",
@@ -31593,7 +34520,87 @@
           ],
           "returnType": "subprocess.Popen | None",
           "exported": true,
-          "lineCount": 49
+          "lineCount": 58
+        },
+        {
+          "name": "probe_hud_identity",
+          "params": [
+            "port",
+            "timeout",
+            "get"
+          ],
+          "returnType": "tuple[str | None, object] | None",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "reattach_or_launch_hud_server",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "launch_nonce",
+            "port",
+            "mode",
+            "python_executable",
+            "popen",
+            "probe"
+          ],
+          "returnType": "tuple[subprocess.Popen | None, str]",
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "tunnel_argv",
+          "params": [
+            "config"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "public_overlay_url",
+          "params": [
+            "config"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_tunnel_child_env",
+          "params": [
+            "config"
+          ],
+          "returnType": "dict[str, str]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_spawn_child",
+          "params": [
+            "argv",
+            "env",
+            "log_path",
+            "popen"
+          ],
+          "returnType": "subprocess.Popen | None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "launch_public_overlay",
+          "params": [
+            "trial_id",
+            "run_dir",
+            "config",
+            "mode",
+            "python_executable",
+            "popen"
+          ],
+          "returnType": "PublicOverlayHandles",
+          "exported": true,
+          "lineCount": 91
         }
       ],
       "classes": [
@@ -31625,6 +34632,39 @@
           ],
           "exported": true,
           "lineCount": 21
+        },
+        {
+          "name": "PublicOverlayConfig",
+          "methods": [
+            "from_env"
+          ],
+          "properties": [
+            "mode",
+            "public_port",
+            "hostname",
+            "cloudflare_token",
+            "tunnel_name",
+            "cloudflared_bin",
+            "tailscale_bin",
+            "ngrok_domain",
+            "ngrok_authtoken",
+            "ngrok_bin"
+          ],
+          "exported": true,
+          "lineCount": 105
+        },
+        {
+          "name": "PublicOverlayHandles",
+          "methods": [],
+          "properties": [
+            "status",
+            "app_proc",
+            "tunnel_proc",
+            "config",
+            "public_url"
+          ],
+          "exported": true,
+          "lineCount": 8
         }
       ],
       "imports": [
@@ -31632,6 +34672,12 @@
           "source": "atexit",
           "specifiers": [
             "atexit"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
           ]
         },
         {
@@ -31737,16 +34783,56 @@
         "_default_gamma_heartbeat",
         "_langsmith_env_heartbeat",
         "run_preflight",
-        "_terminate_quietly",
-        "launch_hud_server"
+        "_no_window_creationflags",
+        "_read_run_status",
+        "_terminate_with_grace",
+        "_status_aware_teardown",
+        "request_hud_stop",
+        "launch_hud_server",
+        "probe_hud_identity",
+        "reattach_or_launch_hud_server",
+        "PublicOverlayConfig",
+        "tunnel_argv",
+        "public_overlay_url",
+        "_tunnel_child_env",
+        "PublicOverlayHandles",
+        "_spawn_child",
+        "launch_public_overlay"
       ],
-      "totalLines": 570,
+      "totalLines": 1124,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "6613716284744213357ab3f27190b9682b123444c458edc9b894efecf51b7952",
+      "contentHash": "1b2e5c3c3750c845111ccbe4516646c829bc935479417be92905fe087495e67d",
       "functions": [
+        {
+          "name": "_prewalk_settings_sentinel_path",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "write_prewalk_settings_confirm_sentinel",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_prewalk_settings_confirm_active",
+          "params": [
+            "run_dir"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 14
+        },
         {
           "name": "_research_dispatch_live",
           "params": [],
@@ -32134,11 +35220,12 @@
             "artifact_paths",
             "production_envelope",
             "pre_fill",
-            "runs_root"
+            "runs_root",
+            "run_settings"
           ],
           "returnType": "Any",
           "exported": true,
-          "lineCount": 206
+          "lineCount": 226
         },
         {
           "name": "_persist_conversation_turn_if_possible",
@@ -32557,6 +35644,38 @@
           "lineCount": 161
         },
         {
+          "name": "_prewalk_settings_gate_disposition",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "pause_at_gates",
+            "allow_offline_cost_report"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "_pause_at_prewalk_settings",
+          "params": [
+            "trial_id",
+            "operator_id",
+            "envelope",
+            "production_envelope",
+            "run_state",
+            "node_index",
+            "manifest_path",
+            "runs_root",
+            "allow_offline_cost_report",
+            "max_specialist_calls",
+            "directive_path",
+            "bundle_dir"
+          ],
+          "returnType": "ProductionTrialEnvelope",
+          "exported": true,
+          "lineCount": 94
+        },
+        {
           "name": "_dispatch_specialist_at_node",
           "params": [
             "adapter",
@@ -32658,6 +35777,45 @@
           "lineCount": 83
         },
         {
+          "name": "_assert_specialist_dispatched_or_raise",
+          "params": [
+            "dispatched",
+            "allow_offline_cost_report",
+            "specialist_id",
+            "node_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "_resolve_trial_budget_usd",
+          "params": [],
+          "returnType": "float | None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_accumulated_run_spend_usd",
+          "params": [
+            "production_envelope"
+          ],
+          "returnType": "float",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_assert_within_dollar_budget_or_raise",
+          "params": [
+            "production_envelope",
+            "node_id",
+            "specialist_id"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
           "name": "run_production_trial",
           "params": [
             "corpus_path",
@@ -32676,7 +35834,33 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 641
+          "lineCount": 782
+        },
+        {
+          "name": "_apply_component_overrides_to_run_state",
+          "params": [
+            "run_dir",
+            "run_state"
+          ],
+          "returnType": "RunState",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
+          "name": "_resume_prewalk_settings",
+          "params": [
+            "trial_id",
+            "verdict",
+            "envelope",
+            "run_state",
+            "runner",
+            "checkpoint",
+            "runs_root",
+            "max_specialist_calls"
+          ],
+          "returnType": "ProductionTrialEnvelope",
+          "exported": true,
+          "lineCount": 93
         },
         {
           "name": "resume_production_trial",
@@ -32688,7 +35872,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 122
+          "lineCount": 142
         },
         {
           "name": "resume_batch_production_trial",
@@ -32700,7 +35884,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 144
+          "lineCount": 145
         },
         {
           "name": "recover_production_trial",
@@ -32712,7 +35896,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 126
+          "lineCount": 127
         },
         {
           "name": "_continue_production_walk",
@@ -32733,7 +35917,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 592
+          "lineCount": 747
         }
       ],
       "classes": [
@@ -32944,7 +36128,11 @@
           "source": "app.marcus.orchestrator.operator_surface_assembler",
           "specifiers": [
             "DEFAULT_HUD_CONFIG_PATH",
-            "OperatorSurfaceAssembler"
+            "OperatorSurfaceAssembler",
+            "apply_run_settings_change",
+            "apply_run_settings_overrides_to_run",
+            "load_run_settings_overrides",
+            "resolve_run_settings"
           ]
         },
         {
@@ -32978,7 +36166,8 @@
             "G2CCard",
             "G3Card",
             "G4ACard",
-            "G4Card"
+            "G4Card",
+            "GSettingsCard"
           ]
         },
         {
@@ -33046,6 +36235,7 @@
           "source": "app.runtime.economics",
           "specifiers": [
             "RUNS_ROOT",
+            "check_trial_budget",
             "measure_trial_cost",
             "record_trial_cost_report"
           ]
@@ -33090,6 +36280,9 @@
         }
       ],
       "exports": [
+        "_prewalk_settings_sentinel_path",
+        "write_prewalk_settings_confirm_sentinel",
+        "_prewalk_settings_confirm_active",
         "_research_dispatch_live",
         "MissingUpstreamContributionError",
         "LegacyEnvelopeSchemaError",
@@ -33172,17 +36365,25 @@
         "_pre_gate_slot_values",
         "_invoke_pre_gate_marcus_for_gate",
         "_pause_at_gate",
+        "_prewalk_settings_gate_disposition",
+        "_pause_at_prewalk_settings",
         "_dispatch_specialist_at_node",
         "_pause_at_error",
         "_pause_at_provider_batch",
         "_dispatch_specialist_catching_batch_wait",
+        "_assert_specialist_dispatched_or_raise",
+        "_resolve_trial_budget_usd",
+        "_accumulated_run_spend_usd",
+        "_assert_within_dollar_budget_or_raise",
         "run_production_trial",
+        "_apply_component_overrides_to_run_state",
+        "_resume_prewalk_settings",
         "resume_production_trial",
         "resume_batch_production_trial",
         "recover_production_trial",
         "_continue_production_walk"
       ],
-      "totalLines": 4708,
+      "totalLines": 5499,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_citation.py": {
@@ -35229,7 +38430,7 @@
     },
     "app/marcus/orchestrator/workbook_prework_writers.py": {
       "filePath": "app/marcus/orchestrator/workbook_prework_writers.py",
-      "contentHash": "708e58c972e6e0ee57ab57cf1073fde84aaec314559fe1d457ca158a7a34356b",
+      "contentHash": "077447c83ed08a6b741d899bf92a6b3326b22b32e3740e1384f5a2bc6ee73c55",
       "functions": [
         {
           "name": "_load_config",
@@ -35255,6 +38456,15 @@
           "returnType": "bool",
           "exported": true,
           "lineCount": 20
+        },
+        {
+          "name": "_compact_enrichment_payload",
+          "params": [
+            "request"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 37
         }
       ],
       "classes": [
@@ -35314,6 +38524,24 @@
           "properties": [],
           "exported": true,
           "lineCount": 205
+        },
+        {
+          "name": "DeepDiveEnrichmentProviderOutputError",
+          "methods": [],
+          "properties": [],
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "LiveDeepDiveEnrichmentWriter",
+          "methods": [
+            "__init__",
+            "__call__",
+            "_system_prompt"
+          ],
+          "properties": [],
+          "exported": true,
+          "lineCount": 178
         }
       ],
       "imports": [
@@ -35373,6 +38601,21 @@
           "source": "pydantic",
           "specifiers": [
             "BaseModel"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_enrichment",
+          "specifiers": [
+            "DeepDiveEnrichedWriterResult",
+            "DeepDiveEnrichmentRequestV1"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_enrichment_provider_contract",
+          "specifiers": [
+            "DEEP_DIVE_ENRICHMENT_PROVIDER_CONTRACT_MODE",
+            "DEEP_DIVE_ENRICHMENT_PROVIDER_NORMALIZER_VERSION",
+            "normalize_deep_dive_enrichment_provider_payload"
           ]
         },
         {
@@ -35449,14 +38692,17 @@
         "LivePromiseTransformer",
         "_compact_deep_dive_payload",
         "_is_bold_parity_failure",
-        "LiveDeepDiveWriter"
+        "LiveDeepDiveWriter",
+        "DeepDiveEnrichmentProviderOutputError",
+        "_compact_enrichment_payload",
+        "LiveDeepDiveEnrichmentWriter"
       ],
-      "totalLines": 581,
+      "totalLines": 817,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/workbook_wiring.py": {
       "filePath": "app/marcus/orchestrator/workbook_wiring.py",
-      "contentHash": "6ed5ef4d4e22da35d3cffdc804adbcd494c130e487c97211f2d4764d3022557d",
+      "contentHash": "efe6554e165707b7af60e1acd264c427a7b6d4613dd47b00eb2e42f6cd6ef20e",
       "functions": [
         {
           "name": "_canonical_json",
@@ -35677,24 +38923,27 @@
           "lineCount": 16
         },
         {
-          "name": "_review_stub",
+          "name": "_review_factory",
           "params": [
             "_node_id",
-            "_envelope"
+            "envelope",
+            "runtime_context"
           ],
           "returnType": "dict[str, object]",
           "exported": true,
-          "lineCount": 6
+          "lineCount": 16
         },
         {
-          "name": "_ask_b_stub",
+          "name": "_ask_b_factory",
           "params": [
             "_node_id",
-            "_envelope"
+            "envelope",
+            "runtime_context",
+            "dispatch_live"
           ],
           "returnType": "dict[str, object]",
           "exported": true,
-          "lineCount": 6
+          "lineCount": 17
         },
         {
           "name": "runtime_context_for_run",
@@ -35704,7 +38953,7 @@
           ],
           "returnType": "WorkbookBriefRuntimeContext",
           "exported": true,
-          "lineCount": 51
+          "lineCount": 65
         },
         {
           "name": "_activated_artifact",
@@ -35750,7 +38999,7 @@
           ],
           "returnType": "ProductionEnvelope",
           "exported": true,
-          "lineCount": 379
+          "lineCount": 654
         }
       ],
       "classes": [],
@@ -35992,15 +39241,15 @@
         "_writer_receipt",
         "workbook_brief_contribution_receipt",
         "_ask_a_factory",
-        "_review_stub",
-        "_ask_b_stub",
+        "_review_factory",
+        "_ask_b_factory",
         "runtime_context_for_run",
         "_activated_artifact",
         "_replace_brief_contribution",
         "_reconcile_activated_artifact",
         "run_workbook_band_node"
       ],
-      "totalLines": 1838,
+      "totalLines": 2187,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/workbook_writer_model_config.yaml": {
@@ -37452,7 +40701,7 @@
     },
     "app/models/decision_cards/__init__.py": {
       "filePath": "app/models/decision_cards/__init__.py",
-      "contentHash": "a34e583e7f38d76cbc4f66a5f9de07e9340fa40ae224fe4f76aa6cf5258be1ad",
+      "contentHash": "ddda82db9d2b41308aad6991eac9646ad7d88e4dffa1cf06a9a9b7764b2d67a7",
       "functions": [],
       "classes": [],
       "imports": [
@@ -37559,6 +40808,12 @@
           ]
         },
         {
+          "source": "app.models.decision_cards.g_settings",
+          "specifiers": [
+            "GSettingsCard"
+          ]
+        },
+        {
           "source": "app.models.decision_cards.override_event",
           "specifiers": [
             "OverrideEvent"
@@ -37581,7 +40836,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 95,
+      "totalLines": 98,
       "hasStructuralAnalysis": true
     },
     "app/models/decision_cards/__main__.py": {
@@ -37799,6 +41054,78 @@
         "DecisionCard"
       ],
       "totalLines": 130,
+      "hasStructuralAnalysis": true
+    },
+    "app/models/decision_cards/g_settings.py": {
+      "filePath": "app/models/decision_cards/g_settings.py",
+      "contentHash": "a60f6e485369889d0fd8162af591df56b4f131f0532a4b5dad328dc704671893",
+      "functions": [],
+      "classes": [
+        {
+          "name": "GSettingsCard",
+          "methods": [
+            "_enforce_uuid4",
+            "_enforce_created_at_tz",
+            "_reject_blank_operator_prompt",
+            "_reject_empty_allowed_verbs"
+          ],
+          "properties": [
+            "schema_version",
+            "card_id",
+            "trial_id",
+            "gate_id",
+            "gate_focus",
+            "created_at",
+            "run_settings",
+            "allowed_verbs",
+            "operator_prompt",
+            "verb"
+          ],
+          "exported": true,
+          "lineCount": 75
+        }
+      ],
+      "imports": [
+        {
+          "source": "datetime",
+          "specifiers": [
+            "UTC",
+            "datetime"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any",
+            "Literal"
+          ]
+        },
+        {
+          "source": "pydantic",
+          "specifiers": [
+            "UUID4",
+            "Field",
+            "field_validator"
+          ]
+        },
+        {
+          "source": "app.models.decision_cards._base",
+          "specifiers": [
+            "DecisionCardBase"
+          ]
+        },
+        {
+          "source": "app.models.state._base",
+          "specifiers": [
+            "enforce_tz_aware",
+            "enforce_uuid4_version"
+          ]
+        }
+      ],
+      "exports": [
+        "GSettingsCard"
+      ],
+      "totalLines": 120,
       "hasStructuralAnalysis": true
     },
     "app/models/decision_cards/g0.py": {
@@ -43390,7 +46717,7 @@
     },
     "app/models/runtime/operator_surface.py": {
       "filePath": "app/models/runtime/operator_surface.py",
-      "contentHash": "0ffac56ade42f09148258b19e8d3f80f7b84338f3ab35c432233d7bda5a6fcfc",
+      "contentHash": "9695e6423beda669a81d7a6129ac4968002cbf15d0f842cf0c5945dd1a4c6386",
       "functions": [
         {
           "name": "_default_notifications",
@@ -43683,6 +47010,30 @@
           "lineCount": 7
         },
         {
+          "name": "RunSettingsSection",
+          "methods": [],
+          "properties": [
+            "component_deck",
+            "component_motion",
+            "component_workbook",
+            "preset",
+            "encounter_mode",
+            "llm_execution_mode",
+            "g0_dispatch_live",
+            "research_dispatch_live",
+            "research_detective_live",
+            "narration_figure_fidelity_active",
+            "voice_direction",
+            "deck_enrichment_active",
+            "udac_active",
+            "coverage_gate",
+            "trial_budget_usd",
+            "treatment_slots"
+          ],
+          "exported": true,
+          "lineCount": 27
+        },
+        {
           "name": "TraceEvent",
           "methods": [
             "_enforce_at_tz"
@@ -43795,13 +47146,14 @@
             "health",
             "specialists",
             "modalities",
+            "run_settings",
             "trace",
             "decision_card",
             "error_message",
             "deliverables"
           ],
           "exported": true,
-          "lineCount": 95
+          "lineCount": 97
         },
         {
           "name": "Unrecognized",
@@ -43913,6 +47265,7 @@
         "SpecialistEntry",
         "SpecialistsSection",
         "ModalitiesSection",
+        "RunSettingsSection",
         "TraceEvent",
         "TraceSection",
         "NotificationsEchoSection",
@@ -43932,7 +47285,7 @@
         "derive_event_transitions",
         "stall_condition"
       ],
-      "totalLines": 911,
+      "totalLines": 984,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/production_envelope.py": {
@@ -44064,7 +47417,7 @@
     },
     "app/models/runtime/production_trial_envelope.py": {
       "filePath": "app/models/runtime/production_trial_envelope.py",
-      "contentHash": "4aa7d89423109a4cd0961ed058295c177d004fd9dd2b19d781fd80dba7bc858e",
+      "contentHash": "0b2c1d9a0d22218558d802b57eddeca6d4dac318e01320f02e5c0992d927306f",
       "functions": [],
       "classes": [
         {
@@ -44164,7 +47517,7 @@
       "exports": [
         "ProductionTrialEnvelope"
       ],
-      "totalLines": 157,
+      "totalLines": 163,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/trial_economics_report.py": {
@@ -44294,12 +47647,12 @@
     },
     "app/models/schemas/operator-surface.v1.schema.json": {
       "filePath": "app/models/schemas/operator-surface.v1.schema.json",
-      "contentHash": "ba78cc562fe1779514401086efd5ff812b01420b195b5a674d418348f5cd18a9",
+      "contentHash": "b6080210c24894f619aa007e7e90ac9251cd6e5f80ddadf8ccec484831108301",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1246,
+      "totalLines": 1354,
       "hasStructuralAnalysis": true
     },
     "app/models/schemas/specialist_state.schema.json": {
@@ -46306,7 +49659,7 @@
     },
     "app/notify/__main__.py": {
       "filePath": "app/notify/__main__.py",
-      "contentHash": "d6d8d35b530ed809681282672216827184d97ebdf03c7aa83bee665eeebe9195",
+      "contentHash": "fd10599fdc3120d570a817b94213dc89e30db0982d65d42576966653ec517478",
       "functions": [
         {
           "name": "run_forever",
@@ -46330,7 +49683,7 @@
           ],
           "returnType": "dict",
           "exported": true,
-          "lineCount": 22
+          "lineCount": 30
         },
         {
           "name": "launch_notifier",
@@ -46437,7 +49790,7 @@
         "_build_arg_parser",
         "main"
       ],
-      "totalLines": 199,
+      "totalLines": 207,
       "hasStructuralAnalysis": true
     },
     "app/notify/service.py": {
@@ -56777,7 +60130,7 @@
     },
     "app/specialists/irene_pass1/_act.py": {
       "filePath": "app/specialists/irene_pass1/_act.py",
-      "contentHash": "ce7ce9cfc76747d4d5f066ab72d3b107eaeec1bf362aa14bed2640064f7fc020",
+      "contentHash": "803d8fe4e507fe7ebb429d37994dc7261f06d0b1d9232d13d8a3c7c3afee5194",
       "functions": [
         {
           "name": "_scrub_floor_annotations",
@@ -56983,7 +60336,7 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 66
+          "lineCount": 68
         },
         {
           "name": "_fidelity_emission_instructions",
@@ -57015,7 +60368,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 135
+          "lineCount": 166
         },
         {
           "name": "normalize_collateral",
@@ -57479,7 +60832,7 @@
         "act",
         "_act_locked"
       ],
-      "totalLines": 1963,
+      "totalLines": 1996,
       "hasStructuralAnalysis": true
     },
     "app/specialists/irene_pass1/cluster_floor.py": {
@@ -67732,7 +71085,7 @@
     },
     "app/specialists/workbook_producer/_act.py": {
       "filePath": "app/specialists/workbook_producer/_act.py",
-      "contentHash": "8a2ed81229581376ec3f6d8812c568ff10fcdeb9098cea9362dcb3cad8e2f8c1",
+      "contentHash": "040a0f6f27e441eb41abcc06a0e9ed79fed4a2af438745c3633e1d7018e6cafb",
       "functions": [
         {
           "name": "_trail_entry",
@@ -67841,6 +71194,25 @@
           "lineCount": 16
         },
         {
+          "name": "_sme_name_from_corpus",
+          "params": [
+            "corpus_root"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "_deck_reference",
+          "params": [
+            "run_dir",
+            "manifest_relpath"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 21
+        },
+        {
           "name": "_plan_unit_and_context",
           "params": [
             "run_dir",
@@ -67855,6 +71227,15 @@
           "lineCount": 22
         },
         {
+          "name": "_apply_exercise_composition_cap",
+          "params": [
+            "sections"
+          ],
+          "returnType": "tuple[list[WorkbookSection], dict[str, object] | None]",
+          "exported": true,
+          "lineCount": 106
+        },
+        {
           "name": "_research_inputs",
           "params": [
             "run_dir"
@@ -67864,14 +71245,24 @@
           "lineCount": 64
         },
         {
+          "name": "_normalize_join_path",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
           "name": "_unit_to_enrichment_lo_map",
           "params": [
             "lesson_plan",
-            "card"
+            "card",
+            "authority_map"
           ],
           "returnType": "dict[str, str]",
           "exported": true,
-          "lineCount": 52
+          "lineCount": 116
         },
         {
           "name": "_research_figure_supplements",
@@ -67883,7 +71274,17 @@
           ],
           "returnType": "set[str]",
           "exported": true,
-          "lineCount": 34
+          "lineCount": 38
+        },
+        {
+          "name": "_glossary_figure_supplements",
+          "params": [
+            "glossary",
+            "deep_dive_review"
+          ],
+          "returnType": "set[str]",
+          "exported": true,
+          "lineCount": 27
         },
         {
           "name": "_authored_prose_figure_supplements",
@@ -67907,7 +71308,17 @@
           ],
           "returnType": "WorkbookInputs | None",
           "exported": true,
-          "lineCount": 299
+          "lineCount": 452
+        },
+        {
+          "name": "_merge_deep_dive_source_refs",
+          "params": [
+            "source_ref_manifest",
+            "rows"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 21
         },
         {
           "name": "_skip_output",
@@ -67924,7 +71335,7 @@
           ],
           "returnType": "WorkbookSidecar | None",
           "exported": true,
-          "lineCount": 80
+          "lineCount": 84
         },
         {
           "name": "_load_persisted_production_envelope",
@@ -67952,7 +71363,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 17
+          "lineCount": 27
         },
         {
           "name": "act",
@@ -67996,13 +71407,17 @@
             "research_trends",
             "research_supplements",
             "lo_overlay_loss",
+            "exercise_overlay_loss",
             "pre_work",
             "encounter_mode",
             "render_profile",
-            "workbook_brief_receipt"
+            "workbook_brief_receipt",
+            "deep_dive_review",
+            "glossary",
+            "cover_inputs"
           ],
           "exported": true,
-          "lineCount": 27
+          "lineCount": 39
         }
       ],
       "imports": [
@@ -68034,6 +71449,12 @@
           "source": "re",
           "specifiers": [
             "re"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Iterable"
           ]
         },
         {
@@ -68072,14 +71493,29 @@
           "source": "app.marcus.lesson_plan.collateral_spec",
           "specifiers": [
             "CollateralSpec",
+            "Exercise",
+            "WorkbookSection",
             "WorkbookSpec"
+          ]
+        },
+        {
+          "source": "app.marcus.lesson_plan.deep_dive_enrichment",
+          "specifiers": [
+            "WorkbookReviewContributionV1",
+            "load_workbook_review_contribution",
+            "render_deep_dive_markdown",
+            "used_pool_rows"
           ]
         },
         {
           "source": "app.marcus.lesson_plan.glossary_projection",
           "specifiers": [
+            "GLOSSARY_CAPABILITY_NOTE",
+            "GLOSSARY_UNCOVERED_DEGRADED_ENTRY_LINE",
+            "GLOSSARY_UNCOVERED_ENTRY_LINE",
             "GlossaryArticleBrief",
-            "glossary_inputs_from_run"
+            "GlossaryProjection",
+            "glossary_projection_from_contribution"
           ]
         },
         {
@@ -68111,6 +71547,14 @@
           ]
         },
         {
+          "source": "app.marcus.lesson_plan.slide_authority",
+          "specifiers": [
+            "SlideAuthorityInvalidError",
+            "WorkbookSlideAuthorityMapV1",
+            "read_slide_authority_map"
+          ]
+        },
+        {
           "source": "app.marcus.lesson_plan.trends_projection",
           "specifiers": [
             "ResearchTrendsBrief",
@@ -68125,13 +71569,15 @@
             "lesson_plan_from_run",
             "load_enrichment_card",
             "project_enrichment_to_workbook_inputs",
-            "research_entries_from_run"
+            "research_entries_from_run",
+            "run_identity_from_run"
           ]
         },
         {
           "source": "app.marcus.lesson_plan.workbook_producer",
           "specifiers": [
             "DEFAULT_WORKBOOK_OUTPUT_ROOT",
+            "CoverInputs",
             "DuplicateCollateralIdError",
             "FurtherReadingEntry",
             "LearningObjectiveBrief",
@@ -68210,13 +71656,19 @@
         "_sanitize_open_id",
         "_derive_plan_unit_fields",
         "_derive_display_title",
+        "_sme_name_from_corpus",
+        "_deck_reference",
         "_plan_unit_and_context",
+        "_apply_exercise_composition_cap",
         "WorkbookInputs",
         "_research_inputs",
+        "_normalize_join_path",
         "_unit_to_enrichment_lo_map",
         "_research_figure_supplements",
+        "_glossary_figure_supplements",
         "_authored_prose_figure_supplements",
         "build_workbook_inputs",
+        "_merge_deep_dive_source_refs",
         "_skip_output",
         "produce_workbook",
         "_load_persisted_production_envelope",
@@ -68224,7 +71676,7 @@
         "_sidecar_refs",
         "act"
       ],
-      "totalLines": 1234,
+      "totalLines": 1735,
       "hasStructuralAnalysis": true
     },
     "app/specialists/workbook_producer/config.yaml": {
@@ -72952,6 +76404,16 @@
       "totalLines": 425,
       "hasStructuralAnalysis": true
     },
+    "scripts/operator/_launch_fresh_c1m1_p1_trial.ps1": {
+      "filePath": "scripts/operator/_launch_fresh_c1m1_p1_trial.ps1",
+      "contentHash": "432246031f94c771d19cf869eddae33701b5035f55c88514d300b4e6729fe82f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
     "scripts/operator/build_descript_narrated_lesson.py": {
       "filePath": "scripts/operator/build_descript_narrated_lesson.py",
       "contentHash": "1d4c11922685d5e2d39ab9177f9abef8a19e967e2b8dbdaa8b7d56ca7e1a7d68",
@@ -73900,6 +77362,16 @@
       "totalLines": 122,
       "hasStructuralAnalysis": true
     },
+    "scripts/operator/neutralize_github_gcm_account_picker.ps1": {
+      "filePath": "scripts/operator/neutralize_github_gcm_account_picker.ps1",
+      "contentHash": "b87c5f8e61df9fff42207a56a6fbd90d7aad9cf9f8ec37d2dc3b22d06f473208",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 202,
+      "hasStructuralAnalysis": false
+    },
     "scripts/operator/probe_scite_mcp.py": {
       "filePath": "scripts/operator/probe_scite_mcp.py",
       "contentHash": "1ff49d76721577042decd2cb42538c3b0775c0c5b62eada8e66113c87c2193f2",
@@ -74590,12 +78062,12 @@
     },
     "scripts/setup/ready_for_trial.ps1": {
       "filePath": "scripts/setup/ready_for_trial.ps1",
-      "contentHash": "72288d7f87f50a504caa7e68fb79fe843d790e6faa8df72a638a8975daa279b7",
+      "contentHash": "43c3ef73812c83fade9776bb520661c2722826f7524a5944ec7c2f56ccb519f2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 130,
+      "totalLines": 145,
       "hasStructuralAnalysis": false
     },
     "scripts/setup/ready_for_trial.sh": {

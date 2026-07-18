@@ -1,3 +1,13 @@
+> ⚠️ **ARCHIVED / DISSOLVED — do not follow.** The BMAD persona **Cora** was dissolved as a runtime
+> specialist (`_bmad-output/planning-artifacts/decision-records/DR-SLAB-1-CLOSE-2026-04-24.md` DR-2,
+> party-ratified 5/5, binding). Her session-coherence role was redistributed to the LangGraph CI stack
+> and the canonical session protocols. This file is retained for historical lineage only; parts of it
+> (e.g. hand-drafting `next-session-start-here.md`) now CONTRADICT the status-surface generated-view
+> regime. **Authoritative session procedure: [`bmad-session-protocol-session-START.md`](../../../../bmad-session-protocol-session-START.md)
+> + [`bmad-session-protocol-session-WRAPUP.md`](../../../../bmad-session-protocol-session-WRAPUP.md)** (the coherence gate lives at their Step 1a / Step 0).
+
+---
+
 # Session-START Protocol (SS)
 
 Cora's opening move on every dev session. Goal: a two-to-three-sentence hot-start that lets the operator resume without reading anything themselves.

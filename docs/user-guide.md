@@ -1,11 +1,16 @@
 # User Guide — Course Content Production System
 
-## Current Status - Marcus-SPOC Workbook Production (2026-07-15)
+## Marcus-SPOC Runtime — Operator Capabilities & Fences
 
-This guide now starts from the Marcus-SPOC local runtime: Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle. Proofing sessions can reveal product defects, but they are not the product target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline, the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), the Operator HUD (Epic 35, 2026-07-11/12), and the Presentation-Support Workbook first complete run (Epics 36–40, 2026-07-15).
+> **Current product status / where-we-are lives in [`STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md) §11 (the product-truth SSOT), not here.** Marcus is the operator-facing orchestrator for a real APP production run, not a concierge/proofing vehicle; proofing sessions can reveal defects but are not the product target. The sections below are durable operator reference — when a status detail drifts from SOTA §11, SOTA wins.
 
 ### What Works Now
 
+- **Every gate now reads as a table, not a JSON blob (Epic 43):** at each human-in-the-loop pause Marcus surfaces a purpose-built, paginated table — gate identity, enrichment metrics, ungrounded advisories, learning objectives, and the per-gate content — instead of the raw dense JSON the first live trial dumped. All 14 operator-reviewed gate surfaces are covered; a coverage guard makes it mechanically impossible to close on a subset. You review what matters, in a readable shape.
+- **Pre-walk settings gate — confirm or change before the run starts (Epic 42, default ON):** before the production walk begins, Marcus pauses on a settings gate (G0S) that shows the resolved run settings (execution mode, preset, HUD, budget, flags) as a 16-toggle readout and lets you confirm or change them up front rather than discovering them mid-run.
+- **Watch a live run from anywhere, read-only (Epic 42):** the operator HUD now has a public overlay served over an ngrok tunnel — a scrubbed, read-only view of the live run (never secrets, decision-card internals, or export paths). The local flight-deck HUD (`http://localhost:8791`) now **survives pause** and launches windowless (no extra console window). See `docs/operator/hud-guide.md`.
+- **A run that overspends now stops itself (Epic 41):** `MARCUS_TRIAL_BUDGET_USD` is an enforced brake — the trial halts when it would exceed your set budget, rather than quietly running past it. Set it before a paid run.
+- **Stalled/frozen runs are honestly recoverable (Epic 41):** the earlier "frozen composed run" failure was diagnosed as budget starvation (a `max_specialist_calls=1` throttle), not a resume bug. The throttle is removed, resume/recover runs a live-environment preflight first, and a silently-skipped specialist now fails loud instead of producing a false-green run.
 - **Learner workbook, end-to-end (first completed run 2026-07-15):** the presentation-support workbook pipeline can now run a governed live trial all the way through and emit a real, verified workbook (Markdown + DOCX) — prework frame, scenes, deep dive, check-on-learning, closing reflection, research glossary/trends when the research packet has content. The run harness only reports success when the workbook actually exists and conforms. **Current caveat:** the Learning Objectives section of the first completed workbook rendered placeholders (a known join defect being fixed); treat workbook output as near-shippable, not yet shippable, until that fix lands.
 - **Operator HUD (Epic 35):** a flight-deck style HUD is authorized for real operator use — live run status, gate cards, roster, and event trace over a per-run projection, with ntfy notifications. See `docs/operator/hud-guide.md`.
 - The durable Phase-2 baseline includes S7 course-source assessment/bundles, the S8 planning-to-selection bridge, the Irene planning-context handoff, and Marcus `plan-ratify` Claim A/B through the live bespoke Irene Pass-1 close at `fa48fb5b`.
@@ -53,32 +58,7 @@ Retrieval providers behind Texas: Scite and Consensus (triangulation-capable), O
 
 Use this current-status block first, then use the older sections below for workflow vocabulary and historical operator patterns. Current project status lives in [`docs/STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md), [`SESSION-HANDOFF.md`](../SESSION-HANDOFF.md), and [`next-session-start-here.md`](../next-session-start-here.md).
 
-## Legacy Context
-
-> **Migration Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration unconditionally SHIPPED 2026-04-27. Slab 7 orchestrational arc COMPLETE (7a+7b+7c closed 2026-05-01 / 2026-05-01 / 2026-05-07). Pre-Trial-3 cleanup arc S1-S6 currently in progress (S1+S2+S3+S4 closed; S5+S6 in flight). **First tracked trial (Trial-3) launches post-cleanup-close** against v5 canonical pack + post-Slab-7c substrate. v5 canonical pack: `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`. Trial methodology: `docs/trials/methodology.md`. Legacy v4.2 retained as mapping-checklist legacy-axis frozen authority.
-
-
-> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
->
-> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE chat + prompt-pack v4.x). The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED**: migration unconditionally SHIPPED 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28 (Step 02A prior-run defaults + Irene Pass 2 authoring template + HUD per-step expandable summaries); first tracked trial UNBLOCKED. Marcus orchestrator runs the production-graph runner against the manifest; specialists invoke through ProductionDispatchAdapter; DecisionCards fire at G1/G2C/G3/G4 with HIL operator verdict via CLI/MCP/FastAPI; checkpoint pause/resume verified end-to-end.
->
-> **For migration-native user workflow (post-SHIP), see:**
-> - **[`docs/operator/production-trial-playbook.md`](operator/production-trial-playbook.md)** — start-to-stop production-run playbook at action-by-action granularity (in-progress fill during first tracked trial). The migration-native equivalent of legacy prompt-pack + cheat-sheet.
-> - **[`docs/operator/production-run-swimlane.md`](operator/production-run-swimlane.md)** — at-a-glance swimlane for typical animated-slides + video production runs (HIL gates G1/G2C/G3/G4 highlighted; cumulative pace + watch-for rubric). Best high-level entry point.
-> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial step-by-step (transport choice + corpus + DecisionCard inspection + verdict flow + override + replay).
-> - **[`docs/operator/hud-guide.md`](operator/hud-guide.md)** — HUD reading guide including Slab 6.5 per-step expandable summaries.
-> - **[`docs/operator/step-02a-prior-run-defaults.md`](operator/step-02a-prior-run-defaults.md)** — Slab 6.3 prior-run directives surfacing.
-> - **[`docs/operator/validation-scripts.md`](operator/validation-scripts.md)** — operator-run validation script catalog (5 validation scripts + 4 ceremony scripts).
-> - **[`README.md`](../README.md)** — top-of-repo project orientation + status-by-slab + quick-start.
->
-> **Scope of this legacy content (post-SHIP):** the prompt-pack v4.x workflow described below is HISTORICAL REFERENCE for the pre-migration primary-repo. It is preserved to keep audit-trail continuity from pre- to post-migration. For active production-content workflow, consult the migration-native see-also list above.
-
----
-
-**Audience:** Course creators and instructional designers using the system to produce educational content.
-**Last Updated:** 2026-04-12 (migration banner actualized 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); hybrid clone is M5 SHIP-CONDITIONAL through 2026-05-03.
-
----
+> Legacy migration context archived to [`user-guide.history.md`](user-guide.history.md) (pre-migration workflow + migration-status banners). Current product status → [`STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md) §11.
 
 ## Quick Start
 

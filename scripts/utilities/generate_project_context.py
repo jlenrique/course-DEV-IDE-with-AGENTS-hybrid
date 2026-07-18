@@ -1,0 +1,276 @@
+"""Generate ``docs/project-context.md`` — a thin generated header over a
+hand-authored base doc that is preserved verbatim.
+
+``docs/project-context.md`` is glob-loaded as a persistent fact by ~59 skills,
+so it MUST stay at that exact path and no second ``project-context.md`` may be
+created anywhere in the tree.
+
+Design (operator-ratified): a THIN generated current-state header ABOVE a
+stable ``<!-- BASE-DOC ... -->`` marker; everything from the marker to EOF is
+the hand-authored base doc, preserved byte-for-byte.
+
+Two modes:
+
+* BOOTSTRAP (first run — no marker yet, but the base-doc heading
+  ``# Project Context: Multi-Agent Course Content Production System`` is
+  present): archive the addendum stack ABOVE that heading to
+  ``docs/project-context.history.md`` (dated header + verbatim), then rewrite
+  ``docs/project-context.md`` = fresh thin header + marker + base doc verbatim.
+* STEADY STATE (marker present): regenerate ONLY the text ABOVE the marker;
+  preserve the marker and everything below it byte-for-byte.
+
+The thin header is sourced from the latest ``SESSION-HANDOFF.md`` section plus
+the current ``### 11.1 You are here`` block of ``docs/STATE-OF-THE-APP.md``.
+
+FAIL-LOUD: a run where NEITHER the marker NOR the base-doc heading is found
+prints a named error and exits non-zero WITHOUT overwriting — the base doc is
+never dropped.
+
+Usage::
+
+    .venv/Scripts/python.exe scripts/utilities/generate_project_context.py
+    .venv/Scripts/python.exe scripts/utilities/generate_project_context.py --check
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+_DEFAULT_ROOT = Path(__file__).resolve().parents[2]
+
+BASE_DOC_MARKER = "<!-- BASE-DOC (hand-authored, preserved — do not delete this marker) -->"
+BASE_DOC_MARKER_PREFIX = "<!-- BASE-DOC"
+BASE_DOC_HEADING = "# Project Context: Multi-Agent Course Content Production System"
+# Line-start anchor for the base-doc heading. Bootstrap asserts EXACTLY ONE
+# occurrence so a spurious earlier restatement cannot mis-slice the boundary.
+BASE_DOC_HEADING_ANCHOR = "# Project Context:"
+
+# Broadened to match ANY ``# Session …`` variant so the newest section wins.
+_SECTION_RE = re.compile(r"^#\s+Session\b.*$", re.IGNORECASE | re.MULTILINE)
+
+
+class GenerationError(RuntimeError):
+    """Named, fail-loud error surfaced to stderr before a non-zero exit."""
+
+
+# ---------------------------------------------------------------------------
+# Source extraction
+# ---------------------------------------------------------------------------
+
+
+def _latest_handoff(root: Path) -> tuple[str, str]:
+    """Return (heading_line, what_is_next_body) from the latest handoff section.
+
+    FAIL-LOUD: a missing SESSION-HANDOFF.md or a file with no ``# Session …``
+    section raises rather than writing a silent placeholder — consistent with
+    the generator's fail-loud contract (never emit a degraded header).
+    """
+    handoff_path = root / "SESSION-HANDOFF.md"
+    if not handoff_path.exists():
+        raise GenerationError(
+            f"generate_project_context: SESSION-HANDOFF.md not found at "
+            f"{handoff_path} (required header input; target NOT overwritten)."
+        )
+    text = handoff_path.read_text(encoding="utf-8")
+    matches = list(_SECTION_RE.finditer(text))
+    if not matches:
+        raise GenerationError(
+            "generate_project_context: no '# Session …' section found in "
+            "SESSION-HANDOFF.md (required header input; target NOT overwritten)."
+        )
+    start = matches[0].start()
+    end = matches[1].start() if len(matches) > 1 else len(text)
+    section = text[start:end]
+    heading = section.splitlines()[0].lstrip("# ").strip()
+    m = re.search(
+        r"^##\s+What is next[^\n]*$(.*?)(?=^##\s|\Z)",
+        section,
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    what_next = m.group(1).strip() if m else ""
+    return heading, what_next
+
+
+def _you_are_here(root: Path) -> str:
+    """Extract the current ``### 11.1 You are here`` block (stops at SUPERSEDED)."""
+    sota_path = root / "docs" / "STATE-OF-THE-APP.md"
+    if not sota_path.exists():
+        return ""
+    text = sota_path.read_text(encoding="utf-8")
+    m = re.search(
+        r"^###\s+11\.1\s+You are here[^\n]*$(.*?)(?=^>\s*\*\*\(SUPERSEDED|^#{1,3}\s|\Z)",
+        text,
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
+    )
+    return m.group(1).strip() if m else ""
+
+
+# ---------------------------------------------------------------------------
+# Header render
+# ---------------------------------------------------------------------------
+
+
+def _render_header(root: Path) -> str:
+    heading, what_next = _latest_handoff(root)
+    you_are_here = _you_are_here(root)
+
+    parts: list[str] = [
+        "# Project Context — Current State (GENERATED)",
+        "",
+        "<!-- GENERATED thin current-state header. Regenerated by "
+        "scripts/utilities/generate_project_context.py. Everything from the "
+        "BASE-DOC marker to EOF is hand-authored and preserved verbatim. -->",
+        "",
+        # STABLE line (no timestamp / branch / HEAD sha): this file is
+        # git-tracked and glob-loaded by ~59 skills, so a volatile header would
+        # churn it on every regen. Idempotent header = no spurious diffs.
+        "> GENERATED thin header — regenerate with "
+        "scripts/utilities/generate_project_context.py",
+        "",
+        "## Current Session State",
+        "",
+        f"Latest session close: **{heading}**",
+        "",
+    ]
+    if what_next:
+        parts += ["**What is next:**", "", what_next, ""]
+    if you_are_here:
+        parts += [
+            "## You Are Here (from STATE-OF-THE-APP.md §11.1)",
+            "",
+            you_are_here,
+            "",
+        ]
+    else:
+        # Honest degrade: name the missing input rather than emit a silent
+        # empty subsection.
+        parts += ["<!-- STATE-OF-THE-APP §11.1 unavailable at generation -->", ""]
+    parts += [
+        "> Dated context-addendum history archived to "
+        "`docs/project-context.history.md`. The hand-authored base doc is "
+        "preserved verbatim below the marker.",
+        "",
+    ]
+    return "\n".join(parts) + "\n"
+
+
+# ---------------------------------------------------------------------------
+# Mode dispatch
+# ---------------------------------------------------------------------------
+
+
+def _line_start_of(text: str, index: int) -> int:
+    """Return the index of the start of the line containing ``index``."""
+    nl = text.rfind("\n", 0, index)
+    return 0 if nl == -1 else nl + 1
+
+
+def build(root: Path) -> tuple[str, str | None]:
+    """Return (new_project_context_text, history_text_or_None).
+
+    ``history_text`` is non-None only on the bootstrap split. Raises
+    ``GenerationError`` if neither the marker nor the base heading is present.
+    """
+    target_path = root / "docs" / "project-context.md"
+    if not target_path.exists():
+        raise GenerationError(
+            f"generate_project_context: {target_path} not found — refusing to "
+            "create it from scratch (would drop the hand-authored base doc)."
+        )
+    text = target_path.read_text(encoding="utf-8")
+    header = _render_header(root)
+
+    marker_idx = text.find(BASE_DOC_MARKER_PREFIX)
+    if marker_idx != -1:
+        # STEADY STATE — preserve marker-to-EOF byte-for-byte.
+        preserved = text[_line_start_of(text, marker_idx):]
+        return header + "\n" + preserved, None
+
+    anchors = list(
+        re.finditer(rf"^{re.escape(BASE_DOC_HEADING_ANCHOR)}", text, re.MULTILINE)
+    )
+    if len(anchors) > 1:
+        raise GenerationError(
+            "generate_project_context: found "
+            f"{len(anchors)} '{BASE_DOC_HEADING_ANCHOR}' headings in "
+            "docs/project-context.md — ambiguous base-doc boundary (a spurious "
+            "earlier restatement would mis-slice the archive). Refusing to "
+            "overwrite."
+        )
+    if len(anchors) == 1:
+        # BOOTSTRAP — archive the addendum stack, insert the marker.
+        base_start = _line_start_of(text, anchors[0].start())
+        addendum_stack = text[:base_start]
+        base_doc = text[base_start:]
+        new_text = header + "\n" + BASE_DOC_MARKER + "\n" + base_doc
+        stamp = datetime.now(tz=UTC).replace(microsecond=0).isoformat()
+        history = (
+            f"# project-context.md — Archived Context Addenda (bootstrapped {stamp})\n"
+            "\n"
+            "> Verbatim addendum stack lifted above the hand-authored base doc "
+            "when `docs/project-context.md` was demoted to a generated view. "
+            "This is the archive sibling; it must NOT be named `project-context.md`.\n"
+            "\n"
+            "---\n"
+            "\n"
+            f"{addendum_stack.rstrip()}\n"
+        )
+        return new_text, history
+
+    raise GenerationError(
+        "generate_project_context: neither the BASE-DOC marker nor the base-doc "
+        f"heading ('{BASE_DOC_HEADING}') was found in docs/project-context.md — "
+        "refusing to overwrite (would drop the hand-authored base doc)."
+    )
+
+
+def generate(root: Path, *, check: bool = False) -> Path | None:
+    """Build and (unless ``check``) write the target + any history sibling."""
+    new_text, history_text = build(root)  # raises on fail-loud condition
+    if check:
+        return None
+    target_path = root / "docs" / "project-context.md"
+    if history_text is not None:
+        history_path = root / "docs" / "project-context.history.md"
+        if history_path.exists():
+            # Never lose prior archives — append a fresh dated block.
+            prior = history_path.read_text(encoding="utf-8").rstrip()
+            history_text = prior + "\n\n---\n\n" + history_text
+        # newline="" disables win32 LF→CRLF translation so the preserved base
+        # doc round-trips its original (LF) line endings byte-for-byte.
+        history_path.write_text(history_text, encoding="utf-8", newline="")
+    target_path.write_text(new_text, encoding="utf-8", newline="")
+    return target_path
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Generate the thin-header-over-preserved-base docs/project-context.md."
+    )
+    parser.add_argument("--root", type=Path, default=_DEFAULT_ROOT, help="Repo root.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Validate that generation would succeed without writing the target.",
+    )
+    args = parser.parse_args(argv)
+
+    try:
+        result = generate(args.root, check=args.check)
+    except GenerationError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+
+    if args.check:
+        print("generate_project_context: --check OK (would generate cleanly).")
+    else:
+        print(f"generate_project_context: wrote {result}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

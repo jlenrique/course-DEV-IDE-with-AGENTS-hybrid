@@ -33,18 +33,20 @@ state/                      # YAML configs + SQLite runtime
 
 The startup protocol **reads** certain files; the WRAPUP protocol **writes** them. Every read must have a corresponding write, or context is lost.
 
-| File | Startup reads | Wrapup writes | Role |
+| File | Startup reads | Wrapup writes | Role & SSOT status |
 |------|:---:|:---:|------|
-| `SESSION-HANDOFF.md` | Always (canonical) | WRAPUP Step 8 | **Cross-machine canonical record** — tracked; survives across clones. |
-| `next-session-start-here.md` | If present (per-clone cache) | WRAPUP Step 7 | **Local hot-start cache** — gitignored; reconstruct from SESSION-HANDOFF.md + recent commits if missing. |
+| `SESSION-HANDOFF.md` | Always (canonical) | WRAPUP Step 8 (+ roll-down) | **Authored SSOT — chronology.** Tracked; survives across clones. Current arc + 1 prior hot; older → `SESSION-HANDOFF.history.md`. |
+| `docs/STATE-OF-THE-APP.md` | §0 guardrail + on-demand | WRAPUP Step 9 | **Authored SSOT — product truth.** Current + 1 prior banners hot; older → `STATE-OF-THE-APP.history.md`. FRAMING PRINCIPLE banner stays permanently. |
+| `sprint-status.yaml` | Step 4 | WRAPUP Step 4a | **Authored SSOT — Kanban.** Value-reconcile only (line-regex + `tripwire_events` parsers); done blocks → `sprint-status.history.md`. |
+| `deferred-inventory.md` | Step 4 (governance) | governance events | **Authored register — governance.** Closed entries → `## Closed Entries — Archived` at retrospective milestones. |
+| `bmm-workflow-status.yaml` | Step 4 | WRAPUP Step 3 | BMAD phase (structured YAML). Comment history → `bmm-workflow-status.history.md`. |
+| `next-session-start-here.md` | If present (per-clone cache) | WRAPUP Step 7 = **GENERATED** | **Generated view (fail-loud)** via `generate_next_session.py`; gitignored. Falls back to SESSION-HANDOFF. |
+| `docs/project-context.md` | Step 1 | WRAPUP Step 5 = **GENERATED** | **Generated view (thin header)** via `generate_project_context.py`; base doc below the `<!-- BASE-DOC -->` marker is hand-authored; addendum history → `project-context.history.md` (generator-fed). Glob-loaded by ~59 skills — never move it. |
 | `docs/ONBOARDING.md` | Once per fresh agent context | WRAPUP Step 9 if regenerated | **Architectural mental model** — knowledge-graph-derived. |
-| `docs/project-context.md` | Step 1 | WRAPUP Step 5 | Current state, key decisions, architecture summary. |
 | `docs/agent-environment.md` | Step 1 | WRAPUP Step 5 | MCP / API / tool / skill inventory. |
-| `bmm-workflow-status.yaml` | Step 4 | WRAPUP Step 3 | BMAD phase and workflow transitions. |
-| `sprint-status.yaml` | Step 4 | WRAPUP Step 4a | Epic / story Kanban state. |
-| Guides (user/admin/dev) | Step 4 on-demand | WRAPUP Step 9 | Large stable docs. |
+| Guides (user/admin/dev) | Step 4 on-demand | WRAPUP Step 9 | Large stable living docs. |
 
-> **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth. If `next-session-start-here.md` is missing (fresh clone or hybrid-secondary), reconstruct it from the latest SESSION-HANDOFF.md section + recent commit messages, and record the reconstruction in this session's WRAPUP Step 8.
+> **Key principle:** `SESSION-HANDOFF.md` is the cross-machine source-of-truth. The **status-surface SSOT & retention contract** (three authored SSOTs — Kanban / chronology / product-truth — plus the deferred-inventory register; `next-session-start-here.md` + `project-context.md` are fail-loud generated views; cold history rolls to dated `*.history.md` siblings at arc close) is defined in [`bmad-session-protocol-session-WRAPUP.md`](bmad-session-protocol-session-WRAPUP.md) and [`spec-status-surface-consolidation.md`](_bmad-output/implementation-artifacts/spec-status-surface-consolidation.md). If `next-session-start-here.md` is missing (fresh clone), regenerate it (`generate_next_session.py`) or reconstruct from the latest SESSION-HANDOFF.md section + recent commits, and record it in WRAPUP Step 8.
 
 ---
 
@@ -71,7 +73,7 @@ Before running the steps below, name the expected session class. This determines
 
 | Class | Pattern | Steps engaged |
 |---|---|---|
-| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | All steps including Step 1a (Cora outstanding-findings gate). |
+| **S — Substrate** | Story/epic dispatch; schema, pipeline-manifest, runtime, or test edits; content production | All steps including Step 1a (outstanding-findings gate). |
 | **D — Docs / Tooling** | Markdown-only edits, lint refactors, knowledge-graph refresh, tool/plugin install, session-meta edits | Steps 1, 2, 3, 10, 12. Step 1a SKIPPED — read `next-session-start-here.md` unresolved-issues block directly. |
 | **P — Planning** | PRD, architecture, epics/stories authoring; party-mode rounds; retrospectives | Steps 1, 2, 3, 7, 10, 11, 12. Step 1a only if prior session left invariant-touching findings. |
 
@@ -106,16 +108,16 @@ Execute these steps in order at the beginning of every session.
 
 **Class S only.** Skip for Class D and Class P (unless Class P inherits invariant-touching findings from the prior session).
 
-For Class S sessions, ask Cora to run her Session-START (SS) protocol: scan `next-session-start-here.md` (and `SESSION-HANDOFF.md` if referenced) for deferred Step 0a Audra L1/L2 findings and acknowledged-but-not-remediated Step 0b pre-closure gaps. Cora presents the list with three choices:
+For Class S sessions, run the outstanding-findings gate: scan `next-session-start-here.md` (and `SESSION-HANDOFF.md` if referenced) for deferred Step 0a L1/L2 coherence findings and acknowledged-but-not-remediated Step 0b pre-closure gaps. Present the list with three choices:
 - **Remediate first** — make findings the opening anchor; defer the originally-intended anchor.
 - **Run `/harmonize` full-repo now** — re-verify against whole-repo invariants + full change window since handoff anchor; recommended when the prior session's audit trail is incomplete.
 - **Proceed with original anchor, carrying findings forward** — findings must reappear in this session's WRAPUP Step 7.
 
 If `next-session-start-here.md` cites findings but no `reports/dev-coherence/` report exists for the prior session, treat as missing-audit-trail and recommend the full-repo sweep.
 
-**Tripwire pre-check:** if the most recent WRAPUP entry in Cora's `chronology.md` recorded a skipped Step 0, any `/harmonize` invoked in this session (mid-session or at WRAPUP) auto-promotes default scope from since-handoff to full-repo.
+**Tripwire pre-check:** if the most recent `SESSION-HANDOFF.md` section recorded a skipped Step 0 (the skip is logged there per WRAPUP Step 8), any `/harmonize` invoked in this session (mid-session or at WRAPUP) auto-promotes default scope from since-handoff to full-repo.
 
-**For Class D / P sessions:** read the unresolved-issues block of `next-session-start-here.md` directly and decide whether to remediate, carry forward, or proceed. Log the decision; Cora's tripwire still applies on the second consecutive skip.
+**For Class D / P sessions:** read the unresolved-issues block of `next-session-start-here.md` directly and decide whether to remediate, carry forward, or proceed. Log the decision; the coherence tripwire still applies on the second consecutive skip.
 
 ### 2. Confirm branch + worktree alignment
 

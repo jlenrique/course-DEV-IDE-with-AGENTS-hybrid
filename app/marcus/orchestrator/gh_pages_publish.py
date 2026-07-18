@@ -134,8 +134,37 @@ class SizeReport:
 
 # ──────────────────────────────────────────────────────────────── low-level git
 def _git(args: list[str], *, cwd: Path | None = None) -> str:
+    """Run git for ephemeral gh-pages publish without poisoning the operator GCM store.
+
+    ``git_publish_dir`` authenticates via ``https://x-access-token:{PAT}@…`` URLs.
+    With the default Git Credential Manager helper, a successful clone/push **writes**
+    a Windows credential keyed as ``git:https://x-access-token@github.com``. That
+    second identity makes GCM's multi-account "Select an account" dialog fire on
+    every later operator ``git push`` (often days later, after the next styleguide
+    picker / Pages publish). Disable helpers + interactive GCM for this subprocess
+    only — the PAT stays in the URL for this ephemeral clone, and nothing is stored.
+    """
+    env = {
+        **os.environ,
+        "GIT_TERMINAL_PROMPT": "0",
+        "GCM_INTERACTIVE": "Never",
+        "GCM_PROVIDER": "none",
+    }
     result = subprocess.run(
-        ["git", *args], cwd=cwd, check=True, capture_output=True, text=True, timeout=180
+        [
+            "git",
+            "-c",
+            "credential.helper=",
+            "-c",
+            "credential.interactive=never",
+            *args,
+        ],
+        cwd=cwd,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=180,
+        env=env,
     )
     return result.stdout
 

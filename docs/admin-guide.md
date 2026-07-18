@@ -1,12 +1,12 @@
 # Admin Guide — System Configuration and Operations
 
-## Current Status - Marcus-SPOC Workbook Production (2026-07-15)
+## Marcus-SPOC Runtime — Operational Reference & Checklists
 
-Operate this repository as the Marcus-SPOC local runtime. Marcus is the single operator-facing orchestrator for real APP production runs; proofing sessions are useful diagnostics, not a deployment target. This block covers the 2026-07-09 Phase-2 lesson-planning baseline, the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), the Operator HUD arc (Epic 35, 2026-07-11/12 — HUD authorized for real operator use), and the Presentation-Support Workbook arc (Epics 36–40, 2026-07-12 → 07-15 — **live gate PASSED**).
+> **Current product status / where-we-are lives in [`STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md) §11 (the product-truth SSOT), not here.** Operate this repository as the Marcus-SPOC local runtime; proofing sessions are useful diagnostics, not a deployment target. The operational checklists below are durable admin reference — when a status detail drifts from SOTA §11, SOTA wins.
 
 ### Current Operating Branch And Evidence
 
-- Active branch: `codex/workbook-enhanced-epics-36-40` (successor to `dev/hud-revival-2026-07-11` → `dev/agentic-research-foundations-2026-07-10` → `dev/batch-mode-2026-07-10` → `dev/lesson-planning-2026-07-09`). On this branch: the Presentation-Support Workbook pipeline (Epics 36–40) ran **end-to-end for the first time on 2026-07-15** — governed trial `a940c5eb` reached `status: completed` / `success: true` and emitted a runner-verified workbook (`runs/a940c5eb…/exports/workbooks/u01@1.{md,docx}`). Epic 36 done; Stories 38.1 + 38.3a live-gate-passed with closure pending the LO-overlay bridge fix (the completed workbook rendered its Learning Objectives section as placeholders — known #1 defect) + party green-light + code review. Four negative first-run-stands witnesses preserved immutable. Master merge deferred until the acceptance arc closes.
+- Active branch: `trial/c1m1-p1-2026-07-17`, cut off consolidated **`master` (`12775df6`)** after Epics 41/42/43 merged. The wave hardened the trial engine (Epic 41), the operator surfaces (Epic 42), and gate-review presentation (Epic 43) — see the "Trial Integrity & Operator Surface" checklist below. The Presentation-Support Workbook pipeline (Epics 36–40) ran **end-to-end for the first time on 2026-07-15** — governed trial `a940c5eb` reached `status: completed` / `success: true` and emitted a runner-verified workbook (`runs/a940c5eb…/exports/workbooks/u01@1.{md,docx}`). Stories 38.1 + 38.3a live-gate-passed with closure pending the LO-overlay bridge fix (the completed workbook rendered its Learning Objectives section as placeholders — known #1 defect). Four negative first-run-stands witnesses preserved immutable.
 - Standing from predecessor branches: Operator HUD Epic 35 (all 10 stories closed; unanimous party re-verdict "performed to spec"; HUD authorized for real operator use — see `docs/operator/hud-guide.md`), Agentic Research Foundations R0–R7 (`MARCUS_RESEARCH_DETECTIVE_LIVE` default OFF), Workbook Research Products W0–W4, TRAIL trio, and Batch LLM Execution Mode v1 (opt-in vision batch transport; default realtime).
 - Durable baseline: live bespoke Irene Pass-1 Claim B is closed through `fa48fb5b`; preceding durable closes include the Phase-2 bridge (`20246475`), Irene planning-context handoff (`b69aa2de`), and plan-ratify surface (`318b6b0f`).
 - Evidence and run artifacts are banked under `_bmad-output/implementation-artifacts/evidence/` and `runs/<uuid>/`. Treat active product-gap evidence as provisional until it is committed and pushed.
@@ -80,40 +80,26 @@ The governed workbook live run (Epics 36–40) is driven by the delegated HIL ha
 3. Standard governed invocation (fresh immutable trial id every run; never reuse a failed witness): `start --trial-id <fresh-uuid> --policy tests/fixtures/marcus_spoc/workbook_live_hil_policy.json --runs-root runs --evidence-root _bmad-output/implementation-artifacts/evidence/workbook-live-hil --input <corpus-dir> --course-source-root <corpus-dir> --encounter-mode recorded`, with `MARCUS_G0_DISPATCH_LIVE=1` exported. Deck+workbook ON / motion+HUD OFF is runner-enforced.
 4. **First-run-stands, no retry-to-green.** If a run pauses at error, freeze and diagnose; do not re-fire hoping for a better roll. Ratified LOs are digest-bound (`ratified-los.json`) — you cannot hand-patch them; regeneration happens inside a fresh run and is re-ratified at G0R.
 
+### Trial Integrity & Operator Surface — Operational Checklist (Epics 41/42/43)
+
+The 2026-07-17 wave changed how you start, watch, and budget a live trial. Operational surface:
+
+1. **Set a budget brake before any paid run.** `MARCUS_TRIAL_BUDGET_USD` is now an **enforced stop** (Epic 41-4), not a passive gauge — `production_runner.py` halts a trial that would exceed it. Export it (e.g. `MARCUS_TRIAL_BUDGET_USD=15`) so a run cannot silently overspend. A halted-on-budget run is expected behavior, not a failure.
+2. **Expect a pre-walk settings gate (G0S, default-ON).** Before the production walk begins, the trial pauses on the **G_SETTINGS** gate showing the resolved run settings as a 16-toggle readout for confirm-or-change (Epic 42-5/42-6). This is intentional — confirm settings up front. It can be disabled per run, but default-ON is the ratified posture; leave it on unless you have a reason.
+3. **Every gate now surfaces as a table.** Gate pauses render purpose-built, paginated tables (Epic 43) — not the raw JSON the first live trial dumped. If a gate ever surfaces raw JSON, that is a regression (the coverage ratchet + SPOC↔projector parity guard should prevent it) — capture it and file it.
+4. **Local HUD survives pause + is windowless.** The flight-deck HUD at `http://localhost:8791` keeps serving across gate pauses and launches with no extra console window (Epic 42-2). The public read-only overlay (ngrok/Cloudflare/Tailscale) is documented in the "Public Read-Only HUD Overlay" section below; the operator's live-proven path is ngrok reserved domain.
+5. **Run the GCM account-picker neutralize pre-step before a trial that publishes.** A gh-pages publish can seed a `x-access-token` GCM identity that later triggers a Windows account-picker prompt. `scripts/setup/ready_for_trial.ps1` runs a neutralize pre-step; the full runbook is [`docs/operator/github-gcm-account-picker.md`](operator/github-gcm-account-picker.md). Fix committed `b9b5029f`.
+6. **Resume/recover is now honest.** A stalled/frozen run is recoverable: `trial resume`/`recover` runs a live-env preflight first, and a silently-skipped specialist fails loud instead of reaching a false-green `completed`. The earlier "frozen composed run" (`bc747b51`) was budget starvation, now fixed (Epic 41).
+
+For the end-to-end operator walk-through, see [`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md) and the HUD reading guide `docs/operator/hud-guide.md`.
+
 ### Do Not Operate As If
 
 - Do not treat the legacy Trial-3 or prompt-pack migration banners below as the current operating plan.
 - Do not ingest real HAI/PHS content remotely or into production paths without explicit story/operator authorization.
 - Do not ad-hoc-edit approved styleguide registry guides; route SME/styleguide changes through the registry and approval contracts.
 
-## Legacy Context
-
-> **Migration Status (refreshed 2026-05-07 at pre-Trial-3 cleanup S5 Tier-2):** Migration unconditionally SHIPPED 2026-04-27. Slab 7 orchestrational arc COMPLETE (7a+7b+7c closed 2026-05-01 / 2026-05-01 / 2026-05-07). Pre-Trial-3 cleanup arc S1-S6 currently in progress (S1+S2+S3+S4 closed; S5+S6 in flight). **First tracked trial (Trial-3) launches post-cleanup-close** against v5 canonical pack + post-Slab-7c substrate. v5 canonical pack: `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`. Trial methodology: `docs/trials/methodology.md`. Legacy v4.2 retained as mapping-checklist legacy-axis frozen authority.
-
-
-> ## MIGRATION STATUS BANNER (refreshed 2026-04-28)
->
-> **This guide reflects the PRE-MIGRATION primary-repo workflow** (Cursor IDE + prompt-pack v4.x + per-Epic-1-24 architectural model). The hybrid clone on `dev/langchain-langgraph-foundation` has **MIGRATED**: migration unconditionally SHIPPED 2026-04-27 (commit `97842ac`); Slab 6 trial-experience bundle 3/3 CLOSED 2026-04-28; first tracked trial UNBLOCKED.
->
-> **For migration-native admin operations (post-SHIP), see:**
-> - **[`docs/operator/production-trial-playbook.md`](operator/production-trial-playbook.md)** — start-to-stop production-run playbook including environment confirmation + pre-flight + health-check sections at action-by-action granularity (in-progress fill during first tracked trial).
-> - **[`docs/operator/validation-scripts.md`](operator/validation-scripts.md)** — operator-run validation script catalog (5 validation + 4 ceremony scripts; check_keys + dual-gate re-runs + bundle health + full health check + M2/M3 ceremonies).
-> - **[`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md)** — first-trial setup + transport choice + verdict workflow.
-> - **[`README.md`](../README.md)** — top-of-repo project orientation + status + quick-start.
-> - **[`.env.example`](../.env.example)** — REQUIRED/RECOMMENDED/OPTIONAL env-var categorization.
-> - **[`scripts/utilities/trial_run_preflight.py`](../scripts/utilities/trial_run_preflight.py)** — 12-point readiness sweep.
-> - **[`scripts/setup/first_clone_bootstrap.{ps1,sh}`](../scripts/setup/)** — one-command operator setup.
-> - **[`docs/dev-guide/local-postgres-setup.md`](dev-guide/local-postgres-setup.md)** — native Postgres setup (NOT Dockerized per operator preference).
-> - **[Migration Admin Appendix](#migration-admin-appendix)** below — migration-specific admin ops added post-Slab-3 close.
->
-> **Scope of this legacy content (post-SHIP):** environment setup + API-key management + MCP server config + Python env + content directory layout sections described below are HISTORICAL REFERENCE for the pre-migration primary-repo. Some sections (Python env; .env management; MCP transport) carry forward to migration; others (prompt-pack management; per-Epic admin) are pre-migration only. For migration-native admin, consult the see-also list above.
-
----
-
-**Audience:** System administrators and the project owner responsible for environment setup, tool connectivity, and operational health.
-**Last Updated:** 2026-04-12 (migration banner actualized 2026-04-26) | **Project Phase:** Epics 1–14 complete (primary); hybrid clone is M5 SHIP-CONDITIONAL through 2026-05-03.
-
----
+> Legacy migration context archived to [`admin-guide.history.md`](admin-guide.history.md) (pre-migration workflow + migration-status banners). Current product status → [`STATE-OF-THE-APP.md`](STATE-OF-THE-APP.md) §11.
 
 ## Table of Contents
 
