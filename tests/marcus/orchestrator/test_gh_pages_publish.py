@@ -323,6 +323,30 @@ def test_git_publish_dir_scrubs_token_on_failure(tmp_path: Path) -> None:
     assert "x-access-token:" not in msg or "***" in msg
 
 
+def test_internal_git_disables_credential_helper(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Publish git must not seed GCM with x-access-token (operator account-picker sabotage)."""
+    from app.marcus.orchestrator import gh_pages_publish as mod
+
+    captured: dict[str, object] = {}
+
+    def fake_run(cmd, **kwargs):  # noqa: ANN001
+        captured["cmd"] = list(cmd)
+        captured["env"] = kwargs.get("env") or {}
+        return subprocess.CompletedProcess(cmd, 0, stdout="ok\n", stderr="")
+
+    monkeypatch.setattr(mod.subprocess, "run", fake_run)
+    assert mod._git(["status"]) == "ok\n"
+    cmd = captured["cmd"]
+    assert isinstance(cmd, list)
+    assert cmd[0] == "git"
+    assert "credential.helper=" in cmd
+    assert "credential.interactive=never" in cmd
+    env = captured["env"]
+    assert isinstance(env, dict)
+    assert env.get("GCM_INTERACTIVE") == "Never"
+    assert env.get("GIT_TERMINAL_PROMPT") == "0"
+
+
 def test_git_publish_dir_size_guard_refuses_before_push(tmp_path: Path) -> None:
     """AC3: over-threshold projected size RAISES and performs NO push (origin unchanged)."""
     bare = _bare_origin(tmp_path)

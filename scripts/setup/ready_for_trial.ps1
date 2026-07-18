@@ -65,6 +65,21 @@ function Invoke-Step {
 
 Push-Location $repoRoot
 try {
+    # Non-blocking hygiene: delete any GCM "x-access-token" identity that would
+    # stall later git push/pull with the Select-an-account popup. Source of the
+    # reseed was gh-pages publish (now also fixed in gh_pages_publish._git).
+    Write-Host ""
+    Write-Host "[pre] neutralize GitHub GCM account-picker (x-access-token)..." -ForegroundColor Yellow
+    $neutralize = Join-Path $repoRoot "scripts\operator\neutralize_github_gcm_account_picker.ps1"
+    # Prefer pwsh when present; fall back to Windows PowerShell 5.1.
+    $shell = if (Get-Command pwsh -ErrorAction SilentlyContinue) { "pwsh" } else { "powershell" }
+    & $shell -NoProfile -File $neutralize -FixOrigin
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "  WARN: neutralize exited $LASTEXITCODE (continuing; fix before long agent git runs)" -ForegroundColor Yellow
+    } else {
+        Write-Host "  PASS" -ForegroundColor Green
+    }
+
     Invoke-Step 1 "trial_run_preflight.py" {
         & $python "scripts\utilities\trial_run_preflight.py"
     }
