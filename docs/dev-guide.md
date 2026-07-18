@@ -1,8 +1,8 @@
 # Developer Guide — Architecture, Execution Flow, and Extension Points
 
-## Current Status - Marcus-SPOC Workbook Production (2026-07-15)
+## Current Status - Marcus-SPOC Operator Surface + Trial Integrity (2026-07-17)
 
-This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only. This block covers the 2026-07-09 Phase-2 lesson-planning baseline, the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), the TRAIL-trio close (2026-07-10), the Operator HUD arc (Epic 35, 2026-07-11/12), and the Presentation-Support Workbook arc (Epics 36–40, 2026-07-12 → 07-15 — **live gate PASSED**; seam map in the workbook section below).
+This guide is currently anchored on the Marcus-SPOC local runtime. The product is the operator-facing APP orchestrator and its deterministic production runtime; proofing/concierge sessions are discovery vehicles only. This block covers the 2026-07-09 Phase-2 lesson-planning baseline, the Batch LLM Execution Mode v1 close (2026-07-10), the Agentic Research Foundations promote (R0–R7, 2026-07-10), the Workbook Research Products close (W0–W4, 2026-07-10), the TRAIL-trio close (2026-07-10), the Operator HUD arc (Epic 35, 2026-07-11/12), the Presentation-Support Workbook arc (Epics 36–40, 2026-07-12 → 07-15 — **live gate PASSED**), and the **Resume-Walk Dispatch Integrity + Operator-Surface Next-Pass + HIL-Surface Tabular Coverage wave (Epics 41/42/43, 2026-07-17 — all CLOSED, master consolidated at `12775df6`; seam map in the Epic 41/42/43 section below)**.
 
 ### Current Implementation Boundary
 
@@ -135,7 +135,7 @@ Invariants (hold these under any refactor):
 
 - **Specialist state-threading contracts.** Any node added to the walk must be handed the real run dir and must ride the `production_envelope` carrier — both documented (with the workbook-arc incidents that motivated them) in [`docs/dev-guide/how-to-add-a-specialist.md`](dev-guide/how-to-add-a-specialist.md). A silently-defaulted run dir or an un-threaded envelope surfaces as opaque terminal-band errors (`segment-manifest.missing`, silent 07W skip).
 - **First-run-stands.** Governed paid runs use a fresh immutable trial id each time; negative witnesses are frozen, never resumed or retried-to-green (witnesses `399bcd61`, `7dd3e6ed`, `503e54c1`, `4614f21f`, `dfc372b7` preserved under `_bmad-output/implementation-artifacts/evidence/workbook-live-hil/`).
-- **Known deferred:** `production_runner.py` budget-guard (a silent specialist-budget skip of the terminal 07W band can reach `completed` with no workbook — currently caught after-the-fact by the runner's verdict assertion; production-side fix owed via block-mode path), and a deliverable replay / reload-equality assertion in the runner verdict.
+- **~~Known deferred~~ (RESOLVED by Epic 41, 2026-07-17):** the `production_runner.py` budget-guard gap — a silent specialist-budget skip of the terminal 07W band reaching `completed` with no workbook — was the `bc747b51` root cause. Epic 41 removed the `max_specialist_calls` throttle, made `MARCUS_TRIAL_BUDGET_USD` an enforced stop, and added fail-loud on silent specialist skip in both walks (see the Epic 41/42/43 seams below). Still open: a deliverable replay / reload-equality assertion in the runner verdict.
 
 ### Epics-39/40 Wave — Paid-Run Economy Protocol (2026-07-15, BINDING)
 
@@ -145,6 +145,36 @@ The wave runs under the ratified protocol at [`_bmad-output/planning-artifacts/w
 - **Component probes:** pre-registered in the story spec BEFORE running (probe id + exact licensed claim + deterministic named judge + evidence pack + first-run-stands); vehicle pattern `scripts/utilities/run_*_probe.py` (see `run_deep_dive_enrichment_37_2b_probe.py` for the live-call shape, `run_glossary_render_39_1_probe.py` for the deterministic replay-render shape with pinned input digests + drift-fail). A new LLM path's first probe PASS freezes as that path's first witness (probe→freeze→replay→spend).
 - **Deliverable bars grow per story:** `_assert_completed_workbook_deliverable` gains each new section's conformance clause IN THE SAME DIFF, with negative-witness pins (feed frozen failures; assert REJECT).
 - **Status vocabulary:** `done-awaiting-live-witness` = deterministic+review+probe green, full-run witness owed by a named batch run; flip to `done` cites the witnessing run id.
+
+### Resume-Walk Integrity + Operator-Surface Next-Pass + HIL Tabular Coverage Seams (Epics 41/42/43, 2026-07-17)
+
+Three epics landed as one wave and consolidated to `master` (`12775df6`). They harden the trial engine, the operator-facing surfaces, and the gate-review presentation. Seam map:
+
+**Epic 41 — Resume-Walk Dispatch Integrity.** The fix for the `bc747b51` frozen composed run. Diagnosis correction: the loud §06 CD-miss was three nodes downstream of the real cause — **budget starvation** (`max_specialist_calls=1`), not keyless resume.
+- Throttle removed: the `max_specialist_calls` cap that starved the composed run is gone (`d8fb959b`). Do not reintroduce a per-run dispatch cap without a party decision.
+- Budget as an enforced brake: `MARCUS_TRIAL_BUDGET_USD` is now a **stop**, not a gauge — `production_runner.py` halts a trial that would exceed it (`cf7df4fd`). Resolves the "Known deferred" budget-guard item noted in the workbook seams above.
+- Fail-loud on silent specialist skip, **both walks** (RED-first, `81fdc495`): a specialist that would be silently skipped now raises instead of producing a false-green run. Standing two-walk gotcha applies — the guard lives in both the start walk and the continuation walk.
+- Resume/recover live-env preflight (`3919c7fb`): `trial resume`/`recover` runs `app/marcus/orchestrator/preflight.py` (phase-01 local + phase-02 live heartbeats) before re-dispatching.
+
+**Epic 42 — Operator-Surface Next-Pass.** The HUD and the pre-walk settings gate.
+- Tabular HIL surface (the seed of Epic 43): `app/marcus/cli/hil_tabular_projector.py` — neutral-verb tabular projection of gate pause material (`8a9f7095`).
+- HUD survives pause + windowless: the local flight deck (`app/hud/server.py`, GET-only, ETag/304, `launch_nonce`-pinned) keeps serving across a gate pause and launches with `CREATE_NO_WINDOW` (no console-window spam) (`72a15de5`).
+- 16-toggle settings readout (`482cf78a`) + the **G_SETTINGS pre-walk gate** (`app/models/decision_cards/g_settings.py`, "G0S") — a convention-conforming manifest HEAD gate (DecisionCard + manifest wiring + binding semantics) that is **default-ON** (wake-sentinel, `39f006ac`). Read `docs/dev-guide/how-to-add-a-gate-renderer.md` and the specialist/gate conventions before touching it.
+- Public read-only HUD: `app/hud/public.py` — a **separate** tunnel-facing FastAPI app serving only a positive-allowlist-scrubbed view (never `launch_nonce`, decision-card internals, error text, or export paths) (`f8dd93d2`); ngrok reserved-domain transport (`4ca3d19b`, live-proven against the operator's account; domain in `.env` `HUD_TUNNEL_MODE=ngrok`, token in `ngrok.yml`). The scrub allowlist is teeth-checked against real secrets — do not widen it casually.
+
+**Epic 43 — HIL Surface Tabular Coverage.** Every operator-reviewed gate surface now renders a bespoke table; the systemic fix, not per-gate patches.
+- Renderer registry + generic fallback + paused-gate wiring (`43-2`): the content-type renderer registry in `app/marcus/cli/hil_tabular_projector.py` is wired at every paused gate (recover/resume-batch coverage holes closed). 14 operator-reviewed content types → 14 bespoke renderers.
+- Gate→content_type bridge: `GATE_TO_CONTENT_TYPE` / `resolve_content_type` map each gate to its renderer (variant/mode, voice, plan-unit/estimator/constants, target-lists, package/handoff, motion — stories 43-3…43-8).
+- **RED-first coverage ratchet** (`43-10`, test `tests/marcus/cli/test_projector_coverage_ratchet_43_10.py`): canonical `GATE_CONTENT_TYPES` + a **shrink-only** `KNOWN_UNRENDERED_ALLOWLIST` (now **empty**) + a named `_EXPECTED_CANONICAL_KEYS` pin. This is the durable fix — a prose AC let the earlier 42-1 projector close on 1-of-15 surfaces; the ratchet fails until every content type is registered-or-waived, making subset-regression mechanically impossible. Do not add to the allowlist to make a test pass — register the renderer.
+- **SPOC↔projector anti-drift parity guard** (`43-11`, test `tests/unit/marcus/cli/test_spoc_projector_parity_43_11.py`): pins the SPOC narration and the tabular projector to the same content set so the two operator surfaces cannot silently diverge.
+- Honest de-scope (`43-9`): `research_packet` + `workbook` are not operator-reviewed gate surfaces → allowlist drained to EMPTY (requirement `hil-operator-surfaces-must-be-tabular` COMPLETED; the 42-1 false-close was corrected honestly in deferred-inventory).
+
+Invariants (hold these under any refactor):
+
+- **Never regress an operator surface to raw JSON.** Every gate the operator reviews flows through the renderer registry; the coverage ratchet + parity guard are the tripwires. Adding a new reviewed gate means adding a renderer + a ratchet entry in the same diff (see `docs/dev-guide/how-to-add-a-gate-renderer.md`).
+- **Consumer-wide baseline-diff catches contract-wide escapes.** A contract-wide change to a gate surface (e.g. `next_action.command`) needs a CONSUMER-WIDE baseline-diff, not a single-consumer check — the 42-1 escape into orchestrator-projection was caught only by running the full consumer set.
+- **Public HUD is non-leak by allowlist, not by redaction.** `public.py` serves a positive allowlist; a field is invisible unless explicitly allowed. Never invert this to a denylist.
+- **G_SETTINGS default-ON is a wake-sentinel, not a hardcoded gate.** The default lives in the wake-sentinel path; changing default-on/off is a settings decision, not a manifest edit.
 
 ### BMAD Harness v6.10.0 — uv + Windows Notes (2026-07-11)
 
