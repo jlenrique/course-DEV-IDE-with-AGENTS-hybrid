@@ -1,3 +1,13 @@
+# Current Context Addendum - 2026-07-17 (LATE) (session WRAPUP: EPIC 43 HIL Surface Tabular Coverage COMPLETE + master consolidated)
+
+**Session class:** S. Branches: consolidated `dev/workbook-wave-3940-2026-07-15` → `master` (`12775df6`, pushed); on fresh `trial/c1m1-p1-2026-07-17` (`12775df6`, synced).
+
+**Landed:** **Epic 43 — HIL Surface Tabular Coverage** (green-lit 5/5 SIGN-WITH-RIDERS; CLOSED), surfaced from a live Marcus-SPOC trial (`5169a872`) whose first HIL surface — the G0 directive confirm — dumped raw YAML. Two audits proved the 42-1 tabular projector only covered G0 while 13 more gates emitted identity-only + a JSON blob. 12 stories (each fresh-dev + orchestrator consumer-baseline-diff review): 43-2 registry + generic fallback + paused-gate wiring (systemic fix); 43-10 RED-first coverage ratchet; 43-1 G0 directive table (killed `trial.py:364` raw dump); 43-3 gate→content_type bridge + variant/mode; 43-4 voice; 43-5 plan-unit/estimator/constants; 43-6 target-lists; 43-8 package/handoff; 43-7 motion; 43-9 research/workbook honest de-scope; 43-11 SPOC anti-drift; 43-12 governance close. **14 gate content types → 14 bespoke tabular renderers; ratchet allowlist empty; requirement `hil-operator-surfaces-must-be-tabular` completed (42-1 false-close corrected).** New substrate: `app/marcus/cli/hil_tabular_projector.py` (registry + `GATE_TO_CONTENT_TYPE` bridge + 14 renderers), `app/marcus/cli/trial.py` (`_confirm_or_edit_directive` renders the directive table; `_emit_gate_surface_if_paused` routes per-gate content; recover/resume-batch coverage holes closed). master consolidated (debt cleared).
+
+**Next:** KG/ONBOARDING regen (OWED) + operator-steered R2 live trial on the fresh branch. Do NOT reopen Epic 43. 3 production observations filed (voice G4Card binding; SPOC flagged-axis; fold-gate/pause-set) — fix on own merits only.
+
+---
+
 # Current Context Addendum - 2026-07-17 (session WRAPUP: EPICS 41 + 42 COMPLETE — bc747b51 fixed + ngrok public HUD)
 
 **Session class:** S. Branch `dev/workbook-wave-3940-2026-07-15` (origin `4ca3d19b`; 14 commits, pushed).

@@ -1,3 +1,52 @@
+# Session close 2026-07-17 (LATE) — EPIC 43 HIL SURFACE TABULAR COVERAGE **COMPLETE** + master consolidated + fresh trial branch cut
+
+**Final class:** S. **Branches:** consolidated `dev/workbook-wave-3940-2026-07-15` → **`master` (`12775df6`, pushed)**; cut + on **`trial/c1m1-p1-2026-07-17`** (`12775df6`, pushed, synced). **Opened as:** BMAD session-START protocol; drove Epic 43 start-to-finish, then operator-directed master merge + fresh branch.
+
+## What was completed
+
+**The trigger:** operator started a live Marcus-SPOC trial (`5169a872`) and the FIRST HIL surface — the G0 directive confirm — dumped **raw YAML**. A sweep (two read-only audits) proved the 42-1 tabular projector only ever covered G0; **13 more gates** emitted an identity-only table + a dense JSON blob.
+
+**Epic 43 — HIL Surface Tabular Coverage (green-lit 5/5 SIGN-WITH-RIDERS, `party-greenlight-epic-43-2026-07-17.md`; CLOSED):** 12 stories, each fresh-dev + orchestrator consumer-baseline-diff review + commit + push:
+- **43-2** renderer registry + generic fallback + paused-gate wiring — the systemic fix (every gate tables; recover/resume-batch coverage holes closed).
+- **43-10** RED-first coverage ratchet (canonical `GATE_CONTENT_TYPES` + shrink-only `KNOWN_UNRENDERED_ALLOWLIST` + `_EXPECTED_CANONICAL_KEYS` named pin) — makes "closed on a subset" mechanically impossible.
+- **43-1** G0 directive source-inventory table (killed the `trial.py:364` `read_text` raw dump; c/e/s/x preserved; operator-witnessed real `5169a872` render).
+- **43-3** gate→content_type bridge (`GATE_TO_CONTENT_TYPE`/`resolve_content_type`) + variant/mode; **43-4** voice; **43-5** plan-unit/estimator/constants; **43-6** target-lists; **43-8** package/handoff; **43-7** motion.
+- **43-9** honest de-scope of `research_packet`+`workbook` (not operator-reviewed surfaces) → allowlist EMPTY.
+- **43-11** SPOC↔projector anti-drift parity guard. **43-12** governance close (requirement corrected, retrospective `epic-43-retrospective-2026-07-17.md`).
+- **Result:** 14 operator-reviewed gate content types → 14 bespoke tabular renderers; ratchet allowlist empty; requirement `hil-operator-surfaces-must-be-tabular` COMPLETED (42-1 false-close corrected honestly in deferred-inventory).
+
+**Master consolidation:** merged the wave branch → master `--no-ff` (`12775df6`), pushed. Clears the standing "master consolidation owed at wave close" debt. Cut fresh **`trial/c1m1-p1-2026-07-17`** off consolidated master + pushed — the clean base for the R2 live run.
+
+## What is next
+
+1. **NEXT SESSION (operator-directed):** (a) KB updates — **KG/ONBOARDING regen is OWED** (`.understand-anything/meta.json` at `b24b2aed`; Epics 41/42/43 substrate landed since — over threshold; regen `/understand` + `/understand-anything:understand-onboard`, mind the `batch-existing.json` rename gotcha in WRAPUP Step 9); then (b) the **R2 steered live trial** on `trial/c1m1-p1-2026-07-17` — witnesses the new tabular G0 directive + every gate surface, G0S default-ON pause, windowless HUD `localhost:8791`, public HUD at the ngrok URL, budget-braked + now-completable.
+2. Guides: dev-guide gained the HIL-projector renderer-registry integration note (this close). admin/user unchanged.
+
+## Unresolved issues / risks
+
+- **Git push flakiness this session (environmental):** stacked concurrent background `git push` deadlocked the remote ref (15 zombie procs); reads stayed instant. Fix = kill zombies + ONE push at a time. Saved to memory `reference-git-push-no-concurrent-background`. All work is on origin now.
+- **3 production observations filed (NOT force-fixed, SPOC-goal guardrail):** `section-11-display-voice-candidates-model-binding-mismatch` (G4Card vs G4ACard, MEDIUM/verify); `spoc-g0e-flagged-axis-diverges-from-projector-ungrounded` (13 vs 12, LOW/UX); G1A/G1.5/G4B/G5 aren't in the woken `ProductionGateId` set (their renderers are future-proof). All in deferred-inventory.
+- **Static-validation S-1** (`workbook-capability-tier-honesty-lag`) remains PARTY-GATED (conservative-direction; party-ratify at next workbook-track touch). S-3/S-4/S-6 open.
+- Pre-existing sandbox env test fails (PreflightGateFailed openai/hud) confirmed pre-existing (clean-tree stash-check), not Epic-43-induced.
+
+## Key lessons (+ memory saved)
+
+- **The RED-first coverage ratchet is the durable fix, not the renderers** — a prose AC let 42-1 close on 1-of-15 surfaces; a test that fails until every content type is registered-or-waived makes subset-regression impossible. Reuse for any "apply X to all N surfaces" requirement.
+- **Consumer-wide baseline-diff catches contract-wide escapes** — 43-1 tripped the TW-7c-4 scope audit; caught only by running the full consumer set (the 42-3 lesson, re-confirmed).
+- **Never stack concurrent git pushes** (memory `reference-git-push-no-concurrent-background`).
+
+## Validation summary
+
+- Per-story: consumer-baseline-diff clean (no regression) every story; ruff + import-linter **18/0** throughout; ratchet green each step (allowlist drained 15→0); TW-7c-4 scope audit green (Epic-43 test files registered). Operator witnessed the real G0 directive table + spot-witnessed variant/voice/plan-unit/estimator/storyboard/handoff/motion tables.
+- WRAPUP: sprint-status validation 2 passed; single worktree; trial branch synced with origin.
+- **Step 0 Cora sweep:** NOT run as a separate `/harmonize` — per-story consumer-baseline-diffs + the mechanical coverage ratchet + ruff/import-linter served as the coherence checks; a full-repo `/harmonize` is available next session if desired.
+
+## Artifact update checklist
+
+sprint-status ✓ (Epic 43 + all 12 stories done; validation passed) · SESSION-HANDOFF ✓ (this) · next-session-start-here ✓ · bmm-workflow-status ✓ · project-context ✓ (Epic-43 addendum) · deferred-inventory ✓ (requirement corrected + 3 observations + prior static-validation findings) · epic spec ✓ (CLOSED) · party record ✓ · retrospective ✓ · dev-guide ✓ (projector-registry note) · memories ✓ (1 new: git-push) · **KG/ONBOARDING regen OWED (next session)** · guides: user/admin unchanged.
+
+---
+
 # Session close 2026-07-17 — EPICS 41 + 42 COMPLETE (bc747b51 fixed end-to-end) + ngrok public HUD wired
 
 **Final class:** S. **Branch:** `dev/workbook-wave-3940-2026-07-15` (origin in sync at `4ca3d19b`; 14 commits this session `23480353→4ca3d19b`, all pushed). **Opened as:** BMAD session-startup protocol against the parked `bc747b51` CD-miss.
