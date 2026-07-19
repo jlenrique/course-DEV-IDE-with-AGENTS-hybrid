@@ -14,8 +14,10 @@ a DID-only assertion):
     by CODE (``_SIGNAL_DERIVED_READERS``), not the doc's self-declared
     ``derivation`` — relabeling C3 to dodge the pin is itself RED (R3).
   * **(b) leak-count reconciliation** → ``open_leak_count_signal``:
-    ``open_leaks`` must equal the count of ``did_leak:``-tagged OPEN entries.
-    **GL-14:** GREEN on a seeded fixture; on the REAL repo ``xfail(strict=True)``.
+    the DID dimension's ``open_leaks`` must equal the count of ``did_leak:``-tagged
+    OPEN entries. **GL-14:** GREEN on a seeded fixture; on the REAL repo a hard
+    reconciliation pin (Q1.5 removed the ``xfail(strict=True)`` once the 5 leaks were
+    tagged in the ``## DID Scorecard Leak Registry``).
   * **(c) score-arithmetic** → the §1.5 rubric: score↔level↔band↔sum consistent.
 
 **GL-6 meta-ratchet** (AC2): a NAMED canonical dimension universe + a pin
@@ -545,27 +547,30 @@ def test_leak_count_pin_reds_when_fixture_tag_struck(tmp_path: Path) -> None:
     assert _reconcile(3, count) is False  # stale claim 3 vs real 2 → RED
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="GL-14: open_leaks=5 hand-carried until Q1.5 tags the 5 did_leak entries",
-)
 def test_leak_count_reconciles_on_real_repo() -> None:
-    """Pin (b) on the REAL repo — intentionally RED-pending (GL-14). Iterates every
-    dimension (R2). Today ``open_leaks: 5`` is hand-carried and 0 ``did_leak:`` tags
-    exist, so 5 != 0 and the assertion fails → xfail. The MOMENT Q1.5 tags the 5
-    leaks (5==5) this xpasses and ``strict=True`` turns it into a FAILURE — forcing
-    the dev to delete this marker and promote it to a hard pin. Self-clearing.
+    """Pin (b) on the REAL repo — now a HARD GREEN pin (GL-14 self-clearing FIRED).
+    Q1.5 tagged the 5 ``did_leak:`` entries in the ``## DID Scorecard Leak Registry``
+    of ``deferred-inventory.md``, so ``open_leak_count_signal()`` == 5 == the DID
+    dimension's ``open_leaks`` (5 == 5) and the reconciliation passes by AGREEING
+    WITH REALITY. Q1.3 shipped this as ``xfail(strict=True)`` (open_leaks hand-carried
+    while 0 tags existed); Q1.5 removed that marker once the tags landed, promoting it
+    to the standing doc↔code reconciliation.
 
-    R6 note: the auto-fire is keyed to ``open_leaks == count``, so it ALSO fires if
-    someone dishonestly zeroes ``open_leaks`` (0 == 0) — acceptable, since that
-    forces attention; but the marker's TRUE clearing event is "Q1.5 tags the 5
-    leaks", not a hand-zeroing."""
-    block = _real_block()
+    **Scope (FIX-2):** the ``did_leak:`` tags are DID-specific, so this reconciles the
+    DID dimension's ``open_leaks`` ONLY — NOT every dimension. A future Q2/Q3 dimension
+    carries its own (differently-namespaced) leak accounting; reconciling the single
+    global DID count against a Q2/Q3 ``open_leaks`` would red this DID pin spuriously.
+    Per-dimension leak namespacing (a per-dimension tag namespace + reader) is that
+    later story's concern.
+
+    Anti-drift: strike any one ``did_leak:`` tag → the count drops to 4, 5 != 4, and
+    this pin goes RED (proven by ``test_leak_count_pin_reds_when_fixture_tag_struck``
+    on the fixture path)."""
+    did = _real_block()["dimensions"][_DID_KEY]
     count = open_leak_count_signal()["open_leak_count"]
-    for dim_key, dim in block["dimensions"].items():
-        assert _reconcile(dim.get("open_leaks"), count), (
-            f"{dim_key}: open_leaks {dim.get('open_leaks')!r} != counted did_leak: tags {count}"
-        )
+    assert _reconcile(did.get("open_leaks"), count), (
+        f"{_DID_KEY}: open_leaks {did.get('open_leaks')!r} != counted did_leak: tags {count}"
+    )
 
 
 # ================================= PIN (c) score-arithmetic =================================

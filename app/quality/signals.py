@@ -58,9 +58,15 @@ _FENCE_ENV_KEYS: tuple[str, ...] = (
 )
 
 #: ``did_leak:`` tag, anchored to line start (optional list/quote/whitespace prefix)
-#: so a mid-line prose mention does not inflate the count (REWORK-4.6). 0 tags today.
+#: so a mid-line prose mention does not inflate the count (REWORK-4.6). 5 tags today,
+#: all in the fixed ``## DID Scorecard Leak Registry`` section (Q1.5).
 _DID_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?did_leak:")
 _FENCE_LINE_RE = re.compile(r"^\s*```")
+#: ``<!-- ... -->`` HTML-comment span (non-greedy, DOTALL for multi-line). Stripped
+#: before counting so a tag commented-out to temporarily disable it (a whole
+#: ``<!-- did_leak: x -->`` line) does NOT count, while a harmless inline trailing
+#: comment on a real tag line is removed leaving the tag (FIX-7).
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
 
 _MISSING = object()
 
@@ -315,6 +321,15 @@ def _strip_fenced_code(text: str) -> str:
     return "\n".join(out)
 
 
+def _strip_html_comments(text: str) -> str:
+    """Drop ``<!-- ... -->`` comment spans so a tag commented-out to temporarily
+    disable it is NOT counted — a commented ``<!-- did_leak: x -->`` must read as
+    absent (FIX-7). Mirrors :func:`_strip_fenced_code`. Non-greedy + DOTALL so
+    multi-line comments are removed; an unclosed ``<!--`` is left intact (fail-soft),
+    and an inline trailing comment on a real tag line is removed leaving the tag."""
+    return _HTML_COMMENT_RE.sub("", text)
+
+
 def _strip_archived_section(text: str) -> str:
     """Drop the archived section so only OPEN entries remain. Only the EXACT
     ``## Closed Entries …`` header opens the archive (REWORK-4.7) — a ``## `` heading
@@ -336,11 +351,12 @@ def _strip_archived_section(text: str) -> str:
 def open_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
     """leak-count — count ``did_leak:``-tagged OPEN entries in the deferred inventory.
 
-    Plain ``.md`` read. Honest **0** today (GL-14; Q1.5 lands the tags). Fenced code
-    blocks are stripped (examples, not tags), the archived section is excluded (open
-    entries only), and the tag is anchored to line start (a mid-line prose mention does
-    not count). Fail-soft: unreadable file → ``{"status": "unavailable",
-    "open_leak_count": None}``.
+    Plain ``.md`` read. **5 today** (Q1.5 tagged the 5 DID leaks in the fixed
+    ``## DID Scorecard Leak Registry`` section). Fenced code blocks are stripped
+    (examples, not tags), ``<!-- ... -->`` HTML comments are stripped (a commented-out
+    tag must not count — FIX-7), the archived section is excluded (open entries only),
+    and the tag is anchored to line start (a mid-line prose mention does not count).
+    Fail-soft: unreadable file → ``{"status": "unavailable", "open_leak_count": None}``.
     """
     p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
     try:
@@ -351,7 +367,7 @@ def open_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]
             "source": _DEFERRED_INVENTORY_REL,
             "open_leak_count": None,
         }
-    open_text = _strip_archived_section(_strip_fenced_code(text))
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     count = len(_DID_LEAK_LINE_RE.findall(open_text))
     return {
         "status": "ok",

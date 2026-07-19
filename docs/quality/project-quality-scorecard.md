@@ -83,28 +83,47 @@ Five criteria, each scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong ·
 
 **Outcome-weighted reading (for prioritization, not a separate score):** C3 and C2 most affect *paid walks*; C5 most affects *learner-trust claims*; C4 is the discipline that makes the rest durable.
 
-### 1.6 Current assessment — score **65 / 100 (B−)** — "strong design, non-uniform enforcement"
+### 1.6 Current assessment — Band **B−** — "strong design, non-uniform enforcement"
 
-*As of 2026-07-19. Baseline — first assessment.*
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; no prior snapshot yet in `docs/quality/scorecard-history.jsonl`).*
 
-| Criterion | Score | Level | Basis |
-|---|:---:|---|---|
-| C1 Neck placement | **4/4** | strong | Architecture is right and live-proven: necks are correctly identified (Operator/SPOC, CD, G0/LO, Irene P1/P2, research-detective, perception, HIL); the product *already is* "intelligence at the necks." |
-| C2 Bone determinism | **3/4** | strong | Most bones are LLM-free and proven (compose/freeze, motion planner `model_config_ref: null`, workbook producer no-LLM, Epic-43 deterministic projectors, gh-pages). **Gap:** Gary export title-match is *determinism pretending to be intelligence* (Leak 3), plus a few historical Gamma/export mixed edges. |
-| C3 Fence enforcement (teeth ON) | **1/4** | weak | The fidelity / coverage / UDAC fences **exist but default OFF**; `--preset production` does not auto-enable them → intelligence runs *un*-fenced on paid walks unless opted in (Leak 1). Biggest single gap. |
-| C4 Lock + contract discipline | **3/4** | strong | The pattern is live-proven (digest-binding, contribution contracts with §06 fail-closed, HIL-before-spend, Epic-41 fail-loud). **Gap:** not *every* intelligent neck has the same digest→READ-ONLY→HIL discipline — it's not yet uniform. |
-| C5 Honesty + calibration | **2/4** | partial | Reading-path neck is *uncalibrated* (~0.071 primary-key on fresh holdout; the 0.93 is catalog-approach, not the built classifier — Leak 4); workbook semantic audit is **WARN-only, not FAIL** (Leak 2); capability tiers lag produced reality (Leak 5). |
-| **Total** | **13/20 = 65** | **B−** | Strong architecture; enforcement, uniformity, and calibration are the gap. |
+**Headline (read this first).**
 
-**The headline:** this project is **well past "halfway"** on the *architecture* — the fence exists and is live-proven where it defines the product. The score is held down not by a missing pattern but by **non-uniform enforcement**: teeth off by default, discipline not uniform across necks, and unclosed honesty/calibration debts.
+- **Band: B−.** The architecture is right and live-proven — the fence exists and is enforced where it *defines* the product ("intelligence at the necks"). The Band is held down not by a missing pattern but by **non-uniform enforcement**: teeth off by default, discipline not uniform across necks, and unclosed honesty/calibration debts. *(The internal 13/20 → 65/100 sum is the arithmetic-pin reasoning trace below — not a false-precise headline number.)*
+- **Trend: ▬ baseline.** First assessment; there is no prior snapshot to compare against, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Open leaks — ranked (5).** The path from B− toward A, ranked by outcome weight (paid-walk → learner-trust → governance). Each is tagged `did_leak: <slug>` in `_bmad-output/planning-artifacts/deferred-inventory.md`, so `open_leak_count_signal()` == 5 == the machine block's `open_leaks` (the leak-count honesty pin reconciles doc↔code). These 5 are the DID contribution to the shared project ranked-leak list (GL-13; Q1.4b's projector consumes it — today DID is the only contributor).
 
-#### Open leaks (the path from 65 → 90)
+  1. **[C3] Fidelity fence exists but is OFF by default** — *Leak 1, paid-walk (strongest)* → `leg4-narration-fidelity-gate-precision-before-flag-on`
+  2. **[C2] Gary export title-match: determinism pretending to be intelligence** — *Leak 3, paid-walk* → `gary-export-llm-brief-to-page-matcher`
+  3. **[C5] Workbook semantic audit WARNs, doesn't gate** — *Leak 2, learner-trust* → `braid-workbook-semantic-claim-citation-audit`
+  4. **[C5] Reading-path / perception neck uncalibrated — fresh-naive holdout OWED** — *Leak 4, learner-trust; cross-links Q3.4 (counted once, here)* → `reading-path-fresh-naive-holdout-pre-trial`
+  5. **[C5] Capability ledger lag (governance honesty)** — *Leak 5, governance* → `workbook-capability-tier-honesty-lag`
+
+  **A verification TODO, NOT a leak:** motion's `bundle_catalog.py` capability tier (`proven_regressed_repairable`) is *likely stale* the same way Leak 5's workbook tier was — but it is **unverified**, so it is an explicit **VERIFY** item (re-read the motion tier against live motion output), deliberately **excluded** from `open_leaks`.
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** The Band is the summary; these five judgments are the trace. Each carries `{level, signal, evidence_ref}`; where a mechanical signal exists, the level's derivation is named. The 0–4 scores roll up to the machine block's Σ = 13/20 = 65/100 (an internal arithmetic-pin trace the CLI/`did_score_ref` read — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| C1 Neck placement | strong | 4/4 | judgment | **Enumerated neck→digest-binding set, each checkable against manifest/code:** the **G0R** lock, the **§04.55** lock, and the **G3** four-artifact lock (irreversible necks — downstream may only execute); per-neck **contribution digests** (typed, sha256-bound; §06 builder fails closed on a missing contribution); the compile-time content-addressed **`app/runtime/compiled_graph_digest.py`** substrate. Necks (Operator/SPOC, CD, G0/LO, Irene P1/P2, research-detective, 07G perception, HIL) are correctly identified and live-proven — the product *already is* "intelligence at the necks." |
+| C2 Bone determinism | strong | 3/4 | judgment-with-evidence (`bone_inventory_signal`) | **Enumerated `model_config_ref` roster (52 nodes):** 49/52 carry `model_config_ref: null`; `gates_all_model_config_ref_null = true`. The **3 nodes carrying a non-null ref** are `07G` PNG-Grounded Vision Perception (the perception *neck* — correctly an LLM), plus `07W.1` + `07W.3` Workbook writer seams (writer ref; deterministic stubs today). **Proxy caveat (honest fact, NOT certification):** `model_config_ref`-nullness does **not** prove determinism — Irene Pass-2 (node `08`) and the Irene Pass-1 *gate* nodes are LLMs with a **null** ref; so the roster can only flag a *breach* (an LLM ref on a gate node), never award `strong`. The `strong` is the §1.6 architecture judgment; the residual gap — **Leak 3** (Gary export title-match determinism-pretending) — is why it is 3/4, not 4/4. |
+| C3 Fence enforcement (teeth ON) | weak | 1/4 | signal-derived (`fences_enabled_signal`) | **Enumerated preset-fenced list on `--preset production` (read env-INDEPENDENTLY):** `{fidelity: OFF, coverage: OFF, udac: OFF}` — 0/3 fences wired ON → `weak` (== `level_from_signal(fences_enabled_signal())`; the fence-claim pin agrees doc↔code). The fidelity/coverage/UDAC fences *exist* but default OFF; the production preset auto-enables none → intelligence runs *un*-fenced on paid walks unless opted in. The single biggest Band-limiter — **Leak 1**. |
+| C4 Lock + contract discipline | strong | 3/4 | judgment-with-evidence (`lock_contract_signal`) | Live-proven pattern: digest-binding, contribution contracts with §06 fail-closed, HIL-before-spend, Epic-41 fail-loud. Honest residual: the runtime silent-bypass axis is **`undetected`** (no detector wired) and `digest_module_present_on_disk` is file-existence only (not proof of runtime wiring) — so the *mechanical* derivation is NON-clean; the `strong` rests on the durable basis above, and non-uniformity across *every* neck is why it is 3/4, not 4/4. |
+| C5 Honesty + calibration | partial | 2/4 | judgment | Three open honesty debts, all encoded in `partial`: reading-path neck **uncalibrated** (see the metric-citation below — **Leak 4**); workbook semantic audit is **WARN-only, not FAIL** (**Leak 2**); capability tiers **lag** produced reality (**Leak 5**). The level already encodes "reading-path uncalibrated + WARN-only + tier-lag." |
+
+**Reading-path metric citation (Mary, binding — every reading-path number carries `(subject, substrate@date)`).** The only reading-path accuracy number that was actually **measured** is:
+
+> **`subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23`: primary-key 0.071 (1/14)** — with full-tuple 0.0, macro 0.50, image_role 0.21, escalation 0.93 on the same run (per `_bmad-output/implementation-artifacts/p2-4b-honest-measurement-and-recalibration-2026-06-23.md`).
+
+**⚠️ Two DISTINCT quantities both round to 0.93 — do NOT let one inherit the other's provenance.** The `0.93` in the blockquote is the **built-classifier ESCALATION rate** (≈0.929 — an *over*-escalation defect, not an accuracy). It is a *different quantity* from the frequently-cited catalog-approach **PRIMARY-KEY accuracy 0.93**. They are numerically coincidental; the accuracy of the built classifier is the **0.071** primary-key above, NOT either 0.93. Specifically: the frequently-cited **`0.93` accuracy was the *catalog-approach* (Claude-labelled) number — a DIFFERENT thing, NOT the built classifier.** Critically, the **fresh NAIVE holdout is OWED / UNMEASURED**: the 14 held-out slides were *consumed* (labelled) to produce the 0.071, so that number is a **resubstitution / upper-bound** on a non-naive dev set, not a generalization estimate — **no fresh-naive number has been measured, and none may be implied.** A fresh naive holdout (operator labels ≥12–15 NEW slides, scored in a separate gate) is REQUIRED before any trial-ready claim (Mary firm dissent against claiming trial-ready off the consumed-14). C5's reading-path evidence therefore reads: *"uncalibrated; built-classifier 0.071 resubstitution@2026-06-23; fresh-naive holdout OWED/unmeasured."* This is **Leak 4** and cross-links Q3.4 (calibration) — counted once, here.
+
+#### Open leaks (detail — the path from B− toward A)
 
 1. **[C3] Fidelity fence exists but is OFF by default (strongest).** Irene Pass-2 intelligence runs; the `narration ⊆ source` fail-loud gate does not unless opted in. Same for coverage/UDAC — mechanisms exist, default OFF; `--preset production` does not auto-enable. *Evidence:* `app/specialists/irene/graph.py` `narration_figure_fidelity_active()` defaults OFF (~L180–187); `coverage_gate_wiring.py` (~L71); `udac_wiring.py` header; deferred `leg4-narration-fidelity-gate-precision-before-flag-on` (false-positive over-block unsolved).
 2. **[C5] Workbook semantic audit WARNs, doesn't gate.** Deterministic assembly can ship prose a heuristic flags as unsourced framing; production is not failed. *Evidence:* `app/specialists/_shared/source_fidelity_audit.py` `SEMANTIC_TRIPWIRE` = `mode: warn_only`, `gates_production: False`; deferred `braid-workbook-semantic-claim-citation-audit`.
 3. **[C2] Gary export title-match: determinism pretending to be intelligence.** A spine step does judgment-shaped work (brief↔rendered page) with brittle string matching; a Gamma title reword fail-loud-pauses (correct honesty, wrong tool). *Evidence:* `app/specialists/gary/_act.py` `materialize_exported_slide_paths_by_title` raises `gamma.export.brief-unmatched` (~L1388–1408); deferred `gary-export-llm-brief-to-page-matcher` (hybrid: fuzzy first, LLM only on residue, bijection required, else loud halt).
-4. **[C5] Reading-path / perception: intelligent neck without a closed calibration fence.** LLM-first is correct; the quality gate on the neck is not closed. *Evidence:* built classifier ~0.071 primary-key on fresh held-out; `reading-path-fresh-naive-holdout-pre-trial` owed before generalization claims.
-5. **[C5] Capability ledger lag (governance honesty).** Front-door honesty *understates* produced reality (fail-safe, but declared reality drifts from produced). *Evidence:* `app/marcus/lesson_plan/bundle_catalog.py` workbook `tier="mechanism_only_never_produced"` — contradicted by live workbook MD+DOCX (trial `a940c5eb`, Epics 36–40 live gate); deferred `workbook-capability-tier-honesty-lag` (S-1); motion's `proven_regressed_repairable` likely stale the same way.
+4. **[C5] Reading-path / perception: intelligent neck without a closed calibration fence.** LLM-first is correct; the quality gate on the neck is not closed. *Evidence (metric-cited):* the built classifier scored **primary-key 0.071 (`subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23`)** — a **resubstitution / upper-bound** on the 14 held-out slides that were *consumed* to produce it (per the metric-citation in §1.6 above). The `0.93` cited elsewhere was the *catalog-approach* (Claude-labelled) number, **not** the built classifier. A **fresh-naive holdout is OWED / UNMEASURED** before any generalization or trial-ready claim — **no fresh-naive number has been measured or may be implied.** Deferred `reading-path-fresh-naive-holdout-pre-trial` (cross-links Q3.4).
+5. **[C5] Capability ledger lag (governance honesty).** Front-door honesty *understates* produced reality (fail-safe, but declared reality drifts from produced). *Evidence:* `app/marcus/lesson_plan/bundle_catalog.py` workbook `tier="mechanism_only_never_produced"` — contradicted by live workbook MD+DOCX (trial `a940c5eb`, Epics 36–40 live gate); deferred `workbook-capability-tier-honesty-lag` (S-1). **VERIFY (not a leak):** motion's `proven_regressed_repairable` tier is *likely stale* the same way — an explicit verification TODO (re-read the motion tier against live motion output), deliberately **NOT** counted in `open_leaks`.
 
 #### Not leaks anymore (closed — keep them closed)
 
@@ -115,9 +134,9 @@ Five criteria, each scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong ·
 | Workbook producer calling LLM | No LLM in workbook producer/enrichment (deterministic compose) |
 | Motion planner as LLM node | Manifest `model_config_ref: null` / "deterministic, NO LLM" |
 
-#### The discipline that raises the score (not just fixes)
+#### The discipline that raises the Band (not just fixes)
 
-Every time a component is hardened, ask: **"did we move judgment upstream into a locked artifact, or did we just delete judgment?"** Only the first preserves dynamic intelligence while buying determinism. Prioritization if forced to cut: **(1) and (3)** most affect paid walks; **(2) and (4)** most affect learner-trust; **(5)** is governance hygiene before it becomes believed-green in the *other* direction.
+Every time a component is hardened, ask: **"did we move judgment upstream into a locked artifact, or did we just delete judgment?"** Only the first preserves dynamic intelligence while buying determinism. Ranked if forced to cut: **Leaks 1 and 3** most affect paid walks; **Leaks 2 and 4** most affect learner-trust; **Leak 5** is governance hygiene before it becomes believed-green in the *other* direction.
 
 ### Cadence (how this dimension stays honest)
 
@@ -145,8 +164,11 @@ level is justified — and it does NOT falsely mechanize a proxy:
     returns a NON-clean value today (proxy/unverified) — the divergence is the honesty.
   • C1 neck_placement / C5 honesty stay `derivation: judgment`, signal:null (C5 = Q1.5).
 The DID numbers are UNCHANGED (65/B-; strong/strong/weak/strong/partial); the rework
-relabels justification, not the score. leak-count reader returns 0 today (open_leaks:5
-stays hand-carried until Q1.5 tags the leaks — GL-14). The /100→Band reframe is Q1.5. -->
+relabels justification, not the score. Q1.5 LANDED: the 5 `did_leak:` tags now exist in
+deferred-inventory.md so open_leak_count_signal() == 5 == open_leaks (the leak-count
+pin is now a HARD reconciliation, not xfail); §1.6 is reframed Band-primary
+(ranked-leaks + trend) with the /100 sum kept as the arithmetic-pin reasoning trace. -->
+
 
 ```yaml
 schema: quality-scorecard/v2
@@ -251,10 +273,10 @@ dimensions:
         evidence_ref: "§1.6 C5 · Leaks 2, 4, 5"
         score: 2
         max: 4
-    # leak-count TRANSITIONAL (Q1.2 / GL-14): app.quality.signals.open_leak_count_signal
-    # returns 0 today — 0 `did_leak:` tags exist in deferred-inventory.md yet. The
-    # hand-carried open_leaks:5 stays until Q1.5 tags the 5 leaks; only then does the
-    # reader override this value. Q1.2 deliberately does NOT overwrite open_leaks here.
+    # leak-count RECONCILED (Q1.5 / GL-14): app.quality.signals.open_leak_count_signal
+    # now returns 5 — the 5 `did_leak:` tags landed in deferred-inventory.md (one per
+    # ranked DID leak). open_leaks:5 == the counted tags, so the leak-count honesty pin
+    # is a HARD doc↔code reconciliation (Q1.3's xfail(strict) was removed by Q1.5).
     open_leaks: 5
     trend: baseline
 ```

@@ -433,10 +433,57 @@ def test_open_leak_count_exact_archive_header(tmp_path: Path) -> None:
     assert open_leak_count_signal(p)["open_leak_count"] == 1
 
 
-def test_open_leak_count_real_is_zero_today() -> None:
+def test_open_leak_count_skips_commented_out_tag(tmp_path: Path) -> None:
+    """FIX-7 regression guard: a single-line ``<!-- did_leak: x -->`` must NOT count
+    (it is a disabled tag); a real tag on its own line still does, and an inline
+    trailing comment on that real tag is harmless. (This single-line form was already
+    skipped by the line-start anchor — the multi-line span below is the true RED-first
+    witness for the comment-strip.)"""
+    doc = textwrap.dedent(
+        """\
+        # Deferred Inventory
+
+        ## DID Scorecard Leak Registry
+
+        - did_leak: real-open-leak  <!-- inline trailing comment is harmless -->
+        <!-- did_leak: temporarily-disabled-leak — commented out, must NOT count -->
+        """
+    )
+    p = _write(tmp_path, "commented.md", doc)
+    assert open_leak_count_signal(p)["open_leak_count"] == 1
+
+
+def test_open_leak_count_multiline_comment_disables_tag(tmp_path: Path) -> None:
+    """FIX-7 (RED-first witness): a multi-line ``<!-- ... -->`` span wrapping a tag on
+    its own line disables it — WITHOUT the comment-strip that line-anchored ``did_leak:``
+    counted (2), inflating the leak count; with the strip it reads as absent (1)."""
+    doc = textwrap.dedent(
+        """\
+        # Deferred Inventory
+
+        ## DID Scorecard Leak Registry
+
+        - did_leak: real-open-leak
+
+        <!--
+        parked for later:
+        did_leak: not-yet-open
+        -->
+        """
+    )
+    p = _write(tmp_path, "ml_comment.md", doc)
+    assert open_leak_count_signal(p)["open_leak_count"] == 1
+
+
+def test_open_leak_count_real_reconciles_with_tagged_leaks() -> None:
+    """Q1.5 tagged the 5 DID ``did_leak:`` entries in the real deferred-inventory, so
+    the reader now counts 5 (it returned 0 through Q1.2–Q1.3, before the tags landed).
+    The reader itself is unchanged; only the tagged reality moved. The doc↔code
+    reconciliation against the machine block's ``open_leaks`` is the honesty pin
+    ``test_leak_count_reconciles_on_real_repo``."""
     sig = open_leak_count_signal()
     assert sig["status"] == "ok"
-    assert sig["open_leak_count"] == 0
+    assert sig["open_leak_count"] == 5
 
 
 def test_open_leak_count_missing_file_unavailable(tmp_path: Path) -> None:
