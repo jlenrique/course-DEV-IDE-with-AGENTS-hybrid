@@ -1,6 +1,6 @@
 # Project Quality Scorecard — Epic Breakdown (Epics Q1–Q3)
 
-**Status:** `draft-pending-party-greenlight` (2026-07-19). Authored from a ratified fully-spawned design party (Winston/architecture · Murat/measurement-rigor · John/purpose+scope · Mary/evidence) + a landscape survey. Per sprint governance: `bmad-party-mode` green-light precedes dev; `bmad-code-review` precedes any story `done`. Class-S substrate (touches `production_runner` run-summary emission + a new `app/quality/` package).
+**Status:** `green-lit-with-amendments — pending operator ratification` (2026-07-19). Design party (Winston/Murat/John/Mary) + landscape survey authored it; the `bmad-party-mode` green-light (Winston/John/Murat/Amelia) returned **4/4 GO-WITH-AMENDMENTS** (see the BINDING `## Green-light amendments` section at the bottom — GL-1…GL-16). Per sprint governance: `bmad-code-review` precedes any story `done`. Class-S substrate (touches `production_runner` run-summary emission + a new `app/quality/` package). **Dev does not open until the operator ratifies.**
 
 ## Overview
 
@@ -151,4 +151,30 @@ A recurring, **project-specific** quality assessment scored on dimensions that m
 
 ## Green-light amendments
 
-*(Populated by the `bmad-party-mode` green-light. BINDING and governs on conflict once filled. Empty until the green-light runs.)*
+**Verdict: 4/4 GO-WITH-AMENDMENTS** (`bmad-party-mode` green-light, 2026-07-19 — Winston/architecture · John/scope · Murat/reliability · Amelia/dev-implementability). No NO-GO, no impasse. **These amendments are BINDING and govern on conflict** with the story bodies above. Binding unless marked (should) or (optional).
+
+**Ordering & story split (all four voices flagged the Q1.2↔Q1.4 backward dependency):**
+- **GL-1 — corrected Q1 topological order** (not the numeric order): **Q1.1 → Q1.4a → Q1.2 → Q1.3 → Q1.5 → Q1.4b**. Q1.2's C4 `silent_bypass_events` signal ships against the honest `undetected`/`null` state; Q1.4a's real detector lands with/before Q1.2's C4 (fail-soft tolerates an absent detector). Add this dependency note to Epic Q1 (the "serialize by rule" clause is concurrency, not ordering).
+- **GL-2 — split Q1.4 into two stories.** **Q1.4a** = the `fence_state` block in `run_summary.yaml` + the honest `silent_bypass_events` detector fix (ships the operator job). **Q1.4b** = the deterministic final-report projector (reuse `hil_tabular_projector`), rendering Band + ranked-leaks + trend = Q1.5's output shape, so **sequence Q1.4b after Q1.5**. Q1.4b is a splittable tail.
+
+**Seam-hardening (Winston):**
+- **GL-3 (CRITICAL) — protect the clean leaf.** Signal readers must NOT module-import `app.*` from inside `app/quality` (import-linter names `app.quality` in zero contracts today, so this regression would pass CI while violating NFR4). Compute fence/env facts **at the `production_runner` seam** (which already imports `narration_figure_fidelity_active()`, `coverage_gate_active()`, etc.) and pass them into the scorecard layer **as plain data**, OR read via deferred local imports. Add a structural test asserting `app.quality` imports zero `app.*` at module scope — *that test is the leaf's honesty-pin.*
+- **GL-4 — the run-summary breadcrumb stays a STATIC pointer.** `{source, note: project-level-not-this-run}`; `as_of` optional/omittable and must NOT force a governance-doc parse inside `_emit_run_summary_yaml` (would re-couple the runtime to the doc — forbidden by consensus rule #1). Per-run facts derive ONLY from run signals, never the doc.
+- **GL-5 — wire `fence_state` into ALL FIVE emit call sites** (`production_runner.py` ~:2691/:4172/:4269/:4422/:5457 — the two-walks gotcha); a single-site wiring silently drops it on the other walk. Test presence across the start-walk AND resume-walk paths.
+
+**Reliability meta-ratchets (Murat — binding unless noted):**
+- **GL-6 (CRITICAL) — dimension-coverage meta-ratchet.** Reuse the 43-10 *structure*, not just its RED-first flavor: a named canonical dimension universe (`_EXPECTED_CANONICAL_KEYS`-style) + `test_every_dimension_has_a_honesty_pin` that FAILS unless every dimension in the v2 machine block has a registered honesty-pin. Prevents a future dimension shipping pin-less-and-green (the exact 42-1 believed-green class 43-10 kills). Add to Q1.3.
+- **GL-7 — Q3.2 must not ship pin-less.** Its current test pins the signal→score function, not the machine-vs-prose contradiction. Either add the real pin (coherence-score can't rise while the three trackers actually diverge) OR declare Q3.2 fully-computed (no hand-authored level) + a test asserting no judgment field exists on it.
+- **GL-8 — nail `silent_bypass_events` on all surfaces (Q1.4a):** (a) a component detection test (seed a synthetic bypass → detector reports it; no event → honest `undetected`/`0`); (b) a pin that `undetected` **caps C4** (cannot claim the clean level on an unchecked run).
+- **GL-9 (should) — promote to doctrine-level:** "pins pass by AGREEING WITH REALITY today" and "goes RED under a seeded dishonest edit" become TESTING-DOCTRINE requirements for **every** dimension pin (Q2/Q3), not DID-only — so a sibling can't be authored green against a fictional target.
+- **GL-10 (should) — the R2 witness is a checkable COMPARISON, not an observation:** capture this-run `fence_state` + projector output to a named evidence artifact and ASSERT equality with the independently-computed env truth for that run.
+- **GL-11 (should) — close two hand-editable green surfaces:** a test pinning `trend == computed(history)` (no painted arrows); and tie any score/level INCREASE to an `as_verified` advance (a cited but stale `evidence_ref` must not suffice — that is the whole reason `as_of`/`as_verified` are split).
+
+**Specification completeness (John + Amelia):**
+- **GL-12 — name the `trend`-history substrate** (Q1.3, owner of `trend`): where it lives, its format, and the first-run "no history → no-trend" degrade.
+- **GL-13 — ranked-leaks is CROSS-dimensional:** each dimension registers its leaks into the shared project ranked-leak list (else it silently stays DID-only). Add an AC to Q1.4b + a line to the Q2/Q3 story template.
+- **GL-14 — Q1.3(b) leak-count pin runs against a fixture (or is intentionally RED-pending) until Q1.5 lands the 5 real `did_leak:` tags** (0 tags exist today) — so "working software each step" holds.
+- **GL-15 — Q2.1 names the REAL seams** (not the non-existent `app/marcus/orchestrator/economics.py`): `app/runtime/economics.py::check_trial_budget`/`BudgetStatus` and the `cost_posture` Literal on `app/models/runtime/trial_economics_report.py`, consumed at `production_runner.py:382-389`.
+- **GL-16 — Q3.3 reads the import-linter result via the shipped Python dep/API** (contracts in `pyproject.toml [tool.importlinter]`), NOT a CLI on PATH (per the verify-via-shipped-deps rule).
+
+**Not blocking (confirmed sound):** fail-soft reader (Q1.1), reuse-existing-emitters harmonization, the E2E-deferral-to-R2 posture, and the Q3.1/Q3.4 report-only phasing flags. Amelia verified all named seams exist and are readable fail-soft.
