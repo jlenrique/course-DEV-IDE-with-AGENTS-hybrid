@@ -343,3 +343,7 @@ Dated 2026-04-19 (via REMEDIATION pass after concurrent-session false closure). 
 
 - [Review][Defer][30-3a-EC1] Empty-packet (zero plan units) test gap. `FourALoop.run_4a` with a `LessonPlan` whose `plan_units == []` transitions directly to plan-lock (zero `plan_unit.created` + zero `scope_decision.set` + one `plan.locked`). Behavior covered by AC-B.3 but not pinned by a dedicated test. Natural home: 30-3b or 32-3.
 - [Review][Defer][30-3a-EC2] Prior-decline rationale naming an unknown `unit_id` is silent-skipped at `FourALoop.run_4a` step 2. Behavior is correct but not explicitly tested. Natural home: 30-3b or 32-3.
+
+Dated 2026-07-19 (Q1.1 code-review triage; DEFER). From the `bmad-code-review` of Story Q1.1 (scorecard schema v2 + generalized reader).
+
+- [Review][Defer][Q1.1-CR1] `scripts/utilities/quality_scorecard.py --check` staleness ratchet keys on the block-level `as_of`, not per-dimension `as_verified`. This belongs to Q1.3, which owns the honesty-pin ratchet framework and demotes `--check` to a secondary nag (per Q1.1 AC4 note + GL-6). No action in Q1.1: the `as_of`/`as_verified` split lands structurally here; consuming `as_verified` in the staleness check is Q1.3's job. Natural home: Q1.3.

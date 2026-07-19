@@ -128,24 +128,57 @@ Every time a component is hardened, ask: **"did we move judgment upstream into a
 
 ---
 
-<!-- QUALITY-SCORECARD-MACHINE-BLOCK v1 — parsed by app/quality/scorecard.py and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. -->
+<!-- QUALITY-SCORECARD-MACHINE-BLOCK v2 — parsed by app/quality/scorecard.py (dimension_ref / did_score_ref) and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. v2 (Story Q1.1): schema is dimension-agnostic — per-dimension rubric_version/as_of/as_verified + per-criterion {level, signal, evidence_ref} (score/max retained as the 0–4 reasoning trace). STRUCTURAL migration only: every value below is carried verbatim from v1; signal is null for all criteria (Q1.2 fills them); the /100→Band reframe is Q1.5. -->
 
 ```yaml
-schema: quality-scorecard/v1
+schema: quality-scorecard/v2
 as_of: 2026-07-19
 dimensions:
   dynamic_intelligence_vs_determinism:
     label: Dynamic Intelligence vs Determinism
+    # rubric_version pins the §1.5 rubric edition; as_of = prose last-edited,
+    # as_verified = evidence last-re-checked. Equal at this baseline migration
+    # (no new evidence checked); the split earns its keep in Q1.3/Q1.5.
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
     score: 65
     max: 100
     band: "B-"
     band_note: "strong design, non-uniform enforcement"
     criteria:
-      neck_placement: { score: 4, max: 4, level: strong }
-      bone_determinism: { score: 3, max: 4, level: strong }
-      fence_enforcement_default_on: { score: 1, max: 4, level: weak }
-      lock_and_contract_discipline: { score: 3, max: 4, level: strong }
-      honesty_and_calibration: { score: 2, max: 4, level: partial }
+      # signal: null for ALL criteria at Q1.1 — levels are the hand-carried v1
+      # values; Q1.2 flips C2/C3/C4/leak-count to computed signals.
+      neck_placement:
+        level: strong
+        signal: null
+        evidence_ref: "§1.6 C1 · Neck placement"
+        score: 4
+        max: 4
+      bone_determinism:
+        level: strong
+        signal: null
+        evidence_ref: "§1.6 C2 · Leak 3 (Gary export title-match)"
+        score: 3
+        max: 4
+      fence_enforcement_default_on:
+        level: weak
+        signal: null
+        evidence_ref: "§1.6 C3 · Leak 1 (fidelity/coverage/UDAC default-OFF)"
+        score: 1
+        max: 4
+      lock_and_contract_discipline:
+        level: strong
+        signal: null
+        evidence_ref: "§1.6 C4 · lock + contribution-contract discipline"
+        score: 3
+        max: 4
+      honesty_and_calibration:
+        level: partial
+        signal: null
+        evidence_ref: "§1.6 C5 · Leaks 2, 4, 5"
+        score: 2
+        max: 4
     open_leaks: 5
     trend: baseline
 ```

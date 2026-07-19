@@ -6,6 +6,8 @@ report, and so operator/dev tooling can surface it. Fail-soft by design: a
 missing or malformed scorecard never raises into a production run.
 """
 
-from app.quality.scorecard import did_score_ref, read_scorecard_block
+# Relative (intra-package) import keeps this a clean leaf: the package references
+# no foreign ``app.*`` module at import time (GL-3 / NFR4).
+from .scorecard import did_score_ref, dimension_ref, read_scorecard_block
 
-__all__ = ["did_score_ref", "read_scorecard_block"]
+__all__ = ["did_score_ref", "dimension_ref", "read_scorecard_block"]

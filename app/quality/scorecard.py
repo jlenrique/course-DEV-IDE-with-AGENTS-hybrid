@@ -27,6 +27,12 @@ _BLOCK_RE = re.compile(
 )
 _DID_KEY = "dynamic_intelligence_vs_determinism"
 
+#: The named canonical dimension-key universe. Q1.3's GL-6 dimension-coverage
+#: meta-ratchet consumes this rail (a new dimension cannot be silently added
+#: without a human touching this tuple AND registering its honesty-pin). Q1.1
+#: only establishes the constant; the meta-ratchet *test* is Q1.3.
+_EXPECTED_CANONICAL_DIMENSION_KEYS: tuple[str, ...] = (_DID_KEY,)
+
 
 def _repo_root() -> Path:
     # app/quality/scorecard.py -> app/quality -> app -> <repo root>
@@ -58,26 +64,36 @@ def read_scorecard_block(path: Path | None = None) -> dict[str, Any] | None:
     return data if isinstance(data, dict) else None
 
 
-def did_score_ref(path: Path | None = None) -> dict[str, Any]:
-    """Small, embeddable summary of the DID dimension for a run's final report.
+def dimension_ref(key: str, path: Path | None = None) -> dict[str, Any]:
+    """Small, embeddable summary of **any** dimension, keyed by its machine-block key.
 
-    Always returns a dict. On success::
+    Dimension-agnostic (v2): a future dimension slots in without editing this
+    reader. Always returns a dict. On success::
 
-        {"dimension": "Dynamic Intelligence vs Determinism", "score": 65,
-         "max": 100, "band": "B-", "as_of": "2026-07-19",
-         "source": "docs/quality/project-quality-scorecard.md"}
+        {"dimension": "<label>", "score": 65, "max": 100, "band": "B-",
+         "as_of": "2026-07-19", "source": "docs/quality/project-quality-scorecard.md",
+         # "as_verified": "2026-07-19"  # surfaced when the dimension carries it (v2)
+        }
 
-    On any failure::
+    On any failure (missing file · bad YAML · non-mapping · marker/dimension
+    absent)::
 
         {"status": "unavailable", "source": "docs/quality/project-quality-scorecard.md"}
     """
     block = read_scorecard_block(path)
-    dim = (block or {}).get("dimensions", {}).get(_DID_KEY) if block else None
+    dim = (
+        block.get("dimensions", {}).get(key)
+        if isinstance(block, dict) and isinstance(block.get("dimensions"), dict)
+        else None
+    )
     if not isinstance(dim, dict):
         return {"status": "unavailable", "source": _SCORECARD_REL}
-    as_of = block.get("as_of") if isinstance(block, dict) else None
-    return {
-        "dimension": dim.get("label", "Dynamic Intelligence vs Determinism"),
+    # v2 carries a dimension-level as_of; fall back to the block-level as_of (v1
+    # shape) so the reader stays backward-compatible.
+    as_of = dim.get("as_of", block.get("as_of") if isinstance(block, dict) else None)
+    as_verified = dim.get("as_verified")
+    ref: dict[str, Any] = {
+        "dimension": dim.get("label", key),
         "score": dim.get("score"),
         "max": dim.get("max", 100),
         "band": dim.get("band"),
@@ -86,3 +102,24 @@ def did_score_ref(path: Path | None = None) -> dict[str, Any]:
         "as_of": str(as_of) if as_of is not None else None,
         "source": _SCORECARD_REL,
     }
+    # Additive (v2): surface as_verified when present without changing the
+    # existing return-key contract the two live consumers depend on.
+    if as_verified is not None:
+        ref["as_verified"] = str(as_verified)
+    return ref
+
+
+def did_score_ref(path: Path | None = None) -> dict[str, Any]:
+    """Thin convenience wrapper: the DID dimension summary for a run's final report.
+
+    Retained for the two live consumers (``production_runner._quality_scorecard_ref``
+    and ``scripts/utilities/quality_scorecard.py``). Its **return keys are stable**
+    (``dimension``, ``score``, ``max``, ``band``, ``as_of``, ``source``) — those keys
+    always appear, so both consumers keep working — and it may additionally surface
+    ``as_verified`` (v2). Note this is key-stability, not full value-stability vs v1:
+    ``as_of`` now prefers the *dimension-level* ``as_of`` when the v2 block carries one
+    (falling back to the block-level date), which is the intended v2 behaviour — the
+    per-dimension date is the authoritative "prose last-edited" stamp for this
+    dimension. It delegates to :func:`dimension_ref`.
+    """
+    return dimension_ref(_DID_KEY, path)

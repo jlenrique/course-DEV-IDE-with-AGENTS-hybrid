@@ -33,22 +33,36 @@ from app.quality.scorecard import (  # noqa: E402  (path bootstrap must precede 
 
 
 def _fmt_summary(block: dict) -> str:
-    dim = block.get("dimensions", {}).get("dynamic_intelligence_vs_determinism", {})
+    # Mirror the reader's own fail-soft guards: a dict block whose `dimensions` is
+    # null/list, or whose DID key maps to a scalar, must format gracefully rather
+    # than AttributeError. Fall back to an empty mapping so every .get() below holds.
+    dims = block.get("dimensions")
+    dim = dims.get("dynamic_intelligence_vs_determinism") if isinstance(dims, dict) else None
+    dim = dim if isinstance(dim, dict) else {}
+    # v2 (Story Q1.1): dimensions carry rubric_version + as_of/as_verified; criteria
+    # carry {level, signal, evidence_ref} alongside the retained score/max. as_of
+    # falls back to the block-level value for backward-compat with the v1 shape.
+    dim_as_of = dim.get("as_of", block.get("as_of", "?"))
     lines = [
-        f"Project Quality Scorecard — as of {block.get('as_of', '?')}",
+        f"Project Quality Scorecard ({block.get('schema', '?')}) — as of {block.get('as_of', '?')}",
         f"  Source: {scorecard_path()}",
         "",
         f"  Dimension 1 — {dim.get('label', 'DID')}: "
         f"{dim.get('score', '?')}/{dim.get('max', 100)} "
         f"({dim.get('band', '?')} — {dim.get('band_note', '')})",
+        f"      rubric v{dim.get('rubric_version', '?')} · "
+        f"as_of {dim_as_of} · as_verified {dim.get('as_verified', '?')}",
     ]
     crit = dim.get("criteria", {})
     if isinstance(crit, dict):
         for name, c in crit.items():
             if isinstance(c, dict):
+                signal = c.get("signal")
+                signal_note = "signal: —" if signal is None else f"signal: {signal}"
                 lines.append(
                     f"      - {name}: {c.get('score', '?')}/{c.get('max', 4)} "
-                    f"({c.get('level', '?')})"
+                    f"({c.get('level', '?')}) · {signal_note} · "
+                    f"{c.get('evidence_ref', '')}"
                 )
     lines.append(f"  Open leaks: {dim.get('open_leaks', '?')} · trend: {dim.get('trend', '?')}")
     return "\n".join(lines)
