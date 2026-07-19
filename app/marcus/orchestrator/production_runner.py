@@ -1399,6 +1399,21 @@ def _conversation_chain_digest(*, trial_id: UUID, runs_root: Path) -> str:
     return "0" * 64
 
 
+def _quality_scorecard_ref() -> dict[str, Any]:
+    """Current project quality posture (DID dimension) for the run's final report.
+
+    Fail-soft: a missing/malformed scorecard yields an ``{"status": "unavailable"}``
+    marker, never an exception — a run must not fail over a governance-doc read.
+    Local import keeps the module-level import graph (import-linter) unchanged.
+    """
+    try:
+        from app.quality.scorecard import did_score_ref
+
+        return did_score_ref()
+    except Exception:  # noqa: BLE001 — a scorecard read must never break a run
+        return {"status": "unavailable", "source": "docs/quality/project-quality-scorecard.md"}
+
+
 def _emit_run_summary_yaml(
     *,
     trial_id: UUID,
@@ -1430,6 +1445,7 @@ def _emit_run_summary_yaml(
             runs_root=runs_root,
         ),
         "langsmith_trace_id": langsmith_trace_id or "skipped-no-langsmith-env",
+        "quality_scorecard": _quality_scorecard_ref(),
     }
     path = _run_dir(trial_id, runs_root) / "run_summary.yaml"
     path.parent.mkdir(parents=True, exist_ok=True)
