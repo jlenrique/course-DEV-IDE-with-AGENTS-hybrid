@@ -1,6 +1,6 @@
 # Project Quality Scorecard — Epic Breakdown (Epics Q1–Q3)
 
-**Status:** `green-lit-with-amendments — pending operator ratification` (2026-07-19). Design party (Winston/Murat/John/Mary) + landscape survey authored it; the `bmad-party-mode` green-light (Winston/John/Murat/Amelia) returned **4/4 GO-WITH-AMENDMENTS** (see the BINDING `## Green-light amendments` section at the bottom — GL-1…GL-16). Per sprint governance: `bmad-code-review` precedes any story `done`. Class-S substrate (touches `production_runner` run-summary emission + a new `app/quality/` package). **Dev does not open until the operator ratifies.**
+**Status:** `RATIFIED — ready for dev` (operator-ratified 2026-07-19). Design party (Winston/Murat/John/Mary) + landscape survey authored it; the `bmad-party-mode` green-light (Winston/John/Murat/Amelia) returned **4/4 GO-WITH-AMENDMENTS**; the operator ratified the epic + the binding GL-1…GL-16 amendments (see the `## Green-light amendments` section — it GOVERNS on conflict). Per sprint governance: `bmad-code-review` precedes any story `done`. Class-S substrate (`production_runner` run-summary emission + a new `app/quality/` package). **Dev opens on Epic Q1 (foundation) in the corrected order Q1.1 → Q1.4a → Q1.2 → Q1.3 → Q1.5 → Q1.4b.**
 
 ## Overview
 
