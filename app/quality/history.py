@@ -95,6 +95,35 @@ def history_entries(dimension: str, path: Path | None = None) -> list[dict[str, 
     return entries
 
 
+def all_history_entries(path: Path | None = None) -> list[dict[str, Any]]:
+    """Every snapshot in the ledger (ALL dimensions), in file order.
+
+    Additive single-read reader (Q1.4b): a multi-dimension consumer — the
+    final-report projector — reads the JSONL ONCE and computes each dimension's
+    trend from the in-memory entries via :func:`trend_from_entries`, instead of
+    re-reading the file per dimension. Fail-soft, identical to
+    :func:`history_entries` but without the dimension filter: a missing/unreadable
+    file yields ``[]``; a malformed JSON line / non-mapping object is skipped.
+    """
+    p = path or history_path()
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return []
+    entries: list[dict[str, Any]] = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            obj = json.loads(stripped)
+        except json.JSONDecodeError:
+            continue  # skip a malformed line — never raise (fail-soft)
+        if isinstance(obj, dict):
+            entries.append(obj)
+    return entries
+
+
 def _snapshot_score(snapshot: dict[str, Any]) -> int | None:
     """The headline score of a snapshot as an ``int``, or ``None`` if malformed."""
     score = snapshot.get("score")
@@ -149,30 +178,32 @@ def latest_prior_snapshot(
     return max(prior, key=lambda t: (t[1]["as_of"], t[0]))[1]
 
 
-def trend_from_history(dimension: str, path: Path | None = None) -> str:
-    """The trend label the machine block's ``trend`` must equal (GL-11).
-
-    Computed from the history log: the newest snapshot's headline score vs the
-    latest snapshot dated *before* it. **First-run / fail-soft degrade (GL-12):**
-    an absent/empty history, a malformed ``as_of`` on the newest-APPENDED entry,
-    fewer than two validly-dated snapshots, or malformed scores → ``"baseline"``.
+def _trend_from_dim_entries(dim_entries: list[dict[str, Any]]) -> str:
+    """Pure trend computation over a SINGLE dimension's entries (already filtered,
+    file order). The shared SSOT for the trend label — behaviour is byte-identical
+    to the prior :func:`trend_from_history` (same newest-by-validated-date vs
+    latest-strictly-prior comparison, same file-index tie-break, same GL-12
+    first-run/fail-soft degrades). Kept pure so both the per-dimension reader and the
+    single-read projector path compute the arrow the SAME way (never painted).
     """
-    entries = history_entries(dimension, path)
-    if not entries:
+    if not dim_entries:
         return "baseline"
     # R4a: if the freshest WRITE (last file line) has a malformed/missing as_of we
-    # cannot trust the log — degrade to baseline rather than silently computing a
-    # trend off an older entry.
-    if not _valid_iso(entries[-1].get("as_of")):
+    # cannot trust the log — degrade to baseline rather than computing off an older one.
+    if not _valid_iso(dim_entries[-1].get("as_of")):
         return "baseline"
-    current = newest_snapshot(dimension, path)
-    if current is None:
+    dated = [(i, e) for i, e in enumerate(dim_entries) if _valid_iso(e.get("as_of"))]
+    if not dated:
         return "baseline"
-    prior = latest_prior_snapshot(dimension, str(current.get("as_of")), path)
-    if prior is None:
+    # newest by (validated date, file index): latest date wins; same-date → later-in-file.
+    current = max(dated, key=lambda t: (t[1]["as_of"], t[0]))[1]
+    cur_as_of = str(current.get("as_of"))
+    prior = [(i, e) for i, e in dated if e["as_of"] < cur_as_of]
+    if not prior:
         return "baseline"
+    prior_snap = max(prior, key=lambda t: (t[1]["as_of"], t[0]))[1]
     cur_score = _snapshot_score(current)
-    prior_score = _snapshot_score(prior)
+    prior_score = _snapshot_score(prior_snap)
     if cur_score is None or prior_score is None:
         return "baseline"  # cannot honestly compare malformed scores
     if cur_score > prior_score:
@@ -180,3 +211,33 @@ def trend_from_history(dimension: str, path: Path | None = None) -> str:
     if cur_score < prior_score:
         return "falling"
     return "flat"
+
+
+def trend_from_entries(entries: list[dict[str, Any]], dimension: str) -> str:
+    """The trend label for ``dimension``, computed from a PRE-LOADED entries list
+    (all dimensions, e.g. from :func:`all_history_entries`) — no file read.
+
+    Additive (Q1.4b): the single-read projector path filters ``entries`` for this
+    dimension (file order preserved) and delegates to :func:`_trend_from_dim_entries`,
+    so it yields the SAME arrow as :func:`trend_from_history` without re-reading the
+    ledger per dimension.
+    """
+    dim_entries = [
+        e for e in entries if isinstance(e, dict) and e.get("dimension") == dimension
+    ]
+    return _trend_from_dim_entries(dim_entries)
+
+
+def trend_from_history(dimension: str, path: Path | None = None) -> str:
+    """The trend label the machine block's ``trend`` must equal (GL-11).
+
+    Computed from the history log: the newest snapshot's headline score vs the
+    latest snapshot dated *before* it. **First-run / fail-soft degrade (GL-12):**
+    an absent/empty history, a malformed ``as_of`` on the newest-APPENDED entry,
+    fewer than two validly-dated snapshots, or malformed scores → ``"baseline"``.
+
+    Now a thin wrapper over the shared pure computation
+    (:func:`_trend_from_dim_entries`) reading the file ONCE via
+    :func:`history_entries` — behaviour is unchanged (all Q1.3 pins stay green).
+    """
+    return _trend_from_dim_entries(history_entries(dimension, path))

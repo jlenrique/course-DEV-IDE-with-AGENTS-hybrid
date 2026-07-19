@@ -71,10 +71,38 @@ from app.quality.scorecard import (
     read_scorecard_block,
 )
 from app.quality.signals import (
+    _DEFERRED_INVENTORY_REL,
+    _repo_root,
+    _strip_archived_section,
+    _strip_fenced_code,
+    _strip_html_comments,
     fences_enabled_signal,
     level_from_signal,
     open_leak_count_signal,
 )
+
+#: Captures the slug after a line-anchored ``did_leak:`` tag (mirrors the count
+#: regex ``signals._DID_LEAK_LINE_RE`` but also captures the slug token). Used by the
+#: slug-set IDENTITY pin (FIX-1) — the count pins reconcile through the integer 5 and
+#: cannot catch a slug that was typo'd/renamed while the count stayed 5.
+_DID_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?did_leak:\s*(\S+)")
+
+
+def _registry_did_leak_slugs() -> set[str]:
+    """The OPEN ``did_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``open_leak_count_signal`` counts them (fenced code / HTML comments /
+    archived section stripped) so the identity set and the count agree on scope."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _DID_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
+    """The slug set from a dimension's structured machine-block ``leaks`` list."""
+    leaks = dim.get("leaks")
+    if not isinstance(leaks, list):
+        return set()
+    return {leak.get("slug") for leak in leaks if isinstance(leak, dict)}
 
 # --------------------------------------------------------------------------- #
 # §1.5 rubric, encoded here as the score-arithmetic pin's source of truth.
@@ -571,6 +599,47 @@ def test_leak_count_reconciles_on_real_repo() -> None:
     assert _reconcile(did.get("open_leaks"), count), (
         f"{_DID_KEY}: open_leaks {did.get('open_leaks')!r} != counted did_leak: tags {count}"
     )
+    # Q1.4b (AC1) — fuller reconciliation: the STRUCTURED machine-block ``leaks`` list
+    # (each {rank, criterion, slug, lane}) must also match ``open_leaks`` in length
+    # (checked only when the list is present + open_leaks is a clean int — additive, so
+    # this never spuriously reds a dimension that has not yet added a ``leaks`` list).
+    leaks = did.get("leaks")
+    open_leaks = did.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_DID_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+# ============================ PIN (b') leak-slug IDENTITY (FIX-1) ============================
+
+
+def test_machine_block_leak_slugs_match_registry_identity() -> None:
+    """FIX-1 — SSOT slug IDENTITY reconciliation the count pins lack.
+
+    Pin (b) reconciles through the integer 5 (registry ``did_leak:`` count ==
+    ``open_leaks`` == structured ``len(leaks)``); a slug that is TYPO'd in the machine
+    block or RENAMED in the registry keeps all three at 5 and every count pin green
+    while the slugs have silently diverged. This pin asserts SET EQUALITY of the two
+    slug identities — the machine-block ``leaks`` slugs vs the registry ``did_leak:``
+    slugs — so an identity drift is caught even when the counts still reconcile."""
+    did = _real_block()["dimensions"][_DID_KEY]
+    assert _machine_block_leak_slugs(did) == _registry_did_leak_slugs()
+
+
+def test_slug_identity_pin_reds_on_seeded_slug_typo_while_counts_stay_green() -> None:
+    """FIX-1 RED-first: typo ONE machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count pins stay green (len==open_leaks==5), proving
+    the identity pin catches drift the count-only reconciliation misses."""
+    block = copy.deepcopy(_real_block())
+    did = block["dimensions"][_DID_KEY]
+    did["leaks"][0]["slug"] = "gary-export-typo"  # rename one slug; count unchanged
+    # Identity pin RED — the machine-block slug set no longer equals the registry set.
+    assert _machine_block_leak_slugs(did) != _registry_did_leak_slugs()
+    # Count pins STILL green — everything still reconciles through the integer 5.
+    assert len(did["leaks"]) == did["open_leaks"] == 5
 
 
 # ================================= PIN (c) score-arithmetic =================================

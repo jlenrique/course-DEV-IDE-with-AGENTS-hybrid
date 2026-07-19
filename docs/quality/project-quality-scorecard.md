@@ -278,5 +278,39 @@ dimensions:
     # ranked DID leak). open_leaks:5 == the counted tags, so the leak-count honesty pin
     # is a HARD doc↔code reconciliation (Q1.3's xfail(strict) was removed by Q1.5).
     open_leaks: 5
+    # STRUCTURED leak list (Q1.4b / GL-13). Machine-readable mirror of the §1.6
+    # "Open leaks — ranked (5)" headline + the `## DID Scorecard Leak Registry`
+    # slugs. Each entry: {rank, criterion, slug, lane}. `rank` = the §1.6 ranked
+    # display position (1–5, already ordered by lane priority paid-walk →
+    # learner-trust → governance, then the original leak number). `criterion` is
+    # the §1.6 C-label; `lane` ∈ paid-walk / learner-trust / governance.
+    # ADDITIVE: len(leaks) == open_leaks == open_leak_count_signal() == 5. The
+    # mirror honesty pin mirrors {score,band,levels,open_leaks,as_of,as_verified}
+    # — NOT `leaks` — so this addition does not touch it. app.quality.report.
+    # ranked_project_leaks aggregates EVERY dimension's `leaks` into ONE shared
+    # cross-dimensional project ranked-leak list (DID is the sole contributor
+    # today; Q2/Q3 dimensions MUST add their own `leaks` list to register — see
+    # docs/dev-guide/quality-scorecard-dimension-authoring.md).
+    leaks:
+      - rank: 1
+        criterion: C3
+        slug: leg4-narration-fidelity-gate-precision-before-flag-on
+        lane: paid-walk
+      - rank: 2
+        criterion: C2
+        slug: gary-export-llm-brief-to-page-matcher
+        lane: paid-walk
+      - rank: 3
+        criterion: C5
+        slug: braid-workbook-semantic-claim-citation-audit
+        lane: learner-trust
+      - rank: 4
+        criterion: C5
+        slug: reading-path-fresh-naive-holdout-pre-trial
+        lane: learner-trust
+      - rank: 5
+        criterion: C5
+        slug: workbook-capability-tier-honesty-lag
+        lane: governance
     trend: baseline
 ```
