@@ -72,7 +72,7 @@ Set `"verb": "reject"` and populate `"reject_reason": "<rationale>"`. Trial halt
 - **exit 1** — RuntimeError: trial-id mismatch, or trial not paused at G1, or downstream resume failure. Inspect stderr for the message.
 - **exit 2** — ValidationError: verdict file is not a valid OperatorVerdict shape. Re-emit per the schema and retry.
 
-For the `silent_bypass_events` invariant (must be 0 per FR-A23 from Story 7a.2), see `runs/<trial_id>/run_summary.yaml` post-trial.
+For the `silent_bypass_events` fact (FR-A23 from Story 7a.2), see `fence_state.silent_bypass_events` in `runs/<trial_id>/run_summary.yaml` post-trial. Q1.4a (GL-8) moved it under the `fence_state` block and made it honest: it reads `"undetected"` (a string, not a hardcoded `0`) unless a real detector supplied a count — an honest "we didn't check" beats a false clean. The run's fence facts also live in that same `fence_state` block; `quality_scorecard` is now only a static breadcrumb pointer (`{source, note: project-level-not-this-run}`), not a per-run DID score.
 
 ---
 

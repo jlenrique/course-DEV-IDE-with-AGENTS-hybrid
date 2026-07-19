@@ -112,10 +112,13 @@ def dimension_ref(key: str, path: Path | None = None) -> dict[str, Any]:
 def did_score_ref(path: Path | None = None) -> dict[str, Any]:
     """Thin convenience wrapper: the DID dimension summary for a run's final report.
 
-    Retained for the two live consumers (``production_runner._quality_scorecard_ref``
-    and ``scripts/utilities/quality_scorecard.py``). Its **return keys are stable**
-    (``dimension``, ``score``, ``max``, ``band``, ``as_of``, ``source``) — those keys
-    always appear, so both consumers keep working — and it may additionally surface
+    Retained for the CLI consumer (``scripts/utilities/quality_scorecard.py``). The
+    runtime run-summary no longer reads the doc: Q1.4a (GL-4) removed
+    ``production_runner._quality_scorecard_ref`` and emits a static breadcrumb
+    pointer instead, decoupling the run from this governance doc. Its **return keys
+    are stable** (``dimension``, ``score``, ``max``, ``band``, ``as_of``,
+    ``source``) — those keys always appear, so the CLI keeps working — and it may
+    additionally surface
     ``as_verified`` (v2). Note this is key-stability, not full value-stability vs v1:
     ``as_of`` now prefers the *dimension-level* ``as_of`` when the v2 block carries one
     (falling back to the block-level date), which is the intended v2 behaviour — the
