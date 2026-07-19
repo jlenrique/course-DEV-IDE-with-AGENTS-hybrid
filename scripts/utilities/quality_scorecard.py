@@ -11,6 +11,15 @@ reads its machine block and:
                                ``--max-age-days`` (default 45). Run it in dev to
                                keep the assessment from rotting into believed-green.
 
+``--check`` is a **SECONDARY staleness nag, NOT the honesty guard** (Story Q1.3 /
+AC4). All it knows is whether ``as_of`` is old or malformed — it can say nothing
+about whether the doc's CLAIMS still match the code. The anti-believed-green
+honesty guard is ``tests/quality/test_scorecard_honesty_pins.py``: those pins fail
+when a machine-block claim contradicts a code-computed reality (fence level ≠ the
+signal reader, ``open_leaks`` ≠ the counted ``did_leak:`` tags, score↔level↔band↔sum
+inconsistent, ``trend`` ≠ computed-from-history). Treat ``--check`` as a "refresh me
+soon" reminder; treat the pins as the correctness gate.
+
 Run: ``.venv/Scripts/python.exe scripts/utilities/quality_scorecard.py [--check]``
 """
 
