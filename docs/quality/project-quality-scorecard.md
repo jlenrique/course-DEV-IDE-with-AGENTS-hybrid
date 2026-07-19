@@ -128,7 +128,24 @@ Every time a component is hardened, ask: **"did we move judgment upstream into a
 
 ---
 
-<!-- QUALITY-SCORECARD-MACHINE-BLOCK v2 — parsed by app/quality/scorecard.py (dimension_ref / did_score_ref) and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. v2 (Story Q1.1): schema is dimension-agnostic — per-dimension rubric_version/as_of/as_verified + per-criterion {level, signal, evidence_ref} (score/max retained as the 0–4 reasoning trace). STRUCTURAL migration only: every value below is carried verbatim from v1; signal is null for all criteria (Q1.2 fills them); the /100→Band reframe is Q1.5. -->
+<!-- QUALITY-SCORECARD-MACHINE-BLOCK v2 — parsed by app/quality/scorecard.py (dimension_ref / did_score_ref) and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. v2 (Story Q1.1): schema is dimension-agnostic — per-dimension rubric_version/as_of/as_verified + per-criterion {level, signal, evidence_ref} (score/max retained as the 0–4 reasoning trace). STRUCTURAL migration only: every value below is carried verbatim from v1. Q1.2 (post
+code-review honesty rework) adds a per-criterion `derivation` field naming HOW the
+level is justified — and it does NOT falsely mechanize a proxy:
+  • C3 fence_enforcement is the ONLY purely-mechanical criterion (`derivation:
+    signal-derived`): level == level_from_signal(fences_enabled_signal()) == weak, the
+    env-INDEPENDENT production-preset posture (0/3 fences ON).
+  • C2 bone_determinism and C4 lock_and_contract are `derivation: judgment-with-evidence`:
+    their `signal` carries honest FACTS but those facts CANNOT mechanically certify the
+    level — model_config_ref-nullness is a determinism PROXY (node 08 Irene Pass-2 is an
+    LLM with a null ref), and runtime bypass detection is honestly `undetected`. The
+    `level: strong` is a documented HUMAN judgment from the §1.6 durable basis
+    (digest-binding + contribution contracts + HIL-before-spend + Epic-41 fail-loud for
+    C4; the architecture for C2), NOT a signal claim. level_from_signal() for C2/C4
+    returns a NON-clean value today (proxy/unverified) — the divergence is the honesty.
+  • C1 neck_placement / C5 honesty stay `derivation: judgment`, signal:null (C5 = Q1.5).
+The DID numbers are UNCHANGED (65/B-; strong/strong/weak/strong/partial); the rework
+relabels justification, not the score. leak-count reader returns 0 today (open_leaks:5
+stays hand-carried until Q1.5 tags the leaks — GL-14). The /100→Band reframe is Q1.5. -->
 
 ```yaml
 schema: quality-scorecard/v2
@@ -147,38 +164,96 @@ dimensions:
     band: "B-"
     band_note: "strong design, non-uniform enforcement"
     criteria:
-      # signal: null for ALL criteria at Q1.1 — levels are the hand-carried v1
-      # values; Q1.2 flips C2/C3/C4/leak-count to computed signals.
+      # Each criterion carries a `derivation`: signal-derived (level == the reader's
+      # mechanical output), judgment-with-evidence (honest signal facts that CANNOT
+      # certify the level — the level is a §1.6 human judgment), or judgment (no signal).
       neck_placement:
         level: strong
+        derivation: judgment
         signal: null
         evidence_ref: "§1.6 C1 · Neck placement"
         score: 4
         max: 4
       bone_determinism:
+        # JUDGMENT-with-evidence: model_config_ref-nullness is a determinism PROXY, not
+        # proof (node 08 Irene Pass-2 is an LLM with a null ref) — the signal cannot
+        # mechanically certify 'strong'. level_from_signal(bone_inventory_signal())
+        # returns NON-clean ('unavailable') today; 'strong' is the §1.6 architecture
+        # judgment. The mechanical signal can only DOWNGRADE on a detected boundary
+        # breach (an LLM ref on a gate node).
         level: strong
-        signal: null
-        evidence_ref: "§1.6 C2 · Leak 3 (Gary export title-match)"
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.bone_inventory_signal
+          fact: >-
+            49/52 manifest nodes carry model_config_ref:null (a determinism PROXY, not
+            proof — see caveat); the config-ref-set roster (07G vision perception neck,
+            07W.1/07W.3 workbook-writer seams) sits off every gate node
+            (gates_all_model_config_ref_null=true).
+          caveat: >-
+            model_config_ref nullness does NOT prove determinism: Irene Pass-2 (id 08)
+            and Irene Pass-1 gate nodes are LLMs with null refs; 07W.1/07W.3 carry a
+            writer ref while deterministic stubs today. So this signal cannot award
+            'strong' — it only flags a breach (an LLM ref on a gate). The strong is the
+            §1.6 architecture judgment; the residual gap (Leak-3 Gary export
+            determinism-pretending) is why it is 3/4, not 4/4.
+        evidence_ref: "§1.6 C2 · Leak 3 (Gary export title-match); architecture judgment"
         score: 3
         max: 4
       fence_enforcement_default_on:
+        # SIGNAL-DERIVED (purely mechanical): level == level_from_signal(
+        # fences_enabled_signal()) — the env-INDEPENDENT production-preset posture is
+        # 0/3 fences ON → weak. This is the one criterion the code fully owns.
         level: weak
-        signal: null
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.fences_enabled_signal
+          derived_level: weak
+          fact: >-
+            fidelity/coverage/UDAC gate fns are env-toggle default-OFF and --preset
+            production sets none of their env keys; the signal is read env-INDEPENDENTLY
+            (ambient shell cleared) → {fidelity:false, coverage:false, udac:false}
+            (0/3 ON) → weak. Anti-drift: patching a gate fn ON flips exactly that key.
         evidence_ref: "§1.6 C3 · Leak 1 (fidelity/coverage/UDAC default-OFF)"
         score: 1
         max: 4
       lock_and_contract_discipline:
+        # JUDGMENT-with-evidence: runtime bypass detection is honestly 'undetected'
+        # (no detector wired) and digest_module_present_on_disk is file-existence only
+        # (NOT proof of runtime wiring) — neither certifies a clean level.
+        # level_from_signal(lock_contract_signal()) returns 'partial' today (undetected
+        # can never award clean); 'strong' is the §1.6 judgment (digest-binding +
+        # contribution contracts + HIL-before-spend + Epic-41 fail-loud, which do NOT
+        # depend on runtime bypass-counting). The undetected runtime-bypass axis is a
+        # known gap = part of why C4 is 3/4 not 4/4. The GL-8 enforcement pin is Q1.3.
         level: strong
-        signal: null
-        evidence_ref: "§1.6 C4 · lock + contribution-contract discipline"
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.lock_contract_signal
+          fact: >-
+            digest_module_present_on_disk=true (app/runtime/compiled_graph_digest.py
+            exists — file-existence only, NOT proof it is runtime-wired);
+            silent_bypass_events consumes Q1.4a run_summary fence_state, honest
+            'undetected' with no run observed (never coerced to 0).
+          caveat: >-
+            'undetected' + file-existence cannot certify clean discipline; the
+            mechanical derivation is NON-clean ('partial'). The 'strong' rests on the
+            §1.6 durable basis (digest-binding, contribution contracts, HIL-before-spend,
+            Epic-41 fail-loud), NOT on the runtime-bypass axis, which is a known gap.
+        evidence_ref: "§1.6 C4 · lock + contribution-contract discipline (runtime-bypass axis undetected)"
         score: 3
         max: 4
       honesty_and_calibration:
         level: partial
+        derivation: judgment
         signal: null
         evidence_ref: "§1.6 C5 · Leaks 2, 4, 5"
         score: 2
         max: 4
+    # leak-count TRANSITIONAL (Q1.2 / GL-14): app.quality.signals.open_leak_count_signal
+    # returns 0 today — 0 `did_leak:` tags exist in deferred-inventory.md yet. The
+    # hand-carried open_leaks:5 stays until Q1.5 tags the 5 leaks; only then does the
+    # reader override this value. Q1.2 deliberately does NOT overwrite open_leaks here.
     open_leaks: 5
     trend: baseline
 ```
