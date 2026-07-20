@@ -52,6 +52,27 @@ The 1 open cost_efficiency scorecard leak. Each line's HTML comment gives its §
 
 ---
 
+## Coverage-Honesty Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN coverage_honesty scorecard leaks counted (line-anchored) by
+     app.quality.signals.coverage_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the coverage_honesty dimension
+     in docs/quality/project-quality-scorecard.md §3.6 (the coverage leak-count + slug-identity
+     honesty pins). THIRD `cov_leak:` namespace, disjoint from the DID `did_leak:` and cost
+     `cost_leak:` tags so the three counts never collide. MAINTENANCE RULE: closing a coverage
+     leak == remove its cov_leak line HERE **and** decrement `open_leaks` + drop the `leaks:`
+     entry in the scorecard, IN LOCKSTEP (the pins reconcile the two — editing only one goes
+     RED). Do NOT tag leaks under their deferred entries: those migrate to §Closed Entries —
+     Archived on close, which the reader excludes, silently dropping the count while the
+     scorecard is untouched. -->
+
+The 1 open coverage_honesty scorecard leak. Each line's HTML comment gives its §3.6 criterion, its coverage leak number, and a pointer to the owning work:
+
+- cov_leak: coverage-honesty-gate-opt-in-default-off  <!-- [CV1] Coverage Leak 1 — the coverage fail-loud gate (coverage_gate_active → enforce_coverage_gate_before_audio, both walks, BEFORE audio spend) is a REAL fence WHEN WOKEN but OPT-IN by default (MARCUS_COVERAGE_GATE_ACTIVE default-OFF; production preset sets no default → coverage_gate_active()==False → the pre-audio-spend seam early-returns). Close = wire the coverage gate ON by default on the production preset (turn the opt-in fence into a default-on fence). -->
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |

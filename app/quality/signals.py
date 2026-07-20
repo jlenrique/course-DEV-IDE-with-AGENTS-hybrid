@@ -652,6 +652,362 @@ def cost_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]
     }
 
 
+# ============================ coverage-honesty (Q2.2) ============================
+#
+# Signal readers over the EXISTING coverage emitters (GL-15 — reuse, NO parallel
+# plumbing): the coverage-gate DEFAULT posture (``coverage_gate_active`` — the fence),
+# the receipt-honesty / vacuous distinction (``evaluate_vacuous_receipt`` +
+# ``COVERAGE_VACUOUS_TAG`` + the ``CoverageReceipt`` model), and the narration-obligation
+# BLOCK term (``evaluate_coverage_gate`` + ``narration_obligation_unmet``). Coverage types
+# and gate functions are reached ONLY via deferred LOCAL imports (GL-3 clean-leaf), and a
+# run's coverage receipt is otherwise read as PLAIN JSON. Every reader is fail-soft per
+# field — it never raises and never invents a clean value.
+
+#: ``cov_leak:`` tag, anchored to line start — a THIRD per-dimension namespace disjoint
+#: from ``did_leak:`` / ``cost_leak:`` so the coverage count/identity reconciliation never
+#: collides with the other two. 1 today (the default-OFF coverage-gate leak).
+_COVERAGE_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cov_leak:")
+
+#: The env var that wakes the coverage fail-loud gate (``coverage_gate_active`` reads it,
+#: default OFF). The production preset sets NO default for it → source-coverage is not
+#: enforced by default. This is the runtime's OWN gate source (no parallel plumbing).
+_COVERAGE_GATE_ENV_KEY = "MARCUS_COVERAGE_GATE_ACTIVE"
+#: The truthy vocabulary ``coverage_gate_wiring._env_true`` uses (mirrored here so the
+#: injectable-env resolution matches the real gate's rule exactly — anti-drift).
+_ENV_TRUTHY: frozenset[str] = frozenset({"1", "true", "yes", "on"})
+
+
+def coverage_fence_default_signal(env: Mapping[str, str] | None = None) -> dict[str, Any]:
+    """CV1 — is source-coverage ENFORCED BY DEFAULT on the production preset?
+
+    The coverage fail-loud gate (``coverage_gate_active`` → the both-walks
+    ``enforce_coverage_gate_before_audio`` seam, BEFORE audio spend) is a REAL fence
+    **when woken**, but ``MARCUS_COVERAGE_GATE_ACTIVE`` is default-OFF and the production
+    preset sets no default for it → the default posture is OPT-IN (default = un-enforced).
+    This is the DID-C3 / cost-CE1 pattern (mechanism exists, default OFF) → a
+    coverage-honesty LEAK: the default-OFF gap IS the leak, NOT a pass.
+
+    **Built RIGHT per the Q2.1 CE1 remediation:**
+      * **reachable close-path** — when ``env is None`` (live) the reader delegates to the
+        REAL ``coverage_gate_active()`` (deferred import); so IF the preset genuinely wires
+        the gate ON by default, this reports ``default_coverage_enforced=True`` and CV1 can
+        earn ``strong`` — the pin must NOT block that honest upgrade;
+      * **read-only + env-independent (FIX-1/FIX-6)** — NO ``os.environ`` mutation and NO
+        self-clearing constant. A caller (a pin) reads the PRESET-DEFAULT posture (ignoring
+        an ambient operator opt-in) by passing a clean ``env`` mapping; the flag is then
+        resolved from that mapping with the SAME truthy rule the real gate uses.
+
+    FIX-4: an unimportable gate seam degrades to ``status="unavailable"`` (never a clean or
+    silently-``False`` posture — a missing seam is NOT "definitely un-enforced").
+    """
+    try:
+        from app.marcus.orchestrator.coverage_gate_wiring import coverage_gate_active
+    except Exception:  # noqa: BLE001 — a signal read must never raise into a caller
+        return {
+            "status": "unavailable",
+            "source": "app.marcus.orchestrator.coverage_gate_wiring.coverage_gate_active",
+        }
+    if env is None:
+        # Live path: consult the REAL source (reads os.environ, read-only, no mutation).
+        try:
+            enforced = coverage_gate_active()
+        except Exception:  # noqa: BLE001
+            return {
+                "status": "unavailable",
+                "source": "app.marcus.orchestrator.coverage_gate_wiring.coverage_gate_active",
+            }
+    else:
+        # Preset-default posture from an injectable env, using the gate's own truthy rule.
+        # Fail-soft (FIX-2): the reader NEVER raises into a caller. A non-Mapping env (a
+        # list) or a non-str env value (a malformed env mapping) degrades to
+        # "unavailable" — never a false-clean posture and never an escaping AttributeError.
+        _unavailable = {
+            "status": "unavailable",
+            "source": "app.marcus.orchestrator.coverage_gate_wiring.coverage_gate_active",
+        }
+        try:
+            val = env.get(_COVERAGE_GATE_ENV_KEY)
+        except Exception:  # noqa: BLE001 — a non-Mapping env (e.g. a list)
+            return _unavailable
+        if val is None:
+            enforced = False
+        elif isinstance(val, str):
+            enforced = val.strip().lower() in _ENV_TRUTHY
+        else:  # a non-str env value is malformed — never coerced to a clean posture
+            return _unavailable
+    if not isinstance(enforced, bool):
+        return {
+            "status": "unavailable",
+            "source": "app.marcus.orchestrator.coverage_gate_wiring.coverage_gate_active",
+        }
+    return {
+        "status": "ok",
+        "source": f"{_COVERAGE_GATE_ENV_KEY} / coverage_gate_wiring.coverage_gate_active",
+        "default_coverage_enforced": enforced,
+        "note": (
+            "the production preset sets no default for MARCUS_COVERAGE_GATE_ACTIVE, so "
+            "coverage_gate_active()==False by default → the coverage fail-loud gate (a REAL "
+            "fence when woken, at the both-walks pre-audio-spend seam) is OPT-IN. The "
+            "default-OFF gap IS the leak (a leak, NOT a pass). Close-path is reachable: if "
+            "the preset wires the gate ON by default this reader reports enforced=True and "
+            "CV1 earns strong."
+        ),
+    }
+
+
+def _load_coverage_receipt_obj(source: Any) -> Any | None:
+    """Coerce a coverage-receipt source into a ``CoverageReceipt`` object, or ``None``.
+
+    A ``CoverageReceipt``-like object (duck-typed: has ``is_vacuous`` + ``rows``) passes
+    through; a ``dict`` / JSON ``str``/``Path`` is rehydrated via a DEFERRED import of
+    ``load_coverage_receipt`` (GL-3 — no module-scope ``app.*``). Any failure (missing
+    file / bad JSON / non-mapping / validation error) degrades to ``None`` (fail-soft).
+    """
+    if source is None:
+        return None
+    if hasattr(source, "is_vacuous") and hasattr(source, "rows"):
+        return source
+    data: Any = None
+    if isinstance(source, dict):
+        data = source
+    elif isinstance(source, str):
+        # FIX-4: a ``str`` may be JSON CONTENT or a filesystem PATH. Try JSON-content
+        # first (so a supplied receipt-as-text is not silently misread as "no receipt"
+        # via an OSError), then fall back to reading it as a path.
+        try:
+            parsed = json.loads(source)
+        except ValueError:
+            parsed = None
+        if isinstance(parsed, dict):
+            data = parsed
+        else:
+            try:
+                data = json.loads(Path(source).read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                return None
+    elif isinstance(source, Path):
+        try:
+            data = json.loads(Path(source).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+    if not isinstance(data, dict):
+        return None
+    try:
+        from app.marcus.lesson_plan.coverage_receipt import load_coverage_receipt
+
+        return load_coverage_receipt(data)
+    except Exception:  # noqa: BLE001 — a reader must never raise into a caller
+        return None
+
+
+def coverage_receipt_honesty_signal(
+    receipt: Any = None, *, note_bearing_content_exists: bool = False
+) -> dict[str, Any]:
+    """CV2 — does the machinery honestly distinguish PASS / FAIL / PASS-vacuous?
+
+    ``evaluate_vacuous_receipt`` + ``COVERAGE_VACUOUS_TAG`` flag a receipt that "passed"
+    only because it asserted nothing (rows-but-zero-joined, or empty-when-note-bearing-
+    content-existed) — a vacuous PASS is honestly NOT a real pass. ``all_deliberately_
+    excluded`` is the legitimate nothing-to-cover case (NOT vacuous). This reader reports
+    the FACT that the guard is wired + honest; the LEVEL is a §3 judgment-with-evidence
+    (``level_from_signal`` returns ``None``).
+
+    FIX-4: an unimportable guard degrades to ``status="unavailable"`` +
+    ``vacuous_guard_wired=False`` (never read wiring-absent as healthy). FIX-3: a
+    present-but-EMPTY receipt against note-bearing content is honestly NOT a clean pass
+    (the guard returns a block reason) — a non-empty structure is never assumed "covered".
+    """
+    try:
+        from app.marcus.lesson_plan.coverage_gate import (
+            COVERAGE_VACUOUS_TAG,
+            evaluate_coverage_gate,
+            evaluate_vacuous_receipt,
+        )
+    except Exception:  # noqa: BLE001
+        return {
+            "status": "unavailable",
+            "source": "app.marcus.lesson_plan.coverage_gate",
+            "vacuous_guard_wired": False,
+        }
+    rec = _load_coverage_receipt_obj(receipt)
+    if rec is None:
+        return {
+            "status": "ok",
+            "source": "app.marcus.lesson_plan.coverage_gate.evaluate_vacuous_receipt",
+            "vacuous_guard_wired": True,
+            "vacuous_tag": COVERAGE_VACUOUS_TAG,
+            "receipt_present": False,
+            "note": (
+                "the vacuous-distinction guard (evaluate_vacuous_receipt + "
+                "COVERAGE_VACUOUS_TAG) is wired; no receipt supplied so only the wiring "
+                "FACT is reported. A vacuous PASS is honestly NOT a real pass."
+            ),
+        }
+    try:
+        reason = evaluate_vacuous_receipt(
+            rec, note_bearing_content_exists=note_bearing_content_exists
+        )
+        # A must-cover BLOCK (evaluate_coverage_gate returns ≥1 blocking row) is a real
+        # FAIL — a coverage hole the vacuous guard alone is BLIND to (review FIX-1). A
+        # receipt the gate BLOCKS is never a clean pass; is_clean_pass must consult it.
+        gate_blocks = bool(evaluate_coverage_gate(rec))
+        is_vacuous = bool(rec.is_vacuous())
+        all_excluded = bool(rec.all_deliberately_excluded())
+        joined = int(rec.joined_row_count())
+        row_count = len(rec.rows)
+    except Exception:  # noqa: BLE001
+        return {
+            "status": "unavailable",
+            "source": "app.marcus.lesson_plan.coverage_gate.evaluate_vacuous_receipt",
+            "vacuous_guard_wired": True,
+        }
+    return {
+        "status": "ok",
+        "source": "app.marcus.lesson_plan.coverage_gate.evaluate_vacuous_receipt",
+        "vacuous_guard_wired": True,
+        "vacuous_tag": COVERAGE_VACUOUS_TAG,
+        "receipt_present": True,
+        "row_count": row_count,
+        "joined_row_count": joined,
+        "is_vacuous": is_vacuous,
+        "all_deliberately_excluded": all_excluded,
+        "gate_blocks": gate_blocks,
+        "vacuous_block_reason": reason,
+        # A clean pass = the must-cover gate does NOT block (FIX-1: a genuine FAIL is
+        # never a clean pass) AND the vacuous guard raised NO reason (FIX-3: a
+        # present-but-empty / rows-but-zero-joined receipt is not covered) AND real
+        # coverage was joined (or it is the legitimate all-excluded nothing-to-cover case).
+        "is_clean_pass": (
+            reason is None and not gate_blocks and (joined > 0 or all_excluded)
+        ),
+        "note": (
+            "PASS / FAIL / PASS-vacuous are honestly distinguished: gate_blocks flags a "
+            "must-cover FAIL (evaluate_coverage_gate); is_vacuous flags rows-but-zero- "
+            "joined; an empty receipt against note-bearing content blocks; "
+            "all_deliberately_excluded is the legitimate nothing-to-cover PASS. Neither a "
+            "FAIL nor a vacuous receipt is a real pass (R5-A5)."
+        ),
+    }
+
+
+def coverage_narration_obligation_signal(receipt: Any = None) -> dict[str, Any]:
+    """CV3 — is the narration-obligation BLOCK term wired (FIX-2 in coverage_gate)?
+
+    A ``detail_in_narration`` point carried ONLY on the slide does NOT satisfy its
+    narration obligation; ``narration_obligation_unmet`` is an INDEPENDENT block term in
+    the gate predicate. This reader reports the wiring FACT by EXERCISING the real
+    ``_is_blocking`` predicate (FIX-3 — not mere model-field presence: a probe row whose
+    only blocking reason is the narration obligation must actually block) + a supplied
+    receipt's unmet/blocking counts. The LEVEL is a §3 judgment-with-evidence
+    (``level_from_signal`` returns ``None``).
+
+    FIX-4: an unimportable gate/model degrades to ``status="unavailable"`` +
+    ``narration_obligation_gate_wired=False``.
+    """
+    try:
+        from app.marcus.lesson_plan.coverage_gate import (
+            _is_blocking,
+            evaluate_coverage_gate,
+        )
+    except Exception:  # noqa: BLE001
+        return {
+            "status": "unavailable",
+            "source": "app.marcus.lesson_plan.coverage_gate.evaluate_coverage_gate",
+            "narration_obligation_gate_wired": False,
+        }
+    # FIX-3: verify the REAL block-predicate wiring, NOT mere model-field presence. A
+    # synthetic must-cover row whose ONLY blocking reason is narration_obligation_unmet
+    # must be BLOCKED by _is_blocking, while its narration-met control must NOT — so a
+    # future edit that drops the term from the predicate (while keeping the model field)
+    # flips gate_wired to False (a false wiring claim in an honesty dimension is caught).
+    from types import SimpleNamespace
+
+    def _probe(unmet: bool) -> SimpleNamespace:
+        return SimpleNamespace(
+            must_cover=True,
+            planned_on_slide=True,
+            planned_in_narration=False,
+            coverage_status="covered_on_slide",
+            verbatim_absent=False,
+            narration_obligation_unmet=unmet,
+        )
+
+    try:
+        gate_wired = bool(_is_blocking(_probe(True))) and not _is_blocking(_probe(False))
+    except Exception:  # noqa: BLE001
+        gate_wired = False
+    rec = _load_coverage_receipt_obj(receipt)
+    if rec is None:
+        return {
+            "status": "ok",
+            "source": "app.marcus.lesson_plan.coverage_gate.evaluate_coverage_gate",
+            "narration_obligation_gate_wired": gate_wired,
+            "receipt_present": False,
+            "note": (
+                "narration_obligation_unmet is an independent BLOCK term (FIX-2): a "
+                "slide-only carriage does NOT satisfy a must-cover detail_in_narration "
+                "obligation. No receipt supplied so only the wiring FACT is reported."
+            ),
+        }
+    try:
+        blocking = evaluate_coverage_gate(rec)
+        unmet_rows = sum(
+            1 for r in rec.rows if getattr(r, "narration_obligation_unmet", False)
+        )
+        blocking_unmet = sum(
+            1 for r in blocking if getattr(r, "narration_obligation_unmet", False)
+        )
+    except Exception:  # noqa: BLE001
+        return {
+            "status": "unavailable",
+            "source": "app.marcus.lesson_plan.coverage_gate.evaluate_coverage_gate",
+            "narration_obligation_gate_wired": gate_wired,
+        }
+    return {
+        "status": "ok",
+        "source": "app.marcus.lesson_plan.coverage_gate.evaluate_coverage_gate",
+        "narration_obligation_gate_wired": gate_wired,
+        "receipt_present": True,
+        "narration_obligation_unmet_rows": unmet_rows,
+        "blocking_rows": len(blocking),
+        "blocking_narration_obligation_rows": blocking_unmet,
+        "note": (
+            "a must-cover detail_in_narration point whose span reaches only the slide is "
+            "an UNMET narration obligation → an independent BLOCK term the gate blocks on "
+            "(FIX-2). Wired end-to-end, but fires only when the gate is woken (default-OFF)."
+        ),
+    }
+
+
+def coverage_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
+    """coverage leak-count — count ``cov_leak:``-tagged OPEN entries in the deferred
+    inventory (a THIRD per-dimension namespace, disjoint from ``did_leak:`` /
+    ``cost_leak:``).
+
+    Same scoping as :func:`open_leak_count_signal` / :func:`cost_leak_count_signal`
+    (fenced code / HTML comments / archived section stripped; line-anchored tag). **1
+    today** (the default-OFF coverage-gate leak in the ``## Coverage-Honesty Scorecard
+    Leak Registry``). Fail-soft: unreadable file → ``{"status": "unavailable",
+    "coverage_leak_count": None}``.
+    """
+    p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {
+            "status": "unavailable",
+            "source": _DEFERRED_INVENTORY_REL,
+            "coverage_leak_count": None,
+        }
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    count = len(_COVERAGE_LEAK_LINE_RE.findall(open_text))
+    return {
+        "status": "ok",
+        "source": _DEFERRED_INVENTORY_REL,
+        "coverage_leak_count": count,
+    }
+
+
 # ============================ signal → level derivation ============================
 #
 # THE anti-believed-green rule: a level is NEVER mechanically awarded a clean/uniform
@@ -729,14 +1085,32 @@ def _level_ce_budget(signal: Any) -> str:
     return "unavailable"
 
 
+def _level_cv_coverage_fence(signal: Any) -> str:
+    """CV1 (purely mechanical, mirrors DID C3 / cost CE1): the coverage gate wired +
+    enforced by default → ``strong``; the gate EXISTS but is OPT-IN by default
+    (``default_coverage_enforced`` False — ``coverage_gate_active`` reads a default-OFF
+    env the preset never sets) → ``weak`` (mechanism present, default OFF — NOT
+    ``absent``); malformed / non-ok / unknown ``default_coverage_enforced`` →
+    ``unavailable``."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    enforced = signal.get("default_coverage_enforced")
+    if enforced is True:
+        return "strong"
+    if enforced is False:
+        return "weak"
+    return "unavailable"
+
+
 def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     """Derive a criterion's level from its signal (the anti-believed-green rule).
 
     Total over each mechanical criterion's signal domain (never raises); for a
     proxy/unverified/unknown/malformed signal it returns a NON-clean level (never
     ``strong``/``uniform``) — the sole exception being C4 on a real detector-observed
-    ``int == 0``, C3 on genuinely all-ON fences, and CE1 on a real default budget wired.
-    Judgment / judgment-with-evidence-only criteria (C1/C5, cost CE2/CE3/CE4) and
+    ``int == 0``, C3 on genuinely all-ON fences, CE1 on a real default budget wired, and
+    CV1 on the coverage gate genuinely wired ON by default. Judgment /
+    judgment-with-evidence-only criteria (C1/C5, cost CE2/CE3/CE4, coverage CV2/CV3) and
     unknown keys return ``None`` (no mechanical derivation; the human authors those).
     """
     if criterion_key == "fence_enforcement_default_on":
@@ -747,4 +1121,6 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
         return _level_c4(signal)
     if criterion_key == "budget_stop_default_on":
         return _level_ce_budget(signal)
+    if criterion_key == "coverage_fence_default_on":
+        return _level_cv_coverage_fence(signal)
     return None

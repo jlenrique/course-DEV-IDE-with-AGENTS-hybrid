@@ -7,6 +7,7 @@
 **Dimensions.** (More will be added; each is a top-level ## section.)
 1. **Dynamic Intelligence vs Determinism (DID)** — the balance this project most depends on.
 2. **Cost-efficiency (paid-walk discipline)** — whether paid walks are cost-disciplined, honest, and reproducibly attested.
+3. **Coverage-honesty** — whether source-coverage is enforced (the gate is default-OFF → a leak), and whether the receipt machinery honestly distinguishes a real PASS from a vacuous one.
 
 ---
 
@@ -209,6 +210,67 @@ Every time cost telemetry is added, ask: **"did we add a stop that fires *before
 - **Every Class-S WRAPUP (Step 9):** review this dimension for currency — if a default budget gets wired (CE1 → strong), if drift is promoted to a gate (CE3 → 4/4), or if a lower-bound posture recurs, refresh the assessment.
 - **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction is caught.
 - **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `cost_efficiency` pins — budget-fence-claim, cost leak-count + slug-identity, score-arithmetic) + `tests/quality/test_cost_efficiency_dimension.py` (the signal readers + drift math + RED-under-seeded proofs) FAIL when a machine-block claim contradicts a code-computed reality. The **budget-fence-claim pin** reds if CE1 is bumped to `strong` without a default budget actually wired (GL-9).
+
+---
+
+## Dimension 3 — Coverage-honesty
+
+> **Why this dimension is load-bearing for this project.** The product's core promise is source-faithful teaching: every must-cover source point should reach a rendered surface, and a paraphrase must never silently drop a load-bearing figure or a narration obligation. Two failure modes corrode that promise: (a) source-coverage runs **un-enforced** — the deterministic fail-loud gate that would refuse audio spend on an uncovered must-cover point is off, so a coverage hole ships silently; and (b) a coverage receipt **over-claims** — an empty or zero-join receipt reads as a clean PASS when in truth it asserted nothing. This dimension scores **whether source-coverage is actually enforced by default (it is not — the gate is opt-in), and whether the receipt machinery honestly distinguishes a real PASS from a FAIL and from a PASS-vacuous.** It is scored from the EXISTING coverage emitters — `app/marcus/orchestrator/coverage_gate_wiring.py` (`coverage_gate_active`), `app/marcus/lesson_plan/coverage_gate.py` (`evaluate_coverage_gate`, `evaluate_vacuous_receipt`, `COVERAGE_VACUOUS_TAG`, the `narration_obligation_unmet` block term), and the `CoverageReceipt` model — with no parallel plumbing (GL-15).
+
+### 3.0 The rule (one line)
+
+**Source-coverage must be enforced BEFORE audio spend, by default — and a receipt that asserts nothing is NOT a pass.** A gate that exists but is opt-in does not protect a default paid walk; a vacuous PASS that reads as clean is a false green. Enforcement is the thesis; honest PASS/FAIL/vacuous accounting is the floor.
+
+### 3.5 Scoring rubric
+
+Three criteria, each scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong · 4 uniform/complete). Sum → /12, normalized to /100. Bands: **A** ≥90 · **B** 75–89 · **B−** 60–74 · **C** 40–59 · **D** <40 (shared with §1.5).
+
+| # | Criterion | What "4/4" looks like |
+|---|---|---|
+| CV1 | **Coverage-fence enforcement — teeth ON by default** | The coverage fail-loud gate (`coverage_gate_active`) is wired **ON by default** on the production preset — a must-cover hole refuses audio spend without the operator opting in. |
+| CV2 | **Receipt honesty (PASS/FAIL/vacuous distinction)** | The receipt machinery honestly distinguishes a real PASS from a FAIL and from a PASS-vacuous (`evaluate_vacuous_receipt` + `COVERAGE_VACUOUS_TAG`); a vacuous receipt (rows-but-zero-joined, or empty-when-note-bearing-content-existed) can never read as a clean pass, while the legitimate nothing-to-cover case is not false-blocked. |
+| CV3 | **Narration-obligation coverage** | A must-cover `detail_in_narration` point carried only on the slide is detected as an UNMET narration obligation and is an independent BLOCK term — a slide carriage never silently satisfies a narration obligation. |
+
+**Outcome-weighted reading (for prioritization, not a separate score):** CV1 most affects *paid walks* (an un-enforced coverage gate lets a source hole reach audio spend) and *learner-trust* (source-faithfulness); CV2 and CV3 most affect *learner-trust* (the honesty of what "covered" means). Equal-weight scoring is kept (consistent with §1/§2); the honest reading rides the band_note.
+
+### 3.6 Current assessment — Band **C** — "correct receipt-honesty machinery; coverage enforcement off by default"
+
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; first `coverage_honesty` snapshot in `docs/quality/scorecard-history.jsonl`).*
+
+**Headline (read this first).**
+
+- **Band: C.** The coverage receipt machinery is genuinely correct and honest — it distinguishes a real PASS from a FAIL and from a PASS-vacuous (an empty / zero-join receipt can never read as clean), and it treats an unmet narration obligation as an independent fail-loud block term. The Band is held down by **one honest gap that is the whole thesis: the coverage fail-loud gate is a REAL fence *when woken*, but it is OPT-IN — `coverage_gate_active()` reads `MARCUS_COVERAGE_GATE_ACTIVE`, default OFF, and the production preset sets no default → on a default paid walk source-coverage is NOT enforced.** *(The internal 7/12 → 58/100 sum is the arithmetic-pin reasoning trace below — not a false-precise headline number.)*
+- **Trend: ▬ baseline.** First `coverage_honesty` assessment; no prior snapshot, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Open leaks — ranked (1).** One learner-trust leak; tagged `cov_leak: coverage-honesty-gate-opt-in-default-off` in the `## Coverage-Honesty Scorecard Leak Registry` of `_bmad-output/planning-artifacts/deferred-inventory.md`, so `coverage_leak_count_signal()` == 1 == the machine block's `open_leaks` (the coverage leak-count + slug-identity pins reconcile doc↔registry). This is the coverage_honesty contribution to the shared project ranked-leak list (GL-13; it interleaves by lane priority — a learner-trust leak, so it sorts after the paid-walk leaks).
+
+  1. **[CV1] Coverage fail-loud gate is a real fence but OPT-IN by default (default-OFF)** — *Leak 1, learner-trust* → `coverage-honesty-gate-opt-in-default-off`
+
+**⚠️ Headline caveat — do NOT read C as "coverage is enforced" (equal-weight scoring, honest reading, Q2.1 FIX-2 band-honesty).** This dimension is scored equal-weight (consistent with §1/§2 — no weighted scoring). But the §3.0 thesis is that *enforcement is the thesis; honest accounting is the floor.* The C is **lifted by the receipt-honesty machinery** — CV2 (vacuous distinction) and CV3 (narration-obligation) are real and correct and each score strong — while the ONE **enforcement** criterion — CV1, the actual fence and the thesis — is **weak (opt-in)**. So read it as "excellent coverage *honesty* machinery, but source-coverage is **not** *enforced* by default," NOT as "coverage is enforced." Worse still, CV2/CV3 are themselves **gated behind the same default-OFF flag** (`enforce_coverage_gate_before_audio` early-returns when `coverage_gate_active()` is False), so on a default paid walk the honest machinery does not even run — its correctness is a report-time / opt-in property, not a default-on protection. The band_note carries this so it cannot be missed.
+
+**Say it plainly (honesty is the bar).** The coverage fail-loud gate (`coverage_gate_active` → the both-walks `enforce_coverage_gate_before_audio` seam, which refuses audio spend on a must-cover hole BEFORE any ElevenLabs/Descript spend) is a **real fence when woken** — it is not absent, and this assessment does not understate it. But `MARCUS_COVERAGE_GATE_ACTIVE` is default-OFF and the production preset sets no default, so by default the seam is a no-op (`coverage_gate_active()==False`). That is the DID-C3 / cost-CE1 pattern — a mechanism that exists but is default-OFF — and it is why CV1 is **weak**, not absent and not strong. **Weak (1) vs partial (2) is a deliberate DID-C3/cost-CE1-consistent conservative call:** the gate is *fully* enforced when woken (both walks, before audio spend), so "partial" is arguable — but the criterion scores the *default* posture, which is entirely off, so it is scored `weak` (1) to mirror DID-C3 `fence_enforcement_default_on` and cost-CE1 `budget_stop_default_on` (also 1 for a default-off-but-real mechanism). A PASS-vacuous receipt is honestly **not** a pass; the assessment does **not** claim "coverage-fenced."
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** Each carries `{level, signal, evidence_ref}`; where a mechanical signal exists, the level's derivation is named. The 0–4 scores roll up to the machine block's Σ = 7/12 = 58/100 (an internal arithmetic-pin trace — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| CV1 Coverage-fence enforcement | weak | 1/4 | signal-derived (`coverage_fence_default_signal`) | **Env-INDEPENDENT production-preset posture:** `MARCUS_COVERAGE_GATE_ACTIVE` unset → `coverage_gate_active()` == `False` → `default_coverage_enforced` == `False` → `weak` (== `level_from_signal("coverage_fence_default_on", coverage_fence_default_signal())`; the fence-claim pin agrees doc↔code). The gate EXISTS and is enforced *when woken* (`enforce_coverage_gate_before_audio`, both walks' dispatch chokepoint, BEFORE audio spend — `coverage_gate_wiring.py:70/176`) but is OPT-IN by default. Anti-drift: wiring the gate ON by default flips `default_coverage_enforced` True → the derived level would be `strong` (close-path reachable + read-only, per the Q2.1 CE1 remediation). This is **Leak 1**. |
+| CV2 Receipt honesty (vacuous distinction) | strong | 3/4 | judgment-with-evidence (`coverage_receipt_honesty_signal`) | `evaluate_vacuous_receipt` + `COVERAGE_VACUOUS_TAG` (`marcus.coverage.vacuous-receipt`) flag a receipt that "passed" only because it asserted nothing: `is_vacuous()` (rows-but-`joined_row_count()==0`) and empty-when-note-bearing-content-existed both block; `all_deliberately_excluded()` is the legitimate nothing-to-cover PASS (not false-blocked). The machinery honestly distinguishes PASS / FAIL / PASS-vacuous — a vacuous PASS is NOT a real pass (R5-A5). Residual (why 3/4, not 4/4): the guard is report-time-correct but only runs when the gate is woken (default-OFF, per CV1) — a correct mechanism, not a default-on fence. |
+| CV3 Narration-obligation coverage | strong | 3/4 | judgment-with-evidence (`coverage_narration_obligation_signal`) | `narration_obligation_unmet` (a `detail_in_narration` point carried ONLY on the slide) is an INDEPENDENT block term in `_is_blocking` (FIX 2 in `coverage_gate.py`) — a slide carriage does not satisfy a narration obligation; `evaluate_coverage_gate` returns such a row as blocking. Wired end-to-end on the row model + the gate predicate. Residual (why 3/4): fires only for must-cover `detail_in_narration` points AND only when the gate is woken (default-OFF, per CV1). |
+
+#### Open leaks (detail — the path from C toward A)
+
+1. **[CV1] Coverage fail-loud gate is a real fence but OPT-IN by default (learner-trust).** The gate refuses audio spend on a must-cover source hole only when the operator sets `MARCUS_COVERAGE_GATE_ACTIVE`; the production preset sets no default, so the default paid walk runs with source-coverage un-enforced (`coverage_gate_active()==False` → `enforce_coverage_gate_before_audio` early-returns). **Closing it needs runtime substrate, not just a doc bump:** wire the coverage gate ON by default on the production preset (turn the opt-in fence into a default-on fence). At that point CV1's `coverage_fence_default_signal` (which delegates to the real `coverage_gate_active()` when live) reports `default_coverage_enforced=True` and the criterion earns `strong` — the reader is not a hardcoded constant, and the seeded on/off test proves its level logic reaches `strong` on a real wired-on gate; only the substrate that flips the preset default is deferred. *Evidence:* `app/marcus/orchestrator/coverage_gate_wiring.py:70` (`coverage_gate_active` → False when unset) + `:176` (`enforce_coverage_gate_before_audio` early-returns when inactive, the both-walks pre-audio-spend seam); `app/marcus/lesson_plan/coverage_gate.py` (the real fail-loud teeth `assert_coverage_gate` / `assert_receipt_not_vacuous`); registry `coverage-honesty-gate-opt-in-default-off`.
+
+#### The discipline that raises the Band (not just fixes)
+
+Every time coverage machinery is added, ask: **"did we turn the fence ON *before* the spend, or only make the *report* more honest after it?"** Only the first raises CV1 toward enforcement discipline. Ranked if forced to cut: **Leak 1** (CV1) is the one enforcement gap (source holes reach audio spend by default); CV2/CV3 are honest-accounting-of-coverage (already strong) — but note they run only when the gate is woken, so closing Leak 1 is also what makes CV2/CV3 protect a default walk.
+
+### Cadence (how this dimension stays honest)
+
+- **Every production run:** the per-run coverage facts (which fences were enabled, `silent_bypass_events`) already ride Q1.4a's `fence_state` in `run_summary.yaml`; read them in the run's final report alongside the Band.
+- **Every Class-S WRAPUP (Step 9):** review this dimension for currency — if the coverage gate is wired ON by default (CV1 → strong), or if the receipt honesty machinery changes, refresh the assessment.
+- **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction is caught.
+- **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `coverage_honesty` pins — coverage-fence-claim, coverage leak-count + slug-identity, score-arithmetic) + `tests/quality/test_coverage_honesty_dimension.py` (the signal readers against fixture receipts + RED-under-seeded proofs) FAIL when a machine-block claim contradicts a code-computed reality. The **coverage-fence-claim pin** reds if CV1 is bumped to `strong` without the coverage gate actually wired ON by default (GL-9).
 
 ---
 
@@ -496,5 +558,110 @@ dimensions:
         criterion: CE1
         slug: cost-efficiency-budget-stop-opt-in-default-no-cap
         lane: paid-walk
+    trend: baseline
+  coverage_honesty:
+    # Dimension 3 (Story Q2.2) — Coverage-honesty, scored from the EXISTING coverage
+    # emitters (GL-15 reuse; NO parallel plumbing). The §3 prose is the authority; this
+    # mirrors the headline numbers. Honest baseline: the coverage fail-loud gate
+    # (coverage_gate_active → enforce_coverage_gate_before_audio, both walks, BEFORE audio
+    # spend) is a REAL fence WHEN WOKEN but OPT-IN by default (MARCUS_COVERAGE_GATE_ACTIVE
+    # default-OFF; production preset sets no default → coverage_gate_active()==False) —
+    # the DID-C3 / cost-CE1 pattern (mechanism exists, default OFF) → a coverage-honesty
+    # LEAK: the default-OFF gap IS the leak, NOT a pass. The receipt machinery honestly
+    # distinguishes PASS / FAIL / PASS-vacuous (evaluate_vacuous_receipt + the
+    # COVERAGE_VACUOUS_TAG) and treats an unmet narration obligation as an independent
+    # BLOCK term — real strengths, but they run only when the gate is woken.
+    label: Coverage-honesty
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
+    score: 58
+    max: 100
+    band: "C"
+    band_note: "C is lifted by receipt-honesty machinery (CV2 vacuous-distinction + CV3 narration-obligation strong); the ENFORCEMENT thesis (CV1 coverage-fence) is weak/opt-in — the gate is default-OFF (MARCUS_COVERAGE_GATE_ACTIVE unset on the production preset), and CV2/CV3 run only when the gate is woken — do NOT read C as 'coverage is enforced'"
+    criteria:
+      coverage_fence_default_on:
+        # SIGNAL-DERIVED (purely mechanical, mirrors DID C3 / cost CE1): level ==
+        # level_from_signal(coverage_fence_default_signal()). The reader delegates to the
+        # REAL coverage_gate_active() when live (reads MARCUS_COVERAGE_GATE_ACTIVE); the
+        # production preset sets no default → coverage_gate_active()==False →
+        # default_coverage_enforced=False → weak. NOT a hardcoded constant: when the preset
+        # wires the gate ON by default the reader detects it and this earns strong
+        # (close-path reachable; the seeded on/off test proves the level logic reaches
+        # strong on a real wired-on gate). Read-only (no os.environ mutation); a pin reads
+        # the preset-default posture via an injectable env mapping.
+        level: weak
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.coverage_fence_default_signal
+          derived_level: weak
+          fact: >-
+            the production preset sets no default for MARCUS_COVERAGE_GATE_ACTIVE, so
+            coverage_gate_active()==False by default → the coverage fail-loud gate (a REAL
+            fence at the both-walks pre-audio-spend seam WHEN WOKEN) is OPT-IN by default
+            (default=un-enforced). This is the DID-C3 / cost-CE1 pattern (mechanism exists,
+            default OFF) → the learner-trust coverage leak below. Closing it needs runtime
+            substrate (wire the gate ON by default on the production preset), at which point
+            this reader detects it and the derived level becomes strong.
+        evidence_ref: "§3.6 CV1 · Coverage Leak (gate opt-in, default-OFF)"
+        score: 1
+        max: 4
+      coverage_receipt_honesty:
+        # JUDGMENT-with-evidence: evaluate_vacuous_receipt + COVERAGE_VACUOUS_TAG +
+        # is_vacuous()/all_deliberately_excluded() honestly distinguish PASS / FAIL /
+        # PASS-vacuous. The signal carries that fact; the level is a §3.6 human judgment
+        # (a vacuous PASS is NOT a real pass — the mechanism is report-time-correct but
+        # runs only when the gate is woken). level_from_signal returns None for this key.
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.coverage_receipt_honesty_signal
+          fact: >-
+            evaluate_vacuous_receipt + COVERAGE_VACUOUS_TAG (marcus.coverage.vacuous-receipt)
+            flag a receipt that passed only because it asserted nothing (is_vacuous =
+            rows-but-zero-joined; empty-when-note-bearing-content-existed) — both block; an
+            all_deliberately_excluded receipt is the legitimate nothing-to-cover PASS (not
+            false-blocked). PASS / FAIL / PASS-vacuous are honestly distinguished.
+          caveat: >-
+            the vacuous-distinction guard is report-time-correct but runs only when the
+            coverage gate is woken (default-OFF, per CV1) — a correct mechanism, not a
+            default-on fence; so 'strong' is a §3.6 judgment (3/4, not 4/4).
+        evidence_ref: "§3.6 CV2 · receipt honesty (PASS/FAIL/vacuous distinction)"
+        score: 3
+        max: 4
+      coverage_narration_obligation:
+        # JUDGMENT-with-evidence: narration_obligation_unmet is an independent BLOCK term
+        # in _is_blocking (FIX 2) — a detail_in_narration point carried only on the slide
+        # does not satisfy its narration obligation. The signal reports the wiring FACT +
+        # a receipt's unmet/blocking counts; 'strong' is a §3.6 judgment. level_from_signal
+        # returns None for this key.
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.coverage_narration_obligation_signal
+          fact: >-
+            narration_obligation_unmet (a detail_in_narration point whose span reaches ONLY
+            the slide) is an INDEPENDENT block term in coverage_gate._is_blocking (FIX 2);
+            evaluate_coverage_gate returns such a must-cover row as blocking. Wired on the
+            CoverageReceiptRow model + the gate predicate end-to-end.
+          caveat: >-
+            fires only for must-cover detail_in_narration points AND only when the gate is
+            woken (default-OFF, per CV1) — why 'strong' is 3/4, not 4/4.
+        evidence_ref: "§3.6 CV3 · narration-obligation coverage (independent block term)"
+        score: 3
+        max: 4
+    # ONE open leak: the coverage fail-loud gate is OPT-IN by default (default-OFF) →
+    # source-coverage un-enforced on a default paid walk. Counted (line-anchored) as
+    # `cov_leak:` in the `## Coverage-Honesty Scorecard Leak Registry` of
+    # deferred-inventory.md — a THIRD per-dimension namespace, disjoint from `did_leak:`
+    # and `cost_leak:` (so the three counts never collide). len(leaks) == open_leaks ==
+    # coverage_leak_count_signal() == 1 (the coverage leak-count + slug-identity pins
+    # reconcile doc↔registry). Lane learner-trust: coverage protects source-faithfulness.
+    open_leaks: 1
+    leaks:
+      - rank: 1
+        criterion: CV1
+        slug: coverage-honesty-gate-opt-in-default-off
+        lane: learner-trust
     trend: baseline
 ```

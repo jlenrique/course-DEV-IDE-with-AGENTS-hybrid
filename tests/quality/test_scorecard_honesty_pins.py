@@ -67,6 +67,7 @@ from app.quality.history import (
 )
 from app.quality.scorecard import (
     _COST_KEY,
+    _COVERAGE_KEY,
     _DID_KEY,
     _EXPECTED_CANONICAL_DIMENSION_KEYS,
     read_scorecard_block,
@@ -79,6 +80,8 @@ from app.quality.signals import (
     _strip_html_comments,
     budget_stop_default_signal,
     cost_leak_count_signal,
+    coverage_fence_default_signal,
+    coverage_leak_count_signal,
     fences_enabled_signal,
     level_from_signal,
     open_leak_count_signal,
@@ -92,6 +95,9 @@ _DID_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?did_leak:\s*(\S+)")
 #: Q2.1 — the cost_efficiency slug namespace (``cost_leak:``), a SEPARATE per-dimension
 #: namespace so the cost identity/count reconciliation never collides with DID's.
 _COST_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cost_leak:\s*(\S+)")
+#: Q2.2 — the coverage_honesty slug namespace (``cov_leak:``), a THIRD per-dimension
+#: namespace disjoint from ``did_leak:`` / ``cost_leak:``.
+_COVERAGE_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cov_leak:\s*(\S+)")
 
 
 def _registry_did_leak_slugs() -> set[str]:
@@ -109,6 +115,14 @@ def _registry_cost_leak_slugs() -> set[str]:
     text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
     open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     return {m.group(1) for m in _COST_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_coverage_leak_slugs() -> set[str]:
+    """The OPEN ``cov_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``coverage_leak_count_signal`` counts them (Q2.2 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _COVERAGE_LEAK_SLUG_RE.finditer(open_text)}
 
 
 def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
@@ -176,6 +190,10 @@ _SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
     # Q2.1 — cost_efficiency CE1 is purely mechanical (mirrors DID C3): the env-
     # INDEPENDENT production-preset posture is default_budget_enforced=False → weak.
     "budget_stop_default_on": budget_stop_default_signal,
+    # Q2.2 — coverage_honesty CV1 is purely mechanical (mirrors DID C3 / cost CE1): the
+    # production-preset posture is default_coverage_enforced=False → weak (the coverage
+    # gate is default-OFF; MARCUS_COVERAGE_GATE_ACTIVE unset on the preset).
+    "coverage_fence_default_on": coverage_fence_default_signal,
 }
 
 #: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
@@ -199,6 +217,16 @@ _HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
             "test_cost_budget_fence_claim_matches_reader",  # pin (a) budget-fence-claim
             "test_cost_leak_count_reconciles_on_real_repo",  # pin (b) cost leak-count
             "test_cost_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q2.2 — coverage_honesty MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror DID's/cost's:
+    # (a) coverage-fence-claim, (b) coverage leak-count + slug identity, (c) arithmetic.
+    _COVERAGE_KEY: frozenset(
+        {
+            "test_coverage_fence_claim_matches_reader",  # pin (a) coverage-fence-claim
+            "test_coverage_leak_count_reconciles_on_real_repo",  # pin (b) coverage leak-count
+            "test_coverage_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
         }
     ),
 }
@@ -1161,3 +1189,195 @@ def test_cost_score_arithmetic_is_internally_consistent() -> None:
     dim = _real_block()["dimensions"][_COST_KEY]
     assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
     assert dim["score"] == 62 and dim["band"] == "B-"
+
+
+# =============================================================================== #
+# Story Q2.2 — coverage_honesty dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_COVERAGE_KEY]) + their RED-under-seeded proofs. Reuse the SAME
+# pure helpers as the DID/cost pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate EVERY
+# dimension, so coverage is structural. Doc↔code: each compares a machine-block CLAIM
+# against a CODE-computed reality (a signal reader / the deferred-inventory registry /
+# the §3.5 arithmetic rule), never doc↔doc.
+# =============================================================================== #
+
+
+def _clear_coverage_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MARCUS_COVERAGE_GATE_ACTIVE", raising=False)
+
+
+# --------------------------- pin (a) coverage-fence-claim ------------------------- #
+
+
+def test_coverage_fence_claim_matches_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin (a) for coverage_honesty, GREEN today: the signal-derived CV1
+    (``coverage_fence_default_on``) level equals its reader's live output —
+    ``level_from_signal("coverage_fence_default_on", coverage_fence_default_signal())`` ==
+    ``weak`` (the production-preset posture: MARCUS_COVERAGE_GATE_ACTIVE unset →
+    ``coverage_gate_active()==False`` → opt-in). The shared ``_signal_derived_violations``
+    scan (over every dimension) is also clean."""
+    _clear_coverage_env(monkeypatch)
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    cv1 = block["dimensions"][_COVERAGE_KEY]["criteria"]["coverage_fence_default_on"]
+    derived = level_from_signal(
+        "coverage_fence_default_on", coverage_fence_default_signal()
+    )
+    assert cv1["level"] == derived == "weak"
+
+
+def test_coverage_fence_claim_reds_on_dishonest_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC3 / GL-9 RED-under-seeded-edit: bump CV1 to ``strong`` on an in-memory copy
+    WITHOUT the coverage gate wired ON by default → the pin (a) comparison FAILS (reader
+    still says ``weak``). The real doc is never touched. This is the exact anti-overclaim
+    guard: a claimed coverage-fenced level cannot pass while the preset default is OFF."""
+    _clear_coverage_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COVERAGE_KEY]["criteria"]["coverage_fence_default_on"][
+        "level"
+    ] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("coverage_fence_default_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_coverage_fence_claim_reds_on_any_inflated_level(
+    monkeypatch: pytest.MonkeyPatch, dishonest: str
+) -> None:
+    """AC3: any inflation of CV1 above the reader-derived ``weak`` (with the coverage gate
+    still default-OFF) is caught."""
+    _clear_coverage_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COVERAGE_KEY]["criteria"]["coverage_fence_default_on"][
+        "level"
+    ] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_coverage_fence_reader_tracks_real_coverage_gate_active(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The reader is grounded in the REAL ``coverage_gate_active`` SSOT + the close-path is
+    REACHABLE and READ-ONLY (Q2.1 CE1 pattern): monkeypatch MARCUS_COVERAGE_GATE_ACTIVE
+    on/off and the live (env=None) reader tracks ``coverage_gate_active()`` exactly; an
+    injectable ``env`` mapping reads the preset-default posture independent of the ambient
+    shell; and calling it NEVER mutates ``os.environ``."""
+    import os
+
+    from app.marcus.orchestrator.coverage_gate_wiring import coverage_gate_active
+
+    # OFF (default posture): live reader == real gate == weak.
+    _clear_coverage_env(monkeypatch)
+    assert coverage_gate_active() is False
+    off = coverage_fence_default_signal()
+    assert off["default_coverage_enforced"] is False
+    assert level_from_signal("coverage_fence_default_on", off) == "weak"
+    # ON (seeded default-on): live reader tracks the real gate → strong (close-path reached).
+    monkeypatch.setenv("MARCUS_COVERAGE_GATE_ACTIVE", "1")
+    before = dict(os.environ)
+    assert coverage_gate_active() is True
+    on = coverage_fence_default_signal()
+    assert on["default_coverage_enforced"] is True
+    assert level_from_signal("coverage_fence_default_on", on) == "strong"
+    # env-INDEPENDENT: an injectable clean mapping reads the preset-default (weak) even
+    # while the ambient shell has the operator opt-in set.
+    preset = coverage_fence_default_signal(env={})
+    assert preset["default_coverage_enforced"] is False
+    assert level_from_signal("coverage_fence_default_on", preset) == "weak"
+    # READ-ONLY: no os.environ mutation across any variant.
+    coverage_fence_default_signal(env={"MARCUS_COVERAGE_GATE_ACTIVE": "1"})
+    assert dict(os.environ) == before
+
+
+def test_coverage_cv1_signal_derived_others_are_judgment_with_evidence() -> None:
+    """The honest derivation split: CV1 is ``signal-derived`` (the reader owns the level);
+    CV2/CV3 are ``judgment-with-evidence`` (a real signal block carries the facts, the
+    level is an authored §3.6 judgment). No unverified signal awards a clean level:
+    ``level_from_signal`` returns ``None`` for the judgment-with-evidence keys."""
+    crit = _real_block()["dimensions"][_COVERAGE_KEY]["criteria"]
+    assert crit["coverage_fence_default_on"]["derivation"] == "signal-derived"
+    for key in ("coverage_receipt_honesty", "coverage_narration_obligation"):
+        c = crit[key]
+        assert c["derivation"] == "judgment-with-evidence"
+        assert c["level"] == "strong"
+        assert isinstance(c["signal"], dict)
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+        assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+        assert level_from_signal(key, c["signal"]) is None
+
+
+# --------------------------- pin (b) coverage leak-count + slug identity ----------- #
+
+
+def test_coverage_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for coverage_honesty: the dimension's ``open_leaks`` == the count of
+    ``cov_leak:``-tagged OPEN entries in the ``## Coverage-Honesty Scorecard Leak
+    Registry`` == ``len(leaks)`` == 1. A THIRD per-dimension ``cov_leak:`` namespace (NOT
+    the global DID ``did_leak:`` / cost ``cost_leak:`` counts). Anti-drift: strike the
+    ``cov_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_COVERAGE_KEY]
+    count = coverage_leak_count_signal()["coverage_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_COVERAGE_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cov_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_COVERAGE_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_coverage_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for coverage_honesty: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``cov_leak:`` slugs — a slug typo /
+    rename that keeps the count at 1 is caught here, which a count-only reconciliation
+    misses."""
+    dim = _real_block()["dimensions"][_COVERAGE_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_coverage_leak_slugs()
+
+
+def test_coverage_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the coverage machine-block leak slug on a COPY → the identity
+    pin RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_COVERAGE_KEY]
+    dim["leaks"][0]["slug"] = "coverage-honesty-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_coverage_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_three_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 THREE-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:``
+    readers do NOT cross-count, and their slug identity sets are pairwise disjoint. A tag
+    in one namespace must never inflate another dimension's count."""
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1
+    did_slugs = _registry_did_leak_slugs()
+    cost_slugs = _registry_cost_leak_slugs()
+    cov_slugs = _registry_coverage_leak_slugs()
+    assert len(did_slugs) == 5 and len(cost_slugs) == 1 and len(cov_slugs) == 1
+    # pairwise disjoint — no slug leaks across the three namespaces.
+    assert did_slugs.isdisjoint(cost_slugs)
+    assert did_slugs.isdisjoint(cov_slugs)
+    assert cost_slugs.isdisjoint(cov_slugs)
+
+
+# --------------------------- pin (c) coverage score-arithmetic -------------------- #
+
+
+def test_coverage_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for coverage_honesty: score↔level per §3.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§3.5 boundary. 1+3+3 = 7/12 → 58 → C. Doc↔code: the
+    arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_COVERAGE_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 58 and dim["band"] == "C"

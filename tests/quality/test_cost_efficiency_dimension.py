@@ -36,7 +36,12 @@ from app.quality.report import (
     ranked_project_leaks,
     render_scorecard_final_report,
 )
-from app.quality.scorecard import _COST_KEY, _DID_KEY, read_scorecard_block
+from app.quality.scorecard import (
+    _COST_KEY,
+    _COVERAGE_KEY,
+    _DID_KEY,
+    read_scorecard_block,
+)
 from app.quality.signals import (
     budget_stop_default_signal,
     cost_drift_signal,
@@ -395,8 +400,9 @@ def test_cost_leak_is_lane_grouped_among_did_paid_walk_leaks() -> None:
     for i, ln in enumerate(lanes):
         if ln in ("learner-trust", "governance"):
             assert i > max(paid_block)
-    # two dimensions contribute overall (cross-dimensional, not DID-only).
-    assert set(dims) == {_DID_KEY, _COST_KEY}
+    # multiple dimensions contribute overall (cross-dimensional, not DID-only). Q2.2
+    # added coverage_honesty as a THIRD contributor (a learner-trust leak).
+    assert set(dims) == {_DID_KEY, _COST_KEY, _COVERAGE_KEY}
 
 
 def test_leak_coverage_clean_with_cost_dimension() -> None:
