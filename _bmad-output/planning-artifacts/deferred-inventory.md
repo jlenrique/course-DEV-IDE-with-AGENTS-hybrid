@@ -32,6 +32,26 @@ The 5 open DID scorecard leaks. Each line's HTML comment gives its §1.6 criteri
 
 ---
 
+## Cost-Efficiency Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN cost_efficiency scorecard leaks counted (line-anchored) by
+     app.quality.signals.cost_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the cost_efficiency dimension
+     in docs/quality/project-quality-scorecard.md §2.6 (the cost leak-count + slug-identity
+     honesty pins). SEPARATE `cost_leak:` namespace from the DID `did_leak:` tags so the two
+     counts never collide. MAINTENANCE RULE: closing a cost leak == remove its cost_leak line
+     HERE **and** decrement `open_leaks` + drop the `leaks:` entry in the scorecard, IN
+     LOCKSTEP (the pins reconcile the two — editing only one goes RED). Do NOT tag leaks under
+     their deferred entries: those migrate to §Closed Entries — Archived on close, which the
+     reader excludes, silently dropping the count while the scorecard is untouched. -->
+
+The 1 open cost_efficiency scorecard leak. Each line's HTML comment gives its §2.6 criterion, its cost leak number, and a pointer to the owning work:
+
+- cost_leak: cost-efficiency-budget-stop-opt-in-default-no-cap  <!-- [CE1] Cost Leak 1 — the Epic-41 dollar brake (MARCUS_TRIAL_BUDGET_USD → check_trial_budget, enforced at both walks' dispatch chokepoint by Story 41-4) is a REAL enforced stop WHEN SET but OPT-IN by default (production preset wires no default budget → check_trial_budget(total, None)=='no-cap'). Close = wire a sensible default budget onto the production preset (turn the opt-in brake ON by default). -->
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |

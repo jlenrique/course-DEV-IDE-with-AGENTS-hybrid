@@ -34,8 +34,10 @@ fence gate functions are reached ONLY via deferred local imports inside the read
 
 from __future__ import annotations
 
+import json
 import os
 import re
+from collections.abc import Mapping
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
@@ -376,6 +378,280 @@ def open_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]
     }
 
 
+# ============================ cost-efficiency (Q2.1) ============================
+#
+# Signal readers over the EXISTING economics emitters (GL-15 — reuse, NO parallel
+# plumbing): the budget-stop DEFAULT posture, ``cost_posture``, per-agent drift, and
+# cost transparency. Economics types are reached ONLY via deferred LOCAL imports
+# (GL-3 clean-leaf), and a run's cost report is otherwise read as PLAIN JSON. Every
+# reader is fail-soft per field — it never raises and never invents a clean value.
+
+#: ``cost_leak:`` tag, anchored to line start (mirrors ``_DID_LEAK_LINE_RE`` but a
+#: SEPARATE per-dimension namespace so the cost count/identity reconciliation never
+#: collides with the DID ``did_leak:`` count). 1 today (the budget-opt-in leak).
+_COST_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cost_leak:")
+
+#: The env var that wires the Epic-41 dollar brake. Today this is the runtime's ONLY
+#: budget source (``production_runner._resolve_trial_budget_usd`` / the economics
+#: ``resolved_budget`` both read it), and the production preset sets NO default for it.
+_BUDGET_ENV_KEY = "MARCUS_TRIAL_BUDGET_USD"
+
+_UNSET = object()
+#: 64-hex digest, case-insensitive (a JSON cost-report may carry upper- or lower-case
+#: hex; the model persists lower-case but a hand/JSON report must not false-"absent").
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$", re.IGNORECASE)
+
+
+def _resolve_runtime_default_budget(env: Mapping[str, str] | None = None) -> float | None:
+    """Resolve the run's default dollar cap the SAME source + algorithm the runtime
+    budget resolver uses (``production_runner._resolve_trial_budget_usd`` and the
+    economics ``resolved_budget`` in ``measure_trial_cost``): read
+    ``MARCUS_TRIAL_BUDGET_USD`` LIVE — an unset / blank / unparseable value means **no
+    cap**. **Read-only — no ``os.environ`` mutation** (FIX-6). ``env`` defaults to the
+    live ``os.environ`` and exists so a caller (a pin) can pass a clean mapping to read
+    the preset-default posture WITHOUT a global env-clear window.
+
+    **Honest today:** the production preset defines NO default-budget source, so a fresh
+    production run resolves ``None`` → the brake is OPT-IN. **The close-path is reachable
+    but needs runtime substrate:** when the preset gains a default-budget source that
+    this resolver returns (the preset sets the env by default, or the resolver grows a
+    preset-config cap), this returns a real cap and CE1 earns ``strong`` — the reader is
+    NOT a hardcoded constant, it delegates to the real source.
+    """
+    source = os.environ if env is None else env
+    raw = (source.get(_BUDGET_ENV_KEY) or "").strip()
+    if not raw:
+        return None
+    try:
+        return float(raw)
+    except ValueError:
+        return None
+
+
+def _read_cost_report(source: Any) -> dict[str, Any] | None:
+    """Coerce a cost-report source into a plain mapping, or ``None`` (fail-soft).
+
+    A ``dict`` is returned as-is; a ``str``/``Path`` is read as a run's
+    ``cost-report.json`` (plain JSON — no ``app`` import); a ``TrialEconomicsReport``-
+    like object is dumped via ``.model_dump(mode="json")`` when available. Any failure
+    (missing file, bad JSON, non-mapping) degrades to ``None``.
+    """
+    if source is None:
+        return None
+    if isinstance(source, dict):
+        return source
+    if isinstance(source, (str, Path)):
+        try:
+            data = json.loads(Path(source).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        return data if isinstance(data, dict) else None
+    dump = getattr(source, "model_dump", None)
+    if callable(dump):
+        try:
+            data = dump(mode="json")
+        except Exception:  # noqa: BLE001 — a reader must never raise into a caller
+            return None
+        return data if isinstance(data, dict) else None
+    return None
+
+
+def budget_stop_default_signal(
+    default_budget_usd: Any = _UNSET, env: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """CE1 — is a budget cap ENFORCED BY DEFAULT on the production preset?
+
+    The Epic-41 dollar brake (``MARCUS_TRIAL_BUDGET_USD`` → the ``check_trial_budget``
+    SSOT, enforced at both walks' dispatch chokepoint — Story 41-4) is a REAL economic
+    stop **when set**, but the production preset defines NO default-budget source, so the
+    runtime resolver returns ``None`` and ``check_trial_budget(total, None)`` returns
+    ``no-cap`` — the default posture is OPT-IN (default = no cap). This is the DID-C3
+    pattern (mechanism exists, default OFF) → a cost-efficiency LEAK on the paid walk.
+
+    **Not a hardcoded constant (FIX-1):** the default budget is resolved by
+    :func:`_resolve_runtime_default_budget`, which reads the runtime's OWN budget source
+    (the same ``MARCUS_TRIAL_BUDGET_USD`` the runtime resolver uses) — so IF the preset
+    gains a default-budget source that resolver returns, this reader detects it and CE1
+    can earn ``strong``. **Read-only (FIX-6):** no ``os.environ`` mutation. A pin reads
+    the preset-default posture (ignoring an ambient operator opt-in) by passing a clean
+    ``env`` mapping; ``check_trial_budget`` is reached by a DEFERRED local import (GL-3).
+    ``default_budget_usd`` is a SEEDED-TEST override proving the level logic reaches
+    ``strong`` on a real resolved cap (the substrate to feed a real preset-default is
+    deferred — see deferred-work.md ``q2-1-r2-cost-posture-witness`` / the §2.6 close-path).
+    """
+    if default_budget_usd is _UNSET:
+        budget = _resolve_runtime_default_budget(env)
+    else:
+        budget = default_budget_usd
+    try:
+        from app.runtime.economics import check_trial_budget
+
+        status = check_trial_budget(1.0, budget)
+        state = getattr(status, "state", None)
+    except Exception:  # noqa: BLE001 — a signal read must never raise into a caller
+        return {
+            "status": "unavailable",
+            "source": "app.runtime.economics.check_trial_budget",
+        }
+    if not isinstance(state, str):
+        return {
+            "status": "unavailable",
+            "source": "app.runtime.economics.check_trial_budget",
+        }
+    enforced = budget is not None and state != "no-cap"
+    return {
+        "status": "ok",
+        "source": "MARCUS_TRIAL_BUDGET_USD / app.runtime.economics.check_trial_budget",
+        "default_budget_usd": budget,
+        "budget_status_state": state,
+        "default_budget_enforced": enforced,
+        "note": (
+            "the production preset defines no default-budget source, so the runtime "
+            "resolver returns None and check_trial_budget(total, None)=='no-cap' → the "
+            "Epic-41 dollar brake is a REAL enforced stop WHEN SET but OPT-IN by default. "
+            "Closing the leak needs runtime substrate (a preset-default budget source the "
+            "resolver returns); when present this reader detects it and CE1 earns strong."
+        ),
+    }
+
+
+def cost_posture_signal(report: Any = None) -> dict[str, Any]:
+    """CE2 — the run's ``cost_posture`` (``exact`` vs
+    ``known-lower-bound-with-explicit-unavailable-attempts``) + ``unavailable_attempt_count``.
+
+    A lower-bound posture means the reported cost is a FLOOR, not exact — an honest
+    honesty-gap WHEN it occurs (the model validator forbids claiming ``exact`` with
+    unavailable attempts, so the posture cannot lie). Reads a report dict / JSON path /
+    model object; no report → an honest ``"no-report"`` marker (never a clean value).
+    """
+    data = _read_cost_report(report)
+    if data is None:
+        return {
+            "status": "no-report",
+            "source": "trial_economics_report.cost_posture",
+            "cost_posture": None,
+            "unavailable_attempt_count": None,
+        }
+    posture = data.get("cost_posture")
+    return {
+        "status": "ok",
+        "source": "trial_economics_report.cost_posture",
+        "cost_posture": posture,
+        "unavailable_attempt_count": data.get("unavailable_attempt_count"),
+        "is_exact": posture == "exact",
+        "is_lower_bound": (
+            posture == "known-lower-bound-with-explicit-unavailable-attempts"
+        ),
+        "note": (
+            "a lower-bound posture = the reported cost is a FLOOR, not exact; the model "
+            "validator forbids 'exact' when unavailable_attempt_count>0 (posture cannot lie)."
+        ),
+    }
+
+
+def cost_drift_signal(report: Any = None) -> dict[str, Any]:
+    """CE3 — is per-agent drift monitoring wired, and what does a report's
+    ``drift_alerts`` carry?
+
+    ``compute_per_agent_drift`` (rolling 5-trial median; a ≥50% per-call deviation →
+    a ``DriftAlert``) is the wired monitor — its importability is the ``drift_monitoring_wired``
+    fact (deferred import, GL-3). A supplied report's ``drift_alerts`` list length is the
+    observed alert count. Honest caveat: drift needs ≥5 history to fire and is ADVISORY
+    (informational, not a spend gate).
+    """
+    monitoring_wired = False
+    try:
+        from app.runtime.economics import compute_per_agent_drift  # noqa: F401
+
+        monitoring_wired = True
+    except Exception:  # noqa: BLE001
+        monitoring_wired = False
+    data = _read_cost_report(report)
+    alerts = data.get("drift_alerts") if isinstance(data, dict) else None
+    # FIX-4: the monitor being UNIMPORTABLE is not "healthy" — a consumer keying on
+    # status=="ok" must not read wiring-absent as fine. Mirror the budget reader's
+    # import-failure handling: status "unavailable" when the monitor cannot be imported.
+    return {
+        "status": "ok" if monitoring_wired else "unavailable",
+        "source": "app.runtime.economics.compute_per_agent_drift / drift_alerts",
+        "drift_monitoring_wired": monitoring_wired,
+        "drift_alert_count": len(alerts) if isinstance(alerts, list) else None,
+        "note": (
+            "drift is a rolling 5-trial median monitor (>=50% per-call deviation → alert); "
+            "needs >=5 history to fire and is ADVISORY (informational, not a spend gate)."
+        ),
+    }
+
+
+def cost_transparency_signal(report: Any = None) -> dict[str, Any]:
+    """CE4 — does a report carry the reproducible cost-attestation fields?
+
+    ``per_agent_breakdown`` + ``per_model_breakdown`` + a 64-hex ``cascade_config_digest``
+    + a 64-hex ``pricing_table_digest`` together let a run's cost be re-derived and
+    audited. Reports per-field presence + ``all_present``; no report → ``"no-report"``.
+    """
+    data = _read_cost_report(report)
+    if data is None:
+        return {
+            "status": "no-report",
+            "source": "trial_economics_report cost-attestation fields",
+            "fields_present": None,
+            "all_present": None,
+        }
+
+    def _sha256(value: Any) -> bool:
+        return isinstance(value, str) and bool(_SHA256_RE.match(value))
+
+    def _nonempty_dict(value: Any) -> bool:
+        # FIX-3: an EMPTY breakdown ({}) is not a reproducible attestation — a report
+        # with no cost data must NOT claim "fully reproducible". Require non-empty.
+        return isinstance(value, dict) and len(value) > 0
+
+    fields_present = {
+        "per_agent_breakdown": _nonempty_dict(data.get("per_agent_breakdown")),
+        "per_model_breakdown": _nonempty_dict(data.get("per_model_breakdown")),
+        "cascade_config_digest": _sha256(data.get("cascade_config_digest")),
+        "pricing_table_digest": _sha256(data.get("pricing_table_digest")),
+    }
+    return {
+        "status": "ok",
+        "source": "trial_economics_report cost-attestation fields",
+        "fields_present": fields_present,
+        "all_present": all(fields_present.values()),
+        "note": (
+            "per_agent + per_model breakdown + cascade/pricing digests = a reproducible "
+            "cost attestation (report-time transparency, not a live spend fence)."
+        ),
+    }
+
+
+def cost_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
+    """cost leak-count — count ``cost_leak:``-tagged OPEN entries in the deferred
+    inventory (a SEPARATE per-dimension namespace from ``did_leak:``).
+
+    Same scoping as :func:`open_leak_count_signal` (fenced code / HTML comments /
+    archived section stripped; line-anchored tag). **1 today** (the budget-opt-in leak
+    in the ``## Cost-Efficiency Scorecard Leak Registry``). Fail-soft: unreadable file →
+    ``{"status": "unavailable", "cost_leak_count": None}``.
+    """
+    p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {
+            "status": "unavailable",
+            "source": _DEFERRED_INVENTORY_REL,
+            "cost_leak_count": None,
+        }
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    count = len(_COST_LEAK_LINE_RE.findall(open_text))
+    return {
+        "status": "ok",
+        "source": _DEFERRED_INVENTORY_REL,
+        "cost_leak_count": count,
+    }
+
+
 # ============================ signal → level derivation ============================
 #
 # THE anti-believed-green rule: a level is NEVER mechanically awarded a clean/uniform
@@ -437,14 +713,31 @@ def _level_c4(signal: Any) -> str:
     return "unavailable"  # "unavailable" / unknown / malformed → NON-clean
 
 
+def _level_ce_budget(signal: Any) -> str:
+    """CE1 (purely mechanical, mirrors C3): a default budget wired + enforced →
+    ``strong``; the brake EXISTS but is OPT-IN by default (``default_budget_enforced``
+    False — ``check_trial_budget`` honours a cap but the preset sets none) → ``weak``
+    (mechanism present, default OFF — NOT ``absent``); malformed / non-ok / unknown
+    ``default_budget_enforced`` → ``unavailable``."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    enforced = signal.get("default_budget_enforced")
+    if enforced is True:
+        return "strong"
+    if enforced is False:
+        return "weak"
+    return "unavailable"
+
+
 def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     """Derive a criterion's level from its signal (the anti-believed-green rule).
 
     Total over each mechanical criterion's signal domain (never raises); for a
     proxy/unverified/unknown/malformed signal it returns a NON-clean level (never
     ``strong``/``uniform``) — the sole exception being C4 on a real detector-observed
-    ``int == 0``, and C3 on genuinely all-ON fences. Judgment criteria (C1/C5) and
-    unknown keys return ``None`` (no derivation; the human authors those).
+    ``int == 0``, C3 on genuinely all-ON fences, and CE1 on a real default budget wired.
+    Judgment / judgment-with-evidence-only criteria (C1/C5, cost CE2/CE3/CE4) and
+    unknown keys return ``None`` (no mechanical derivation; the human authors those).
     """
     if criterion_key == "fence_enforcement_default_on":
         return _level_c3(signal)
@@ -452,4 +745,6 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
         return _level_c2(signal)
     if criterion_key == "lock_and_contract_discipline":
         return _level_c4(signal)
+    if criterion_key == "budget_stop_default_on":
+        return _level_ce_budget(signal)
     return None

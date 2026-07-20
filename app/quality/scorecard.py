@@ -26,12 +26,15 @@ _BLOCK_RE = re.compile(
     re.DOTALL,
 )
 _DID_KEY = "dynamic_intelligence_vs_determinism"
+#: Story Q2.1 — Dimension 2 (Cost-efficiency / paid-walk discipline).
+_COST_KEY = "cost_efficiency"
 
 #: The named canonical dimension-key universe. Q1.3's GL-6 dimension-coverage
 #: meta-ratchet consumes this rail (a new dimension cannot be silently added
 #: without a human touching this tuple AND registering its honesty-pin). Q1.1
-#: only establishes the constant; the meta-ratchet *test* is Q1.3.
-_EXPECTED_CANONICAL_DIMENSION_KEYS: tuple[str, ...] = (_DID_KEY,)
+#: established the constant; the meta-ratchet *test* is Q1.3; Q2.1 adds
+#: ``cost_efficiency`` here IN LOCKSTEP with registering its honesty-pin.
+_EXPECTED_CANONICAL_DIMENSION_KEYS: tuple[str, ...] = (_DID_KEY, _COST_KEY)
 
 
 def _repo_root() -> Path:

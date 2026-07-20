@@ -6,6 +6,7 @@
 
 **Dimensions.** (More will be added; each is a top-level ## section.)
 1. **Dynamic Intelligence vs Determinism (DID)** — the balance this project most depends on.
+2. **Cost-efficiency (paid-walk discipline)** — whether paid walks are cost-disciplined, honest, and reproducibly attested.
 
 ---
 
@@ -145,6 +146,69 @@ Every time a component is hardened, ask: **"did we move judgment upstream into a
 - **Every epic retrospective:** re-score the affected criteria; record the trend (rising/flat/falling) so believed-green in either direction is caught.
 - **Staleness ratchet (SECONDARY nag, not the honesty guard):** `scripts/utilities/quality_scorecard.py --check` warns if the machine block's `as_of` is older than the threshold or malformed. It only checks *age*, never whether the claims still match the code. The anti-believed-green **honesty guard** is `tests/quality/test_scorecard_honesty_pins.py` — pins that FAIL when a machine-block claim contradicts a code-computed reality (fence level vs the signal reader, `open_leaks` vs the counted `did_leak:` tags, score↔level↔band↔sum, `trend` vs computed-from-history).
 - **Trend history is an append-only ledger** at `docs/quality/scorecard-history.jsonl`: every scorecard edit MUST append (new `as_of`) or update-in-place (same-day) a snapshot mirroring the machine block, and any score INCREASE must advance `as_verified` and cite fresh evidence (the pins enforce all three). **Honest residual (stated plainly):** this ledger records a *judgment history*, not observed system state — the pins cannot mechanically detect a *coordinated* fabrication of BOTH the doc and the ledger in one edit. That last gap is a review/governance concern, not a mechanical guarantee.
+
+---
+
+## Dimension 2 — Cost-efficiency (paid-walk discipline)
+
+> **Why this dimension is load-bearing for this project.** Every production run spends real money on paid LLM walks. Two failure modes corrode trust and burn budget: (a) a paid walk runs **un-capped** — nothing stops spend when a run goes wrong; and (b) the reported cost is **not honest** — a lower-bound estimate reads as an exact figure, or drift/attribution is invisible. This dimension scores **whether paid walks are cost-disciplined (a real brake that actually stops spend), cost-honest (the reported posture never over-claims exactness), and reproducibly attested (per-agent / per-model breakdown + config digests so a run's cost can be re-derived).** It is scored from the EXISTING economics emitters — `app/runtime/economics.py` (`check_trial_budget`, `compute_per_agent_drift`) and the `cost_posture` on `app/models/runtime/trial_economics_report.py` — with no parallel plumbing.
+
+### 2.0 The rule (one line)
+
+**A paid walk must be brake-able, cost-honest, and reproducibly attested — and the brake must be ON by default, not opt-in.** Telemetry that only *reports* after the spend is transparency, not discipline; discipline is a stop that fires *before* the money is gone.
+
+### 2.5 Scoring rubric
+
+Four criteria, each scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong · 4 uniform/complete). Sum → /16, normalized to /100. Bands: **A** ≥90 · **B** 75–89 · **B−** 60–74 · **C** 40–59 · **D** <40 (shared with §1.5).
+
+| # | Criterion | What "4/4" looks like |
+|---|---|---|
+| CE1 | **Budget-stop default posture** | The dollar brake is wired **ON by default** on the production preset — a paid walk is cost-fenced without the operator opting in. |
+| CE2 | **Cost-posture honesty** | The reported cost is `exact`, or an explicitly-declared lower-bound floor with a counted set of unavailable attempts; the posture can never over-claim exactness. |
+| CE3 | **Per-agent drift monitoring** | Rolling-median per-agent drift is monitored on every trial and (at 4/4) gates, not merely warns. |
+| CE4 | **Cost transparency** | Per-agent + per-model breakdown + cascade/pricing digests give a fully reproducible, auditable cost attestation. |
+
+**Outcome-weighted reading (for prioritization, not a separate score):** CE1 most affects *paid walks* (an un-capped walk is the direct money risk); CE2 and CE4 most affect *learner/operator-trust* in the reported numbers; CE3 is the discipline that catches cost regressions before they compound.
+
+### 2.6 Current assessment — Band **B−** — "real economics telemetry; budget brake opt-in on paid walks"
+
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; first `cost_efficiency` snapshot in `docs/quality/scorecard-history.jsonl`).*
+
+**Headline (read this first).**
+
+- **Band: B−.** The economics substrate is genuinely strong — cost is honestly posture-tagged (a lower-bound can never masquerade as exact), per-agent drift is monitored against a rolling median, and every trial carries a reproducible per-agent/per-model + digest attestation. The Band is held down by **one honest gap: the dollar brake is a REAL Epic-41 enforced stop *when set*, but it is OPT-IN — the production preset wires no default budget, so `check_trial_budget(total, None)` returns `no-cap` and the default paid walk runs un-capped.** *(The internal 10/16 → 62/100 sum is the arithmetic-pin reasoning trace below — not a false-precise headline number.)*
+- **Trend: ▬ baseline.** First `cost_efficiency` assessment; no prior snapshot, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Open leaks — ranked (1).** One paid-walk leak; tagged `cost_leak: cost-efficiency-budget-stop-opt-in-default-no-cap` in the `## Cost-Efficiency Scorecard Leak Registry` of `_bmad-output/planning-artifacts/deferred-inventory.md`, so `cost_leak_count_signal()` == 1 == the machine block's `open_leaks` (the cost leak-count + slug-identity pins reconcile doc↔registry). This is the cost_efficiency contribution to the shared project ranked-leak list (GL-13; it interleaves with DID's paid-walk leaks by lane priority).
+
+  1. **[CE1] Budget-stop is a real enforced brake but OPT-IN by default** — *Leak 1, paid-walk* → `cost-efficiency-budget-stop-opt-in-default-no-cap`
+
+**⚠️ Headline caveat — do NOT read B− as adequate pre-spend cost discipline (equal-weight scoring, honest reading).** This dimension is scored equal-weight (consistent with §1's DID model — no weighted scoring here). But the §2.0 thesis is that *discipline is a stop that fires **before** the money is gone; telemetry after the spend is transparency, not discipline.* Three of the four criteria (CE2 posture-honesty, CE3 advisory-drift, CE4 report-time-transparency) are explicitly **post-spend** and each scores strong; the ONE **pre-spend** criterion — CE1, the actual brake and the thesis — is **weak (opt-in)**. So the B− is **lifted by post-spend telemetry while the pre-spend brake is weak**: read it as "excellent cost *honesty/transparency*, but paid walks are **not** cost-*disciplined* by default," NOT as "cost discipline is decent." (This is the "outcome-weighted reading" below, elevated to the headline so it cannot be missed.)
+
+**Say it plainly (honesty is the bar).** The Epic-41 dollar brake (`MARCUS_TRIAL_BUDGET_USD` → the `check_trial_budget` SSOT, enforced at both walks' dispatch chokepoint — Story 41-4) is a **real economic stop when a budget is set** — it is not absent, and this assessment does not understate it. But the production preset defines **no default-budget source**, so by default the brake never fires (`no-cap`). That is the DID-C3 pattern — a mechanism that exists but is default-OFF — and it is why CE1 is **weak**, not absent and not strong. **Weak (1) vs partial (2) is a deliberate DID-C3-consistent conservative call:** the brake is *fully* enforced when set (both walks, pre- + post-spend chokepoints), so "partial" is arguable — but the criterion scores the *default* posture, which is entirely off, so it is scored `weak` (1) to mirror DID-C3 `fence_enforcement_default_on` (also 1 for a default-off-but-real mechanism) and to err conservative, not as an oversight. The assessment does **not** claim "cost-fenced": the default paid walk is not budget-fenced.
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** Each carries `{level, signal, evidence_ref}`; where a mechanical signal exists, the level's derivation is named. The 0–4 scores roll up to the machine block's Σ = 10/16 = 62/100 (an internal arithmetic-pin trace — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| CE1 Budget-stop default posture | weak | 1/4 | signal-derived (`budget_stop_default_signal`) | **Env-INDEPENDENT production-preset posture:** `MARCUS_TRIAL_BUDGET_USD` unset → `_resolve_preset_default_budget()` == `None` → `check_trial_budget(1.0, None).state` == `no-cap` → `default_budget_enforced` == `False` → `weak` (== `level_from_signal("budget_stop_default_on", budget_stop_default_signal())`; the fence-claim pin agrees doc↔code). The brake EXISTS and is enforced *when set* (Epic-41 / Story 41-4, both walks' dispatch chokepoint) but is OPT-IN by default. Anti-drift: seeding a default cap flips `default_budget_enforced` True → the derived level would be `strong`. This is **Leak 1**. |
+| CE2 Cost-posture honesty | strong | 3/4 | judgment-with-evidence (`cost_posture_signal`) | `cost_posture` ∈ `{exact, known-lower-bound-with-explicit-unavailable-attempts}` with `unavailable_attempt_count`; the model validator on `TrialEconomicsReport` **forbids** `exact` when `unavailable_attempt_count > 0`, so a lower-bound posture is an honestly-declared **floor** and the posture cannot lie. Residual (why 3/4, not 4/4): a lower-bound posture (when it occurs) *is* a floor, not exact — an honest honesty-gap; the mechanism cannot certify "always exact". |
+| CE3 Per-agent drift monitoring | strong | 3/4 | judgment-with-evidence (`cost_drift_signal`) | `compute_per_agent_drift` (`app/runtime/economics.py:362`) computes a rolling 5-trial median and raises a `DriftAlert` on a ≥50% per-call deviation; alerts ride the trial economics report (`drift_alerts`). Monitoring is wired end-to-end. Residual (why 3/4): drift needs ≥5 history to fire (cold-start blind) and is **advisory** (informational, not a spend gate). |
+| CE4 Cost transparency | strong | 3/4 | judgment-with-evidence (`cost_transparency_signal`) | The report carries `per_agent_breakdown` + `per_model_breakdown` + 64-hex `cascade_config_digest` + `pricing_table_digest` — a reproducible cost attestation (a run's cost can be re-derived and audited). Residual (why 3/4): transparency is report-time, **not** a live spend fence. |
+
+#### Open leaks (detail — the path from B− toward A)
+
+1. **[CE1] Budget-stop is a real enforced brake but OPT-IN by default (paid-walk).** The dollar brake fires only when the operator sets `MARCUS_TRIAL_BUDGET_USD`; the production preset defines no default-budget source, so the default paid walk is un-capped (`check_trial_budget(total, None)` → `no-cap`). **Closing it needs runtime substrate, not just a doc bump:** the runtime's only budget source today is that one env var (`_resolve_trial_budget_usd` reads it live; there is no preset/config default). The close-path = ADD a preset-default budget source the runtime resolver returns (the preset sets a sensible default, or the resolver grows a preset-config cap) — at which point CE1's `budget_stop_default_signal` (which delegates to that resolver source, `_resolve_runtime_default_budget`) reports `default_budget_enforced=True` and the criterion earns `strong`. The reader is not a hardcoded constant: the seeded-override test proves its level logic reaches `strong` on a real resolved cap; only the substrate that feeds a real preset-default is deferred. *Evidence:* `app/runtime/economics.py:347` (`check_trial_budget` → `no-cap` when budget None); `app/marcus/orchestrator/production_runner.py:3535` (`_resolve_trial_budget_usd` → `None` when unset; env-only, no preset/config default) + `:3597` (the enforced dispatch chokepoint, Story 41-4); registry `cost-efficiency-budget-stop-opt-in-default-no-cap`.
+
+#### The discipline that raises the Band (not just fixes)
+
+Every time cost telemetry is added, ask: **"did we add a stop that fires *before* the spend, or only a nicer *report* after it?"** Only the first raises CE1/CE3 toward gating discipline. Ranked if forced to cut: **Leak 1** (CE1) is the one paid-walk money risk; CE2/CE4 are trust-in-the-numbers (already strong); CE3 becomes a fence, not just a monitor, at 4/4.
+
+### Cadence (how this dimension stays honest)
+
+- **Every production run:** the per-run `cost_posture` fact already rides Q1.4a's `fence_state` in `run_summary.yaml`; read it in the run's final report alongside the Band.
+- **Every Class-S WRAPUP (Step 9):** review this dimension for currency — if a default budget gets wired (CE1 → strong), if drift is promoted to a gate (CE3 → 4/4), or if a lower-bound posture recurs, refresh the assessment.
+- **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction is caught.
+- **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `cost_efficiency` pins — budget-fence-claim, cost leak-count + slug-identity, score-arithmetic) + `tests/quality/test_cost_efficiency_dimension.py` (the signal readers + drift math + RED-under-seeded proofs) FAIL when a machine-block claim contradicts a code-computed reality. The **budget-fence-claim pin** reds if CE1 is bumped to `strong` without a default budget actually wired (GL-9).
 
 ---
 
@@ -312,5 +376,125 @@ dimensions:
         criterion: C5
         slug: workbook-capability-tier-honesty-lag
         lane: governance
+    trend: baseline
+  cost_efficiency:
+    # Dimension 2 (Story Q2.1) — Cost-efficiency / paid-walk discipline, scored from
+    # the EXISTING economics emitters (GL-15 reuse; NO parallel plumbing). The §2 prose
+    # is the authority; this mirrors the headline numbers. Honest baseline: the Epic-41
+    # dollar brake (MARCUS_TRIAL_BUDGET_USD → check_trial_budget) is a REAL enforced stop
+    # WHEN SET but OPT-IN by default (production preset sets no default budget →
+    # check_trial_budget(total, None)=='no-cap') — the DID-C3 pattern (mechanism exists,
+    # default OFF) → a cost-efficiency LEAK on the paid walk. Cost_posture honesty, drift
+    # monitoring, and cost transparency are real strengths.
+    label: Cost-efficiency
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
+    score: 62
+    max: 100
+    band: "B-"
+    band_note: "B- is lifted by post-spend telemetry (posture/drift/transparency strong); the PRE-SPEND brake (CE1, the thesis) is weak/opt-in — do NOT read B- as adequate pre-spend cost discipline"
+    criteria:
+      budget_stop_default_on:
+        # SIGNAL-DERIVED (purely mechanical, mirrors DID C3): level ==
+        # level_from_signal(budget_stop_default_signal()). The reader delegates to the
+        # runtime's OWN budget source (_resolve_runtime_default_budget — the same
+        # MARCUS_TRIAL_BUDGET_USD the runtime resolver reads); the production preset
+        # defines no default-budget source → resolver None → check_trial_budget(total,
+        # None)=='no-cap' → default_budget_enforced=False → weak. NOT a hardcoded
+        # constant: when the preset gains a default-budget source the resolver returns,
+        # the reader detects it and this earns strong (close-path needs that substrate;
+        # the seeded-override test proves the level logic reaches strong on a real cap).
+        # The pin reads the preset-default posture (ambient operator opt-in cleared in-
+        # test), read-only (no os.environ mutation).
+        level: weak
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.budget_stop_default_signal
+          derived_level: weak
+          fact: >-
+            the production preset defines no default-budget source, so the runtime budget
+            resolver returns None and check_trial_budget(total, None)=='no-cap' → the
+            Epic-41 dollar brake (enforced at both walks' dispatch chokepoint WHEN SET) is
+            OPT-IN by default (default=no cap). This is the DID-C3 pattern (mechanism
+            exists, default OFF) → the paid-walk cost leak below. Closing it needs runtime
+            substrate (a preset-default budget source the resolver returns), at which point
+            this reader detects it and the derived level becomes strong.
+        evidence_ref: "§2.6 CE1 · Cost Leak (budget-stop opt-in, default no-cap)"
+        score: 1
+        max: 4
+      cost_posture_honesty:
+        # JUDGMENT-with-evidence: the cost_posture Literal + unavailable_attempt_count +
+        # the model validator (which FORBIDS claiming 'exact' when attempts were
+        # unavailable) make the reported cost honestly exact-or-a-declared-floor. The
+        # signal carries that fact; the level is a §2.6 human judgment (a per-run posture
+        # is exact OR a floor — the mechanism cannot mechanically certify 'always exact').
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.cost_posture_signal
+          fact: >-
+            cost_posture ∈ {exact, known-lower-bound-with-explicit-unavailable-attempts}
+            with unavailable_attempt_count; the model validator forbids 'exact' when
+            unavailable_attempt_count>0, so a lower-bound posture is a HONEST floor and
+            the posture cannot lie.
+          caveat: >-
+            a lower-bound posture (when it occurs) = the reported cost is a FLOOR, not
+            exact — an honest honesty-gap; the mechanism cannot certify 'always exact',
+            so 'strong' is a §2.6 judgment (3/4, not 4/4).
+        evidence_ref: "§2.6 CE2 · cost_posture honesty (exact vs declared floor)"
+        score: 3
+        max: 4
+      cost_drift_monitoring:
+        # JUDGMENT-with-evidence: compute_per_agent_drift (rolling 5-trial median; a
+        # >=50% per-call deviation → a DriftAlert) is wired and emits into the report.
+        # The signal reports monitoring-wired + a report's alert count; 'strong' is a
+        # §2.6 judgment. Residual (why 3/4): drift needs >=5 history to fire and is
+        # ADVISORY (informational, not a spend gate).
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.cost_drift_signal
+          fact: >-
+            compute_per_agent_drift computes a rolling 5-trial median and raises a
+            DriftAlert on a >=50% per-call deviation; alerts ride the trial economics
+            report (drift_alerts). Monitoring is wired end-to-end.
+          caveat: >-
+            drift needs >=5 history to fire (cold-start blind) and is ADVISORY
+            (informational, not a spend gate) — why 'strong' is 3/4, not 4/4.
+        evidence_ref: "§2.6 CE3 · per-agent drift monitoring (rolling-median advisory)"
+        score: 3
+        max: 4
+      cost_transparency:
+        # JUDGMENT-with-evidence: per_agent_breakdown + per_model_breakdown +
+        # 64-hex cascade_config_digest + pricing_table_digest = a reproducible cost
+        # attestation. The signal reports per-field presence; 'strong' is a §2.6
+        # judgment. Residual (why 3/4): transparency is report-time, not a live fence.
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.cost_transparency_signal
+          fact: >-
+            the trial economics report carries per_agent_breakdown, per_model_breakdown,
+            and 64-hex cascade_config_digest + pricing_table_digest — a reproducible
+            cost attestation (a run's cost can be re-derived and audited).
+          caveat: >-
+            transparency is report-time (a reproducible attestation), NOT a live spend
+            fence — why 'strong' is 3/4, not 4/4.
+        evidence_ref: "§2.6 CE4 · cost transparency (reproducible attestation)"
+        score: 3
+        max: 4
+    # ONE open leak: the budget brake is OPT-IN by default (default no-cap) on paid
+    # walks. Counted (line-anchored) as `cost_leak:` in the `## Cost-Efficiency
+    # Scorecard Leak Registry` of deferred-inventory.md — a SEPARATE per-dimension
+    # namespace from `did_leak:` (so the two counts never collide). len(leaks) ==
+    # open_leaks == cost_leak_count_signal() == 1 (the cost leak-count + slug-identity
+    # pins reconcile doc↔registry).
+    open_leaks: 1
+    leaks:
+      - rank: 1
+        criterion: CE1
+        slug: cost-efficiency-budget-stop-opt-in-default-no-cap
+        lane: paid-walk
     trend: baseline
 ```

@@ -173,4 +173,9 @@ def test_did_score_ref_delegates_to_dimension_ref(tmp_path: Path) -> None:
 
 def test_canonical_dimension_keys_constant() -> None:
     assert _DID_KEY in _EXPECTED_CANONICAL_DIMENSION_KEYS
-    assert _EXPECTED_CANONICAL_DIMENSION_KEYS == ("dynamic_intelligence_vs_determinism",)
+    # Q2.1 added cost_efficiency as Dimension 2 (in lockstep with registering its
+    # honesty-pin — GL-6). The canonical universe now names both dimensions.
+    assert _EXPECTED_CANONICAL_DIMENSION_KEYS == (
+        "dynamic_intelligence_vs_determinism",
+        "cost_efficiency",
+    )

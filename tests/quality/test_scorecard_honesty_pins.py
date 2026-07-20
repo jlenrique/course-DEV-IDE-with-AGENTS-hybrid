@@ -66,6 +66,7 @@ from app.quality.history import (
     trend_from_history,
 )
 from app.quality.scorecard import (
+    _COST_KEY,
     _DID_KEY,
     _EXPECTED_CANONICAL_DIMENSION_KEYS,
     read_scorecard_block,
@@ -76,6 +77,8 @@ from app.quality.signals import (
     _strip_archived_section,
     _strip_fenced_code,
     _strip_html_comments,
+    budget_stop_default_signal,
+    cost_leak_count_signal,
     fences_enabled_signal,
     level_from_signal,
     open_leak_count_signal,
@@ -86,6 +89,9 @@ from app.quality.signals import (
 #: slug-set IDENTITY pin (FIX-1) — the count pins reconcile through the integer 5 and
 #: cannot catch a slug that was typo'd/renamed while the count stayed 5.
 _DID_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?did_leak:\s*(\S+)")
+#: Q2.1 — the cost_efficiency slug namespace (``cost_leak:``), a SEPARATE per-dimension
+#: namespace so the cost identity/count reconciliation never collides with DID's.
+_COST_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cost_leak:\s*(\S+)")
 
 
 def _registry_did_leak_slugs() -> set[str]:
@@ -95,6 +101,14 @@ def _registry_did_leak_slugs() -> set[str]:
     text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
     open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     return {m.group(1) for m in _DID_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_cost_leak_slugs() -> set[str]:
+    """The OPEN ``cost_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``cost_leak_count_signal`` counts them (Q2.1 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _COST_LEAK_SLUG_RE.finditer(open_text)}
 
 
 def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
@@ -159,6 +173,9 @@ def _band_for_score(score: int) -> str:
 #: mechanical today; C2/C4 are judgment-with-evidence and C1/C5 are judgment.
 _SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
     "fence_enforcement_default_on": fences_enabled_signal,
+    # Q2.1 — cost_efficiency CE1 is purely mechanical (mirrors DID C3): the env-
+    # INDEPENDENT production-preset posture is default_budget_enforced=False → weak.
+    "budget_stop_default_on": budget_stop_default_signal,
 }
 
 #: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
@@ -172,6 +189,16 @@ _HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
             "test_signal_derived_levels_match_readers",  # pin (a) fence-claim
             "test_leak_count_reconciles_on_real_repo",  # pin (b) leak-count (GL-14)
             "test_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q2.1 — cost_efficiency MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror DID's:
+    # (a) budget-fence-claim, (b) cost leak-count + slug identity, (c) arithmetic.
+    _COST_KEY: frozenset(
+        {
+            "test_cost_budget_fence_claim_matches_reader",  # pin (a) budget-fence-claim
+            "test_cost_leak_count_reconciles_on_real_repo",  # pin (b) cost leak-count
+            "test_cost_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
         }
     ),
 }
@@ -466,6 +493,7 @@ def test_signal_derived_levels_match_readers(monkeypatch: pytest.MonkeyPatch) ->
     live output. Concretely C3 == level_from_signal(fences_enabled_signal()) ==
     'weak' (the env-INDEPENDENT default-OFF production posture)."""
     _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)  # CE1's env-live reader now also runs in this scan
     block = _real_block()
     assert _signal_derived_violations(block) == []
     c3 = block["dimensions"][_DID_KEY]["criteria"]["fence_enforcement_default_on"]
@@ -480,6 +508,7 @@ def test_code_known_mechanical_criteria_not_de_mechanized(
     Each ``_SIGNAL_DERIVED_READERS`` criterion still declares ``signal-derived`` and
     matches its reader output."""
     _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)  # CE1's env-live reader is in _SIGNAL_DERIVED_READERS
     assert _mechanical_criteria_violations(_real_block()) == []
 
 
@@ -771,10 +800,11 @@ def test_pin_registry_keys_are_canonical_no_orphans() -> None:
 def test_meta_ratchet_reds_on_pinless_dimension() -> None:
     """AC2 seeded-RED: a future dimension present in the block but absent from the
     registry surfaces as pin-less → RED. (Uses a seeded key set — the real block
-    is never mutated.)"""
-    seeded_keys = {_DID_KEY, "cost_efficiency"}  # a hypothetical future dimension
+    is never mutated. ``cost_efficiency`` is now a REGISTERED dimension, so the
+    hypothetical unpinned key is a fresh future dimension.)"""
+    seeded_keys = {_DID_KEY, _COST_KEY, "some_future_unpinned_dimension"}
     without = _coverage_violations(seeded_keys, _HONESTY_PIN_REGISTRY)
-    assert without == {"cost_efficiency"}
+    assert without == {"some_future_unpinned_dimension"}
 
 
 # ================================= R1 doc↔ledger mirror =================================
@@ -993,3 +1023,141 @@ def test_upgrade_guard_allows_free_downgrade() -> None:
     advance."""
     dim = _did_dim_with(lambda d: d["criteria"]["neck_placement"].update(score=3))
     assert evidence_gated_upgrade_violations(dim, _BASELINE_SNAPSHOT) == []
+
+
+# =============================================================================== #
+# Story Q2.1 — cost_efficiency dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_COST_KEY]) + their RED-under-seeded proofs. These reuse the
+# SAME pure helpers as the DID pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate
+# EVERY dimension, so coverage is structural. Doc↔code: each compares a machine-block
+# CLAIM against a CODE-computed reality (a signal reader / the deferred-inventory
+# registry / the §2.5 arithmetic rule), never doc↔doc.
+# =============================================================================== #
+
+
+def _clear_budget_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MARCUS_TRIAL_BUDGET_USD", raising=False)
+
+
+# --------------------------- pin (a) budget-fence-claim --------------------------- #
+
+
+def test_cost_budget_fence_claim_matches_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin (a) for cost_efficiency, GREEN today: the signal-derived CE1
+    (``budget_stop_default_on``) level equals its reader's live output —
+    ``level_from_signal("budget_stop_default_on", budget_stop_default_signal())`` ==
+    ``weak`` (the env-INDEPENDENT production-preset posture: no default budget →
+    ``check_trial_budget(total, None)=='no-cap'`` → opt-in). The shared
+    ``_signal_derived_violations`` scan (over every dimension) is also clean."""
+    _clear_budget_env(monkeypatch)
+    _clear_fence_env(monkeypatch)
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    ce1 = block["dimensions"][_COST_KEY]["criteria"]["budget_stop_default_on"]
+    derived = level_from_signal("budget_stop_default_on", budget_stop_default_signal())
+    assert ce1["level"] == derived == "weak"
+
+
+def test_cost_budget_fence_claim_reds_on_dishonest_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC3 / GL-9 RED-under-seeded-edit: bump CE1 to ``strong`` on an in-memory copy
+    WITHOUT a default budget wired → the pin (a) comparison FAILS (reader still says
+    ``weak``). The real doc is never touched. This is the exact anti-overclaim guard:
+    a claimed budget-enforced/cost-fenced level cannot pass while the preset default is
+    no-cap."""
+    _clear_budget_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COST_KEY]["criteria"]["budget_stop_default_on"][
+        "level"
+    ] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("budget_stop_default_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_cost_budget_fence_claim_reds_on_any_inflated_level(
+    monkeypatch: pytest.MonkeyPatch, dishonest: str
+) -> None:
+    """AC3: any inflation of CE1 above the reader-derived ``weak`` (with no default
+    budget wired) is caught."""
+    _clear_budget_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COST_KEY]["criteria"]["budget_stop_default_on"][
+        "level"
+    ] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_cost_ce1_is_signal_derived_others_are_judgment_with_evidence() -> None:
+    """The honest derivation split: CE1 is ``signal-derived`` (the reader owns the
+    level); CE2/CE3/CE4 are ``judgment-with-evidence`` (a real signal block carries the
+    facts, the level is an authored §2.6 judgment). No unverified signal awards a clean
+    level: ``level_from_signal`` returns ``None`` for the judgment-with-evidence keys."""
+    crit = _real_block()["dimensions"][_COST_KEY]["criteria"]
+    assert crit["budget_stop_default_on"]["derivation"] == "signal-derived"
+    for key in ("cost_posture_honesty", "cost_drift_monitoring", "cost_transparency"):
+        c = crit[key]
+        assert c["derivation"] == "judgment-with-evidence"
+        assert c["level"] == "strong"
+        assert isinstance(c["signal"], dict)
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+        assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+        # judgment-with-evidence → no mechanical derivation → never a clean auto-award.
+        assert level_from_signal(key, c["signal"]) is None
+
+
+# --------------------------- pin (b) cost leak-count + slug identity --------------- #
+
+
+def test_cost_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for cost_efficiency: the dimension's ``open_leaks`` == the count of
+    ``cost_leak:``-tagged OPEN entries in the ``## Cost-Efficiency Scorecard Leak
+    Registry`` == ``len(leaks)`` == 1. A per-dimension ``cost_leak:`` namespace (NOT the
+    global DID ``did_leak:`` count — that would spuriously red per FIX-2). Anti-drift:
+    strike the ``cost_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_COST_KEY]
+    count = cost_leak_count_signal()["cost_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_COST_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cost_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_COST_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_cost_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for cost_efficiency: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``cost_leak:`` slugs — a slug typo /
+    rename that keeps the count at 1 is caught here, which a count-only reconciliation
+    misses."""
+    dim = _real_block()["dimensions"][_COST_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_cost_leak_slugs()
+
+
+def test_cost_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the cost machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_COST_KEY]
+    dim["leaks"][0]["slug"] = "cost-efficiency-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_cost_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+# --------------------------- pin (c) cost score-arithmetic ------------------------ #
+
+
+def test_cost_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for cost_efficiency: score↔level per §2.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§2.5 boundary. 1+3+3+3 = 10/16 → 62 → B-. Doc↔code: the
+    arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_COST_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 62 and dim["band"] == "B-"
