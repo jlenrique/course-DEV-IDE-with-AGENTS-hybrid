@@ -231,6 +231,50 @@ POLL_JS = r"""
     if (!items || !items.length) return "";
     return '<div class="art-label">' + esc(label) + "</div>" + artifactsBlock(items);
   }
+  // ---- project quality tile (Story Q4.3) ----
+  // CLIENT MIRROR of page.py::_quality_panel — the poll re-render of the
+  // completed land-brief MUST keep the tile (else it vanishes on the first poll
+  // and the operator watching live never sees it). READ-ONLY consumer of the
+  // Q4.1 quality section; the HUD NEVER recomputes (QLW-4). Field-level
+  // type-defensive + zero-lie fail-soft, byte-for-byte parity with the server:
+  // available!==true / missing / malformed → explicit "unavailable"; band D →
+  // critical red; unknown band → neutral (never green); non-list top_leaks →
+  // no leak rows (never a crash, never char-iterated).
+  var QUALITY_BAND_CLASS = { "a": "on", "b": "on", "c": "warn", "d": "crit" };
+  function qualityPanel(d) {
+    var q = d.quality;
+    if (!q || typeof q !== "object" || q.available !== true) {
+      return '<section class="quality-tile unavailable" aria-label="project quality posture">' +
+        '<div class="bt">◍ Project quality — unavailable</div>' +
+        '<div class="prompt">No committed scorecard read on this run surface. ' +
+        "This absence is reported honestly — it is NOT a clean bill of " +
+        "quality.</div></section>";
+    }
+    var band = q.band;
+    var bandCls = QUALITY_BAND_CLASS[String(band == null ? "" : band).trim().toLowerCase()] || "";
+    var bandChip = '<span class="chip ' + bandCls + '"><span class="dot"></span> band ' +
+      (band ? esc(band) : "—") + "</span>";
+    var fields = "";
+    if (q.ranked_leak_count !== null && q.ranked_leak_count !== undefined)
+      fields += '<div class="frow"><span class="k">ranked leaks</span><span class="v">' + esc(q.ranked_leak_count) + "</span></div>";
+    if (q.coverage_gaps !== null && q.coverage_gaps !== undefined)
+      fields += '<div class="frow"><span class="k">coverage gaps</span><span class="v">' + esc(q.coverage_gaps) + "</span></div>";
+    if (q.trend) fields += '<div class="frow"><span class="k">trend</span><span class="v">' + esc(q.trend) + "</span></div>";
+    var fieldsHtml = fields ? '<div class="fields">' + fields + "</div>" : "";
+    var tl = q.top_leaks, leaks = [];
+    if (Array.isArray(tl)) {
+      for (var i = 0; i < tl.length; i++) {
+        if (tl[i] !== null && tl[i] !== undefined) leaks.push(String(tl[i]));
+      }
+    }
+    var leaksHtml = labelledArtifacts("top leaks", leaks);
+    var stamp = q.scorecard_as_of
+      ? '<div class="bm">scorecard as of ' + esc(q.scorecard_as_of) + "</div>"
+      : '<div class="bm">scorecard staleness unknown</div>';
+    return '<section class="quality-tile" aria-label="project quality posture">' +
+      '<div class="bt">◍ Project quality</div>' + stamp +
+      '<div class="components">' + bandChip + "</div>" + fieldsHtml + leaksHtml + "</section>";
+  }
   function context(d, now) {
     var env = d.envelope || {}, st = env.status, na = d.next_action || {};
     var active = activeEntry(d.steps);
@@ -289,7 +333,8 @@ POLL_JS = r"""
       if (deliv.total_cost_usd !== null && deliv.total_cost_usd !== undefined)
         cost = '<div class="frow"><span class="k">final cost</span><span class="v">$' + esc(deliv.total_cost_usd) + "</span></div>";
       return '<div class="land-brief"><div class="bt">✓ Landed</div><div class="bm">completed ' + clock(env.completed_at) + "</div>" +
-        compHtml + '<div class="artifacts">' + rows + '</div><div class="fields">' + cost + "</div></div>";
+        compHtml + '<div class="artifacts">' + rows + '</div><div class="fields">' + cost + "</div></div>" +
+        qualityPanel(d);
     }
     if (st === "failed") {
       var tail = na.command ? cmdBlock(na.command, "recovery command:") : '<div class="prompt">no automated recovery — see SPOC</div>';

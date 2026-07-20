@@ -90,6 +90,8 @@ a { color:#94A3B8; text-decoration:underline; text-underline-offset:2px; }
 .chip.on .dot { background:#E2E8F0; border-color:#E2E8F0; }
 .chip.batch.on .dot { background:#A78BFA; border-color:#A78BFA; }
 .chip.warn { color:#FBBF24; border-color:#FBBF24; }
+.chip.crit { color:#EF4444; border-color:#EF4444; }
+.chip.crit .dot { background:#EF4444; border-color:#EF4444; }
 .id-right { margin-left:auto; display:flex; gap:16px; align-items:baseline; }
 .freshness .sweep {
   display:inline-block; width:6px; height:6px; border-radius:9999px;
@@ -184,6 +186,18 @@ a { color:#94A3B8; text-decoration:underline; text-underline-offset:2px; }
 .artifact .mono { color:#94A3B8; }
 .more { margin-top:6px; }
 .more > summary { cursor:pointer; color:#64748B; font-size:12px; }
+/* Story Q4.3 · project quality tile — a compact posture brief that rides the
+   completed land-brief. Contained like the other briefs; the honest
+   "unavailable" state gets a red left-border so a degraded read is emphatic,
+   never a silent green absence (QLW-8). */
+.quality-tile {
+  margin-top:12px;
+  background:#1E293B; border:1px solid #293548; border-radius:8px;
+  border-left:3px solid #38BDF8; padding:12px 14px;
+}
+.quality-tile .bt { color:#E2E8F0; }
+.quality-tile.unavailable { border-left:3px solid #EF4444; }
+.quality-tile.unavailable .bt { color:#EF4444; }
 /* decision-card options/evidence caption + completion component chips (35.9) */
 .art-label { margin-top:10px; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:#64748B; }
 .components { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
