@@ -798,6 +798,98 @@
       "title": "PreflightSection",
       "type": "object"
     },
+    "QualitySection": {
+      "additionalProperties": false,
+      "description": "Compact, honest read of the PROJECT quality posture at run-time (Story Q4.1).\n\nNOTE: this tile reflects the STANDING project quality scorecard doc (identical\nacross runs modulo its committed ``as_of`` staleness stamp) \u2014 it is NOT a\nper-run recomputation. It is surfaced ON the per-run operator surface at run-end\nso the operator has the project posture at the accept/reject/edit moment.\n\nNO ``/100`` numeric score \u2014 that would contradict ``app/quality/report.py``'s\ndeliberate no-false-precise-headline design. The tile carries the project's\nquality POSTURE (Band + top leaks + trend) so the operator sees, at the\naccept/reject/edit moment, *\"how trustworthy is the project posture behind THIS\nrun, and where are its load-bearing leaks?\"* without opening the full report.\n\n**Band-aggregation rule (QLW-7 / QLW-9):** ``band`` is the **WORST band across\nall present dimensions** \u2014 the assembler never paints the best dimension's\nband over a redder sibling. An unrecognized band string is treated as no\nbetter than any known band, so a garbage band can never render a cleaner\nposture than the committed block's worst dimension.\n\n**Fail-soft (QLW-8, non-negotiable):** every substantive field is\noptional/None-able and ``available`` defaults ``False`` so a missing/degraded\nscorecard renders ``available=False`` + null posture \u2014 never a fabricated band\nor a silent absence. The assembler swallows any exception on the tile path.\n\n**Determinism (QLW-4):** substantive values are read from the COMMITTED\nscorecard doc (they carry the doc's committed ``as_of``); only this section's\nown ``as_of`` read-stamp uses emit-time ``now()``.",
+      "properties": {
+        "as_of": {
+          "description": "UTC timestamp of this section's last write.",
+          "format": "date-time",
+          "title": "As Of",
+          "type": "string"
+        },
+        "available": {
+          "default": false,
+          "title": "Available",
+          "type": "boolean"
+        },
+        "band": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Band"
+        },
+        "coverage_gaps": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Coverage Gaps"
+        },
+        "ranked_leak_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ranked Leak Count"
+        },
+        "scorecard_as_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The COMMITTED scorecard doc's own ``as_of`` date (e.g. '2026-07-19') \u2014 a STALENESS signal so the operator sees how old the committed posture is. This is DISTINCT from the section's ``as_of`` read-stamp, which is the emit-time ``now()``. None when the tile is unavailable.",
+          "title": "Scorecard As Of"
+        },
+        "top_leaks": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Top Leaks",
+          "type": "array"
+        },
+        "trend": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trend"
+        }
+      },
+      "required": [
+        "as_of"
+      ],
+      "title": "QualitySection",
+      "type": "object"
+    },
     "RunSettingsSection": {
       "additionalProperties": false,
       "description": "The ~16 run-defining toggles as a standing readout (Story 42.3, AD-1).\n\nEvery field is a REQUIRED resolved display string \u2014 env-absent toggles\nrender an explicit resolved default (``\"off\"`` / ``\"unset\"``), never a\nmissing key (AC-3). The assembler's deterministic resolver populates all\nsixteen from env / directive / run_summary / the prior projection, so the\nsection is a pure projection of resolved run settings (double-emit on\nidentical inputs is byte-identical modulo ``as_of``).",
@@ -1280,6 +1372,17 @@
       "minimum": 0,
       "title": "Progress Seq",
       "type": "integer"
+    },
+    "quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/QualitySection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     },
     "run_settings": {
       "anyOf": [

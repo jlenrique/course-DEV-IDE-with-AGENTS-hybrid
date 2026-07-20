@@ -592,6 +592,102 @@ class DeliverablesSection(_Section):
 
 
 # --------------------------------------------------------------------------
+# Quality tile (Story Q4.1 — Epic Q4) — the compact PROJECT quality posture,
+# read at run-time from the STANDING scorecard doc (not a per-run recompute).
+#
+# ADDITIVE within v1 (AD-4: a new OPTIONAL section, NO schema_version bump). The
+# sole-writer assembler populates this at the terminal-completion choke-point
+# (the same verb-condition ``deliverables`` uses) from the COMMITTED scorecard
+# doc via a DEFERRED ``app.quality`` clean-leaf import — NEVER ``app.quality.
+# signals.*`` live recompute (QLW-4 determinism-as-honesty). This module imports
+# NOTHING from ``app.quality`` (its layer rule): ``QualitySection`` is a fresh
+# typed mirror of plain ``str | int | bool | None`` fields.
+# --------------------------------------------------------------------------
+
+
+class QualitySection(_Section):
+    """Compact, honest read of the PROJECT quality posture at run-time (Story Q4.1).
+
+    NOTE: this tile reflects the STANDING project quality scorecard doc (identical
+    across runs modulo its committed ``as_of`` staleness stamp) — it is NOT a
+    per-run recomputation. It is surfaced ON the per-run operator surface at run-end
+    so the operator has the project posture at the accept/reject/edit moment.
+
+    NO ``/100`` numeric score — that would contradict ``app/quality/report.py``'s
+    deliberate no-false-precise-headline design. The tile carries the project's
+    quality POSTURE (Band + top leaks + trend) so the operator sees, at the
+    accept/reject/edit moment, *"how trustworthy is the project posture behind THIS
+    run, and where are its load-bearing leaks?"* without opening the full report.
+
+    **Band-aggregation rule (QLW-7 / QLW-9):** ``band`` is the **WORST band across
+    all present dimensions** — the assembler never paints the best dimension's
+    band over a redder sibling. An unrecognized band string is treated as no
+    better than any known band, so a garbage band can never render a cleaner
+    posture than the committed block's worst dimension.
+
+    **Fail-soft (QLW-8, non-negotiable):** every substantive field is
+    optional/None-able and ``available`` defaults ``False`` so a missing/degraded
+    scorecard renders ``available=False`` + null posture — never a fabricated band
+    or a silent absence. The assembler swallows any exception on the tile path.
+
+    **Determinism (QLW-4):** substantive values are read from the COMMITTED
+    scorecard doc (they carry the doc's committed ``as_of``); only this section's
+    own ``as_of`` read-stamp uses emit-time ``now()``.
+    """
+
+    available: bool = False
+    band: str | None = None
+    ranked_leak_count: int | None = Field(default=None, ge=0)
+    top_leaks: list[str] = Field(default_factory=list)
+    coverage_gaps: int | None = Field(default=None, ge=0)
+    trend: str | None = None
+    scorecard_as_of: str | None = Field(
+        default=None,
+        description=(
+            "The COMMITTED scorecard doc's own ``as_of`` date (e.g. '2026-07-19') — "
+            "a STALENESS signal so the operator sees how old the committed posture "
+            "is. This is DISTINCT from the section's ``as_of`` read-stamp, which is "
+            "the emit-time ``now()``. None when the tile is unavailable."
+        ),
+    )
+
+    @model_validator(mode="after")
+    def _enforce_zero_lie_posture(self) -> QualitySection:
+        """FIX 3 — the zero-lie invariant is STRUCTURAL, not merely a convention.
+
+        * ``available is False`` ⇒ the posture is FULLY null: ``band``,
+          ``ranked_leak_count``, ``coverage_gaps``, ``trend`` and
+          ``scorecard_as_of`` are all ``None`` and ``top_leaks == []`` — an
+          unavailable tile can never carry a fabricated value.
+        * ``available is True`` ⇒ ``band is not None`` — an available tile must
+          carry a band (there is nothing to interpret its leak counts against
+          otherwise; see the assembler's FIX-1 guard).
+        """
+        if self.available is False:
+            offenders = [
+                name
+                for name, value in (
+                    ("band", self.band),
+                    ("ranked_leak_count", self.ranked_leak_count),
+                    ("coverage_gaps", self.coverage_gaps),
+                    ("trend", self.trend),
+                    ("scorecard_as_of", self.scorecard_as_of),
+                )
+                if value is not None
+            ]
+            if self.top_leaks:
+                offenders.append("top_leaks")
+            if offenders:
+                raise ValueError(
+                    "QualitySection available=False must be fully null; "
+                    f"non-null field(s): {', '.join(offenders)}"
+                )
+        elif self.band is None:
+            raise ValueError("QualitySection available=True must carry a band")
+        return self
+
+
+# --------------------------------------------------------------------------
 # Top-level projection
 # --------------------------------------------------------------------------
 
@@ -651,6 +747,10 @@ class OperatorSurfaceProjection(BaseModel):
     decision_card: DecisionCardSection | None = None
     error_message: ErrorMessageSection | None = None
     deliverables: DeliverablesSection | None = None
+
+    # Story Q4.1 — additive within v1 (AD-4): the compact quality read populated
+    # at the terminal-completion choke-point from the COMMITTED scorecard doc.
+    quality: QualitySection | None = None
 
     @field_validator("last_progress_at", "as_of")
     @classmethod
@@ -962,6 +1062,7 @@ __all__ = [
     "PreflightItem",
     "PreflightItemState",
     "PreflightSection",
+    "QualitySection",
     "QuotaConfidence",
     "RUN_SETTINGS_TOGGLES",
     "RunSettingsSection",

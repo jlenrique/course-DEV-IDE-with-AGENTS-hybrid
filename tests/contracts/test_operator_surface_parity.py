@@ -46,6 +46,7 @@ from app.models.runtime.operator_surface import (
     OperatorSurfaceStatus,
     PreflightItem,
     PreflightSection,
+    QualitySection,
     RunSettingsSection,
     SpecialistEntry,
     SpecialistsSection,
@@ -283,6 +284,8 @@ _SECTION_DEFS: list[tuple[type[BaseModel], str]] = [
     (ErrorMessageSection, "ErrorMessageSection"),
     (DeliverablesSection, "DeliverablesSection"),
     (DeliverableComponents, "DeliverableComponents"),
+    # Story Q4.1 additive section
+    (QualitySection, "QualitySection"),
 ]
 
 
@@ -435,6 +438,50 @@ def test_back_compat_pre_42_3_modalities_only_surface_still_parses() -> None:
     # the old modalities slice is untouched
     assert result.modalities is not None
     assert result.modalities.llm_execution_mode == "batch"
+
+
+def test_back_compat_pre_quality_v1_surface_still_parses() -> None:
+    """AC5 (QLW-5/QLW-11): a frozen pre-Q4.1 surface (NO ``quality`` key) still
+    parses through the lenient reader — schema_version stays 'v1', so it is never
+    Unrecognized. Mirror of the pre-42.3 back-compat pin."""
+    payload = build_projection("completed").model_dump(mode="json")
+    payload.pop("quality", None)  # a surface written before Q4.1 landed
+    assert "quality" not in payload
+    result = read_operator_surface_lenient(payload)
+    assert isinstance(result, OperatorSurfaceProjection)
+    assert result.schema_version == "v1"
+    assert result.quality is None
+    # the old deliverables slice is untouched
+    assert result.envelope.status == "completed"
+
+
+def test_quality_section_round_trips_and_is_lenient_tolerant() -> None:
+    """AC5: a populated quality tile round-trips strictly and reads leniently."""
+    proj = build_projection("completed")
+    updated = proj.model_copy(
+        update={
+            "quality": QualitySection(
+                as_of=BASE_TIME,
+                available=True,
+                band="D",
+                ranked_leak_count=5,
+                top_leaks=["paid-walk · leg4-narration · Dynamic Intelligence"],
+                coverage_gaps=0,
+                trend="baseline",
+            )
+        }
+    )
+    dumped = updated.model_dump(mode="json")
+    restored = OperatorSurfaceProjection.model_validate(dumped)
+    assert restored.quality is not None
+    assert restored.quality.available is True
+    assert restored.quality.band == "D"
+    assert restored.quality.ranked_leak_count == 5
+    assert restored.quality.coverage_gaps == 0
+    assert restored.model_dump(mode="json") == dumped
+    lenient = read_operator_surface_lenient(updated.model_dump_json())
+    assert isinstance(lenient, OperatorSurfaceProjection)
+    assert lenient.quality is not None
 
 
 def test_decision_card_section_all_inner_fields_optional() -> None:
