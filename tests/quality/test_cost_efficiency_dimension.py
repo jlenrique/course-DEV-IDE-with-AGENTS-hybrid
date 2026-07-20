@@ -403,8 +403,15 @@ def test_cost_leak_is_lane_grouped_among_did_paid_walk_leaks() -> None:
             assert i > max(paid_block)
     # multiple dimensions contribute overall (cross-dimensional, not DID-only). Q2.2
     # added coverage_honesty as a THIRD contributor (a learner-trust leak); Q2.3 added
-    # fidelity_trust as a FOURTH (also learner-trust).
-    assert set(dims) == {_DID_KEY, _COST_KEY, _COVERAGE_KEY, _FIDELITY_KEY}
+    # fidelity_trust as a FOURTH (also learner-trust); Q3.1 added capability_honesty as a
+    # FIFTH (a governance leak).
+    assert set(dims) == {
+        _DID_KEY,
+        _COST_KEY,
+        _COVERAGE_KEY,
+        _FIDELITY_KEY,
+        "capability_honesty",
+    }
 
 
 def test_leak_coverage_clean_with_cost_dimension() -> None:

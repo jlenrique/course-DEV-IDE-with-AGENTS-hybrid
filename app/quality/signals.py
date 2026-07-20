@@ -40,6 +40,7 @@ import re
 from collections.abc import Mapping
 from contextlib import contextmanager
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any
 
 import yaml
@@ -1340,6 +1341,280 @@ def fidelity_leak_count_signal(inventory_path: Path | None = None) -> dict[str, 
     }
 
 
+# ============================ capability-honesty (Q3.1) ============================
+#
+# Signal readers over the EXISTING front-door capability ledger (GL-15 — reuse, NO
+# parallel plumbing): the per-component ``CapabilityTier`` in
+# ``app/marcus/lesson_plan/bundle_catalog.py`` (``CAPABILITY_TIERS``), reconciled
+# READ-ONLY against a small, BOUNDED, curated produced-evidence signal (the recorded
+# DID-Leak-5 evidence). ⛔ This module NEVER edits a tier — tier bumps are party-gated
+# governance (CLAUDE.md pack-versioning + the DID-Leak-5 entry). It SCORES the honesty of
+# the tiers; it consumes ``bundle_catalog`` read-only via a DEFERRED local import (GL-3
+# clean-leaf). Every reader is fail-soft per field — it never raises and never invents a
+# clean value.
+#
+# PHASING FLAG (Q2-retro AI-Q2d, binding): the produced-evidence signal is the small
+# curated DID-Leak-5 set, NOT a full trial-artifact scanner. The deep "scan every trial run
+# for produced artifacts" reconciliation is a split TODO (deferred-work.md).
+
+#: ``cap_leak:`` tag, anchored to line start — a FIFTH per-dimension namespace disjoint
+#: from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` / ``fid_leak:`` so the capability
+#: count/identity reconciliation never collides with the other four. 1 today (the workbook
+#: tier-lags-produced-reality leak — a CONSERVATIVE/understating coherence gap).
+_CAPABILITY_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cap_leak:")
+
+#: The ``CapabilityTier`` values that assert a component has NEVER produced a real artifact.
+#: ``CapabilityTier`` is a FOUR-value enum: BOTH ``mechanism_only_never_produced`` ("design/
+#: mechanism landed, never produced") AND ``shelf`` ("named but not built (placeholder)" —
+#: strictly further from produced reality) assert never-produced. A component carrying EITHER
+#: while a produced artifact demonstrably exists is the DID-Leak-5 LAG (a CONSERVATIVE/
+#: understating coherence gap — fail-safe, NOT an overclaim). Hand-mirrored from
+#: ``bundle_catalog.CapabilityTier``; anti-drift-pinned
+#: (test_capability_mirrored_tier_constants_match_source) so a future rename OR a NEW
+#: unclassified tier reds the test rather than silently mis-reconciling / false-cleaning.
+_NEVER_PRODUCED_TIERS: frozenset[str] = frozenset(
+    {"mechanism_only_never_produced", "shelf"}
+)
+#: The tiers that ASSERT a component was produced at some point (proven now, or once-proven-
+#: now-regressed-repairable). A component carrying one of these while curated evidence says
+#: it was NEVER produced would be the OVERSTATING direction (the worse believed-green gap) —
+#: none exist today. Hand-mirrored + anti-drift-pinned (same test). Together with
+#: ``_NEVER_PRODUCED_TIERS`` this COVERS every ``CapabilityTier`` member (enum-coverage pin).
+_PROVEN_TIERS: frozenset[str] = frozenset(
+    {"proven_wired", "proven_regressed_repairable"}
+)
+
+#: BOUNDED, curated produced-evidence signal (PHASING FLAG — NOT a trial-artifact scanner).
+#: The recorded DID-Leak-5 evidence: the workbook companion produced real MD+DOCX on the
+#: FROZEN Tejal P2 lesson (trial ``a940c5eb``; LO-verified ``8b275e5b``). ``produced=True``
+#: means "a real artifact demonstrably exists"; the honest tier is ``proven-on-frozen-lesson``
+#: (off-frozen-lesson stays an open claim — NOT blanket ``proven_wired``).
+_CURATED_PRODUCED_EVIDENCE: Mapping[str, Mapping[str, Any]] = MappingProxyType(
+    {
+        "workbook": MappingProxyType(
+            {
+                "produced": True,
+                "honest_tier": "proven-on-frozen-lesson",
+                "lesson_scope": "frozen Tejal P2 (off-frozen-lesson stays an open claim)",
+                "evidence_refs": (
+                    "trial a940c5eb (first complete workbook MD+DOCX)",
+                    "LO-verified 8b275e5b (6/6 LOs, frozen Tejal P2)",
+                ),
+            }
+        ),
+    }
+)
+
+
+def _read_capability_tiers(tiers: Any = None) -> dict[str, Any] | None:
+    """Coerce the capability-tier source into a ``{component: tier_str}`` mapping, or
+    ``None`` (fail-soft).
+
+    ``tiers is None`` → consult the REAL ``CAPABILITY_TIERS`` registry via a DEFERRED
+    import (GL-3 — no module-scope ``app.*``), READ-ONLY. An injectable ``Mapping`` reads a
+    SEEDED tier posture (the reachable close-path / the isolating pin) WITHOUT touching the
+    real registry — values may be plain ``str`` tiers OR ``ComponentCapability``-like objects
+    carrying a ``.tier``. A non-mapping / unimportable source degrades to ``None``.
+    """
+    if tiers is not None:
+        if not isinstance(tiers, Mapping):
+            return None
+        out: dict[str, Any] = {}
+        for name, value in tiers.items():
+            if isinstance(value, str):
+                out[name] = value
+            else:  # a ComponentCapability-like object carrying a .tier
+                tier = getattr(value, "tier", None)
+                out[name] = tier if isinstance(tier, str) else None
+        return out
+    try:
+        from app.marcus.lesson_plan.bundle_catalog import CAPABILITY_TIERS
+    except Exception:  # noqa: BLE001 — a signal read must never raise into a caller
+        return None
+    try:
+        return {
+            name: (cap.tier if isinstance(getattr(cap, "tier", None), str) else None)
+            for name, cap in CAPABILITY_TIERS.items()
+        }
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def capability_tier_reconciliation_signal(
+    tiers: Any = None, produced_evidence: Any = None
+) -> dict[str, Any]:
+    """CH1/CH2 — reconcile the front-door capability TIERS against produced reality.
+
+    Reads the REAL ``bundle_catalog`` ``CAPABILITY_TIERS`` (read-only, deferred import) +
+    the BOUNDED curated produced-evidence set, and flags the DID-Leak-5 pattern —
+    **a component tiered ``mechanism_only_never_produced`` for which a produced artifact
+    demonstrably exists** (workbook, per the recorded evidence). That is a LAG: the declared
+    tier UNDERSTATES produced reality (a CONSERVATIVE/fail-safe coherence gap, NOT an
+    overclaim). The opposite — a component tiered proven while curated evidence says it was
+    NEVER produced — is the worse OVERSTATING direction (none today).
+
+    **Consults the REAL mismatch condition (CV2/FT2 lesson):** a lag is flagged only when
+    ``produced is True`` AND ``tier == mechanism_only_never_produced`` — NOT on mere tier
+    presence. A component tiered ``mechanism_only_never_produced`` with NO produced-evidence
+    is HONEST (not a mismatch). The isolating pin varies the produced-evidence axis while
+    holding the tier to prove a raw-tier-only regression can't ship green.
+
+    ``tiers_match_produced_reality`` is ``True`` iff there is NO lag AND NO overstatement —
+    the SIGNAL-DERIVED CH1 level keys off it (True → strong; the reachable close-path: a
+    party-ratified tier that matches reality → no mismatch → strong, and the pin never blocks
+    that honest upgrade). ``no_overstatement`` (the worse direction absent) is the fact CH2
+    (judgment-with-evidence) rests its §5.6 ``strong`` on.
+
+    ⛔ READ-ONLY: this NEVER edits a tier (party-gated governance). Fail-soft: an unimportable
+    / non-mapping / empty tier source degrades to ``status="unavailable"`` (never a clean or
+    silently-``False`` coherence claim).
+    """
+    tier_map = _read_capability_tiers(tiers)
+    if not isinstance(tier_map, dict) or not tier_map:
+        return {
+            "status": "unavailable",
+            "source": "app.marcus.lesson_plan.bundle_catalog.CAPABILITY_TIERS",
+        }
+    evidence = (
+        produced_evidence
+        if isinstance(produced_evidence, Mapping)
+        else _CURATED_PRODUCED_EVIDENCE
+    )
+    lag_mismatches: list[dict[str, Any]] = []
+    overstatement_mismatches: list[dict[str, Any]] = []
+    unreconciled: list[dict[str, Any]] = []
+    reconciled_count = 0
+    for component, ev in evidence.items():
+        if not isinstance(ev, Mapping):
+            continue
+        produced = ev.get("produced")
+        tier = tier_map.get(component)
+        # A component is RECONCILED only when its tier is a readable ``str`` AND ``produced``
+        # is a real ``bool``. Anything else — an absent/typo'd component (tier None), an
+        # unreadable/None tier, or a non-bool ``produced`` — is UNKNOWN, never certified clean
+        # (the CV2/FT2 principle: never read clean on an unchecked/unreadable input). It is
+        # SURFACED in ``unreconciled`` (not silently dropped), and does NOT count toward
+        # coherence.
+        if not isinstance(tier, str) or not isinstance(produced, bool):
+            unreconciled.append(
+                {
+                    "component": component,
+                    "declared_tier": tier if isinstance(tier, str) else None,
+                    "produced": produced if isinstance(produced, bool) else None,
+                    "reason": (
+                        "tier not readable"
+                        if not isinstance(tier, str)
+                        else "produced is not a bool"
+                    ),
+                }
+            )
+            continue
+        reconciled_count += 1
+        if produced and tier in _NEVER_PRODUCED_TIERS:
+            # LAG: the tier asserts "never produced" (mechanism_only_never_produced OR shelf)
+            # but a produced artifact demonstrably exists → declared reality LAGS produced
+            # reality (conservative/understating).
+            lag_mismatches.append(
+                {
+                    "component": component,
+                    "declared_tier": tier,
+                    "honest_tier": ev.get("honest_tier"),
+                    "lesson_scope": ev.get("lesson_scope"),
+                    "evidence_refs": list(ev.get("evidence_refs") or ()),
+                }
+            )
+        elif not produced and tier in _PROVEN_TIERS:
+            # OVERSTATEMENT: the tier claims produced while curated evidence says NEVER
+            # produced → the worse believed-green direction (none today).
+            overstatement_mismatches.append(
+                {
+                    "component": component,
+                    "declared_tier": tier,
+                    "evidence_refs": list(ev.get("evidence_refs") or ()),
+                }
+            )
+    if reconciled_count == 0:
+        # Nothing was ACTUALLY reconciled (empty evidence, all-unreadable tiers, absent/typo'd
+        # components, non-bool produced). "Nothing reconcilable" is UNKNOWN, NOT coherent — a
+        # clean/strong verdict here would be an over-claim on an unchecked input (CV2/FT2).
+        return {
+            "status": "unavailable",
+            "source": (
+                "app.marcus.lesson_plan.bundle_catalog.CAPABILITY_TIERS + curated "
+                "produced-evidence (DID-Leak-5)"
+            ),
+            "reconciled_count": 0,
+            "unreconciled": unreconciled,
+            "note": (
+                "no component was actually reconciled (tier readable AND produced a real "
+                "bool) — an unchecked/unreadable input is UNKNOWN, never certified coherent."
+            ),
+        }
+    coherent = not lag_mismatches and not overstatement_mismatches
+    if lag_mismatches and not overstatement_mismatches:
+        direction = "conservative-understatement"
+    elif overstatement_mismatches:
+        direction = "overstatement"
+    else:
+        direction = "none"
+    return {
+        "status": "ok",
+        "source": (
+            "app.marcus.lesson_plan.bundle_catalog.CAPABILITY_TIERS + curated "
+            "produced-evidence (DID-Leak-5)"
+        ),
+        "tiers": tier_map,
+        "reconciled_count": reconciled_count,
+        "unreconciled": unreconciled,
+        "lag_mismatches": lag_mismatches,
+        "overstatement_mismatches": overstatement_mismatches,
+        "tiers_match_produced_reality": coherent,
+        "no_overstatement": not overstatement_mismatches,
+        "mismatch_direction": direction,
+        "note": (
+            "the reconciliation reads bundle_catalog tiers READ-ONLY against a bounded "
+            "curated produced-evidence set and flags the DID-Leak-5 pattern (a component "
+            "tiered mechanism_only_never_produced for which a produced artifact exists — "
+            "workbook). The workbook lag UNDERSTATES produced reality (conservative/fail-safe, "
+            "greys the bundle), it does NOT overstate; no tier claims proven while never "
+            "produced. The real mismatch condition is declared-tier-vs-produced-evidence, "
+            "NOT mere tier presence (CV2/FT2). Close-path reachable + read-only: a "
+            "party-ratified tier that matches reality → no mismatch → strong. ⛔ NEVER edits a "
+            "tier (party-gated). Cross-links DID Leak-5 (workbook-capability-tier-honesty-lag), "
+            "counted once under cap_leak:, not double-counted. BOUNDED reconciliation — the "
+            "full trial-artifact scan is a split TODO (PHASING FLAG)."
+        ),
+    }
+
+
+def capability_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
+    """capability leak-count — count ``cap_leak:``-tagged OPEN entries in the deferred
+    inventory (a FIFTH per-dimension namespace, disjoint from ``did_leak:`` / ``cost_leak:``
+    / ``cov_leak:`` / ``fid_leak:``).
+
+    Same scoping as the sibling leak-count readers (fenced code / HTML comments / archived
+    section stripped; line-anchored tag). **1 today** (the workbook tier-lags-produced-reality
+    leak in the ``## Capability-Honesty Scorecard Leak Registry``). Fail-soft: unreadable file
+    → ``{"status": "unavailable", "capability_leak_count": None}``.
+    """
+    p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {
+            "status": "unavailable",
+            "source": _DEFERRED_INVENTORY_REL,
+            "capability_leak_count": None,
+        }
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    count = len(_CAPABILITY_LEAK_LINE_RE.findall(open_text))
+    return {
+        "status": "ok",
+        "source": _DEFERRED_INVENTORY_REL,
+        "capability_leak_count": count,
+    }
+
+
 # ============================ signal → level derivation ============================
 #
 # THE anti-believed-green rule: a level is NEVER mechanically awarded a clean/uniform
@@ -1450,6 +1725,26 @@ def _level_ft_semantic_fence(signal: Any) -> str:
     return "unavailable"
 
 
+def _level_ch_reconciliation(signal: Any) -> str:
+    """CH1 (purely mechanical, mirrors DID C3 / cost CE1 / coverage CV1 / fidelity FT1):
+    the capability tiers match produced reality (no lag, no overstatement) → ``strong``;
+    a mismatch exists (``tiers_match_produced_reality`` False — today the CONSERVATIVE
+    workbook LAG) → ``weak`` (a coherence gap, fail-safe but still a gap — NOT ``absent``);
+    malformed / non-ok / unknown ``tiers_match_produced_reality`` → ``unavailable``.
+
+    Reachable close-path + read-only: a party-ratified tier that matches produced reality
+    flips ``tiers_match_produced_reality`` True → ``strong`` (the pin never blocks the honest
+    upgrade). The reader reads the REAL ``CAPABILITY_TIERS``, not a hardcoded verdict."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    coherent = signal.get("tiers_match_produced_reality")
+    if coherent is True:
+        return "strong"
+    if coherent is False:
+        return "weak"
+    return "unavailable"
+
+
 def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     """Derive a criterion's level from its signal (the anti-believed-green rule).
 
@@ -1457,9 +1752,10 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     proxy/unverified/unknown/malformed signal it returns a NON-clean level (never
     ``strong``/``uniform``) — the sole exception being C4 on a real detector-observed
     ``int == 0``, C3 on genuinely all-ON fences, CE1 on a real default budget wired, CV1
-    on the coverage gate genuinely wired ON by default, and FT1 on the semantic-fidelity
-    audit genuinely gating production. Judgment / judgment-with-evidence-only criteria
-    (C1/C5, cost CE2/CE3/CE4, coverage CV2/CV3, fidelity FT2/FT3) and unknown keys return
+    on the coverage gate genuinely wired ON by default, FT1 on the semantic-fidelity
+    audit genuinely gating production, and CH1 on the capability tiers genuinely matching
+    produced reality. Judgment / judgment-with-evidence-only criteria (C1/C5, cost
+    CE2/CE3/CE4, coverage CV2/CV3, fidelity FT2/FT3, capability CH2) and unknown keys return
     ``None`` (no mechanical derivation; the human authors those).
     """
     if criterion_key == "fence_enforcement_default_on":
@@ -1474,4 +1770,6 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
         return _level_cv_coverage_fence(signal)
     if criterion_key == "semantic_fence_gating_on":
         return _level_ft_semantic_fence(signal)
+    if criterion_key == "capability_tier_reconciliation_on":
+        return _level_ch_reconciliation(signal)
     return None

@@ -336,6 +336,67 @@ Every time fidelity machinery is added, ask: **"did we turn the audit into a *ga
 
 ---
 
+## Dimension 5 — Capability-honesty (declared vs produced)
+
+> **Why this dimension is load-bearing for this project.** The front door offers the operator a choice of blessed bundles, and it must offer that choice HONESTLY: a bundle's readiness verdict (`fully_proven` / `partial` / `not_yet`) is derived from each component's `CapabilityTier` in `app/marcus/lesson_plan/bundle_catalog.py`. If a tier drifts out of step with what the system actually PRODUCES, the front door misrepresents the product — in either of two directions. The worse, believed-green direction is an **overstating** tier (a component tiered proven while it has never produced a real artifact) — the operator is offered a choice that silently can't deliver. The milder, fail-safe direction is a **lagging** tier (a component tiered `mechanism_only_never_produced` while a produced artifact demonstrably exists) — the front door UNDERSTATES and greys a bundle that in fact works on a proven lesson. This dimension scores **whether the declared capability tiers are COHERENT with produced reality (they are not — the workbook tier LAGS produced reality: the DID-Leak-5 pattern), and whether any tier OVERSTATES (claims proven while never produced — none do; the ledger errs conservative).** It is scored by RECONCILING the EXISTING `bundle_catalog` tiers (`CAPABILITY_TIERS`) — **read-only, never edited** — against a small, bounded, curated produced-evidence signal (the recorded DID-Leak-5 evidence), with no parallel plumbing (GL-15).
+
+### 5.0 The rule (one line)
+
+**A declared capability tier must be COHERENT with what the system actually produces — a tier that lags (or overstates) produced reality is a coherence gap.** A lag is fail-safe (it understates, greys the bundle); an overstatement is believed-green (it offers a choice that can't deliver). Coherence is the thesis; the overstating direction is the floor that must stay clean.
+
+**⛔ Governance fence (binding).** This dimension SCORES the honesty of the tiers; it reads `bundle_catalog` **READ-ONLY and NEVER changes a tier.** A tier bump is a **party-gated governance act** (CLAUDE.md pack-versioning + the DID-Leak-5 deferred entry) — not something the scorecard, or the dev of this dimension, may do.
+
+### 5.5 Scoring rubric
+
+Two criteria, each scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong · 4 uniform/complete). Sum → /8, normalized to /100. Bands: **A** ≥90 · **B** 75–89 · **B−** 60–74 · **C** 40–59 · **D** <40 (shared with §1.5).
+
+| # | Criterion | What "4/4" looks like |
+|---|---|---|
+| CH1 | **Tier↔produced reconciliation — declared matches produced** | The `bundle_catalog` tiers are COHERENT with produced reality: no component is tiered `mechanism_only_never_produced` while a produced artifact demonstrably exists (`tiers_match_produced_reality` is `True`) — the front-door readiness verdict tells the operator the truth. |
+| CH2 | **No overstatement — no tier claims proven while never produced** | No component is tiered `proven_wired` / `proven_regressed_repairable` while the curated produced-evidence says it was NEVER produced (`no_overstatement` is `True`) — the worse believed-green direction is absent. |
+
+**Outcome-weighted reading (for prioritization, not a separate score):** CH1 and CH2 both most affect the *governance* lane — the honesty of the front-door capability ledger is a ledger/governance concern (the bundle readiness the operator is offered). Equal-weight scoring is kept (consistent with §1/§2/§3/§4); the honest reading rides the band_note.
+
+### 5.6 Current assessment — Band **C** — "front-door tiers honest in the safe direction; the workbook tier LAGS produced reality (conservative/fail-safe)"
+
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; first `capability_honesty` snapshot in `docs/quality/scorecard-history.jsonl`).*
+
+**Headline (read this first).**
+
+- **Band: C.** The capability ledger is honest in the direction that matters most — **no tier OVERSTATES** (nothing is offered as proven that has never produced; CH2 strong). The Band is held down by **one honest, CONSERVATIVE coherence gap: the workbook is tiered `mechanism_only_never_produced` DESPITE real workbook MD+DOCX produced (trial `a940c5eb`, LO-verified `8b275e5b`) on the FROZEN Tejal P2 lesson.** The declared tier LAGS produced reality — but it lags in the **fail-safe direction (it understates, greys the bundle), NOT an overclaim.** *(The internal 4/8 → 50/100 sum is the arithmetic-pin reasoning trace below — not a false-precise headline number.)*
+- **Trend: ▬ baseline.** First `capability_honesty` assessment; no prior snapshot, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Open leaks — ranked (1).** One governance leak; tagged `cap_leak: capability-honesty-workbook-tier-lags-produced-reality` in the `## Capability-Honesty Scorecard Leak Registry` of `_bmad-output/planning-artifacts/deferred-inventory.md`, so `capability_leak_count_signal()` == 1 == the machine block's `open_leaks` (the capability leak-count + slug-identity pins reconcile doc↔registry). This is the capability_honesty contribution to the shared project ranked-leak list (GL-13; a governance leak, so it sorts after the paid-walk and learner-trust leaks). **Cross-links DID Leak-5** (`workbook-capability-tier-honesty-lag`) — the SAME underlying substrate (the workbook capability tier lags produced reality), counted ONCE per namespace (`did_leak:` = DID C5 capability-ledger-lag; `cap_leak:` = capability_honesty CH1 tier↔produced reconciliation), **NOT double-counted.**
+
+  1. **[CH1] Workbook capability tier lags produced reality (governance)** — *Leak 1, governance* → `capability-honesty-workbook-tier-lags-produced-reality`
+
+**⚠️ Headline caveat — do NOT read C as "capabilities dishonest / the system is broken" NOR as "all capabilities proven" (band-honesty).** This dimension is scored equal-weight (consistent with §1/§2/§3/§4). The C is a **CONSERVATIVE/fail-safe lag**: the front door greys a bundle that in fact works on the frozen Tejal P2 lesson — it does NOT offer a proven-looking choice that can't deliver. Read it as "the front-door capability tiers are honest in the safe (understating) direction, but the workbook tier LAGS a produced artifact," NOT as "capabilities are broken" and NOT as "all capabilities are proven." The band_note carries this so it cannot be missed.
+
+**Say it plainly (honesty is the bar).** `bundle_catalog` tiers `workbook` as `mechanism_only_never_produced` ("no real producer has emitted a workbook artifact yet") DESPITE real MD+DOCX produced at trial `a940c5eb` and LO-verified at `8b275e5b`, on the FROZEN Tejal P2 lesson. The reconciliation flags exactly ONE mismatch, in the **conservative/understating** direction — the tier lags produced reality; it is fail-safe, not believed-green. The honest bump is *proven-on-frozen-lesson* (Tejal P2), NOT blanket `proven_wired` (off-frozen-lesson stays an open claim). **We do NOT edit the tier** — the bump is party-gated governance. The overstating direction (a tier claiming proven while never produced) is **absent** — the ledger errs conservative — so CH2 is strong. **VERIFY (not a counted leak):** motion's `proven_regressed_repairable` tier is likely stale the same way — re-read against live motion output; it is a VERIFY TODO (deferred-work.md), not a leak.
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** Each carries `{level, signal, evidence_ref}`; where a mechanical signal exists, the level's derivation is named. The 0–4 scores roll up to the machine block's Σ = 4/8 = 50/100 (an internal arithmetic-pin trace — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| CH1 Tier↔produced reconciliation | weak | 1/4 | signal-derived (`capability_tier_reconciliation_signal`) | **The read-only reconciliation:** `bundle_catalog` `CAPABILITY_TIERS["workbook"].tier` == `mechanism_only_never_produced` while curated produced-evidence records the workbook produced real MD+DOCX (trial `a940c5eb`, LO-verified `8b275e5b`, frozen Tejal P2) → ONE lag mismatch → `tiers_match_produced_reality` == `False` → `weak` (== `level_from_signal("capability_tier_reconciliation_on", capability_tier_reconciliation_signal())`; the reconciliation pin agrees doc↔code). Consults the REAL mismatch condition (declared tier vs produced-evidence), NOT mere tier presence (CV2/FT2). Anti-drift + close-path reachable + read-only: a party-ratified tier that matches produced reality flips `tiers_match_produced_reality` `True` → the derived level would be `strong` (the reader reads the real `CAPABILITY_TIERS`, not a hardcoded verdict, and NEVER edits the tier). This is **Leak 1** (cross-links DID Leak-5, counted once). |
+| CH2 No overstatement | strong | 3/4 | judgment-with-evidence (`capability_tier_reconciliation_signal`) | The BOUNDED curated produced-evidence carries NO never-produced-but-proven marker (only the workbook `produced=True` marker), so `overstatement_mismatches` == `[]` → `no_overstatement` == `True` **structurally** — this signal CANNOT positively detect overstatement from the curated set; it can only fail to find one. So `strong` is a **human JUDGMENT** that the LIVE ledger errs conservative (the only OBSERVED mismatch is the fail-safe workbook lag, CH1), **not a mechanically-checked absence** of overstatement. Residual (why 3/4, not 4/4): this is a BOUNDED reconciliation (the recorded DID-Leak-5 refs), NOT a full trial-artifact scanner (PHASING FLAG — the deep scan that could positively detect overstatement is a split TODO); the mechanism cannot certify "no tier will ever overstate". An unverified/unknown signal never awards a clean level. |
+
+#### Open leaks (detail — the path from C toward A)
+
+1. **[CH1] Workbook capability tier lags produced reality (governance).** `bundle_catalog` tiers `workbook` as `mechanism_only_never_produced` and `narrated-deck-with-workbook` readiness `not_yet`, despite real MD+DOCX produced at `a940c5eb` + LO-verified `8b275e5b`. The direction is CONSERVATIVE (understates → greys the bundle → fail-safe, not an overclaim). **Closing it is a PARTY-GATED tier bump, not a doc edit:** party-ratify the honest tier (*proven-on-frozen-lesson*, NOT blanket `proven_wired` — off-frozen-lesson stays an open claim), at which point `capability_tier_reconciliation_signal` reports `tiers_match_produced_reality=True` and CH1 earns `strong` — the reader reads the real `CAPABILITY_TIERS`, and the seeded ratified-tier test proves its level logic reaches `strong` on a coherent posture; only the party-gated tier bump is deferred. **⛔ Q3.1 does NOT edit the tier.** **Cross-links DID Leak-5** (`workbook-capability-tier-honesty-lag`, §1.6 C5) — the SAME underlying substrate, counted ONCE per namespace (NOT double-counted). *Evidence:* `CAPABILITY_TIERS["workbook"].tier == "mechanism_only_never_produced"` in `app/marcus/lesson_plan/bundle_catalog.py` (symbol reference — no line pin, since the file is governance-fenced and drifts on any edit above it); the produced-evidence refs `a940c5eb` / `8b275e5b`; registry `capability-honesty-workbook-tier-lags-produced-reality` (cross-links `workbook-capability-tier-honesty-lag`).
+
+#### The discipline that raises the Band (not just fixes)
+
+Every time capability substrate changes (a producer lands, a tier is party-ratified), ask: **"did we make the declared tier match what the system actually produces, or only edit prose?"** Only the first raises CH1 toward coherence. Ranked if forced to cut: **Leak 1** (CH1) is the one coherence gap — and it is the FAIL-SAFE direction (understating), so it is non-urgent; the believed-green OVERSTATING direction (CH2) is already clean. Note the PHASING FLAG: today's reconciliation is BOUNDED (the curated DID-Leak-5 evidence); the full trial-artifact-scan reconciliation is a split TODO (deferred-work.md) — landing it widens the curated set toward every produced component (and could surface the motion VERIFY as a real leak).
+
+### Cadence (how this dimension stays honest)
+
+- **Every production run:** the per-run capability facts (which bundle was offered, its readiness verdict) ride the run's final report alongside the Band.
+- **Every Class-S WRAPUP (Step 9):** review this dimension for currency — if a tier is party-ratified (CH1 → strong), or if a new producer lands, refresh the assessment. Re-read the motion VERIFY.
+- **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction is caught.
+- **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `capability_honesty` pins — reconciliation-claim, capability leak-count + slug-identity, score-arithmetic) + `tests/quality/test_capability_honesty_dimension.py` (the reconciliation reader against fixture tiers+evidence + RED-under-seeded proofs, incl. the isolating pin) FAIL when a machine-block claim contradicts a code-computed reality. The **reconciliation pin** reds if CH1 is bumped to `strong` while the reconciliation reports a mismatch (the workbook lag) — the score is tied to the reconciliation result (GL-9); the **isolating pin** varies the produced-evidence axis while holding the tier so a regression to raw-tier-only can't ship green.
+
+---
+
 <!-- QUALITY-SCORECARD-MACHINE-BLOCK v2 — parsed by app/quality/scorecard.py (dimension_ref / did_score_ref) and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. v2 (Story Q1.1): schema is dimension-agnostic — per-dimension rubric_version/as_of/as_verified + per-criterion {level, signal, evidence_ref} (score/max retained as the 0–4 reasoning trace). STRUCTURAL migration only: every value below is carried verbatim from v1. Q1.2 (post
 code-review honesty rework) adds a per-criterion `derivation` field naming HOW the
 level is justified — and it does NOT falsely mechanize a proxy:
@@ -836,5 +897,111 @@ dimensions:
         criterion: FT1
         slug: fidelity-trust-semantic-fence-warn-only-never-gates
         lane: learner-trust
+    trend: baseline
+  capability_honesty:
+    # Dimension 5 (Story Q3.1) — Capability-honesty (declared vs produced), scored by
+    # RECONCILING the EXISTING bundle_catalog capability tiers (GL-15 reuse; NO parallel
+    # plumbing) against a bounded curated produced-evidence signal. The §5 prose is the
+    # authority; this mirrors the headline numbers. ⛔ READ-ONLY: this dimension SCORES the
+    # honesty of the tiers; it NEVER edits a tier (party-gated governance — CLAUDE.md
+    # pack-versioning + the DID-Leak-5 entry). Honest baseline: bundle_catalog tiers workbook
+    # as mechanism_only_never_produced DESPITE real workbook MD+DOCX produced (trial a940c5eb,
+    # LO-verified 8b275e5b) on the FROZEN Tejal P2 lesson — the declared tier LAGS produced
+    # reality (the DID-Leak-5 pattern). The direction is CONSERVATIVE (understates → greys the
+    # bundle → fail-safe, NOT an overclaim). No tier OVERSTATES (claims proven while never
+    # produced — the worse believed-green direction — none today). PHASING FLAG: BOUNDED
+    # reconciliation over the curated DID-Leak-5 evidence; the full trial-artifact scan is a
+    # split TODO (deferred-work.md).
+    label: Capability-honesty
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
+    score: 50
+    max: 100
+    band: "C"
+    band_note: "C is a CONSERVATIVE/fail-safe coherence gap: the workbook capability TIER LAGS produced reality (tiered mechanism_only_never_produced despite real MD+DOCX produced on the frozen Tejal P2 lesson) — it UNDERSTATES (greys the bundle), it does NOT overstate. No tier claims proven while never produced (CH2 strong). Do NOT read C as 'capabilities dishonest/broken' NOR as 'all capabilities proven' — it is a fail-safe lag, party-gated to close (Q3.1 SCORES it read-only, NEVER edits the tier)."
+    criteria:
+      capability_tier_reconciliation_on:
+        # SIGNAL-DERIVED (purely mechanical, mirrors DID C3 / cost CE1 / coverage CV1 /
+        # fidelity FT1): level == level_from_signal(capability_tier_reconciliation_signal()).
+        # The reader reads the REAL bundle_catalog CAPABILITY_TIERS (READ-ONLY, deferred
+        # import) + a bounded curated produced-evidence set and flags the DID-Leak-5 pattern:
+        # a component tiered mechanism_only_never_produced for which a produced artifact
+        # demonstrably exists (workbook) → ONE lag mismatch → tiers_match_produced_reality=
+        # False → weak. Consults the REAL mismatch condition (declared tier vs produced-
+        # evidence), NOT mere tier presence (CV2/FT2). NOT a hardcoded verdict: when the tier
+        # is PARTY-RATIFIED to match produced reality the reconciliation reports no mismatch →
+        # tiers_match_produced_reality=True and this earns strong (close-path reachable; the
+        # seeded ratified-tier test proves the level logic reaches strong on a coherent
+        # posture; the pin never blocks the honest upgrade). ⛔ NEVER edits the tier
+        # (party-gated governance).
+        level: weak
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.capability_tier_reconciliation_signal
+          derived_level: weak
+          fact: >-
+            bundle_catalog CAPABILITY_TIERS['workbook'].tier == mechanism_only_never_produced
+            DESPITE real workbook MD+DOCX produced (trial a940c5eb, LO-verified 8b275e5b) on
+            the frozen Tejal P2 lesson → the reconciliation flags ONE lag mismatch (declared
+            tier LAGS produced reality) → tiers_match_produced_reality=False → weak. The
+            direction is CONSERVATIVE (understates → greys the bundle → fail-safe), NOT an
+            overclaim. Closing it is a PARTY-GATED tier bump (governance), at which point this
+            reader detects the coherent posture and the derived level becomes strong.
+          caveat: >-
+            the lag is fail-safe (understating), not believed-green; the honest tier is
+            proven-on-frozen-lesson (off-frozen-lesson stays an open claim), NOT blanket
+            proven_wired. Q3.1 SCORES the honesty READ-ONLY and NEVER edits the tier. VERIFY
+            (not a counted leak): motion's proven_regressed_repairable is likely stale the
+            same way — a deferred-work VERIFY TODO.
+        evidence_ref: "§5.6 CH1 · Capability Leak (workbook tier lags produced reality); cross-links DID Leak-5"
+        score: 1
+        max: 4
+      capability_no_overstatement:
+        # JUDGMENT-with-evidence: the reconciliation reader also reports
+        # overstatement_mismatches (a component tiered proven_wired/proven_regressed_repairable
+        # while curated evidence says it was NEVER produced — the worse believed-green
+        # direction). None today (no_overstatement=True) → the ledger errs CONSERVATIVE. The
+        # signal carries that fact; 'strong' is a §5.6 human judgment (the bounded curated
+        # evidence carries no never-produced-but-proven marker; the mechanism cannot certify
+        # 'no tier will ever overstate'). level_from_signal returns None for this key (an
+        # unverified/unknown signal never awards a clean level).
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.capability_tier_reconciliation_signal
+          fact: >-
+            the BOUNDED curated produced-evidence contains NO never-produced-but-proven marker
+            (it carries only the workbook produced=True marker), so overstatement_mismatches is
+            STRUCTURALLY empty (no_overstatement=True) — this signal CANNOT positively detect
+            overstatement from the curated set; it can only fail to find one. CH2's 'strong' is
+            therefore a HUMAN JUDGMENT that the LIVE ledger errs conservative (the only OBSERVED
+            mismatch is the fail-safe workbook lag, CH1), NOT a mechanically-checked absence of
+            overstatement.
+          caveat: >-
+            this is a BOUNDED reconciliation over a small curated produced-evidence set (the
+            recorded DID-Leak-5 refs), NOT a full trial-artifact scanner (PHASING FLAG) — so the
+            no-overstatement result is a JUDGMENT, not a checked absence. The full
+            trial-artifact-scan reconciliation (which could positively detect overstatement) is
+            a split TODO (deferred-work.md); 'strong' is a §5.6 judgment (3/4, not 4/4).
+        evidence_ref: "§5.6 CH2 · no-overstatement (ledger errs conservative)"
+        score: 3
+        max: 4
+    # ONE open leak: the workbook capability tier LAGS produced reality (the DID-Leak-5
+    # pattern — a CONSERVATIVE/understating coherence gap). Counted (line-anchored) as
+    # `cap_leak:` in the `## Capability-Honesty Scorecard Leak Registry` of
+    # deferred-inventory.md — a FIFTH per-dimension namespace, disjoint from `did_leak:` /
+    # `cost_leak:` / `cov_leak:` / `fid_leak:` (so the five counts never collide). len(leaks)
+    # == open_leaks == capability_leak_count_signal() == 1 (the capability leak-count +
+    # slug-identity pins reconcile doc↔registry). Lane governance: capability honesty is a
+    # front-door ledger/governance concern. Cross-links DID Leak-5
+    # (workbook-capability-tier-honesty-lag) — SAME substrate, counted once per namespace
+    # (NOT double-counted).
+    open_leaks: 1
+    leaks:
+      - rank: 1
+        criterion: CH1
+        slug: capability-honesty-workbook-tier-lags-produced-reality
+        lane: governance
     trend: baseline
 ```

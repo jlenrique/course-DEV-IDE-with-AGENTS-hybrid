@@ -66,6 +66,7 @@ from app.quality.history import (
     trend_from_history,
 )
 from app.quality.scorecard import (
+    _CAPABILITY_KEY,
     _COST_KEY,
     _COVERAGE_KEY,
     _DID_KEY,
@@ -80,6 +81,8 @@ from app.quality.signals import (
     _strip_fenced_code,
     _strip_html_comments,
     budget_stop_default_signal,
+    capability_leak_count_signal,
+    capability_tier_reconciliation_signal,
     cost_leak_count_signal,
     coverage_fence_default_signal,
     coverage_leak_count_signal,
@@ -104,6 +107,9 @@ _COVERAGE_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cov_leak:\s*(\S+)"
 #: Q2.3 — the fidelity_trust slug namespace (``fid_leak:``), a FOURTH per-dimension
 #: namespace disjoint from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:``.
 _FIDELITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?fid_leak:\s*(\S+)")
+#: Q3.1 — the capability_honesty slug namespace (``cap_leak:``), a FIFTH per-dimension
+#: namespace disjoint from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` / ``fid_leak:``.
+_CAPABILITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cap_leak:\s*(\S+)")
 
 
 def _registry_did_leak_slugs() -> set[str]:
@@ -137,6 +143,14 @@ def _registry_fidelity_leak_slugs() -> set[str]:
     text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
     open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     return {m.group(1) for m in _FIDELITY_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_capability_leak_slugs() -> set[str]:
+    """The OPEN ``cap_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``capability_leak_count_signal`` counts them (Q3.1 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _CAPABILITY_LEAK_SLUG_RE.finditer(open_text)}
 
 
 def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
@@ -212,6 +226,12 @@ _SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
     # CV1): SEMANTIC_TRIPWIRE['gates_production'] is False → semantic_fence_gates=False →
     # weak (the semantic-fidelity audit WARNs, never gates production).
     "semantic_fence_gating_on": semantic_fence_gating_signal,
+    # Q3.1 — capability_honesty CH1 is purely mechanical (mirrors DID C3 / cost CE1 /
+    # coverage CV1 / fidelity FT1): the reconciliation reads the REAL bundle_catalog tiers
+    # (read-only) against curated produced-evidence → tiers_match_produced_reality=False
+    # (the workbook lag) → weak. This IS the epic's reconciliation honesty-pin: CH1's level
+    # is tied to the reconciliation result (a claim of coherence while a mismatch exists → RED).
+    "capability_tier_reconciliation_on": capability_tier_reconciliation_signal,
 }
 
 #: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
@@ -257,6 +277,19 @@ _HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
             "test_fidelity_gates_claim_matches_reader",  # pin (a) gates-claim
             "test_fidelity_leak_count_reconciles_on_real_repo",  # pin (b) fidelity leak-count
             "test_fidelity_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.1 — capability_honesty MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror the siblings':
+    # (a) reconciliation-claim (the epic's exact pin — CH1's score FAILS if it claims the
+    # tiers match produced reality while the reconciliation reports a mismatch; the isolating
+    # pin proves it consulted the real reconciliation, not the raw tier), (b) capability
+    # leak-count + slug identity, (c) arithmetic.
+    _CAPABILITY_KEY: frozenset(
+        {
+            "test_capability_reconciliation_claim_matches_reader",  # pin (a) reconciliation-claim
+            "test_capability_leak_count_reconciles_on_real_repo",  # pin (b) capability leak-count
+            "test_capability_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
         }
     ),
 }
@@ -1606,3 +1639,263 @@ def test_fidelity_score_arithmetic_is_internally_consistent() -> None:
     dim = _real_block()["dimensions"][_FIDELITY_KEY]
     assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
     assert dim["score"] == 58 and dim["band"] == "C"
+
+
+# =============================================================================== #
+# Story Q3.1 — capability_honesty dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_CAPABILITY_KEY]) + their RED-under-seeded proofs. Reuse the SAME
+# pure helpers as the DID/cost/coverage/fidelity pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate EVERY
+# dimension, so coverage is structural. Doc↔code: each compares a machine-block CLAIM against
+# a CODE-computed reality (the reconciliation reader over the REAL bundle_catalog / the
+# deferred-inventory registry / the §5.5 arithmetic rule), never doc↔doc. This is the FIRST
+# Q3 (partial/report-only) sibling: the reconciliation is BOUNDED (curated produced-evidence,
+# the PHASING FLAG); the leak is the CONSERVATIVE workbook tier-lag (governance lane).
+# =============================================================================== #
+
+
+# --------------------------- pin (a) reconciliation-claim (the epic's exact pin) --- #
+
+
+def test_capability_reconciliation_claim_matches_reader() -> None:
+    """Pin (a) for capability_honesty, GREEN today: the signal-derived CH1
+    (``capability_tier_reconciliation_on``) level equals its reader's live output —
+    ``level_from_signal("capability_tier_reconciliation_on", <the reader>())``
+    == ``weak`` (the real posture: ``bundle_catalog`` tiers workbook
+    ``mechanism_only_never_produced`` while a produced artifact demonstrably exists →
+    ``tiers_match_produced_reality`` False → the reconciliation flags the lag). The shared
+    ``_signal_derived_violations`` scan (over every dimension) is also clean."""
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    ch1 = block["dimensions"][_CAPABILITY_KEY]["criteria"][
+        "capability_tier_reconciliation_on"
+    ]
+    derived = level_from_signal(
+        "capability_tier_reconciliation_on", capability_tier_reconciliation_signal()
+    )
+    assert ch1["level"] == derived == "weak"
+
+
+def test_capability_reconciliation_claim_reds_on_dishonest_level() -> None:
+    """AC3 / GL-9 RED-under-seeded-edit — the epic's EXACT reconciliation honesty-pin: bump
+    CH1 to ``strong`` on an in-memory copy WHILE the reconciliation still reports the workbook
+    lag → the pin (a) comparison FAILS (reader still says ``weak``). The real doc is never
+    touched. The score FAILS if it CLAIMS the tiers match produced reality while the
+    reconciliation reports a mismatch."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CAPABILITY_KEY]["criteria"][
+        "capability_tier_reconciliation_on"
+    ]["level"] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("capability_tier_reconciliation_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_capability_reconciliation_claim_reds_on_any_inflated_level(dishonest: str) -> None:
+    """AC3: any inflation of CH1 above the reader-derived ``weak`` (with the workbook tier
+    still lagging produced reality) is caught."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CAPABILITY_KEY]["criteria"][
+        "capability_tier_reconciliation_on"
+    ]["level"] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_capability_reconciliation_reader_reads_real_bundle_catalog() -> None:
+    """The reader is grounded in the REAL ``bundle_catalog`` ``CAPABILITY_TIERS`` + the
+    close-path is REACHABLE and READ-ONLY (Q2.1 CE1 / Q2.2 CV1 / Q2.3 FT1 pattern): the live
+    (tiers=None) reader reads the real registry (workbook lags → weak); a SEEDED
+    party-ratified tier that matches produced reality → coherent → strong; and calling the
+    reader NEVER mutates the real ``CAPABILITY_TIERS``."""
+    from app.marcus.lesson_plan.bundle_catalog import CAPABILITY_TIERS
+
+    before = {name: cap.tier for name, cap in CAPABILITY_TIERS.items()}
+    # Live: reads the REAL registry (workbook mechanism_only_never_produced) → weak.
+    live = capability_tier_reconciliation_signal()
+    assert live["tiers"]["workbook"] == "mechanism_only_never_produced"
+    assert live["tiers_match_produced_reality"] is False
+    assert level_from_signal("capability_tier_reconciliation_on", live) == "weak"
+    # Close-path REACHABLE: a party-ratified tier that matches produced reality → coherent →
+    # strong (the pin never blocks the honest upgrade). Seeded, NOT an edit to the registry.
+    ratified = capability_tier_reconciliation_signal(
+        tiers={**before, "workbook": "proven_wired"}
+    )
+    assert ratified["tiers_match_produced_reality"] is True
+    assert level_from_signal("capability_tier_reconciliation_on", ratified) == "strong"
+    # READ-ONLY: the reader never mutated the real registry.
+    assert {name: cap.tier for name, cap in CAPABILITY_TIERS.items()} == before
+
+
+def test_capability_reconciliation_pin_isolates_evidence_from_raw_tier() -> None:
+    """THE ISOLATING PIN (Q2.3 FT2 lesson applied to Q3.1's central thesis). HOLD the tier at
+    ``mechanism_only_never_produced`` and VARY the produced-evidence axis:
+
+      * evidence ``produced=True``  → a LAG mismatch → ``tiers_match_produced_reality`` False
+        → ``weak`` (the workbook case — the tier lags a produced artifact);
+      * evidence ``produced=False`` → NO mismatch → ``tiers_match_produced_reality`` True →
+        ``strong`` (a genuinely-never-produced component tiered mechanism_only is HONEST).
+
+    A regressed impl that flagged ``tier == mechanism_only_never_produced`` on RAW TIER ALONE
+    (ignoring produced-evidence) would flag BOTH → return ``weak`` for the no-evidence case →
+    this test would RED it. Proves CH1 consulted the REAL reconciliation (declared tier vs
+    produced-evidence), not the raw tier."""
+    held_tier = {"workbook": "mechanism_only_never_produced"}
+    lag = capability_tier_reconciliation_signal(
+        tiers=held_tier, produced_evidence={"workbook": {"produced": True}}
+    )
+    assert lag["lag_mismatches"] and lag["tiers_match_produced_reality"] is False
+    assert level_from_signal("capability_tier_reconciliation_on", lag) == "weak"
+    # SAME tier, evidence flipped to never-produced → NO lag → coherent → strong.
+    honest = capability_tier_reconciliation_signal(
+        tiers=held_tier, produced_evidence={"workbook": {"produced": False}}
+    )
+    assert honest["lag_mismatches"] == [] and honest["tiers_match_produced_reality"] is True
+    assert level_from_signal("capability_tier_reconciliation_on", honest) == "strong"
+
+
+def test_capability_ch1_signal_derived_ch2_judgment_with_evidence() -> None:
+    """The honest derivation split: CH1 is ``signal-derived`` (the reconciliation reader owns
+    the level); CH2 is ``judgment-with-evidence`` (a real signal block carries the
+    no-overstatement fact, the level is an authored §5.6 judgment). No unverified signal awards
+    a clean level: ``level_from_signal`` returns ``None`` for the judgment-with-evidence key."""
+    crit = _real_block()["dimensions"][_CAPABILITY_KEY]["criteria"]
+    assert crit["capability_tier_reconciliation_on"]["derivation"] == "signal-derived"
+    c = crit["capability_no_overstatement"]
+    assert c["derivation"] == "judgment-with-evidence"
+    assert c["level"] == "strong"
+    assert isinstance(c["signal"], dict)
+    assert c["signal"]["reader"].startswith("app.quality.signals.")
+    assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+    assert level_from_signal("capability_no_overstatement", c["signal"]) is None
+
+
+def test_capability_mirrored_tier_constants_match_source() -> None:
+    """Anti-drift + enum-COVERAGE (FIX-2): the hand-mirrored ``CapabilityTier`` constants in
+    ``app/quality/signals.py`` (``_NEVER_PRODUCED_TIERS`` + ``_PROVEN_TIERS``) are tied to
+    ``bundle_catalog.CapabilityTier``'s REAL literal members, so a future tier rename reds THIS
+    test rather than silently mis-reconciling. Crucially it asserts the mirrored sets COVER
+    every enum member — so a NEW/unmirrored tier (the ``shelf`` class FIX-1 restored, or any
+    future addition) reds this rather than sitting unclassified and false-cleaning a lag. This
+    is the "future tier reds the test" guarantee for the GROWTH direction. Mirrors the Q2.3
+    ``_OIA_CATEGORIES`` anti-drift discipline."""
+    import typing
+
+    from app.marcus.lesson_plan.bundle_catalog import CapabilityTier
+    from app.quality.signals import _NEVER_PRODUCED_TIERS, _PROVEN_TIERS
+
+    members = set(typing.get_args(CapabilityTier))
+    # every mirrored tier is a REAL CapabilityTier member (no stale/typo'd mirror).
+    assert members >= _NEVER_PRODUCED_TIERS, (
+        "a _NEVER_PRODUCED_TIERS member is not a real CapabilityTier — update the mirror"
+    )
+    assert members >= _PROVEN_TIERS, (
+        "a _PROVEN_TIERS member is not a real CapabilityTier — update the mirror"
+    )
+    # enum-COVERAGE: every CapabilityTier member is CLASSIFIED by the mirrored sets — a
+    # NEW/unmirrored tier (e.g. shelf) reds HERE rather than silently false-cleaning a lag.
+    unclassified = members - _PROVEN_TIERS - _NEVER_PRODUCED_TIERS
+    assert unclassified == set(), (
+        f"unclassified CapabilityTier member(s): {sorted(unclassified)} — add each to "
+        "_PROVEN_TIERS or _NEVER_PRODUCED_TIERS in app/quality/signals.py"
+    )
+    # the two classes are disjoint (a tier is never both never-produced AND proven).
+    assert _NEVER_PRODUCED_TIERS.isdisjoint(_PROVEN_TIERS)
+
+
+# --------------------------- pin (b) capability leak-count + slug identity --------- #
+
+
+def test_capability_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for capability_honesty: the dimension's ``open_leaks`` == the count of
+    ``cap_leak:``-tagged OPEN entries in the ``## Capability-Honesty Scorecard Leak Registry``
+    == ``len(leaks)`` == 1. A FIFTH per-dimension ``cap_leak:`` namespace (NOT the global DID
+    ``did_leak:`` / cost ``cost_leak:`` / coverage ``cov_leak:`` / fidelity ``fid_leak:``
+    counts). Anti-drift: strike the ``cap_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_CAPABILITY_KEY]
+    count = capability_leak_count_signal()["capability_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_CAPABILITY_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cap_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_CAPABILITY_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_capability_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for capability_honesty: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``cap_leak:`` slugs — a slug typo / rename
+    that keeps the count at 1 is caught here, which a count-only reconciliation misses."""
+    dim = _real_block()["dimensions"][_CAPABILITY_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_capability_leak_slugs()
+
+
+def test_capability_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the capability machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_CAPABILITY_KEY]
+    dim["leaks"][0]["slug"] = "capability-honesty-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_capability_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_capability_leak_cross_links_did_leak5_no_double_count() -> None:
+    """AC4 cross-link / NO-double-count: the capability ``cap_leak:`` slug and the DID
+    ``did_leak:`` DID-Leak-5 slug are the SAME underlying substrate (the workbook capability
+    tier lag) but DISTINCT slugs in DISJOINT namespaces — counted ONCE each, never
+    double-counted. Both are present (the cross-link is real, not a dangling reference)."""
+    cap_slugs = _registry_capability_leak_slugs()
+    did_slugs = _registry_did_leak_slugs()
+    assert "capability-honesty-workbook-tier-lags-produced-reality" in cap_slugs
+    assert "workbook-capability-tier-honesty-lag" in did_slugs  # DID Leak-5 (the substrate)
+    # distinct slugs, disjoint namespaces → the shared substrate is not double-counted.
+    assert cap_slugs.isdisjoint(did_slugs)
+
+
+def test_five_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 FIVE-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` / ``cap_leak:`` readers do NOT cross-count, and their slug identity sets are
+    pairwise disjoint. A tag in one namespace must never inflate another dimension's count.
+    (Extends the Q2.3 four-namespace pin to the fifth capability namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1 and cap == 1
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+    }
+    assert len(slug_sets["did"]) == 5
+    assert len(slug_sets["cost"]) == 1
+    assert len(slug_sets["cov"]) == 1
+    assert len(slug_sets["fid"]) == 1
+    assert len(slug_sets["cap"]) == 1
+    # pairwise disjoint across ALL FIVE namespaces — no slug leaks across namespaces.
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# --------------------------- pin (c) capability score-arithmetic ------------------ #
+
+
+def test_capability_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for capability_honesty: score↔level per §5.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§5.5 boundary. 1+3 = 4/8 → 50 → C. Doc↔code: the arithmetic
+    RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_CAPABILITY_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 50 and dim["band"] == "C"

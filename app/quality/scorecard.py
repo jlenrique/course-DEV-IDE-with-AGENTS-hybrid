@@ -32,18 +32,21 @@ _COST_KEY = "cost_efficiency"
 _COVERAGE_KEY = "coverage_honesty"
 #: Story Q2.3 — Dimension 4 (Fidelity-trust).
 _FIDELITY_KEY = "fidelity_trust"
+#: Story Q3.1 — Dimension 5 (Capability-honesty; declared vs produced).
+_CAPABILITY_KEY = "capability_honesty"
 
 #: The named canonical dimension-key universe. Q1.3's GL-6 dimension-coverage
 #: meta-ratchet consumes this rail (a new dimension cannot be silently added
 #: without a human touching this tuple AND registering its honesty-pin). Q1.1
 #: established the constant; the meta-ratchet *test* is Q1.3; Q2.1 added
-#: ``cost_efficiency``; Q2.2 added ``coverage_honesty``; Q2.3 adds ``fidelity_trust``
-#: here IN LOCKSTEP with registering its honesty-pin.
+#: ``cost_efficiency``; Q2.2 added ``coverage_honesty``; Q2.3 added ``fidelity_trust``;
+#: Q3.1 adds ``capability_honesty`` here IN LOCKSTEP with registering its honesty-pin.
 _EXPECTED_CANONICAL_DIMENSION_KEYS: tuple[str, ...] = (
     _DID_KEY,
     _COST_KEY,
     _COVERAGE_KEY,
     _FIDELITY_KEY,
+    _CAPABILITY_KEY,
 )
 
 

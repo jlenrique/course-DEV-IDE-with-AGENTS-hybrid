@@ -103,6 +103,40 @@ The 1 open fidelity_trust scorecard leak. Each line's HTML comment gives its §4
 
 ---
 
+## Capability-Honesty Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN capability_honesty scorecard leaks counted (line-anchored) by
+     app.quality.signals.capability_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the capability_honesty dimension
+     in docs/quality/project-quality-scorecard.md §5.6 (the capability leak-count +
+     slug-identity honesty pins). FIFTH `cap_leak:` namespace, disjoint from the DID
+     `did_leak:`, cost `cost_leak:`, coverage `cov_leak:`, and fidelity `fid_leak:` tags so the
+     five counts never collide (verified by test_five_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: closing a capability leak == remove its cap_leak line HERE **and**
+     decrement `open_leaks` + drop the `leaks:` entry in the scorecard, IN LOCKSTEP (the pins
+     reconcile the two — editing only one goes RED). Do NOT tag leaks under their deferred
+     entries: those migrate to §Closed Entries — Archived on close, which the reader excludes,
+     silently dropping the count while the scorecard is untouched.
+
+     ⛔ GOVERNANCE FENCE: this leak is CLOSED by a PARTY-GATED tier bump in bundle_catalog.py
+     (CLAUDE.md pack-versioning + the `workbook-capability-tier-honesty-lag` deferred entry) —
+     NOT by editing the scorecard. Q3.1 SCORES the tier honesty read-only; it never edits a tier.
+
+     CROSS-LINK / NO-DOUBLE-COUNT: this capability leak is the SAME underlying substrate as
+     DID Leak-5 (`did_leak: workbook-capability-tier-honesty-lag`, §1.6 C5) — the workbook
+     capability tier LAGS produced reality. It is deliberately counted ONCE per namespace:
+     under `did_leak:` it is the DID C5 capability-ledger-lag; here under `cap_leak:` it is the
+     capability_honesty CH1 tier↔produced reconciliation leak. Distinct slugs, distinct
+     namespaces → NOT a double-count of the shared `workbook-capability-tier-honesty-lag`
+     deferred entry. -->
+
+The 1 open capability_honesty scorecard leak. Each line's HTML comment gives its §5.6 criterion, its capability leak number, and a pointer to the owning work:
+
+- cap_leak: capability-honesty-workbook-tier-lags-produced-reality  <!-- [CH1] Capability Leak 1 — bundle_catalog.py tiers `workbook` as mechanism_only_never_produced (front-door readiness `not_yet`) DESPITE real workbook MD+DOCX produced (trial a940c5eb, LO-verified 8b275e5b) on the FROZEN Tejal P2 lesson. The declared tier LAGS produced reality (the DID-Leak-5 pattern). Direction is CONSERVATIVE (understates → greys the bundle → fail-safe, NOT an overclaim), so non-urgent. Close = PARTY-RATIFY the honest tier (proven-on-frozen-lesson, NOT blanket proven_wired — off-frozen-lesson stays an open claim) in bundle_catalog.py — a party-gated governance act — at which point capability_tier_reconciliation_signal() reports tiers_match_produced_reality=True and CH1 earns strong. ⛔ Do NOT edit the tier from the scorecard. Cross-links DID Leak-5 (workbook-capability-tier-honesty-lag) — SAME substrate, counted once per namespace (did_leak: = DID C5 capability-ledger-lag; cap_leak: = capability_honesty CH1 reconciliation), NOT double-counted. -->
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |
