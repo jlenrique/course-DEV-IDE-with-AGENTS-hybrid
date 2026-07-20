@@ -346,17 +346,17 @@ def test_ranked_project_leaks_interleaves_across_dimensions() -> None:
 def test_real_did_leaks_reconcile_with_open_leaks() -> None:
     """The real DID ``leaks`` list has exactly 5 entries == its ``open_leaks``. The
     cross-dimensional ranked list now AGGREGATES DID (5) + cost_efficiency (1) +
-    coverage_honesty (1) = 7 (GL-13; Q2.1 added cost_efficiency's ``leaks`` list, Q2.2
-    added coverage_honesty's)."""
+    coverage_honesty (1) + fidelity_trust (1) = 8 (GL-13; Q2.1 added cost_efficiency's
+    ``leaks`` list, Q2.2 added coverage_honesty's, Q2.3 added fidelity_trust's)."""
     block = read_scorecard_block()
     dim = block["dimensions"][_DID_KEY]
     assert len(dim["leaks"]) == dim["open_leaks"] == 5
-    # Ranked list = sum of every dimension's open_leaks (DID 5 + cost 1 + coverage 1).
+    # Ranked list = sum of every dimension's open_leaks (DID 5 + cost 1 + coverage 1 + fid 1).
     total_open = sum(
         d.get("open_leaks", 0) for d in block["dimensions"].values() if isinstance(d, dict)
     )
-    assert total_open == 7
-    assert len(ranked_project_leaks(block)) == total_open == 7
+    assert total_open == 8
+    assert len(ranked_project_leaks(block)) == total_open == 8
 
 
 def test_leak_coverage_gaps_clean_on_real_repo() -> None:

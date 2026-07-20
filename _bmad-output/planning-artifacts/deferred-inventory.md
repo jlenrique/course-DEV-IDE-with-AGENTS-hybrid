@@ -73,6 +73,36 @@ The 1 open coverage_honesty scorecard leak. Each line's HTML comment gives its �
 
 ---
 
+## Fidelity-Trust Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN fidelity_trust scorecard leaks counted (line-anchored) by
+     app.quality.signals.fidelity_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the fidelity_trust dimension
+     in docs/quality/project-quality-scorecard.md §4.6 (the fidelity leak-count +
+     slug-identity honesty pins). FOURTH `fid_leak:` namespace, disjoint from the DID
+     `did_leak:`, cost `cost_leak:`, and coverage `cov_leak:` tags so the four counts never
+     collide (verified by test_four_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: closing a fidelity leak == remove its fid_leak line HERE **and**
+     decrement `open_leaks` + drop the `leaks:` entry in the scorecard, IN LOCKSTEP (the
+     pins reconcile the two — editing only one goes RED). Do NOT tag leaks under their
+     deferred entries: those migrate to §Closed Entries — Archived on close, which the
+     reader excludes, silently dropping the count while the scorecard is untouched.
+
+     CROSS-LINK / NO-DOUBLE-COUNT: this fidelity leak is the SAME underlying substrate as
+     DID Leak-2 (`did_leak: braid-workbook-semantic-claim-citation-audit`, §1.6 C5) — the
+     workbook semantic audit WARNs but does not gate. It is deliberately counted ONCE per
+     namespace: under `did_leak:` it is the DID C5 honesty leak (workbook-scoped); here
+     under `fid_leak:` it is the fidelity-trust FT1 semantic-fence leak (source→output
+     faithfulness framing). Distinct slugs, distinct namespaces → NOT a double-count of the
+     shared `braid-workbook-semantic-claim-citation-audit` deferred entry. -->
+
+The 1 open fidelity_trust scorecard leak. Each line's HTML comment gives its §4.6 criterion, its fidelity leak number, and a pointer to the owning work:
+
+- fid_leak: fidelity-trust-semantic-fence-warn-only-never-gates  <!-- [FT1] Fidelity Leak 1 — the semantic-fidelity audit (app/specialists/_shared/source_fidelity_audit.py::audit_semantic_framing) is a REAL heuristic that reports candidate unsourced-framing, but SEMANTIC_TRIPWIRE['gates_production'] is False → it WARNs and NEVER fails a production run. A WARN that never gates IS the measured gap (the DID-C3 / cost-CE1 / coverage-CV1 pattern: mechanism exists, never gates). Close = flip gates_production True (make the audit gate production) — at which point semantic_fence_gating_signal() reports semantic_fence_gates=True and FT1 earns strong. Cross-links DID Leak-2 (braid-workbook-semantic-claim-citation-audit) — SAME substrate, counted once per namespace (did_leak: = DID C5 workbook-scoped; fid_leak: = fidelity-trust FT1 source→output framing), NOT double-counted. -->
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |

@@ -1008,6 +1008,338 @@ def coverage_leak_count_signal(inventory_path: Path | None = None) -> dict[str, 
     }
 
 
+# ============================ fidelity-trust (Q2.3) ============================
+#
+# Signal readers over the EXISTING fidelity emitters (GL-15 — reuse, NO parallel
+# plumbing): the semantic-fidelity audit's DEFAULT gating posture (the
+# ``SEMANTIC_TRIPWIRE["gates_production"]`` module constant — the fence), the Vera
+# fidelity trace's real Omissions/Inventions/Alterations FAIL condition
+# (``vera._act._hard_fail`` over a trace's findings + the verdict status), and the
+# audit's WARN-transparency posture (``mode == "warn_only"`` + the claim fence). The
+# fidelity types are reached ONLY via deferred LOCAL imports (GL-3 clean-leaf), and a
+# run's fidelity trace is otherwise read as PLAIN JSON. Every reader is fail-soft per
+# field — it never raises and never invents a clean value.
+
+#: ``fid_leak:`` tag, anchored to line start — a FOURTH per-dimension namespace disjoint
+#: from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` so the fidelity count/identity
+#: reconciliation never collides with the other three. 1 today (the WARN-only-that-never-
+#: gates semantic-fence leak).
+_FIDELITY_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?fid_leak:")
+
+#: The Vera fidelity-trace hard-fail category set (Omissions / Inventions / Alterations),
+#: mirrored here for the O/I/A COUNT only; the REAL predicate ``vera._act._hard_fail`` is
+#: what the honesty reader consults for the fail decision (never re-implemented). An
+#: anti-drift pin (test_fidelity_mirrored_vera_constants_match_source) ties this to Vera's
+#: real ``OIA`` so a future Vera rename reds the test rather than silently mis-counting.
+_OIA_CATEGORIES: frozenset[str] = frozenset({"O", "I", "A"})
+#: Vera verdict status that marks a real fidelity FAIL (a hard O/I/A finding halts). Hand-
+#: mirrored from ``vera._act`` and anti-drift-pinned (same test) so a Vera rename cannot
+#: silently make ``verdict_halts`` permanently False.
+_FIDELITY_HALT_STATUS = "HALT-AND-REMEDIATE"
+#: The schema tag a genuine Vera fidelity trace carries (``vera._act`` emits it). A dict
+#: lacking this tag is a foreign artifact / wrong file and can NEVER certify clean (FIX-3).
+_FIDELITY_TRACE_SCHEMA = "fidelity-trace.v1"
+
+
+def _read_semantic_tripwire(tripwire: Any = None) -> Mapping[str, Any] | None:
+    """Coerce the semantic-tripwire source into a mapping, or ``None`` (fail-soft).
+
+    ``tripwire is None`` → consult the REAL ``SEMANTIC_TRIPWIRE`` module constant via a
+    DEFERRED import (GL-3 — no module-scope ``app.*``). An injectable ``Mapping`` is
+    returned as-is so a pin/test can read a SEEDED posture (the reachable close-path:
+    ``gates_production=True`` → gating) WITHOUT mutating the real constant — read-only.
+    A non-mapping injected value / an unimportable constant degrades to ``None``.
+    """
+    if tripwire is not None:
+        return tripwire if isinstance(tripwire, Mapping) else None
+    try:
+        from app.specialists._shared.source_fidelity_audit import SEMANTIC_TRIPWIRE
+    except Exception:  # noqa: BLE001 — a signal read must never raise into a caller
+        return None
+    return SEMANTIC_TRIPWIRE if isinstance(SEMANTIC_TRIPWIRE, Mapping) else None
+
+
+def semantic_fence_gating_signal(tripwire: Any = None) -> dict[str, Any]:
+    """FT1 — does the semantic-fidelity audit GATE production BY DEFAULT?
+
+    The semantic-fidelity audit (``audit_semantic_framing`` — a REAL heuristic that
+    reports candidate unsourced-framing) is honest machinery, but its disposition
+    constant ``SEMANTIC_TRIPWIRE["gates_production"]`` is ``False``: it WARNs and never
+    FAILS a production run. A WARN that never gates = the measured gap → a fidelity-trust
+    LEAK (the DID-C3 / cost-CE1 / coverage-CV1 pattern: mechanism exists, never gates).
+
+    **SIGNAL-DERIVED + reachable close-path (Q2.1 CE1 / Q2.2 CV1 discipline):** the reader
+    reads the REAL ``gates_production`` constant (not a hardcoded ``False``); IF it is
+    genuinely flipped ``True`` the reader reports ``semantic_fence_gates=True`` and FT1 can
+    earn ``strong`` — the pin must NOT block that honest upgrade. **Read-only** — it only
+    READS the constant (simpler than CE1/CV1 since the source is a constant, not an env
+    toggle; no mutation, no self-clearing). An injectable ``tripwire`` mapping reads a
+    seeded posture independent of the committed constant. ``gates_production`` is read
+    STRICTLY as ``bool`` — a non-``bool`` value (unknown posture) degrades to
+    ``"unavailable"`` (never coerced to a clean/false posture).
+
+    FIX-4: an unimportable / non-mapping tripwire degrades to ``status="unavailable"``
+    (never a clean or silently-``False`` posture — a missing constant is NOT "definitely
+    non-gating").
+    """
+    trip = _read_semantic_tripwire(tripwire)
+    if trip is None:
+        return {
+            "status": "unavailable",
+            "source": "app.specialists._shared.source_fidelity_audit.SEMANTIC_TRIPWIRE",
+        }
+    try:
+        gates = trip.get("gates_production")
+    except Exception:  # noqa: BLE001 — a non-Mapping-ish injected value
+        return {
+            "status": "unavailable",
+            "source": "app.specialists._shared.source_fidelity_audit.SEMANTIC_TRIPWIRE",
+        }
+    if not isinstance(gates, bool):
+        # unknown / malformed posture — never coerced to a clean or false gating claim.
+        return {
+            "status": "unavailable",
+            "source": "SEMANTIC_TRIPWIRE.gates_production",
+        }
+    return {
+        "status": "ok",
+        "source": "SEMANTIC_TRIPWIRE.gates_production",
+        "gates_production": gates,
+        "semantic_fence_gates": gates,
+        "note": (
+            "the semantic-fidelity audit (audit_semantic_framing) is REAL but "
+            "SEMANTIC_TRIPWIRE['gates_production'] is False → it WARNs and never FAILS a "
+            "production run. A WARN that never gates IS the measured gap (the DID-C3 / "
+            "cost-CE1 / coverage-CV1 pattern) → the fidelity-trust leak. Close-path is "
+            "reachable: flip gates_production True (the real audit becomes gating) and this "
+            "reader reports semantic_fence_gates=True → FT1 earns strong. Cross-links DID "
+            "Leak-2 (braid-workbook-semantic-claim-citation-audit) — counted once, under "
+            "fid_leak:, not double-counted."
+        ),
+    }
+
+
+def _read_fidelity_trace(source: Any) -> dict[str, Any] | None:
+    """Coerce a Vera fidelity-trace source into a plain mapping, or ``None`` (fail-soft).
+
+    A ``dict`` passes through; a ``str`` is tried as JSON CONTENT first then as a
+    filesystem PATH (Q2.2 FIX-4 — a supplied trace-as-text is not silently misread as
+    "no trace" via an OSError); a ``Path`` is read as JSON. Any failure (missing file /
+    bad JSON / non-mapping) degrades to ``None``. No ``app`` import — a trace is plain
+    ``fidelity-trace.v1`` JSON.
+    """
+    if source is None:
+        return None
+    if isinstance(source, dict):
+        return source
+    if isinstance(source, str):
+        try:
+            parsed = json.loads(source)
+        except ValueError:
+            parsed = None
+        if isinstance(parsed, dict):
+            return parsed
+        try:
+            data = json.loads(Path(source).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        return data if isinstance(data, dict) else None
+    if isinstance(source, Path):
+        try:
+            data = json.loads(Path(source).read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        return data if isinstance(data, dict) else None
+    return None
+
+
+def fidelity_trace_honesty_signal(trace: Any = None) -> dict[str, Any]:
+    """FT2 — does the fidelity trace honestly report a real Omission/Invention/Alteration
+    FAIL, rather than reading "clean" on a real fidelity fail? (The Q2.2 CV2 lesson.)
+
+    The Vera fidelity trace (``fidelity-trace.v1``) carries ``findings`` (each
+    ``{category, severity, ...}`` with ``category`` ∈ O/I/A) and a ``verdict``. A REAL
+    fidelity FAIL is a hard O/I/A finding — decided by the REAL predicate
+    ``vera._act._hard_fail`` (category ∈ O/I/A ∧ severity ``critical`` → the trace's
+    verdict becomes ``HALT-AND-REMEDIATE``). This reader CONSULTS that real predicate (a
+    DEFERRED import, GL-3) — it does NOT re-implement the fail rule and does NOT report a
+    "clean" fidelity on a real O/I/A fail (``is_clean_fidelity`` is False whenever
+    ``_hard_fail`` fires OR the verdict halts). The LEVEL is a §4 judgment-with-evidence
+    (``level_from_signal`` returns ``None``).
+
+    A trace with ZERO findings cannot certify clean (non-empty guard — a real trace emits
+    at least the advisory O/I/A trio); no trace supplied → only the wiring FACT.
+
+    FIX-4: an unimportable predicate degrades to ``status="unavailable"`` +
+    ``fidelity_fail_predicate_wired=False`` (never read wiring-absent as clean).
+    """
+    try:
+        from app.specialists.vera._act import _hard_fail
+    except Exception:  # noqa: BLE001
+        return {
+            "status": "unavailable",
+            "source": "app.specialists.vera._act._hard_fail",
+            "fidelity_fail_predicate_wired": False,
+        }
+    data = _read_fidelity_trace(trace)
+    if data is None:
+        return {
+            "status": "ok",
+            "source": "app.specialists.vera._act._hard_fail",
+            "fidelity_fail_predicate_wired": True,
+            "trace_present": False,
+            "note": (
+                "the real O/I/A hard-fail predicate (vera._act._hard_fail: category in "
+                "{O,I,A} and severity=='critical' → HALT-AND-REMEDIATE) is wired; no trace "
+                "supplied so only the wiring FACT is reported. A real O/I/A fail is NEVER a "
+                "clean fidelity (the Q2.2 CV2 is_clean_pass lesson applied to fidelity)."
+            ),
+        }
+    # FIX-3: only a genuine ``fidelity-trace.v1`` Vera trace may certify clean. An arbitrary
+    # dict with findings/verdict keys (a foreign artifact / wrong file) degrades to
+    # "unavailable" — never a false-clean. (schema_version is what vera._act emits.)
+    if data.get("schema_version") != _FIDELITY_TRACE_SCHEMA:
+        return {
+            "status": "unavailable",
+            "source": "app.specialists.vera._act._hard_fail",
+            "fidelity_fail_predicate_wired": True,
+            "note": (
+                f"trace schema_version {data.get('schema_version')!r} != "
+                f"{_FIDELITY_TRACE_SCHEMA!r} — a foreign / wrong-schema artifact cannot "
+                "certify a clean fidelity."
+            ),
+        }
+    findings = data.get("findings")
+    findings_list = findings if isinstance(findings, list) else []
+    # FIX-2: pass the DICT-FILTERED findings to the real predicate (consistent with
+    # oia_finding_count). _hard_fail does finding.get(...), so a non-dict entry would raise
+    # AttributeError → caught → "unavailable", MASKING a genuine critical O/I/A positioned
+    # after the non-dict. Filtering first means a real fail after a junk entry is still
+    # detected, not suppressed.
+    dict_findings = [f for f in findings_list if isinstance(f, dict)]
+    verdict = data.get("verdict")
+    verdict_status = verdict.get("status") if isinstance(verdict, dict) else None
+    try:
+        hard_fail = _hard_fail(dict_findings)
+    except Exception:  # noqa: BLE001 — the predicate must never raise into a caller
+        return {
+            "status": "unavailable",
+            "source": "app.specialists.vera._act._hard_fail",
+            "fidelity_fail_predicate_wired": True,
+        }
+    oia_finding_count = sum(
+        1 for f in dict_findings if f.get("category") in _OIA_CATEGORIES
+    )
+    verdict_halts = verdict_status == _FIDELITY_HALT_STATUS
+    return {
+        "status": "ok",
+        "source": "app.specialists.vera._act._hard_fail",
+        "fidelity_fail_predicate_wired": True,
+        "trace_present": True,
+        "findings_count": len(findings_list),
+        "oia_finding_count": oia_finding_count,
+        "hard_fail_finding": hard_fail,
+        "verdict_status": verdict_status,
+        "verdict_halts": verdict_halts,
+        # A clean fidelity = the trace carries REAL O/I/A findings AND the REAL hard-fail
+        # predicate does NOT fire AND the verdict does not halt. FIX-1: require
+        # oia_finding_count > 0 (not merely len(findings) > 0) — a degenerate trace with
+        # findings but ZERO O/I/A entries cannot certify clean fidelity (the CV2 over-claim-
+        # clean failure this reader exists to prevent). The `_hard_fail` term (not the
+        # verdict status) is what drives NOT-clean on a real critical O/I/A — the verdict_halts
+        # term is defensive/redundant, so a regressed impl trusting only verdict.status would
+        # be caught by the isolating test (critical O/I/A + PROCEED → still not-clean).
+        "is_clean_fidelity": (
+            hard_fail is None and not verdict_halts and oia_finding_count > 0
+        ),
+        "note": (
+            "PASS / FAIL are honestly distinguished by the REAL predicate: a critical O/I/A "
+            "finding (vera._act._hard_fail) → NOT a clean fidelity (independent of verdict "
+            "status); a trace with no O/I/A findings cannot certify clean (oia_finding_count "
+            "guard). The reader consults the real fail condition, never mere trace presence "
+            "(Q2.2 CV2)."
+        ),
+    }
+
+
+def fidelity_audit_honesty_signal(tripwire: Any = None) -> dict[str, Any]:
+    """FT3 — does the semantic-fidelity audit honestly LABEL itself advisory (``warn_only``
+    + a claim fence) rather than silently passing unsourced framing?
+
+    ``SEMANTIC_TRIPWIRE`` declares ``mode == "warn_only"``, a ``disposition``, and a
+    ``claim_fence`` prose that scopes exactly what the heuristic does and does NOT assert
+    (it does NOT claim comprehensive semantic claim↔source faithfulness). That honest
+    self-labelling — a WARN transparently declared, not a silent pass — is the FACT this
+    reader reports; the LEVEL is a §4 judgment-with-evidence (``level_from_signal`` returns
+    ``None``). Read-only. FIX-4: an unimportable / non-mapping tripwire → ``status=
+    "unavailable"`` (never read the label-absent as honest).
+    """
+    trip = _read_semantic_tripwire(tripwire)
+    if trip is None:
+        return {
+            "status": "unavailable",
+            "source": "app.specialists._shared.source_fidelity_audit.SEMANTIC_TRIPWIRE",
+        }
+    try:
+        mode = trip.get("mode")
+        claim_fence = trip.get("claim_fence")
+        disposition = trip.get("disposition")
+        gates_production = trip.get("gates_production")
+    except Exception:  # noqa: BLE001
+        return {
+            "status": "unavailable",
+            "source": "app.specialists._shared.source_fidelity_audit.SEMANTIC_TRIPWIRE",
+        }
+    labels_warn_only = mode == "warn_only"
+    has_claim_fence = isinstance(claim_fence, str) and bool(claim_fence.strip())
+    return {
+        "status": "ok",
+        "source": "SEMANTIC_TRIPWIRE.{mode,claim_fence,disposition}",
+        "mode": mode,
+        "labels_warn_only": labels_warn_only,
+        "has_claim_fence": has_claim_fence,
+        "disposition": disposition,
+        "gates_production": gates_production,
+        # honest advisory transparency = it labels itself warn_only AND scopes its claim
+        # fence — a WARN transparently declared, NOT a silent pass of unsourced framing.
+        "advisory_transparency": labels_warn_only and has_claim_fence,
+        "note": (
+            "the audit transparently labels itself warn_only with an explicit claim_fence "
+            "(it does NOT assert comprehensive semantic claim↔source faithfulness) — an "
+            "honestly-declared advisory, not a silent pass. This is report-time honesty, "
+            "NOT a gate (gates_production stays False — see FT1)."
+        ),
+    }
+
+
+def fidelity_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
+    """fidelity leak-count — count ``fid_leak:``-tagged OPEN entries in the deferred
+    inventory (a FOURTH per-dimension namespace, disjoint from ``did_leak:`` /
+    ``cost_leak:`` / ``cov_leak:``).
+
+    Same scoping as the sibling leak-count readers (fenced code / HTML comments / archived
+    section stripped; line-anchored tag). **1 today** (the WARN-only-semantic-fence leak in
+    the ``## Fidelity-Trust Scorecard Leak Registry``). Fail-soft: unreadable file →
+    ``{"status": "unavailable", "fidelity_leak_count": None}``.
+    """
+    p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {
+            "status": "unavailable",
+            "source": _DEFERRED_INVENTORY_REL,
+            "fidelity_leak_count": None,
+        }
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    count = len(_FIDELITY_LEAK_LINE_RE.findall(open_text))
+    return {
+        "status": "ok",
+        "source": _DEFERRED_INVENTORY_REL,
+        "fidelity_leak_count": count,
+    }
+
+
 # ============================ signal → level derivation ============================
 #
 # THE anti-believed-green rule: a level is NEVER mechanically awarded a clean/uniform
@@ -1102,16 +1434,33 @@ def _level_cv_coverage_fence(signal: Any) -> str:
     return "unavailable"
 
 
+def _level_ft_semantic_fence(signal: Any) -> str:
+    """FT1 (purely mechanical, mirrors DID C3 / cost CE1 / coverage CV1): the semantic-
+    fidelity audit gates production by default → ``strong``; the audit EXISTS but WARNs and
+    never gates (``semantic_fence_gates`` False — ``SEMANTIC_TRIPWIRE['gates_production']``
+    is False) → ``weak`` (mechanism present, never gates — NOT ``absent``); malformed /
+    non-ok / unknown ``semantic_fence_gates`` → ``unavailable``."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    gates = signal.get("semantic_fence_gates")
+    if gates is True:
+        return "strong"
+    if gates is False:
+        return "weak"
+    return "unavailable"
+
+
 def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     """Derive a criterion's level from its signal (the anti-believed-green rule).
 
     Total over each mechanical criterion's signal domain (never raises); for a
     proxy/unverified/unknown/malformed signal it returns a NON-clean level (never
     ``strong``/``uniform``) — the sole exception being C4 on a real detector-observed
-    ``int == 0``, C3 on genuinely all-ON fences, CE1 on a real default budget wired, and
-    CV1 on the coverage gate genuinely wired ON by default. Judgment /
-    judgment-with-evidence-only criteria (C1/C5, cost CE2/CE3/CE4, coverage CV2/CV3) and
-    unknown keys return ``None`` (no mechanical derivation; the human authors those).
+    ``int == 0``, C3 on genuinely all-ON fences, CE1 on a real default budget wired, CV1
+    on the coverage gate genuinely wired ON by default, and FT1 on the semantic-fidelity
+    audit genuinely gating production. Judgment / judgment-with-evidence-only criteria
+    (C1/C5, cost CE2/CE3/CE4, coverage CV2/CV3, fidelity FT2/FT3) and unknown keys return
+    ``None`` (no mechanical derivation; the human authors those).
     """
     if criterion_key == "fence_enforcement_default_on":
         return _level_c3(signal)
@@ -1123,4 +1472,6 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
         return _level_ce_budget(signal)
     if criterion_key == "coverage_fence_default_on":
         return _level_cv_coverage_fence(signal)
+    if criterion_key == "semantic_fence_gating_on":
+        return _level_ft_semantic_fence(signal)
     return None

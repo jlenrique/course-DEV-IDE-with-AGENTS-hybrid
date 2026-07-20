@@ -8,6 +8,7 @@
 1. **Dynamic Intelligence vs Determinism (DID)** — the balance this project most depends on.
 2. **Cost-efficiency (paid-walk discipline)** — whether paid walks are cost-disciplined, honest, and reproducibly attested.
 3. **Coverage-honesty** — whether source-coverage is enforced (the gate is default-OFF → a leak), and whether the receipt machinery honestly distinguishes a real PASS from a vacuous one.
+4. **Fidelity-trust (source→output faithfulness)** — whether the semantic-fidelity audit GATES production (it does not — WARN-only → a leak), whether the Vera trace honestly reports a real Omission/Invention/Alteration FAIL, and whether the audit honestly labels itself advisory.
 
 ---
 
@@ -271,6 +272,67 @@ Every time coverage machinery is added, ask: **"did we turn the fence ON *before
 - **Every Class-S WRAPUP (Step 9):** review this dimension for currency — if the coverage gate is wired ON by default (CV1 → strong), or if the receipt honesty machinery changes, refresh the assessment.
 - **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction is caught.
 - **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `coverage_honesty` pins — coverage-fence-claim, coverage leak-count + slug-identity, score-arithmetic) + `tests/quality/test_coverage_honesty_dimension.py` (the signal readers against fixture receipts + RED-under-seeded proofs) FAIL when a machine-block claim contradicts a code-computed reality. The **coverage-fence-claim pin** reds if CV1 is bumped to `strong` without the coverage gate actually wired ON by default (GL-9).
+
+---
+
+## Dimension 4 — Fidelity-trust (source→output faithfulness)
+
+> **Why this dimension is load-bearing for this project.** The product's promise is that a delivered narration is *faithful to its source* — it must not silently omit a load-bearing point, invent an unsourced claim, or alter a figure or framing. Two failure modes corrode that trust: (a) the semantic-fidelity audit runs **advisory-only** — it measures candidate unsourced framing but never FAILS a production run, so framing a heuristic flags as unsourced ships un-gated; and (b) a fidelity trace **over-claims clean** — a real Omission/Invention/Alteration reads as a clean pass. This dimension scores **whether the semantic-fidelity audit actually gates production (it does not — it is WARN-only, and that WARN-that-never-gates IS the measured gap), whether the Vera fidelity trace honestly reports a real O/I/A FAIL rather than reading clean on a fail, and whether the audit honestly labels itself advisory rather than silently passing unsourced framing.** It is scored from the EXISTING fidelity emitters — `app/specialists/_shared/source_fidelity_audit.py` (`SEMANTIC_TRIPWIRE`, `audit_semantic_framing`) and the Vera fidelity trace (`app/specialists/vera/_act.py` — the Omissions/Inventions/Alterations findings + the `_hard_fail` predicate) — with no parallel plumbing (GL-15).
+
+### 4.0 The rule (one line)
+
+**Source→output faithfulness must be GATED, not merely WARNed — and a real Omission/Invention/Alteration must never read as clean.** An audit that measures unsourced framing but never fails a run is transparency, not enforcement; a trace that reads clean on a real fidelity fail is a false green. Gating is the thesis; honest FAIL-accounting is the floor.
+
+### 4.5 Scoring rubric
+
+Three criteria, each scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong · 4 uniform/complete). Sum → /12, normalized to /100. Bands: **A** ≥90 · **B** 75–89 · **B−** 60–74 · **C** 40–59 · **D** <40 (shared with §1.5).
+
+| # | Criterion | What "4/4" looks like |
+|---|---|---|
+| FT1 | **Semantic-fence gating — teeth ON by default** | The semantic-fidelity audit GATES production (`SEMANTIC_TRIPWIRE["gates_production"]` is `True`) — candidate unsourced framing FAILS a run, it does not merely WARN. |
+| FT2 | **Fidelity-trace honesty (O/I/A FAIL-accounting)** | The Vera fidelity trace honestly distinguishes a real PASS from a FAIL: a critical Omission/Invention/Alteration (`_hard_fail` → `HALT-AND-REMEDIATE`) can never read as clean fidelity, and an empty trace cannot certify clean. |
+| FT3 | **Audit honesty (WARN transparency)** | The audit honestly labels itself `warn_only` with an explicit claim fence (it does NOT assert comprehensive semantic claim↔source faithfulness) rather than silently passing unsourced framing. |
+
+**Outcome-weighted reading (for prioritization, not a separate score):** FT1 most affects *learner-trust* (an un-gated semantic audit lets unsourced framing reach the learner) — fidelity IS source→output trust; FT2 and FT3 most affect *learner-trust* (the honesty of what "faithful" means). Equal-weight scoring is kept (consistent with §1/§2/§3); the honest reading rides the band_note.
+
+### 4.6 Current assessment — Band **C** — "real detection + honest trace machinery; semantic fence WARN-only, never gates"
+
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; first `fidelity_trust` snapshot in `docs/quality/scorecard-history.jsonl`).*
+
+**Headline (read this first).**
+
+- **Band: C.** The fidelity machinery is genuinely real and honest — the Vera trace detects Omissions/Inventions/Alterations and treats a critical O/I/A as a hard fail (`HALT-AND-REMEDIATE`), and the semantic-fidelity audit transparently labels itself advisory with an explicit claim fence. The Band is held down by **one honest gap that is the whole thesis: the semantic-fidelity audit is a REAL audit but advisory-only — `SEMANTIC_TRIPWIRE["gates_production"]` is `False`, so it WARNs and NEVER fails a production run. A WARN that never gates IS the measured gap.** *(The internal 7/12 → 58/100 sum is the arithmetic-pin reasoning trace below — not a false-precise headline number.)*
+- **Trend: ▬ baseline.** First `fidelity_trust` assessment; no prior snapshot, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Open leaks — ranked (1).** One learner-trust leak; tagged `fid_leak: fidelity-trust-semantic-fence-warn-only-never-gates` in the `## Fidelity-Trust Scorecard Leak Registry` of `_bmad-output/planning-artifacts/deferred-inventory.md`, so `fidelity_leak_count_signal()` == 1 == the machine block's `open_leaks` (the fidelity leak-count + slug-identity pins reconcile doc↔registry). This is the fidelity_trust contribution to the shared project ranked-leak list (GL-13; it interleaves by lane priority — a learner-trust leak, so it sorts after the paid-walk leaks). **Cross-links DID Leak-2** (`braid-workbook-semantic-claim-citation-audit`) — the SAME underlying substrate (the workbook semantic audit WARNs, doesn't gate), counted ONCE per namespace (`did_leak:` = DID C5 workbook-scoped; `fid_leak:` = fidelity-trust FT1 source→output framing), **NOT double-counted**.
+
+  1. **[FT1] Semantic-fidelity audit is a real audit but advisory-only (WARN-only, never gates)** — *Leak 1, learner-trust* → `fidelity-trust-semantic-fence-warn-only-never-gates`
+
+**⚠️ Headline caveat — do NOT read C as "fidelity is gated" (equal-weight scoring, honest reading, Q2.1 FIX-2 band-honesty).** This dimension is scored equal-weight (consistent with §1/§2/§3 — no weighted scoring). But the §4.0 thesis is that *gating is the thesis; honest FAIL-accounting is the floor.* The C is **lifted by the trace/audit-honesty machinery** — FT2 (O/I/A FAIL-accounting) and FT3 (WARN transparency) are real and correct and each score strong — while the ONE **gating** criterion — FT1, the actual semantic fence and the thesis — is **weak (WARN-only)**. So read it as "excellent fidelity *trace/audit honesty*, but source→output faithfulness is **not** *gated* by the semantic audit," NOT as "fidelity is gated." The band_note carries this so it cannot be missed — the headline is **trace-honesty-lifted while the semantic fence is WARN-only**; do not read the Band as "fidelity gated."
+
+**Say it plainly (honesty is the bar).** The semantic-fidelity audit (`audit_semantic_framing` → the `SEMANTIC_TRIPWIRE` disposition) is a **real audit** — it reports candidate unsourced-framing sentences (claim cues without citation anchors and weak source overlap) — and this assessment does **not** understate it as absent. But `SEMANTIC_TRIPWIRE["gates_production"]` is `False`: it WARNs and never fails a production run. That is the DID-C3 / cost-CE1 / coverage-CV1 pattern — a real mechanism that never gates — and it is why FT1 is **weak**, not absent and not strong. **Weak (1) vs partial (2) is a deliberate DID-C3-consistent conservative call:** the audit runs and honestly reports, so "partial" is arguable — but the criterion scores the *gating* posture, which is entirely off (it never fails a run), so it is scored `weak` (1) to mirror DID-C3 / cost-CE1 / coverage-CV1 (also 1 for a default-off / never-gates-but-real mechanism). The Vera trace's O/I/A detection is real (a critical finding hard-fails); a real Omission/Invention/Alteration must **not** read as clean — the assessment does **not** claim "fidelity gated," and does **not** understate the trace/audit machinery as absent.
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** Each carries `{level, signal, evidence_ref}`; where a mechanical signal exists, the level's derivation is named. The 0–4 scores roll up to the machine block's Σ = 7/12 = 58/100 (an internal arithmetic-pin trace — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| FT1 Semantic-fence gating | weak | 1/4 | signal-derived (`semantic_fence_gating_signal`) | **The real audit's gating posture:** `SEMANTIC_TRIPWIRE["gates_production"]` == `False` → `semantic_fence_gates` == `False` → `weak` (== `level_from_signal("semantic_fence_gating_on", semantic_fence_gating_signal())`; the gates-claim pin agrees doc↔code). The audit (`audit_semantic_framing`) EXISTS and honestly reports candidate unsourced framing but is WARN-only (never fails a run). Anti-drift: flipping `gates_production` True flips `semantic_fence_gates` True → the derived level would be `strong` (close-path reachable + read-only — the reader reads the real constant, not a hardcoded `False`). This is **Leak 1** (cross-links DID Leak-2, counted once). |
+| FT2 Fidelity-trace honesty (O/I/A) | strong | 3/4 | judgment-with-evidence (`fidelity_trace_honesty_signal`) | The Vera fidelity trace (`fidelity-trace.v1`) carries O/I/A `findings` + a `verdict`; a critical Omission/Invention/Alteration is a hard fail decided by the REAL predicate `app/specialists/vera/_act.py::_hard_fail` (`category ∈ {O,I,A}` ∧ `severity == "critical"` → verdict `HALT-AND-REMEDIATE`). The reader CONSULTS that real predicate — `is_clean_fidelity` is False whenever `_hard_fail` fires or the verdict halts, and an empty trace cannot certify clean (the Q2.2 CV2 lesson: never report clean on a real fidelity FAIL). Residual (why 3/4, not 4/4): the trace's honesty is report-time-correct, but the semantic-claim fence it sits beside is WARN-only (per FT1) — a correct honest trace, not a default-on gate. |
+| FT3 Audit honesty (WARN transparency) | strong | 3/4 | judgment-with-evidence (`fidelity_audit_honesty_signal`) | `SEMANTIC_TRIPWIRE` declares `mode == "warn_only"` with an explicit `claim_fence` ("Reports candidate framing sentences … Does NOT assert comprehensive semantic claim↔source faithfulness") — the audit transparently labels itself advisory rather than silently passing unsourced framing. `advisory_transparency` == `True`. Residual (why 3/4): honest self-labelling is report-time transparency, **not** a gate (`gates_production` stays False — see FT1). |
+
+#### Open leaks (detail — the path from C toward A)
+
+1. **[FT1] Semantic-fidelity audit is a real audit but advisory-only, never gates (learner-trust).** The audit reports candidate unsourced framing but `SEMANTIC_TRIPWIRE["gates_production"]` is `False`, so a production run is never failed on unsourced framing — the framing ships un-gated. **Closing it needs runtime substrate, not just a doc bump:** flip the semantic tripwire to gate production (`gates_production: True`) and wire its WARN into a fail-loud disposition. At that point FT1's `semantic_fence_gating_signal` (which reads the real `SEMANTIC_TRIPWIRE["gates_production"]` constant when live) reports `semantic_fence_gates=True` and the criterion earns `strong` — the reader is not a hardcoded constant, and the seeded on/off test proves its level logic reaches `strong` on a real gating posture; only the substrate that flips the disposition is deferred. **Cross-links DID Leak-2** (`braid-workbook-semantic-claim-citation-audit`, §1.6 C5) — the SAME underlying substrate (the workbook semantic audit WARNs, doesn't gate), counted ONCE per namespace (NOT double-counted). *Evidence:* `app/specialists/_shared/source_fidelity_audit.py:51-53` (`SEMANTIC_TRIPWIRE = {"mode": "warn_only", "gates_production": False, ...}`) + `audit_semantic_framing` (the real WARN-only heuristic); the Vera trace `app/specialists/vera/_act.py` (O/I/A detection + `_hard_fail`); registry `fidelity-trust-semantic-fence-warn-only-never-gates`.
+
+#### The discipline that raises the Band (not just fixes)
+
+Every time fidelity machinery is added, ask: **"did we turn the audit into a *gate* that fails a run, or only make the *WARN* more honest after it?"** Only the first raises FT1 toward gating discipline. Ranked if forced to cut: **Leak 1** (FT1) is the one gating gap (unsourced framing reaches the learner by default); FT2/FT3 are honest-accounting-of-fidelity (already strong) — but note they are report-time honesty, not a default-on gate, so closing Leak 1 is what makes the fidelity machinery *protect* a default walk.
+
+### Cadence (how this dimension stays honest)
+
+- **Every production run:** the per-run fidelity facts (the Vera trace verdict, any O/I/A findings) ride the run's fidelity trace under the run dir; read them in the run's final report alongside the Band.
+- **Every Class-S WRAPUP (Step 9):** review this dimension for currency — if the semantic tripwire is flipped to gate production (FT1 → strong), or if the Vera trace / audit machinery changes, refresh the assessment.
+- **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction is caught.
+- **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `fidelity_trust` pins — gates-claim, fidelity leak-count + slug-identity, score-arithmetic) + `tests/quality/test_fidelity_trust_dimension.py` (the signal readers against fixture traces + RED-under-seeded proofs) FAIL when a machine-block claim contradicts a code-computed reality. The **gates-claim pin** reds if FT1 is bumped to `strong` while `SEMANTIC_TRIPWIRE["gates_production"]` is `False` (the epic's exact honesty-pin; GL-9).
 
 ---
 
@@ -662,6 +724,117 @@ dimensions:
       - rank: 1
         criterion: CV1
         slug: coverage-honesty-gate-opt-in-default-off
+        lane: learner-trust
+    trend: baseline
+  fidelity_trust:
+    # Dimension 4 (Story Q2.3) — Fidelity-trust (source→output faithfulness), scored from
+    # the EXISTING fidelity emitters (GL-15 reuse; NO parallel plumbing). The §4 prose is
+    # the authority; this mirrors the headline numbers. Honest baseline: the semantic-
+    # fidelity audit (audit_semantic_framing → SEMANTIC_TRIPWIRE) is a REAL heuristic that
+    # reports candidate unsourced framing, but SEMANTIC_TRIPWIRE['gates_production'] is
+    # False → it WARNs and NEVER fails a production run (the DID-C3 / cost-CE1 / coverage-
+    # CV1 pattern: mechanism exists, never gates) → a fidelity-trust LEAK: the WARN-that-
+    # never-gates IS the measured gap, NOT a pass. Cross-links DID Leak-2 (braid-workbook-
+    # semantic-claim-citation-audit) — SAME substrate, counted ONCE per namespace (did_leak:
+    # DID C5 workbook-scoped; fid_leak: fidelity-trust FT1 source→output framing), NOT
+    # double-counted. The Vera trace's O/I/A detection (a critical O/I/A → _hard_fail →
+    # HALT-AND-REMEDIATE) and the audit's honest warn_only self-labelling are real
+    # strengths — but they are report-time honesty, not a default-on gate.
+    label: Fidelity-trust
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
+    score: 58
+    max: 100
+    band: "C"
+    band_note: "C is trace-honesty-lifted (FT2 O/I/A FAIL-accounting + FT3 warn_only-transparency strong); the GATING thesis (FT1 semantic-fence) is weak/WARN-only — the semantic-fidelity audit is REAL but SEMANTIC_TRIPWIRE['gates_production'] is False (it WARNs, never fails a run) — do NOT read C as 'fidelity is gated'; the headline is trace-honesty-lifted while the semantic fence is WARN-only"
+    criteria:
+      semantic_fence_gating_on:
+        # SIGNAL-DERIVED (purely mechanical, mirrors DID C3 / cost CE1 / coverage CV1):
+        # level == level_from_signal(semantic_fence_gating_signal()). The reader reads the
+        # REAL SEMANTIC_TRIPWIRE['gates_production'] constant (a module constant, not an env
+        # toggle); it is False → semantic_fence_gates=False → weak (the audit WARNs, never
+        # gates). NOT a hardcoded constant: when gates_production is flipped True the reader
+        # reports semantic_fence_gates=True and this earns strong (close-path reachable; the
+        # seeded on/off test proves the level logic reaches strong on a real gating posture).
+        # Read-only (just reads the constant — no mutation); a pin reads a seeded posture via
+        # an injectable tripwire mapping.
+        level: weak
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.semantic_fence_gating_signal
+          derived_level: weak
+          fact: >-
+            SEMANTIC_TRIPWIRE['gates_production'] is False, so the semantic-fidelity audit
+            (audit_semantic_framing — a REAL heuristic reporting candidate unsourced framing)
+            WARNs and NEVER fails a production run → semantic_fence_gates=False → weak. This
+            is the DID-C3 / cost-CE1 / coverage-CV1 pattern (mechanism exists, never gates) →
+            the learner-trust fidelity leak below. Closing it needs runtime substrate (flip
+            gates_production True — make the audit gate production), at which point this
+            reader detects it and the derived level becomes strong.
+        evidence_ref: "§4.6 FT1 · Fidelity Leak (semantic fence WARN-only, never gates); cross-links DID Leak-2"
+        score: 1
+        max: 4
+      fidelity_trace_honesty:
+        # JUDGMENT-with-evidence: the Vera fidelity trace (fidelity-trace.v1) carries O/I/A
+        # findings + a verdict; a critical Omission/Invention/Alteration is a hard fail
+        # decided by the REAL predicate vera._act._hard_fail (→ HALT-AND-REMEDIATE). The
+        # signal CONSULTS that real predicate (is_clean_fidelity False whenever _hard_fail
+        # fires or the verdict halts; an empty trace cannot certify clean) — the Q2.2 CV2
+        # lesson: never report clean on a real fidelity FAIL. The level is a §4.6 human
+        # judgment. level_from_signal returns None for this key.
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.fidelity_trace_honesty_signal
+          fact: >-
+            the Vera fidelity trace carries O/I/A findings + a verdict; a critical
+            Omission/Invention/Alteration is a hard fail decided by the REAL predicate
+            vera._act._hard_fail (category in {O,I,A} and severity=='critical' →
+            HALT-AND-REMEDIATE). The reader consults that real predicate: a real O/I/A fail
+            is NEVER a clean fidelity, and an empty trace cannot certify clean.
+          caveat: >-
+            the trace's honesty is report-time-correct but the semantic-claim fence beside
+            it is WARN-only (per FT1) — a correct honest trace, not a default-on gate — so
+            'strong' is a §4.6 judgment (3/4, not 4/4).
+        evidence_ref: "§4.6 FT2 · fidelity-trace honesty (O/I/A FAIL-accounting; Q2.2 CV2 lesson)"
+        score: 3
+        max: 4
+      fidelity_audit_honesty:
+        # JUDGMENT-with-evidence: SEMANTIC_TRIPWIRE declares mode=='warn_only' + an explicit
+        # claim_fence (it does NOT assert comprehensive semantic claim↔source faithfulness) —
+        # the audit transparently labels itself advisory rather than silently passing
+        # unsourced framing. The signal reports advisory_transparency; 'strong' is a §4.6
+        # judgment. level_from_signal returns None for this key.
+        level: strong
+        derivation: judgment-with-evidence
+        signal:
+          reader: app.quality.signals.fidelity_audit_honesty_signal
+          fact: >-
+            SEMANTIC_TRIPWIRE declares mode=='warn_only' with an explicit claim_fence
+            ('Reports candidate framing sentences … Does NOT assert comprehensive semantic
+            claim↔source faithfulness') — the audit transparently labels itself advisory
+            rather than silently passing unsourced framing (advisory_transparency=True).
+          caveat: >-
+            honest self-labelling is report-time transparency, NOT a gate (gates_production
+            stays False — see FT1) — why 'strong' is 3/4, not 4/4.
+        evidence_ref: "§4.6 FT3 · audit honesty (warn_only self-labelling + claim fence)"
+        score: 3
+        max: 4
+    # ONE open leak: the semantic-fidelity audit is WARN-only (gates_production False) →
+    # unsourced framing un-gated on a default paid walk. Counted (line-anchored) as
+    # `fid_leak:` in the `## Fidelity-Trust Scorecard Leak Registry` of deferred-inventory.md
+    # — a FOURTH per-dimension namespace, disjoint from `did_leak:` / `cost_leak:` /
+    # `cov_leak:` (so the four counts never collide). len(leaks) == open_leaks ==
+    # fidelity_leak_count_signal() == 1 (the fidelity leak-count + slug-identity pins
+    # reconcile doc↔registry). Lane learner-trust: fidelity protects source→output trust.
+    # Cross-links DID Leak-2 (braid-workbook-semantic-claim-citation-audit) — SAME substrate,
+    # counted once per namespace (NOT double-counted).
+    open_leaks: 1
+    leaks:
+      - rank: 1
+        criterion: FT1
+        slug: fidelity-trust-semantic-fence-warn-only-never-gates
         lane: learner-trust
     trend: baseline
 ```

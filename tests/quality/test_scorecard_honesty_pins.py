@@ -70,6 +70,7 @@ from app.quality.scorecard import (
     _COVERAGE_KEY,
     _DID_KEY,
     _EXPECTED_CANONICAL_DIMENSION_KEYS,
+    _FIDELITY_KEY,
     read_scorecard_block,
 )
 from app.quality.signals import (
@@ -83,8 +84,10 @@ from app.quality.signals import (
     coverage_fence_default_signal,
     coverage_leak_count_signal,
     fences_enabled_signal,
+    fidelity_leak_count_signal,
     level_from_signal,
     open_leak_count_signal,
+    semantic_fence_gating_signal,
 )
 
 #: Captures the slug after a line-anchored ``did_leak:`` tag (mirrors the count
@@ -98,6 +101,9 @@ _COST_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cost_leak:\s*(\S+)")
 #: Q2.2 — the coverage_honesty slug namespace (``cov_leak:``), a THIRD per-dimension
 #: namespace disjoint from ``did_leak:`` / ``cost_leak:``.
 _COVERAGE_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cov_leak:\s*(\S+)")
+#: Q2.3 — the fidelity_trust slug namespace (``fid_leak:``), a FOURTH per-dimension
+#: namespace disjoint from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:``.
+_FIDELITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?fid_leak:\s*(\S+)")
 
 
 def _registry_did_leak_slugs() -> set[str]:
@@ -123,6 +129,14 @@ def _registry_coverage_leak_slugs() -> set[str]:
     text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
     open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     return {m.group(1) for m in _COVERAGE_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_fidelity_leak_slugs() -> set[str]:
+    """The OPEN ``fid_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``fidelity_leak_count_signal`` counts them (Q2.3 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _FIDELITY_LEAK_SLUG_RE.finditer(open_text)}
 
 
 def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
@@ -194,6 +208,10 @@ _SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
     # production-preset posture is default_coverage_enforced=False → weak (the coverage
     # gate is default-OFF; MARCUS_COVERAGE_GATE_ACTIVE unset on the preset).
     "coverage_fence_default_on": coverage_fence_default_signal,
+    # Q2.3 — fidelity_trust FT1 is purely mechanical (mirrors DID C3 / cost CE1 / coverage
+    # CV1): SEMANTIC_TRIPWIRE['gates_production'] is False → semantic_fence_gates=False →
+    # weak (the semantic-fidelity audit WARNs, never gates production).
+    "semantic_fence_gating_on": semantic_fence_gating_signal,
 }
 
 #: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
@@ -227,6 +245,18 @@ _HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
             "test_coverage_fence_claim_matches_reader",  # pin (a) coverage-fence-claim
             "test_coverage_leak_count_reconciles_on_real_repo",  # pin (b) coverage leak-count
             "test_coverage_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q2.3 — fidelity_trust MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror the siblings':
+    # (a) gates-claim (the epic's exact pin — score FAILS if it claims gating while
+    # SEMANTIC_TRIPWIRE['gates_production'] is False), (b) fidelity leak-count + slug
+    # identity, (c) arithmetic.
+    _FIDELITY_KEY: frozenset(
+        {
+            "test_fidelity_gates_claim_matches_reader",  # pin (a) gates-claim
+            "test_fidelity_leak_count_reconciles_on_real_repo",  # pin (b) fidelity leak-count
+            "test_fidelity_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
         }
     ),
 }
@@ -1379,5 +1409,200 @@ def test_coverage_score_arithmetic_is_internally_consistent() -> None:
     + band == the shared §1.5/§3.5 boundary. 1+3+3 = 7/12 → 58 → C. Doc↔code: the
     arithmetic RULE is the code source (``_arithmetic_violations``)."""
     dim = _real_block()["dimensions"][_COVERAGE_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 58 and dim["band"] == "C"
+
+
+# =============================================================================== #
+# Story Q2.3 — fidelity_trust dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_FIDELITY_KEY]) + their RED-under-seeded proofs. Reuse the SAME
+# pure helpers as the DID/cost/coverage pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate EVERY
+# dimension, so coverage is structural. Doc↔code: each compares a machine-block CLAIM
+# against a CODE-computed reality (a signal reader / the deferred-inventory registry /
+# the §4.5 arithmetic rule), never doc↔doc.
+# =============================================================================== #
+
+
+# --------------------------- pin (a) gates-claim (the epic's exact pin) ----------- #
+
+
+def test_fidelity_gates_claim_matches_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin (a) for fidelity_trust, GREEN today: the signal-derived FT1
+    (``semantic_fence_gating_on``) level equals its reader's live output —
+    ``level_from_signal("semantic_fence_gating_on", semantic_fence_gating_signal())`` ==
+    ``weak`` (the real posture: ``SEMANTIC_TRIPWIRE['gates_production']`` is False →
+    ``semantic_fence_gates`` False → the audit WARNs, never gates). The shared
+    ``_signal_derived_violations`` scan (over every dimension) is also clean."""
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)
+    _clear_coverage_env(monkeypatch)
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    ft1 = block["dimensions"][_FIDELITY_KEY]["criteria"]["semantic_fence_gating_on"]
+    derived = level_from_signal(
+        "semantic_fence_gating_on", semantic_fence_gating_signal()
+    )
+    assert ft1["level"] == derived == "weak"
+
+
+def test_fidelity_gates_claim_reds_on_dishonest_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC3 / GL-9 RED-under-seeded-edit — the epic's EXACT honesty-pin: bump FT1 to
+    ``strong`` on an in-memory copy WHILE ``SEMANTIC_TRIPWIRE['gates_production']`` is
+    False → the pin (a) comparison FAILS (reader still says ``weak``). The real doc is
+    never touched. The score FAILS if it CLAIMS gating while the tripwire says it does not
+    gate."""
+    _clear_fence_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_FIDELITY_KEY]["criteria"]["semantic_fence_gating_on"][
+        "level"
+    ] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("semantic_fence_gating_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_fidelity_gates_claim_reds_on_any_inflated_level(
+    monkeypatch: pytest.MonkeyPatch, dishonest: str
+) -> None:
+    """AC3: any inflation of FT1 above the reader-derived ``weak`` (with the semantic fence
+    still WARN-only / never-gating) is caught."""
+    _clear_fence_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_FIDELITY_KEY]["criteria"]["semantic_fence_gating_on"][
+        "level"
+    ] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_fidelity_gates_reader_reads_real_tripwire_constant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The reader is grounded in the REAL ``SEMANTIC_TRIPWIRE['gates_production']`` constant
+    + the close-path is REACHABLE and READ-ONLY (Q2.1 CE1 / Q2.2 CV1 pattern): the live
+    (tripwire=None) reader reports the real constant (False → weak); flipping the real
+    constant via ``monkeypatch.setitem`` flips the reader to gating=True → strong (close-
+    path reached, grounded in the real source); an injectable clean tripwire reads a seeded
+    posture; and calling it NEVER mutates the constant."""
+    from app.specialists._shared.source_fidelity_audit import SEMANTIC_TRIPWIRE
+
+    # Live: reads the REAL constant (False today) → weak.
+    live = semantic_fence_gating_signal()
+    assert live["gates_production"] is False
+    assert level_from_signal("semantic_fence_gating_on", live) == "weak"
+    # Close-path REACHABLE, grounded in the REAL constant: flip gates_production True (auto-
+    # restored by monkeypatch) → the live reader tracks it → strong.
+    monkeypatch.setitem(SEMANTIC_TRIPWIRE, "gates_production", True)
+    on = semantic_fence_gating_signal()
+    assert on["semantic_fence_gates"] is True
+    assert level_from_signal("semantic_fence_gating_on", on) == "strong"
+    monkeypatch.undo()
+    # Restored: the real constant is False again (read-only — the reader never mutated it).
+    assert SEMANTIC_TRIPWIRE["gates_production"] is False
+    assert semantic_fence_gating_signal()["gates_production"] is False
+    # Injectable seeded posture (reachable close-path without touching the real constant).
+    seeded = semantic_fence_gating_signal(tripwire={"gates_production": True})
+    assert level_from_signal("semantic_fence_gating_on", seeded) == "strong"
+    assert SEMANTIC_TRIPWIRE["gates_production"] is False  # still untouched
+
+
+def test_fidelity_ft1_signal_derived_others_are_judgment_with_evidence() -> None:
+    """The honest derivation split: FT1 is ``signal-derived`` (the reader owns the level);
+    FT2/FT3 are ``judgment-with-evidence`` (a real signal block carries the facts, the level
+    is an authored §4.6 judgment). No unverified signal awards a clean level:
+    ``level_from_signal`` returns ``None`` for the judgment-with-evidence keys."""
+    crit = _real_block()["dimensions"][_FIDELITY_KEY]["criteria"]
+    assert crit["semantic_fence_gating_on"]["derivation"] == "signal-derived"
+    for key in ("fidelity_trace_honesty", "fidelity_audit_honesty"):
+        c = crit[key]
+        assert c["derivation"] == "judgment-with-evidence"
+        assert c["level"] == "strong"
+        assert isinstance(c["signal"], dict)
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+        assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+        assert level_from_signal(key, c["signal"]) is None
+
+
+# --------------------------- pin (b) fidelity leak-count + slug identity ----------- #
+
+
+def test_fidelity_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for fidelity_trust: the dimension's ``open_leaks`` == the count of
+    ``fid_leak:``-tagged OPEN entries in the ``## Fidelity-Trust Scorecard Leak Registry`` ==
+    ``len(leaks)`` == 1. A FOURTH per-dimension ``fid_leak:`` namespace (NOT the global DID
+    ``did_leak:`` / cost ``cost_leak:`` / coverage ``cov_leak:`` counts). Anti-drift: strike
+    the ``fid_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_FIDELITY_KEY]
+    count = fidelity_leak_count_signal()["fidelity_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_FIDELITY_KEY}: open_leaks {dim.get('open_leaks')!r} != counted fid_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_FIDELITY_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_fidelity_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for fidelity_trust: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``fid_leak:`` slugs — a slug typo / rename
+    that keeps the count at 1 is caught here, which a count-only reconciliation misses."""
+    dim = _real_block()["dimensions"][_FIDELITY_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_fidelity_leak_slugs()
+
+
+def test_fidelity_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the fidelity machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_FIDELITY_KEY]
+    dim["leaks"][0]["slug"] = "fidelity-trust-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_fidelity_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_four_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 FOUR-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` readers do NOT cross-count, and their slug identity sets are pairwise
+    disjoint. A tag in one namespace must never inflate another dimension's count. (Extends
+    the Q2.2 three-namespace pin to the fourth fidelity namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+    }
+    assert len(slug_sets["did"]) == 5
+    assert len(slug_sets["cost"]) == 1
+    assert len(slug_sets["cov"]) == 1
+    assert len(slug_sets["fid"]) == 1
+    # pairwise disjoint across ALL FOUR namespaces — no slug leaks across namespaces.
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# --------------------------- pin (c) fidelity score-arithmetic -------------------- #
+
+
+def test_fidelity_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for fidelity_trust: score↔level per §4.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§4.5 boundary. 1+3+3 = 7/12 → 58 → C. Doc↔code: the
+    arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_FIDELITY_KEY]
     assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
     assert dim["score"] == 58 and dim["band"] == "C"

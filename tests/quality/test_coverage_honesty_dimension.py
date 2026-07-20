@@ -454,8 +454,9 @@ def test_coverage_leak_aggregates_into_shared_ranked_list() -> None:
     paid_block = [i for i, ln in enumerate(lanes) if ln == "paid-walk"]
     assert paid_block == list(range(len(paid_block)))  # contiguous at front
     assert cov_idx > max(paid_block)
-    # THREE dimensions now contribute (cross-dimensional, not DID/cost-only).
-    assert set(dims) == {_DID_KEY, "cost_efficiency", _COVERAGE_KEY}
+    # THREE+ dimensions now contribute (cross-dimensional, not DID/cost-only). Q2.3 added
+    # fidelity_trust as a FOURTH contributor (also learner-trust).
+    assert set(dims) == {_DID_KEY, "cost_efficiency", _COVERAGE_KEY, "fidelity_trust"}
 
 
 def test_leak_coverage_clean_with_coverage_dimension() -> None:
