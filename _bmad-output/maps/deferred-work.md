@@ -343,3 +343,15 @@ Dated 2026-04-19 (via REMEDIATION pass after concurrent-session false closure). 
 
 - [Review][Defer][30-3a-EC1] Empty-packet (zero plan units) test gap. `FourALoop.run_4a` with a `LessonPlan` whose `plan_units == []` transitions directly to plan-lock (zero `plan_unit.created` + zero `scope_decision.set` + one `plan.locked`). Behavior covered by AC-B.3 but not pinned by a dedicated test. Natural home: 30-3b or 32-3.
 - [Review][Defer][30-3a-EC2] Prior-decline rationale naming an unknown `unit_id` is silent-skipped at `FourALoop.run_4a` step 2. Behavior is correct but not explicitly tested. Natural home: 30-3b or 32-3.
+
+Dated 2026-07-19 (Q1.1 code-review triage; DEFER). From the `bmad-code-review` of Story Q1.1 (scorecard schema v2 + generalized reader).
+
+- [Review][Defer][Q1.1-CR1] `scripts/utilities/quality_scorecard.py --check` staleness ratchet keys on the block-level `as_of`, not per-dimension `as_verified`. This belongs to Q1.3, which owns the honesty-pin ratchet framework and demotes `--check` to a secondary nag (per Q1.1 AC4 note + GL-6). No action in Q1.1: the `as_of`/`as_verified` split lands structurally here; consuming `as_verified` in the staleness check is Q1.3's job. Natural home: Q1.3.
+
+## Q1.4a R2 fence_state witness obligation (GL-10)
+
+Dated 2026-07-19. Filed by Story Q1.4a (per-run `fence_state` + honest `silent_bypass_events` detector). Q1.4a landed the run-summary emission + hermetic (direct-emit) coverage; the live E2E witness is deferred to R2 per GL-10.
+
+- [Defer][Q1.4a-R2] **R2 operator-steered trial witnesses `fence_state`.** During the R2 operator-steered live trial, capture the emitted `run_summary.yaml` `fence_state` block to a NAMED evidence artifact, then ASSERT equality between the witnessed `fences_enabled` / `hil_allowlist_empty` / `cost_posture` / `silent_bypass_events` and the INDEPENDENTLY-computed env truth for that run (a checkable comparison, not a mere observation): read `MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE` / `MARCUS_COVERAGE_GATE_ACTIVE` / `MARCUS_UDAC_ACTIVE`, `hil_tabular_projector.KNOWN_UNRENDERED_ALLOWLIST`, and the run's `cost-report.json` `cost_posture` at trial time and confirm the run_summary matches. No live trial is run inside Q1.4a. Reactivation trigger: the next R2 operator-steered trial.
+
+- [Defer][Q1.4a-DETECTOR] **Wire a REAL silent-bypass detector.** Today `fence_state.silent_bypass_events` is `"undetected"` on 100% of real runs (no caller supplies the detector signal). GL-8's honest sentinel is shipped (Q1.4a); a real cross-walk detector — a run-scoped ledger counting the uncounted bypass classes (e.g. the Path-Z §05/§05B skip) so a completed run can emit a genuine `0`/`N` instead of `"undetected"` — is future work (rides/after R2). Distinct from the Q1.4a-R2 witness obligation above (that witnesses the sentinel; this replaces it with a real count).

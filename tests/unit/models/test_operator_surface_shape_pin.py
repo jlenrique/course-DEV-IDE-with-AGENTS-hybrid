@@ -25,6 +25,7 @@ from app.models.runtime.operator_surface import (
     NotificationsEchoSection,
     OperatorSurfaceProjection,
     OperatorSurfaceStatus,
+    QualitySection,
     RunSettingsSection,
     operator_surface_schema_text,
 )
@@ -192,6 +193,132 @@ def test_run_settings_fields_are_required_never_missing_key() -> None:
     missing key — so every field is REQUIRED on the strict producer model."""
     with pytest.raises(ValidationError):
         RunSettingsSection(as_of=_BASE_TIME)  # no toggles → strict model rejects
+
+
+# ---------------------------------------------------------------------------
+# Story Q4.1 — quality tile: shape + additive-within-v1 pins (AC1/AC5)
+# ---------------------------------------------------------------------------
+
+_QUALITY_SUBSTANTIVE_FIELDS = {
+    "available",
+    "band",
+    "ranked_leak_count",
+    "top_leaks",
+    "coverage_gaps",
+    "trend",
+    # FIX 2 — the COMMITTED scorecard doc date (staleness signal), additive-within-v1.
+    "scorecard_as_of",
+}
+
+
+def test_quality_section_is_in_schema_defs() -> None:
+    schema = OperatorSurfaceProjection.model_json_schema()
+    assert "QualitySection" in schema["$defs"]
+    assert "quality" in schema["properties"]
+    assert schema["$defs"]["QualitySection"]["additionalProperties"] is False
+
+
+def test_quality_section_carries_exactly_the_tile_fields_plus_as_of() -> None:
+    """AC1 (QLW-7): ONLY the six substantive fields (NO /100 score) + the read-stamp."""
+    fields = set(QualitySection.model_fields)
+    assert fields == _QUALITY_SUBSTANTIVE_FIELDS | {"as_of"}
+    # NO /100 numeric score anywhere on the tile (report.py's no-false-precise design).
+    assert "score" not in fields
+    assert "max" not in fields
+
+
+def test_quality_section_field_types_are_none_able_scalars() -> None:
+    """AC1: band/ranked_leak_count/coverage_gaps/trend are None-able; top_leaks -> []."""
+    section = QualitySection(as_of=_BASE_TIME)
+    assert section.available is False
+    assert section.band is None
+    assert section.ranked_leak_count is None
+    assert section.coverage_gaps is None
+    assert section.trend is None
+    assert section.top_leaks == []
+
+
+def test_quality_unavailable_posture_must_be_fully_null_structural() -> None:
+    """FIX 3: the zero-lie invariant is STRUCTURAL — an ``available=False`` tile
+    MUST carry a null posture (no band, no counts, no trend, no scorecard_as_of,
+    empty top_leaks). Any substantive value alongside ``available=False`` RAISES."""
+    for kwargs in (
+        {"available": False, "band": "A"},
+        {"available": False, "ranked_leak_count": 3},
+        {"available": False, "coverage_gaps": 1},
+        {"available": False, "trend": "rising"},
+        {"available": False, "scorecard_as_of": "2026-07-19"},
+        {"available": False, "top_leaks": ["paid-walk · x · Dim"]},
+    ):
+        with pytest.raises(ValidationError):
+            QualitySection(as_of=_BASE_TIME, **kwargs)
+
+
+def test_quality_available_tile_must_carry_a_band_structural() -> None:
+    """FIX 3: an ``available=True`` tile with no band is a self-contradiction and
+    RAISES (the assembler must never build one)."""
+    with pytest.raises(ValidationError):
+        QualitySection(as_of=_BASE_TIME, available=True, band=None)
+
+
+def test_quality_unavailable_default_posture_validates_clean() -> None:
+    """FIX 3: the honest fail-soft posture (available=False + all defaults) is legal."""
+    section = QualitySection(as_of=_BASE_TIME, available=False)
+    assert section.available is False
+    assert section.band is None
+
+
+def test_quality_defaults_to_none_on_projection_additive_within_v1() -> None:
+    """AC5: the section is OPTIONAL — every existing status builds with it absent."""
+    proj = OperatorSurfaceProjection(**_registered_kwargs())
+    assert proj.quality is None
+    # it is NOT in the schema's root required list (unknown == None).
+    schema = OperatorSurfaceProjection.model_json_schema()
+    assert "quality" not in set(schema.get("required", []))
+
+
+def test_operator_surface_model_imports_nothing_from_app_quality() -> None:
+    """AC1/AC5 layer rule: operator_surface.py (the contract layer) imports NOTHING
+    from app.quality — QualitySection is a fresh typed mirror of plain scalars, and
+    app.quality is reached ONLY by the assembler's deferred import."""
+    import ast as _ast
+
+    import app.models.runtime.operator_surface as osm
+
+    tree = _ast.parse(Path(osm.__file__).read_text(encoding="utf-8"))
+    for node in _ast.walk(tree):
+        if isinstance(node, _ast.ImportFrom):
+            assert not (node.module or "").startswith("app.quality"), (
+                f"operator_surface.py must not import from app.quality (line {node.lineno})"
+            )
+        if isinstance(node, _ast.Import):
+            for alias in node.names:
+                assert not alias.name.startswith("app.quality"), (
+                    f"operator_surface.py must not import app.quality (line {node.lineno})"
+                )
+
+
+def test_quality_section_populated_round_trips() -> None:
+    proj = OperatorSurfaceProjection(**_registered_kwargs())
+    updated = proj.model_copy(
+        update={
+            "quality": QualitySection(
+                as_of=_BASE_TIME,
+                available=True,
+                band="D",
+                ranked_leak_count=5,
+                top_leaks=["paid-walk · slug-x · Dim"],
+                coverage_gaps=0,
+                trend="baseline",
+            )
+        }
+    )
+    dumped = updated.model_dump(mode="json")
+    restored = OperatorSurfaceProjection.model_validate(dumped)
+    assert restored.quality is not None
+    assert restored.quality.band == "D"
+    assert restored.quality.ranked_leak_count == 5
+    assert restored.model_dump(mode="json") == dumped
 
 
 # ---------------------------------------------------------------------------

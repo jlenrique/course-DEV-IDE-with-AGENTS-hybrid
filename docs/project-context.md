@@ -6,14 +6,14 @@
 
 ## Current Session State
 
-Latest session close: **Session close 2026-07-18 — DOC CHAIN (ONBOARDING+guides+SOTA) + STATUS-SURFACE CONSOLIDATION arc (bmad-quick-dev, party-confirmed COMPLETE)**
+Latest session close: **Session close 2026-07-19 — PROJECT QUALITY SCORECARD epic DESIGNED + GREEN-LIT + RATIFIED (planning; dev deferred to fresh session)**
 
 **What is next:**
 
-1. **Push `dev/status-surface-consolidation-2026-07-17`** to origin (Step 12; new branch, no tracking yet) — consolidation arc is complete + party-confirmed; safe to push.
-2. **Merge decision (operator):** the consolidation branch is discrete governance substrate ready to merge to `master` (or fast-forward into the trial branch). Operator's call on timing.
-3. **The R2 operator-steered live trial** on `tejal-apc-c1m1-p1-call` remains the standing product frontier (unchanged; operator at the wheel).
-4. **Deferred follow-up filed:** `project-context-base-doc-slim` (deferred-work.md) — the 111KB hand-authored base doc is the real 59-skill payload + carries ~12 dated chronology paragraphs; a separate scoped decision (not this structural pass).
+1. **DEV opens on Epic Q1 (foundation)** in the corrected order **Q1.1 → Q1.4a → Q1.2 → Q1.3 → Q1.5 → Q1.4b**, honoring GL-1…GL-16 (binding). `bmad-code-review` precedes any story `done`. Class S — dev per BMAD dev-story discipline.
+2. **Testing doctrine (operator-mandated):** live-test at the component + run-segment level; full E2E runs economically OR **rides the upcoming Operator/HIL R2 trial** (witness `fence_state` + the final-report projection as a checkable comparison, per GL-10). The measure must be VERY reliable — every dimension carries its own honesty-pin ratchet.
+3. **The R2 operator-steered live trial** (on `tejal-apc-c1m1-p1-call`) remains the standing product frontier — the quality reporting rides it as part of the shakedown.
+4. **Branch disposition:** `dev/quality-scorecard-epic-2026-07-19` merges to master at arc close (or per operator).
 
 ## You Are Here (from STATE-OF-THE-APP.md §11.1)
 

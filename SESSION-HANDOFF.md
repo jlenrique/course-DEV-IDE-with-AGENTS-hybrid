@@ -1,3 +1,41 @@
+# Session close 2026-07-19 — PROJECT QUALITY SCORECARD epic DESIGNED + GREEN-LIT + RATIFIED (planning; dev deferred to fresh session)
+
+**Final class:** S (strawman code committed: `app/quality/`, a `run_summary.yaml` field in `production_runner`). **Branch:** `dev/quality-scorecard-epic-2026-07-19` (cut off `master` `19a329c0`; 4 commits `4e8b9ed7`→[this wrapup]; **NOT yet merged**). **Opened as:** continuation of the 2026-07-18 session after the status-surface merge to master; operator introduced a new topic — a project-specific quality score.
+
+## What was completed
+
+- **New topic: a customized project quality-reporting system**, first dimension = **Dynamic Intelligence vs Determinism (DID)** (intelligence at the "necks", determinism in the "bones", fences enforced). Consolidated a provided prior-party conversation on the intelligence topic.
+- **Process correction (operator-flagged):** the assistant jumped to building a strawman before convening the design party. Corrected — a **fully-spawned design party** (Winston/Murat/John/Mary) + a **landscape survey** redesigned it. Key outputs: runs emit per-run FACTS not the project grade; the scorecard must honor its own fence (per-criterion {judged level + computed signal + evidence_ref}); anti-believed-green = machine-vs-prose honesty-pin tests reusing the Epic-43 RED-first ratchet; report band+leaks+trend not a false-precise /100; Mary caught a **mis-cited reading-path number** (fresh holdout is OWED/unmeasured, not 0.071). Survey: the scorecard doc is the HOME; SOTA §4/§11.5 is complementary (cross-ref, not merge); reuse existing emitters.
+- **Epic authored + green-lit + RATIFIED:** `_bmad-output/planning-artifacts/epics-project-quality-scorecard-2026-07-19.md` — a dedicated epic file (NOT the destructive `epics.md` overwrite the BMAD skill's step-01 would have done). Scope "everything": Q1 engine+DID (foundation) · Q2 ready siblings (cost-efficiency, coverage-honesty, fidelity-trust) · Q3 partial+report-only (capability-honesty, tracker-coherence, lane-discipline, calibration). **`bmad-party-mode` green-light = 4/4 GO-WITH-AMENDMENTS** (Winston/John/Murat/Amelia; no NO-GO, no impasse) → **16 binding amendments GL-1…GL-16** folded in (ordering fix; split Q1.4; protect the `app/quality` clean leaf w/ a structural import test; static breadcrumb no doc-parse on emit; fence_state into all 5 emit sites; dimension-coverage meta-ratchet; Q3.2 not pin-less; nail silent_bypass_events; R2 witness = checkable comparison). Amelia verified every named seam against the repo.
+- **Strawman baseline** (`4e8b9ed7`): `app/quality/scorecard.py` fail-soft reader, `docs/quality/project-quality-scorecard.md` (prose + versioned machine block + dimensions container), `scripts/utilities/quality_scorecard.py` CLI + `--check`. **Bones are keepers; content/integration REWORKED by the epic** (the run-summary stamp + hand-transcribed judgment block are explicitly REPLACED per the binding consensus).
+
+## What is next
+
+1. **DEV opens on Epic Q1 (foundation)** in the corrected order **Q1.1 → Q1.4a → Q1.2 → Q1.3 → Q1.5 → Q1.4b**, honoring GL-1…GL-16 (binding). `bmad-code-review` precedes any story `done`. Class S — dev per BMAD dev-story discipline.
+2. **Testing doctrine (operator-mandated):** live-test at the component + run-segment level; full E2E runs economically OR **rides the upcoming Operator/HIL R2 trial** (witness `fence_state` + the final-report projection as a checkable comparison, per GL-10). The measure must be VERY reliable — every dimension carries its own honesty-pin ratchet.
+3. **The R2 operator-steered live trial** (on `tejal-apc-c1m1-p1-call`) remains the standing product frontier — the quality reporting rides it as part of the shakedown.
+4. **Branch disposition:** `dev/quality-scorecard-epic-2026-07-19` merges to master at arc close (or per operator).
+
+## Unresolved issues / risks
+
+- **The strawman is WIP and KNOWN-flawed** (superseded by the party design) — do NOT ship it as-is; the epic reworks it. It's kept only as scaffolding + a clean diff base.
+- Ambient dirty files (NOT session-owned, unchanged): shadow-monitor `.md`s, `gamma-styleguide-picks.jsonl`, `workbooks-*`, HAI/tejal corpus dirs, `goal-*.txt`.
+
+## Key lessons
+
+- **Design goes through the party BEFORE building** — the assistant built a strawman first and was rightly stopped; the party then caught a recursive flaw (the scorecard didn't honor the fence it measures), a mis-cited metric, and the believed-green trap. Party-first is not ceremony here; it changed the design materially.
+- **The BMAD create-epics skill's step-01 would overwrite the 256KB project `epics.md`** — for an established repo, author a DEDICATED epic file (repo convention), never run the greenfield-template path.
+
+## Validation summary
+
+- ruff clean on `app/quality/` + the CLI; fail-soft reader + runner helper verified (`_quality_scorecard_ref()` returns the ref or the `{status: unavailable}` marker, never raises). No new test suite yet — the epic's Q1.1/Q1.3 stories author the honesty-pin + fail-soft tests (dev phase). Step 0 coherence sweep: not run as a separate `/harmonize` — this was a planning arc (party design + green-light served as the review).
+
+## Artifact update checklist
+
+epic doc ✓ (authored + green-lit + RATIFIED) · strawman baseline ✓ (`4e8b9ed7`, labeled) · SESSION-HANDOFF ✓ (this) · bmm-workflow-status ✓ · project-context + next-session ✓ (regenerated) · sprint-status — deferred to dev-open (bmad-sprint-planning generates Q1-Q3 rows when dev starts) · guides/ONBOARDING/KG — unchanged (planning arc) · push (branch) — Step 12.
+
+---
+
 # Session close 2026-07-18 — DOC CHAIN (ONBOARDING+guides+SOTA) + STATUS-SURFACE CONSOLIDATION arc (bmad-quick-dev, party-confirmed COMPLETE)
 
 **Final class:** S (session-governance protocol + scripts/tests + sprint-status touched). **Branches:** opened on `trial/c1m1-p1-2026-07-17` (doc chain, pushed `6d87f35b`); cut `dev/status-surface-consolidation-2026-07-17` off it for the consolidation arc (4 commits `497eb4dc`→`f382e651`, NOT yet pushed at this section-write — see Step 12). **Opened as:** BMAD session-START (doc chain) → operator-directed party-mode on the status-surface liability → `bmad-quick-dev` consolidation arc.

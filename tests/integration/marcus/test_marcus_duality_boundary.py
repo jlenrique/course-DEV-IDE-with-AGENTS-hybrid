@@ -67,7 +67,11 @@ def test_trial2_bypass_and_max3_invariants_hold_across_terminal_gates(tmp_path) 
     payload = yaml.safe_load(run_summary.read_text(encoding="utf-8"))
     gates = production_gate_ids(load(DEFAULT_MANIFEST_PATH))
 
-    assert payload["silent_bypass_events"] == 0
+    # Q1.4a (GL-8): the honest silent_bypass value moved into fence_state; the
+    # dishonest hardcoded top-level 0 stamp is gone. No detector signal is passed
+    # here, so the honest emission is the sentinel "undetected", never a false 0.
+    assert "silent_bypass_events" not in payload
+    assert payload["fence_state"]["silent_bypass_events"] == "undetected"
     # Arc 2 (2026-06-18): G2B (variant pick) + G4A (voice pick) woken into the
     # surfaced pause set. G0-S2 (2026-06-26): +G0E source-enrichment confirm-gate #1.
     # G0-S3 (2026-06-26): +G0R Irene LO ratify-gate #2. Story 42.5 (2026-07-17):

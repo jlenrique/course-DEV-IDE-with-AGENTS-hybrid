@@ -65,6 +65,7 @@ from app.models.runtime.operator_surface import (
     OperatorSurfaceProjection,
     PreflightItem,
     PreflightSection,
+    QualitySection,
     RunSettingsSection,
     SpecialistEntry,
     SpecialistsSection,
@@ -111,6 +112,26 @@ _RUN_SETTING_MAX_CHARS = 240
 #: Bounds so the additive sections cannot reopen the 525KB run.json trap (AD-16).
 _CONTEXT_ENTRY_MAX_CHARS = 240
 _MAX_EXPORT_PATHS = 40
+
+#: Story Q4.1 — how many ranked leaks the compact tile surfaces.
+_QUALITY_TOP_LEAKS_N = 5
+
+#: Letter-band severity ladder (best → worst): higher == redder. Used ONLY to pick
+#: the worst band across dimensions for the tile (QLW-7). The tile stores the band
+#: string VERBATIM; this map never mutates the committed value.
+_BAND_SEVERITY: dict[str, int] = {
+    "A+": 0, "A": 1, "A-": 2,
+    "B+": 3, "B": 4, "B-": 5,
+    "C+": 6, "C": 7, "C-": 8,
+    "D+": 9, "D": 10, "D-": 11,
+    "F": 12,
+}
+#: FIX 4 — an unrecognized/garbage band token is never surfaced verbatim (it is
+#: not an actionable ladder value). It is mapped to the conservative ladder FLOOR
+#: (``"D"``) for BOTH ranking severity and the stored display value, so a garbage
+#: band can never render a cleaner posture than a known red sibling (QLW-9) while
+#: the tile always shows an actionable band, never a garbage string.
+_UNKNOWN_BAND_DISPLAY = "D"
 
 #: Bounded retry for ``os.replace`` under a concurrent open reader (AD-2).
 _REPLACE_RETRIES = 5
@@ -613,6 +634,10 @@ class OperatorSurfaceAssembler:
                     "decision_card": self._decision_card_dict(envelope, now),
                     "error_message": self._error_message_dict(envelope, now),
                     "deliverables": self._deliverables_dict(envelope, now),
+                    # Story Q4.1 — the compact quality read at the SAME terminal-
+                    # completion choke-point deliverables uses (None off completion
+                    # so the field clears on transition, like next_action).
+                    "quality": self._quality_dict(envelope, now),
                 }
                 return updates
 
@@ -831,6 +856,142 @@ class OperatorSurfaceAssembler:
         except Exception:  # noqa: BLE001
             LOGGER.warning("exports enumeration failed for trial %s", self.trial_id)
             return []
+
+    # -- Story Q4.1: quality tile (terminal-completion, COMMITTED-doc read) ---
+
+    def _quality_dict(self, envelope: Any, now: datetime) -> dict[str, Any] | None:
+        """Map the COMMITTED project-quality scorecard -> QualitySection at completion.
+
+        This surfaces the STANDING project quality posture (identical across runs
+        modulo the committed ``as_of``) ON the per-run surface — it is NOT a per-run
+        recomputation. Fires only at genuine terminal completion (mirrors
+        ``deliverables``' verb-condition), so it rides ``emit()`` in BOTH node walks
+        and NEVER at the G1 start-walk pause. Reads the COMMITTED doc through the
+        ``app.quality`` clean leaf via a **deferred local import** (mirroring the ``next_action`` /
+        ``TrialEconomicsReport`` deferrals) — NEVER ``app.quality.signals.*`` (the
+        Q3.2 live-recompute determinism trap, QLW-4).
+
+        Zero-lie / fail-soft (QLW-8): a missing/degraded block still emits an
+        ``available=False`` + null-posture section (never a silent absence, never a
+        fabricated band). Any exception on this path is swallowed here so it can
+        never perturb the walk (amendment 8).
+        """
+        if envelope.status != "completed":
+            return None
+        try:
+            # Deferred local import of the clean leaf. Read-only COMMITTED-doc
+            # readers ONLY — signals.* is deliberately not imported.
+            from app.quality import (
+                leak_coverage_gaps,
+                ranked_project_leaks,
+                read_scorecard_block,
+            )
+            from app.quality.history import history_path, trend_from_history
+
+            block = read_scorecard_block()
+            dims = block.get("dimensions") if isinstance(block, dict) else None
+            if not isinstance(dims, dict) or not dims:
+                return self._quality_unavailable(now)
+
+            worst_key, worst_band = self._worst_band(dims)
+            # FIX 1 (zero-lie): present dimensions with NO parseable band is not a
+            # trustworthy posture — an ``available=True`` tile MUST carry a band, so
+            # "dims present but no band to interpret them against" is UNAVAILABLE.
+            if worst_band is None:
+                return self._quality_unavailable(now)
+            ranked = ranked_project_leaks(block)
+            gaps = leak_coverage_gaps(block)
+            top_leaks = [self._leak_label(e) for e in ranked[:_QUALITY_TOP_LEAKS_N]]
+            # Trend follows the worst dimension so band + trend describe the same
+            # dimension; computed from the append-only ledger (never painted).
+            trend = (
+                trend_from_history(worst_key, history_path())
+                if worst_key is not None
+                else None
+            )
+            # FIX 2: surface the COMMITTED doc's own as_of as a staleness signal
+            # (distinct from this section's emit-time read-stamp above).
+            raw_as_of = block.get("as_of")
+            scorecard_as_of = str(raw_as_of) if raw_as_of is not None else None
+            return QualitySection(
+                as_of=now,
+                available=True,
+                band=worst_band,
+                ranked_leak_count=len(ranked),
+                top_leaks=top_leaks,
+                coverage_gaps=len(gaps),
+                trend=trend,
+                scorecard_as_of=scorecard_as_of,
+            ).model_dump(mode="json")
+        except Exception:  # noqa: BLE001 — a bad scorecard never sinks emit
+            LOGGER.exception(
+                "quality tile map failed for trial %s — available=False", self.trial_id
+            )
+            # FIX 6: the fallback construction itself must be bulletproof — if
+            # ``_quality_unavailable`` (a model build + dump) somehow raises, we must
+            # NOT propagate into ``_build`` and abort the ENTIRE terminal emit
+            # (deliverables / envelope / identity would all be lost). Omit the tile
+            # (None) as the last-resort honest posture instead.
+            try:
+                return self._quality_unavailable(now)
+            except Exception:  # noqa: BLE001 — never abort the walk over the tile
+                LOGGER.exception(
+                    "quality unavailable-fallback ALSO failed for trial %s — "
+                    "omitting the tile so the terminal emit is never aborted",
+                    self.trial_id,
+                )
+                return None
+
+    def _quality_unavailable(self, now: datetime) -> dict[str, Any]:
+        """The honest fail-soft posture: present, ``available=False``, no fabricated value."""
+        return QualitySection(as_of=now, available=False).model_dump(mode="json")
+
+    @staticmethod
+    def _worst_band(dims: Mapping[str, Any]) -> tuple[str | None, str | None]:
+        """Return ``(worst_dimension_key, worst_band)`` across present dimensions.
+
+        The worst (reddest) band wins (QLW-7 band-aggregation). The stored band is
+        always an actionable ladder value: a recognized band is stored VERBATIM but
+        whitespace-STRIPPED (FIX 4 NIT), while an unrecognized/garbage token is
+        mapped to the conservative ladder floor ``_UNKNOWN_BAND_DISPLAY`` (``"D"``)
+        for BOTH ranking severity and the stored value — so a garbage band can never
+        render a cleaner posture than the committed block's worst dimension (QLW-9)
+        and never leaks a garbage string onto the operator surface (FIX 4). Iteration
+        is in sorted key order with a strict ``>`` so ties resolve deterministically
+        to the first-encountered dimension. Dimensions with no band are skipped.
+        """
+        worst_sev = -1
+        worst_key: str | None = None
+        worst_band: str | None = None
+        for key in sorted(dims, key=str):
+            dim = dims[key]
+            if not isinstance(dim, dict):
+                continue
+            band = dim.get("band")
+            if not isinstance(band, str) or not band.strip():
+                continue
+            stripped = band.strip()
+            sev = _BAND_SEVERITY.get(stripped)
+            if sev is None:
+                # Unparseable/garbage → conservative actionable floor "D": never
+                # surface the raw token, never render cleaner than reality.
+                sev = _BAND_SEVERITY[_UNKNOWN_BAND_DISPLAY]
+                display = _UNKNOWN_BAND_DISPLAY
+            else:
+                display = stripped
+            if sev > worst_sev:
+                worst_sev = sev
+                worst_key = str(key)
+                worst_band = display
+        return worst_key, worst_band
+
+    @staticmethod
+    def _leak_label(entry: Mapping[str, Any]) -> str:
+        """One ranked-leak entry -> a compact ``lane · slug · dimension`` label."""
+        lane = entry.get("lane") or "unknown-lane"
+        slug = entry.get("slug") or "unknown-slug"
+        dim = entry.get("dimension_label") or entry.get("dimension") or "unknown-dimension"
+        return f"{lane} · {slug} · {dim}"[:_CONTEXT_ENTRY_MAX_CHARS]
 
     # -- public API: steps section (AD-15) --------------------------------
 

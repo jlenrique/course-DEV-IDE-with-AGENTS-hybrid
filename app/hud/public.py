@@ -130,6 +130,23 @@ ALLOWED_RUN_SETTINGS: tuple[str, ...] = tuple(
 #: Trace TIMINGS only. ``detail`` dropped (free text that could echo content).
 ALLOWED_TRACE_EVENT: tuple[str, ...] = ("at", "event")
 
+#: The Story Q4.3 compact PROJECT-quality posture tile (read-only consumer of
+#: the Q4.1 ``QualitySection``). Every field is an honest posture summary —
+#: ``band`` (A/B/C/D ladder), leak/gap counts, ``top_leaks`` (dimension-level
+#: leak labels, NOT source content), ``trend``, and the committed scorecard's
+#: staleness stamp. There is no digest, path, cost, or operator identity here,
+#: so the whole section is safe to cross the public wire.
+ALLOWED_QUALITY: tuple[str, ...] = (
+    "available",
+    "band",
+    "ranked_leak_count",
+    "top_leaks",
+    "coverage_gaps",
+    "trend",
+    "scorecard_as_of",
+    "as_of",
+)
+
 #: Whole sections that NEVER cross the wire (documentation + the enumeration
 #: test read this to prove intent). ``notifications_echo`` is dropped because it
 #: nests the full HudConfig echo; the public viewer does not need it.
@@ -224,6 +241,10 @@ def build_public_view(projection: Mapping[str, Any]) -> dict[str, Any]:
     run_settings = projection.get("run_settings")
     if isinstance(run_settings, Mapping):
         view["run_settings"] = _copy_allowed(run_settings, ALLOWED_RUN_SETTINGS)
+
+    quality = projection.get("quality")
+    if isinstance(quality, Mapping):
+        view["quality"] = _copy_allowed(quality, ALLOWED_QUALITY)
 
     trace = projection.get("trace")
     if isinstance(trace, Mapping):
@@ -437,6 +458,7 @@ __all__ = [
     "ALLOWED_HEALTH_TILE",
     "ALLOWED_IDENTITY",
     "ALLOWED_MODALITIES",
+    "ALLOWED_QUALITY",
     "ALLOWED_RUN_SETTINGS",
     "ALLOWED_SPECIALIST",
     "ALLOWED_STEPS",

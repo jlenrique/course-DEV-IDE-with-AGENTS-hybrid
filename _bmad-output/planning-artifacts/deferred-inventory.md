@@ -10,6 +10,241 @@
 
 ---
 
+## DID Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     This is the SSOT for the OPEN DID scorecard leaks counted (line-anchored) by
+     app.quality.signals.open_leak_count_signal and reconciled against `open_leaks` in
+     docs/quality/project-quality-scorecard.md §1.6 by the leak-count honesty pin.
+     MAINTENANCE RULE: closing a DID leak == remove its did_leak line HERE **and** decrement
+     `open_leaks` in docs/quality/project-quality-scorecard.md, IN LOCKSTEP (the honesty pin
+     reconciles the two — editing only one goes RED). Do NOT tag leaks under their deferred
+     entries: those entries migrate to the §Closed Entries — Archived section on close, which
+     the reader excludes, silently dropping the count while the scorecard is untouched. -->
+
+The 5 open DID scorecard leaks. Each line's HTML comment gives its §1.6 criterion, its DID leak number, and a pointer to the deferred entry that owns the underlying work (the registry decouples the *count* from those entries' lifecycles):
+
+- did_leak: leg4-narration-fidelity-gate-precision-before-flag-on  <!-- [C3] DID Leak 1 — fidelity fence OFF by default; owner entry: ## Leg-4 CLOSE follow-ons -->
+- did_leak: gary-export-llm-brief-to-page-matcher  <!-- [C2] DID Leak 3 — Gary export title-match determinism-pretending; owner entry: ## Named-But-Not-Filed Follow-Ons table -->
+- did_leak: braid-workbook-semantic-claim-citation-audit  <!-- [C5] DID Leak 2 — workbook semantic audit WARN-not-gate; owner entry: ## Braid green-light follow-ons -->
+- did_leak: reading-path-fresh-naive-holdout-pre-trial  <!-- [C5] DID Leak 4 — reading-path uncalibrated, fresh-naive holdout OWED (cross-links Q3.4); underlying follow-on lives inside the p2-4b entry [[reading-path-fresh-naive-holdout-pre-trial]] in ## Named-But-Not-Filed Follow-Ons -->
+- did_leak: workbook-capability-tier-honesty-lag  <!-- [C5] DID Leak 5 — capability ledger lag; owner entry: ## Static-validation deck+motion+workbook findings -->
+
+---
+
+## Cost-Efficiency Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN cost_efficiency scorecard leaks counted (line-anchored) by
+     app.quality.signals.cost_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the cost_efficiency dimension
+     in docs/quality/project-quality-scorecard.md §2.6 (the cost leak-count + slug-identity
+     honesty pins). SEPARATE `cost_leak:` namespace from the DID `did_leak:` tags so the two
+     counts never collide. MAINTENANCE RULE: closing a cost leak == remove its cost_leak line
+     HERE **and** decrement `open_leaks` + drop the `leaks:` entry in the scorecard, IN
+     LOCKSTEP (the pins reconcile the two — editing only one goes RED). Do NOT tag leaks under
+     their deferred entries: those migrate to §Closed Entries — Archived on close, which the
+     reader excludes, silently dropping the count while the scorecard is untouched. -->
+
+The 1 open cost_efficiency scorecard leak. Each line's HTML comment gives its §2.6 criterion, its cost leak number, and a pointer to the owning work:
+
+- cost_leak: cost-efficiency-budget-stop-opt-in-default-no-cap  <!-- [CE1] Cost Leak 1 — the Epic-41 dollar brake (MARCUS_TRIAL_BUDGET_USD → check_trial_budget, enforced at both walks' dispatch chokepoint by Story 41-4) is a REAL enforced stop WHEN SET but OPT-IN by default (production preset wires no default budget → check_trial_budget(total, None)=='no-cap'). Close = wire a sensible default budget onto the production preset (turn the opt-in brake ON by default). -->
+
+---
+
+## Coverage-Honesty Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN coverage_honesty scorecard leaks counted (line-anchored) by
+     app.quality.signals.coverage_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the coverage_honesty dimension
+     in docs/quality/project-quality-scorecard.md §3.6 (the coverage leak-count + slug-identity
+     honesty pins). THIRD `cov_leak:` namespace, disjoint from the DID `did_leak:` and cost
+     `cost_leak:` tags so the three counts never collide. MAINTENANCE RULE: closing a coverage
+     leak == remove its cov_leak line HERE **and** decrement `open_leaks` + drop the `leaks:`
+     entry in the scorecard, IN LOCKSTEP (the pins reconcile the two — editing only one goes
+     RED). Do NOT tag leaks under their deferred entries: those migrate to §Closed Entries —
+     Archived on close, which the reader excludes, silently dropping the count while the
+     scorecard is untouched. -->
+
+The 1 open coverage_honesty scorecard leak. Each line's HTML comment gives its §3.6 criterion, its coverage leak number, and a pointer to the owning work:
+
+- cov_leak: coverage-honesty-gate-opt-in-default-off  <!-- [CV1] Coverage Leak 1 — the coverage fail-loud gate (coverage_gate_active → enforce_coverage_gate_before_audio, both walks, BEFORE audio spend) is a REAL fence WHEN WOKEN but OPT-IN by default (MARCUS_COVERAGE_GATE_ACTIVE default-OFF; production preset sets no default → coverage_gate_active()==False → the pre-audio-spend seam early-returns). Close = wire the coverage gate ON by default on the production preset (turn the opt-in fence into a default-on fence). -->
+
+---
+
+## Fidelity-Trust Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN fidelity_trust scorecard leaks counted (line-anchored) by
+     app.quality.signals.fidelity_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the fidelity_trust dimension
+     in docs/quality/project-quality-scorecard.md §4.6 (the fidelity leak-count +
+     slug-identity honesty pins). FOURTH `fid_leak:` namespace, disjoint from the DID
+     `did_leak:`, cost `cost_leak:`, and coverage `cov_leak:` tags so the four counts never
+     collide (verified by test_four_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: closing a fidelity leak == remove its fid_leak line HERE **and**
+     decrement `open_leaks` + drop the `leaks:` entry in the scorecard, IN LOCKSTEP (the
+     pins reconcile the two — editing only one goes RED). Do NOT tag leaks under their
+     deferred entries: those migrate to §Closed Entries — Archived on close, which the
+     reader excludes, silently dropping the count while the scorecard is untouched.
+
+     CROSS-LINK / NO-DOUBLE-COUNT: this fidelity leak is the SAME underlying substrate as
+     DID Leak-2 (`did_leak: braid-workbook-semantic-claim-citation-audit`, §1.6 C5) — the
+     workbook semantic audit WARNs but does not gate. It is deliberately counted ONCE per
+     namespace: under `did_leak:` it is the DID C5 honesty leak (workbook-scoped); here
+     under `fid_leak:` it is the fidelity-trust FT1 semantic-fence leak (source→output
+     faithfulness framing). Distinct slugs, distinct namespaces → NOT a double-count of the
+     shared `braid-workbook-semantic-claim-citation-audit` deferred entry. -->
+
+The 1 open fidelity_trust scorecard leak. Each line's HTML comment gives its §4.6 criterion, its fidelity leak number, and a pointer to the owning work:
+
+- fid_leak: fidelity-trust-semantic-fence-warn-only-never-gates  <!-- [FT1] Fidelity Leak 1 — the semantic-fidelity audit (app/specialists/_shared/source_fidelity_audit.py::audit_semantic_framing) is a REAL heuristic that reports candidate unsourced-framing, but SEMANTIC_TRIPWIRE['gates_production'] is False → it WARNs and NEVER fails a production run. A WARN that never gates IS the measured gap (the DID-C3 / cost-CE1 / coverage-CV1 pattern: mechanism exists, never gates). Close = flip gates_production True (make the audit gate production) — at which point semantic_fence_gating_signal() reports semantic_fence_gates=True and FT1 earns strong. Cross-links DID Leak-2 (braid-workbook-semantic-claim-citation-audit) — SAME substrate, counted once per namespace (did_leak: = DID C5 workbook-scoped; fid_leak: = fidelity-trust FT1 source→output framing), NOT double-counted. -->
+
+---
+
+## Capability-Honesty Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN capability_honesty scorecard leaks counted (line-anchored) by
+     app.quality.signals.capability_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the capability_honesty dimension
+     in docs/quality/project-quality-scorecard.md §5.6 (the capability leak-count +
+     slug-identity honesty pins). FIFTH `cap_leak:` namespace, disjoint from the DID
+     `did_leak:`, cost `cost_leak:`, coverage `cov_leak:`, and fidelity `fid_leak:` tags so the
+     five counts never collide (verified by test_five_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: closing a capability leak == remove its cap_leak line HERE **and**
+     decrement `open_leaks` + drop the `leaks:` entry in the scorecard, IN LOCKSTEP (the pins
+     reconcile the two — editing only one goes RED). Do NOT tag leaks under their deferred
+     entries: those migrate to §Closed Entries — Archived on close, which the reader excludes,
+     silently dropping the count while the scorecard is untouched.
+
+     ⛔ GOVERNANCE FENCE: this leak is CLOSED by a PARTY-GATED tier bump in bundle_catalog.py
+     (CLAUDE.md pack-versioning + the `workbook-capability-tier-honesty-lag` deferred entry) —
+     NOT by editing the scorecard. Q3.1 SCORES the tier honesty read-only; it never edits a tier.
+
+     CROSS-LINK / NO-DOUBLE-COUNT: this capability leak is the SAME underlying substrate as
+     DID Leak-5 (`did_leak: workbook-capability-tier-honesty-lag`, §1.6 C5) — the workbook
+     capability tier LAGS produced reality. It is deliberately counted ONCE per namespace:
+     under `did_leak:` it is the DID C5 capability-ledger-lag; here under `cap_leak:` it is the
+     capability_honesty CH1 tier↔produced reconciliation leak. Distinct slugs, distinct
+     namespaces → NOT a double-count of the shared `workbook-capability-tier-honesty-lag`
+     deferred entry. -->
+
+The 1 open capability_honesty scorecard leak. Each line's HTML comment gives its §5.6 criterion, its capability leak number, and a pointer to the owning work:
+
+- cap_leak: capability-honesty-workbook-tier-lags-produced-reality  <!-- [CH1] Capability Leak 1 — bundle_catalog.py tiers `workbook` as mechanism_only_never_produced (front-door readiness `not_yet`) DESPITE real workbook MD+DOCX produced (trial a940c5eb, LO-verified 8b275e5b) on the FROZEN Tejal P2 lesson. The declared tier LAGS produced reality (the DID-Leak-5 pattern). Direction is CONSERVATIVE (understates → greys the bundle → fail-safe, NOT an overclaim), so non-urgent. Close = PARTY-RATIFY the honest tier (proven-on-frozen-lesson, NOT blanket proven_wired — off-frozen-lesson stays an open claim) in bundle_catalog.py — a party-gated governance act — at which point capability_tier_reconciliation_signal() reports tiers_match_produced_reality=True and CH1 earns strong. ⛔ Do NOT edit the tier from the scorecard. Cross-links DID Leak-5 (workbook-capability-tier-honesty-lag) — SAME substrate, counted once per namespace (did_leak: = DID C5 capability-ledger-lag; cap_leak: = capability_honesty CH1 reconciliation), NOT double-counted. -->
+
+---
+
+## Governance/Tracker-Coherence Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN tracker_coherence scorecard leaks counted (line-anchored) by
+     app.quality.signals.tracker_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the tracker_coherence dimension
+     in docs/quality/project-quality-scorecard.md §6.6 (the tracker leak-count +
+     slug-identity honesty pins). SIXTH `trk_leak:` namespace, disjoint from the DID
+     `did_leak:`, cost `cost_leak:`, coverage `cov_leak:`, fidelity `fid_leak:`, and capability
+     `cap_leak:` tags so the six counts never collide (verified by
+     test_six_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: closing a tracker leak == remove its trk_leak line HERE **and** decrement
+     `open_leaks` + drop the `leaks:` entry in the scorecard, IN LOCKSTEP (the pins reconcile the
+     two — editing only one goes RED). Do NOT tag leaks under their deferred entries: those
+     migrate to §Closed Entries — Archived on close, which the reader excludes, silently dropping
+     the count while the scorecard is untouched.
+
+     ⚠️ ZERO-LEAK CASE: this is the FIRST dimension whose count may legitimately be **0** — if the
+     status trackers reconcile to a CLEAN structural verdict AND the drift monitor gates, this
+     registry carries NO trk_leak line, the tracker_coherence dimension declares `open_leaks: 0` +
+     `leaks: []`, and the shared machinery handles that cleanly (leak_coverage_gaps treats
+     `open_leaks <= 0` as no gap; the leak-count identity pin reconciles 0 == 0). Today the
+     trackers are STRUCTURALLY DEGRADED (TC1) AND the drift monitor is advisory/never-gates (TC2),
+     so exactly TWO leaks are open below. -->
+
+The 2 open tracker_coherence scorecard leaks. Each line's HTML comment gives its §6.6 criterion, its tracker leak number, and a pointer to the owning work:
+
+- trk_leak: tracker-coherence-status-trackers-degraded-orphan-stories  <!-- [TC1] Tracker Leak 1 — progress_map.qualify_sources() reports a STRUCTURAL DEGRADED verdict across the status trackers (1 structural warning: orphan_stories — 269 story keys in sprint-status.yaml development_status do not match any epic-* prefix, so they are not owned by any declared epic). Time-based staleness is EXCLUDED from the verdict (deterministic). This is a real tracker-coherence divergence (a status tracker is internally incoherent), so tracker_coherence is NOT fully coherent → TC1 derives `partial`. Direction is fail-safe (a data-quality warning surfaced by the qualifier, not a silent overclaim). Close = reconcile sprint-status.yaml so every story key maps to a declared epic (or adjust the epic roster the qualifier recognizes) until the structural verdict is CLEAN — at which point tracker_coherence_signal() reports trackers_coherent=True and TC1 earns strong. ⛔ Q3.2 SCORES the tracker coherence READ-ONLY; it never edits a tracker or its tooling. -->
+- trk_leak: tracker-coherence-doc-drift-monitoring-advisory-never-gates  <!-- [TC2] Tracker Leak 2 — scripts/utilities/doc_drift_monitor.py EXISTS (code↔doc drift monitoring wired) but is an ADVISORY pre-push/CI heuristic (check_documentation_drift prints ✅/⚠ and at most sys.exits a non-blocking hook; no gates_production affordance, not wired into production_runner) → it does NOT gate a production run → tracker_doc_drift_signal() reports gates_production=False → TC2 derives `weak` (the fence-not-gating pattern, like coverage default-OFF / fidelity WARN-only). Direction is fail-safe (a monitor that under-enforces, not a silent overclaim). Close = wire the drift monitor to gate a production run (a truthy gates_production affordance the reader detects) — at which point tracker_doc_drift_signal() reports gates_production=True and TC2 earns strong. ⛔ Q3.2 SCORES the tracker coherence READ-ONLY; it never edits a tracker or its tooling (the gating wiring is a separate tooling act, not done here). -->
+
+---
+
+## Lane-Discipline Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN lane_discipline scorecard leaks counted (line-anchored) by
+     app.quality.signals.lane_leak_count_signal and reconciled — by COUNT and by SLUG IDENTITY —
+     against `open_leaks` + the `leaks:` list of the lane_discipline dimension in
+     docs/quality/project-quality-scorecard.md §7.6 (the lane leak-count + slug-identity honesty
+     pins). SEVENTH `lane_leak:` namespace, disjoint from the DID `did_leak:`, cost `cost_leak:`,
+     coverage `cov_leak:`, fidelity `fid_leak:`, capability `cap_leak:`, and tracker `trk_leak:`
+     tags so the seven counts never collide (verified by
+     test_seven_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: opening/closing a lane leak == add/remove a lane_leak line HERE **and**
+     increment/decrement `open_leaks` + add/drop the `leaks:` entry in the scorecard, IN LOCKSTEP
+     (the pins reconcile the two — editing only one goes RED). Do NOT tag leaks under their deferred
+     entries: those migrate to §Closed Entries — Archived on close, which the reader excludes,
+     silently dropping the count while the scorecard is untouched.
+
+     ⚠️ declared-clean ≠ verified-clean-COVERAGE: LD1 proves the 18 DECLARED contracts pass (18/0
+     today → LD1 strong), but does NOT verify those contracts COVER every lane documented in
+     docs/lane-matrix.md — a documented lane with no enforcing contract would read 18/0 clean while
+     being a real hole. So ONE leak is open today: the coverage-completeness-UNVERIFIED gap (the
+     OWED lane-matrix↔contract coverage check; DID Leak-4 owed-check precedent). LD1 itself stays
+     strong — the leak is a SEPARATE completeness gap, not an LD1 failure. A BROKEN contract (a real
+     forbidden import) would ADDITIONALLY drop LD1 to weak (the broken-count pin) and could add a
+     second lane_leak. ⛔ Q3.3 SCORES the lane discipline READ-ONLY; it never edits a contract.
+     (The 0-leak PATH stays machinery-tested via synthetic-block tests — honesty over having a live
+     0-leak example.) -->
+
+The 1 open lane_discipline scorecard leak. The line's HTML comment gives its §7.6 criterion, its lane leak number, and a pointer to the owning follow-on:
+
+- lane_leak: lane-discipline-lane-matrix-contract-coverage-unverified  <!-- [LD1] Lane Leak 1 — LD1 (import_linter_lane_signal) proves the 18 DECLARED pyproject.toml [tool.importlinter] contracts pass (18/0 today via the shipped importlinter.api), but there is NO mechanical check that those contracts EXHAUSTIVELY cover the lanes documented in docs/lane-matrix.md — a documented lane with no enforcing contract would read 18/0 clean while being a real discipline hole (declared-clean ≠ verified-clean-coverage; the DID Leak-4 owed-check precedent counts an owed/unmeasured check as a leak). LD1 itself stays strong (18/0 declared-pass is honestly strong — this leak is a SEPARATE completeness gap, not an LD1 failure). Direction is fail-safe (an owed verification, not a silent overclaim). Close = build the lane-matrix↔contract coverage verifier (the would-be LD2; the named follow-on lane-discipline-lane-matrix-contract-coverage-verifier in §Named-But-Not-Filed) that reconciles every documented lane against a [tool.importlinter] contract — at which point coverage-completeness is verified and this leak closes (the path toward A). ⛔ Q3.3 SCORES the lane discipline READ-ONLY; it never edits a contract or the lane-matrix. -->
+
+`lane_leak_count_signal()` == 1 == the §7.6 machine block's `open_leaks` == `len(leaks)`.
+
+---
+
+## Calibration Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN calibration scorecard leaks counted (line-anchored) by
+     app.quality.signals.calibration_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the calibration dimension in
+     docs/quality/project-quality-scorecard.md §8.6 (the calibration leak-count + slug-identity
+     honesty pins). EIGHTH `cal_leak:` namespace, disjoint from the DID `did_leak:`, cost
+     `cost_leak:`, coverage `cov_leak:`, fidelity `fid_leak:`, capability `cap_leak:`, tracker
+     `trk_leak:`, and lane `lane_leak:` tags so the eight counts never collide (verified by
+     test_eight_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: opening/closing a calibration leak == add/remove a cal_leak line HERE **and**
+     increment/decrement `open_leaks` + add/drop the `leaks:` entry in the scorecard, IN LOCKSTEP
+     (the pins reconcile the two — editing only one goes RED). Do NOT tag leaks under their deferred
+     entries: those migrate to §Closed Entries — Archived on close, which the reader excludes,
+     silently dropping the count while the scorecard is untouched.
+
+     ⛔ REPORT-ONLY: Q3.4's calibration dimension REPORTS the reading-path calibration posture; it
+     does NOT build the fresh-naive-holdout harness or run any measurement (that is the SEPARATE owed
+     epic reading-path-fresh-naive-holdout-pre-trial = DID Leak-4). The reading-path neck is
+     UNCALIBRATED — the fresh NAIVE holdout is OWED / UNMEASURED, and NONE may be implied (Mary,
+     binding). The ONLY measured number is the built-classifier RESUBSTITUTION (subject=built-
+     classifier(S1/S2/S3), substrate=fresh@2026-06-23: primary-key 0.071/14 on the CONSUMED-14) — a
+     resubstitution/upper-bound ONLY, surfaced as LABELED evidence of what WAS run, NEVER a fresh-naive
+     figure. So ONE leak is open today: the reading-path fresh-naive-holdout OWED gap (the DID Leak-4
+     owed-check precedent: an OWED/unmeasured check counts as a leak). CROSS-LINKS DID Leak-4
+     (did_leak: reading-path-fresh-naive-holdout-pre-trial, §1.6 C5) — the SAME underlying substrate,
+     but a DISTINCT slug in a DISJOINT namespace, counted ONCE per namespace (the Q2.3/Q3.1 cross-link
+     precedent), NOT double-counted (verified by test_calibration_leak_cross_links_did_leak4_no_double_count).
+     Closing this leak = the owed epic (record a fresh-naive-holdout measurement), at which point the
+     reading-path becomes calibrated and CAL1 earns strong (the path toward B). -->
+
+The 1 open calibration scorecard leak. The line's HTML comment gives its §8.6 criterion, its calibration leak number, and a pointer to the owning follow-on:
+
+- cal_leak: calibration-reading-path-fresh-naive-holdout-owed  <!-- [CAL1] Calibration Leak 1 — CAL1 (reading_path_calibration_signal) reports that the reading-path neck is UNCALIBRATED: the fresh NAIVE holdout MEASUREMENT is OWED / UNMEASURED (the harness/artifact does not exist — the owed epic reading-path-fresh-naive-holdout-pre-trial = DID Leak-4). A fresh naive number has NOT been measured and NONE may be implied (Mary, binding). The ONLY measured number is the built-classifier RESUBSTITUTION (subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23: primary-key 0.071/14 on the CONSUMED-14 held-out) — a resubstitution/upper-bound ONLY (report honest-built-classifier-measurement.json), surfaced as LABELED evidence of what WAS run, NEVER a generalization and NEVER a fresh-naive figure. CAL1 consults the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the presence of a resubstitution number (resubstitution ≠ calibrated). Direction is fail-safe (an OWED measurement, not a silent overclaim). CROSS-LINKS DID Leak-4 (did_leak: reading-path-fresh-naive-holdout-pre-trial) — SAME substrate, DISTINCT slug/namespace, counted ONCE (NOT double-counted). Close = the owed epic (build the fresh-naive-holdout harness + record a fresh-naive-holdout measurement; the underlying follow-on lives inside the p2-4b entry [[reading-path-fresh-naive-holdout-pre-trial]] in ## Named-But-Not-Filed Follow-Ons) — at which point the reading-path becomes calibrated and CAL1 earns strong. ⛔ Q3.4 REPORTS the owed posture READ-ONLY; it never builds the harness or measures. -->
+
+`calibration_leak_count_signal()` == 1 == the §8.6 machine block's `open_leaks` == `len(leaks)`.
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |
@@ -41,6 +276,7 @@
 
 ## Named-But-Not-Filed Follow-Ons
 
+- 🟢 **`lane-discipline-lane-matrix-contract-coverage-verifier`** (filed 2026-07-19 by Story Q3.3 — the would-be LD2; the CLOSE-PATH for the open lane leak `lane-discipline-lane-matrix-contract-coverage-unverified` tagged in the `## Lane-Discipline Scorecard Leak Registry`) — Q3.3's `lane_discipline` dimension scores LD1 (the LIVE import-linter kept/broken via `importlinter.api`, 18/0 declared-pass → `strong`) and caps at Band **B** (the single signal-derived criterion caps at `strong`/3). The lane-matrix / governance-dimensions-taxonomy maps are consulted as SUPPORTING evidence, but their existence is NOT proof of EXHAUSTIVE lane↔contract coverage — so **declared-clean ≠ verified-clean-coverage**, and that coverage-completeness gap is held OPEN as the dimension's one governance leak (per the DID Leak-4 owed-check precedent). A would-be **LD2** — a mechanical verifier that reconciles every documented lane in `docs/lane-matrix.md` against a corresponding `[tool.importlinter]` contract (a gap = a documented lane with no enforcing contract) — would VERIFY coverage completeness, close the leak, and be the path toward A. **Reactivation trigger: when exhaustive lane-matrix↔contract coverage becomes worth mechanizing (a lane-matrix expansion, or a governance push for provable coverage). Priority LOW** (LD1 already gives an honest, deterministic, CI-grounded read of the declared contracts; direction-stable — additive scoring, never relaxes LD1).
 - ✅ **RESOLVED 2026-07-17 as Story 42-6** (`42-6-g0s-runner-default-wake-sentinel.md`, done + dual-gate reviewed): per-run wake sentinel written by the CLI operator path (default ON via `--prewalk-settings-confirm`; `start_trial` function-default OFF keeps tests deterministic; env flag kept as OR override; opt-out preserved). G0S now shows by DEFAULT on operator-steered runs. Original entry retained below for lineage.
 - 🔴 **`g0s-runner-default-wake-policy`** (filed 2026-07-17 by Story 42-5 review; RESOLVED by 42-6 — see above): the new pre-walk settings gate `G0S` is operator-woken via `MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE` (default OFF → traversed byte-identically, mirroring G0E/G0R). So the pre-walk confirm surface is NOT shown by DEFAULT on a real operator-steered run — the operator must export the flag. The operator's 42-5 requirement (RED priority) implies it should be the DEFAULT for operator-steered runs. Clean fix (dev-flagged): a per-run persisted wake sentinel (run-dir file) set by `start_trial` for operator-steered runs + read by both walks — NOT global `os.environ.setdefault` in start_trial (would leak into the 13 start_trial test files). **Reactivation: operator/party ruling on default-ON — likely immediate (it's what makes 42-5 fulfill the operator requirement by default). Priority HIGH.**
 - ✅ **RESOLVED 2026-07-17 as Story 42-7** (rider R3): 9 stale `tests/unit/manifest/` pins refreshed to the live 52-node manifest (node count 45→52 with attributed history; gate topology counts DERIVED-from-live; gate-id/fold pins += G0R/G0S; golden schema fixtures regenerated additive-only). `tests/unit/manifest/` fully green (74). Original entry retained below for lineage.
@@ -458,6 +694,11 @@ The P5 directed-voice arc CLOSED (Steps 1–8 + 8.5 UDAC + §10-item-5 ElevenLab
 - Fix-on-the-fly playbook patches landed: §1.4 Postgres connectivity (dotenv-aware command + Windows winget unattended install path documented in `docs/dev-guide/local-postgres-setup.md`); §3.2 corpus-shape clarification (locator vs retrieval; disk-files-only convention); §3.3 deletion (initialization is part of §4.1, not a pre-step); §4.1 launch command + concrete-for-this-trial example + HTTP transport note; §4.3 HUD invocation patched with module form + `--watch --open --trial-id` canonical flags + rationale.
 - `scripts/utilities/run_hud.py` defects fixed: (a) `--watch --open` together previously broken because `--open` block was outside the watch loop, fired only after Ctrl+C — now opens browser on iteration 1; (b) header/title showed "No active run" even with `--trial-id` because `rc.get("RUN_ID", ...)` only consulted legacy source-bundle's run-constants.yaml — now prefers `active_trial.trial_id (status)` when migrated trial is present.
 
+<!-- NOTE: `gary-export-llm-brief-to-page-matcher` and the `reading-path-fresh-naive-holdout-pre-trial`
+     named follow-on (in the table above) are tagged as DID scorecard leaks in the fixed
+     ## DID Scorecard Leak Registry near the top of this file — NOT here, so a close/archival
+     of these entries does not disturb the leak count. -->
+
 **Total named follow-ons: ~34 active (+4 at vision-perceiver-real CLOSE 2026-06-21: believed-green-tracker-audit, vision-perceiver-empty-visual-elements-degradation, reading-path-bbox-out-of-range-bucketing, vision-recording-normalize-on-write; + the P5 directed-voice arc follow-ons incl. Step-9 reactivation 2026-06-28: E-bundle [slower-pace-value-underpowered + role-seed-linkage + energy-scalar] reactivated as next increment, plus new `p5-cross-corpus-beta`, `p5-text-to-dialogue`, `directed-voice-apply-text-normalization-grounding-review`, `p5-media-placement-gate`); 24 closed-and-archived to §"Closed Entries — Archived" at bottom of file.** Pre-archive total was 53 filed across the project's history; the S1-P0-IH sweep segregated 24 closed entries (13 strikethrough + 10 RESOLVED-not-strikethrough + 1 REFRAMED) for hot-start scannability.
 
 _(Pre-S1 historical narrative preserved below for audit trail; counts therein are pre-refresh and should not be acted on without consulting the archive section.)_
@@ -503,7 +744,7 @@ _(Pre-S1 historical narrative preserved below for audit trail; counts therein ar
 
 Named in the braid specs (S1–S4) + ratification `braid-green-light-ratification-2026-06-24.md`. Filed per governance §3.
 
-- 🟠 **`braid-workbook-semantic-claim-citation-audit`** — parent: S2 workbook producer (G1). v1 covers only **numeric** body fidelity (L2 in FAIL mode, `unsourced_numeric==0`) + a **named operator spot-check** for non-numeric prose claim↔source faithfulness. **2026-07-10 TRAIL trio:** WARN-only heuristic tripwire landed (`SEMANTIC_TRIPWIRE` non-None + `audit_semantic_framing` → `unsourced_framing`; `gates_production=False`). **Full semantic claim→source audit remains net-new / open.** Do NOT claim L2 covers support faithfulness. **Trigger:** ≥3 workbook calibration runs, OR before relying on auto-prose-fidelity for a non-demo client deliverable. **Direction-stable** (compose-freely-assert-only-sourced).
+- 🟠 **`braid-workbook-semantic-claim-citation-audit`** — parent: S2 workbook producer (G1). v1 covers only **numeric** body fidelity (L2 in FAIL mode, `unsourced_numeric==0`) + a **named operator spot-check** for non-numeric prose claim↔source faithfulness. **2026-07-10 TRAIL trio:** WARN-only heuristic tripwire landed (`SEMANTIC_TRIPWIRE` non-None + `audit_semantic_framing` → `unsourced_framing`; `gates_production=False`). **Full semantic claim→source audit remains net-new / open.** Do NOT claim L2 covers support faithfulness. **Trigger:** ≥3 workbook calibration runs, OR before relying on auto-prose-fidelity for a non-demo client deliverable. **Direction-stable** (compose-freely-assert-only-sourced). <!-- DID scorecard Leak 2 (C5) tagged in ## DID Scorecard Leak Registry, not here (survives entry archival). -->
 - 🟡 **`braid-workbook-pdf-render-leg`** — parent: S2 (DP3). v1 = Markdown→**DOCX** only (python-docx present; **no PDF lib on disk**). **Trigger:** when a PDF deliverable is required AND an owner takes the pandoc/weasyprint/reportlab dependency decision (system-binary / wheel + font fragility). Interim: open the DOCX and Export-PDF.
 - 🟡 **`braid-workbook-worksheet-fill-in-affordances`** — parent: S2 (Irene A4-5). Answer blanks / lined response areas / "show-your-work" boxes (Markdown→DOCX renders these only crudely). **Trigger:** when richer worksheet pedagogy is needed beyond prompts+space. v1 = prompts + space.
 - 🟡 **`braid-capability-overlay-trial-log-wired-tightening`** — parent: S4 (DP1, v1.1). Tighten `wired` from "is it routed (static)" to "appeared in the most recent green trial-run's executed-node set" (`runs/` logs). **Trigger:** S4 v1 closes + trial-log executed-node schema is stable. Stronger honesty bar; not a v1 blocker.
@@ -657,7 +898,7 @@ Cross-cutting tech debt that grew during Slabs 1-4 + that should be properly tra
 
 Source: `_bmad-output/implementation-artifacts/static-validation-deck-motion-workbook-pipeline-2026-07-17.md` (independent read-only static validation). Triaged by Marcus-orchestrator 2026-07-17. **S-2 (G0 directive raw dump) is NOT filed here — it is OWNED by Epic 43 (HIL Surface Tabular Coverage), which supersedes and exceeds it** (43 fixes the systemic projector gap across all 13 gates, not just G0). S-5/S-7/S-8 = by-design/info, no action.
 
-- **`workbook-capability-tier-honesty-lag`** (S-1, HIGH-honesty, **PARTY-GATED**) — `bundle_catalog.py` still tiers `workbook` as `mechanism_only_never_produced` ("no real producer has emitted a workbook artifact yet") and `narrated-deck-with-workbook` readiness `not_yet`, despite real MD+DOCX produced at trials `a940c5eb` + LO-verified `8b275e5b`. Direction is CONSERVATIVE (understates → greys the bundle → fail-safe, not an overclaim), so non-urgent. **Do NOT silently edit the tier** (tier bumps are governance per CLAUDE.md pack-versioning + the report §8.2). Correct bump is nuanced: artifact was produced on the FROZEN lesson (Tejal P2) — honest tier is *proven-on-frozen-lesson*, NOT blanket `proven_wired`; off-frozen-lesson stays an open claim. Trigger: party-ratify at the next workbook-track touch or the 39/40-wave close. Direction may flip if substrate evolves.
+- **`workbook-capability-tier-honesty-lag`** (S-1, HIGH-honesty, **PARTY-GATED**) — `bundle_catalog.py` still tiers `workbook` as `mechanism_only_never_produced` ("no real producer has emitted a workbook artifact yet") and `narrated-deck-with-workbook` readiness `not_yet`, despite real MD+DOCX produced at trials `a940c5eb` + LO-verified `8b275e5b`. Direction is CONSERVATIVE (understates → greys the bundle → fail-safe, not an overclaim), so non-urgent. **Do NOT silently edit the tier** (tier bumps are governance per CLAUDE.md pack-versioning + the report §8.2). Correct bump is nuanced: artifact was produced on the FROZEN lesson (Tejal P2) — honest tier is *proven-on-frozen-lesson*, NOT blanket `proven_wired`; off-frozen-lesson stays an open claim. Trigger: party-ratify at the next workbook-track touch or the 39/40-wave close. Direction may flip if substrate evolves. <!-- DID scorecard Leak 5 (C5) tagged in ## DID Scorecard Leak Registry, not here (survives entry archival). VERIFY (not a leak): motion's `proven_regressed_repairable` tier likely stale the same way — re-read against live motion output; NOT counted in open_leaks. -->
 - **`deck-plus-workbook-without-motion-catalog-path`** (S-4, MEDIUM, product question) — no catalog bundle for deck+workbook without motion; selecting workbook always forces the motion nodes. Product-shape decision (PM/John), not a defect. Trigger: an operator/SME actually wanting workbook-sans-motion.
 - **`unchained-node-operator-swimlane-doc`** (S-3, LOW, docs) — `directive-composer`/`g0-enrichment`/`irene-refinement`/… appear in the 52-node list but do real work at start-time/wake-gated side paths; easy to misread as "the walk visits the composer." Document unchained-node semantics in the operator swimlane. Trigger: next operator-facing doc pass.
 - **`motion-modality-registry-hygiene`** (S-6, LOW, cleanup) — motion is a composer `_STUB_MODALITIES` binding, not in `MODALITY_REGISTRY`; prune works, registry hygiene incomplete. Trigger: next modality-registry touch.
@@ -1202,7 +1443,7 @@ Confirm-spike verdict: clustering is LIVE in code (Pass-1 emission unconditional
 
 Leg-4 CLOSED: the UDAC anti-tautology broken-asset HALT is LIVE-proven (done-signal, `evidence/leg4-udac-halt-live-20260701T025814Z/`), and Irene's `narration⊆source` fail-loud conflict-gate landed as a flag-OFF mechanism down-payment (`MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE`). These carry the trustworthiness balance OPEN (close is "trust-GATED, NOT trust-COMPLETE").
 
-- 🔴 **`leg4-narration-fidelity-gate-precision-before-flag-on`** (owner Irene/Vera) — the Pass-2 `narration⊆source` gate ships **flag-OFF**; before `MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE` can ship ON, the 3-lane review's false-positive vectors MUST be closed (the gate currently over-blocks — fail-loud-SAFE, never mis-narrates, but would halt faithful runs on activation): (1) **numeric tolerance band** (source `18.4%` → deck-label `18%` → narration `18%` must not raise); (2) **surface-form normalization** (`$4,600,000,000` / `4.6 billion` source vs narrated `$4.6B` — partly needs frozen `figure_tokens._FIGURE_RE` normalization = lockstep governance); (3) **derived/word-form/cross-unit** figures (fraction `0.67`→`67%`, word-form source→digit narration) — overlaps the frozen-neck word-form follow-on [[leg4-figure-tokens-neck-under-extraction]]; (4) a **WARN-fallback/allowlist** for low-confidence cases; (5) **prompt/gate surface parity** (the reground shows raw `_FIGURE_RE.group(0)` surfaces while the gate normalizes — align them); (6) **live-walk activation** — unlike the UDAC leg (activated live `MARCUS_UDAC_ACTIVE=1`), the fidelity gate was proven at function-level over real offline artifacts + injected defects, NOT inside a live `production_runner` Pass-2 walk with the flag ON. Default production runs remain UNPROTECTED on the narration-figure axis until this lands. Direction-stable (additive precision + activation; never relaxes the block-only VO-protection). Cross-ref the positive-carry gap [[leg4-narration-figure-fidelity-enforcement]] (the deeper grounding-authority redesign) + [[directed-voice-vera-r7-wire-clinical-lexicon]]. **➕ PARTIAL-MET 2026-07-10 (Mine-next trust T4a+T4b+T4c):** (1) percent tolerance + (2) comma money (T4a); positive-carry gate (T4b); flag-ON activation over **real** Leg-3 Pass-2 artifacts with confab + carry-miss teeth + flag-OFF firewall (T4c); integrated trust E2E `mine-next-trust-e2e-20260710T043111Z` (fresh Pass-1 assets). **Default remains OFF** (activation proven, not default-flip). Evidence `mine-next-trust-t4a-*` / `t4b-*` / `t4c-*` / `e2e-*`. **Residual OPEN:** (3) word-form/cross-unit, (4) WARN-fallback, (5) prompt/gate surface parity, (6b) live `production_runner` Pass-2 walk with flag ON (paid LLM) — still optional before default-ON.
+- 🔴 **`leg4-narration-fidelity-gate-precision-before-flag-on`** (owner Irene/Vera) — the Pass-2 `narration⊆source` gate ships **flag-OFF**; before `MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE` can ship ON, the 3-lane review's false-positive vectors MUST be closed (the gate currently over-blocks — fail-loud-SAFE, never mis-narrates, but would halt faithful runs on activation): (1) **numeric tolerance band** (source `18.4%` → deck-label `18%` → narration `18%` must not raise); (2) **surface-form normalization** (`$4,600,000,000` / `4.6 billion` source vs narrated `$4.6B` — partly needs frozen `figure_tokens._FIGURE_RE` normalization = lockstep governance); (3) **derived/word-form/cross-unit** figures (fraction `0.67`→`67%`, word-form source→digit narration) — overlaps the frozen-neck word-form follow-on [[leg4-figure-tokens-neck-under-extraction]]; (4) a **WARN-fallback/allowlist** for low-confidence cases; (5) **prompt/gate surface parity** (the reground shows raw `_FIGURE_RE.group(0)` surfaces while the gate normalizes — align them); (6) **live-walk activation** — unlike the UDAC leg (activated live `MARCUS_UDAC_ACTIVE=1`), the fidelity gate was proven at function-level over real offline artifacts + injected defects, NOT inside a live `production_runner` Pass-2 walk with the flag ON. Default production runs remain UNPROTECTED on the narration-figure axis until this lands. Direction-stable (additive precision + activation; never relaxes the block-only VO-protection). Cross-ref the positive-carry gap [[leg4-narration-figure-fidelity-enforcement]] (the deeper grounding-authority redesign) + [[directed-voice-vera-r7-wire-clinical-lexicon]]. **➕ PARTIAL-MET 2026-07-10 (Mine-next trust T4a+T4b+T4c):** (1) percent tolerance + (2) comma money (T4a); positive-carry gate (T4b); flag-ON activation over **real** Leg-3 Pass-2 artifacts with confab + carry-miss teeth + flag-OFF firewall (T4c); integrated trust E2E `mine-next-trust-e2e-20260710T043111Z` (fresh Pass-1 assets). **Default remains OFF** (activation proven, not default-flip). Evidence `mine-next-trust-t4a-*` / `t4b-*` / `t4c-*` / `e2e-*`. **Residual OPEN:** (3) word-form/cross-unit, (4) WARN-fallback, (5) prompt/gate surface parity, (6b) live `production_runner` Pass-2 walk with flag ON (paid LLM) — still optional before default-ON. <!-- DID scorecard Leak 1 (C3) tagged in ## DID Scorecard Leak Registry, not here (survives entry archival). -->
 - 🟡 **`leg4-recover-irene-missing-vision-projection-crash-to-error-pause`** (owner Winston/runtime; surfaced by the Leg-4 UDAC live-halt driver authoring, Winston C2) — a genuine recover-path robustness gap orthogonal to UDAC: re-entering a `recover_production_trial` at a node whose PROJECTED upstream is absent (e.g. irene@08 with `vision`/07G never run in the golden) makes `dispatch_adapter.build_specialist_state` raise `ProductionDispatchAdapterError` — a plain `RuntimeError`, NOT a `SpecialistDispatchError` — so it BYPASSES the `except SpecialistDispatchError → _pause_at_error` channel and propagates UNCAUGHT, crashing the recover instead of a recoverable pause. Fix = re-base `ProductionDispatchAdapterError` (or wrap the projection-resolution at the recover seam) into the `SpecialistDispatchError` error-pause family so a missing-projection recover degrades to a recoverable pause, RED-first. Sibling of the live-path error-taxonomy family (cf. `trial-4-modemismatch-recoverable-family`). Reported-not-fixed under the Leg-4 close guardrail (no rushed fix on a load-bearing dispatch path); owns its own RED-first cycle. Direction-stable (crash→recoverable-pause; never loosens dispatch fail-loud).
 
 ## Carried-findings + enum-refresh session filings (filed 2026-07-02 session 05; green-light parties 4/4 + 6/6; auditor-countersigned)

@@ -801,12 +801,113 @@ def _ctx_completed(view: dict[str, Any]) -> str:
             '<div class="frow"><span class="k">final cost</span>'
             f'<span class="v">${_esc(total)}</span></div>'
         )
+    # Story Q4.3: the compact PROJECT quality posture rides the completed brief
+    # (the Q4.1 assembler populates the tile at the terminal-completion
+    # choke-point). Fail-soft: absent/unavailable → an explicit unavailable tile.
     return (
         '<div class="land-brief">'
         f'<div class="bt">✓ Landed</div>'
         f'<div class="bm">completed {_clock(env.get("completed_at"))}</div>'
         f"{comp_html}"
         f'<div class="artifacts">{rows}</div><div class="fields">{cost}</div></div>'
+        f"{_quality_panel(view)}"
+    )
+
+
+# --------------------------------------------------------------------------
+# Quality tile (Story Q4.3) — READ-ONLY consumer of the Q4.1 QualitySection.
+# --------------------------------------------------------------------------
+
+#: Band → severity chip class over the A/B/C/D ladder. Unknown / missing bands
+#: map to the NEUTRAL class — never ``on`` — so a garbage band can NEVER read
+#: cleaner than a committed red (QLW-9). The assembler already floors an
+#: unrecognized band to "D" upstream; this map only colours what it renders.
+#: ``d`` (the worst committed band) gets its OWN critical/red ``crit`` chip so it
+#: is visually distinct from ``c``'s amber ``warn`` — a worst-band read must not
+#: look the same as a merely-cautionary one (QLW-9 at the HUD layer).
+_QUALITY_BAND_CLASS = {"a": "on", "b": "on", "c": "warn", "d": "crit"}
+
+
+def _quality_panel(view: dict[str, Any]) -> str:
+    """Render the compact PROJECT quality posture tile (Story Q4.3).
+
+    READ-ONLY consumer of the operator-surface ``quality`` section shipped by
+    Story Q4.1 — the HUD NEVER recomputes quality (QLW-4); it renders ONLY the
+    honest fields the section carries. Zero-lie / fail-soft (QLW-8, non-negotiable):
+    a missing / ``None`` / malformed / ``available=False`` section renders an
+    EXPLICIT "quality: unavailable" state — NEVER a fabricated band, NEVER a
+    silent green absence, and NEVER a crash (every read is ``.get`` + ``_esc``).
+    """
+    quality = view["proj"].get("quality")
+    # FIX 3: the ``available`` flag is honoured ONLY when it is the boolean
+    # ``True``. A truthy-but-non-True value ("false", "no", "yes", 1, …) is NOT
+    # a valid available posture — it renders the honest "unavailable" tile,
+    # never a fabricated band. ``is True`` is the strict, zero-lie gate.
+    if not isinstance(quality, dict) or quality.get("available") is not True:
+        # QLW-8: absence/degrade is reported honestly — NOT a clean bill.
+        return (
+            '<section class="quality-tile unavailable" '
+            'aria-label="project quality posture">'
+            '<div class="bt">◍ Project quality — unavailable</div>'
+            '<div class="prompt">No committed scorecard read on this run surface. '
+            "This absence is reported honestly — it is NOT a clean bill of "
+            "quality.</div></section>"
+        )
+
+    band = quality.get("band")
+    band_cls = _QUALITY_BAND_CLASS.get(str(band or "").strip().lower(), "")
+    band_chip = (
+        f'<span class="chip {band_cls}"><span class="dot"></span> '
+        f'band {_esc(band) if band else "—"}</span>'
+    )
+
+    fields = ""
+    ranked = quality.get("ranked_leak_count")
+    if ranked is not None:
+        fields += (
+            '<div class="frow"><span class="k">ranked leaks</span>'
+            f'<span class="v">{_esc(ranked)}</span></div>'
+        )
+    gaps = quality.get("coverage_gaps")
+    if gaps is not None:
+        fields += (
+            '<div class="frow"><span class="k">coverage gaps</span>'
+            f'<span class="v">{_esc(gaps)}</span></div>'
+        )
+    trend = quality.get("trend")
+    if trend:
+        fields += (
+            '<div class="frow"><span class="k">trend</span>'
+            f'<span class="v">{_esc(trend)}</span></div>'
+        )
+    fields_html = f'<div class="fields">{fields}</div>' if fields else ""
+
+    # FIX 2: ``top_leaks`` is a RAW producer-projection field — never assume it
+    # is a list. A truthy non-iterable (``top_leaks: 5``) would ``TypeError`` and
+    # crash the whole completed render; a bare string would char-iterate into
+    # per-character rows. Coerce field-defensively: only a genuine list/tuple
+    # yields leak rows, ``None`` entries are dropped (the None-label finding),
+    # anything else degrades to no leak block.
+    tl = quality.get("top_leaks")
+    leaks = (
+        [str(x) for x in tl if x is not None]
+        if isinstance(tl, (list, tuple))
+        else []
+    )
+    leaks_html = _labelled_artifacts("top leaks", leaks)
+
+    scorecard_as_of = quality.get("scorecard_as_of")
+    stamp = (
+        f'<div class="bm">scorecard as of {_esc(scorecard_as_of)}</div>'
+        if scorecard_as_of
+        else '<div class="bm">scorecard staleness unknown</div>'
+    )
+    return (
+        '<section class="quality-tile" aria-label="project quality posture">'
+        '<div class="bt">◍ Project quality</div>'
+        f"{stamp}"
+        f'<div class="components">{band_chip}</div>'
+        f"{fields_html}{leaks_html}</section>"
     )
 
 

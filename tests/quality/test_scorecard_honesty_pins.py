@@ -1,0 +1,2943 @@
+"""Story Q1.3 — the anti-believed-green honesty pins + meta-ratchet (RED-first).
+
+The whole point (consensus rule #3): **each pin compares a machine-block CLAIM
+against a CODE-COMPUTED reality — doc↔code, never doc↔doc.** A pin that only
+checks the doc against itself is worthless, so every pin below cites a code
+source, and — post code-review — every pin **iterates over EVERY dimension** in
+the machine block, so coverage is structural (a future ``cost_efficiency``
+dimension is automatically subject to the same pins; it cannot pass vacuously on
+a DID-only assertion):
+
+  * **(a) fence-claim consistency** → ``app.quality.signals``: for every
+    ``derivation: signal-derived`` criterion the machine-block ``level`` must
+    equal the reader's live output; AND the set of mechanical criteria is decided
+    by CODE (``_SIGNAL_DERIVED_READERS``), not the doc's self-declared
+    ``derivation`` — relabeling C3 to dodge the pin is itself RED (R3).
+  * **(b) leak-count reconciliation** → ``open_leak_count_signal``:
+    the DID dimension's ``open_leaks`` must equal the count of ``did_leak:``-tagged
+    OPEN entries. **GL-14:** GREEN on a seeded fixture; on the REAL repo a hard
+    reconciliation pin (Q1.5 removed the ``xfail(strict=True)`` once the 5 leaks were
+    tagged in the ``## DID Scorecard Leak Registry``).
+  * **(c) score-arithmetic** → the §1.5 rubric: score↔level↔band↔sum consistent.
+
+**GL-6 meta-ratchet** (AC2): a NAMED canonical dimension universe + a pin
+registry + :func:`test_every_dimension_has_a_honesty_pin` (0-dimension block is
+itself a violation — no vacuous pass), mirroring the 43-10 structural form.
+
+**GL-11 / GL-12** (AC3): ``trend`` is compared to ``trend_from_history`` (no
+painted arrows). The evidence-gated upgrade guard runs as a STANDING pin over the
+real block + the real newest-strictly-prior history snapshot, and the
+**doc↔ledger mirror** pin (:func:`test_newest_history_mirrors_current_block`)
+makes "inflate the doc without appending to history" impossible — so the guard
+cannot be silently kept a forever-no-op. Any INCREASE must cite an ``evidence_ref``
+AND advance ``as_verified``; unknown/malformed prior levels are treated
+conservatively (a real increase can never slip). Downgrades are free.
+
+**AC5 / GL-9 doctrine:** every pin passes TODAY by AGREEING WITH REALITY, and a
+companion proof shows it goes RED under a **seeded** dishonest edit — via a
+fixture / an in-memory ``deepcopy`` mutation, **NEVER** by mutating the real doc.
+
+**Honest residual (anti-believed-green, stated plainly):** the trend/history axis
+is a JUDGMENT-HISTORY ledger, not observed system state. These pins enforce the
+doc↔ledger mirror, a mandatory append on every doc change, and evidence-gated
+increases — but they CANNOT mechanically detect a *coordinated* fabrication of
+BOTH the doc and the ledger in one edit. That residual is a review / governance
+concern, not a mechanical guarantee.
+
+Pure-structural + hermetic-fixture where possible (like 43-10). No live calls, no
+``--run-live``. Reads the committed doc + committed readers (legitimate per the
+epic testing doctrine — the pins are *about* the real files).
+"""
+
+from __future__ import annotations
+
+import copy
+import re
+import textwrap
+from collections.abc import Callable
+from pathlib import Path
+from typing import Any
+
+import pytest
+
+from app.quality.history import (
+    latest_prior_snapshot,
+    newest_snapshot,
+    trend_from_history,
+)
+from app.quality.scorecard import (
+    _CALIBRATION_KEY,
+    _CAPABILITY_KEY,
+    _COST_KEY,
+    _COVERAGE_KEY,
+    _DID_KEY,
+    _EXPECTED_CANONICAL_DIMENSION_KEYS,
+    _FIDELITY_KEY,
+    _LANE_KEY,
+    _TRACKER_KEY,
+    read_scorecard_block,
+)
+from app.quality.signals import (
+    _DEFERRED_INVENTORY_REL,
+    _repo_root,
+    _strip_archived_section,
+    _strip_fenced_code,
+    _strip_html_comments,
+    budget_stop_default_signal,
+    calibration_leak_count_signal,
+    capability_leak_count_signal,
+    capability_tier_reconciliation_signal,
+    cost_leak_count_signal,
+    coverage_fence_default_signal,
+    coverage_leak_count_signal,
+    fences_enabled_signal,
+    fidelity_leak_count_signal,
+    import_linter_lane_signal,
+    lane_leak_count_signal,
+    level_from_signal,
+    open_leak_count_signal,
+    reading_path_calibration_signal,
+    semantic_fence_gating_signal,
+    tracker_coherence_signal,
+    tracker_doc_drift_signal,
+    tracker_leak_count_signal,
+)
+
+#: Captures the slug after a line-anchored ``did_leak:`` tag (mirrors the count
+#: regex ``signals._DID_LEAK_LINE_RE`` but also captures the slug token). Used by the
+#: slug-set IDENTITY pin (FIX-1) — the count pins reconcile through the integer 5 and
+#: cannot catch a slug that was typo'd/renamed while the count stayed 5.
+_DID_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?did_leak:\s*(\S+)")
+#: Q2.1 — the cost_efficiency slug namespace (``cost_leak:``), a SEPARATE per-dimension
+#: namespace so the cost identity/count reconciliation never collides with DID's.
+_COST_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cost_leak:\s*(\S+)")
+#: Q2.2 — the coverage_honesty slug namespace (``cov_leak:``), a THIRD per-dimension
+#: namespace disjoint from ``did_leak:`` / ``cost_leak:``.
+_COVERAGE_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cov_leak:\s*(\S+)")
+#: Q2.3 — the fidelity_trust slug namespace (``fid_leak:``), a FOURTH per-dimension
+#: namespace disjoint from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:``.
+_FIDELITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?fid_leak:\s*(\S+)")
+#: Q3.1 — the capability_honesty slug namespace (``cap_leak:``), a FIFTH per-dimension
+#: namespace disjoint from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` / ``fid_leak:``.
+_CAPABILITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cap_leak:\s*(\S+)")
+#: Q3.2 — the tracker_coherence slug namespace (``trk_leak:``), a SIXTH per-dimension
+#: namespace disjoint from the other five. May be EMPTY (the first dimension that can carry
+#: zero leaks — if the trackers reconcile to CLEAN).
+_TRACKER_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?trk_leak:\s*(\S+)")
+#: Q3.3 — the lane_discipline slug namespace (``lane_leak:``), a SEVENTH per-dimension
+#: namespace disjoint from the other six. 1 today (the coverage-completeness-UNVERIFIED gap —
+#: declared-clean ≠ verified-clean-coverage; LD1's declared-pass stays strong).
+_LANE_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?lane_leak:\s*(\S+)")
+#: Q3.4 — the calibration slug namespace (``cal_leak:``), an EIGHTH per-dimension namespace
+#: disjoint from the other seven. 1 today (the reading-path fresh-naive-holdout OWED gap —
+#: cross-links DID Leak-4, counted once per namespace).
+_CALIBRATION_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cal_leak:\s*(\S+)")
+
+
+def _registry_did_leak_slugs() -> set[str]:
+    """The OPEN ``did_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``open_leak_count_signal`` counts them (fenced code / HTML comments /
+    archived section stripped) so the identity set and the count agree on scope."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _DID_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_cost_leak_slugs() -> set[str]:
+    """The OPEN ``cost_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``cost_leak_count_signal`` counts them (Q2.1 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _COST_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_coverage_leak_slugs() -> set[str]:
+    """The OPEN ``cov_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``coverage_leak_count_signal`` counts them (Q2.2 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _COVERAGE_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_fidelity_leak_slugs() -> set[str]:
+    """The OPEN ``fid_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``fidelity_leak_count_signal`` counts them (Q2.3 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _FIDELITY_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_capability_leak_slugs() -> set[str]:
+    """The OPEN ``cap_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``capability_leak_count_signal`` counts them (Q3.1 per-dimension identity pin)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _CAPABILITY_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_tracker_leak_slugs() -> set[str]:
+    """The OPEN ``trk_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``tracker_leak_count_signal`` counts them (Q3.2 per-dimension identity pin).
+    May be EMPTY (the first dimension that can carry zero leaks)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _TRACKER_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_lane_leak_slugs() -> set[str]:
+    """The OPEN ``lane_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``lane_leak_count_signal`` counts them (Q3.3 per-dimension identity pin).
+    1 today (the coverage-completeness-UNVERIFIED gap)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _LANE_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_calibration_leak_slugs() -> set[str]:
+    """The OPEN ``cal_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``calibration_leak_count_signal`` counts them (Q3.4 per-dimension identity pin).
+    1 today (the reading-path fresh-naive-holdout OWED gap; cross-links DID Leak-4)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _CALIBRATION_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
+    """The slug set from a dimension's structured machine-block ``leaks`` list."""
+    leaks = dim.get("leaks")
+    if not isinstance(leaks, list):
+        return set()
+    return {leak.get("slug") for leak in leaks if isinstance(leak, dict)}
+
+# --------------------------------------------------------------------------- #
+# §1.5 rubric, encoded here as the score-arithmetic pin's source of truth.
+# score→allowed level(s): 4=strong/uniform · 3=strong · 2=partial · 1=weak · 0=absent
+# --------------------------------------------------------------------------- #
+_SCORE_TO_LEVELS: dict[int, frozenset[str]] = {
+    4: frozenset({"strong", "uniform"}),
+    3: frozenset({"strong"}),
+    2: frozenset({"partial"}),
+    1: frozenset({"weak"}),
+    0: frozenset({"absent"}),
+}
+
+_ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def _iso_ok(value: Any) -> bool:
+    """True iff ``value`` is a ``YYYY-MM-DD`` string safe to order lexically."""
+    return isinstance(value, str) and bool(_ISO_DATE_RE.match(value))
+
+
+def _as_str(value: Any) -> str | None:
+    """None-safe stringify. The machine-block ``as_of``/``as_verified`` parse to
+    ``datetime.date`` (bare YAML dates) while the ledger stores ISO strings — both
+    normalize to the same ``YYYY-MM-DD`` here."""
+    return str(value) if value is not None else None
+
+
+def _int_score(value: Any) -> int | None:
+    """A real integer score, or ``None`` if malformed. ``bool`` is an ``int``
+    subclass and must NEVER coerce to 0/1 (R5b) — a ``score: true`` is malformed,
+    not a weak criterion."""
+    if isinstance(value, bool):
+        return None
+    return value if isinstance(value, int) else None
+
+
+#: §1.5 band boundary table: A ≥90 · B 75–89 · B− 60–74 · C 40–59 · D <40.
+def _band_for_score(score: int) -> str:
+    if score >= 90:
+        return "A"
+    if score >= 75:
+        return "B"
+    if score >= 60:
+        return "B-"
+    if score >= 40:
+        return "C"
+    return "D"
+
+
+#: The signal-derived criteria and the CODE reader whose live output their level
+#: must equal (pin (a)). **This — not the doc's self-declared ``derivation`` — is
+#: the authority on which criteria are mechanical (R3).** Only C3 is purely
+#: mechanical today; C2/C4 are judgment-with-evidence and C1/C5 are judgment.
+_SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
+    "fence_enforcement_default_on": fences_enabled_signal,
+    # Q2.1 — cost_efficiency CE1 is purely mechanical (mirrors DID C3): the env-
+    # INDEPENDENT production-preset posture is default_budget_enforced=False → weak.
+    "budget_stop_default_on": budget_stop_default_signal,
+    # Q2.2 — coverage_honesty CV1 is purely mechanical (mirrors DID C3 / cost CE1): the
+    # production-preset posture is default_coverage_enforced=False → weak (the coverage
+    # gate is default-OFF; MARCUS_COVERAGE_GATE_ACTIVE unset on the preset).
+    "coverage_fence_default_on": coverage_fence_default_signal,
+    # Q2.3 — fidelity_trust FT1 is purely mechanical (mirrors DID C3 / cost CE1 / coverage
+    # CV1): SEMANTIC_TRIPWIRE['gates_production'] is False → semantic_fence_gates=False →
+    # weak (the semantic-fidelity audit WARNs, never gates production).
+    "semantic_fence_gating_on": semantic_fence_gating_signal,
+    # Q3.1 — capability_honesty CH1 is purely mechanical (mirrors DID C3 / cost CE1 /
+    # coverage CV1 / fidelity FT1): the reconciliation reads the REAL bundle_catalog tiers
+    # (read-only) against curated produced-evidence → tiers_match_produced_reality=False
+    # (the workbook lag) → weak. This IS the epic's reconciliation honesty-pin: CH1's level
+    # is tied to the reconciliation result (a claim of coherence while a mismatch exists → RED).
+    "capability_tier_reconciliation_on": capability_tier_reconciliation_signal,
+    # Q3.2 — tracker_coherence is the ONLY FULLY-COMPUTED dimension (GL-7): BOTH criteria are
+    # signal-derived (no judgment level). TC1 keys off the REAL qualify_sources verdict
+    # (DEGRADED today → partial); TC2 keys off the code↔doc drift heuristic (no drift → partial,
+    # capped conservative). A claim of a coherent level while the divergence signal says
+    # otherwise → RED (the fully-computed structural pin + the seeded-divergence pin).
+    "tracker_divergence_coherence": tracker_coherence_signal,
+    "tracker_doc_drift": tracker_doc_drift_signal,
+    # Q3.3 — lane_discipline LD1 is purely mechanical (mirrors DID C3 / cost CE1 / coverage CV1 /
+    # fidelity FT1): the LIVE import-linter kept/broken result via the SHIPPED importlinter.api
+    # (GL-16 — NOT the lint-imports CLI) → 0 broken → strong (18/0 today); broken>0 → weak. This IS
+    # the epic's broken-count honesty-pin: LD1's level is tied to the REAL kept/broken RESULT (a
+    # claim of clean while import-linter reports broken>0 → RED). The isolating pin proves the
+    # reader consults the real broken-count, not the DECLARED contract count.
+    "lane_discipline_import_linter": import_linter_lane_signal,
+    # Q3.4 — calibration CAL1 is purely mechanical (SIGNAL-DERIVED; REPORT-ONLY): the recorded
+    # reading-path calibration posture. The fresh NAIVE holdout is OWED/UNMEASURED →
+    # reading_path_calibrated=False → weak (an owed/unmeasured neck scored uncalibrated, NOT
+    # passing). This IS the epic's uncalibrated-not-passing honesty-pin: CAL1's level is tied to the
+    # REAL owed-state (a claim of calibrated while the holdout is owed → RED). The isolating pin
+    # proves the reader consults the owed-state, NOT the presence of a resubstitution number
+    # (resubstitution ≠ calibrated).
+    "reading_path_calibration_posture": reading_path_calibration_signal,
+}
+
+#: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
+#: it (by this module's test-function names). ``test_every_dimension_has_a_honesty_pin``
+#: fails unless every machine-block dimension appears here with ≥1 pin. Adding a
+#: dimension to the machine block WITHOUT registering a pin here → RED (the 42-1
+#: believed-green class the 43-10 ratchet kills, generalized to dimensions).
+_HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
+    _DID_KEY: frozenset(
+        {
+            "test_signal_derived_levels_match_readers",  # pin (a) fence-claim
+            "test_leak_count_reconciles_on_real_repo",  # pin (b) leak-count (GL-14)
+            "test_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q2.1 — cost_efficiency MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror DID's:
+    # (a) budget-fence-claim, (b) cost leak-count + slug identity, (c) arithmetic.
+    _COST_KEY: frozenset(
+        {
+            "test_cost_budget_fence_claim_matches_reader",  # pin (a) budget-fence-claim
+            "test_cost_leak_count_reconciles_on_real_repo",  # pin (b) cost leak-count
+            "test_cost_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q2.2 — coverage_honesty MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror DID's/cost's:
+    # (a) coverage-fence-claim, (b) coverage leak-count + slug identity, (c) arithmetic.
+    _COVERAGE_KEY: frozenset(
+        {
+            "test_coverage_fence_claim_matches_reader",  # pin (a) coverage-fence-claim
+            "test_coverage_leak_count_reconciles_on_real_repo",  # pin (b) coverage leak-count
+            "test_coverage_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q2.3 — fidelity_trust MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror the siblings':
+    # (a) gates-claim (the epic's exact pin — score FAILS if it claims gating while
+    # SEMANTIC_TRIPWIRE['gates_production'] is False), (b) fidelity leak-count + slug
+    # identity, (c) arithmetic.
+    _FIDELITY_KEY: frozenset(
+        {
+            "test_fidelity_gates_claim_matches_reader",  # pin (a) gates-claim
+            "test_fidelity_leak_count_reconciles_on_real_repo",  # pin (b) fidelity leak-count
+            "test_fidelity_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.1 — capability_honesty MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its three pins mirror the siblings':
+    # (a) reconciliation-claim (the epic's exact pin — CH1's score FAILS if it claims the
+    # tiers match produced reality while the reconciliation reports a mismatch; the isolating
+    # pin proves it consulted the real reconciliation, not the raw tier), (b) capability
+    # leak-count + slug identity, (c) arithmetic.
+    _CAPABILITY_KEY: frozenset(
+        {
+            "test_capability_reconciliation_claim_matches_reader",  # pin (a) reconciliation-claim
+            "test_capability_leak_count_reconciles_on_real_repo",  # pin (b) capability leak-count
+            "test_capability_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.2 — tracker_coherence MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. The ONLY FULLY-COMPUTED dimension
+    # (GL-7): the pins are (a) the fully-computed structural pin (no criterion carries a
+    # judgment derivation AND every level == its reader) + the seeded-divergence pin (a
+    # seeded three-tracker disagreement lowers the score; a coherent claim while diverging →
+    # RED), (b) tracker leak-count + slug identity, (c) arithmetic.
+    _TRACKER_KEY: frozenset(
+        {
+            "test_tracker_coherence_is_fully_computed_no_judgment",  # pin (a) GL-7 fully-computed
+            "test_tracker_seeded_divergence_lowers_score",  # pin (a') GL-7 seeded-divergence
+            "test_tracker_leak_count_reconciles_on_real_repo",  # pin (b) tracker leak-count
+            "test_tracker_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.3 — lane_discipline MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its pins mirror the siblings':
+    # (a) the broken-count pin (the epic's exact pin — LD1's score FAILS if it claims clean while
+    # import-linter reports broken>0) + the isolating pin (a seeded broken>0 result drops LD1,
+    # proving the reader consults the REAL kept/broken, not the declared contract count),
+    # (b) lane leak-count + slug identity (0 today — the zero-leak path), (c) arithmetic.
+    _LANE_KEY: frozenset(
+        {
+            "test_lane_discipline_import_linter_claim_matches_reader",  # pin (a) broken-count
+            "test_lane_discipline_isolating_pin_seeded_broken_drops_level",  # pin (a') isolating
+            "test_lane_leak_count_reconciles_on_real_repo",  # pin (b) lane leak-count
+            "test_lane_discipline_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.4 — calibration MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its pins: (a) the uncalibrated-not-passing
+    # pin (the epic's exact pin — CAL1's score FAILS if it claims calibrated/clean while the
+    # fresh-naive holdout is owed) + (a') the isolating pin (holds the resubstitution fact present
+    # and varies the owed-state, proving CAL1 consults the REAL owed-state, NOT the resubstitution
+    # number — resubstitution ≠ calibrated), (a'') the NEVER-IMPLY-MEASURED pin (the epic's
+    # signature — the prose/machine-block/signal must NEVER imply a fresh-naive number was measured;
+    # seed a fresh figure → RED), (b) calibration leak-count + slug identity (1 — cross-links DID
+    # Leak-4, no double-count), (c) arithmetic.
+    _CALIBRATION_KEY: frozenset(
+        {
+            "test_calibration_uncalibrated_not_passing_claim_matches_reader",  # pin (a)
+            "test_calibration_isolating_pin_owed_state_not_resubstitution",  # pin (a') isolating
+            "test_calibration_never_imply_measured",  # pin (a'') never-imply-measured (signature)
+            "test_calibration_leak_count_reconciles_on_real_repo",  # pin (b) calibration leak-count
+            "test_calibration_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+}
+
+
+# ============================ pure honesty-pin helpers ============================
+# All block-level helpers ITERATE over every dimension (R2): coverage is structural.
+
+
+def _signal_derived_violations(block: dict[str, Any]) -> list[str]:
+    """Pin (a), doc-driven half: every criterion the DOC labels ``signal-derived``
+    must have its claimed ``level`` equal its reader's CODE-computed level.
+    Iterates all dimensions. Returns doc↔code contradictions (empty == honest)."""
+    violations: list[str] = []
+    for dim_key, dim in (block.get("dimensions") or {}).items():
+        for key, crit in (dim.get("criteria") or {}).items():
+            if not isinstance(crit, dict) or crit.get("derivation") != "signal-derived":
+                continue
+            reader = _SIGNAL_DERIVED_READERS.get(key)
+            if reader is None:
+                violations.append(
+                    f"{dim_key}.{key}: derivation=signal-derived but no registered reader"
+                )
+                continue
+            derived = level_from_signal(key, reader())
+            if crit.get("level") != derived:
+                violations.append(
+                    f"{dim_key}.{key}: machine-block level {crit.get('level')!r} != "
+                    f"reader-derived {derived!r}"
+                )
+    return violations
+
+
+def _mechanical_criteria_violations(block: dict[str, Any]) -> list[str]:
+    """Pin (a), CODE-driven half (R3 anti-de-mechanization): for each criterion the
+    CODE knows is mechanical (``_SIGNAL_DERIVED_READERS``), assert it (i) STILL
+    declares ``derivation: signal-derived`` (relabeling it to judgment to dodge the
+    pin → RED) AND (ii) its level == the reader output. A code-known mechanical
+    criterion that has vanished from every dimension is also a violation."""
+    violations: list[str] = []
+    dims = block.get("dimensions") or {}
+    for key, reader in _SIGNAL_DERIVED_READERS.items():
+        found = False
+        derived = level_from_signal(key, reader())
+        for dim_key, dim in dims.items():
+            crit = (dim.get("criteria") or {}).get(key)
+            if not isinstance(crit, dict):
+                continue
+            found = True
+            if crit.get("derivation") != "signal-derived":
+                violations.append(
+                    f"{dim_key}.{key}: code-known mechanical criterion is de-mechanized "
+                    f"(derivation={crit.get('derivation')!r}, expected 'signal-derived')"
+                )
+            if crit.get("level") != derived:
+                violations.append(
+                    f"{dim_key}.{key}: level {crit.get('level')!r} != reader-derived {derived!r}"
+                )
+        if not found:
+            violations.append(
+                f"{key}: code-known mechanical criterion is absent from every dimension"
+            )
+    return violations
+
+
+def _reconcile(open_leaks_claim: Any, open_leak_count: Any) -> bool:
+    """Pin (b) core: the hand-carried ``open_leaks`` equals the CODE-counted
+    ``did_leak:`` open-tag count. Fail-soft: a ``None`` count (unavailable reader)
+    or a ``bool`` never reconciles."""
+    return (
+        _int_score(open_leaks_claim) is not None
+        and _int_score(open_leak_count) is not None
+        and open_leaks_claim == open_leak_count
+    )
+
+
+def _arithmetic_violations(dim: dict[str, Any]) -> list[str]:
+    """Pin (c) as a pure function over ONE dimension: score↔level (per §1.5) +
+    Σscore/max→/100 == headline + band == §1.5 boundary. Hardened: a missing
+    ``criteria`` mapping returns a clean violation, not a KeyError (R5a); a ``bool``
+    score is malformed, never coerced to 0/1 (R5b)."""
+    violations: list[str] = []
+    crit = dim.get("criteria")
+    if not isinstance(crit, dict) or not crit:
+        return [f"dimension has no criteria mapping (got {type(crit).__name__})"]
+    total = 0
+    max_sum = 0
+    for key, c in crit.items():
+        if not isinstance(c, dict):
+            violations.append(f"{key}: criterion is not a mapping")
+            continue
+        score = _int_score(c.get("score"))
+        level = c.get("level")
+        allowed = _SCORE_TO_LEVELS.get(score) if score is not None else None
+        if allowed is None or level not in allowed:
+            violations.append(
+                f"{key}: score {c.get('score')!r} ↔ level {level!r} violates §1.5"
+            )
+        if score is not None:
+            total += score
+        cmax = _int_score(c.get("max"))
+        if cmax is not None:
+            max_sum += cmax
+    if max_sum <= 0:
+        violations.append(f"criterion max sum is {max_sum} (expected > 0)")
+        return violations
+    normalized = round(total / max_sum * 100)
+    headline = _int_score(dim.get("score"))
+    if headline is None or normalized != headline:
+        violations.append(
+            f"Σscore {total}/{max_sum} normalizes to {normalized} != headline {dim.get('score')!r}"
+        )
+    if headline is not None:
+        expected_band = _band_for_score(headline)
+        if dim.get("band") != expected_band:
+            violations.append(
+                f"band {dim.get('band')!r} != §1.5 band for {headline} ({expected_band!r})"
+            )
+    return violations
+
+
+def _dimensions_without_pins(
+    dimension_keys: set[str], registry: dict[str, frozenset[str]]
+) -> set[str]:
+    """The dimensions present in the machine block that have NO registered
+    honesty-pin. A future pin-less dimension surfaces here → RED."""
+    return {d for d in dimension_keys if not registry.get(d)}
+
+
+def _coverage_violations(
+    dimension_keys: set[str], registry: dict[str, frozenset[str]]
+) -> set[str]:
+    """GL-6 core: pin-less dimensions PLUS the vacuous-block guard (R5d) — a
+    0-dimension block is itself a violation, never a silent pass."""
+    if not dimension_keys:
+        return {"<no dimensions in machine block>"}
+    return _dimensions_without_pins(dimension_keys, registry)
+
+
+def _mirror_projection_block(dim_key: str, dim: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "dimension": dim_key,
+        "score": dim.get("score"),
+        "band": dim.get("band"),
+        "levels": {
+            k: (c or {}).get("score") for k, c in (dim.get("criteria") or {}).items()
+        },
+        "open_leaks": dim.get("open_leaks"),
+        "as_of": _as_str(dim.get("as_of")),
+        "as_verified": _as_str(dim.get("as_verified")),
+    }
+
+
+def _mirror_projection_snapshot(snap: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "dimension": snap.get("dimension"),
+        "score": snap.get("score"),
+        "band": snap.get("band"),
+        "levels": dict(snap.get("levels") or {}),
+        "open_leaks": snap.get("open_leaks"),
+        "as_of": _as_str(snap.get("as_of")),
+        "as_verified": _as_str(snap.get("as_verified")),
+    }
+
+
+def _mirror_violations(block: dict[str, Any], path: Path | None = None) -> list[str]:
+    """R1 (HIGH): the NEWEST history entry per dimension must content-match the
+    current machine block ({dimension, score, band, levels, open_leaks, as_of,
+    as_verified}). A doc change not reflected in the ledger (append for a new
+    ``as_of`` / update-in-place for a same-day edit) → RED. This makes "inflate the
+    doc without touching history" impossible and guarantees the evidence-gated
+    guard gets a real prior on the next re-score."""
+    violations: list[str] = []
+    for dim_key, dim in (block.get("dimensions") or {}).items():
+        newest = newest_snapshot(dim_key, path)
+        if newest is None:
+            violations.append(
+                f"{dim_key}: no history snapshot mirrors the current block "
+                "(append one to docs/quality/scorecard-history.jsonl)"
+            )
+            continue
+        want = _mirror_projection_block(dim_key, dim)
+        got = _mirror_projection_snapshot(newest)
+        if want != got:
+            violations.append(
+                f"{dim_key}: newest history entry does not mirror the block — "
+                f"block={want} ledger={got}"
+            )
+    return violations
+
+
+def evidence_gated_upgrade_violations(
+    dim: dict[str, Any], prior_snapshot: dict[str, Any] | None
+) -> list[str]:
+    """GL-11 guard over ONE dimension: any criterion/headline INCREASE vs the
+    latest PRIOR snapshot must cite (i) a non-empty ``evidence_ref`` AND (ii) an
+    ``as_verified`` advance (a bumped ``as_of`` alone — prose edited, evidence NOT
+    re-checked — must not suffice; that split is the whole point). **Downgrades are
+    free.** Conservative on malformed prior data (R5c): a missing ``levels`` map or
+    a non-numeric prior level is treated as "cannot prove it's not an increase" →
+    the increase requires evidence. With no prior snapshot (first-run) → ``[]``."""
+    if prior_snapshot is None:
+        return []
+    cur_verified = _as_str(dim.get("as_verified"))
+    prior_verified = prior_snapshot.get("as_verified")
+    verified_advanced = (
+        _iso_ok(cur_verified) and _iso_ok(prior_verified) and cur_verified > prior_verified
+    )
+    prior_levels = prior_snapshot.get("levels")
+    levels_ok = isinstance(prior_levels, dict)
+    violations: list[str] = []
+    for key, c in (dim.get("criteria") or {}).items():
+        if not isinstance(c, dict):
+            continue
+        cur = _int_score(c.get("score"))
+        if cur is None:
+            continue
+        prev = _int_score(prior_levels.get(key)) if levels_ok else None
+        # Unknown / malformed prior → conservative increase (R5c): must not slip.
+        is_increase = prev is None or cur > prev
+        if not is_increase:
+            continue
+        if not verified_advanced:
+            violations.append(
+                f"{key} rose to {cur} (prior {prev}) without an as_verified advance "
+                "(stale evidence — a bumped as_of does NOT suffice)"
+            )
+        ev = c.get("evidence_ref")
+        if not (isinstance(ev, str) and ev.strip()):
+            violations.append(
+                f"{key} rose to {cur} (prior {prev}) without citing an evidence_ref"
+            )
+    cur_head = _int_score(dim.get("score"))
+    prev_head = _int_score(prior_snapshot.get("score"))
+    head_increase = cur_head is not None and (prev_head is None or cur_head > prev_head)
+    if head_increase and not verified_advanced:
+        violations.append(
+            f"headline rose to {cur_head} (prior {prev_head}) without an as_verified advance"
+        )
+    return violations
+
+
+# ============================ shared fixtures/helpers ============================
+
+
+def _clear_fence_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    for env in (
+        "MARCUS_NARRATION_FIGURE_FIDELITY_ACTIVE",
+        "MARCUS_COVERAGE_GATE_ACTIVE",
+        "MARCUS_UDAC_ACTIVE",
+    ):
+        monkeypatch.delenv(env, raising=False)
+
+
+def _real_block() -> dict[str, Any]:
+    block = read_scorecard_block()
+    assert isinstance(block, dict), "committed scorecard machine block must be parseable"
+    return block
+
+
+#: The seeded baseline history snapshot (mirrors docs/quality/scorecard-history.jsonl).
+_BASELINE_SNAPSHOT: dict[str, Any] = {
+    "as_of": "2026-07-19",
+    "dimension": _DID_KEY,
+    "score": 65,
+    "band": "B-",
+    "levels": {
+        "neck_placement": 4,
+        "bone_determinism": 3,
+        "fence_enforcement_default_on": 1,
+        "lock_and_contract_discipline": 3,
+        "honesty_and_calibration": 2,
+    },
+    "open_leaks": 5,
+    "as_verified": "2026-07-19",
+}
+
+
+def _did_dim_with(mutate: Callable[[dict[str, Any]], None]) -> dict[str, Any]:
+    """A deepcopy of the real DID dimension with ``mutate`` applied — never touches
+    the real doc."""
+    dim = copy.deepcopy(_real_block()["dimensions"][_DID_KEY])
+    mutate(dim)
+    return dim
+
+
+# ================================= PIN (a) fence-claim =================================
+
+
+def test_signal_derived_levels_match_readers(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin (a) GREEN today: every signal-derived criterion's level == its reader's
+    live output. Concretely C3 == level_from_signal(fences_enabled_signal()) ==
+    'weak' (the env-INDEPENDENT default-OFF production posture)."""
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)  # CE1's env-live reader now also runs in this scan
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    c3 = block["dimensions"][_DID_KEY]["criteria"]["fence_enforcement_default_on"]
+    derived = level_from_signal("fence_enforcement_default_on", fences_enabled_signal())
+    assert c3["level"] == derived == "weak"
+
+
+def test_code_known_mechanical_criteria_not_de_mechanized(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """R3 GREEN today: CODE (not the doc) decides which criteria are mechanical.
+    Each ``_SIGNAL_DERIVED_READERS`` criterion still declares ``signal-derived`` and
+    matches its reader output."""
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)  # CE1's env-live reader is in _SIGNAL_DERIVED_READERS
+    assert _mechanical_criteria_violations(_real_block()) == []
+
+
+def test_de_mechanization_is_caught(monkeypatch: pytest.MonkeyPatch) -> None:
+    """R3 RED-under-seeded-edit: relabel C3's ``derivation`` to judgment-with-evidence
+    AND bump its level — the doc-driven pin (a) would SKIP it (the believed-green
+    hole), but the CODE-driven pin catches BOTH the de-mechanization and the level
+    lie. Real doc untouched."""
+    _clear_fence_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    c3 = block["dimensions"][_DID_KEY]["criteria"]["fence_enforcement_default_on"]
+    c3["derivation"] = "judgment-with-evidence"  # dodge attempt
+    c3["level"] = "strong"  # the inflation being hidden
+    # Doc-driven half now skips C3 (it no longer self-declares signal-derived):
+    assert _signal_derived_violations(block) == []
+    # …but the code-driven half catches it on both counts:
+    violations = _mechanical_criteria_violations(block)
+    assert any("de-mechanized" in v for v in violations), violations
+    assert any("reader-derived" in v for v in violations), violations
+
+
+def test_fence_claim_pin_reds_on_dishonest_level(monkeypatch: pytest.MonkeyPatch) -> None:
+    """AC5 RED-under-seeded-edit: bump C3 to 'strong' in an in-memory copy WITHOUT
+    the env-gate default flipping → the pin (a) comparison FAILS. The real doc is
+    never touched."""
+    _clear_fence_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_DID_KEY]["criteria"]["fence_enforcement_default_on"][
+        "level"
+    ] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("fence_enforcement_default_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_fence_claim_pin_reds_on_any_inflated_level(
+    monkeypatch: pytest.MonkeyPatch, dishonest: str
+) -> None:
+    """AC5: any inflation of C3 above the reader-derived 'weak' (with fences still
+    default-OFF) is caught."""
+    _clear_fence_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_DID_KEY]["criteria"]["fence_enforcement_default_on"][
+        "level"
+    ] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+# ================================= PIN (b) leak-count =================================
+
+_FIXTURE_INVENTORY_3 = textwrap.dedent(
+    """\
+    # Deferred Inventory (fixture)
+
+    ## Named-But-Not-Filed Follow-Ons
+
+    ### open-one
+    did_leak: true — counted.
+
+    ### open-two
+    did_leak: yes — counted.
+
+    ### open-three
+    did_leak: true — counted.
+    """
+)
+
+
+def test_leak_count_reconciles_on_fixture(tmp_path: Path) -> None:
+    """Pin (b) GREEN on a seeded fixture (GL-14): a fixture inventory with 3
+    ``did_leak:`` open tags reconciles against a seeded ``open_leaks: 3``. This
+    proves the reconciliation LOGIC while the real repo is RED-pending."""
+    inv = tmp_path / "inv.md"
+    inv.write_text(_FIXTURE_INVENTORY_3, encoding="utf-8")
+    count = open_leak_count_signal(inv)["open_leak_count"]
+    assert count == 3
+    assert _reconcile(3, count) is True  # seeded open_leaks:3 ↔ 3 tags
+
+
+def test_leak_count_pin_reds_when_fixture_tag_struck(tmp_path: Path) -> None:
+    """AC5 RED-under-seeded-edit: strike one ``did_leak:`` tag in the FIXTURE while
+    the claimed ``open_leaks`` stays 3 → reconciliation FAILS (3 != 2). The real
+    inventory is never touched."""
+    inv = tmp_path / "inv.md"
+    inv.write_text(_FIXTURE_INVENTORY_3, encoding="utf-8")
+    assert _reconcile(3, open_leak_count_signal(inv)["open_leak_count"]) is True
+    struck = _FIXTURE_INVENTORY_3.replace(
+        "### open-three\ndid_leak: true — counted.\n", "### open-three\n(closed)\n"
+    )
+    inv.write_text(struck, encoding="utf-8")
+    count = open_leak_count_signal(inv)["open_leak_count"]
+    assert count == 2
+    assert _reconcile(3, count) is False  # stale claim 3 vs real 2 → RED
+
+
+def test_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) on the REAL repo — now a HARD GREEN pin (GL-14 self-clearing FIRED).
+    Q1.5 tagged the 5 ``did_leak:`` entries in the ``## DID Scorecard Leak Registry``
+    of ``deferred-inventory.md``, so ``open_leak_count_signal()`` == 5 == the DID
+    dimension's ``open_leaks`` (5 == 5) and the reconciliation passes by AGREEING
+    WITH REALITY. Q1.3 shipped this as ``xfail(strict=True)`` (open_leaks hand-carried
+    while 0 tags existed); Q1.5 removed that marker once the tags landed, promoting it
+    to the standing doc↔code reconciliation.
+
+    **Scope (FIX-2):** the ``did_leak:`` tags are DID-specific, so this reconciles the
+    DID dimension's ``open_leaks`` ONLY — NOT every dimension. A future Q2/Q3 dimension
+    carries its own (differently-namespaced) leak accounting; reconciling the single
+    global DID count against a Q2/Q3 ``open_leaks`` would red this DID pin spuriously.
+    Per-dimension leak namespacing (a per-dimension tag namespace + reader) is that
+    later story's concern.
+
+    Anti-drift: strike any one ``did_leak:`` tag → the count drops to 4, 5 != 4, and
+    this pin goes RED (proven by ``test_leak_count_pin_reds_when_fixture_tag_struck``
+    on the fixture path)."""
+    did = _real_block()["dimensions"][_DID_KEY]
+    count = open_leak_count_signal()["open_leak_count"]
+    assert _reconcile(did.get("open_leaks"), count), (
+        f"{_DID_KEY}: open_leaks {did.get('open_leaks')!r} != counted did_leak: tags {count}"
+    )
+    # Q1.4b (AC1) — fuller reconciliation: the STRUCTURED machine-block ``leaks`` list
+    # (each {rank, criterion, slug, lane}) must also match ``open_leaks`` in length
+    # (checked only when the list is present + open_leaks is a clean int — additive, so
+    # this never spuriously reds a dimension that has not yet added a ``leaks`` list).
+    leaks = did.get("leaks")
+    open_leaks = did.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_DID_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+# ============================ PIN (b') leak-slug IDENTITY (FIX-1) ============================
+
+
+def test_machine_block_leak_slugs_match_registry_identity() -> None:
+    """FIX-1 — SSOT slug IDENTITY reconciliation the count pins lack.
+
+    Pin (b) reconciles through the integer 5 (registry ``did_leak:`` count ==
+    ``open_leaks`` == structured ``len(leaks)``); a slug that is TYPO'd in the machine
+    block or RENAMED in the registry keeps all three at 5 and every count pin green
+    while the slugs have silently diverged. This pin asserts SET EQUALITY of the two
+    slug identities — the machine-block ``leaks`` slugs vs the registry ``did_leak:``
+    slugs — so an identity drift is caught even when the counts still reconcile."""
+    did = _real_block()["dimensions"][_DID_KEY]
+    assert _machine_block_leak_slugs(did) == _registry_did_leak_slugs()
+
+
+def test_slug_identity_pin_reds_on_seeded_slug_typo_while_counts_stay_green() -> None:
+    """FIX-1 RED-first: typo ONE machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count pins stay green (len==open_leaks==5), proving
+    the identity pin catches drift the count-only reconciliation misses."""
+    block = copy.deepcopy(_real_block())
+    did = block["dimensions"][_DID_KEY]
+    did["leaks"][0]["slug"] = "gary-export-typo"  # rename one slug; count unchanged
+    # Identity pin RED — the machine-block slug set no longer equals the registry set.
+    assert _machine_block_leak_slugs(did) != _registry_did_leak_slugs()
+    # Count pins STILL green — everything still reconciles through the integer 5.
+    assert len(did["leaks"]) == did["open_leaks"] == 5
+
+
+# ================================= PIN (c) score-arithmetic =================================
+
+
+def test_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) GREEN today, over EVERY dimension (R2): score↔level per §1.5 +
+    Σscore/max→/100 == headline + band == §1.5 boundary. Doc↔code: the arithmetic
+    RULE is the code source. (R7: no brittle insertion-order literal — the check is
+    the ``_arithmetic_violations`` computation, robust to YAML key reorder.)"""
+    block = _real_block()
+    problems = {
+        dk: v for dk, dv in block["dimensions"].items() if (v := _arithmetic_violations(dv))
+    }
+    assert problems == {}, problems
+    dim = block["dimensions"][_DID_KEY]
+    assert dim["score"] == 65 and dim["band"] == "B-"  # DID numbers unchanged
+
+
+def test_arithmetic_pin_covers_every_dimension_not_just_did() -> None:
+    """R2: a SEEDED 2nd dimension with an arithmetic inconsistency is caught by the
+    same (parametrized-over-all-dimensions) arithmetic pin — proving coverage is not
+    DID-only. Real block never mutated."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"]["cost_efficiency"] = {
+        "as_of": "2026-07-19",
+        "as_verified": "2026-07-19",
+        "score": 99,  # inconsistent: Σ = 1/4 → 25, not 99
+        "band": "A",
+        "criteria": {"c1": {"level": "weak", "score": 1, "max": 4}},
+        "open_leaks": 0,
+        "trend": "baseline",
+    }
+    problems = {
+        dk: v for dk, dv in block["dimensions"].items() if (v := _arithmetic_violations(dv))
+    }
+    assert "cost_efficiency" in problems, problems
+
+
+def test_arithmetic_pin_handles_missing_criteria_without_keyerror() -> None:
+    """R5a: a dimension missing its ``criteria`` mapping returns a clean violation,
+    never a KeyError."""
+    violations = _arithmetic_violations({"score": 65, "band": "B-"})  # no 'criteria'
+    assert violations and any("criteria" in v for v in violations)
+
+
+def test_arithmetic_pin_rejects_bool_score_not_coerced_to_one() -> None:
+    """R5b: a ``score: true`` must be flagged malformed, NEVER silently treated as
+    the integer 1 (which would let a dishonest bool pass score↔level + arithmetic)."""
+    dim = _did_dim_with(
+        lambda d: d["criteria"]["fence_enforcement_default_on"].update(score=True)
+    )
+    violations = _arithmetic_violations(dim)
+    assert any(
+        "fence_enforcement_default_on" in v and "violates §1.5" in v for v in violations
+    ), violations
+    # And the bool did NOT count as 1 toward the sum → the headline also fails.
+    assert any("normalizes" in v for v in violations), violations
+
+
+@pytest.mark.parametrize(
+    ("mutate", "needle"),
+    [
+        pytest.param(lambda d: d.update(band="A"), "band", id="fat-fingered-band"),
+        pytest.param(lambda d: d.update(score=80), "normalizes", id="fat-fingered-headline"),
+        pytest.param(
+            lambda d: d["criteria"]["fence_enforcement_default_on"].update(score=4),
+            "normalizes",
+            id="fat-fingered-criterion-score",
+        ),
+        pytest.param(
+            lambda d: d["criteria"]["honesty_and_calibration"].update(level="strong"),
+            "violates §1.5",
+            id="score-level-mismatch",
+        ),
+    ],
+)
+def test_score_arithmetic_pin_reds_on_seeded_edit(mutate, needle: str) -> None:
+    """AC5 RED-under-seeded-edit: fat-finger the band / headline / a criterion
+    score / a score↔level pairing in an in-memory copy → pin (c) FAILS. Real doc
+    untouched."""
+    dim = _did_dim_with(mutate)
+    violations = _arithmetic_violations(dim)
+    assert any(needle in v for v in violations), violations
+
+
+# ================================= GL-6 meta-ratchet =================================
+
+
+def test_every_dimension_has_a_honesty_pin() -> None:
+    """AC2 / GL-6 (CRITICAL): every dimension in the v2 machine block has ≥1
+    registered honesty-pin; a 0-dimension block is itself a violation (R5d — no
+    vacuous pass). A future dimension added without registering a pin → RED."""
+    block = _real_block()
+    dim_keys = set(block["dimensions"])
+    assert dim_keys, "machine block declares zero dimensions"
+    without = _coverage_violations(dim_keys, _HONESTY_PIN_REGISTRY)
+    assert without == set(), f"dimension(s) with no registered honesty-pin: {sorted(without)}"
+
+
+def test_meta_ratchet_rejects_zero_dimension_block() -> None:
+    """R5d: a 0-dimension machine block must NOT pass the coverage check vacuously."""
+    assert _coverage_violations(set(), _HONESTY_PIN_REGISTRY) != set()
+
+
+def test_canonical_universe_matches_machine_block() -> None:
+    """AC2 no-typo/no-orphan: the NAMED canonical dimension universe (Q1.1's
+    ``_EXPECTED_CANONICAL_DIMENSION_KEYS``) equals the machine-block dimension keys
+    — a silent add/rename/drop fails here."""
+    block = _real_block()
+    assert set(_EXPECTED_CANONICAL_DIMENSION_KEYS) == set(block["dimensions"])
+
+
+def test_pin_registry_keys_are_canonical_no_orphans() -> None:
+    """AC2: the registry names only canonical dimensions (no typo/orphan), and
+    every registered pin is a real test function in this module (no dangling
+    reference)."""
+    canonical = set(_EXPECTED_CANONICAL_DIMENSION_KEYS)
+    stray = set(_HONESTY_PIN_REGISTRY) - canonical
+    assert stray == set(), f"registry keys not in the canonical universe: {sorted(stray)}"
+    for dim, pins in _HONESTY_PIN_REGISTRY.items():
+        assert pins, f"{dim} registered with an empty pin set"
+        for pin_name in pins:
+            assert callable(globals().get(pin_name)), (
+                f"registered pin {pin_name!r} for {dim} is not a test in this module"
+            )
+
+
+def test_meta_ratchet_reds_on_pinless_dimension() -> None:
+    """AC2 seeded-RED: a future dimension present in the block but absent from the
+    registry surfaces as pin-less → RED. (Uses a seeded key set — the real block
+    is never mutated. ``cost_efficiency`` is now a REGISTERED dimension, so the
+    hypothetical unpinned key is a fresh future dimension.)"""
+    seeded_keys = {_DID_KEY, _COST_KEY, "some_future_unpinned_dimension"}
+    without = _coverage_violations(seeded_keys, _HONESTY_PIN_REGISTRY)
+    assert without == {"some_future_unpinned_dimension"}
+
+
+# ================================= R1 doc↔ledger mirror =================================
+
+
+def test_newest_history_mirrors_current_block() -> None:
+    """R1 (HIGH) STANDING pin: the newest history entry per dimension content-matches
+    the current machine block. Closes the upgrade-guard bypass — a doc inflation that
+    never appends to scorecard-history.jsonl goes RED here, guaranteeing the guard
+    gets a real prior on the next re-score. GREEN today (baseline mirrors the block)."""
+    assert _mirror_violations(_real_block()) == []
+
+
+def test_mirror_pin_reds_on_doc_inflation_without_history_append(tmp_path: Path) -> None:
+    """R1 RED-under-seeded-edit: inflate a fixture block's score WITHOUT updating its
+    paired newest-history entry → the mirror pin goes RED. Real files untouched."""
+    import json as _json
+
+    hist = tmp_path / "h.jsonl"
+    hist.write_text(_json.dumps(_BASELINE_SNAPSHOT) + "\n", encoding="utf-8")
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_DID_KEY]["score"] = 80  # inflate; ledger still says 65
+    violations = _mirror_violations(block, hist)
+    assert any(_DID_KEY in v and "mirror" in v for v in violations), violations
+
+
+# ================================= GL-11 computed-trend =================================
+
+
+def test_trend_is_computed_not_painted() -> None:
+    """AC3 / GL-11: the machine-block ``trend`` equals ``trend_from_history`` (delta
+    vs the latest prior snapshot). Today both == 'baseline' (only the seeded 2026-
+    07-19 entry exists). Doc↔code: the history log is the code source."""
+    dim = _real_block()["dimensions"][_DID_KEY]
+    assert dim["trend"] == trend_from_history(_DID_KEY) == "baseline"
+
+
+def test_trend_pin_reds_on_hand_painted_arrow(tmp_path: Path) -> None:
+    """AC5 RED-under-seeded-edit: a hand-painted ``trend: rising`` with no
+    supporting history disagrees with the computed 'baseline' → the pin would go
+    RED. (Uses a fixture empty/one-entry history — the real log is never touched.)"""
+    empty = tmp_path / "empty.jsonl"
+    empty.write_text("", encoding="utf-8")
+    computed = trend_from_history(_DID_KEY, empty)
+    assert computed == "baseline"
+    painted = "rising"
+    assert painted != computed  # doc's painted arrow contradicts the computed trend
+
+
+def test_trend_computes_rising_and_falling(tmp_path: Path) -> None:
+    """GL-11/GL-12 witness: with a real prior snapshot, the trend is COMPUTED from
+    the score delta — so an honest 'rising'/'falling' is earned, not painted."""
+    log = tmp_path / "h.jsonl"
+    import json as _json
+
+    prior = dict(_BASELINE_SNAPSHOT)
+    rising = {**_BASELINE_SNAPSHOT, "as_of": "2026-08-01", "score": 72}
+    log.write_text(
+        _json.dumps(prior) + "\n" + _json.dumps(rising) + "\n", encoding="utf-8"
+    )
+    assert trend_from_history(_DID_KEY, log) == "rising"
+    falling = {**_BASELINE_SNAPSHOT, "as_of": "2026-08-01", "score": 60}
+    log.write_text(
+        _json.dumps(prior) + "\n" + _json.dumps(falling) + "\n", encoding="utf-8"
+    )
+    assert trend_from_history(_DID_KEY, log) == "falling"
+
+
+def test_trend_first_run_degrade_on_absent_history(tmp_path: Path) -> None:
+    """GL-12 first-run degrade: an absent / empty history yields 'baseline', never a
+    fabricated arrow."""
+    assert trend_from_history(_DID_KEY, tmp_path / "nope.jsonl") == "baseline"
+    empty = tmp_path / "empty.jsonl"
+    empty.write_text("\n\n", encoding="utf-8")
+    assert trend_from_history(_DID_KEY, empty) == "baseline"
+
+
+# ================================= R4 history date-hardening =================================
+
+
+def test_trend_degrades_on_malformed_newest_as_of(tmp_path: Path) -> None:
+    """R4a: a malformed/missing ``as_of`` on the newest-APPENDED entry → 'baseline'
+    (cannot trust the freshest write), rather than silently computing a trend off an
+    older entry."""
+    import json as _json
+
+    log = tmp_path / "h.jsonl"
+    good = dict(_BASELINE_SNAPSHOT)
+    corrupt = {**_BASELINE_SNAPSHOT, "as_of": "not-a-date", "score": 90}
+    log.write_text(
+        _json.dumps(good) + "\n" + _json.dumps(corrupt) + "\n", encoding="utf-8"
+    )
+    assert trend_from_history(_DID_KEY, log) == "baseline"
+
+
+def test_trend_uses_max_by_date_not_file_order(tmp_path: Path) -> None:
+    """R4b: ``current`` is the max-BY-VALIDATED-DATE snapshot, not ``entries[-1]`` —
+    an out-of-order append (an older-dated entry written last) cannot mislead the
+    computed trend."""
+    import json as _json
+
+    log = tmp_path / "h.jsonl"
+    newer = {**_BASELINE_SNAPSHOT, "as_of": "2026-08-01", "score": 72}
+    older = {**_BASELINE_SNAPSHOT, "as_of": "2026-07-19", "score": 65}
+    # file order: newer FIRST, older appended last (out of order)
+    log.write_text(
+        _json.dumps(newer) + "\n" + _json.dumps(older) + "\n", encoding="utf-8"
+    )
+    # current = max-by-date = 2026-08-01 (72); prior = 2026-07-19 (65) → rising.
+    assert trend_from_history(_DID_KEY, log) == "rising"
+
+
+def test_trend_same_date_tiebreak_is_later_in_file(tmp_path: Path) -> None:
+    """R4c: when two entries share the max ``as_of``, the later-in-file entry wins
+    (deterministic tie-break). Here the later same-day entry equals the prior score
+    → 'flat'; if the tie-break were the earlier same-day entry it would be 'rising'."""
+    import json as _json
+
+    log = tmp_path / "h.jsonl"
+    prior = {**_BASELINE_SNAPSHOT, "as_of": "2026-07-19", "score": 65}
+    same_day_high = {**_BASELINE_SNAPSHOT, "as_of": "2026-08-01", "score": 70}
+    same_day_low = {**_BASELINE_SNAPSHOT, "as_of": "2026-08-01", "score": 65}
+    log.write_text(
+        _json.dumps(prior)
+        + "\n"
+        + _json.dumps(same_day_high)
+        + "\n"
+        + _json.dumps(same_day_low)
+        + "\n",
+        encoding="utf-8",
+    )
+    # later-in-file same-day entry (65) wins → 65 vs prior 65 → flat.
+    assert trend_from_history(_DID_KEY, log) == "flat"
+
+
+# ================================= GL-11 evidence-gated upgrade =================================
+
+
+def test_evidence_gated_upgrade_guard_holds_on_real_block() -> None:
+    """AC3 / GL-11 STANDING pin over the real block + each dimension's real
+    newest-strictly-prior history snapshot. Today the only snapshot shares the
+    block's ``as_of`` → no strictly-prior → honest no-op; the mirror pin guarantees
+    a real prior appears on the next re-score, activating this guard automatically."""
+    block = _real_block()
+    problems: dict[str, list[str]] = {}
+    for dim_key, dim in block["dimensions"].items():
+        prior = latest_prior_snapshot(dim_key, _as_str(dim.get("as_of")))
+        v = evidence_gated_upgrade_violations(dim, prior)
+        if v:
+            problems[dim_key] = v
+    assert problems == {}, problems
+    # explicit no-op witness for DID today:
+    did = block["dimensions"][_DID_KEY]
+    assert latest_prior_snapshot(_DID_KEY, _as_str(did.get("as_of"))) is None
+
+
+def test_upgrade_guard_reds_on_increase_without_as_verified_advance() -> None:
+    """AC5 RED: C3 rises 1→3 but ``as_verified`` stays 2026-07-19 (only ``as_of``
+    bumped — prose edited, evidence NOT re-checked) → guard FAILS. This is exactly
+    why as_of/as_verified are split: a stale evidence citation must not suffice."""
+    dim = _did_dim_with(
+        lambda d: (
+            d.update(as_of="2026-08-01", as_verified="2026-07-19"),
+            d["criteria"]["fence_enforcement_default_on"].update(score=3),
+        )
+    )
+    violations = evidence_gated_upgrade_violations(dim, _BASELINE_SNAPSHOT)
+    assert any("as_verified" in v for v in violations), violations
+
+
+def test_upgrade_guard_reds_on_increase_without_evidence_ref() -> None:
+    """AC5 RED: C3 rises with ``as_verified`` advanced but its ``evidence_ref``
+    emptied → guard FAILS (an increase must CITE evidence)."""
+    dim = _did_dim_with(
+        lambda d: (
+            d.update(as_verified="2026-08-01"),
+            d["criteria"]["fence_enforcement_default_on"].update(score=3, evidence_ref=""),
+        )
+    )
+    violations = evidence_gated_upgrade_violations(dim, _BASELINE_SNAPSHOT)
+    assert any("evidence_ref" in v for v in violations), violations
+
+
+def test_upgrade_guard_conservative_on_malformed_prior_levels() -> None:
+    """R5c: a prior snapshot MISSING its ``levels`` map (or with a non-numeric level)
+    must NOT let a real increase slip — the guard treats it conservatively and still
+    requires evidence + as_verified advance."""
+    prior_no_levels = {**_BASELINE_SNAPSHOT}
+    prior_no_levels.pop("levels")
+    dim = _did_dim_with(
+        lambda d: (
+            d.update(as_of="2026-08-01", as_verified="2026-07-19"),  # NOT advanced
+            d["criteria"]["fence_enforcement_default_on"].update(score=3),
+        )
+    )
+    violations = evidence_gated_upgrade_violations(dim, prior_no_levels)
+    assert any("as_verified" in v for v in violations), violations
+
+
+def test_upgrade_guard_allows_earned_increase() -> None:
+    """AC3 GREEN path: an increase that BOTH advances ``as_verified`` AND cites a
+    (fresh) evidence_ref is allowed — a fence turned ON, re-verified on a new date."""
+    dim = _did_dim_with(
+        lambda d: (
+            d.update(as_verified="2026-08-01"),
+            d["criteria"]["fence_enforcement_default_on"].update(
+                score=3, evidence_ref="§1.6 C3 · Leak 1 CLOSED — fences ON by default"
+            ),
+        )
+    )
+    assert evidence_gated_upgrade_violations(dim, _BASELINE_SNAPSHOT) == []
+
+
+def test_upgrade_guard_allows_free_downgrade() -> None:
+    """AC3: downgrades are FREE — lowering a score needs no evidence/as_verified
+    advance."""
+    dim = _did_dim_with(lambda d: d["criteria"]["neck_placement"].update(score=3))
+    assert evidence_gated_upgrade_violations(dim, _BASELINE_SNAPSHOT) == []
+
+
+# =============================================================================== #
+# Story Q2.1 — cost_efficiency dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_COST_KEY]) + their RED-under-seeded proofs. These reuse the
+# SAME pure helpers as the DID pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate
+# EVERY dimension, so coverage is structural. Doc↔code: each compares a machine-block
+# CLAIM against a CODE-computed reality (a signal reader / the deferred-inventory
+# registry / the §2.5 arithmetic rule), never doc↔doc.
+# =============================================================================== #
+
+
+def _clear_budget_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MARCUS_TRIAL_BUDGET_USD", raising=False)
+
+
+# --------------------------- pin (a) budget-fence-claim --------------------------- #
+
+
+def test_cost_budget_fence_claim_matches_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin (a) for cost_efficiency, GREEN today: the signal-derived CE1
+    (``budget_stop_default_on``) level equals its reader's live output —
+    ``level_from_signal("budget_stop_default_on", budget_stop_default_signal())`` ==
+    ``weak`` (the env-INDEPENDENT production-preset posture: no default budget →
+    ``check_trial_budget(total, None)=='no-cap'`` → opt-in). The shared
+    ``_signal_derived_violations`` scan (over every dimension) is also clean."""
+    _clear_budget_env(monkeypatch)
+    _clear_fence_env(monkeypatch)
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    ce1 = block["dimensions"][_COST_KEY]["criteria"]["budget_stop_default_on"]
+    derived = level_from_signal("budget_stop_default_on", budget_stop_default_signal())
+    assert ce1["level"] == derived == "weak"
+
+
+def test_cost_budget_fence_claim_reds_on_dishonest_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC3 / GL-9 RED-under-seeded-edit: bump CE1 to ``strong`` on an in-memory copy
+    WITHOUT a default budget wired → the pin (a) comparison FAILS (reader still says
+    ``weak``). The real doc is never touched. This is the exact anti-overclaim guard:
+    a claimed budget-enforced/cost-fenced level cannot pass while the preset default is
+    no-cap."""
+    _clear_budget_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COST_KEY]["criteria"]["budget_stop_default_on"][
+        "level"
+    ] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("budget_stop_default_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_cost_budget_fence_claim_reds_on_any_inflated_level(
+    monkeypatch: pytest.MonkeyPatch, dishonest: str
+) -> None:
+    """AC3: any inflation of CE1 above the reader-derived ``weak`` (with no default
+    budget wired) is caught."""
+    _clear_budget_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COST_KEY]["criteria"]["budget_stop_default_on"][
+        "level"
+    ] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_cost_ce1_is_signal_derived_others_are_judgment_with_evidence() -> None:
+    """The honest derivation split: CE1 is ``signal-derived`` (the reader owns the
+    level); CE2/CE3/CE4 are ``judgment-with-evidence`` (a real signal block carries the
+    facts, the level is an authored §2.6 judgment). No unverified signal awards a clean
+    level: ``level_from_signal`` returns ``None`` for the judgment-with-evidence keys."""
+    crit = _real_block()["dimensions"][_COST_KEY]["criteria"]
+    assert crit["budget_stop_default_on"]["derivation"] == "signal-derived"
+    for key in ("cost_posture_honesty", "cost_drift_monitoring", "cost_transparency"):
+        c = crit[key]
+        assert c["derivation"] == "judgment-with-evidence"
+        assert c["level"] == "strong"
+        assert isinstance(c["signal"], dict)
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+        assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+        # judgment-with-evidence → no mechanical derivation → never a clean auto-award.
+        assert level_from_signal(key, c["signal"]) is None
+
+
+# --------------------------- pin (b) cost leak-count + slug identity --------------- #
+
+
+def test_cost_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for cost_efficiency: the dimension's ``open_leaks`` == the count of
+    ``cost_leak:``-tagged OPEN entries in the ``## Cost-Efficiency Scorecard Leak
+    Registry`` == ``len(leaks)`` == 1. A per-dimension ``cost_leak:`` namespace (NOT the
+    global DID ``did_leak:`` count — that would spuriously red per FIX-2). Anti-drift:
+    strike the ``cost_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_COST_KEY]
+    count = cost_leak_count_signal()["cost_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_COST_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cost_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_COST_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_cost_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for cost_efficiency: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``cost_leak:`` slugs — a slug typo /
+    rename that keeps the count at 1 is caught here, which a count-only reconciliation
+    misses."""
+    dim = _real_block()["dimensions"][_COST_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_cost_leak_slugs()
+
+
+def test_cost_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the cost machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_COST_KEY]
+    dim["leaks"][0]["slug"] = "cost-efficiency-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_cost_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+# --------------------------- pin (c) cost score-arithmetic ------------------------ #
+
+
+def test_cost_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for cost_efficiency: score↔level per §2.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§2.5 boundary. 1+3+3+3 = 10/16 → 62 → B-. Doc↔code: the
+    arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_COST_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 62 and dim["band"] == "B-"
+
+
+# =============================================================================== #
+# Story Q2.2 — coverage_honesty dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_COVERAGE_KEY]) + their RED-under-seeded proofs. Reuse the SAME
+# pure helpers as the DID/cost pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate EVERY
+# dimension, so coverage is structural. Doc↔code: each compares a machine-block CLAIM
+# against a CODE-computed reality (a signal reader / the deferred-inventory registry /
+# the §3.5 arithmetic rule), never doc↔doc.
+# =============================================================================== #
+
+
+def _clear_coverage_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("MARCUS_COVERAGE_GATE_ACTIVE", raising=False)
+
+
+# --------------------------- pin (a) coverage-fence-claim ------------------------- #
+
+
+def test_coverage_fence_claim_matches_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin (a) for coverage_honesty, GREEN today: the signal-derived CV1
+    (``coverage_fence_default_on``) level equals its reader's live output —
+    ``level_from_signal("coverage_fence_default_on", coverage_fence_default_signal())`` ==
+    ``weak`` (the production-preset posture: MARCUS_COVERAGE_GATE_ACTIVE unset →
+    ``coverage_gate_active()==False`` → opt-in). The shared ``_signal_derived_violations``
+    scan (over every dimension) is also clean."""
+    _clear_coverage_env(monkeypatch)
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    cv1 = block["dimensions"][_COVERAGE_KEY]["criteria"]["coverage_fence_default_on"]
+    derived = level_from_signal(
+        "coverage_fence_default_on", coverage_fence_default_signal()
+    )
+    assert cv1["level"] == derived == "weak"
+
+
+def test_coverage_fence_claim_reds_on_dishonest_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC3 / GL-9 RED-under-seeded-edit: bump CV1 to ``strong`` on an in-memory copy
+    WITHOUT the coverage gate wired ON by default → the pin (a) comparison FAILS (reader
+    still says ``weak``). The real doc is never touched. This is the exact anti-overclaim
+    guard: a claimed coverage-fenced level cannot pass while the preset default is OFF."""
+    _clear_coverage_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COVERAGE_KEY]["criteria"]["coverage_fence_default_on"][
+        "level"
+    ] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("coverage_fence_default_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_coverage_fence_claim_reds_on_any_inflated_level(
+    monkeypatch: pytest.MonkeyPatch, dishonest: str
+) -> None:
+    """AC3: any inflation of CV1 above the reader-derived ``weak`` (with the coverage gate
+    still default-OFF) is caught."""
+    _clear_coverage_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_COVERAGE_KEY]["criteria"]["coverage_fence_default_on"][
+        "level"
+    ] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_coverage_fence_reader_tracks_real_coverage_gate_active(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The reader is grounded in the REAL ``coverage_gate_active`` SSOT + the close-path is
+    REACHABLE and READ-ONLY (Q2.1 CE1 pattern): monkeypatch MARCUS_COVERAGE_GATE_ACTIVE
+    on/off and the live (env=None) reader tracks ``coverage_gate_active()`` exactly; an
+    injectable ``env`` mapping reads the preset-default posture independent of the ambient
+    shell; and calling it NEVER mutates ``os.environ``."""
+    import os
+
+    from app.marcus.orchestrator.coverage_gate_wiring import coverage_gate_active
+
+    # OFF (default posture): live reader == real gate == weak.
+    _clear_coverage_env(monkeypatch)
+    assert coverage_gate_active() is False
+    off = coverage_fence_default_signal()
+    assert off["default_coverage_enforced"] is False
+    assert level_from_signal("coverage_fence_default_on", off) == "weak"
+    # ON (seeded default-on): live reader tracks the real gate → strong (close-path reached).
+    monkeypatch.setenv("MARCUS_COVERAGE_GATE_ACTIVE", "1")
+    before = dict(os.environ)
+    assert coverage_gate_active() is True
+    on = coverage_fence_default_signal()
+    assert on["default_coverage_enforced"] is True
+    assert level_from_signal("coverage_fence_default_on", on) == "strong"
+    # env-INDEPENDENT: an injectable clean mapping reads the preset-default (weak) even
+    # while the ambient shell has the operator opt-in set.
+    preset = coverage_fence_default_signal(env={})
+    assert preset["default_coverage_enforced"] is False
+    assert level_from_signal("coverage_fence_default_on", preset) == "weak"
+    # READ-ONLY: no os.environ mutation across any variant.
+    coverage_fence_default_signal(env={"MARCUS_COVERAGE_GATE_ACTIVE": "1"})
+    assert dict(os.environ) == before
+
+
+def test_coverage_cv1_signal_derived_others_are_judgment_with_evidence() -> None:
+    """The honest derivation split: CV1 is ``signal-derived`` (the reader owns the level);
+    CV2/CV3 are ``judgment-with-evidence`` (a real signal block carries the facts, the
+    level is an authored §3.6 judgment). No unverified signal awards a clean level:
+    ``level_from_signal`` returns ``None`` for the judgment-with-evidence keys."""
+    crit = _real_block()["dimensions"][_COVERAGE_KEY]["criteria"]
+    assert crit["coverage_fence_default_on"]["derivation"] == "signal-derived"
+    for key in ("coverage_receipt_honesty", "coverage_narration_obligation"):
+        c = crit[key]
+        assert c["derivation"] == "judgment-with-evidence"
+        assert c["level"] == "strong"
+        assert isinstance(c["signal"], dict)
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+        assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+        assert level_from_signal(key, c["signal"]) is None
+
+
+# --------------------------- pin (b) coverage leak-count + slug identity ----------- #
+
+
+def test_coverage_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for coverage_honesty: the dimension's ``open_leaks`` == the count of
+    ``cov_leak:``-tagged OPEN entries in the ``## Coverage-Honesty Scorecard Leak
+    Registry`` == ``len(leaks)`` == 1. A THIRD per-dimension ``cov_leak:`` namespace (NOT
+    the global DID ``did_leak:`` / cost ``cost_leak:`` counts). Anti-drift: strike the
+    ``cov_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_COVERAGE_KEY]
+    count = coverage_leak_count_signal()["coverage_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_COVERAGE_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cov_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_COVERAGE_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_coverage_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for coverage_honesty: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``cov_leak:`` slugs — a slug typo /
+    rename that keeps the count at 1 is caught here, which a count-only reconciliation
+    misses."""
+    dim = _real_block()["dimensions"][_COVERAGE_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_coverage_leak_slugs()
+
+
+def test_coverage_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the coverage machine-block leak slug on a COPY → the identity
+    pin RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_COVERAGE_KEY]
+    dim["leaks"][0]["slug"] = "coverage-honesty-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_coverage_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_three_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 THREE-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:``
+    readers do NOT cross-count, and their slug identity sets are pairwise disjoint. A tag
+    in one namespace must never inflate another dimension's count."""
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1
+    did_slugs = _registry_did_leak_slugs()
+    cost_slugs = _registry_cost_leak_slugs()
+    cov_slugs = _registry_coverage_leak_slugs()
+    assert len(did_slugs) == 5 and len(cost_slugs) == 1 and len(cov_slugs) == 1
+    # pairwise disjoint — no slug leaks across the three namespaces.
+    assert did_slugs.isdisjoint(cost_slugs)
+    assert did_slugs.isdisjoint(cov_slugs)
+    assert cost_slugs.isdisjoint(cov_slugs)
+
+
+# --------------------------- pin (c) coverage score-arithmetic -------------------- #
+
+
+def test_coverage_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for coverage_honesty: score↔level per §3.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§3.5 boundary. 1+3+3 = 7/12 → 58 → C. Doc↔code: the
+    arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_COVERAGE_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 58 and dim["band"] == "C"
+
+
+# =============================================================================== #
+# Story Q2.3 — fidelity_trust dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_FIDELITY_KEY]) + their RED-under-seeded proofs. Reuse the SAME
+# pure helpers as the DID/cost/coverage pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate EVERY
+# dimension, so coverage is structural. Doc↔code: each compares a machine-block CLAIM
+# against a CODE-computed reality (a signal reader / the deferred-inventory registry /
+# the §4.5 arithmetic rule), never doc↔doc.
+# =============================================================================== #
+
+
+# --------------------------- pin (a) gates-claim (the epic's exact pin) ----------- #
+
+
+def test_fidelity_gates_claim_matches_reader(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin (a) for fidelity_trust, GREEN today: the signal-derived FT1
+    (``semantic_fence_gating_on``) level equals its reader's live output —
+    ``level_from_signal("semantic_fence_gating_on", semantic_fence_gating_signal())`` ==
+    ``weak`` (the real posture: ``SEMANTIC_TRIPWIRE['gates_production']`` is False →
+    ``semantic_fence_gates`` False → the audit WARNs, never gates). The shared
+    ``_signal_derived_violations`` scan (over every dimension) is also clean."""
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)
+    _clear_coverage_env(monkeypatch)
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    ft1 = block["dimensions"][_FIDELITY_KEY]["criteria"]["semantic_fence_gating_on"]
+    derived = level_from_signal(
+        "semantic_fence_gating_on", semantic_fence_gating_signal()
+    )
+    assert ft1["level"] == derived == "weak"
+
+
+def test_fidelity_gates_claim_reds_on_dishonest_level(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """AC3 / GL-9 RED-under-seeded-edit — the epic's EXACT honesty-pin: bump FT1 to
+    ``strong`` on an in-memory copy WHILE ``SEMANTIC_TRIPWIRE['gates_production']`` is
+    False → the pin (a) comparison FAILS (reader still says ``weak``). The real doc is
+    never touched. The score FAILS if it CLAIMS gating while the tripwire says it does not
+    gate."""
+    _clear_fence_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_FIDELITY_KEY]["criteria"]["semantic_fence_gating_on"][
+        "level"
+    ] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("semantic_fence_gating_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_fidelity_gates_claim_reds_on_any_inflated_level(
+    monkeypatch: pytest.MonkeyPatch, dishonest: str
+) -> None:
+    """AC3: any inflation of FT1 above the reader-derived ``weak`` (with the semantic fence
+    still WARN-only / never-gating) is caught."""
+    _clear_fence_env(monkeypatch)
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_FIDELITY_KEY]["criteria"]["semantic_fence_gating_on"][
+        "level"
+    ] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_fidelity_gates_reader_reads_real_tripwire_constant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The reader is grounded in the REAL ``SEMANTIC_TRIPWIRE['gates_production']`` constant
+    + the close-path is REACHABLE and READ-ONLY (Q2.1 CE1 / Q2.2 CV1 pattern): the live
+    (tripwire=None) reader reports the real constant (False → weak); flipping the real
+    constant via ``monkeypatch.setitem`` flips the reader to gating=True → strong (close-
+    path reached, grounded in the real source); an injectable clean tripwire reads a seeded
+    posture; and calling it NEVER mutates the constant."""
+    from app.specialists._shared.source_fidelity_audit import SEMANTIC_TRIPWIRE
+
+    # Live: reads the REAL constant (False today) → weak.
+    live = semantic_fence_gating_signal()
+    assert live["gates_production"] is False
+    assert level_from_signal("semantic_fence_gating_on", live) == "weak"
+    # Close-path REACHABLE, grounded in the REAL constant: flip gates_production True (auto-
+    # restored by monkeypatch) → the live reader tracks it → strong.
+    monkeypatch.setitem(SEMANTIC_TRIPWIRE, "gates_production", True)
+    on = semantic_fence_gating_signal()
+    assert on["semantic_fence_gates"] is True
+    assert level_from_signal("semantic_fence_gating_on", on) == "strong"
+    monkeypatch.undo()
+    # Restored: the real constant is False again (read-only — the reader never mutated it).
+    assert SEMANTIC_TRIPWIRE["gates_production"] is False
+    assert semantic_fence_gating_signal()["gates_production"] is False
+    # Injectable seeded posture (reachable close-path without touching the real constant).
+    seeded = semantic_fence_gating_signal(tripwire={"gates_production": True})
+    assert level_from_signal("semantic_fence_gating_on", seeded) == "strong"
+    assert SEMANTIC_TRIPWIRE["gates_production"] is False  # still untouched
+
+
+def test_fidelity_ft1_signal_derived_others_are_judgment_with_evidence() -> None:
+    """The honest derivation split: FT1 is ``signal-derived`` (the reader owns the level);
+    FT2/FT3 are ``judgment-with-evidence`` (a real signal block carries the facts, the level
+    is an authored §4.6 judgment). No unverified signal awards a clean level:
+    ``level_from_signal`` returns ``None`` for the judgment-with-evidence keys."""
+    crit = _real_block()["dimensions"][_FIDELITY_KEY]["criteria"]
+    assert crit["semantic_fence_gating_on"]["derivation"] == "signal-derived"
+    for key in ("fidelity_trace_honesty", "fidelity_audit_honesty"):
+        c = crit[key]
+        assert c["derivation"] == "judgment-with-evidence"
+        assert c["level"] == "strong"
+        assert isinstance(c["signal"], dict)
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+        assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+        assert level_from_signal(key, c["signal"]) is None
+
+
+# --------------------------- pin (b) fidelity leak-count + slug identity ----------- #
+
+
+def test_fidelity_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for fidelity_trust: the dimension's ``open_leaks`` == the count of
+    ``fid_leak:``-tagged OPEN entries in the ``## Fidelity-Trust Scorecard Leak Registry`` ==
+    ``len(leaks)`` == 1. A FOURTH per-dimension ``fid_leak:`` namespace (NOT the global DID
+    ``did_leak:`` / cost ``cost_leak:`` / coverage ``cov_leak:`` counts). Anti-drift: strike
+    the ``fid_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_FIDELITY_KEY]
+    count = fidelity_leak_count_signal()["fidelity_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_FIDELITY_KEY}: open_leaks {dim.get('open_leaks')!r} != counted fid_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_FIDELITY_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_fidelity_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for fidelity_trust: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``fid_leak:`` slugs — a slug typo / rename
+    that keeps the count at 1 is caught here, which a count-only reconciliation misses."""
+    dim = _real_block()["dimensions"][_FIDELITY_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_fidelity_leak_slugs()
+
+
+def test_fidelity_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the fidelity machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_FIDELITY_KEY]
+    dim["leaks"][0]["slug"] = "fidelity-trust-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_fidelity_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_four_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 FOUR-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` readers do NOT cross-count, and their slug identity sets are pairwise
+    disjoint. A tag in one namespace must never inflate another dimension's count. (Extends
+    the Q2.2 three-namespace pin to the fourth fidelity namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+    }
+    assert len(slug_sets["did"]) == 5
+    assert len(slug_sets["cost"]) == 1
+    assert len(slug_sets["cov"]) == 1
+    assert len(slug_sets["fid"]) == 1
+    # pairwise disjoint across ALL FOUR namespaces — no slug leaks across namespaces.
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# --------------------------- pin (c) fidelity score-arithmetic -------------------- #
+
+
+def test_fidelity_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for fidelity_trust: score↔level per §4.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§4.5 boundary. 1+3+3 = 7/12 → 58 → C. Doc↔code: the
+    arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_FIDELITY_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 58 and dim["band"] == "C"
+
+
+# =============================================================================== #
+# Story Q3.1 — capability_honesty dimension honesty pins (the 3 registered in
+# _HONESTY_PIN_REGISTRY[_CAPABILITY_KEY]) + their RED-under-seeded proofs. Reuse the SAME
+# pure helpers as the DID/cost/coverage/fidelity pins (_signal_derived_violations, _reconcile,
+# _arithmetic_violations, _machine_block_leak_slugs) — the helpers already iterate EVERY
+# dimension, so coverage is structural. Doc↔code: each compares a machine-block CLAIM against
+# a CODE-computed reality (the reconciliation reader over the REAL bundle_catalog / the
+# deferred-inventory registry / the §5.5 arithmetic rule), never doc↔doc. This is the FIRST
+# Q3 (partial/report-only) sibling: the reconciliation is BOUNDED (curated produced-evidence,
+# the PHASING FLAG); the leak is the CONSERVATIVE workbook tier-lag (governance lane).
+# =============================================================================== #
+
+
+# --------------------------- pin (a) reconciliation-claim (the epic's exact pin) --- #
+
+
+def test_capability_reconciliation_claim_matches_reader() -> None:
+    """Pin (a) for capability_honesty, GREEN today: the signal-derived CH1
+    (``capability_tier_reconciliation_on``) level equals its reader's live output —
+    ``level_from_signal("capability_tier_reconciliation_on", <the reader>())``
+    == ``weak`` (the real posture: ``bundle_catalog`` tiers workbook
+    ``mechanism_only_never_produced`` while a produced artifact demonstrably exists →
+    ``tiers_match_produced_reality`` False → the reconciliation flags the lag). The shared
+    ``_signal_derived_violations`` scan (over every dimension) is also clean."""
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    ch1 = block["dimensions"][_CAPABILITY_KEY]["criteria"][
+        "capability_tier_reconciliation_on"
+    ]
+    derived = level_from_signal(
+        "capability_tier_reconciliation_on", capability_tier_reconciliation_signal()
+    )
+    assert ch1["level"] == derived == "weak"
+
+
+def test_capability_reconciliation_claim_reds_on_dishonest_level() -> None:
+    """AC3 / GL-9 RED-under-seeded-edit — the epic's EXACT reconciliation honesty-pin: bump
+    CH1 to ``strong`` on an in-memory copy WHILE the reconciliation still reports the workbook
+    lag → the pin (a) comparison FAILS (reader still says ``weak``). The real doc is never
+    touched. The score FAILS if it CLAIMS the tiers match produced reality while the
+    reconciliation reports a mismatch."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CAPABILITY_KEY]["criteria"][
+        "capability_tier_reconciliation_on"
+    ]["level"] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any("capability_tier_reconciliation_on" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_capability_reconciliation_claim_reds_on_any_inflated_level(dishonest: str) -> None:
+    """AC3: any inflation of CH1 above the reader-derived ``weak`` (with the workbook tier
+    still lagging produced reality) is caught."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CAPABILITY_KEY]["criteria"][
+        "capability_tier_reconciliation_on"
+    ]["level"] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_capability_reconciliation_reader_reads_real_bundle_catalog() -> None:
+    """The reader is grounded in the REAL ``bundle_catalog`` ``CAPABILITY_TIERS`` + the
+    close-path is REACHABLE and READ-ONLY (Q2.1 CE1 / Q2.2 CV1 / Q2.3 FT1 pattern): the live
+    (tiers=None) reader reads the real registry (workbook lags → weak); a SEEDED
+    party-ratified tier that matches produced reality → coherent → strong; and calling the
+    reader NEVER mutates the real ``CAPABILITY_TIERS``."""
+    from app.marcus.lesson_plan.bundle_catalog import CAPABILITY_TIERS
+
+    before = {name: cap.tier for name, cap in CAPABILITY_TIERS.items()}
+    # Live: reads the REAL registry (workbook mechanism_only_never_produced) → weak.
+    live = capability_tier_reconciliation_signal()
+    assert live["tiers"]["workbook"] == "mechanism_only_never_produced"
+    assert live["tiers_match_produced_reality"] is False
+    assert level_from_signal("capability_tier_reconciliation_on", live) == "weak"
+    # Close-path REACHABLE: a party-ratified tier that matches produced reality → coherent →
+    # strong (the pin never blocks the honest upgrade). Seeded, NOT an edit to the registry.
+    ratified = capability_tier_reconciliation_signal(
+        tiers={**before, "workbook": "proven_wired"}
+    )
+    assert ratified["tiers_match_produced_reality"] is True
+    assert level_from_signal("capability_tier_reconciliation_on", ratified) == "strong"
+    # READ-ONLY: the reader never mutated the real registry.
+    assert {name: cap.tier for name, cap in CAPABILITY_TIERS.items()} == before
+
+
+def test_capability_reconciliation_pin_isolates_evidence_from_raw_tier() -> None:
+    """THE ISOLATING PIN (Q2.3 FT2 lesson applied to Q3.1's central thesis). HOLD the tier at
+    ``mechanism_only_never_produced`` and VARY the produced-evidence axis:
+
+      * evidence ``produced=True``  → a LAG mismatch → ``tiers_match_produced_reality`` False
+        → ``weak`` (the workbook case — the tier lags a produced artifact);
+      * evidence ``produced=False`` → NO mismatch → ``tiers_match_produced_reality`` True →
+        ``strong`` (a genuinely-never-produced component tiered mechanism_only is HONEST).
+
+    A regressed impl that flagged ``tier == mechanism_only_never_produced`` on RAW TIER ALONE
+    (ignoring produced-evidence) would flag BOTH → return ``weak`` for the no-evidence case →
+    this test would RED it. Proves CH1 consulted the REAL reconciliation (declared tier vs
+    produced-evidence), not the raw tier."""
+    held_tier = {"workbook": "mechanism_only_never_produced"}
+    lag = capability_tier_reconciliation_signal(
+        tiers=held_tier, produced_evidence={"workbook": {"produced": True}}
+    )
+    assert lag["lag_mismatches"] and lag["tiers_match_produced_reality"] is False
+    assert level_from_signal("capability_tier_reconciliation_on", lag) == "weak"
+    # SAME tier, evidence flipped to never-produced → NO lag → coherent → strong.
+    honest = capability_tier_reconciliation_signal(
+        tiers=held_tier, produced_evidence={"workbook": {"produced": False}}
+    )
+    assert honest["lag_mismatches"] == [] and honest["tiers_match_produced_reality"] is True
+    assert level_from_signal("capability_tier_reconciliation_on", honest) == "strong"
+
+
+def test_capability_ch1_signal_derived_ch2_judgment_with_evidence() -> None:
+    """The honest derivation split: CH1 is ``signal-derived`` (the reconciliation reader owns
+    the level); CH2 is ``judgment-with-evidence`` (a real signal block carries the
+    no-overstatement fact, the level is an authored §5.6 judgment). No unverified signal awards
+    a clean level: ``level_from_signal`` returns ``None`` for the judgment-with-evidence key."""
+    crit = _real_block()["dimensions"][_CAPABILITY_KEY]["criteria"]
+    assert crit["capability_tier_reconciliation_on"]["derivation"] == "signal-derived"
+    c = crit["capability_no_overstatement"]
+    assert c["derivation"] == "judgment-with-evidence"
+    assert c["level"] == "strong"
+    assert isinstance(c["signal"], dict)
+    assert c["signal"]["reader"].startswith("app.quality.signals.")
+    assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+    assert level_from_signal("capability_no_overstatement", c["signal"]) is None
+
+
+def test_capability_mirrored_tier_constants_match_source() -> None:
+    """Anti-drift + enum-COVERAGE (FIX-2): the hand-mirrored ``CapabilityTier`` constants in
+    ``app/quality/signals.py`` (``_NEVER_PRODUCED_TIERS`` + ``_PROVEN_TIERS``) are tied to
+    ``bundle_catalog.CapabilityTier``'s REAL literal members, so a future tier rename reds THIS
+    test rather than silently mis-reconciling. Crucially it asserts the mirrored sets COVER
+    every enum member — so a NEW/unmirrored tier (the ``shelf`` class FIX-1 restored, or any
+    future addition) reds this rather than sitting unclassified and false-cleaning a lag. This
+    is the "future tier reds the test" guarantee for the GROWTH direction. Mirrors the Q2.3
+    ``_OIA_CATEGORIES`` anti-drift discipline."""
+    import typing
+
+    from app.marcus.lesson_plan.bundle_catalog import CapabilityTier
+    from app.quality.signals import _NEVER_PRODUCED_TIERS, _PROVEN_TIERS
+
+    members = set(typing.get_args(CapabilityTier))
+    # every mirrored tier is a REAL CapabilityTier member (no stale/typo'd mirror).
+    assert members >= _NEVER_PRODUCED_TIERS, (
+        "a _NEVER_PRODUCED_TIERS member is not a real CapabilityTier — update the mirror"
+    )
+    assert members >= _PROVEN_TIERS, (
+        "a _PROVEN_TIERS member is not a real CapabilityTier — update the mirror"
+    )
+    # enum-COVERAGE: every CapabilityTier member is CLASSIFIED by the mirrored sets — a
+    # NEW/unmirrored tier (e.g. shelf) reds HERE rather than silently false-cleaning a lag.
+    unclassified = members - _PROVEN_TIERS - _NEVER_PRODUCED_TIERS
+    assert unclassified == set(), (
+        f"unclassified CapabilityTier member(s): {sorted(unclassified)} — add each to "
+        "_PROVEN_TIERS or _NEVER_PRODUCED_TIERS in app/quality/signals.py"
+    )
+    # the two classes are disjoint (a tier is never both never-produced AND proven).
+    assert _NEVER_PRODUCED_TIERS.isdisjoint(_PROVEN_TIERS)
+
+
+# --------------------------- pin (b) capability leak-count + slug identity --------- #
+
+
+def test_capability_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for capability_honesty: the dimension's ``open_leaks`` == the count of
+    ``cap_leak:``-tagged OPEN entries in the ``## Capability-Honesty Scorecard Leak Registry``
+    == ``len(leaks)`` == 1. A FIFTH per-dimension ``cap_leak:`` namespace (NOT the global DID
+    ``did_leak:`` / cost ``cost_leak:`` / coverage ``cov_leak:`` / fidelity ``fid_leak:``
+    counts). Anti-drift: strike the ``cap_leak:`` tag → count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_CAPABILITY_KEY]
+    count = capability_leak_count_signal()["capability_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_CAPABILITY_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cap_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_CAPABILITY_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_capability_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY (retro AI-Q2) for capability_honesty: SET EQUALITY of the
+    machine-block ``leaks`` slugs vs the registry ``cap_leak:`` slugs — a slug typo / rename
+    that keeps the count at 1 is caught here, which a count-only reconciliation misses."""
+    dim = _real_block()["dimensions"][_CAPABILITY_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_capability_leak_slugs()
+
+
+def test_capability_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the capability machine-block leak slug on a COPY → the identity pin
+    RED (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_CAPABILITY_KEY]
+    dim["leaks"][0]["slug"] = "capability-honesty-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_capability_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_capability_leak_cross_links_did_leak5_no_double_count() -> None:
+    """AC4 cross-link / NO-double-count: the capability ``cap_leak:`` slug and the DID
+    ``did_leak:`` DID-Leak-5 slug are the SAME underlying substrate (the workbook capability
+    tier lag) but DISTINCT slugs in DISJOINT namespaces — counted ONCE each, never
+    double-counted. Both are present (the cross-link is real, not a dangling reference)."""
+    cap_slugs = _registry_capability_leak_slugs()
+    did_slugs = _registry_did_leak_slugs()
+    assert "capability-honesty-workbook-tier-lags-produced-reality" in cap_slugs
+    assert "workbook-capability-tier-honesty-lag" in did_slugs  # DID Leak-5 (the substrate)
+    # distinct slugs, disjoint namespaces → the shared substrate is not double-counted.
+    assert cap_slugs.isdisjoint(did_slugs)
+
+
+def test_five_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 FIVE-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` / ``cap_leak:`` readers do NOT cross-count, and their slug identity sets are
+    pairwise disjoint. A tag in one namespace must never inflate another dimension's count.
+    (Extends the Q2.3 four-namespace pin to the fifth capability namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1 and cap == 1
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+    }
+    assert len(slug_sets["did"]) == 5
+    assert len(slug_sets["cost"]) == 1
+    assert len(slug_sets["cov"]) == 1
+    assert len(slug_sets["fid"]) == 1
+    assert len(slug_sets["cap"]) == 1
+    # pairwise disjoint across ALL FIVE namespaces — no slug leaks across namespaces.
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# --------------------------- pin (c) capability score-arithmetic ------------------ #
+
+
+def test_capability_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for capability_honesty: score↔level per §5.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§5.5 boundary. 1+3 = 4/8 → 50 → C. Doc↔code: the arithmetic
+    RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_CAPABILITY_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 50 and dim["band"] == "C"
+
+
+# =============================================================================== #
+# Story Q3.2 — tracker_coherence dimension honesty pins (the 4 registered in
+# _HONESTY_PIN_REGISTRY[_TRACKER_KEY]) + their RED-under-seeded proofs. This is the ONLY
+# FULLY-COMPUTED dimension (GL-7): BOTH criteria are signal-derived — there is NO
+# hand-authored judgment level. The pins reuse the SAME pure helpers as the siblings
+# (_signal_derived_violations, _reconcile, _arithmetic_violations, _machine_block_leak_slugs)
+# — the helpers already iterate EVERY dimension, so coverage is structural. Doc↔code: each
+# compares a machine-block CLAIM against a CODE-computed reality (the qualify_sources verdict
+# / the doc-drift heuristic / the deferred-inventory registry / the §6.5 arithmetic rule),
+# never doc↔doc. This is the FIRST dimension whose leak count may legitimately be 0.
+# =============================================================================== #
+
+_TC1_KEY = "tracker_divergence_coherence"
+_TC2_KEY = "tracker_doc_drift"
+
+#: level → §1.5 score, for asserting a seeded divergence LOWERS the computed score.
+_LEVEL_ORDER: dict[str, int] = {"absent": 0, "weak": 1, "partial": 2, "strong": 3, "uniform": 4}
+
+
+# --------- fixtures: hermetic coherent vs seeded-divergent status trackers --------- #
+
+
+def _write_coherent_trackers(tmp_path: Path) -> dict[str, Path]:
+    """Three hermetic status-tracker fixtures that reconcile to a CLEAN qualify_sources
+    verdict: sprint-status with an epic + stories that all map to it (no orphans, known
+    statuses, fresh), and the two handoff files carrying MATCHING next-step guidance (no
+    cross-tracker next_step_conflict)."""
+    import datetime as _dt
+
+    today = _dt.datetime.now(tz=_dt.UTC).strftime("%Y-%m-%d")
+    sprint = tmp_path / "sprint-status.yaml"
+    sprint.write_text(
+        f"last_updated: {today}\n"
+        "development_status:\n"
+        "  epic-1: done\n"
+        "  1-1-alpha: done\n"
+        "  1-2-beta: in-progress\n",
+        encoding="utf-8",
+    )
+    next_step = "Dispatch story 1-2-beta then run the coverage gate before audio spend."
+    handoff = tmp_path / "SESSION-HANDOFF.md"
+    handoff.write_text(
+        f"# Handoff\n\n## What Is Next\n\n{next_step}\n\n"
+        "## Unresolved Issues\n\nNone blocking; the trackers are mutually coherent today.\n",
+        encoding="utf-8",
+    )
+    nxt = tmp_path / "next-session-start-here.md"
+    nxt.write_text(
+        f"# Next session\n\n## Immediate Next Action\n\n{next_step}\n\n"
+        "## Key Risks / Unresolved Issues\n\nNone blocking; coherent trackers this session.\n",
+        encoding="utf-8",
+    )
+    return {"sprint": sprint, "handoff": handoff, "next": nxt}
+
+
+def _write_divergent_trackers(tmp_path: Path) -> dict[str, Path]:
+    """Three hermetic status-tracker fixtures that DISAGREE (a seeded three-tracker
+    disagreement → a DEGRADED-or-worse qualify_sources verdict): (1) sprint-status carries an
+    ORPHAN story owned by no epic (tracker 1 internally incoherent); (2)+(3) the two handoff
+    files give CONFLICTING next-step guidance (the cross-tracker next_step_conflict — trackers
+    2 & 3 disagree)."""
+    import datetime as _dt
+
+    today = _dt.datetime.now(tz=_dt.UTC).strftime("%Y-%m-%d")
+    sprint = tmp_path / "sprint-status.yaml"
+    sprint.write_text(
+        f"last_updated: {today}\n"
+        "development_status:\n"
+        "  epic-1: done\n"
+        "  1-1-alpha: done\n"
+        "  zz-9-orphaned-story: done\n",  # matches no epic-* prefix → orphan_stories warn
+        encoding="utf-8",
+    )
+    handoff = tmp_path / "SESSION-HANDOFF.md"
+    handoff.write_text(
+        "# Handoff\n\n## What Is Next\n\nShip the workbook cover assembly and close Epic 40.\n\n"
+        "## Unresolved Issues\n\nThe two handoff surfaces disagree on the next action.\n",
+        encoding="utf-8",
+    )
+    nxt = tmp_path / "next-session-start-here.md"
+    nxt.write_text(
+        "# Next session\n\n## Immediate Next Action\n\nRun the Q3.4 reading-path holdout first.\n\n"
+        "## Key Risks / Unresolved Issues\n\nNext-step guidance conflicts across handoff files.\n",
+        encoding="utf-8",
+    )
+    return {"sprint": sprint, "handoff": handoff, "next": nxt}
+
+
+def _qualify_over_fixtures(monkeypatch: pytest.MonkeyPatch, files: dict[str, Path]) -> dict:
+    """Run the REAL ``progress_map.qualify_sources`` over hermetic fixture trackers by pointing
+    its module-level source paths at the fixtures (read-only — the real trackers are untouched).
+    This exercises the real qualifier end-to-end over seeded trackers (per the story)."""
+    import scripts.utilities.progress_map as pm
+
+    monkeypatch.setattr(pm, "SPRINT_STATUS", files["sprint"])
+    monkeypatch.setattr(pm, "SESSION_HANDOFF", files["handoff"])
+    monkeypatch.setattr(pm, "NEXT_SESSION", files["next"])
+    return pm.qualify_sources()
+
+
+# ---------------- pin (a) GL-7 fully-computed structural pin ---------------- #
+
+
+def test_tracker_coherence_is_fully_computed_no_judgment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Pin (a) / GL-7 (THE point of Q3.2): the tracker_coherence dimension is FULLY-COMPUTED —
+    NO criterion carries a ``judgment`` / ``judgment-with-evidence`` derivation, every criterion
+    is registered in ``_SIGNAL_DERIVED_READERS``, and every level == its reader's live output.
+    A hand-judged coherence level would be believed-green in the very dimension that scores
+    believed-green, so there is nothing to hand-judge here. GREEN today: TC1 == partial (the
+    DEGRADED qualify_sources verdict) and TC2 == partial (no active code↔doc drift)."""
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)
+    _clear_coverage_env(monkeypatch)
+    block = _real_block()
+    dim = block["dimensions"][_TRACKER_KEY]
+    crit = dim["criteria"]
+    # (i) NO judgment field anywhere on this dimension — every criterion is signal-derived.
+    for key, c in crit.items():
+        assert c["derivation"] == "signal-derived", (
+            f"{key}: tracker_coherence is FULLY-COMPUTED — no judgment level allowed "
+            f"(got derivation={c['derivation']!r})"
+        )
+        assert key in _SIGNAL_DERIVED_READERS, f"{key}: no registered signal reader"
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+    # (ii) every level == level_from_signal(reader()) — the fully-computed identity.
+    for key, c in crit.items():
+        derived = level_from_signal(key, _SIGNAL_DERIVED_READERS[key]())
+        assert c["level"] == derived, f"{key}: block level {c['level']!r} != reader {derived!r}"
+    # concrete witnesses (today's honest posture):
+    assert crit[_TC1_KEY]["level"] == level_from_signal(_TC1_KEY, tracker_coherence_signal())
+    assert crit[_TC2_KEY]["level"] == level_from_signal(_TC2_KEY, tracker_doc_drift_signal())
+    assert crit[_TC1_KEY]["level"] == "partial"  # STRUCTURAL DEGRADED verdict today
+    assert crit[_TC2_KEY]["level"] == "weak"  # drift monitoring advisory / never-gates today
+    # and the shared signal-derived scan (over EVERY dimension) is clean.
+    assert _signal_derived_violations(block) == []
+
+
+def test_tracker_fully_computed_pin_reds_on_judgment_derivation() -> None:
+    """Pin (a) RED-under-seeded — the GL-7 anti-hand-judge guard: relabel a tracker_coherence
+    criterion to ``judgment-with-evidence`` (the believed-green hole — a hand-authored level)
+    AND inflate it on an in-memory copy. The doc-driven ``_signal_derived_violations`` half
+    would SKIP it (it no longer self-declares signal-derived), but the CODE-driven
+    ``_mechanical_criteria_violations`` half catches BOTH the de-mechanization and the level
+    lie — a code-known mechanical criterion cannot be relabelled to dodge the pin. Real doc
+    untouched."""
+    block = copy.deepcopy(_real_block())
+    c = block["dimensions"][_TRACKER_KEY]["criteria"][_TC1_KEY]
+    c["derivation"] = "judgment-with-evidence"  # dodge attempt (hand-judge the coherence)
+    c["level"] = "strong"  # the inflation being hidden
+    assert not any(_TC1_KEY in v for v in _signal_derived_violations(block))  # doc-half skips
+    violations = _mechanical_criteria_violations(block)
+    assert any(_TC1_KEY in v and "de-mechanized" in v for v in violations), violations
+    assert any(_TC1_KEY in v and "reader-derived" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "uniform"])
+def test_tracker_coherence_claim_reds_on_inflated_level(dishonest: str) -> None:
+    """Pin (a) RED-under-seeded: bump TC1 to a coherent level (``strong``/``uniform``) on an
+    in-memory copy WHILE qualify_sources reports DEGRADED → ``_signal_derived_violations``
+    FAILS (reader still says ``partial``). The real doc is never touched. The score cannot
+    CLAIM coherence while the trackers actually diverge."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_TRACKER_KEY]["criteria"][_TC1_KEY]["level"] = dishonest
+    violations = _signal_derived_violations(block)
+    assert any(_TC1_KEY in v for v in violations), violations
+
+
+# ---------------- pin (a') GL-7 seeded-divergence pin ---------------- #
+
+
+def test_tracker_seeded_divergence_lowers_score(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Pin (a') / GL-7 seeded-divergence (the epic AC): run the REAL ``qualify_sources`` over a
+    COHERENT three-tracker fixture set vs a seeded THREE-tracker-DISAGREEMENT fixture set, and
+    assert the seeded divergence LOWERS the computed coherence level. The coherent set → CLEAN →
+    ``strong``; the divergent set (an orphan story + conflicting handoff next-steps) → a
+    DEGRADED-or-worse verdict → a strictly LOWER level. RED-under-seeded: a machine block that
+    CLAIMS the coherent ``strong`` while the divergent fixtures diverge → ``_signal_derived_
+    violations`` FAILS. Uses REAL qualify_sources reads over hermetic fixtures — the real
+    trackers are never touched."""
+    coherent_dir = tmp_path / "coherent"
+    coherent_dir.mkdir()
+    coherent = _qualify_over_fixtures(monkeypatch, _write_coherent_trackers(coherent_dir))
+    monkeypatch.undo()
+    divergent_dir = tmp_path / "divergent"
+    divergent_dir.mkdir()
+    divergent = _qualify_over_fixtures(monkeypatch, _write_divergent_trackers(divergent_dir))
+    coherent_level = level_from_signal(_TC1_KEY, tracker_coherence_signal(coherent))
+    divergent_level = level_from_signal(_TC1_KEY, tracker_coherence_signal(divergent))
+    # the coherent set reconciles to CLEAN → strong; the seeded divergence drops it.
+    assert coherent["verdict"] == "CLEAN", coherent
+    assert coherent_level == "strong"
+    assert divergent["verdict"] in {"DEGRADED", "FAIL"}, divergent
+    assert _LEVEL_ORDER[divergent_level] < _LEVEL_ORDER[coherent_level], (
+        f"seeded divergence did not lower the score: {divergent_level} !< {coherent_level}"
+    )
+    # RED-under-seeded: a block CLAIMING the coherent 'strong' while the divergent signal says
+    # otherwise is caught by the fully-computed pin (a) comparison.
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_TRACKER_KEY]["criteria"][_TC1_KEY]["level"] = "strong"
+    assert any(_TC1_KEY in v for v in _signal_derived_violations(block))
+
+
+def test_tracker_coherence_reader_tracks_real_qualify_verdict(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The live (qualify_result=None) reader consults the REAL ``qualify_sources`` end-to-end
+    over hermetic fixtures (monkeypatched module paths) — a CLEAN fixture set → ``strong`` —
+    proving the reader is grounded in the real qualifier, not a hardcoded verdict, AND the
+    close-path to ``strong`` is reachable and READ-ONLY (the real trackers are never touched)."""
+    files = _write_coherent_trackers(tmp_path)
+    import scripts.utilities.progress_map as pm
+
+    monkeypatch.setattr(pm, "SPRINT_STATUS", files["sprint"])
+    monkeypatch.setattr(pm, "SESSION_HANDOFF", files["handoff"])
+    monkeypatch.setattr(pm, "NEXT_SESSION", files["next"])
+    live = tracker_coherence_signal()  # qualify_result=None → real qualify_sources over fixtures
+    assert live["verdict"] == "CLEAN"
+    assert level_from_signal(_TC1_KEY, live) == "strong"
+
+
+# ---------------- pin (b) tracker leak-count + slug identity ---------------- #
+
+
+def test_tracker_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for tracker_coherence: the dimension's ``open_leaks`` == the count of
+    ``trk_leak:``-tagged OPEN entries in the ``## Governance/Tracker-Coherence Scorecard Leak
+    Registry`` == ``len(leaks)`` == 1. A SIXTH per-dimension ``trk_leak:`` namespace. Anti-drift:
+    strike the ``trk_leak:`` tag → count drops to 0, 1 != 0 → RED. This dimension is ALSO the
+    first whose count could legitimately be 0 — ``_reconcile(0, 0)`` handles that cleanly (see
+    the zero-leak-path lock-in in test_tracker_coherence_dimension.py)."""
+    dim = _real_block()["dimensions"][_TRACKER_KEY]
+    count = tracker_leak_count_signal()["tracker_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_TRACKER_KEY}: open_leaks {dim.get('open_leaks')!r} != counted trk_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_TRACKER_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_tracker_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY for tracker_coherence: SET EQUALITY of the machine-block
+    ``leaks`` slugs vs the registry ``trk_leak:`` slugs — a slug typo / rename that keeps the
+    count at 1 is caught here, which a count-only reconciliation misses."""
+    dim = _real_block()["dimensions"][_TRACKER_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_tracker_leak_slugs()
+
+
+def test_tracker_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the tracker machine-block leak slug on a COPY → the identity pin RED
+    (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_TRACKER_KEY]
+    dim["leaks"][0]["slug"] = "tracker-coherence-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_tracker_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 2
+
+
+def test_six_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 SIX-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` / ``cap_leak:`` / ``trk_leak:`` readers do NOT cross-count, and their slug
+    identity sets are pairwise disjoint. A tag in one namespace must never inflate another
+    dimension's count. (Extends the Q3.1 five-namespace pin to the sixth tracker namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    trk = tracker_leak_count_signal()["tracker_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1 and cap == 1 and trk == 2
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+        "trk": _registry_tracker_leak_slugs(),
+    }
+    assert len(slug_sets["trk"]) == 2
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# ---------------- pin (c) tracker score-arithmetic ---------------- #
+
+
+def test_tracker_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for tracker_coherence: score↔level per §6.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§6.5 boundary. TC1 partial(2) + TC2 weak(1) = 3/8 → 38 → D
+    (< 40). Doc↔code: the arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_TRACKER_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 38 and dim["band"] == "D"
+
+
+# =============================================================================== #
+# Story Q3.3 — lane_discipline dimension honesty pins (the 4 registered in
+# _HONESTY_PIN_REGISTRY[_LANE_KEY]) + their RED-under-seeded proofs. LD1 is SIGNAL-DERIVED:
+# the LIVE import-linter kept/broken result via the SHIPPED importlinter.api (GL-16 — NOT the
+# lint-imports CLI). The pins reuse the SAME pure helpers as the siblings
+# (_signal_derived_violations, _reconcile, _arithmetic_violations, _machine_block_leak_slugs) —
+# already iterating EVERY dimension, so coverage is structural. Doc↔code: each compares a
+# machine-block CLAIM against a CODE-computed reality (the import-linter kept/broken result / the
+# deferred-inventory registry / the §7.6 arithmetic rule), never doc↔doc. The dimension carries ONE
+# governance leak (coverage-completeness UNVERIFIED — declared-clean ≠ verified-clean-coverage; the
+# 0-leak PATH stays machinery-tested via synthetic-block tests). The broken-count pin ties the score
+# to the REAL kept/broken count; the isolating pin proves LD1 consults the real broken-count, NOT
+# the declared contract count.
+# =============================================================================== #
+
+_LD1_KEY = "lane_discipline_import_linter"
+
+
+# ---------------- pin (a) broken-count pin ---------------- #
+
+
+def test_lane_discipline_import_linter_claim_matches_reader() -> None:
+    """Pin (a) / the epic's broken-count honesty-pin: LD1's machine-block level ==
+    ``level_from_signal(import_linter_lane_signal())`` — the doc↔reader consistency the honesty
+    ratchet exists to enforce. The score CANNOT claim a level the live reader denies.
+
+    FIX-D (resilient): if the live import-linter genuinely cannot run in this env (e.g. ``app`` not
+    importable / grimp quirk) the reader returns ``unavailable`` → ``pytest.skip`` with a reason,
+    rather than red-ing the ENTIRE honesty-pin suite for reasons unrelated to scorecard honesty.
+    When the reader IS ok, assert ``block level == reader level`` (doc↔reader consistency) — NOT a
+    hard ``== "strong"`` literal (a legitimate future broken contract would then red this pin as a
+    scorecard-honesty failure, which is exactly the wrong signal)."""
+    block = _real_block()
+    dim = block["dimensions"][_LANE_KEY]
+    crit = dim["criteria"][_LD1_KEY]
+    assert crit["derivation"] == "signal-derived"
+    assert crit["signal"]["reader"] == "app.quality.signals.import_linter_lane_signal"
+    live = import_linter_lane_signal()  # the REAL import-linter run (via importlinter.api)
+    if live.get("status") != "ok":
+        pytest.skip(f"import-linter unavailable here (not a honesty failure): {live}")
+    derived = level_from_signal(_LD1_KEY, live)
+    assert crit["level"] == derived, (
+        f"{_LANE_KEY}.{_LD1_KEY}: block level {crit['level']!r} != reader-derived {derived!r}"
+    )
+    # the shared signal-derived scan (over EVERY dimension) is clean doc↔code.
+    assert _signal_derived_violations(block) == []
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_lane_discipline_broken_count_pin_reds_on_claim_clean_while_broken(
+    dishonest: str,
+) -> None:
+    """Pin (a) RED-under-seeded — the broken-count pin: a machine block that CLAIMS a clean/
+    non-weak level while a SEEDED import-linter report reports broken > 0 → the score is dishonest.
+    Here we prove the reader-side directly: a seeded broken>0 report derives ``weak`` (NOT the
+    claimed clean level), so ``_signal_derived_violations`` would FAIL if the block claimed clean.
+    The real doc is never touched."""
+    # A seeded broken>0 report → the reader derives weak (never the claimed clean level).
+    seeded = import_linter_lane_signal({"kept": 15, "broken": 3})
+    assert seeded["status"] == "ok" and seeded["broken_count"] == 3
+    assert level_from_signal(_LD1_KEY, seeded) == "weak"
+    assert level_from_signal(_LD1_KEY, seeded) != dishonest
+    # And a machine-block copy that inflates LD1 above the REAL reader-derived 'strong' is caught
+    # by the shared signal-derived pin (proves the block cannot paint a level the reader denies).
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_LANE_KEY]["criteria"][_LD1_KEY]["level"] = dishonest
+    if dishonest != "strong":  # 'strong' == today's honest level; the others are inflations
+        assert any(_LD1_KEY in v for v in _signal_derived_violations(block))
+
+
+# ---------------- pin (a') isolating pin ---------------- #
+
+
+class _FakeReport:
+    """A hermetic ``importlinter`` ``Report``-like object (``.kept_count`` / ``.broken_count`` —
+    the exact attributes ``create_report`` returns). FIX-H(a): feeding a fake REPORT (not a bare
+    mapping) to the READER proves the reader reads ``create_report``'s real count attributes, i.e.
+    the WIRING, not just the level function's dict handling."""
+
+    def __init__(self, *, kept: int, broken: int, could_not_run: bool = False) -> None:
+        self.kept_count = kept
+        self.broken_count = broken
+        self.could_not_run = could_not_run
+
+
+def test_lane_discipline_isolating_pin_seeded_broken_drops_level() -> None:
+    """Pin (a') / the isolating pin (Q2.3 FT2 lesson): the READER consults the REAL kept/broken
+    RESULT off ``create_report``, NOT the DECLARED contract count. FIX-H(a): the seeded posture is
+    a fake ``Report`` OBJECT (``.kept_count``/``.broken_count``) fed to the reader — the SAME shape
+    ``create_report`` returns — so this exercises the reader WIRING, not merely the level function
+    over a dict. SAME 18-contract total, only the RESULT differs: a raw declared-count reader
+    ('18 contracts declared → strong') would say strong for both; the real reader must drop
+    the broken one below clean. Real doc + real linter untouched for the seeded arm."""
+    clean = import_linter_lane_signal(_FakeReport(kept=18, broken=0))
+    broken = import_linter_lane_signal(_FakeReport(kept=15, broken=3))  # SAME 18 total, 3 broken
+    assert clean["contracts_total"] == broken["contracts_total"] == 18
+    assert clean["broken_count"] == 0 and broken["broken_count"] == 3  # reader read the real counts
+    assert level_from_signal(_LD1_KEY, clean) == "strong"
+    assert level_from_signal(_LD1_KEY, broken) == "weak"  # consulted the REAL broken-count
+    assert _LEVEL_ORDER[level_from_signal(_LD1_KEY, broken)] < _LEVEL_ORDER[
+        level_from_signal(_LD1_KEY, clean)
+    ]
+
+
+def test_lane_discipline_unavailable_never_clean() -> None:
+    """Nothing-checked / errored import-linter → ``unavailable``, NEVER clean (the Q3.1/Q3.2
+    consult-real-result rule). A could_not_run report, a nothing-evaluated (0/0) report, and a
+    malformed count each degrade to ``unavailable`` — never a false-clean ``strong``."""
+    assert import_linter_lane_signal({"kept": 18, "broken": 0, "could_not_run": True})[
+        "status"
+    ] == "unavailable"
+    assert import_linter_lane_signal({"kept": 0, "broken": 0})["status"] == "unavailable"
+    assert import_linter_lane_signal({"kept": 18, "broken": True})["status"] == "unavailable"
+    for bad in (
+        {"status": "unavailable"},
+        {"kept": 0, "broken": 0},
+        {"status": "ok", "kept_count": 18},  # missing broken_count
+    ):
+        assert level_from_signal(_LD1_KEY, bad) != "strong"
+
+
+# ---------------- pin (b) lane leak-count + slug identity (zero-leak) ---------------- #
+
+
+def test_lane_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for lane_discipline: the dimension's ``open_leaks`` == the count of ``lane_leak:``-
+    tagged OPEN entries in the ``## Lane-Discipline Scorecard Leak Registry`` == ``len(leaks)`` ==
+    1 today (the coverage-completeness-UNVERIFIED gap — declared-clean ≠ verified-clean-coverage;
+    the DID Leak-4 owed-check precedent). A SEVENTH per-dimension ``lane_leak:`` namespace."""
+    dim = _real_block()["dimensions"][_LANE_KEY]
+    count = lane_leak_count_signal()["lane_leak_count"]
+    assert count == 1  # the coverage-completeness-unverified governance leak
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_LANE_KEY}: open_leaks {dim.get('open_leaks')!r} != counted lane_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks == 1, (
+            f"{_LANE_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_lane_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY for lane_discipline: SET EQUALITY of the machine-block ``leaks``
+    slugs vs the registry ``lane_leak:`` slugs — both == the single coverage-completeness slug. A
+    slug typo / rename that keeps the count at 1 is caught here (a count-only reconciliation
+    misses it)."""
+    dim = _real_block()["dimensions"][_LANE_KEY]
+    slugs = _machine_block_leak_slugs(dim)
+    assert slugs == _registry_lane_leak_slugs()
+    assert slugs == {"lane-discipline-lane-matrix-contract-coverage-unverified"}
+
+
+def test_lane_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the lane machine-block leak slug on a COPY → the identity pin RED (set
+    inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_LANE_KEY]
+    dim["leaks"][0]["slug"] = "lane-discipline-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_lane_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_seven_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 SEVEN-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` / ``cap_leak:`` / ``trk_leak:`` / ``lane_leak:`` readers do NOT cross-count, and
+    their slug identity sets are pairwise disjoint. A tag in one namespace must never inflate
+    another dimension's count. (Extends the Q3.2 six-namespace pin to the 7th lane namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    trk = tracker_leak_count_signal()["tracker_leak_count"]
+    lane = lane_leak_count_signal()["lane_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1 and cap == 1 and trk == 2 and lane == 1
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+        "trk": _registry_tracker_leak_slugs(),
+        "lane": _registry_lane_leak_slugs(),
+    }
+    assert len(slug_sets["lane"]) == 1
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# ---------------- pin (c) lane score-arithmetic ---------------- #
+
+
+def test_lane_discipline_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for lane_discipline: score↔level per §7.5 + Σscore/max→/100 == headline + band ==
+    the shared §1.5/§7.5 boundary. LD1 strong(3) = 3/4 → 75 → B. Doc↔code: the arithmetic RULE is
+    the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_LANE_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 75 and dim["band"] == "B"
+
+
+# =============================================================================== #
+# Story Q3.4 — calibration dimension honesty pins (the 5 registered in
+# _HONESTY_PIN_REGISTRY[_CALIBRATION_KEY]) + their RED-under-seeded proofs. CAL1 is
+# SIGNAL-DERIVED and REPORT-ONLY: the recorded reading-path calibration posture (the fresh NAIVE
+# holdout is OWED/UNMEASURED → uncalibrated → weak). The pins reuse the SAME pure helpers as the
+# siblings (_signal_derived_violations, _reconcile, _arithmetic_violations, _machine_block_leak
+# _slugs) — already iterating EVERY dimension, so coverage is structural. Doc↔code: each compares a
+# machine-block CLAIM against a CODE-computed reality (the recorded owed-state / the deferred
+# registry / the §8.5 arithmetic rule), never doc↔doc. This is the 8th and FINAL dimension — closing
+# closes the whole scorecard. ⛔ REPORT-ONLY: CAL1 reads the recorded posture; it NEVER measures.
+# =============================================================================== #
+
+_CAL1_KEY = "reading_path_calibration_posture"
+
+#: The never-imply-measured pin's forbidden pattern: a fresh-(naive-)holdout claim followed (within
+#: one sentence — ``[^.\n]`` never crosses a period) by a DECIMAL (``\d*\.\d+``) OR a PERCENT
+#: (``\d+\s*%`` — FIX C, so ``fresh-holdout accuracy: 93%`` no longer evades) number → an IMPLIED
+#: fresh-naive MEASUREMENT. The honest text keeps every number attributed to the built-classifier
+#: RESUBSTITUTION (a period always separates the "fresh naive holdout is OWED" clause from any
+#: figure), so it never matches; seeding "fresh-holdout accuracy: 0.93" / "…: 93%" DOES → RED.
+#:
+#: ⚠️ DELIBERATELY NARROW (do NOT broaden): the anchor is ``fresh`` (required) → optional ``naive`` →
+#: ``holdout`` → same-sentence → a decimal-or-percent AFTER it. Bare INTEGERS, a number BEFORE the
+#: holdout token, and a ``held-out`` anchor are ALL excluded ON PURPOSE — the honest text co-locates
+#: exactly those: "primary-key 0.071 (1/14) on the CONSUMED-14 held-out" (decimal BEFORE 'held-out',
+#: and 'held-out' ≠ 'holdout'), "reading-path-fresh-naive-holdout-pre-trial = DID Leak-4" (bare
+#: integer 4 with no period), and §1's "escalation 0.93 on the same run". Anchoring on any of those
+#: would RED the honest text (a regression, not a fix).
+_FRESH_NAIVE_NUMBER_RE = re.compile(
+    r"fresh[\s_-]*(?:naive[\s_-]*)?holdout[^.\n]{0,60}?\b(?:\d*\.\d+|\d+\s*%)", re.IGNORECASE
+)
+
+
+def _calibration_section_prose() -> str:
+    """FIX B — extract the §8 ``## Dimension 8 — Calibration`` PROSE section (the DECLARED
+    AUTHORITY: "The prose above is the authority; this mirrors the headline numbers") from
+    ``docs/quality/project-quality-scorecard.md`` — from that heading to the next top-level
+    ``## Dimension`` heading or ``---`` horizontal rule (whichever comes first). The machine-block
+    yaml mirror below the ``---`` is NOT included here (it is scanned separately via
+    :func:`_calibration_dimension_text`). The never-imply-measured guard scans this so the AUTHORITY
+    prose — not only the machine-block mirror — is held honest."""
+    doc = (_repo_root() / "docs/quality/project-quality-scorecard.md").read_text(encoding="utf-8")
+    lines = doc.splitlines()
+    start = next((i for i, ln in enumerate(lines) if ln.startswith("## Dimension 8")), None)
+    if start is None:
+        return ""
+    end = len(lines)
+    for j in range(start + 1, len(lines)):
+        if lines[j].startswith("## Dimension") or lines[j].strip() == "---":
+            end = j
+            break
+    return "\n".join(lines[start:end])
+
+
+def _never_imply_measured_violation(
+    scanned: list[tuple[str, str]], *, measured: bool
+) -> str | None:
+    """FIX A/B — the never-imply-measured guard as a PURE, owed-state-gated function. While the
+    fresh-naive-holdout owed-state is NOT measured (``measured=False`` — today), a
+    fresh-(naive-)holdout figure (decimal OR percent, within one sentence) is FORBIDDEN in ANY
+    ``(label, text)`` in ``scanned`` (the machine-block dim AND the §8 prose AUTHORITY). Once the
+    owed epic lands and a fresh-naive-holdout MEASUREMENT is recorded (``measured=True``), an HONEST
+    measured figure is ALLOWED — the guard must NEVER block the honest close-path (consistent with
+    the isolating + uncalibrated-not-passing pins, which already gate on the owed-state). Returns
+    the first offending ``"label: match"`` or ``None``."""
+    if measured:
+        return None
+    for label, text in scanned:
+        m = _FRESH_NAIVE_NUMBER_RE.search(text)
+        if m:
+            return f"{label}: {m.group(0)!r}"
+    return None
+
+
+def _calibration_dimension_text(dim: dict[str, Any]) -> str:
+    """Flatten EVERY string value in the calibration machine-block dimension (band_note + each
+    criterion's signal fact/caveat + evidence_ref + leak slugs) into one blob for the
+    never-imply-measured scan. Doc↔code: the scan is over the real machine-block dimension."""
+    parts: list[str] = []
+
+    def _collect(v: Any) -> None:
+        if isinstance(v, str):
+            parts.append(v)
+        elif isinstance(v, dict):
+            for x in v.values():
+                _collect(x)
+        elif isinstance(v, (list, tuple)):
+            for x in v:
+                _collect(x)
+
+    _collect(dim)
+    return "\n".join(parts)
+
+
+# --------------------------- pin (a) uncalibrated-not-passing (the epic's exact pin) --- #
+
+
+def test_calibration_uncalibrated_not_passing_claim_matches_reader() -> None:
+    """Pin (a) for calibration, GREEN today: the signal-derived CAL1
+    (``reading_path_calibration_posture``) level equals its reader's live output —
+    ``level_from_signal("reading_path_calibration_posture", reading_path_calibration_signal())``
+    == ``weak`` (the real recorded posture: the fresh NAIVE holdout is OWED/UNMEASURED →
+    ``reading_path_calibrated`` False → uncalibrated). The shared ``_signal_derived_violations``
+    scan (over every dimension) is also clean."""
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    cal1 = block["dimensions"][_CALIBRATION_KEY]["criteria"][_CAL1_KEY]
+    derived = level_from_signal(_CAL1_KEY, reading_path_calibration_signal())
+    assert cal1["level"] == derived == "weak"
+
+
+def test_calibration_uncalibrated_claim_reds_on_dishonest_level() -> None:
+    """AC3 / GL-9 RED-under-seeded-edit — the epic's EXACT uncalibrated-not-passing pin: bump CAL1
+    to ``strong`` (claim CALIBRATED) on an in-memory copy WHILE the fresh holdout is still owed →
+    the pin (a) comparison FAILS (reader still says ``weak``). The real doc is never touched. The
+    score FAILS if it claims calibrated while the fresh-naive holdout is owed."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CALIBRATION_KEY]["criteria"][_CAL1_KEY]["level"] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any(_CAL1_KEY in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_calibration_claim_reds_on_any_inflated_level(dishonest: str) -> None:
+    """AC3: any inflation of CAL1 above the reader-derived ``weak`` (with the fresh-naive holdout
+    still owed) is caught — an owed/unmeasured neck can never claim a non-weak calibrated level."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CALIBRATION_KEY]["criteria"][_CAL1_KEY]["level"] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_calibration_reader_reads_recorded_posture_close_path_reachable() -> None:
+    """The reader is grounded in the REAL recorded posture + the close-path is REACHABLE and
+    REPORT-ONLY (the Q3.1 CH1 pattern): the live (posture=None) reader reads the recorded posture
+    (fresh holdout OWED → weak); a SEEDED posture where a fresh-naive-holdout measurement EXISTS →
+    calibrated → strong (the pin never blocks the honest upgrade). No measurement is ever run."""
+    live = reading_path_calibration_signal()
+    assert live["fresh_naive_holdout_measured"] is False
+    assert live["reading_path_calibrated"] is False
+    assert live["calibration_status"] == "uncalibrated"
+    assert level_from_signal(_CAL1_KEY, live) == "weak"
+    # Close-path REACHABLE (report-only): a recorded fresh-naive-holdout measurement → calibrated →
+    # strong. Seeded posture, NOT a measurement.
+    recorded = reading_path_calibration_signal({"fresh_naive_holdout_measured": True})
+    assert recorded["reading_path_calibrated"] is True
+    assert level_from_signal(_CAL1_KEY, recorded) == "strong"
+
+
+def test_calibration_isolating_pin_owed_state_not_resubstitution() -> None:
+    """THE ISOLATING PIN (Q2.3 FT2 / Q3.1 CH1 lesson applied to Q3.4's central thesis). HOLD the
+    resubstitution fact PRESENT and VARY the owed-state axis:
+
+      * fresh_naive_holdout_measured False (+ resubstitution present) → uncalibrated → ``weak``
+        (today — the resubstitution number does NOT make it calibrated);
+      * fresh_naive_holdout_measured True  (+ resubstitution present) → calibrated → ``strong``.
+
+    A regressed impl that awarded ``strong`` because a resubstitution NUMBER is present would return
+    ``strong`` for BOTH → this test would RED the owed arm (it expects ``weak``). Proves CAL1
+    consulted the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the presence
+    of the resubstitution number — resubstitution ≠ calibrated."""
+    resub = {"subject": "built-classifier (S1/S2/S3)", "substrate": "fresh@2026-06-23",
+             "primary_key_top1": 1 / 14, "measurement_kind": "resubstitution/upper-bound"}
+    owed = reading_path_calibration_signal(
+        {"fresh_naive_holdout_measured": False, "resubstitution": resub}
+    )
+    assert owed["calibration_status"] == "uncalibrated"
+    # a resubstitution number does NOT calibrate:
+    assert level_from_signal(_CAL1_KEY, owed) == "weak"
+    # SAME resubstitution fact present, owed-state flipped to measured → calibrated → strong.
+    measured = reading_path_calibration_signal(
+        {"fresh_naive_holdout_measured": True, "resubstitution": resub}
+    )
+    assert measured["calibration_status"] == "calibrated"
+    assert level_from_signal(_CAL1_KEY, measured) == "strong"
+    assert _LEVEL_ORDER[level_from_signal(_CAL1_KEY, owed)] < _LEVEL_ORDER[
+        level_from_signal(_CAL1_KEY, measured)
+    ]
+
+
+# --------------------------- pin (a'') never-imply-measured (the signature pin) --------- #
+
+
+def test_calibration_never_imply_measured() -> None:
+    """AC3(a) — the epic's SIGNATURE honesty pin, GREEN today: the calibration dimension's text
+    (band_note + each criterion's signal fact/caveat + evidence_ref) MUST (i) carry the OWED/
+    unmeasured framing, (ii) carry Mary's ``(subject=built-classifier, substrate=fresh@date)``
+    citation on the resubstitution number, and (iii) NEVER imply a fresh-naive holdout number was
+    measured (no fresh-(naive-)holdout figure). Doc↔code: the scan is over the REAL block."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    text = _calibration_dimension_text(dim)
+    low = text.lower()
+    # (i) OWED/unmeasured framing present.
+    assert "owed" in low, "calibration text must carry the OWED framing"
+    assert ("unmeasured" in low or "not been measured" in low or "not measured" in low), (
+        "calibration text must state the fresh-naive holdout is UNMEASURED"
+    )
+    # (ii) Mary's (subject, substrate@date) citation on the resubstitution number.
+    assert "subject=built-classifier" in low, "missing Mary subject= citation"
+    assert "substrate=fresh@2026-06-23" in low, "missing Mary substrate@date citation"
+    assert "resubstitution" in low, "the measured number must be labelled resubstitution"
+    # (iii) NEVER a fresh-naive holdout figure (the never-imply-measured guarantee) — OWED-STATE-
+    # GATED (FIX A) and scanning BOTH the machine-block dim AND the §8 prose AUTHORITY (FIX B).
+    # While the fresh-naive holdout is OWED (today: fresh_naive_holdout_measured is not True) no
+    # fresh-naive figure may appear; once the owed epic records a measurement, an HONEST figure is
+    # ALLOWED (the guard must not block the honest close-path — same owed-state gating the isolating
+    # + uncalibrated-not-passing pins already use).
+    measured = reading_path_calibration_signal().get("fresh_naive_holdout_measured") is True
+    violation = _never_imply_measured_violation(
+        [("machine-block", text), ("§8 prose", _calibration_section_prose())],
+        measured=measured,
+    )
+    assert violation is None, (
+        f"calibration text implies a fresh-naive holdout number was measured while the owed epic "
+        f"is unlanded ({violation})"
+    )
+
+
+def test_calibration_never_imply_measured_reds_on_seeded_fresh_number() -> None:
+    """AC3(a) RED-under-seeded-edit — the never-imply-measured pin's proof: seed the calibration
+    band_note on a COPY to imply a fresh-naive number was measured ("fresh-holdout accuracy: 0.93")
+    → the negative assertion RED (the forbidden pattern matches). The real doc is never touched.
+    This is the epic's signature guard: the dimension that REPORTS calibration owed must NEVER
+    fabricate the very number it reports as owed."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_CALIBRATION_KEY]
+    dim["band_note"] = dim.get("band_note", "") + " fresh-holdout accuracy: 0.93"
+    text = _calibration_dimension_text(dim)
+    assert _FRESH_NAIVE_NUMBER_RE.search(text), "seeded fresh-naive figure must match the guard"
+
+
+def test_calibration_never_imply_measured_is_owed_state_gated() -> None:
+    """FIX A (Edge MED) RED-first — the never-imply-measured guard is OWED-STATE-GATED, not
+    unconditional. A fresh-naive figure seeded into the calibration text is FORBIDDEN while the
+    fresh-naive holdout is OWED (``measured=False`` — today's live state) but ALLOWED once a
+    fresh-naive-holdout MEASUREMENT is recorded (``measured=True`` — the honest close-path the owed
+    epic reaches). This mirrors the isolating + uncalibrated-not-passing pins, which already gate on
+    the owed-state; an UNCONDITIONAL guard would RED an HONEST measured fresh-naive number written
+    into the band_note once the owed epic lands — blocking the honest close-path. The seam is the
+    pure ``_never_imply_measured_violation`` helper the real pin delegates to."""
+    seeded = [("machine-block", "band_note fresh-holdout accuracy: 0.93")]
+    # OWED (today): the fresh-naive figure is FORBIDDEN → a violation is reported.
+    assert _never_imply_measured_violation(seeded, measured=False) is not None
+    # MEASURED (the recorded close-path): the honest figure is ALLOWED → NO violation (gated).
+    assert _never_imply_measured_violation(seeded, measured=True) is None
+    # The live owed-state is False today → the guard is STILL enforced today (behavior unchanged).
+    assert reading_path_calibration_signal()["fresh_naive_holdout_measured"] is False
+
+
+def test_calibration_never_imply_measured_scans_section_prose() -> None:
+    """FIX B (Blind MED) RED-first — the never-imply-measured guard scans the §8 markdown PROSE (the
+    DECLARED AUTHORITY, "the prose above is the authority"), not only the machine-block mirror. A
+    seeded COPY of the extracted prose with a fabricated fresh-naive figure is caught (proving the
+    authority is now scanned); the REAL §8 prose passes GREEN (no honest fresh-(naive-)holdout
+    figure co-located with a number in-sentence)."""
+    prose = _calibration_section_prose()
+    assert prose and prose.lstrip().startswith("## Dimension 8"), "must extract §8 section prose"
+    # The REAL §8 prose is honest → GREEN (no fresh-(naive-)holdout figure in-sentence).
+    hit = _FRESH_NAIVE_NUMBER_RE.search(prose)
+    assert hit is None, f"real §8 prose implies a fresh-naive holdout number was measured: {hit!r}"
+    # A seeded COPY of the authority prose → caught (the authority IS scanned).
+    seeded = prose + '\n\nseeded: fresh-holdout accuracy: 0.93'
+    assert _FRESH_NAIVE_NUMBER_RE.search(seeded) is not None
+
+
+def test_calibration_never_imply_measured_regex_covers_percent_form() -> None:
+    """FIX C (Blind/Edge/Acc — conservative) RED-first — the guard also catches a
+    fresh-(naive-)holdout token followed within ONE sentence by a PERCENT figure (``93%``,
+    ``93 %``), not only a decimal, so ``fresh-holdout accuracy: 93%`` can no longer evade. Bare
+    integers and number-BEFORE-holdout stay DELIBERATELY unmatched — the honest text co-locates them
+    (``... held-out ... 0.071`` has the number BEFORE 'held-out'; ``holdout-pre-trial = DID Leak-4``
+    is a bare integer with no period) — so anchoring on those would RED the honest text."""
+    # percent-form now matched:
+    assert _FRESH_NAIVE_NUMBER_RE.search("fresh naive holdout accuracy 93%") is not None
+    assert _FRESH_NAIVE_NUMBER_RE.search("fresh-holdout accuracy: 93 %") is not None
+    # decimal-form still matched:
+    assert _FRESH_NAIVE_NUMBER_RE.search("fresh-holdout accuracy: 0.93") is not None
+    # landmines stay UNMATCHED (matching them would RED the honest text):
+    assert _FRESH_NAIVE_NUMBER_RE.search("holdout-pre-trial = DID Leak-4") is None
+    number_before_heldout = "primary-key 0.071 (1/14) on the CONSUMED-14 held-out"
+    assert _FRESH_NAIVE_NUMBER_RE.search(number_before_heldout) is None
+
+
+def test_calibration_resubstitution_number_is_not_a_generalization() -> None:
+    """The reader surfaces the resubstitution fact as LABELED evidence of what WAS run — clearly
+    ``measurement_kind='resubstitution/upper-bound'`` + ``is_generalization=False`` — NEVER a
+    generalization and NEVER a fresh-naive number. A consumer can therefore never misread it as a
+    calibrated/fresh figure."""
+    resub = reading_path_calibration_signal()["resubstitution_evidence"]
+    assert resub["is_generalization"] is False
+    assert resub["measurement_kind"] == "resubstitution/upper-bound"
+    assert resub["subject"] == "built-classifier (S1/S2/S3)"
+    assert resub["substrate"] == "fresh@2026-06-23"
+
+
+def test_calibration_cal1_signal_derived() -> None:
+    """The honest derivation: CAL1 is ``signal-derived`` (the recorded-posture reader owns the
+    level) with a real reader + evidence_ref; ``level_from_signal`` returns a real level (weak)."""
+    crit = _real_block()["dimensions"][_CALIBRATION_KEY]["criteria"]
+    assert set(crit) == {_CAL1_KEY}
+    c = crit[_CAL1_KEY]
+    assert c["derivation"] == "signal-derived"
+    assert c["signal"]["reader"] == "app.quality.signals.reading_path_calibration_signal"
+    assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+    assert level_from_signal(_CAL1_KEY, reading_path_calibration_signal()) == "weak"
+
+
+# --------------------------- pin (b) calibration leak-count + slug identity --------- #
+
+
+def test_calibration_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for calibration: the dimension's ``open_leaks`` == the count of ``cal_leak:``-tagged
+    OPEN entries in the ``## Calibration Scorecard Leak Registry`` == ``len(leaks)`` == 1. An EIGHTH
+    per-dimension ``cal_leak:`` namespace (NOT the other seven). Anti-drift: strike the tag →
+    count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    count = calibration_leak_count_signal()["calibration_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_CALIBRATION_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cal_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks == 1, (
+            f"{_CALIBRATION_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_calibration_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY for calibration: SET EQUALITY of the machine-block ``leaks`` slugs
+    vs the registry ``cal_leak:`` slugs — both == the single reading-path-OWED slug. A slug typo /
+    rename that keeps the count at 1 is caught here (a count-only reconciliation misses it)."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    slugs = _machine_block_leak_slugs(dim)
+    assert slugs == _registry_calibration_leak_slugs()
+    assert slugs == {"calibration-reading-path-fresh-naive-holdout-owed"}
+
+
+def test_calibration_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the calibration machine-block leak slug on a COPY → the identity pin RED
+    (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_CALIBRATION_KEY]
+    dim["leaks"][0]["slug"] = "calibration-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_calibration_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_calibration_leak_cross_links_did_leak4_no_double_count() -> None:
+    """AC4 cross-link / NO-double-count: the calibration ``cal_leak:`` slug and the DID
+    ``did_leak:`` DID-Leak-4 slug are the SAME underlying substrate (the reading-path holdout OWED)
+    but DISTINCT slugs in DISJOINT namespaces — counted ONCE each, never double-counted. Both are
+    present (the cross-link is real, not a dangling reference). This is the Q2.3/Q3.1 precedent."""
+    cal_slugs = _registry_calibration_leak_slugs()
+    did_slugs = _registry_did_leak_slugs()
+    assert "calibration-reading-path-fresh-naive-holdout-owed" in cal_slugs
+    assert "reading-path-fresh-naive-holdout-pre-trial" in did_slugs  # DID Leak-4 (the substrate)
+    # distinct slugs, disjoint namespaces → the shared substrate is not double-counted.
+    assert cal_slugs.isdisjoint(did_slugs)
+
+
+def test_eight_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 EIGHT-namespace disjointness (CLOSES the scorecard): the ``did_leak:`` / ``cost_leak:`` /
+    ``cov_leak:`` / ``fid_leak:`` / ``cap_leak:`` / ``trk_leak:`` / ``lane_leak:`` / ``cal_leak:``
+    readers do NOT cross-count, and their slug identity sets are pairwise disjoint. A tag in one
+    namespace must never inflate another dimension's count. (Extends the Q3.3 seven-namespace pin to
+    the 8th calibration namespace — the final dimension.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    trk = tracker_leak_count_signal()["tracker_leak_count"]
+    lane = lane_leak_count_signal()["lane_leak_count"]
+    cal = calibration_leak_count_signal()["calibration_leak_count"]
+    assert (did, cost, cov, fid, cap, trk, lane, cal) == (5, 1, 1, 1, 1, 2, 1, 1)
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+        "trk": _registry_tracker_leak_slugs(),
+        "lane": _registry_lane_leak_slugs(),
+        "cal": _registry_calibration_leak_slugs(),
+    }
+    assert len(slug_sets["cal"]) == 1
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# --------------------------- pin (c) calibration score-arithmetic ------------------ #
+
+
+def test_calibration_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for calibration: score↔level per §8.5 + Σscore/max→/100 == headline + band == the
+    shared §1.5/§8.5 boundary. CAL1 weak(1) = 1/4 → 25 → D. Doc↔code: the arithmetic RULE is the
+    code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 25 and dim["band"] == "D"

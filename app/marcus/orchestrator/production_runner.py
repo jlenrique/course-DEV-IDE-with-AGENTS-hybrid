@@ -331,6 +331,80 @@ def _emit_operator_surface(envelope: ProductionTrialEnvelope, runs_root: Path) -
         LOGGER.exception("operator-surface emit wrapper failed — swallowed")
 
 
+def _read_fence_state_from_run_summary(run_summary_path: Path) -> Any:
+    """Read THIS run's OWN ``fence_state`` back from the just-written
+    ``run_summary.yaml`` (QLW-6 compute-once — do NOT recompute a second, possibly
+    divergent ``_build_fence_state``). Fail-soft: a missing/corrupt/absent summary
+    yields ``None`` so the projector renders its honest per-run marker."""
+    try:
+        data = yaml.safe_load(Path(run_summary_path).read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — a fence read must never break the walk
+        return None
+    return data.get("fence_state") if isinstance(data, dict) else None
+
+
+def _emit_quality_final_report(
+    *, trial_id: UUID, runs_root: Path, run_summary_path: Path
+) -> None:
+    """Story Q4.2 — render the deterministic Quality Scorecard final report to
+    ``<run_dir>/quality-final-report.md`` at genuine terminal completion.
+
+    Called ONLY from the two terminal-completion blocks (both node walks — the
+    start walk's ``run_production_trial`` completion and ``_continue_production_walk``
+    completion), NEVER at the G1 start-walk pause / reject / resume-pause (QLW-3).
+    WIRING ONLY (GL-15): reuses the already-built, already-tested, already-fail-soft
+    projector ``render_scorecard_final_report`` verbatim over the COMMITTED scorecard
+    block (QLW-4 — never ``app.quality.signals.*`` live recompute) and this run's OWN
+    ``fence_state`` (QLW-6 — read back from ``run_summary.yaml``, no recompute).
+
+    Fail-soft (QLW-8): mirrors ``_emit_operator_surface`` — the whole body is
+    exception-swallowed so a missing/degraded scorecard, a corrupt run dir, or a
+    raising projector NEVER perturbs the walk; the projector still renders honest
+    ``unavailable``/``undetected`` markers rather than a fabricated Band.
+
+    Idempotent for the SAME inputs (same committed block + same trend-ledger state):
+    the atomic write below overwrites clean (no double-append) and the projector is
+    wall-clock-free, so two emits over one run dir are byte-identical. NOTE (honest
+    framing — not overstated): a LATER rewind / re-run of the same ``trial_id`` reads
+    the append-only trend ledger via ``history_path()``, whose growth can change the
+    rendered trend arrow; the report therefore reflects the trend ledger's emit-time
+    state BY DESIGN and is NOT guaranteed byte-identical across time. ``app.quality``
+    is imported locally (deferred) so the module stays a clean importable leaf.
+    """
+    try:
+        # Deferred local import: the runner may import app.quality; keep app.quality
+        # a clean leaf (no module-scope app.* added to it).
+        from app.quality.history import history_path
+        from app.quality.report import render_scorecard_final_report
+        from app.quality.scorecard import read_scorecard_block
+
+        content = render_scorecard_final_report(
+            block=read_scorecard_block(),
+            history=history_path(),
+            fence_state=_read_fence_state_from_run_summary(run_summary_path),
+        )
+        path = _run_dir(trial_id, runs_root) / "quality-final-report.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        # Atomic write (FIX-1): stage into a temp in the SAME directory, then
+        # os.replace (atomic on the same filesystem, incl. Windows). A mid-write
+        # interruption (disk full / kill / power loss) can only ever leave a stale
+        # temp — NEVER a TRUNCATED ``quality-final-report.md`` that reads as a
+        # complete report (this file feeds the R2 equality witness). newline="\n"
+        # on the temp write keeps the bytes IDENTICAL to the projector output — the
+        # hook adds/drops nothing (QLW-2/AC5).
+        temporary = path.with_suffix(".md.tmp")
+        try:
+            temporary.write_text(content, encoding="utf-8", newline="\n")
+            os.replace(temporary, path)
+        finally:
+            # Best-effort cleanup of a stale temp on any failure (still fail-soft);
+            # after a successful os.replace the temp no longer exists (renamed).
+            if temporary.exists():
+                temporary.unlink(missing_ok=True)
+    except Exception:  # noqa: BLE001 — emission must never break the walk (QLW-8)
+        LOGGER.exception("quality-final-report emit wrapper failed — swallowed")
+
+
 def _emit_operator_surface_steps(
     trial_id: UUID, runs_root: Path, manifest: Any, walk_index: int
 ) -> None:
@@ -361,6 +435,13 @@ def _append_operator_surface_trace(
 # --------------------------------------------------------------------------
 
 
+#: Mid-write guard sentinel: while a cost-report write is in flight this file
+#: exists alongside a half-written ``cost-report.json``. ONE shared constant so a
+#: future rename can't desync the two readers (``_operator_surface_cost_reading``
+#: + ``_fence_cost_posture``) and leave one reading a half-written report (FIX-F).
+_COST_REPORT_TRANSACTION_FILENAME = "cost-report-transaction.v1.json"
+
+
 def _operator_surface_cost_reading(
     trial_id: UUID | str, runs_root: Path, run_state: Any
 ) -> tuple[float | None, str]:
@@ -373,7 +454,7 @@ def _operator_surface_cost_reading(
     try:
         run_dir = runs_root / str(trial_id)
         path = run_dir / "cost-report.json"
-        transaction = run_dir / "cost-report-transaction.v1.json"
+        transaction = run_dir / _COST_REPORT_TRANSACTION_FILENAME
         if path.is_file() and not transaction.exists():
             raw_report = path.read_text(encoding="utf-8")
             data = json.loads(raw_report)
@@ -1399,6 +1480,156 @@ def _conversation_chain_digest(*, trial_id: UUID, runs_root: Path) -> str:
     return "0" * 64
 
 
+#: GL-4 (consensus rule #1): the run-summary carries a STATIC breadcrumb POINTER
+#: to the project-level scorecard doc — never a per-run doc parse. Per-run facts
+#: derive ONLY from run signals (see ``_build_fence_state``). This decouples the
+#: runtime run-summary from the governance doc entirely (the app/quality reader +
+#: CLI keep ``did_score_ref`` for their own use).
+_QUALITY_SCORECARD_BREADCRUMB: dict[str, str] = {
+    "source": "docs/quality/project-quality-scorecard.md",
+    "note": "project-level-not-this-run",
+}
+
+
+def _detect_silent_bypass_events(signal: int | None) -> int | str:
+    """Honest ``silent_bypass_events`` emission (GL-8) — NEVER a hardcoded ``0``.
+
+    A real detected count is emitted when a caller supplies an explicit signal
+    (seed a synthetic bypass → the value is reported; a genuine ``0`` only when a
+    detector actually ran and found none). Absent a signal the honest sentinel
+    ``"undetected"`` is emitted: "we didn't check" beats a false clean.
+
+    Design (per the party's GL-8 guidance): Epic-41 made the silent-specialist-skip
+    class fail loud in BOTH walks (:class:`GateBypassError`), so that class is
+    zero-by-construction on any run that *completed* to a run_summary. But other
+    bypass classes (e.g. the Path-Z §05/§05B skip) have no run-scoped counter
+    today, so the honest *aggregate* emission is ``"undetected"`` unless a real
+    ledger is wired — a completed run cannot honestly claim ``0`` across all
+    classes.
+    """
+    if isinstance(signal, bool):  # bool is an int subclass — never a real count
+        return "undetected"
+    if isinstance(signal, int):
+        # A negative "count" is never honest — floor it to the sentinel (FIX-A).
+        return signal if signal >= 0 else "undetected"
+    return "undetected"
+
+
+def _fence_fences_enabled() -> dict[str, bool | str]:
+    """Per-run fence posture (GL-8), fail-soft PER FIELD (Q1.1 learning / AC6).
+
+    Each gate read is guarded independently so a failure in one degrades exactly
+    one fence to the honest ``"unavailable"`` marker, never the whole dict. A gate
+    that RETURNS a non-``bool`` (e.g. ``None`` / a string) is ALSO degraded rather
+    than silently ``bool()``-coerced (FIX-B): ``None``→``False`` would report a
+    fence definitely-OFF when the truth is actually unknown.
+    """
+    fidelity: bool | str
+    try:
+        # Deferred local import — irene.graph is heavy; keep the module-level
+        # import graph (import-linter) unchanged.
+        from app.specialists.irene.graph import narration_figure_fidelity_active
+
+        _v = narration_figure_fidelity_active()
+        fidelity = _v if isinstance(_v, bool) else "unavailable"
+    except Exception:  # noqa: BLE001 — a fence read must never break a run
+        fidelity = "unavailable"
+
+    coverage: bool | str
+    try:
+        _v = coverage_gate_wiring.coverage_gate_active()
+        coverage = _v if isinstance(_v, bool) else "unavailable"
+    except Exception:  # noqa: BLE001
+        coverage = "unavailable"
+
+    udac: bool | str
+    try:
+        _v = udac_wiring.udac_active()
+        udac = _v if isinstance(_v, bool) else "unavailable"
+    except Exception:  # noqa: BLE001
+        udac = "unavailable"
+
+    return {"fidelity": fidelity, "coverage": coverage, "udac": udac}
+
+
+def _fence_hil_allowlist_empty() -> bool | str:
+    """``True`` iff the HIL known-unrendered allowlist is empty; fail-soft marker."""
+    try:
+        # Deferred local import — the projector module is heavy.
+        from app.marcus.cli.hil_tabular_projector import KNOWN_UNRENDERED_ALLOWLIST
+
+        return len(KNOWN_UNRENDERED_ALLOWLIST) == 0
+    except Exception:  # noqa: BLE001
+        return "unavailable"
+
+
+def _fence_cost_posture(trial_id: UUID, runs_root: Path) -> str:
+    """Honest ``cost_posture`` from the SAME persisted economics artifact that
+    :func:`_operator_surface_cost_reading` reads (GL-15 — reuse, no parallel
+    plumbing).
+
+    Surfaces :attr:`TrialEconomicsReport.cost_posture` verbatim when the run's
+    ``cost-report.json`` resolves; ``"unavailable"`` when it does not — never
+    fabricated. Mirrors the seam's mid-write guard (skip while a cost-report
+    transaction is in flight).
+    """
+    try:
+        run_dir = runs_root / str(trial_id)
+        path = run_dir / "cost-report.json"
+        transaction = run_dir / _COST_REPORT_TRANSACTION_FILENAME
+        if path.is_file() and not transaction.exists():
+            validated = TrialEconomicsReport.model_validate_json(
+                path.read_text(encoding="utf-8")
+            )
+            posture = validated.cost_posture
+            if isinstance(posture, str) and posture:
+                return posture
+        return "unavailable"
+    except Exception:  # noqa: BLE001 — an economics read must never break a run
+        return "unavailable"
+
+
+def _build_fence_state(
+    *,
+    trial_id: UUID,
+    runs_root: Path,
+    pack_hash_binding: str,
+    conversation_chain_digest: str,
+    silent_bypass_signal: int | None,
+) -> dict[str, Any]:
+    """Per-run mechanical fence FACTS for ``run_summary.yaml`` (GL-3/GL-5/GL-8).
+
+    Computed at the runner seam (NOT in ``app/quality``) and returned as plain
+    data. Because this is built INSIDE the single shared ``_emit_run_summary_yaml``
+    all five emit sites across BOTH walks inherit it structurally (GL-5). Every
+    sub-reader is fail-soft (AC6/NFR1); the outer guard is a belt-and-suspenders
+    net so the build can NEVER raise into a production run.
+    """
+    try:
+        return {
+            "fences_enabled": _fence_fences_enabled(),
+            "silent_bypass_events": _detect_silent_bypass_events(silent_bypass_signal),
+            "hil_allowlist_empty": _fence_hil_allowlist_empty(),
+            "pack_hash_binding": pack_hash_binding,
+            "conversation_chain_digest": conversation_chain_digest,
+            "cost_posture": _fence_cost_posture(trial_id, runs_root),
+        }
+    except Exception:  # noqa: BLE001 — fence_state must never break a run (AC6/NFR1)
+        LOGGER.exception("fence_state build failed — degrading to honest markers")
+        return {
+            "fences_enabled": {
+                "fidelity": "unavailable",
+                "coverage": "unavailable",
+                "udac": "unavailable",
+            },
+            "silent_bypass_events": "undetected",
+            "hil_allowlist_empty": "unavailable",
+            "pack_hash_binding": pack_hash_binding,
+            "conversation_chain_digest": conversation_chain_digest,
+            "cost_posture": "unavailable",
+        }
+
+
 def _emit_run_summary_yaml(
     *,
     trial_id: UUID,
@@ -1406,30 +1637,74 @@ def _emit_run_summary_yaml(
     runs_root: Path,
     manifest_path: Path,
     langsmith_trace_id: str | None,
-    silent_bypass_events: int = 0,
+    silent_bypass_events: int | None = None,
     selection: ComponentSelection | None = None,
     composed_manifest: Any | None = None,
 ) -> Path:
-    if silent_bypass_events != 0:
+    # ``silent_bypass_events`` is now a detector SIGNAL, not a stamped value: an
+    # explicit non-negative int is a real detected count; ``None`` (the default no
+    # caller sets) means no detector ran → honest ``"undetected"`` (GL-8). The
+    # debug-log fires only on a real non-zero detected count — a ``bool`` or a
+    # negative signal is treated like the detector treats it (→ "undetected") and
+    # is NOT logged as "expected 0, got …" (FIX-A consistency).
+    if (
+        isinstance(silent_bypass_events, int)
+        and not isinstance(silent_bypass_events, bool)
+        and silent_bypass_events > 0
+    ):
         LOGGER.debug(
             "run_summary.yaml silent_bypass_events expected 0, got %s",
             silent_bypass_events,
         )
-    payload = {
-        "terminal_gate": terminal_gate,
-        "silent_bypass_events": silent_bypass_events,
-        "specialist_roster_count": len(specialist_summary_writer.CANONICAL_SPECIALIST_IDS),
-        "pack_hash_binding": _pack_hash_binding(
+    # Compute the shared payload facts ONCE; fence_state references them (AC1), it
+    # does not recompute (GL-5-safe: single shared emitter, both walks inherit).
+    # FIX-C (AC6 always-write): on the reject/resume emit paths (no composed
+    # manifest) ``_pack_hash_binding`` forces a LIVE compose and
+    # ``_conversation_chain_digest`` reads ``directive.yaml`` — either can raise
+    # (missing/corrupt manifest, incompatible selection, read race). Guard both so
+    # a raise degrades the value to the honest ``"unavailable"`` marker (in BOTH
+    # the top-level key AND the fence_state reference) rather than aborting the
+    # emit before it writes a well-formed run_summary.yaml.
+    try:
+        pack_hash_binding: str = _pack_hash_binding(
             manifest_path,
             selection=selection,
             composed_manifest=composed_manifest,
-        ),
-        "component_selection": selection.as_map() if selection is not None else None,
-        "conversation_chain_digest": _conversation_chain_digest(
+        )
+    except Exception:  # noqa: BLE001 — emit must always write (AC6/NFR1)
+        LOGGER.exception(
+            "pack_hash_binding compute failed at emit — degrading to unavailable"
+        )
+        pack_hash_binding = "unavailable"
+    try:
+        conversation_chain_digest: str = _conversation_chain_digest(
             trial_id=trial_id,
             runs_root=runs_root,
-        ),
+        )
+    except Exception:  # noqa: BLE001 — emit must always write (AC6/NFR1)
+        LOGGER.exception(
+            "conversation_chain_digest compute failed at emit — degrading to unavailable"
+        )
+        conversation_chain_digest = "unavailable"
+    fence_state = _build_fence_state(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        pack_hash_binding=pack_hash_binding,
+        conversation_chain_digest=conversation_chain_digest,
+        silent_bypass_signal=silent_bypass_events,
+    )
+    payload = {
+        "terminal_gate": terminal_gate,
+        "specialist_roster_count": len(specialist_summary_writer.CANONICAL_SPECIALIST_IDS),
+        "pack_hash_binding": pack_hash_binding,
+        "component_selection": selection.as_map() if selection is not None else None,
+        "conversation_chain_digest": conversation_chain_digest,
         "langsmith_trace_id": langsmith_trace_id or "skipped-no-langsmith-env",
+        # GL-8: the honest per-run silent_bypass value lives ONLY in fence_state;
+        # the dishonest hardcoded top-level ``silent_bypass_events: 0`` is removed.
+        "fence_state": fence_state,
+        # GL-4: static breadcrumb pointer — NO doc parse inside this emitter.
+        "quality_scorecard": dict(_QUALITY_SCORECARD_BREADCRUMB),
     }
     path = _run_dir(trial_id, runs_root) / "run_summary.yaml"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -4164,6 +4439,13 @@ def run_production_trial(
         selection=run_state.component_selection,
         composed_manifest=manifest,
     )
+    # Q4.2 (QLW-3): terminal-completion seam #1 (START node walk). Reuses the run's
+    # OWN fence_state read back from run_summary.yaml (QLW-6); fail-soft (QLW-8).
+    _emit_quality_final_report(
+        trial_id=effective_trial_id,
+        runs_root=runs_root,
+        run_summary_path=run_summary_path,
+    )
     engagement_report_path = _emit_engagement_decay_report(
         trial_id=effective_trial_id,
         child_runs=child_runs,
@@ -5448,6 +5730,13 @@ def _continue_production_walk(
         langsmith_trace_id=langsmith_trace_id,
         selection=run_state.component_selection,
         composed_manifest=manifest,
+    )
+    # Q4.2 (QLW-3): terminal-completion seam #2 (CONTINUE node walk). Reuses the
+    # run's OWN fence_state read back from run_summary.yaml (QLW-6); fail-soft (QLW-8).
+    _emit_quality_final_report(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        run_summary_path=run_summary_path,
     )
     engagement_report_path = _emit_engagement_decay_report(
         trial_id=trial_id,
