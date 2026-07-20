@@ -331,6 +331,80 @@ def _emit_operator_surface(envelope: ProductionTrialEnvelope, runs_root: Path) -
         LOGGER.exception("operator-surface emit wrapper failed — swallowed")
 
 
+def _read_fence_state_from_run_summary(run_summary_path: Path) -> Any:
+    """Read THIS run's OWN ``fence_state`` back from the just-written
+    ``run_summary.yaml`` (QLW-6 compute-once — do NOT recompute a second, possibly
+    divergent ``_build_fence_state``). Fail-soft: a missing/corrupt/absent summary
+    yields ``None`` so the projector renders its honest per-run marker."""
+    try:
+        data = yaml.safe_load(Path(run_summary_path).read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001 — a fence read must never break the walk
+        return None
+    return data.get("fence_state") if isinstance(data, dict) else None
+
+
+def _emit_quality_final_report(
+    *, trial_id: UUID, runs_root: Path, run_summary_path: Path
+) -> None:
+    """Story Q4.2 — render the deterministic Quality Scorecard final report to
+    ``<run_dir>/quality-final-report.md`` at genuine terminal completion.
+
+    Called ONLY from the two terminal-completion blocks (both node walks — the
+    start walk's ``run_production_trial`` completion and ``_continue_production_walk``
+    completion), NEVER at the G1 start-walk pause / reject / resume-pause (QLW-3).
+    WIRING ONLY (GL-15): reuses the already-built, already-tested, already-fail-soft
+    projector ``render_scorecard_final_report`` verbatim over the COMMITTED scorecard
+    block (QLW-4 — never ``app.quality.signals.*`` live recompute) and this run's OWN
+    ``fence_state`` (QLW-6 — read back from ``run_summary.yaml``, no recompute).
+
+    Fail-soft (QLW-8): mirrors ``_emit_operator_surface`` — the whole body is
+    exception-swallowed so a missing/degraded scorecard, a corrupt run dir, or a
+    raising projector NEVER perturbs the walk; the projector still renders honest
+    ``unavailable``/``undetected`` markers rather than a fabricated Band.
+
+    Idempotent for the SAME inputs (same committed block + same trend-ledger state):
+    the atomic write below overwrites clean (no double-append) and the projector is
+    wall-clock-free, so two emits over one run dir are byte-identical. NOTE (honest
+    framing — not overstated): a LATER rewind / re-run of the same ``trial_id`` reads
+    the append-only trend ledger via ``history_path()``, whose growth can change the
+    rendered trend arrow; the report therefore reflects the trend ledger's emit-time
+    state BY DESIGN and is NOT guaranteed byte-identical across time. ``app.quality``
+    is imported locally (deferred) so the module stays a clean importable leaf.
+    """
+    try:
+        # Deferred local import: the runner may import app.quality; keep app.quality
+        # a clean leaf (no module-scope app.* added to it).
+        from app.quality.history import history_path
+        from app.quality.report import render_scorecard_final_report
+        from app.quality.scorecard import read_scorecard_block
+
+        content = render_scorecard_final_report(
+            block=read_scorecard_block(),
+            history=history_path(),
+            fence_state=_read_fence_state_from_run_summary(run_summary_path),
+        )
+        path = _run_dir(trial_id, runs_root) / "quality-final-report.md"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        # Atomic write (FIX-1): stage into a temp in the SAME directory, then
+        # os.replace (atomic on the same filesystem, incl. Windows). A mid-write
+        # interruption (disk full / kill / power loss) can only ever leave a stale
+        # temp — NEVER a TRUNCATED ``quality-final-report.md`` that reads as a
+        # complete report (this file feeds the R2 equality witness). newline="\n"
+        # on the temp write keeps the bytes IDENTICAL to the projector output — the
+        # hook adds/drops nothing (QLW-2/AC5).
+        temporary = path.with_suffix(".md.tmp")
+        try:
+            temporary.write_text(content, encoding="utf-8", newline="\n")
+            os.replace(temporary, path)
+        finally:
+            # Best-effort cleanup of a stale temp on any failure (still fail-soft);
+            # after a successful os.replace the temp no longer exists (renamed).
+            if temporary.exists():
+                temporary.unlink(missing_ok=True)
+    except Exception:  # noqa: BLE001 — emission must never break the walk (QLW-8)
+        LOGGER.exception("quality-final-report emit wrapper failed — swallowed")
+
+
 def _emit_operator_surface_steps(
     trial_id: UUID, runs_root: Path, manifest: Any, walk_index: int
 ) -> None:
@@ -4365,6 +4439,13 @@ def run_production_trial(
         selection=run_state.component_selection,
         composed_manifest=manifest,
     )
+    # Q4.2 (QLW-3): terminal-completion seam #1 (START node walk). Reuses the run's
+    # OWN fence_state read back from run_summary.yaml (QLW-6); fail-soft (QLW-8).
+    _emit_quality_final_report(
+        trial_id=effective_trial_id,
+        runs_root=runs_root,
+        run_summary_path=run_summary_path,
+    )
     engagement_report_path = _emit_engagement_decay_report(
         trial_id=effective_trial_id,
         child_runs=child_runs,
@@ -5649,6 +5730,13 @@ def _continue_production_walk(
         langsmith_trace_id=langsmith_trace_id,
         selection=run_state.component_selection,
         composed_manifest=manifest,
+    )
+    # Q4.2 (QLW-3): terminal-completion seam #2 (CONTINUE node walk). Reuses the
+    # run's OWN fence_state read back from run_summary.yaml (QLW-6); fail-soft (QLW-8).
+    _emit_quality_final_report(
+        trial_id=trial_id,
+        runs_root=runs_root,
+        run_summary_path=run_summary_path,
     )
     engagement_report_path = _emit_engagement_decay_report(
         trial_id=trial_id,
