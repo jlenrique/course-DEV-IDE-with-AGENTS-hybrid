@@ -72,6 +72,7 @@ from app.quality.scorecard import (
     _DID_KEY,
     _EXPECTED_CANONICAL_DIMENSION_KEYS,
     _FIDELITY_KEY,
+    _LANE_KEY,
     _TRACKER_KEY,
     read_scorecard_block,
 )
@@ -89,6 +90,8 @@ from app.quality.signals import (
     coverage_leak_count_signal,
     fences_enabled_signal,
     fidelity_leak_count_signal,
+    import_linter_lane_signal,
+    lane_leak_count_signal,
     level_from_signal,
     open_leak_count_signal,
     semantic_fence_gating_signal,
@@ -118,6 +121,10 @@ _CAPABILITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cap_leak:\s*(\S+
 #: namespace disjoint from the other five. May be EMPTY (the first dimension that can carry
 #: zero leaks — if the trackers reconcile to CLEAN).
 _TRACKER_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?trk_leak:\s*(\S+)")
+#: Q3.3 — the lane_discipline slug namespace (``lane_leak:``), a SEVENTH per-dimension
+#: namespace disjoint from the other six. 1 today (the coverage-completeness-UNVERIFIED gap —
+#: declared-clean ≠ verified-clean-coverage; LD1's declared-pass stays strong).
+_LANE_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?lane_leak:\s*(\S+)")
 
 
 def _registry_did_leak_slugs() -> set[str]:
@@ -168,6 +175,15 @@ def _registry_tracker_leak_slugs() -> set[str]:
     text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
     open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     return {m.group(1) for m in _TRACKER_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_lane_leak_slugs() -> set[str]:
+    """The OPEN ``lane_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``lane_leak_count_signal`` counts them (Q3.3 per-dimension identity pin).
+    1 today (the coverage-completeness-UNVERIFIED gap)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _LANE_LEAK_SLUG_RE.finditer(open_text)}
 
 
 def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
@@ -256,6 +272,13 @@ _SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
     # otherwise → RED (the fully-computed structural pin + the seeded-divergence pin).
     "tracker_divergence_coherence": tracker_coherence_signal,
     "tracker_doc_drift": tracker_doc_drift_signal,
+    # Q3.3 — lane_discipline LD1 is purely mechanical (mirrors DID C3 / cost CE1 / coverage CV1 /
+    # fidelity FT1): the LIVE import-linter kept/broken result via the SHIPPED importlinter.api
+    # (GL-16 — NOT the lint-imports CLI) → 0 broken → strong (18/0 today); broken>0 → weak. This IS
+    # the epic's broken-count honesty-pin: LD1's level is tied to the REAL kept/broken RESULT (a
+    # claim of clean while import-linter reports broken>0 → RED). The isolating pin proves the
+    # reader consults the real broken-count, not the DECLARED contract count.
+    "lane_discipline_import_linter": import_linter_lane_signal,
 }
 
 #: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
@@ -328,6 +351,20 @@ _HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
             "test_tracker_seeded_divergence_lowers_score",  # pin (a') GL-7 seeded-divergence
             "test_tracker_leak_count_reconciles_on_real_repo",  # pin (b) tracker leak-count
             "test_tracker_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.3 — lane_discipline MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its pins mirror the siblings':
+    # (a) the broken-count pin (the epic's exact pin — LD1's score FAILS if it claims clean while
+    # import-linter reports broken>0) + the isolating pin (a seeded broken>0 result drops LD1,
+    # proving the reader consults the REAL kept/broken, not the declared contract count),
+    # (b) lane leak-count + slug identity (0 today — the zero-leak path), (c) arithmetic.
+    _LANE_KEY: frozenset(
+        {
+            "test_lane_discipline_import_linter_claim_matches_reader",  # pin (a) broken-count
+            "test_lane_discipline_isolating_pin_seeded_broken_drops_level",  # pin (a') isolating
+            "test_lane_leak_count_reconciles_on_real_repo",  # pin (b) lane leak-count
+            "test_lane_discipline_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
         }
     ),
 }
@@ -2245,3 +2282,212 @@ def test_tracker_score_arithmetic_is_internally_consistent() -> None:
     dim = _real_block()["dimensions"][_TRACKER_KEY]
     assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
     assert dim["score"] == 38 and dim["band"] == "D"
+
+
+# =============================================================================== #
+# Story Q3.3 — lane_discipline dimension honesty pins (the 4 registered in
+# _HONESTY_PIN_REGISTRY[_LANE_KEY]) + their RED-under-seeded proofs. LD1 is SIGNAL-DERIVED:
+# the LIVE import-linter kept/broken result via the SHIPPED importlinter.api (GL-16 — NOT the
+# lint-imports CLI). The pins reuse the SAME pure helpers as the siblings
+# (_signal_derived_violations, _reconcile, _arithmetic_violations, _machine_block_leak_slugs) —
+# already iterating EVERY dimension, so coverage is structural. Doc↔code: each compares a
+# machine-block CLAIM against a CODE-computed reality (the import-linter kept/broken result / the
+# deferred-inventory registry / the §7.6 arithmetic rule), never doc↔doc. The dimension carries ONE
+# governance leak (coverage-completeness UNVERIFIED — declared-clean ≠ verified-clean-coverage; the
+# 0-leak PATH stays machinery-tested via synthetic-block tests). The broken-count pin ties the score
+# to the REAL kept/broken count; the isolating pin proves LD1 consults the real broken-count, NOT
+# the declared contract count.
+# =============================================================================== #
+
+_LD1_KEY = "lane_discipline_import_linter"
+
+
+# ---------------- pin (a) broken-count pin ---------------- #
+
+
+def test_lane_discipline_import_linter_claim_matches_reader() -> None:
+    """Pin (a) / the epic's broken-count honesty-pin: LD1's machine-block level ==
+    ``level_from_signal(import_linter_lane_signal())`` — the doc↔reader consistency the honesty
+    ratchet exists to enforce. The score CANNOT claim a level the live reader denies.
+
+    FIX-D (resilient): if the live import-linter genuinely cannot run in this env (e.g. ``app`` not
+    importable / grimp quirk) the reader returns ``unavailable`` → ``pytest.skip`` with a reason,
+    rather than red-ing the ENTIRE honesty-pin suite for reasons unrelated to scorecard honesty.
+    When the reader IS ok, assert ``block level == reader level`` (doc↔reader consistency) — NOT a
+    hard ``== "strong"`` literal (a legitimate future broken contract would then red this pin as a
+    scorecard-honesty failure, which is exactly the wrong signal)."""
+    block = _real_block()
+    dim = block["dimensions"][_LANE_KEY]
+    crit = dim["criteria"][_LD1_KEY]
+    assert crit["derivation"] == "signal-derived"
+    assert crit["signal"]["reader"] == "app.quality.signals.import_linter_lane_signal"
+    live = import_linter_lane_signal()  # the REAL import-linter run (via importlinter.api)
+    if live.get("status") != "ok":
+        pytest.skip(f"import-linter unavailable here (not a honesty failure): {live}")
+    derived = level_from_signal(_LD1_KEY, live)
+    assert crit["level"] == derived, (
+        f"{_LANE_KEY}.{_LD1_KEY}: block level {crit['level']!r} != reader-derived {derived!r}"
+    )
+    # the shared signal-derived scan (over EVERY dimension) is clean doc↔code.
+    assert _signal_derived_violations(block) == []
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_lane_discipline_broken_count_pin_reds_on_claim_clean_while_broken(
+    dishonest: str,
+) -> None:
+    """Pin (a) RED-under-seeded — the broken-count pin: a machine block that CLAIMS a clean/
+    non-weak level while a SEEDED import-linter report reports broken > 0 → the score is dishonest.
+    Here we prove the reader-side directly: a seeded broken>0 report derives ``weak`` (NOT the
+    claimed clean level), so ``_signal_derived_violations`` would FAIL if the block claimed clean.
+    The real doc is never touched."""
+    # A seeded broken>0 report → the reader derives weak (never the claimed clean level).
+    seeded = import_linter_lane_signal({"kept": 15, "broken": 3})
+    assert seeded["status"] == "ok" and seeded["broken_count"] == 3
+    assert level_from_signal(_LD1_KEY, seeded) == "weak"
+    assert level_from_signal(_LD1_KEY, seeded) != dishonest
+    # And a machine-block copy that inflates LD1 above the REAL reader-derived 'strong' is caught
+    # by the shared signal-derived pin (proves the block cannot paint a level the reader denies).
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_LANE_KEY]["criteria"][_LD1_KEY]["level"] = dishonest
+    if dishonest != "strong":  # 'strong' == today's honest level; the others are inflations
+        assert any(_LD1_KEY in v for v in _signal_derived_violations(block))
+
+
+# ---------------- pin (a') isolating pin ---------------- #
+
+
+class _FakeReport:
+    """A hermetic ``importlinter`` ``Report``-like object (``.kept_count`` / ``.broken_count`` —
+    the exact attributes ``create_report`` returns). FIX-H(a): feeding a fake REPORT (not a bare
+    mapping) to the READER proves the reader reads ``create_report``'s real count attributes, i.e.
+    the WIRING, not just the level function's dict handling."""
+
+    def __init__(self, *, kept: int, broken: int, could_not_run: bool = False) -> None:
+        self.kept_count = kept
+        self.broken_count = broken
+        self.could_not_run = could_not_run
+
+
+def test_lane_discipline_isolating_pin_seeded_broken_drops_level() -> None:
+    """Pin (a') / the isolating pin (Q2.3 FT2 lesson): the READER consults the REAL kept/broken
+    RESULT off ``create_report``, NOT the DECLARED contract count. FIX-H(a): the seeded posture is
+    a fake ``Report`` OBJECT (``.kept_count``/``.broken_count``) fed to the reader — the SAME shape
+    ``create_report`` returns — so this exercises the reader WIRING, not merely the level function
+    over a dict. SAME 18-contract total, only the RESULT differs: a raw declared-count reader
+    ('18 contracts declared → strong') would say strong for both; the real reader must drop
+    the broken one below clean. Real doc + real linter untouched for the seeded arm."""
+    clean = import_linter_lane_signal(_FakeReport(kept=18, broken=0))
+    broken = import_linter_lane_signal(_FakeReport(kept=15, broken=3))  # SAME 18 total, 3 broken
+    assert clean["contracts_total"] == broken["contracts_total"] == 18
+    assert clean["broken_count"] == 0 and broken["broken_count"] == 3  # reader read the real counts
+    assert level_from_signal(_LD1_KEY, clean) == "strong"
+    assert level_from_signal(_LD1_KEY, broken) == "weak"  # consulted the REAL broken-count
+    assert _LEVEL_ORDER[level_from_signal(_LD1_KEY, broken)] < _LEVEL_ORDER[
+        level_from_signal(_LD1_KEY, clean)
+    ]
+
+
+def test_lane_discipline_unavailable_never_clean() -> None:
+    """Nothing-checked / errored import-linter → ``unavailable``, NEVER clean (the Q3.1/Q3.2
+    consult-real-result rule). A could_not_run report, a nothing-evaluated (0/0) report, and a
+    malformed count each degrade to ``unavailable`` — never a false-clean ``strong``."""
+    assert import_linter_lane_signal({"kept": 18, "broken": 0, "could_not_run": True})[
+        "status"
+    ] == "unavailable"
+    assert import_linter_lane_signal({"kept": 0, "broken": 0})["status"] == "unavailable"
+    assert import_linter_lane_signal({"kept": 18, "broken": True})["status"] == "unavailable"
+    for bad in (
+        {"status": "unavailable"},
+        {"kept": 0, "broken": 0},
+        {"status": "ok", "kept_count": 18},  # missing broken_count
+    ):
+        assert level_from_signal(_LD1_KEY, bad) != "strong"
+
+
+# ---------------- pin (b) lane leak-count + slug identity (zero-leak) ---------------- #
+
+
+def test_lane_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for lane_discipline: the dimension's ``open_leaks`` == the count of ``lane_leak:``-
+    tagged OPEN entries in the ``## Lane-Discipline Scorecard Leak Registry`` == ``len(leaks)`` ==
+    1 today (the coverage-completeness-UNVERIFIED gap — declared-clean ≠ verified-clean-coverage;
+    the DID Leak-4 owed-check precedent). A SEVENTH per-dimension ``lane_leak:`` namespace."""
+    dim = _real_block()["dimensions"][_LANE_KEY]
+    count = lane_leak_count_signal()["lane_leak_count"]
+    assert count == 1  # the coverage-completeness-unverified governance leak
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_LANE_KEY}: open_leaks {dim.get('open_leaks')!r} != counted lane_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks == 1, (
+            f"{_LANE_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_lane_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY for lane_discipline: SET EQUALITY of the machine-block ``leaks``
+    slugs vs the registry ``lane_leak:`` slugs — both == the single coverage-completeness slug. A
+    slug typo / rename that keeps the count at 1 is caught here (a count-only reconciliation
+    misses it)."""
+    dim = _real_block()["dimensions"][_LANE_KEY]
+    slugs = _machine_block_leak_slugs(dim)
+    assert slugs == _registry_lane_leak_slugs()
+    assert slugs == {"lane-discipline-lane-matrix-contract-coverage-unverified"}
+
+
+def test_lane_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the lane machine-block leak slug on a COPY → the identity pin RED (set
+    inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_LANE_KEY]
+    dim["leaks"][0]["slug"] = "lane-discipline-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_lane_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_seven_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 SEVEN-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` / ``cap_leak:`` / ``trk_leak:`` / ``lane_leak:`` readers do NOT cross-count, and
+    their slug identity sets are pairwise disjoint. A tag in one namespace must never inflate
+    another dimension's count. (Extends the Q3.2 six-namespace pin to the 7th lane namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    trk = tracker_leak_count_signal()["tracker_leak_count"]
+    lane = lane_leak_count_signal()["lane_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1 and cap == 1 and trk == 2 and lane == 1
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+        "trk": _registry_tracker_leak_slugs(),
+        "lane": _registry_lane_leak_slugs(),
+    }
+    assert len(slug_sets["lane"]) == 1
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# ---------------- pin (c) lane score-arithmetic ---------------- #
+
+
+def test_lane_discipline_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for lane_discipline: score↔level per §7.5 + Σscore/max→/100 == headline + band ==
+    the shared §1.5/§7.5 boundary. LD1 strong(3) = 3/4 → 75 → B. Doc↔code: the arithmetic RULE is
+    the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_LANE_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 75 and dim["band"] == "B"

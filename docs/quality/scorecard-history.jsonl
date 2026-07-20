@@ -4,3 +4,4 @@
 {"as_of": "2026-07-19", "dimension": "fidelity_trust", "score": 58, "band": "C", "levels": {"semantic_fence_gating_on": 1, "fidelity_trace_honesty": 3, "fidelity_audit_honesty": 3}, "open_leaks": 1, "as_verified": "2026-07-19"}
 {"as_of": "2026-07-19", "dimension": "capability_honesty", "score": 50, "band": "C", "levels": {"capability_tier_reconciliation_on": 1, "capability_no_overstatement": 3}, "open_leaks": 1, "as_verified": "2026-07-19"}
 {"as_of": "2026-07-19", "dimension": "tracker_coherence", "score": 38, "band": "D", "levels": {"tracker_divergence_coherence": 2, "tracker_doc_drift": 1}, "open_leaks": 2, "as_verified": "2026-07-19"}
+{"as_of": "2026-07-19", "dimension": "lane_discipline", "score": 75, "band": "B", "levels": {"lane_discipline_import_linter": 3}, "open_leaks": 1, "as_verified": "2026-07-19"}

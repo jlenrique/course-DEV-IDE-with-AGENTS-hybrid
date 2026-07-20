@@ -465,6 +465,70 @@ Every time a tracker changes (a story is filed, a handoff is written) or the dri
 - **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction (trackers look coherent while they diverge) is caught. If the drift monitor gains a production gate, refresh TC2.
 - **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `tracker_coherence` pins — the GL-7 fully-computed structural pin, the seeded-divergence pin, tracker leak-count + slug-identity, score-arithmetic) + `tests/quality/test_tracker_coherence_dimension.py` (the structural-verdict / monitoring-posture readers against fixtures + real `qualify_sources` reads + RED-under-seeded proofs incl. determinism + no-read-time-git) FAIL when a machine-block claim contradicts a code-computed reality. The **fully-computed pin** reds if any `tracker_coherence` criterion carries a judgment derivation or a level that does not match its reader; the **seeded-divergence pin** reds if the block claims a coherent level while a seeded three-tracker disagreement lowers the computed score (GL-9).
 
+## Dimension 7 — Lane-discipline / scope-fidelity
+
+> **Why this dimension is load-bearing for this project.** The app is a multi-agent runtime whose correctness rests on **lane discipline** — Marcus and Cora are lane-isolated siblings, only sanctioned seams may cross module boundaries (Marcus contracts M1/M2, Cora C1, the D3/D4 lane-isolation contracts), and the layered import graph must not tangle. If a forbidden import silently lands (a specialist reaching into `run_state`, a Marcus↔Cora cross-import, a layering inversion), the runtime's scope guarantees quietly rot — a **believed-green** architecture that *looks* isolated while it actually leaks across lanes. That discipline is already ENFORCED in CI by import-linter (`pyproject.toml [tool.importlinter]`, 18 contracts). This dimension **SCORES that already-enforced isolation from the LIVE import-linter result** (via the shipped `importlinter.api`, GL-16 — **not** the `lint-imports` CLI), tying the score to the REAL kept/broken pass-count so the scorecard cannot claim clean lane discipline while a contract is actually broken. It adds **NO new enforcement** (GL-15) — it consumes the CI-enforced contracts read-only.
+
+### 7.0 The rule (one line)
+
+**Lane/scope isolation that is enforced in CI must be SCORED from the LIVE enforcement result — and any real import-graph regression (a broken contract) must LOWER the score, never be paintable away.** The honesty pin ties the score to the real import-linter pass/fail count: the score FAILS if it claims clean while import-linter reports `broken > 0`.
+
+**⛔ GL-16 — read the result via the SHIPPED dep, not the CLI (binding).** LD1 reads kept/broken via `importlinter.api` (`read_user_options` + `create_report`) — the shipped Python dep — **NOT** the `lint-imports` CLI on PATH (verify-via-shipped-deps). The `importlinter` dep is reached by a DEFERRED local import so the `app/` import graph being scored stays unchanged.
+
+**⛔ READ-ONLY.** This dimension SCORES the lane discipline; it CONSUMES the import-linter contracts read-only and **NEVER edits a contract or a lane-matrix / taxonomy doc.** It adds no enforcement (the CI enforcement is unchanged; Q3.3 only scores it).
+
+**Determinism (binding).** import-linter is a legitimate persisted-level signal (unlike Q3.2's volatile git-drift): it breaks ONLY when the import GRAPH changes to break a contract — a REAL lane-discipline regression that SHOULD red the scorecard. So LD1 reading the live result is honest AND non-flapping (it does not change per-commit unless a real forbidden import lands). Still fail-soft (importlinter unavailable → `unavailable`, never clean) and bounded (the graph build is guarded).
+
+### 7.5 Scoring rubric
+
+One criterion, scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong · 4 uniform/complete). Score → /4, normalized to /100. Bands: **A** ≥90 · **B** 75–89 · **B−** 60–74 · **C** 40–59 · **D** <40 (shared with §1.5). LD1 is `signal-derived`.
+
+**⚠️ Band ceiling — B (disclosed, do NOT chase A).** The single signal-derived criterion caps at `strong` (score 3) mechanically — `level_from_signal` never awards `uniform` (4). So the maximum attainable is 3/4 = 75 → Band B. An A is structurally unreachable for this **single-criterion** dimension; the honest target is B, and B (declared import-linter contracts clean, 18/0) is **reached** today. The lane-matrix / governance-dimensions-taxonomy maps are **supporting evidence** (they document the intended lanes), but their existence is **not** proof of exhaustive coverage — whether the 18 contracts EXHAUSTIVELY cover the documented lanes is UNVERIFIED, held open as **Leak 1** (§7.6). Closing it needs a lane-matrix↔contract **coverage verifier** (a would-be LD2) — a NAMED deferred follow-on; that is the path to add a second criterion and lift the ceiling.
+
+| # | Criterion | What the top attainable (`strong`, 3/4) looks like |
+|---|---|---|
+| LD1 | **import-linter lane discipline — the CI-enforced lanes are clean** | `importlinter.api` runs the `pyproject.toml [tool.importlinter]` contracts and reports **0 broken** (all kept) → `lane_discipline_clean` is `True` → `strong`. Any `broken > 0` (a real forbidden-import / lane-isolation / layering regression) → `weak` — a real regression that reds the scorecard. importlinter unavailable / config missing / the run errors / nothing actually checked (`kept + broken == 0`) → `unavailable` (never silently clean). The level keys off the **REAL kept/broken count**, NOT the declared 18 contracts. The read is DETERMINISTIC (a break is a real regression, not per-commit noise) and read via the **shipped dep** (GL-16), never the CLI. |
+
+**Outcome-weighted reading (for prioritization, not a separate score):** LD1 most affects the *governance* lane — lane/scope discipline is an architecture-integrity concern. Equal-weight scoring is kept (consistent with §1–§6); the honest reading rides the band_note.
+
+### 7.6 Current assessment — Band **B** — "declared import-linter contracts clean (18/0, live via shipped dep); lane↔contract coverage-completeness UNVERIFIED (1 open gap)"
+
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; first `lane_discipline` snapshot in `docs/quality/scorecard-history.jsonl`).*
+
+**Headline (read this first).**
+
+- **Band: B.** Lane discipline is measured HONESTLY — the LIVE import-linter result via the shipped `importlinter.api` (GL-16), deterministic, reflecting the REAL kept/broken count. Today **18 kept / 0 broken** → LD1 = `strong` → the **declared** CI-enforced lane/scope contracts pass. *(The internal 3/4 → 75/100 is the arithmetic-pin reasoning trace below — not a false-precise headline.)*
+- **Trend: ▬ baseline.** First `lane_discipline` assessment; no prior snapshot, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Band ceiling: B.** The single signal-derived criterion caps at `strong` (3) mechanically; A is unreachable (see §7.5). Do not chase A.
+- **Open leaks — ranked (1).** ⚠️ **declared-clean ≠ verified-clean-COVERAGE.** LD1 proves the 18 **declared** contracts pass, but does NOT verify those contracts **cover** every lane documented in `docs/lane-matrix.md` — a documented lane with no enforcing contract would read 18/0 clean while being a real discipline hole. That coverage-completeness gap is UNVERIFIED (the OWED lane-matrix↔contract coverage check), so it is registered as **one governance leak** (the DID Leak-4 precedent counts an OWED/unmeasured check as a leak) → **`open_leaks: 1`**, `slug: lane-discipline-lane-matrix-contract-coverage-unverified`, in the `## Lane-Discipline Scorecard Leak Registry` (a SEVENTH `lane_leak:` namespace). `lane_leak_count_signal()` == 1 == the machine block's `open_leaks` == `len(leaks)`. **LD1 itself stays `strong`** — 18/0 declared-pass is honestly strong; the leak is a SEPARATE completeness gap, not an LD1 failure (a *broken* contract would additionally drop LD1 to `weak`).
+
+  1. **[LD1] Lane↔contract coverage-completeness UNVERIFIED (governance)** — *Leak 1, governance* → `lane-discipline-lane-matrix-contract-coverage-unverified`
+
+**⚠️ Headline caveat — do NOT read B as "no discipline gaps / lane discipline is perfect" (band-honesty).** B says the **declared** import-linter contracts are clean (18/0 — real, deterministic, CI-enforced, live-read evidence) — it does NOT say scope discipline is *complete*. Whether the 18 contracts EXHAUSTIVELY cover the lanes documented in `docs/lane-matrix.md` is UNVERIFIED (the open coverage-completeness leak). Read B as "the declared contracts are clean, scored live and honestly; lane↔contract coverage-completeness is an open, owed check," NOT as "scope discipline is uniformly perfect / has no gaps." The band_note carries this so it cannot be missed.
+
+**Say it plainly (honesty is the bar).** `importlinter.api` runs the 18 `pyproject.toml [tool.importlinter]` contracts (Marcus M1/M2, Cora C1, the D3/D4 lane-isolation contracts, layering, etc.) and reports **18 kept / 0 broken** → LD1 `strong`. We read this via the **shipped dep** (`read_user_options` + `create_report`), **not** the `lint-imports` CLI (GL-16). The honesty pin ties the score to the REAL broken-count: if a forbidden import lands (`broken > 0`) the reader reports it and LD1 drops to `weak` — the scorecard cannot claim clean while a contract is broken. **But declared-clean is not verified-clean-COVERAGE:** LD1 does not prove the 18 contracts cover every documented lane, so the coverage-completeness gap is honestly held open as Leak 1 (closing it = the deferred lane-matrix↔contract coverage verifier — the would-be LD2 — which is the path toward A). **We do NOT edit the contracts or the lane-matrix docs** — Q3.3 SCORES the CI-enforced discipline read-only.
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** LD1 carries `{level, signal, evidence_ref}`; it is `signal-derived` (level == `level_from_signal("lane_discipline_import_linter", import_linter_lane_signal())`). The 0–4 score rolls up to the machine block's Σ = 3/4 = 75/100 (an internal arithmetic-pin trace — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| LD1 import-linter lane discipline | strong | 3/4 | signal-derived (`import_linter_lane_signal`) | **The read-only LIVE import-linter signal (via the shipped `importlinter.api`, GL-16):** running the `pyproject.toml [tool.importlinter]` contracts (`read_user_options` + `create_report`, console-suppressed + watchdog-bounded) yields **18 kept / 0 broken** → `lane_discipline_clean == True` → `strong` (== `level_from_signal("lane_discipline_import_linter", import_linter_lane_signal())`; the broken-count pin agrees doc↔code). Keys off the REAL broken-count (0), NOT the declared 18 contracts (the isolating pin proves a seeded `broken > 0` drops the level). importlinter unavailable / config missing / run error / timeout / nothing-checked → `unavailable`, never clean. Deterministic (a break is a real forbidden-import regression). Supporting maps: `docs/lane-matrix.md` + `docs/governance-dimensions-taxonomy.md`. **Coverage-completeness (does the 18 contracts COVER every documented lane) is UNVERIFIED → Leak 1** (LD1's declared-pass stays strong; the leak is a separate completeness gap). |
+
+#### Open leaks (detail — the path from B toward A)
+
+1. **[LD1] Lane↔contract coverage-completeness UNVERIFIED (governance).** LD1 proves the 18 **declared** `[tool.importlinter]` contracts pass (18/0), but there is NO mechanical check that those contracts EXHAUSTIVELY cover the lanes documented in `docs/lane-matrix.md` — a documented lane with no enforcing contract would read 18/0 clean while being a real discipline hole. This is the "declared-clean ≠ verified-clean-coverage" gap (the DID Leak-4 owed-check precedent: an OWED/unmeasured check counts as a leak). Direction is fail-safe (an owed verification, not a silent overclaim). **Closing it is a scoring-enrichment act (NOT done here — read-only scope):** build the lane-matrix↔contract coverage verifier (the would-be LD2 — reconcile every documented lane against a `[tool.importlinter]` contract; a gap = a documented lane with no enforcing contract), at which point the coverage-completeness becomes verified and this leak closes (the path toward A). *Evidence:* the 18 kept contracts vs the lanes in `docs/lane-matrix.md` have no mechanical coverage reconciliation; registry `lane-discipline-lane-matrix-contract-coverage-unverified`; the deferred follow-on `lane-discipline-lane-matrix-contract-coverage-verifier`. **⛔ Q3.3 does NOT edit the contracts or the lane-matrix.**
+
+#### The discipline that raises the Band (not just fixes)
+
+Every time the import graph changes (a new seam, a refactor across modules), ask two questions: **(1) did import-linter stay 18/0, or did a forbidden import land?** (a break lowers LD1 to `weak` until the lane regression is fixed — the scorecard refuses to paint over it); and **(2) is every documented lane actually ENFORCED by a contract, or only assumed?** (the open coverage-completeness leak). Remember the disclosed **Band ceiling B** (the single signal-derived criterion caps at `strong`/3) — B is reached (declared contracts clean); A needs the coverage-completeness leak closed (the deferred lane-matrix↔contract coverage verifier).
+
+### Cadence (how this dimension stays honest)
+
+- **Every production run:** the lane-discipline Band rides the run's final report alongside the other dimensions (no per-run lane facts — this is a project posture, not a per-run claim).
+- **Assessment cadence (NOT a hot loop):** LD1 runs the import-linter contracts, which builds the `app/` import graph (~seconds). This is an **assessment-cadence** read (session ramp / retrospective / scorecard re-score), guarded and bounded — never a per-render or per-run-step call. Any error / unavailability degrades to `unavailable` (never a clean claim). If a future render-time cost is a concern, a persisted-level + pin-re-runs split is the follow-on — but the epic wants the LIVE count, so LD1 reads it.
+- **Every session hot-start / WRAPUP + epic retrospective:** if import-linter flips 18/0 ↔ `broken > 0`, refresh LD1 (a break → `weak`, a fix → `strong`). Record the trend so a lane regression is caught.
+- **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `lane_discipline` pins — the broken-count pin, the isolating pin, lane leak-count + slug-identity (1 leak: the coverage-completeness gap), score-arithmetic) + `tests/quality/test_lane_discipline_dimension.py` (the reader against the REAL import-linter (18/0) + hermetic seeded fixtures — a fake report with `broken > 0` → not clean; importlinter-unavailable / timeout → `unavailable`; no console spinner at read time; the coverage-completeness leak on the shared ranked list; the 0-leak-PATH machinery still lock-in-tested with synthetic blocks; the projector picking up the 7th dimension with NO projector change) FAIL when a machine-block claim contradicts a code-computed reality. The **broken-count pin** reds if the block claims `strong` while a seeded/fixture `broken > 0`; the **isolating pin** proves the reader consults the REAL kept/broken, not the declared count.
+
 ---
 
 <!-- QUALITY-SCORECARD-MACHINE-BLOCK v2 — parsed by app/quality/scorecard.py (dimension_ref / did_score_ref) and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. v2 (Story Q1.1): schema is dimension-agnostic — per-dimension rubric_version/as_of/as_verified + per-criterion {level, signal, evidence_ref} (score/max retained as the 0–4 reasoning trace). STRUCTURAL migration only: every value below is carried verbatim from v1. Q1.2 (post
@@ -1177,6 +1241,86 @@ dimensions:
       - rank: 2
         criterion: TC2
         slug: tracker-coherence-doc-drift-monitoring-advisory-never-gates
+        lane: governance
+    trend: baseline
+  lane_discipline:
+    # Dimension 7 (Story Q3.3) — Lane-discipline / scope-fidelity, scored from the LIVE
+    # import-linter result via the SHIPPED importlinter.api (GL-16 — NOT the lint-imports CLI on
+    # PATH): pyproject.toml [tool.importlinter] declares the lane/scope contracts (Marcus M1/M2,
+    # Cora C1, lane-isolation D3/D4, etc.). The §7 prose is the authority; this mirrors the
+    # headline numbers. ⛔ READ-ONLY (GL-15): SCORES the already-CI-enforced lane isolation; it
+    # adds NO enforcement and NEVER edits a contract. LD1 is SIGNAL-DERIVED and consults the REAL
+    # kept/broken RESULT, NOT the DECLARED contract count (the isolating pin proves it). The read
+    # is DETERMINISTIC (import-linter breaks ONLY on a real import-graph regression — a forbidden
+    # import — which SHOULD red the scorecard; a legitimate persisted-level signal, unlike Q3.2's
+    # volatile git-drift) + BOUNDED (watchdog timeout → unavailable) + FAIL-SOFT (any error / config
+    # missing / nothing-checked / timeout → unavailable, never clean). Honest baseline: 18 kept / 0
+    # broken today → LD1 strong (the DECLARED contracts pass). ⚠️ HONESTY: declared-clean ≠
+    # verified-clean-COVERAGE. LD1 proves the 18 DECLARED contracts pass, but does NOT verify those
+    # contracts COVER every lane documented in docs/lane-matrix.md — a documented lane with no
+    # enforcing contract would read 18/0 clean while being a real discipline hole. So open_leaks is
+    # 1 (the coverage-completeness-UNVERIFIED gap — the OWED lane-matrix↔contract coverage check;
+    # the DID Leak-4 calibration-OWED precedent counts an owed/unmeasured check as a leak), NOT 0.
+    # LD1 stays strong (18/0 declared-pass is honestly strong — the leak is a SEPARATE completeness
+    # gap, not an LD1 failure). len(leaks)==open_leaks==lane_leak_count_signal()==1, lane governance.
+    # Band CEILING is B (the single signal-derived criterion caps at strong/3 mechanically —
+    # uniform/4 is never a mechanical award; do NOT chase A).
+    label: Lane-discipline / scope-fidelity
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
+    score: 75
+    max: 100
+    band: "B"
+    band_note: "B reflects the LIVE import-linter result via the SHIPPED importlinter.api (GL-16 — NOT the lint-imports CLI), deterministic, on the REAL kept/broken count: 18 kept / 0 broken today → LD1 strong (the DECLARED lane/scope contracts pass; the CI-enforced isolation holds). ⚠️ declared-clean ≠ verified-clean-COVERAGE: LD1 proves the 18 DECLARED contracts pass, but does NOT verify those contracts COVER every lane documented in docs/lane-matrix.md — a documented lane with no enforcing contract would read 18/0 clean while being a real hole. So this is 'declared import-linter contracts clean (18/0, live via shipped dep); lane↔contract coverage-completeness UNVERIFIED (1 open gap — the deferred coverage-verifier)', NOT 'no discipline gaps'. That coverage-completeness gap is registered as ONE governance leak (open_leaks=1, the DID Leak-4 owed-check precedent), which is why this is NOT a live 0-leak example; LD1 itself stays strong (18/0 declared-pass is honestly strong — the leak is a SEPARATE completeness gap). This is a LEGITIMATE persisted-level + honesty-pin (unlike Q3.2's volatile git-drift): import-linter breaks ONLY on a real import-graph regression, so LD1 is honest + non-flapping; the score CANNOT claim clean while a contract is actually broken (the broken-count pin). Band CEILING is B — the single signal-derived criterion caps at strong/3 mechanically (uniform/4 is never a mechanical award); closing the coverage-completeness leak (the deferred lane-matrix↔contract coverage verifier — the would-be LD2) is the path toward A. ⛔ READ-ONLY: Q3.3 SCORES the already-CI-enforced lanes; it adds NO enforcement."
+    criteria:
+      lane_discipline_import_linter:
+        # SIGNAL-DERIVED (purely mechanical): level == level_from_signal(import_linter_lane_signal()).
+        # The reader runs the pyproject.toml [tool.importlinter] contracts via the SHIPPED
+        # importlinter.api (GL-16 — read_user_options + create_report; NOT the lint-imports CLI) and
+        # reads the REAL kept/broken: 0 broken → strong, broken>0 → weak (a real forbidden-import
+        # regression), nothing-checked / config missing / run error / malformed → unavailable (never
+        # clean). Today 18 kept / 0 broken → strong. Keys off the REAL broken-count, NOT the DECLARED
+        # 18 (consult-real-result — the isolating pin proves a seeded broken>0 drops the level). NOT a
+        # hardcoded verdict: a real broken contract flips this to weak; a genuinely clean run keeps
+        # strong. DETERMINISTIC + BOUNDED (the app/ graph build is ~seconds, guarded → unavailable on
+        # any error). ⛔ READ-ONLY — SCORES the already-CI-enforced lanes; edits no contract.
+        level: strong
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.import_linter_lane_signal
+          derived_level: strong
+          fact: >-
+            The LIVE import-linter result via the SHIPPED importlinter.api (GL-16 — NOT the
+            lint-imports CLI on PATH): pyproject.toml [tool.importlinter] declares 18 lane/scope
+            contracts (root_packages=["app"]; Marcus M1/M2, Cora C1, lane-isolation D3/D4, etc.),
+            and running them programmatically yields 18 kept / 0 broken today → lane_discipline_clean
+            True → strong. The level keys off the REAL broken-count, NOT the declared contract count:
+            a real import-graph regression (a forbidden import) → broken>0 → weak (a real
+            lane-discipline regression that SHOULD red the scorecard). Deterministic (a break is a
+            real regression, not per-commit noise) + bounded (the graph build is ~seconds, guarded).
+            importlinter unavailable / config missing / the run errors / nothing checked → unavailable,
+            never clean. The supporting lane-matrix / governance-dimensions-taxonomy maps document
+            the intended lanes (their existence ≠ proof of exhaustive coverage — the honest ceiling).
+        evidence_ref: "§7.6 LD1 · import-linter 18 kept / 0 broken (via importlinter.api) · pyproject.toml [tool.importlinter] · docs/lane-matrix.md + docs/governance-dimensions-taxonomy.md (supporting maps)"
+        score: 3
+        max: 4
+    # ONE open leak: the coverage-completeness-UNVERIFIED gap (LD1 proves the 18 DECLARED contracts
+    # pass, but does NOT verify they COVER every documented lane — the OWED lane-matrix↔contract
+    # coverage check; DID Leak-4 owed-check precedent). `lane_leak:` is a SEVENTH per-dimension
+    # namespace (disjoint from the other six) in the `## Lane-Discipline Scorecard Leak Registry` of
+    # deferred-inventory.md; len(leaks) == open_leaks == lane_leak_count_signal() == 1 (the lane
+    # leak-count + slug-identity pins reconcile doc↔registry). Lane governance (an architecture-
+    # integrity/coverage concern). NOTE: LD1 itself stays strong (18/0 declared-pass) — the leak is
+    # a SEPARATE completeness gap, not an LD1 failure; a BROKEN contract would additionally drop LD1
+    # to weak. Closing this leak = the deferred lane-matrix↔contract coverage verifier (the would-be
+    # LD2). The 0-leak PATH stays machinery-tested (synthetic-block tests) even though this live
+    # dimension is not itself a 0-leak example — honesty over having a live 0-leak.
+    open_leaks: 1
+    leaks:
+      - rank: 1
+        criterion: LD1
+        slug: lane-discipline-lane-matrix-contract-coverage-unverified
         lane: governance
     trend: baseline
 ```

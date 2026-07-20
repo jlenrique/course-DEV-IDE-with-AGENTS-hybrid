@@ -417,12 +417,13 @@ def test_tracker_leaks_aggregate_into_shared_ranked_list() -> None:
     assert slugs.index(tc2_slug) > max(non_gov)
     assert lanes[slugs.index(tc1_slug)] == "governance"
     assert lanes[slugs.index(tc2_slug)] == "governance"
-    # SIX dimensions now contribute (cross-dimensional).
+    # SEVEN dimensions now contribute (Q3.3 added lane_discipline — a governance leak).
     assert dims == {
         _DID_KEY, _COST_KEY, _COVERAGE_KEY, _FIDELITY_KEY, _CAPABILITY_KEY, _TRACKER_KEY,
+        "lane_discipline",
     }
-    # 5 DID + 1 cost + 1 coverage + 1 fidelity + 1 capability + 2 tracker = 11.
-    assert len(ranked) == 11
+    # 5 DID + 1 cost + 1 coverage + 1 fidelity + 1 capability + 2 tracker + 1 lane = 12.
+    assert len(ranked) == 12
 
 
 def test_leak_coverage_clean_with_tracker_dimension() -> None:

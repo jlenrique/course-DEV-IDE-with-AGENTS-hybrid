@@ -169,6 +169,42 @@ The 2 open tracker_coherence scorecard leaks. Each line's HTML comment gives its
 
 ---
 
+## Lane-Discipline Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN lane_discipline scorecard leaks counted (line-anchored) by
+     app.quality.signals.lane_leak_count_signal and reconciled — by COUNT and by SLUG IDENTITY —
+     against `open_leaks` + the `leaks:` list of the lane_discipline dimension in
+     docs/quality/project-quality-scorecard.md §7.6 (the lane leak-count + slug-identity honesty
+     pins). SEVENTH `lane_leak:` namespace, disjoint from the DID `did_leak:`, cost `cost_leak:`,
+     coverage `cov_leak:`, fidelity `fid_leak:`, capability `cap_leak:`, and tracker `trk_leak:`
+     tags so the seven counts never collide (verified by
+     test_seven_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: opening/closing a lane leak == add/remove a lane_leak line HERE **and**
+     increment/decrement `open_leaks` + add/drop the `leaks:` entry in the scorecard, IN LOCKSTEP
+     (the pins reconcile the two — editing only one goes RED). Do NOT tag leaks under their deferred
+     entries: those migrate to §Closed Entries — Archived on close, which the reader excludes,
+     silently dropping the count while the scorecard is untouched.
+
+     ⚠️ declared-clean ≠ verified-clean-COVERAGE: LD1 proves the 18 DECLARED contracts pass (18/0
+     today → LD1 strong), but does NOT verify those contracts COVER every lane documented in
+     docs/lane-matrix.md — a documented lane with no enforcing contract would read 18/0 clean while
+     being a real hole. So ONE leak is open today: the coverage-completeness-UNVERIFIED gap (the
+     OWED lane-matrix↔contract coverage check; DID Leak-4 owed-check precedent). LD1 itself stays
+     strong — the leak is a SEPARATE completeness gap, not an LD1 failure. A BROKEN contract (a real
+     forbidden import) would ADDITIONALLY drop LD1 to weak (the broken-count pin) and could add a
+     second lane_leak. ⛔ Q3.3 SCORES the lane discipline READ-ONLY; it never edits a contract.
+     (The 0-leak PATH stays machinery-tested via synthetic-block tests — honesty over having a live
+     0-leak example.) -->
+
+The 1 open lane_discipline scorecard leak. The line's HTML comment gives its §7.6 criterion, its lane leak number, and a pointer to the owning follow-on:
+
+- lane_leak: lane-discipline-lane-matrix-contract-coverage-unverified  <!-- [LD1] Lane Leak 1 — LD1 (import_linter_lane_signal) proves the 18 DECLARED pyproject.toml [tool.importlinter] contracts pass (18/0 today via the shipped importlinter.api), but there is NO mechanical check that those contracts EXHAUSTIVELY cover the lanes documented in docs/lane-matrix.md — a documented lane with no enforcing contract would read 18/0 clean while being a real discipline hole (declared-clean ≠ verified-clean-coverage; the DID Leak-4 owed-check precedent counts an owed/unmeasured check as a leak). LD1 itself stays strong (18/0 declared-pass is honestly strong — this leak is a SEPARATE completeness gap, not an LD1 failure). Direction is fail-safe (an owed verification, not a silent overclaim). Close = build the lane-matrix↔contract coverage verifier (the would-be LD2; the named follow-on lane-discipline-lane-matrix-contract-coverage-verifier in §Named-But-Not-Filed) that reconciles every documented lane against a [tool.importlinter] contract — at which point coverage-completeness is verified and this leak closes (the path toward A). ⛔ Q3.3 SCORES the lane discipline READ-ONLY; it never edits a contract or the lane-matrix. -->
+
+`lane_leak_count_signal()` == 1 == the §7.6 machine block's `open_leaks` == `len(leaks)`.
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |
@@ -200,6 +236,7 @@ The 2 open tracker_coherence scorecard leaks. Each line's HTML comment gives its
 
 ## Named-But-Not-Filed Follow-Ons
 
+- 🟢 **`lane-discipline-lane-matrix-contract-coverage-verifier`** (filed 2026-07-19 by Story Q3.3 — the would-be LD2; the CLOSE-PATH for the open lane leak `lane-discipline-lane-matrix-contract-coverage-unverified` tagged in the `## Lane-Discipline Scorecard Leak Registry`) — Q3.3's `lane_discipline` dimension scores LD1 (the LIVE import-linter kept/broken via `importlinter.api`, 18/0 declared-pass → `strong`) and caps at Band **B** (the single signal-derived criterion caps at `strong`/3). The lane-matrix / governance-dimensions-taxonomy maps are consulted as SUPPORTING evidence, but their existence is NOT proof of EXHAUSTIVE lane↔contract coverage — so **declared-clean ≠ verified-clean-coverage**, and that coverage-completeness gap is held OPEN as the dimension's one governance leak (per the DID Leak-4 owed-check precedent). A would-be **LD2** — a mechanical verifier that reconciles every documented lane in `docs/lane-matrix.md` against a corresponding `[tool.importlinter]` contract (a gap = a documented lane with no enforcing contract) — would VERIFY coverage completeness, close the leak, and be the path toward A. **Reactivation trigger: when exhaustive lane-matrix↔contract coverage becomes worth mechanizing (a lane-matrix expansion, or a governance push for provable coverage). Priority LOW** (LD1 already gives an honest, deterministic, CI-grounded read of the declared contracts; direction-stable — additive scoring, never relaxes LD1).
 - ✅ **RESOLVED 2026-07-17 as Story 42-6** (`42-6-g0s-runner-default-wake-sentinel.md`, done + dual-gate reviewed): per-run wake sentinel written by the CLI operator path (default ON via `--prewalk-settings-confirm`; `start_trial` function-default OFF keeps tests deterministic; env flag kept as OR override; opt-out preserved). G0S now shows by DEFAULT on operator-steered runs. Original entry retained below for lineage.
 - 🔴 **`g0s-runner-default-wake-policy`** (filed 2026-07-17 by Story 42-5 review; RESOLVED by 42-6 — see above): the new pre-walk settings gate `G0S` is operator-woken via `MARCUS_PREWALK_SETTINGS_CONFIRM_ACTIVE` (default OFF → traversed byte-identically, mirroring G0E/G0R). So the pre-walk confirm surface is NOT shown by DEFAULT on a real operator-steered run — the operator must export the flag. The operator's 42-5 requirement (RED priority) implies it should be the DEFAULT for operator-steered runs. Clean fix (dev-flagged): a per-run persisted wake sentinel (run-dir file) set by `start_trial` for operator-steered runs + read by both walks — NOT global `os.environ.setdefault` in start_trial (would leak into the 13 start_trial test files). **Reactivation: operator/party ruling on default-ON — likely immediate (it's what makes 42-5 fulfill the operator requirement by default). Priority HIGH.**
 - ✅ **RESOLVED 2026-07-17 as Story 42-7** (rider R3): 9 stale `tests/unit/manifest/` pins refreshed to the live 52-node manifest (node count 45→52 with attributed history; gate topology counts DERIVED-from-live; gate-id/fold pins += G0R/G0S; golden schema fixtures regenerated additive-only). `tests/unit/manifest/` fully green (74). Original entry retained below for lineage.

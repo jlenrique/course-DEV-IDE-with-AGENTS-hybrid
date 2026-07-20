@@ -34,11 +34,13 @@ fence gate functions are reached ONLY via deferred local imports inside the read
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import re
+import threading
 from collections.abc import Mapping
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stderr, redirect_stdout
 from pathlib import Path
 from types import MappingProxyType
 from typing import Any
@@ -1868,6 +1870,246 @@ def tracker_leak_count_signal(inventory_path: Path | None = None) -> dict[str, A
     }
 
 
+# ============================ lane-discipline / scope-fidelity (Q3.3) ============================
+#
+# Signal reader over the LIVE import-linter result via the SHIPPED ``importlinter.api`` (GL-16 —
+# NOT the ``lint-imports`` CLI on PATH): ``pyproject.toml [tool.importlinter]`` declares the
+# lane/scope contracts (Marcus M1/M2, Cora C1, lane-isolation D3/D4, etc.); the reader runs them
+# programmatically and reads the REAL kept/broken RESULT. ⛔ READ-ONLY: this SCORES the
+# already-CI-enforced lane isolation; it adds NO enforcement and NEVER edits a contract (GL-15).
+# The ``importlinter`` dep is THIRD-PARTY (not ``app.*``, so the clean-leaf guard does not require
+# it deferred) but is reached ONLY via a DEFERRED local import (GL-3-consistent — keeps the app/
+# import graph unchanged + matches the sibling deferred pattern). The read is DETERMINISTIC
+# (import-linter breaks ONLY on a real import-graph regression — a forbidden import — which SHOULD
+# red the scorecard; unlike Q3.2's volatile git-drift this is a legitimate persisted-level signal)
+# and BOUNDED (building the app/ import graph is ~seconds; guarded by try/except → ``unavailable``
+# on ANY error). Fail-soft: importlinter unavailable / config missing / the run errors / nothing
+# actually checked → ``unavailable``, NEVER clean (never report clean lane discipline from a linter
+# that did not actually run — the Q3.1/Q3.2 nothing-checked→unavailable rule). Consults the REAL
+# broken-count, NOT the DECLARED contract count (the isolating pin proves it).
+
+#: ``lane_leak:`` tag, anchored to line start — a SEVENTH per-dimension namespace disjoint from
+#: ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` / ``fid_leak:`` / ``cap_leak:`` / ``trk_leak:`` so
+#: the lane count/identity reconciliation never collides with the other six. **0 today** (the
+#: import-linter is 18/0 clean → the ZERO-LEAK path; a real broken contract or a documented
+#: lane-matrix hole would register one).
+_LANE_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?lane_leak:")
+
+#: The import-linter config the shipped dep reads (GL-16). ``pyproject.toml [tool.importlinter]``
+#: declares 18 contracts today (root_packages=["app"]); the reader consults the REAL kept/broken
+#: RESULT of running them, NOT this declared count.
+_IMPORTLINTER_CONFIG_REL = "pyproject.toml"
+_IMPORTLINTER_SRC = "importlinter.api / pyproject.toml [tool.importlinter]"
+#: Watchdog bound for the LIVE import-linter build (FIX-E). The real ``app/`` graph build is ~0.4s;
+#: a generous cap turns a pathological stuck build into an ``unavailable`` return instead of an
+#: indefinite block. Read at call time so a test can shrink it to prove the timeout path.
+_IMPORTLINTER_TIMEOUT_S: float = 60.0
+
+
+def _coerce_count(value: Any) -> int | None:
+    """A real non-negative ``int`` count, or ``None`` — a ``bool`` (int subclass), a negative, or a
+    non-int is malformed and can never certify a clean level."""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value if value >= 0 else None
+    return None
+
+
+def _run_import_linter_live() -> Any:
+    """Run the LIVE import-linter contracts via the SHIPPED ``importlinter.api`` (GL-16 — NOT the
+    ``lint-imports`` CLI), returning a real importlinter ``Report`` — or ``None`` on ANY failure or
+    a watchdog TIMEOUT. Never raises, never blocks indefinitely, never flashes a console spinner.
+
+      * **BOUNDED (FIX-E):** the build runs in a daemon worker thread joined with
+        :data:`_IMPORTLINTER_TIMEOUT_S`; a stuck/unbounded build → ``None`` (``unavailable``) within
+        the bound rather than an indefinite block (a plain ``try/except`` catches raises but NOT a
+        hang). ``signal.alarm`` is POSIX-only, so a worker-thread watchdog keeps this portable on
+        Windows.
+      * **NO console side-effects (FIX-A):** ``create_report`` renders a rich ``console.status`` +
+        a transient ``Live`` progress bar during the multi-second build; a session-ramp / retro
+        scorecard read must not flash a spinner. The build window is wrapped in
+        ``redirect_stdout``/``redirect_stderr`` sinks AND the importlinter console is set
+        ``quiet=True`` — so NOTHING reaches the real terminal. The redirect spans the join in the
+        MAIN thread (not the worker), so a completed build restores the streams cleanly.
+      * **GL-16 (shipped dep, NOT the CLI):** reads via ``read_user_options`` + ``create_report``
+        (in-process; no subprocess, no ``lint_imports`` CLI wrapper).
+    """
+    holder: dict[str, Any] = {}
+
+    def _worker() -> None:
+        try:
+            # DEFERRED local import (GL-3-consistent): importlinter is third-party; keeping it
+            # function-local leaves the app/ import graph — the very thing being scored — unchanged.
+            from importlinter.api import use_cases
+            from importlinter.application.use_cases import _register_contract_types
+
+            config = str(_repo_root() / _IMPORTLINTER_CONFIG_REL)
+            user_options = use_cases.read_user_options(config_filename=config)
+            # Built-in + plugin contract types must be registered before the report runs (the
+            # `lint-imports` CLI does this internally). ``_register_contract_types`` is an internal
+            # of ``importlinter`` — an anti-drift test (test_importlinter_register_seam_available)
+            # fails LOUD if this seam moves in a future 2.x, so a dep upgrade reds a test rather
+            # than silently degrading LD1 to ``unavailable`` while the doc/history claim ``strong``.
+            _register_contract_types(user_options)
+            holder["report"] = use_cases.create_report(user_options, cache_dir=None)
+        except Exception as exc:  # noqa: BLE001 — a signal read must never raise into a caller
+            holder["error"] = exc
+
+    try:
+        from importlinter.api import use_cases as _uc
+
+        prev_quiet = _uc.console.quiet
+    except Exception:  # noqa: BLE001 — importlinter unimportable → unavailable
+        return None
+    sink_out, sink_err = io.StringIO(), io.StringIO()
+    try:
+        _uc.console.quiet = True
+        with redirect_stdout(sink_out), redirect_stderr(sink_err):
+            worker = threading.Thread(
+                target=_worker, name="lane-discipline-import-linter", daemon=True
+            )
+            worker.start()
+            worker.join(_IMPORTLINTER_TIMEOUT_S)
+    finally:
+        _uc.console.quiet = prev_quiet
+    if worker.is_alive():
+        return None  # TIMEOUT — the build is stuck; return unavailable, never block, never clean
+    if "error" in holder or "report" not in holder:
+        return None
+    return holder["report"]
+
+
+def _read_import_linter_report(report: Any) -> dict[str, Any] | None:
+    """Coerce an import-linter report source into a ``{kept, broken, could_not_run}`` mapping, or
+    ``None`` (fail-soft).
+
+    ``report is None`` → run the LIVE contracts via :func:`_run_import_linter_live` (GL-16 shipped
+    dep, bounded, console-suppressed). An injectable ``Mapping`` (``{kept, broken}`` /
+    ``{kept_count, broken_count}``) OR an object carrying ``.kept_count``/``.broken_count`` (a real
+    ``Report`` or a hermetic fake) reads a SEEDED posture WITHOUT running the live linter — the
+    fixture / isolating path. Any failure — including a HOSTILE report whose attribute access RAISES
+    (FIX-F: a raising ``.kept_count`` property must not propagate) — degrades to ``None``, a
+    fail-soft read that NEVER raises into a caller.
+    """
+    if report is None:
+        report = _run_import_linter_live()
+        if report is None:
+            return None
+    try:
+        if isinstance(report, Mapping):  # a seeded fixture (prefer `kept`, else `kept_count`)
+            kept = report["kept"] if "kept" in report else report.get("kept_count")
+            broken = report["broken"] if "broken" in report else report.get("broken_count")
+            return {
+                "kept": kept,
+                "broken": broken,
+                "could_not_run": bool(report.get("could_not_run", False)),
+            }
+        # A real importlinter Report (or a hermetic fake) carrying the count attributes. A raising
+        # property (a hostile report) is caught here → None (FIX-F), matching the live guarantee.
+        kept = getattr(report, "kept_count", None)
+        broken = getattr(report, "broken_count", None)
+        if kept is None and broken is None:
+            return None
+        return {
+            "kept": kept,
+            "broken": broken,
+            "could_not_run": bool(getattr(report, "could_not_run", False)),
+        }
+    except Exception:  # noqa: BLE001 — a hostile report must never raise into a caller
+        return None
+
+
+def import_linter_lane_signal(report: Any = None) -> dict[str, Any]:
+    """LD1 — the LIVE import-linter lane-discipline signal via the SHIPPED ``importlinter.api``
+    (GL-16 — NOT the ``lint-imports`` CLI).
+
+    Runs the ``pyproject.toml [tool.importlinter]`` contracts programmatically and reports the REAL
+    ``kept_count`` / ``broken_count``. ``lane_discipline_clean`` is ``broken_count == 0``. The
+    level (see :func:`_level_ld_import_linter`) is a function of the REAL broken-count — 0 broken →
+    ``strong`` (lane discipline clean, ALREADY the case today at 18/0); broken > 0 → ``weak`` (a
+    real import-graph regression, a forbidden import that SHOULD red the scorecard) — NOT a function
+    of the DECLARED contract count.
+
+    ⛔ READ-ONLY (GL-15): SCORES the already-CI-enforced lanes; adds NO enforcement, edits NO
+    contract. DETERMINISTIC + BOUNDED (the graph build is ~seconds, guarded). Fail-soft: an
+    unimportable dep / missing config / a run error / ``could_not_run`` / nothing-actually-checked
+    (``kept + broken == 0``) / malformed counts → ``unavailable`` — NEVER clean (never report clean
+    lane discipline from a linter that did not actually run). This is an assessment-cadence read,
+    not a hot loop (see §7 Cadence).
+    """
+    data = _read_import_linter_report(report)
+    if data is None:
+        return {"status": "unavailable", "source": _IMPORTLINTER_SRC}
+    if data.get("could_not_run"):
+        # invalid contract options → the linter could not actually run → UNKNOWN, never clean.
+        return {
+            "status": "unavailable",
+            "source": _IMPORTLINTER_SRC,
+            "note": "import-linter could_not_run (invalid contract options) — never clean.",
+        }
+    kept = _coerce_count(data.get("kept"))
+    broken = _coerce_count(data.get("broken"))
+    if kept is None or broken is None:
+        return {"status": "unavailable", "source": _IMPORTLINTER_SRC}
+    total = kept + broken
+    if total <= 0:
+        # NOTHING was actually evaluated (no contract ran) — UNKNOWN, never clean (the Q3.1/Q3.2
+        # nothing-checked→unavailable rule). A clean lane-discipline claim requires a real run.
+        return {
+            "status": "unavailable",
+            "source": _IMPORTLINTER_SRC,
+            "note": "no contract was actually evaluated (kept+broken==0) — never clean.",
+        }
+    return {
+        "status": "ok",
+        "source": _IMPORTLINTER_SRC,
+        "kept_count": kept,
+        "broken_count": broken,
+        "contracts_total": total,
+        "lane_discipline_clean": broken == 0,
+        "note": (
+            "the LIVE import-linter result via the SHIPPED importlinter.api (GL-16 — NOT the "
+            "lint-imports CLI on PATH): kept_count kept / broken_count broken; broken==0 → lane "
+            "discipline clean → strong; broken>0 → weak (a REAL import-graph regression — a "
+            "forbidden import — that SHOULD red the scorecard). The level keys off the REAL "
+            "broken-count, NOT the DECLARED contract count (consult-real-result — the isolating "
+            "pin proves it). DETERMINISTIC (a break is a real lane-discipline regression, not "
+            "per-commit noise) + BOUNDED (the app/ graph build is ~seconds, guarded; any error → "
+            "unavailable). READ-ONLY — SCORES the already-CI-enforced lanes, adds no enforcement."
+        ),
+    }
+
+
+def lane_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
+    """lane leak-count — count ``lane_leak:``-tagged OPEN entries in the deferred inventory (a
+    SEVENTH per-dimension namespace, disjoint from the other six).
+
+    Same scoping as the sibling leak-count readers (fenced code / HTML comments / archived section
+    stripped; line-anchored tag). **0 today** — the import-linter is 18/0 clean → the ZERO-LEAK
+    path (a real broken contract or a documented lane-matrix hole would register a ``lane_leak:``).
+    This is the SECOND dimension whose count may legitimately be **0**; ``_reconcile(0, 0)`` and
+    ``leak_coverage_gaps`` (``open_leaks <= 0`` is not a gap) both handle it cleanly. Fail-soft:
+    unreadable file → ``{"status": "unavailable", "lane_leak_count": None}``.
+    """
+    p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {
+            "status": "unavailable",
+            "source": _DEFERRED_INVENTORY_REL,
+            "lane_leak_count": None,
+        }
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    count = len(_LANE_LEAK_LINE_RE.findall(open_text))
+    return {
+        "status": "ok",
+        "source": _DEFERRED_INVENTORY_REL,
+        "lane_leak_count": count,
+    }
+
+
 # ============================ signal → level derivation ============================
 #
 # THE anti-believed-green rule: a level is NEVER mechanically awarded a clean/uniform
@@ -2038,6 +2280,28 @@ def _level_tc_doc_drift(signal: Any) -> str:
     return "unavailable"
 
 
+def _level_ld_import_linter(signal: Any) -> str:
+    """LD1 (purely mechanical, SIGNAL-DERIVED): the LIVE import-linter kept/broken result.
+
+    ``broken_count == 0`` → ``strong`` (lane discipline clean — the reachable close-path is ALREADY
+    reached today, 18/0); ``broken_count > 0`` → ``weak`` (a REAL import-graph / lane regression —
+    a forbidden import that SHOULD red the scorecard); non-ok / nothing-checked (``kept + broken
+    <= 0``) / malformed counts → ``unavailable`` (never a clean claim from a linter that did not
+    actually run). Keys off the REAL broken-count, NOT the DECLARED contract count — the isolating
+    pin (a seeded ``broken > 0`` result) proves a raw declared-count reader can't ship green."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    broken = signal.get("broken_count")
+    kept = signal.get("kept_count")
+    if not isinstance(broken, int) or isinstance(broken, bool) or broken < 0:
+        return "unavailable"
+    if not isinstance(kept, int) or isinstance(kept, bool) or kept < 0:
+        return "unavailable"
+    if kept + broken <= 0:
+        return "unavailable"  # nothing actually checked — NON-clean, never strong
+    return "strong" if broken == 0 else "weak"
+
+
 def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     """Derive a criterion's level from its signal (the anti-believed-green rule).
 
@@ -2050,9 +2314,11 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     produced reality. Q3.2 tracker_coherence is FULLY-COMPUTED (GL-7): BOTH TC1
     (``tracker_divergence_coherence``, on the qualify_sources verdict) and TC2
     (``tracker_doc_drift``, on the code↔doc drift heuristic — capped at partial) derive real
-    levels here. Judgment / judgment-with-evidence-only criteria (C1/C5, cost CE2/CE3/CE4,
-    coverage CV2/CV3, fidelity FT2/FT3, capability CH2) and unknown keys return ``None`` (no
-    mechanical derivation; the human authors those).
+    levels here. Q3.3 lane_discipline LD1 (``lane_discipline_import_linter``) derives from the LIVE
+    import-linter kept/broken result (0 broken → ``strong``; broken > 0 → ``weak``). Judgment /
+    judgment-with-evidence-only criteria (C1/C5, cost CE2/CE3/CE4, coverage CV2/CV3, fidelity
+    FT2/FT3, capability CH2) and unknown keys return ``None`` (no mechanical derivation; the human
+    authors those).
     """
     if criterion_key == "fence_enforcement_default_on":
         return _level_c3(signal)
@@ -2075,4 +2341,9 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
         return _level_tc_divergence(signal)
     if criterion_key == "tracker_doc_drift":
         return _level_tc_doc_drift(signal)
+    # Q3.3 — lane_discipline LD1 is purely mechanical (SIGNAL-DERIVED): the LIVE import-linter
+    # kept/broken result via the shipped importlinter.api (GL-16). 0 broken → strong (18/0 today);
+    # broken>0 → weak (a real forbidden-import regression); nothing-checked/malformed → unavailable.
+    if criterion_key == "lane_discipline_import_linter":
+        return _level_ld_import_linter(signal)
     return None

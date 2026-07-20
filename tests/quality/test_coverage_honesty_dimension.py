@@ -465,6 +465,7 @@ def test_coverage_leak_aggregates_into_shared_ranked_list() -> None:
         "fidelity_trust",
         "capability_honesty",
         "tracker_coherence",
+        "lane_discipline",  # Q3.3 — SEVENTH contributor (governance: coverage-completeness gap)
     }
 
 
