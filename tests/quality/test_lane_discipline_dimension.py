@@ -336,8 +336,9 @@ def test_lane_leak_aggregates_into_shared_ranked_list() -> None:
     assert lanes[slugs.index(lane_slug)] == "governance"
     assert dims == {
         _DID_KEY, _COST_KEY, _COVERAGE_KEY, _FIDELITY_KEY, _CAPABILITY_KEY, _TRACKER_KEY, _LANE_KEY,
+        "calibration",
     }
-    assert len(ranked) == 12  # the 7th dimension adds its one governance leak
+    assert len(ranked) == 13  # + Q3.4 calibration's one learner-trust leak (the 8th, final dim)
 
 
 def test_leak_coverage_clean_with_lane_dimension() -> None:

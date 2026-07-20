@@ -531,6 +531,72 @@ Every time the import graph changes (a new seam, a refactor across modules), ask
 
 ---
 
+## Dimension 8 — Calibration (report-only)
+
+> **Why this dimension is load-bearing for this project.** The app's learner-facing quality rests on **intelligent necks** whose real-world accuracy must be **known**, not assumed. The **reading-path** neck (the slide-perception → style classifier that drives styleguide selection) is the sharpest case: if we *believe* it is accurate but have never measured it on a **fresh, naive** holdout, the whole pipeline is **believed-green** — a neck that *looks* calibrated while its true generalization is unknown. This dimension **HONESTLY REPORTS** the calibration posture: it surfaces "fresh naive holdout **OWED / unmeasured**" for the reading-path and the single pinned **resubstitution** metric+dataset+commit — so the operator sees an honest read of what is calibrated vs owed, an owed/unmeasured neck is scored **UNCALIBRATED (never passing)**, and the dimension **NEVER implies a fresh-holdout number was measured when it was not.**
+
+### 8.0 The rule (one line)
+
+**A neck's calibration must be REPORTED from the RECORDED measurement posture — an owed/unmeasured neck is scored UNCALIBRATED (never passing), and no fresh-naive number may ever be implied when it was not measured.** The honesty pin ties the score to the real owed-state: CAL1 FAILS if it claims calibrated while the fresh-naive holdout is owed, and the never-imply-measured pin reds any text that implies a fresh-naive number was measured.
+
+**⛔ REPORT-ONLY (binding — the phasing flag).** This dimension **REPORTS** the calibration posture; it does **NOT** build the fresh-naive-holdout harness, does **NOT** run any measurement, and does **NOT** fabricate a fresh number. Building the holdout stays the **separate owed epic** `reading-path-fresh-naive-holdout-pre-trial` (**DID Leak-4**). CAL1 reads the **recorded posture** (the deferred entry / the pinned resubstitution report metadata) as plain data.
+
+**⛔ Mary's metric-citation rule (binding).** Every reading-path accuracy number carries `(subject=built-classifier|catalog-approach, substrate=fresh|stale@date)`. The single measured number is the built-classifier **RESUBSTITUTION** (`subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23`: primary-key **0.071 (1/14)** on the CONSUMED-14) — an **upper-bound**, surfaced as **LABELED** evidence of what WAS run, **NEVER** a generalization and **NEVER** a fresh-naive figure. The **fresh NAIVE holdout is OWED / UNMEASURED**; a fresh naive number has **not** been measured and none may be implied. (The `0.93` was **catalog-approach** / Claude-labels, **not** the built classifier.)
+
+**Consult the REAL owed-state (binding).** CAL1 keys off whether a fresh-naive-holdout **MEASUREMENT exists**, NOT the mere presence of a resubstitution number — **resubstitution ≠ calibrated**. A resubstitution number can never award a calibrated level.
+
+### 8.5 Scoring rubric
+
+One criterion, scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong · 4 uniform/complete). Score → /4, normalized to /100. Bands: **A** ≥90 · **B** 75–89 · **B−** 60–74 · **C** 40–59 · **D** <40 (shared with §1.5). CAL1 is `signal-derived`.
+
+**⚠️ Band ceiling — B (disclosed, do NOT chase A).** The single signal-derived criterion caps at `strong` (score 3) mechanically — `level_from_signal` never awards `uniform` (4). So the maximum attainable is 3/4 = 75 → Band B. B is reached only when a fresh-naive-holdout measurement is **recorded** (the owed epic — the reachable close-path, NOT done here). Today the fresh holdout is OWED → CAL1 `weak` → 1/4 = 25 → **Band D** (honest: the reading-path is uncalibrated). A second criterion (e.g. cross-SME calibration) is a NAMED deferred follow-on; that would be the path to lift the ceiling.
+
+| # | Criterion | What the top attainable (`strong`, 3/4) looks like |
+|---|---|---|
+| CAL1 | **reading-path calibration posture — a fresh-naive-holdout MEASUREMENT exists** | The reader reads the RECORDED posture: a fresh-naive-holdout MEASUREMENT is recorded for the reading-path neck (`fresh_naive_holdout_measured` True) → `reading_path_calibrated` True → `strong`. Today it is **OWED/unmeasured** (`fresh_naive_holdout_measured` False) → `weak` — an owed/unmeasured neck scored UNCALIBRATED, not passing. Nothing-checkable (absent/non-bool owed-state) → `unavailable` (never calibrated). The level keys off the **REAL owed-state**, NOT the presence of the resubstitution number (resubstitution ≠ calibrated — the isolating pin proves it). ⛔ REPORT-ONLY (reads the recorded posture; never measures). |
+
+**Outcome-weighted reading (for prioritization, not a separate score):** CAL1 most affects the *learner-trust* lane — calibration is trust in the reading-path neck's measured quality. Equal-weight scoring is kept (consistent with §1–§7); the honest reading rides the band_note.
+
+### 8.6 Current assessment — Band **D** — "REPORT-ONLY: reading-path UNCALIBRATED (fresh naive holdout OWED/unmeasured); the only measured number is the built-classifier resubstitution/upper-bound"
+
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; first `calibration` snapshot in `docs/quality/scorecard-history.jsonl`).*
+
+**Headline (read this first).**
+
+- **Band: D.** REPORT-ONLY. The reading-path neck is **UNCALIBRATED**: the fresh NAIVE holdout is **OWED / UNMEASURED**. CAL1 = `weak` (an owed/unmeasured neck scored uncalibrated, not passing). *(The internal 1/4 → 25/100 is the arithmetic-pin reasoning trace below — not a false-precise headline.)*
+- **Trend: ▬ baseline.** First `calibration` assessment; no prior snapshot, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Band ceiling: B.** The single signal-derived criterion caps at `strong` (3) mechanically; A is unreachable (see §8.5). Do not chase A.
+- **Open leaks — ranked (1).** ⚠️ **the reading-path is uncalibrated — the fresh-naive holdout is OWED.** Registered as **one learner-trust leak** (the DID Leak-4 precedent counts an OWED/unmeasured check as a leak) → **`open_leaks: 1`**, `slug: calibration-reading-path-fresh-naive-holdout-owed`, in the `## Calibration Scorecard Leak Registry` (an EIGHTH `cal_leak:` namespace). `calibration_leak_count_signal()` == 1 == the machine block's `open_leaks` == `len(leaks)`. This **cross-links DID Leak-4** (`reading-path-fresh-naive-holdout-pre-trial`) — SAME substrate, distinct slug/namespace, counted ONCE per namespace (the Q2.3/Q3.1 cross-link precedent — NOT double-counted).
+
+  1. **[CAL1] Reading-path uncalibrated — fresh-naive holdout OWED (learner-trust)** — *Leak 1, learner-trust* → `calibration-reading-path-fresh-naive-holdout-owed`
+
+**⚠️ Headline caveat — do NOT read D as "a fresh-naive number was measured and is bad" (band-honesty).** D says the reading-path is **UNCALIBRATED** — the fresh naive holdout is **OWED / UNMEASURED** — NOT that a fresh-naive number was measured. The ONLY measured number is the built-classifier **RESUBSTITUTION** (`subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23`): primary-key **0.071 (1/14)** on the CONSUMED-14 held-out — a **resubstitution/upper-bound ONLY** (the consumed-14 is now a non-naive dev set), surfaced as LABELED evidence of what WAS run, **never** a generalization and **never** a fresh-naive figure. Read D as "the reading-path is uncalibrated, the fresh naive holdout is owed (unmeasured), scored uncalibrated → not passing," NOT as "we measured a fresh number and it was bad." The band_note carries this so it cannot be missed.
+
+**Say it plainly (honesty is the bar).** The reading-path neck's real generalization is **UNKNOWN**: no fresh-naive-holdout measurement exists (it is the OWED epic `reading-path-fresh-naive-holdout-pre-trial` = DID Leak-4). The only number we have is the built-classifier **RESUBSTITUTION** on the CONSUMED-14 — an **upper-bound** (`0.071` primary-key, `subject=built-classifier`, `substrate=fresh@2026-06-23`, report `honest-built-classifier-measurement.json`), which we surface as LABELED evidence of what was run, and which can **never** stand in for a fresh-naive number (`resubstitution ≠ calibrated`). The `0.93` some earlier notes cite was the **catalog-approach** (Claude-labels), **not** the built classifier — it is deliberately NOT stored as a built-classifier figure. **We do NOT build the holdout harness or run any measurement here** — Q3.4 REPORTS the owed posture read-only; closing it (recording a fresh-naive-holdout measurement) is the owed epic, at which point CAL1 earns `strong`.
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** CAL1 carries `{level, signal, evidence_ref}`; it is `signal-derived` (level == `level_from_signal("reading_path_calibration_posture", reading_path_calibration_signal())`). The 0–4 score rolls up to the machine block's Σ = 1/4 = 25/100 (an internal arithmetic-pin trace — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| CAL1 reading-path calibration posture | weak | 1/4 | signal-derived (`reading_path_calibration_signal`) | **The read-only RECORDED calibration posture (REPORT-ONLY — no measurement):** the reading-path neck's fresh-naive holdout is **OWED / UNMEASURED** (`fresh_naive_holdout_measured` False; the harness/artifact does not exist — DID Leak-4) → `reading_path_calibrated` False → `weak` (== `level_from_signal("reading_path_calibration_posture", reading_path_calibration_signal())`; the uncalibrated-not-passing pin agrees doc↔code). Keys off the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the presence of a resubstitution number (the isolating pin proves a resubstitution-present/owed posture stays `weak`). The single pinned resubstitution fact — `subject=built-classifier(S1/S2/S3)`, `substrate=fresh@2026-06-23`, primary-key **0.071 (1/14)**, dataset **consumed-14**, report `honest-built-classifier-measurement.json`, `measurement_kind=resubstitution/upper-bound`, `is_generalization=False` — is surfaced as LABELED evidence of what WAS run, NEVER a generalization and NEVER a fresh-naive number (Mary, binding). ⛔ REPORT-ONLY (reads the recorded posture; never measures). |
+
+#### Open leaks (detail — the path from D toward B)
+
+1. **[CAL1] Reading-path uncalibrated — fresh-naive holdout OWED (learner-trust).** The reading-path neck's real generalization is UNKNOWN: no fresh-naive-holdout MEASUREMENT exists (the OWED epic `reading-path-fresh-naive-holdout-pre-trial` = DID Leak-4). The only measured number is the built-classifier RESUBSTITUTION on the CONSUMED-14 (`0.071` primary-key, `subject=built-classifier`, `substrate=fresh@2026-06-23`) — an upper-bound, NOT a fresh-naive number (`resubstitution ≠ calibrated`). This is the "declared-clean ≠ verified-clean" gap for calibration (the DID Leak-4 owed-check precedent: an OWED/unmeasured check counts as a leak). Direction is fail-safe (an owed measurement, not a silent overclaim). **Closing it is the OWED EPIC (NOT done here — REPORT-ONLY scope):** build the fresh-naive-holdout harness and record a fresh-naive-holdout measurement, at which point the reading-path becomes calibrated and CAL1 earns `strong` (the path toward B). *Evidence:* the resubstitution report `honest-built-classifier-measurement.json` + `p2-4b-honest-measurement-and-recalibration-2026-06-23.md`; registry `calibration-reading-path-fresh-naive-holdout-owed`; **cross-links DID Leak-4** `reading-path-fresh-naive-holdout-pre-trial` (SAME substrate, distinct slug/namespace, counted once). **⛔ Q3.4 REPORTS the owed posture; it does NOT build the harness or measure.**
+
+#### The discipline that raises the Band (not just fixes)
+
+Every time the reading-path neck (or another intelligent neck) is touched, ask two questions: **(1) does a fresh-naive-holdout MEASUREMENT exist, or is it still OWED?** (an owed neck is uncalibrated → `weak`; a recorded fresh-naive measurement → `strong`); and **(2) is every reading-path number carrying its `(subject, substrate@date)` citation, with resubstitution/upper-bound numbers LABELED as such and never implied to be fresh-naive?** (the never-imply-measured discipline). Remember the disclosed **Band ceiling B** (the single signal-derived criterion caps at `strong`/3) — B is reached only when the fresh-naive-holdout measurement is recorded (the owed epic); A needs a second calibration criterion (a NAMED deferred follow-on).
+
+### Cadence (how this dimension stays honest)
+
+- **Every production run:** the calibration Band rides the run's final report alongside the other dimensions (no per-run calibration facts — this is a project posture, not a per-run claim).
+- **⛔ REPORT-ONLY cadence:** CAL1 reads the RECORDED calibration posture — it NEVER builds the fresh-naive-holdout harness or runs a measurement (that is the owed epic `reading-path-fresh-naive-holdout-pre-trial` = DID Leak-4). It is a plain-data read (no live run, no cost), guarded and fail-soft (nothing-checkable → `unavailable`, never calibrated).
+- **Every session hot-start / WRAPUP + epic retrospective:** when a fresh-naive-holdout measurement is RECORDED (the owed epic lands), refresh CAL1 (OWED → recorded flips `weak` → `strong`; record the trend). Until then, the reading-path stays honestly uncalibrated.
+- **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `calibration` pins — the uncalibrated-not-passing pin + the isolating pin, the never-imply-measured pin, calibration leak-count + slug-identity (1 leak: the reading-path OWED gap, cross-linking DID Leak-4), score-arithmetic) + `tests/quality/test_calibration_dimension.py` (the reader against the REAL recorded posture (uncalibrated/owed → weak) + a hermetic fixture where a fresh-holdout measurement EXISTS (→ can improve, the close-path); the resubstitution surfaced as LABELED evidence, not generalization; nothing-checkable → unavailable; the calibration leak on the shared ranked list; the projector picking up the 8th dimension with NO projector change) FAIL when a machine-block claim contradicts a code-computed reality. The **uncalibrated-not-passing pin** reds if the block claims `calibrated`/clean while the fresh holdout is owed; the **never-imply-measured pin** reds any text that implies a fresh-naive number was measured — owed-state-gated, and scanning this §8 prose authority as well as the machine-block mirror (seed a fabricated fresh-holdout accuracy figure into either → RED; once the owed epic records a real fresh-naive measurement, an honest figure is allowed); the **isolating pin** proves the reader consults the REAL owed-state, not the presence of a resubstitution number.
+
+---
+
 <!-- QUALITY-SCORECARD-MACHINE-BLOCK v2 — parsed by app/quality/scorecard.py (dimension_ref / did_score_ref) and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. v2 (Story Q1.1): schema is dimension-agnostic — per-dimension rubric_version/as_of/as_verified + per-criterion {level, signal, evidence_ref} (score/max retained as the 0–4 reasoning trace). STRUCTURAL migration only: every value below is carried verbatim from v1. Q1.2 (post
 code-review honesty rework) adds a per-criterion `derivation` field naming HOW the
 level is justified — and it does NOT falsely mechanize a proxy:
@@ -1322,5 +1388,91 @@ dimensions:
         criterion: LD1
         slug: lane-discipline-lane-matrix-contract-coverage-unverified
         lane: governance
+    trend: baseline
+  calibration:
+    # Dimension 8 (Story Q3.4) — Calibration, REPORT-ONLY. The 8th and FINAL dimension — this closes
+    # the whole Project Quality Scorecard. Scored from the RECORDED calibration posture of the
+    # reading-path neck (GL-15 reuse of the recorded state; NO parallel plumbing, NO measurement).
+    # The §8 prose is the authority; this mirrors the headline numbers. ⛔ REPORT-ONLY: this REPORTS
+    # the calibration posture; it does NOT build the fresh-naive-holdout harness, does NOT run any
+    # measurement, and does NOT fabricate a fresh number. Building the holdout stays the SEPARATE
+    # owed epic reading-path-fresh-naive-holdout-pre-trial (DID Leak-4). Honest baseline (from Q1.5 —
+    # NOT re-derived): the reading-path is UNCALIBRATED — the fresh NAIVE holdout is OWED/UNMEASURED,
+    # and NONE may be implied (Mary, binding). The ONLY measured number is the built-classifier
+    # RESUBSTITUTION (subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23, primary-key
+    # 0.071/14 on the CONSUMED-14 → resubstitution/upper-bound ONLY — surfaced as LABELED evidence of
+    # what WAS run, NEVER a generalization, NEVER a fresh-naive number). The 0.93 was CATALOG-approach
+    # (Claude-labels), NOT the built classifier. So the reading-path calibration posture = UNCALIBRATED
+    # (fresh naive holdout OWED) → CAL1 weak (an owed/unmeasured neck scored uncalibrated, NOT passing).
+    # CAL1 consults the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the
+    # presence of a resubstitution number (resubstitution ≠ calibrated — the isolating pin proves it).
+    # ONE leak (the reading-path fresh-naive-holdout OWED gap) cross-links DID Leak-4 — SAME substrate,
+    # distinct slug/namespace, counted ONCE (the Q2.3/Q3.1 cross-link precedent). Band CEILING is B
+    # (the single signal-derived criterion caps at strong/3 mechanically — uniform/4 is never awarded).
+    label: Calibration
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
+    score: 25
+    max: 100
+    band: "D"
+    band_note: "REPORT-ONLY (this dimension REPORTS the calibration posture; it does NOT build the fresh-naive-holdout harness or run any measurement — that stays the owed epic reading-path-fresh-naive-holdout-pre-trial = DID Leak-4). D is HONEST: the reading-path neck is UNCALIBRATED — the fresh NAIVE holdout is OWED / UNMEASURED, and a fresh-naive number has NOT been measured and NONE may be implied (Mary, binding). The ONLY measured number is the built-classifier RESUBSTITUTION (subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23): primary-key 0.071 (1/14) on the CONSUMED-14 held-out — a resubstitution/upper-bound ONLY (the consumed-14 is now a non-naive dev set), surfaced as LABELED evidence of what WAS run, NEVER a generalization and NEVER a fresh-naive figure. (The 0.93 was CATALOG-approach / Claude-labels, NOT the built classifier.) So do NOT read D as 'a fresh-naive number was measured and is bad' — read it as 'the reading-path is UNCALIBRATED, the fresh naive holdout is OWED (unmeasured), scored uncalibrated → not passing'. CAL1 consults the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the presence of the resubstitution number (resubstitution ≠ calibrated); the close-path (report-only) is reachable: when a fresh-naive-holdout measurement is recorded, CAL1 earns strong. Band CEILING B (the single signal-derived criterion caps at strong/3). Equal-weight kept."
+    criteria:
+      reading_path_calibration_posture:
+        # SIGNAL-DERIVED (purely mechanical; REPORT-ONLY): level == level_from_signal(
+        # reading_path_calibration_signal()). The reader reads the RECORDED calibration posture
+        # (report-only — no measurement, no live run) and reports whether a fresh-naive-holdout
+        # MEASUREMENT exists for the reading-path neck: it does NOT (OWED — DID Leak-4) →
+        # fresh_naive_holdout_measured=False → reading_path_calibrated=False → weak (an owed/
+        # unmeasured neck scored UNCALIBRATED, NOT passing). Consults the REAL owed-state, NOT the
+        # presence of a resubstitution number (resubstitution ≠ calibrated). NOT a hardcoded verdict:
+        # when a fresh-naive-holdout measurement is recorded the reader detects it and this earns
+        # strong (close-path reachable, report-only; the isolating pin holds the resubstitution fact
+        # present and varies the owed-state to prove the level keys off owed-state, not the resub
+        # number). ⛔ REPORT-ONLY — reads the recorded posture; it NEVER builds the harness or
+        # measures (the owed epic DID Leak-4).
+        level: weak
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.reading_path_calibration_signal
+          derived_level: weak
+          fact: >-
+            the reading-path neck is UNCALIBRATED: the fresh NAIVE holdout MEASUREMENT is OWED /
+            UNMEASURED (fresh_naive_holdout_measured=False; the harness/artifact does not exist — the
+            owed epic reading-path-fresh-naive-holdout-pre-trial = DID Leak-4) →
+            reading_path_calibrated=False → weak. A fresh naive number has NOT been measured and NONE
+            may be implied (Mary, binding). The ONLY measured number is the built-classifier
+            RESUBSTITUTION (subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23): primary-key
+            0.071 (1/14) on the CONSUMED-14 held-out (a non-naive dev set) → resubstitution/upper-bound
+            ONLY (report honest-built-classifier-measurement.json) — surfaced as LABELED evidence of
+            what WAS run (is_generalization=False), NEVER a generalization and NEVER a fresh-naive
+            figure. Consults the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the
+            presence of the resubstitution number (resubstitution ≠ calibrated). Closing it (record a
+            fresh-naive-holdout measurement — the owed epic; NOT done here, REPORT-ONLY) flips
+            fresh_naive_holdout_measured True and the derived level becomes strong.
+          caveat: >-
+            REPORT-ONLY: this reads the RECORDED posture as plain data — it does NOT build the
+            fresh-naive-holdout harness, run a measurement, or fabricate a fresh number. The
+            resubstitution number is an upper-bound on the consumed-14 (a non-naive dev set), NOT a
+            fresh-naive generalization — it can NEVER award a calibrated level (resubstitution ≠
+            calibrated). Every reading-path number carries Mary's (subject, substrate@date) citation.
+        evidence_ref: "§8.6 CAL1 · Calibration Leak (reading-path uncalibrated — fresh-naive holdout OWED/unmeasured); cross-links DID Leak-4"
+        score: 1
+        max: 4
+    # ONE open leak: the reading-path is UNCALIBRATED — the fresh-naive holdout is OWED/UNMEASURED (the
+    # DID Leak-4 owed-check precedent: an OWED/unmeasured check counts as a leak). Counted (line-
+    # anchored) as `cal_leak:` in the `## Calibration Scorecard Leak Registry` of deferred-inventory.md
+    # — an EIGHTH per-dimension namespace, disjoint from the other seven (so the eight counts never
+    # collide). len(leaks) == open_leaks == calibration_leak_count_signal() == 1 (the calibration
+    # leak-count + slug-identity pins reconcile doc↔registry). Lane learner-trust: calibration is trust
+    # in the reading-path neck's measured quality. Cross-links DID Leak-4
+    # (reading-path-fresh-naive-holdout-pre-trial) — SAME substrate, distinct slug/namespace, counted
+    # ONCE per namespace (the Q2.3/Q3.1 cross-link precedent — NOT double-counted).
+    open_leaks: 1
+    leaks:
+      - rank: 1
+        criterion: CAL1
+        slug: calibration-reading-path-fresh-naive-holdout-owed
+        lane: learner-trust
     trend: baseline
 ```

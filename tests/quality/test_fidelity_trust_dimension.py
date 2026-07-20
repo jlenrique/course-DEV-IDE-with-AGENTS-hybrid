@@ -532,8 +532,10 @@ def test_fidelity_leak_aggregates_into_shared_ranked_list() -> None:
         "capability_honesty",
         "tracker_coherence",
         "lane_discipline",
+        "calibration",
     }
-    assert len(ranked) == 12  # 5 DID + 1 cost + 1 cov + 1 fid + 1 cap + 2 tracker + 1 lane
+    # 5 DID + 1 cost + 1 cov + 1 fid + 1 cap + 2 tracker + 1 lane + 1 cal = 13 (Q3.4 closed).
+    assert len(ranked) == 13
 
 
 def test_leak_coverage_clean_with_fidelity_dimension() -> None:

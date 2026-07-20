@@ -40,14 +40,21 @@ _TRACKER_KEY = "tracker_coherence"
 #: Story Q3.3 — Dimension 7 (Lane-discipline / scope-fidelity). Scores the already-CI-enforced
 #: lane isolation from the LIVE import-linter result (via the shipped importlinter.api — GL-16).
 _LANE_KEY = "lane_discipline"
+#: Story Q3.4 — Dimension 8 (Calibration; REPORT-ONLY). The 8th and FINAL dimension — closing it
+#: closes the whole Project Quality Scorecard. REPORTS the reading-path calibration posture (the
+#: fresh-naive holdout is OWED/unmeasured → UNCALIBRATED → weak); it does NOT build the holdout
+#: harness or run any measurement (the owed epic reading-path-fresh-naive-holdout-pre-trial = DID
+#: Leak-4). Consults the REAL owed-state, NOT the presence of a resubstitution number.
+_CALIBRATION_KEY = "calibration"
 
 #: The named canonical dimension-key universe. Q1.3's GL-6 dimension-coverage
 #: meta-ratchet consumes this rail (a new dimension cannot be silently added
 #: without a human touching this tuple AND registering its honesty-pin). Q1.1
 #: established the constant; the meta-ratchet *test* is Q1.3; Q2.1 added
 #: ``cost_efficiency``; Q2.2 added ``coverage_honesty``; Q2.3 added ``fidelity_trust``;
-#: Q3.1 added ``capability_honesty``; Q3.2 added ``tracker_coherence``; Q3.3 adds
-#: ``lane_discipline`` here IN LOCKSTEP with registering its honesty-pin.
+#: Q3.1 added ``capability_honesty``; Q3.2 added ``tracker_coherence``; Q3.3 added
+#: ``lane_discipline``; Q3.4 adds ``calibration`` here IN LOCKSTEP with registering its
+#: honesty-pin — the 8th and FINAL dimension, closing the scorecard.
 _EXPECTED_CANONICAL_DIMENSION_KEYS: tuple[str, ...] = (
     _DID_KEY,
     _COST_KEY,
@@ -56,6 +63,7 @@ _EXPECTED_CANONICAL_DIMENSION_KEYS: tuple[str, ...] = (
     _CAPABILITY_KEY,
     _TRACKER_KEY,
     _LANE_KEY,
+    _CALIBRATION_KEY,
 )
 
 

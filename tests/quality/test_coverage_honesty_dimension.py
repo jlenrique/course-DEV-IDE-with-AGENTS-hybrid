@@ -466,6 +466,7 @@ def test_coverage_leak_aggregates_into_shared_ranked_list() -> None:
         "capability_honesty",
         "tracker_coherence",
         "lane_discipline",  # Q3.3 — SEVENTH contributor (governance: coverage-completeness gap)
+        "calibration",  # Q3.4 — EIGHTH (final) contributor (learner-trust: reading-path OWED)
     }
 
 

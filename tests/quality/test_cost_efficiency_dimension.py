@@ -414,6 +414,7 @@ def test_cost_leak_is_lane_grouped_among_did_paid_walk_leaks() -> None:
         "capability_honesty",
         "tracker_coherence",
         "lane_discipline",
+        "calibration",  # Q3.4 — EIGHTH (final) contributor (learner-trust: reading-path OWED)
     }
 
 

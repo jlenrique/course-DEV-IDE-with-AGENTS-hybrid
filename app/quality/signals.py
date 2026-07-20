@@ -2110,6 +2110,174 @@ def lane_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]
     }
 
 
+# ============================ calibration (Q3.4 — REPORT-ONLY) ============================
+#
+# Signal reader over the RECORDED calibration posture of the reading-path neck (GL-15 — reuse the
+# recorded state; NO parallel plumbing, NO measurement). ⛔ REPORT-ONLY: this READS the recorded
+# posture (the deferred entry / the pinned resubstitution report metadata) as PLAIN DATA — it does
+# NOT build the fresh-naive-holdout harness, does NOT run any measurement, and does NOT fabricate a
+# fresh number. Building the holdout stays the separate owed epic
+# reading-path-fresh-naive-holdout-pre-trial (DID Leak-4). The reader consults the REAL owed state —
+# does a fresh-naive-holdout MEASUREMENT exist for the neck? — NOT the mere presence of a
+# resubstitution number (resubstitution ≠ calibrated). Clean leaf: NO app.* import at all (the
+# posture is a curated module constant / an injectable mapping — plain data). Fail-soft per field —
+# it never raises and never invents a calibrated value.
+#
+# Mary's metric-citation rule (binding): every reading-path accuracy number carries
+# (subject=built-classifier|catalog-approach, substrate=fresh|stale@date). The reader surfaces the
+# SINGLE pinned resubstitution fact as LABELED evidence of what WAS run (resubstitution/upper-bound
+# on the consumed-14), NEVER as a generalization and NEVER as a fresh-naive number.
+
+#: ``cal_leak:`` tag, anchored to line start — an EIGHTH per-dimension namespace disjoint from the
+#: other seven so the calibration count/identity reconciliation never collides. 1 today (the
+#: reading-path fresh-naive-holdout OWED gap — cross-links DID Leak-4, counted once per namespace).
+_CALIBRATION_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cal_leak:")
+
+_CALIBRATION_SRC = (
+    "reading-path calibration posture (recorded; DID Leak-4) / "
+    "honest-built-classifier-measurement.json"
+)
+
+#: The SINGLE pinned resubstitution fact for the reading-path neck (the ONLY measured number).
+#: subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23, primary-key 0.071 (1/14) on the
+#: CONSUMED-14 held-out (now a non-naive dev set → resubstitution/upper-bound ONLY). Labeled
+#: ``measurement_kind='resubstitution/upper-bound'`` + ``is_generalization=False`` so a consumer
+#: can NEVER read it as a fresh-naive generalization. From
+#: p2-4b-honest-measurement-and-recalibration-2026-06-23.md / honest-built-classifier-measurement
+#: .json. The 0.93 was CATALOG-approach (Claude-labels), NOT the built classifier — deliberately
+#: NOT stored here (it is not a built-classifier number, never implied to be a fresh-naive figure).
+_READING_PATH_RESUBSTITUTION: Mapping[str, Any] = MappingProxyType(
+    {
+        "subject": "built-classifier (S1/S2/S3)",
+        "substrate": "fresh@2026-06-23",
+        "dataset": "consumed-14",
+        "primary_key_top1": 0.07142857142857142,
+        "primary_key_display": "0.071 (1/14)",
+        "measurement_kind": "resubstitution/upper-bound",
+        "is_generalization": False,
+        "report": "honest-built-classifier-measurement.json",
+    }
+)
+
+#: The RECORDED reading-path calibration posture (report-only curated record — the SSOT the live
+#: reader reads; the injectable ``posture`` arg reads a seeded posture WITHOUT this constant). The
+#: fresh NAIVE holdout is OWED / UNMEASURED — ``fresh_naive_holdout_measured=False`` — so the neck
+#: is UNCALIBRATED (Mary, binding: a fresh naive number has NOT been measured and none may imply).
+#: The resubstitution fact is carried as LABELED evidence of what WAS run, never as a fresh figure.
+#: Mirrors the capability reader's curated-evidence pattern (a bounded recorded signal, NOT a
+#: measurement); the close-path is REACHABLE via an injectable posture (report-only).
+_READING_PATH_CALIBRATION_POSTURE: Mapping[str, Any] = MappingProxyType(
+    {
+        "neck": "reading-path",
+        "fresh_naive_holdout_measured": False,
+        "owed_epic": "reading-path-fresh-naive-holdout-pre-trial",
+        "resubstitution": _READING_PATH_RESUBSTITUTION,
+    }
+)
+
+
+def reading_path_calibration_signal(posture: Any = None) -> dict[str, Any]:
+    """CAL1 — the reading-path calibration posture (REPORT-ONLY; the owed/uncalibrated read).
+
+    Reports whether a fresh-naive-holdout MEASUREMENT exists for the reading-path neck. Honest
+    today: it does NOT (the harness/artifact is OWED — DID Leak-4) → ``calibration_status ==
+    "uncalibrated"`` → ``weak`` (an owed/unmeasured neck scored UNCALIBRATED, NOT passing). The
+    reader surfaces the SINGLE pinned resubstitution fact (subject=built-classifier,
+    substrate=fresh@2026-06-23, primary-key 0.071/14, dataset=consumed-14,
+    report=honest-built-classifier-measurement.json) as LABELED evidence of what WAS run — clearly
+    ``measurement_kind='resubstitution/upper-bound'`` + ``is_generalization=False``, NEVER a
+    generalization and NEVER a fresh-naive number.
+
+    **Consults the REAL owed state (CV2/FT2/CH1 lesson):** ``reading_path_calibrated`` keys off
+    ``fresh_naive_holdout_measured`` (does the fresh-holdout MEASUREMENT exist?), NOT the mere
+    presence of a resubstitution number — a resubstitution number can NEVER award a calibrated level
+    (resubstitution ≠ calibrated). ``posture is None`` → the RECORDED posture (owed today); an
+    injectable ``Mapping`` reads a SEEDED posture (the reachable close-path / the isolating pin)
+    WITHOUT the recorded constant. Fail-soft: a non-mapping posture / a missing or non-bool
+    ``fresh_naive_holdout_measured`` (nothing-checkable) → ``status="unavailable"`` — never
+    "calibrated".
+
+    ⛔ REPORT-ONLY: NO measurement, NO live run, NO fabricated fresh number — reads the recorded
+    posture as plain data. Clean leaf: no ``app.*`` import.
+    """
+    if posture is None:
+        rec: Any = _READING_PATH_CALIBRATION_POSTURE
+    elif isinstance(posture, Mapping):
+        rec = posture
+    else:
+        return {"status": "unavailable", "source": _CALIBRATION_SRC}
+    measured = rec.get("fresh_naive_holdout_measured")
+    if not isinstance(measured, bool):
+        # nothing-checkable (absent / non-bool) is UNKNOWN, never calibrated (CV2/FT2/CH1) — and a
+        # resubstitution number can NEVER stand in for a fresh-naive-holdout measurement.
+        return {
+            "status": "unavailable",
+            "source": _CALIBRATION_SRC,
+            "note": (
+                "fresh_naive_holdout_measured is absent/non-bool — the owed-state is UNKNOWN, "
+                "never certified calibrated (a resubstitution number cannot stand in for it)."
+            ),
+        }
+    # The resubstitution fact as LABELED evidence of what WAS run — never a generalization, never a
+    # fresh-naive number. Read from the posture when supplied, else the pinned record.
+    resub_src = rec.get("resubstitution")
+    resub = dict(resub_src) if isinstance(resub_src, Mapping) else None
+    calibrated = measured is True
+    calibration_status = "calibrated" if calibrated else "uncalibrated"
+    return {
+        "status": "ok",
+        "source": _CALIBRATION_SRC,
+        "neck": rec.get("neck", "reading-path"),
+        "fresh_naive_holdout_measured": measured,
+        "reading_path_calibrated": calibrated,
+        "calibration_status": calibration_status,
+        "owed_epic": rec.get("owed_epic", "reading-path-fresh-naive-holdout-pre-trial"),
+        "resubstitution_evidence": resub,
+        "note": (
+            "the fresh NAIVE holdout is OWED/UNMEASURED (fresh_naive_holdout_measured=False) → "
+            "the reading-path neck is UNCALIBRATED → weak (an owed/unmeasured neck scored "
+            "uncalibrated, NOT passing). The ONLY measured number is the built-classifier "
+            "RESUBSTITUTION (subject=built-classifier, substrate=fresh@2026-06-23, primary-key "
+            "0.071/14 on the consumed-14) — surfaced as LABELED resubstitution/upper-bound "
+            "evidence of what WAS run, NEVER a generalization and NEVER a fresh-naive number "
+            "(Mary, binding). Consults the REAL owed-state (does a fresh-naive-holdout MEASUREMENT "
+            "exist?), NOT the presence of a resubstitution number — resubstitution ≠ calibrated. "
+            "Close-path reachable (report-only): when a fresh-naive-holdout measurement is "
+            "recorded (fresh_naive_holdout_measured=True) this reader detects it and CAL1 earns "
+            "strong. "
+            "⛔ REPORT-ONLY — reads the recorded posture; it does NOT build the holdout harness or "
+            "run any measurement (the owed epic DID Leak-4)."
+        ),
+    }
+
+
+def calibration_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
+    """calibration leak-count — count ``cal_leak:``-tagged OPEN entries in the deferred inventory
+    (an EIGHTH per-dimension namespace, disjoint from the other seven).
+
+    Same scoping as the sibling leak-count readers (fenced code / HTML comments / archived section
+    stripped; line-anchored tag). **1 today** (the reading-path fresh-naive-holdout OWED gap in the
+    ``## Calibration Scorecard Leak Registry`` — cross-links DID Leak-4, counted once).
+    Fail-soft: unreadable file → ``{"status": "unavailable", "calibration_leak_count": None}``.
+    """
+    p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {
+            "status": "unavailable",
+            "source": _DEFERRED_INVENTORY_REL,
+            "calibration_leak_count": None,
+        }
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    count = len(_CALIBRATION_LEAK_LINE_RE.findall(open_text))
+    return {
+        "status": "ok",
+        "source": _DEFERRED_INVENTORY_REL,
+        "calibration_leak_count": count,
+    }
+
+
 # ============================ signal → level derivation ============================
 #
 # THE anti-believed-green rule: a level is NEVER mechanically awarded a clean/uniform
@@ -2302,6 +2470,24 @@ def _level_ld_import_linter(signal: Any) -> str:
     return "strong" if broken == 0 else "weak"
 
 
+def _level_cal_reading_path(signal: Any) -> str:
+    """CAL1 (purely mechanical, SIGNAL-DERIVED; REPORT-ONLY): the recorded reading-path calibration
+    posture. ``reading_path_calibrated`` True (a fresh-naive-holdout MEASUREMENT exists) →
+    ``strong`` (the reachable close-path — report-only); ``reading_path_calibrated`` False (the
+    fresh holdout is OWED/unmeasured — today) → ``weak`` (an owed/unmeasured neck UNCALIBRATED);
+    non-ok / unknown / malformed → ``unavailable`` (nothing-checkable, never calibrated — a
+    resubstitution number can NEVER award a calibrated level). Keys off the REAL owed-state, NOT the
+    presence of a resubstitution number (the isolating pin proves it)."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    calibrated = signal.get("reading_path_calibrated")
+    if calibrated is True:
+        return "strong"
+    if calibrated is False:
+        return "weak"
+    return "unavailable"
+
+
 def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     """Derive a criterion's level from its signal (the anti-believed-green rule).
 
@@ -2346,4 +2532,10 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     # broken>0 → weak (a real forbidden-import regression); nothing-checked/malformed → unavailable.
     if criterion_key == "lane_discipline_import_linter":
         return _level_ld_import_linter(signal)
+    # Q3.4 — calibration CAL1 is purely mechanical (SIGNAL-DERIVED; REPORT-ONLY): the recorded
+    # reading-path calibration posture. A fresh-naive-holdout MEASUREMENT exists → strong (the
+    # reachable close-path); the fresh holdout is OWED/unmeasured (today) → weak (uncalibrated, NOT
+    # passing); nothing-checkable/malformed → unavailable (resubstitution ≠ calibrated).
+    if criterion_key == "reading_path_calibration_posture":
+        return _level_cal_reading_path(signal)
     return None

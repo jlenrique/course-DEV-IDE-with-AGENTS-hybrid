@@ -374,9 +374,10 @@ def test_capability_leak_aggregates_into_shared_ranked_list() -> None:
     # Q3.2 added tracker_coherence as a SIXTH; Q3.3 added lane_discipline as a SEVENTH (governance).
     assert set(dims) == {
         _DID_KEY, _COST_KEY, _COVERAGE_KEY, _FIDELITY_KEY, _CAPABILITY_KEY,
-        "tracker_coherence", "lane_discipline",
+        "tracker_coherence", "lane_discipline", "calibration",
     }
-    assert len(ranked) == 12  # 5 DID + 1 cost + 1 cov + 1 fid + 1 cap + 2 tracker + 1 lane
+    # 5 DID + 1 cost + 1 cov + 1 fid + 1 cap + 2 tracker + 1 lane + 1 cal = 13 (Q3.4 closed).
+    assert len(ranked) == 13
 
 
 def test_leak_coverage_clean_with_capability_dimension() -> None:

@@ -66,6 +66,7 @@ from app.quality.history import (
     trend_from_history,
 )
 from app.quality.scorecard import (
+    _CALIBRATION_KEY,
     _CAPABILITY_KEY,
     _COST_KEY,
     _COVERAGE_KEY,
@@ -83,6 +84,7 @@ from app.quality.signals import (
     _strip_fenced_code,
     _strip_html_comments,
     budget_stop_default_signal,
+    calibration_leak_count_signal,
     capability_leak_count_signal,
     capability_tier_reconciliation_signal,
     cost_leak_count_signal,
@@ -94,6 +96,7 @@ from app.quality.signals import (
     lane_leak_count_signal,
     level_from_signal,
     open_leak_count_signal,
+    reading_path_calibration_signal,
     semantic_fence_gating_signal,
     tracker_coherence_signal,
     tracker_doc_drift_signal,
@@ -125,6 +128,10 @@ _TRACKER_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?trk_leak:\s*(\S+)")
 #: namespace disjoint from the other six. 1 today (the coverage-completeness-UNVERIFIED gap —
 #: declared-clean ≠ verified-clean-coverage; LD1's declared-pass stays strong).
 _LANE_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?lane_leak:\s*(\S+)")
+#: Q3.4 — the calibration slug namespace (``cal_leak:``), an EIGHTH per-dimension namespace
+#: disjoint from the other seven. 1 today (the reading-path fresh-naive-holdout OWED gap —
+#: cross-links DID Leak-4, counted once per namespace).
+_CALIBRATION_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cal_leak:\s*(\S+)")
 
 
 def _registry_did_leak_slugs() -> set[str]:
@@ -184,6 +191,15 @@ def _registry_lane_leak_slugs() -> set[str]:
     text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
     open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     return {m.group(1) for m in _LANE_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_calibration_leak_slugs() -> set[str]:
+    """The OPEN ``cal_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``calibration_leak_count_signal`` counts them (Q3.4 per-dimension identity pin).
+    1 today (the reading-path fresh-naive-holdout OWED gap; cross-links DID Leak-4)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _CALIBRATION_LEAK_SLUG_RE.finditer(open_text)}
 
 
 def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
@@ -279,6 +295,14 @@ _SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
     # claim of clean while import-linter reports broken>0 → RED). The isolating pin proves the
     # reader consults the real broken-count, not the DECLARED contract count.
     "lane_discipline_import_linter": import_linter_lane_signal,
+    # Q3.4 — calibration CAL1 is purely mechanical (SIGNAL-DERIVED; REPORT-ONLY): the recorded
+    # reading-path calibration posture. The fresh NAIVE holdout is OWED/UNMEASURED →
+    # reading_path_calibrated=False → weak (an owed/unmeasured neck scored uncalibrated, NOT
+    # passing). This IS the epic's uncalibrated-not-passing honesty-pin: CAL1's level is tied to the
+    # REAL owed-state (a claim of calibrated while the holdout is owed → RED). The isolating pin
+    # proves the reader consults the owed-state, NOT the presence of a resubstitution number
+    # (resubstitution ≠ calibrated).
+    "reading_path_calibration_posture": reading_path_calibration_signal,
 }
 
 #: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
@@ -365,6 +389,24 @@ _HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
             "test_lane_discipline_isolating_pin_seeded_broken_drops_level",  # pin (a') isolating
             "test_lane_leak_count_reconciles_on_real_repo",  # pin (b) lane leak-count
             "test_lane_discipline_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.4 — calibration MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. Its pins: (a) the uncalibrated-not-passing
+    # pin (the epic's exact pin — CAL1's score FAILS if it claims calibrated/clean while the
+    # fresh-naive holdout is owed) + (a') the isolating pin (holds the resubstitution fact present
+    # and varies the owed-state, proving CAL1 consults the REAL owed-state, NOT the resubstitution
+    # number — resubstitution ≠ calibrated), (a'') the NEVER-IMPLY-MEASURED pin (the epic's
+    # signature — the prose/machine-block/signal must NEVER imply a fresh-naive number was measured;
+    # seed a fresh figure → RED), (b) calibration leak-count + slug identity (1 — cross-links DID
+    # Leak-4, no double-count), (c) arithmetic.
+    _CALIBRATION_KEY: frozenset(
+        {
+            "test_calibration_uncalibrated_not_passing_claim_matches_reader",  # pin (a)
+            "test_calibration_isolating_pin_owed_state_not_resubstitution",  # pin (a') isolating
+            "test_calibration_never_imply_measured",  # pin (a'') never-imply-measured (signature)
+            "test_calibration_leak_count_reconciles_on_real_repo",  # pin (b) calibration leak-count
+            "test_calibration_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
         }
     ),
 }
@@ -2491,3 +2533,411 @@ def test_lane_discipline_score_arithmetic_is_internally_consistent() -> None:
     dim = _real_block()["dimensions"][_LANE_KEY]
     assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
     assert dim["score"] == 75 and dim["band"] == "B"
+
+
+# =============================================================================== #
+# Story Q3.4 — calibration dimension honesty pins (the 5 registered in
+# _HONESTY_PIN_REGISTRY[_CALIBRATION_KEY]) + their RED-under-seeded proofs. CAL1 is
+# SIGNAL-DERIVED and REPORT-ONLY: the recorded reading-path calibration posture (the fresh NAIVE
+# holdout is OWED/UNMEASURED → uncalibrated → weak). The pins reuse the SAME pure helpers as the
+# siblings (_signal_derived_violations, _reconcile, _arithmetic_violations, _machine_block_leak
+# _slugs) — already iterating EVERY dimension, so coverage is structural. Doc↔code: each compares a
+# machine-block CLAIM against a CODE-computed reality (the recorded owed-state / the deferred
+# registry / the §8.5 arithmetic rule), never doc↔doc. This is the 8th and FINAL dimension — closing
+# closes the whole scorecard. ⛔ REPORT-ONLY: CAL1 reads the recorded posture; it NEVER measures.
+# =============================================================================== #
+
+_CAL1_KEY = "reading_path_calibration_posture"
+
+#: The never-imply-measured pin's forbidden pattern: a fresh-(naive-)holdout claim followed (within
+#: one sentence — ``[^.\n]`` never crosses a period) by a DECIMAL (``\d*\.\d+``) OR a PERCENT
+#: (``\d+\s*%`` — FIX C, so ``fresh-holdout accuracy: 93%`` no longer evades) number → an IMPLIED
+#: fresh-naive MEASUREMENT. The honest text keeps every number attributed to the built-classifier
+#: RESUBSTITUTION (a period always separates the "fresh naive holdout is OWED" clause from any
+#: figure), so it never matches; seeding "fresh-holdout accuracy: 0.93" / "…: 93%" DOES → RED.
+#:
+#: ⚠️ DELIBERATELY NARROW (do NOT broaden): the anchor is ``fresh`` (required) → optional ``naive`` →
+#: ``holdout`` → same-sentence → a decimal-or-percent AFTER it. Bare INTEGERS, a number BEFORE the
+#: holdout token, and a ``held-out`` anchor are ALL excluded ON PURPOSE — the honest text co-locates
+#: exactly those: "primary-key 0.071 (1/14) on the CONSUMED-14 held-out" (decimal BEFORE 'held-out',
+#: and 'held-out' ≠ 'holdout'), "reading-path-fresh-naive-holdout-pre-trial = DID Leak-4" (bare
+#: integer 4 with no period), and §1's "escalation 0.93 on the same run". Anchoring on any of those
+#: would RED the honest text (a regression, not a fix).
+_FRESH_NAIVE_NUMBER_RE = re.compile(
+    r"fresh[\s_-]*(?:naive[\s_-]*)?holdout[^.\n]{0,60}?\b(?:\d*\.\d+|\d+\s*%)", re.IGNORECASE
+)
+
+
+def _calibration_section_prose() -> str:
+    """FIX B — extract the §8 ``## Dimension 8 — Calibration`` PROSE section (the DECLARED
+    AUTHORITY: "The prose above is the authority; this mirrors the headline numbers") from
+    ``docs/quality/project-quality-scorecard.md`` — from that heading to the next top-level
+    ``## Dimension`` heading or ``---`` horizontal rule (whichever comes first). The machine-block
+    yaml mirror below the ``---`` is NOT included here (it is scanned separately via
+    :func:`_calibration_dimension_text`). The never-imply-measured guard scans this so the AUTHORITY
+    prose — not only the machine-block mirror — is held honest."""
+    doc = (_repo_root() / "docs/quality/project-quality-scorecard.md").read_text(encoding="utf-8")
+    lines = doc.splitlines()
+    start = next((i for i, ln in enumerate(lines) if ln.startswith("## Dimension 8")), None)
+    if start is None:
+        return ""
+    end = len(lines)
+    for j in range(start + 1, len(lines)):
+        if lines[j].startswith("## Dimension") or lines[j].strip() == "---":
+            end = j
+            break
+    return "\n".join(lines[start:end])
+
+
+def _never_imply_measured_violation(
+    scanned: list[tuple[str, str]], *, measured: bool
+) -> str | None:
+    """FIX A/B — the never-imply-measured guard as a PURE, owed-state-gated function. While the
+    fresh-naive-holdout owed-state is NOT measured (``measured=False`` — today), a
+    fresh-(naive-)holdout figure (decimal OR percent, within one sentence) is FORBIDDEN in ANY
+    ``(label, text)`` in ``scanned`` (the machine-block dim AND the §8 prose AUTHORITY). Once the
+    owed epic lands and a fresh-naive-holdout MEASUREMENT is recorded (``measured=True``), an HONEST
+    measured figure is ALLOWED — the guard must NEVER block the honest close-path (consistent with
+    the isolating + uncalibrated-not-passing pins, which already gate on the owed-state). Returns
+    the first offending ``"label: match"`` or ``None``."""
+    if measured:
+        return None
+    for label, text in scanned:
+        m = _FRESH_NAIVE_NUMBER_RE.search(text)
+        if m:
+            return f"{label}: {m.group(0)!r}"
+    return None
+
+
+def _calibration_dimension_text(dim: dict[str, Any]) -> str:
+    """Flatten EVERY string value in the calibration machine-block dimension (band_note + each
+    criterion's signal fact/caveat + evidence_ref + leak slugs) into one blob for the
+    never-imply-measured scan. Doc↔code: the scan is over the real machine-block dimension."""
+    parts: list[str] = []
+
+    def _collect(v: Any) -> None:
+        if isinstance(v, str):
+            parts.append(v)
+        elif isinstance(v, dict):
+            for x in v.values():
+                _collect(x)
+        elif isinstance(v, (list, tuple)):
+            for x in v:
+                _collect(x)
+
+    _collect(dim)
+    return "\n".join(parts)
+
+
+# --------------------------- pin (a) uncalibrated-not-passing (the epic's exact pin) --- #
+
+
+def test_calibration_uncalibrated_not_passing_claim_matches_reader() -> None:
+    """Pin (a) for calibration, GREEN today: the signal-derived CAL1
+    (``reading_path_calibration_posture``) level equals its reader's live output —
+    ``level_from_signal("reading_path_calibration_posture", reading_path_calibration_signal())``
+    == ``weak`` (the real recorded posture: the fresh NAIVE holdout is OWED/UNMEASURED →
+    ``reading_path_calibrated`` False → uncalibrated). The shared ``_signal_derived_violations``
+    scan (over every dimension) is also clean."""
+    block = _real_block()
+    assert _signal_derived_violations(block) == []
+    cal1 = block["dimensions"][_CALIBRATION_KEY]["criteria"][_CAL1_KEY]
+    derived = level_from_signal(_CAL1_KEY, reading_path_calibration_signal())
+    assert cal1["level"] == derived == "weak"
+
+
+def test_calibration_uncalibrated_claim_reds_on_dishonest_level() -> None:
+    """AC3 / GL-9 RED-under-seeded-edit — the epic's EXACT uncalibrated-not-passing pin: bump CAL1
+    to ``strong`` (claim CALIBRATED) on an in-memory copy WHILE the fresh holdout is still owed →
+    the pin (a) comparison FAILS (reader still says ``weak``). The real doc is never touched. The
+    score FAILS if it claims calibrated while the fresh-naive holdout is owed."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CALIBRATION_KEY]["criteria"][_CAL1_KEY]["level"] = "strong"
+    violations = _signal_derived_violations(block)
+    assert any(_CAL1_KEY in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "partial", "uniform"])
+def test_calibration_claim_reds_on_any_inflated_level(dishonest: str) -> None:
+    """AC3: any inflation of CAL1 above the reader-derived ``weak`` (with the fresh-naive holdout
+    still owed) is caught — an owed/unmeasured neck can never claim a non-weak calibrated level."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_CALIBRATION_KEY]["criteria"][_CAL1_KEY]["level"] = dishonest
+    assert _signal_derived_violations(block) != []
+
+
+def test_calibration_reader_reads_recorded_posture_close_path_reachable() -> None:
+    """The reader is grounded in the REAL recorded posture + the close-path is REACHABLE and
+    REPORT-ONLY (the Q3.1 CH1 pattern): the live (posture=None) reader reads the recorded posture
+    (fresh holdout OWED → weak); a SEEDED posture where a fresh-naive-holdout measurement EXISTS →
+    calibrated → strong (the pin never blocks the honest upgrade). No measurement is ever run."""
+    live = reading_path_calibration_signal()
+    assert live["fresh_naive_holdout_measured"] is False
+    assert live["reading_path_calibrated"] is False
+    assert live["calibration_status"] == "uncalibrated"
+    assert level_from_signal(_CAL1_KEY, live) == "weak"
+    # Close-path REACHABLE (report-only): a recorded fresh-naive-holdout measurement → calibrated →
+    # strong. Seeded posture, NOT a measurement.
+    recorded = reading_path_calibration_signal({"fresh_naive_holdout_measured": True})
+    assert recorded["reading_path_calibrated"] is True
+    assert level_from_signal(_CAL1_KEY, recorded) == "strong"
+
+
+def test_calibration_isolating_pin_owed_state_not_resubstitution() -> None:
+    """THE ISOLATING PIN (Q2.3 FT2 / Q3.1 CH1 lesson applied to Q3.4's central thesis). HOLD the
+    resubstitution fact PRESENT and VARY the owed-state axis:
+
+      * fresh_naive_holdout_measured False (+ resubstitution present) → uncalibrated → ``weak``
+        (today — the resubstitution number does NOT make it calibrated);
+      * fresh_naive_holdout_measured True  (+ resubstitution present) → calibrated → ``strong``.
+
+    A regressed impl that awarded ``strong`` because a resubstitution NUMBER is present would return
+    ``strong`` for BOTH → this test would RED the owed arm (it expects ``weak``). Proves CAL1
+    consulted the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the presence
+    of the resubstitution number — resubstitution ≠ calibrated."""
+    resub = {"subject": "built-classifier (S1/S2/S3)", "substrate": "fresh@2026-06-23",
+             "primary_key_top1": 1 / 14, "measurement_kind": "resubstitution/upper-bound"}
+    owed = reading_path_calibration_signal(
+        {"fresh_naive_holdout_measured": False, "resubstitution": resub}
+    )
+    assert owed["calibration_status"] == "uncalibrated"
+    # a resubstitution number does NOT calibrate:
+    assert level_from_signal(_CAL1_KEY, owed) == "weak"
+    # SAME resubstitution fact present, owed-state flipped to measured → calibrated → strong.
+    measured = reading_path_calibration_signal(
+        {"fresh_naive_holdout_measured": True, "resubstitution": resub}
+    )
+    assert measured["calibration_status"] == "calibrated"
+    assert level_from_signal(_CAL1_KEY, measured) == "strong"
+    assert _LEVEL_ORDER[level_from_signal(_CAL1_KEY, owed)] < _LEVEL_ORDER[
+        level_from_signal(_CAL1_KEY, measured)
+    ]
+
+
+# --------------------------- pin (a'') never-imply-measured (the signature pin) --------- #
+
+
+def test_calibration_never_imply_measured() -> None:
+    """AC3(a) — the epic's SIGNATURE honesty pin, GREEN today: the calibration dimension's text
+    (band_note + each criterion's signal fact/caveat + evidence_ref) MUST (i) carry the OWED/
+    unmeasured framing, (ii) carry Mary's ``(subject=built-classifier, substrate=fresh@date)``
+    citation on the resubstitution number, and (iii) NEVER imply a fresh-naive holdout number was
+    measured (no fresh-(naive-)holdout figure). Doc↔code: the scan is over the REAL block."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    text = _calibration_dimension_text(dim)
+    low = text.lower()
+    # (i) OWED/unmeasured framing present.
+    assert "owed" in low, "calibration text must carry the OWED framing"
+    assert ("unmeasured" in low or "not been measured" in low or "not measured" in low), (
+        "calibration text must state the fresh-naive holdout is UNMEASURED"
+    )
+    # (ii) Mary's (subject, substrate@date) citation on the resubstitution number.
+    assert "subject=built-classifier" in low, "missing Mary subject= citation"
+    assert "substrate=fresh@2026-06-23" in low, "missing Mary substrate@date citation"
+    assert "resubstitution" in low, "the measured number must be labelled resubstitution"
+    # (iii) NEVER a fresh-naive holdout figure (the never-imply-measured guarantee) — OWED-STATE-
+    # GATED (FIX A) and scanning BOTH the machine-block dim AND the §8 prose AUTHORITY (FIX B).
+    # While the fresh-naive holdout is OWED (today: fresh_naive_holdout_measured is not True) no
+    # fresh-naive figure may appear; once the owed epic records a measurement, an HONEST figure is
+    # ALLOWED (the guard must not block the honest close-path — same owed-state gating the isolating
+    # + uncalibrated-not-passing pins already use).
+    measured = reading_path_calibration_signal().get("fresh_naive_holdout_measured") is True
+    violation = _never_imply_measured_violation(
+        [("machine-block", text), ("§8 prose", _calibration_section_prose())],
+        measured=measured,
+    )
+    assert violation is None, (
+        f"calibration text implies a fresh-naive holdout number was measured while the owed epic "
+        f"is unlanded ({violation})"
+    )
+
+
+def test_calibration_never_imply_measured_reds_on_seeded_fresh_number() -> None:
+    """AC3(a) RED-under-seeded-edit — the never-imply-measured pin's proof: seed the calibration
+    band_note on a COPY to imply a fresh-naive number was measured ("fresh-holdout accuracy: 0.93")
+    → the negative assertion RED (the forbidden pattern matches). The real doc is never touched.
+    This is the epic's signature guard: the dimension that REPORTS calibration owed must NEVER
+    fabricate the very number it reports as owed."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_CALIBRATION_KEY]
+    dim["band_note"] = dim.get("band_note", "") + " fresh-holdout accuracy: 0.93"
+    text = _calibration_dimension_text(dim)
+    assert _FRESH_NAIVE_NUMBER_RE.search(text), "seeded fresh-naive figure must match the guard"
+
+
+def test_calibration_never_imply_measured_is_owed_state_gated() -> None:
+    """FIX A (Edge MED) RED-first — the never-imply-measured guard is OWED-STATE-GATED, not
+    unconditional. A fresh-naive figure seeded into the calibration text is FORBIDDEN while the
+    fresh-naive holdout is OWED (``measured=False`` — today's live state) but ALLOWED once a
+    fresh-naive-holdout MEASUREMENT is recorded (``measured=True`` — the honest close-path the owed
+    epic reaches). This mirrors the isolating + uncalibrated-not-passing pins, which already gate on
+    the owed-state; an UNCONDITIONAL guard would RED an HONEST measured fresh-naive number written
+    into the band_note once the owed epic lands — blocking the honest close-path. The seam is the
+    pure ``_never_imply_measured_violation`` helper the real pin delegates to."""
+    seeded = [("machine-block", "band_note fresh-holdout accuracy: 0.93")]
+    # OWED (today): the fresh-naive figure is FORBIDDEN → a violation is reported.
+    assert _never_imply_measured_violation(seeded, measured=False) is not None
+    # MEASURED (the recorded close-path): the honest figure is ALLOWED → NO violation (gated).
+    assert _never_imply_measured_violation(seeded, measured=True) is None
+    # The live owed-state is False today → the guard is STILL enforced today (behavior unchanged).
+    assert reading_path_calibration_signal()["fresh_naive_holdout_measured"] is False
+
+
+def test_calibration_never_imply_measured_scans_section_prose() -> None:
+    """FIX B (Blind MED) RED-first — the never-imply-measured guard scans the §8 markdown PROSE (the
+    DECLARED AUTHORITY, "the prose above is the authority"), not only the machine-block mirror. A
+    seeded COPY of the extracted prose with a fabricated fresh-naive figure is caught (proving the
+    authority is now scanned); the REAL §8 prose passes GREEN (no honest fresh-(naive-)holdout
+    figure co-located with a number in-sentence)."""
+    prose = _calibration_section_prose()
+    assert prose and prose.lstrip().startswith("## Dimension 8"), "must extract §8 section prose"
+    # The REAL §8 prose is honest → GREEN (no fresh-(naive-)holdout figure in-sentence).
+    hit = _FRESH_NAIVE_NUMBER_RE.search(prose)
+    assert hit is None, f"real §8 prose implies a fresh-naive holdout number was measured: {hit!r}"
+    # A seeded COPY of the authority prose → caught (the authority IS scanned).
+    seeded = prose + '\n\nseeded: fresh-holdout accuracy: 0.93'
+    assert _FRESH_NAIVE_NUMBER_RE.search(seeded) is not None
+
+
+def test_calibration_never_imply_measured_regex_covers_percent_form() -> None:
+    """FIX C (Blind/Edge/Acc — conservative) RED-first — the guard also catches a
+    fresh-(naive-)holdout token followed within ONE sentence by a PERCENT figure (``93%``,
+    ``93 %``), not only a decimal, so ``fresh-holdout accuracy: 93%`` can no longer evade. Bare
+    integers and number-BEFORE-holdout stay DELIBERATELY unmatched — the honest text co-locates them
+    (``... held-out ... 0.071`` has the number BEFORE 'held-out'; ``holdout-pre-trial = DID Leak-4``
+    is a bare integer with no period) — so anchoring on those would RED the honest text."""
+    # percent-form now matched:
+    assert _FRESH_NAIVE_NUMBER_RE.search("fresh naive holdout accuracy 93%") is not None
+    assert _FRESH_NAIVE_NUMBER_RE.search("fresh-holdout accuracy: 93 %") is not None
+    # decimal-form still matched:
+    assert _FRESH_NAIVE_NUMBER_RE.search("fresh-holdout accuracy: 0.93") is not None
+    # landmines stay UNMATCHED (matching them would RED the honest text):
+    assert _FRESH_NAIVE_NUMBER_RE.search("holdout-pre-trial = DID Leak-4") is None
+    number_before_heldout = "primary-key 0.071 (1/14) on the CONSUMED-14 held-out"
+    assert _FRESH_NAIVE_NUMBER_RE.search(number_before_heldout) is None
+
+
+def test_calibration_resubstitution_number_is_not_a_generalization() -> None:
+    """The reader surfaces the resubstitution fact as LABELED evidence of what WAS run — clearly
+    ``measurement_kind='resubstitution/upper-bound'`` + ``is_generalization=False`` — NEVER a
+    generalization and NEVER a fresh-naive number. A consumer can therefore never misread it as a
+    calibrated/fresh figure."""
+    resub = reading_path_calibration_signal()["resubstitution_evidence"]
+    assert resub["is_generalization"] is False
+    assert resub["measurement_kind"] == "resubstitution/upper-bound"
+    assert resub["subject"] == "built-classifier (S1/S2/S3)"
+    assert resub["substrate"] == "fresh@2026-06-23"
+
+
+def test_calibration_cal1_signal_derived() -> None:
+    """The honest derivation: CAL1 is ``signal-derived`` (the recorded-posture reader owns the
+    level) with a real reader + evidence_ref; ``level_from_signal`` returns a real level (weak)."""
+    crit = _real_block()["dimensions"][_CALIBRATION_KEY]["criteria"]
+    assert set(crit) == {_CAL1_KEY}
+    c = crit[_CAL1_KEY]
+    assert c["derivation"] == "signal-derived"
+    assert c["signal"]["reader"] == "app.quality.signals.reading_path_calibration_signal"
+    assert isinstance(c["evidence_ref"], str) and c["evidence_ref"]
+    assert level_from_signal(_CAL1_KEY, reading_path_calibration_signal()) == "weak"
+
+
+# --------------------------- pin (b) calibration leak-count + slug identity --------- #
+
+
+def test_calibration_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for calibration: the dimension's ``open_leaks`` == the count of ``cal_leak:``-tagged
+    OPEN entries in the ``## Calibration Scorecard Leak Registry`` == ``len(leaks)`` == 1. An EIGHTH
+    per-dimension ``cal_leak:`` namespace (NOT the other seven). Anti-drift: strike the tag →
+    count drops to 0, 1 != 0 → RED."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    count = calibration_leak_count_signal()["calibration_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_CALIBRATION_KEY}: open_leaks {dim.get('open_leaks')!r} != counted cal_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks == 1, (
+            f"{_CALIBRATION_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_calibration_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY for calibration: SET EQUALITY of the machine-block ``leaks`` slugs
+    vs the registry ``cal_leak:`` slugs — both == the single reading-path-OWED slug. A slug typo /
+    rename that keeps the count at 1 is caught here (a count-only reconciliation misses it)."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    slugs = _machine_block_leak_slugs(dim)
+    assert slugs == _registry_calibration_leak_slugs()
+    assert slugs == {"calibration-reading-path-fresh-naive-holdout-owed"}
+
+
+def test_calibration_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the calibration machine-block leak slug on a COPY → the identity pin RED
+    (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_CALIBRATION_KEY]
+    dim["leaks"][0]["slug"] = "calibration-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_calibration_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 1
+
+
+def test_calibration_leak_cross_links_did_leak4_no_double_count() -> None:
+    """AC4 cross-link / NO-double-count: the calibration ``cal_leak:`` slug and the DID
+    ``did_leak:`` DID-Leak-4 slug are the SAME underlying substrate (the reading-path holdout OWED)
+    but DISTINCT slugs in DISJOINT namespaces — counted ONCE each, never double-counted. Both are
+    present (the cross-link is real, not a dangling reference). This is the Q2.3/Q3.1 precedent."""
+    cal_slugs = _registry_calibration_leak_slugs()
+    did_slugs = _registry_did_leak_slugs()
+    assert "calibration-reading-path-fresh-naive-holdout-owed" in cal_slugs
+    assert "reading-path-fresh-naive-holdout-pre-trial" in did_slugs  # DID Leak-4 (the substrate)
+    # distinct slugs, disjoint namespaces → the shared substrate is not double-counted.
+    assert cal_slugs.isdisjoint(did_slugs)
+
+
+def test_eight_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 EIGHT-namespace disjointness (CLOSES the scorecard): the ``did_leak:`` / ``cost_leak:`` /
+    ``cov_leak:`` / ``fid_leak:`` / ``cap_leak:`` / ``trk_leak:`` / ``lane_leak:`` / ``cal_leak:``
+    readers do NOT cross-count, and their slug identity sets are pairwise disjoint. A tag in one
+    namespace must never inflate another dimension's count. (Extends the Q3.3 seven-namespace pin to
+    the 8th calibration namespace — the final dimension.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    trk = tracker_leak_count_signal()["tracker_leak_count"]
+    lane = lane_leak_count_signal()["lane_leak_count"]
+    cal = calibration_leak_count_signal()["calibration_leak_count"]
+    assert (did, cost, cov, fid, cap, trk, lane, cal) == (5, 1, 1, 1, 1, 2, 1, 1)
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+        "trk": _registry_tracker_leak_slugs(),
+        "lane": _registry_lane_leak_slugs(),
+        "cal": _registry_calibration_leak_slugs(),
+    }
+    assert len(slug_sets["cal"]) == 1
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# --------------------------- pin (c) calibration score-arithmetic ------------------ #
+
+
+def test_calibration_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for calibration: score↔level per §8.5 + Σscore/max→/100 == headline + band == the
+    shared §1.5/§8.5 boundary. CAL1 weak(1) = 1/4 → 25 → D. Doc↔code: the arithmetic RULE is the
+    code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_CALIBRATION_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 25 and dim["band"] == "D"

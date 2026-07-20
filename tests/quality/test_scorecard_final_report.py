@@ -347,20 +347,21 @@ def test_real_did_leaks_reconcile_with_open_leaks() -> None:
     """The real DID ``leaks`` list has exactly 5 entries == its ``open_leaks``. The
     cross-dimensional ranked list now AGGREGATES DID (5) + cost_efficiency (1) +
     coverage_honesty (1) + fidelity_trust (1) + capability_honesty (1) + tracker_coherence (2) +
-    lane_discipline (1) = 12 (GL-13; Q2.1 added cost_efficiency's ``leaks`` list, Q2.2 added
-    coverage_honesty's, Q2.3 added fidelity_trust's, Q3.1 added capability_honesty's, Q3.2 added
-    tracker_coherence's TWO governance leaks, Q3.3 added lane_discipline's ONE governance leak —
-    the coverage-completeness-unverified gap)."""
+    lane_discipline (1) + calibration (1) = 13 (GL-13; Q2.1 added cost_efficiency's ``leaks`` list,
+    Q2.2 added coverage_honesty's, Q2.3 added fidelity_trust's, Q3.1 added capability_honesty's,
+    Q3.2 added tracker_coherence's TWO governance leaks, Q3.3 added lane_discipline's ONE leak,
+    Q3.4 added calibration's ONE learner-trust leak — the reading-path fresh-naive-holdout OWED gap,
+    closing the 8-dimension scorecard)."""
     block = read_scorecard_block()
     dim = block["dimensions"][_DID_KEY]
     assert len(dim["leaks"]) == dim["open_leaks"] == 5
     # Ranked list = sum of every dimension's open_leaks (DID 5 + cost 1 + cov 1 + fid 1 + cap 1
-    # + tracker 2 + lane 1).
+    # + tracker 2 + lane 1 + calibration 1).
     total_open = sum(
         d.get("open_leaks", 0) for d in block["dimensions"].values() if isinstance(d, dict)
     )
-    assert total_open == 12
-    assert len(ranked_project_leaks(block)) == total_open == 12
+    assert total_open == 13
+    assert len(ranked_project_leaks(block)) == total_open == 13
 
 
 def test_leak_coverage_gaps_clean_on_real_repo() -> None:

@@ -205,6 +205,46 @@ The 1 open lane_discipline scorecard leak. The line's HTML comment gives its §7
 
 ---
 
+## Calibration Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN calibration scorecard leaks counted (line-anchored) by
+     app.quality.signals.calibration_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the calibration dimension in
+     docs/quality/project-quality-scorecard.md §8.6 (the calibration leak-count + slug-identity
+     honesty pins). EIGHTH `cal_leak:` namespace, disjoint from the DID `did_leak:`, cost
+     `cost_leak:`, coverage `cov_leak:`, fidelity `fid_leak:`, capability `cap_leak:`, tracker
+     `trk_leak:`, and lane `lane_leak:` tags so the eight counts never collide (verified by
+     test_eight_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: opening/closing a calibration leak == add/remove a cal_leak line HERE **and**
+     increment/decrement `open_leaks` + add/drop the `leaks:` entry in the scorecard, IN LOCKSTEP
+     (the pins reconcile the two — editing only one goes RED). Do NOT tag leaks under their deferred
+     entries: those migrate to §Closed Entries — Archived on close, which the reader excludes,
+     silently dropping the count while the scorecard is untouched.
+
+     ⛔ REPORT-ONLY: Q3.4's calibration dimension REPORTS the reading-path calibration posture; it
+     does NOT build the fresh-naive-holdout harness or run any measurement (that is the SEPARATE owed
+     epic reading-path-fresh-naive-holdout-pre-trial = DID Leak-4). The reading-path neck is
+     UNCALIBRATED — the fresh NAIVE holdout is OWED / UNMEASURED, and NONE may be implied (Mary,
+     binding). The ONLY measured number is the built-classifier RESUBSTITUTION (subject=built-
+     classifier(S1/S2/S3), substrate=fresh@2026-06-23: primary-key 0.071/14 on the CONSUMED-14) — a
+     resubstitution/upper-bound ONLY, surfaced as LABELED evidence of what WAS run, NEVER a fresh-naive
+     figure. So ONE leak is open today: the reading-path fresh-naive-holdout OWED gap (the DID Leak-4
+     owed-check precedent: an OWED/unmeasured check counts as a leak). CROSS-LINKS DID Leak-4
+     (did_leak: reading-path-fresh-naive-holdout-pre-trial, §1.6 C5) — the SAME underlying substrate,
+     but a DISTINCT slug in a DISJOINT namespace, counted ONCE per namespace (the Q2.3/Q3.1 cross-link
+     precedent), NOT double-counted (verified by test_calibration_leak_cross_links_did_leak4_no_double_count).
+     Closing this leak = the owed epic (record a fresh-naive-holdout measurement), at which point the
+     reading-path becomes calibrated and CAL1 earns strong (the path toward B). -->
+
+The 1 open calibration scorecard leak. The line's HTML comment gives its §8.6 criterion, its calibration leak number, and a pointer to the owning follow-on:
+
+- cal_leak: calibration-reading-path-fresh-naive-holdout-owed  <!-- [CAL1] Calibration Leak 1 — CAL1 (reading_path_calibration_signal) reports that the reading-path neck is UNCALIBRATED: the fresh NAIVE holdout MEASUREMENT is OWED / UNMEASURED (the harness/artifact does not exist — the owed epic reading-path-fresh-naive-holdout-pre-trial = DID Leak-4). A fresh naive number has NOT been measured and NONE may be implied (Mary, binding). The ONLY measured number is the built-classifier RESUBSTITUTION (subject=built-classifier(S1/S2/S3), substrate=fresh@2026-06-23: primary-key 0.071/14 on the CONSUMED-14 held-out) — a resubstitution/upper-bound ONLY (report honest-built-classifier-measurement.json), surfaced as LABELED evidence of what WAS run, NEVER a generalization and NEVER a fresh-naive figure. CAL1 consults the REAL owed-state (does a fresh-naive-holdout MEASUREMENT exist?), NOT the presence of a resubstitution number (resubstitution ≠ calibrated). Direction is fail-safe (an OWED measurement, not a silent overclaim). CROSS-LINKS DID Leak-4 (did_leak: reading-path-fresh-naive-holdout-pre-trial) — SAME substrate, DISTINCT slug/namespace, counted ONCE (NOT double-counted). Close = the owed epic (build the fresh-naive-holdout harness + record a fresh-naive-holdout measurement; the underlying follow-on lives inside the p2-4b entry [[reading-path-fresh-naive-holdout-pre-trial]] in ## Named-But-Not-Filed Follow-Ons) — at which point the reading-path becomes calibrated and CAL1 earns strong. ⛔ Q3.4 REPORTS the owed posture READ-ONLY; it never builds the harness or measures. -->
+
+`calibration_leak_count_signal()` == 1 == the §8.6 machine block's `open_leaks` == `len(leaks)`.
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |
