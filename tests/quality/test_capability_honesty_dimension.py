@@ -371,8 +371,11 @@ def test_capability_leak_aggregates_into_shared_ranked_list() -> None:
     non_gov = [i for i, ln in enumerate(lanes) if ln in ("paid-walk", "learner-trust")]
     assert cap_idx > max(non_gov)
     # FIVE dimensions now contribute (cross-dimensional).
-    assert set(dims) == {_DID_KEY, _COST_KEY, _COVERAGE_KEY, _FIDELITY_KEY, _CAPABILITY_KEY}
-    assert len(ranked) == 9  # 5 DID + 1 cost + 1 coverage + 1 fidelity + 1 capability
+    # Q3.2 added tracker_coherence as a SIXTH contributor (a governance leak).
+    assert set(dims) == {
+        _DID_KEY, _COST_KEY, _COVERAGE_KEY, _FIDELITY_KEY, _CAPABILITY_KEY, "tracker_coherence",
+    }
+    assert len(ranked) == 11  # 5 DID + 1 cost + 1 cov + 1 fid + 1 cap + 2 tracker
 
 
 def test_leak_coverage_clean_with_capability_dimension() -> None:

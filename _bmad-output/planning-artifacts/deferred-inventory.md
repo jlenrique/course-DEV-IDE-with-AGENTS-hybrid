@@ -137,6 +137,38 @@ The 1 open capability_honesty scorecard leak. Each line's HTML comment gives its
 
 ---
 
+## Governance/Tracker-Coherence Scorecard Leak Registry
+
+<!-- GOVERNANCE SECTION — NOT a deferred-work entry; it NEVER migrates on entry archival.
+     SSOT for the OPEN tracker_coherence scorecard leaks counted (line-anchored) by
+     app.quality.signals.tracker_leak_count_signal and reconciled — by COUNT and by SLUG
+     IDENTITY — against `open_leaks` + the `leaks:` list of the tracker_coherence dimension
+     in docs/quality/project-quality-scorecard.md §6.6 (the tracker leak-count +
+     slug-identity honesty pins). SIXTH `trk_leak:` namespace, disjoint from the DID
+     `did_leak:`, cost `cost_leak:`, coverage `cov_leak:`, fidelity `fid_leak:`, and capability
+     `cap_leak:` tags so the six counts never collide (verified by
+     test_six_leak_namespaces_are_disjoint_and_dont_cross_count).
+     MAINTENANCE RULE: closing a tracker leak == remove its trk_leak line HERE **and** decrement
+     `open_leaks` + drop the `leaks:` entry in the scorecard, IN LOCKSTEP (the pins reconcile the
+     two — editing only one goes RED). Do NOT tag leaks under their deferred entries: those
+     migrate to §Closed Entries — Archived on close, which the reader excludes, silently dropping
+     the count while the scorecard is untouched.
+
+     ⚠️ ZERO-LEAK CASE: this is the FIRST dimension whose count may legitimately be **0** — if the
+     status trackers reconcile to a CLEAN structural verdict AND the drift monitor gates, this
+     registry carries NO trk_leak line, the tracker_coherence dimension declares `open_leaks: 0` +
+     `leaks: []`, and the shared machinery handles that cleanly (leak_coverage_gaps treats
+     `open_leaks <= 0` as no gap; the leak-count identity pin reconciles 0 == 0). Today the
+     trackers are STRUCTURALLY DEGRADED (TC1) AND the drift monitor is advisory/never-gates (TC2),
+     so exactly TWO leaks are open below. -->
+
+The 2 open tracker_coherence scorecard leaks. Each line's HTML comment gives its §6.6 criterion, its tracker leak number, and a pointer to the owning work:
+
+- trk_leak: tracker-coherence-status-trackers-degraded-orphan-stories  <!-- [TC1] Tracker Leak 1 — progress_map.qualify_sources() reports a STRUCTURAL DEGRADED verdict across the status trackers (1 structural warning: orphan_stories — 269 story keys in sprint-status.yaml development_status do not match any epic-* prefix, so they are not owned by any declared epic). Time-based staleness is EXCLUDED from the verdict (deterministic). This is a real tracker-coherence divergence (a status tracker is internally incoherent), so tracker_coherence is NOT fully coherent → TC1 derives `partial`. Direction is fail-safe (a data-quality warning surfaced by the qualifier, not a silent overclaim). Close = reconcile sprint-status.yaml so every story key maps to a declared epic (or adjust the epic roster the qualifier recognizes) until the structural verdict is CLEAN — at which point tracker_coherence_signal() reports trackers_coherent=True and TC1 earns strong. ⛔ Q3.2 SCORES the tracker coherence READ-ONLY; it never edits a tracker or its tooling. -->
+- trk_leak: tracker-coherence-doc-drift-monitoring-advisory-never-gates  <!-- [TC2] Tracker Leak 2 — scripts/utilities/doc_drift_monitor.py EXISTS (code↔doc drift monitoring wired) but is an ADVISORY pre-push/CI heuristic (check_documentation_drift prints ✅/⚠ and at most sys.exits a non-blocking hook; no gates_production affordance, not wired into production_runner) → it does NOT gate a production run → tracker_doc_drift_signal() reports gates_production=False → TC2 derives `weak` (the fence-not-gating pattern, like coverage default-OFF / fidelity WARN-only). Direction is fail-safe (a monitor that under-enforces, not a silent overclaim). Close = wire the drift monitor to gate a production run (a truthy gates_production affordance the reader detects) — at which point tracker_doc_drift_signal() reports gates_production=True and TC2 earns strong. ⛔ Q3.2 SCORES the tracker coherence READ-ONLY; it never edits a tracker or its tooling (the gating wiring is a separate tooling act, not done here). -->
+
+---
+
 ## Backlog Epics â€” Full Scope Deferred
 
 | Epic | Focus | Stories | Story count | Reactivation trigger |

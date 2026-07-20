@@ -72,6 +72,7 @@ from app.quality.scorecard import (
     _DID_KEY,
     _EXPECTED_CANONICAL_DIMENSION_KEYS,
     _FIDELITY_KEY,
+    _TRACKER_KEY,
     read_scorecard_block,
 )
 from app.quality.signals import (
@@ -91,6 +92,9 @@ from app.quality.signals import (
     level_from_signal,
     open_leak_count_signal,
     semantic_fence_gating_signal,
+    tracker_coherence_signal,
+    tracker_doc_drift_signal,
+    tracker_leak_count_signal,
 )
 
 #: Captures the slug after a line-anchored ``did_leak:`` tag (mirrors the count
@@ -110,6 +114,10 @@ _FIDELITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?fid_leak:\s*(\S+)"
 #: Q3.1 — the capability_honesty slug namespace (``cap_leak:``), a FIFTH per-dimension
 #: namespace disjoint from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` / ``fid_leak:``.
 _CAPABILITY_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?cap_leak:\s*(\S+)")
+#: Q3.2 — the tracker_coherence slug namespace (``trk_leak:``), a SIXTH per-dimension
+#: namespace disjoint from the other five. May be EMPTY (the first dimension that can carry
+#: zero leaks — if the trackers reconcile to CLEAN).
+_TRACKER_LEAK_SLUG_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?trk_leak:\s*(\S+)")
 
 
 def _registry_did_leak_slugs() -> set[str]:
@@ -151,6 +159,15 @@ def _registry_capability_leak_slugs() -> set[str]:
     text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
     open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
     return {m.group(1) for m in _CAPABILITY_LEAK_SLUG_RE.finditer(open_text)}
+
+
+def _registry_tracker_leak_slugs() -> set[str]:
+    """The OPEN ``trk_leak:`` slugs in the real deferred-inventory registry — read the
+    SAME way ``tracker_leak_count_signal`` counts them (Q3.2 per-dimension identity pin).
+    May be EMPTY (the first dimension that can carry zero leaks)."""
+    text = (_repo_root() / _DEFERRED_INVENTORY_REL).read_text(encoding="utf-8")
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    return {m.group(1) for m in _TRACKER_LEAK_SLUG_RE.finditer(open_text)}
 
 
 def _machine_block_leak_slugs(dim: dict[str, Any]) -> set[str]:
@@ -232,6 +249,13 @@ _SIGNAL_DERIVED_READERS: dict[str, Callable[[], Any]] = {
     # (the workbook lag) → weak. This IS the epic's reconciliation honesty-pin: CH1's level
     # is tied to the reconciliation result (a claim of coherence while a mismatch exists → RED).
     "capability_tier_reconciliation_on": capability_tier_reconciliation_signal,
+    # Q3.2 — tracker_coherence is the ONLY FULLY-COMPUTED dimension (GL-7): BOTH criteria are
+    # signal-derived (no judgment level). TC1 keys off the REAL qualify_sources verdict
+    # (DEGRADED today → partial); TC2 keys off the code↔doc drift heuristic (no drift → partial,
+    # capped conservative). A claim of a coherent level while the divergence signal says
+    # otherwise → RED (the fully-computed structural pin + the seeded-divergence pin).
+    "tracker_divergence_coherence": tracker_coherence_signal,
+    "tracker_doc_drift": tracker_doc_drift_signal,
 }
 
 #: GL-6 pin registry — each canonical dimension → the honesty-pins registered for
@@ -290,6 +314,20 @@ _HONESTY_PIN_REGISTRY: dict[str, frozenset[str]] = {
             "test_capability_reconciliation_claim_matches_reader",  # pin (a) reconciliation-claim
             "test_capability_leak_count_reconciles_on_real_repo",  # pin (b) capability leak-count
             "test_capability_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
+        }
+    ),
+    # Q3.2 — tracker_coherence MUST register ≥1 pin or the GL-6 meta-ratchet
+    # (test_every_dimension_has_a_honesty_pin) reds it. The ONLY FULLY-COMPUTED dimension
+    # (GL-7): the pins are (a) the fully-computed structural pin (no criterion carries a
+    # judgment derivation AND every level == its reader) + the seeded-divergence pin (a
+    # seeded three-tracker disagreement lowers the score; a coherent claim while diverging →
+    # RED), (b) tracker leak-count + slug identity, (c) arithmetic.
+    _TRACKER_KEY: frozenset(
+        {
+            "test_tracker_coherence_is_fully_computed_no_judgment",  # pin (a) GL-7 fully-computed
+            "test_tracker_seeded_divergence_lowers_score",  # pin (a') GL-7 seeded-divergence
+            "test_tracker_leak_count_reconciles_on_real_repo",  # pin (b) tracker leak-count
+            "test_tracker_score_arithmetic_is_internally_consistent",  # pin (c) arithmetic
         }
     ),
 }
@@ -1899,3 +1937,311 @@ def test_capability_score_arithmetic_is_internally_consistent() -> None:
     dim = _real_block()["dimensions"][_CAPABILITY_KEY]
     assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
     assert dim["score"] == 50 and dim["band"] == "C"
+
+
+# =============================================================================== #
+# Story Q3.2 — tracker_coherence dimension honesty pins (the 4 registered in
+# _HONESTY_PIN_REGISTRY[_TRACKER_KEY]) + their RED-under-seeded proofs. This is the ONLY
+# FULLY-COMPUTED dimension (GL-7): BOTH criteria are signal-derived — there is NO
+# hand-authored judgment level. The pins reuse the SAME pure helpers as the siblings
+# (_signal_derived_violations, _reconcile, _arithmetic_violations, _machine_block_leak_slugs)
+# — the helpers already iterate EVERY dimension, so coverage is structural. Doc↔code: each
+# compares a machine-block CLAIM against a CODE-computed reality (the qualify_sources verdict
+# / the doc-drift heuristic / the deferred-inventory registry / the §6.5 arithmetic rule),
+# never doc↔doc. This is the FIRST dimension whose leak count may legitimately be 0.
+# =============================================================================== #
+
+_TC1_KEY = "tracker_divergence_coherence"
+_TC2_KEY = "tracker_doc_drift"
+
+#: level → §1.5 score, for asserting a seeded divergence LOWERS the computed score.
+_LEVEL_ORDER: dict[str, int] = {"absent": 0, "weak": 1, "partial": 2, "strong": 3, "uniform": 4}
+
+
+# --------- fixtures: hermetic coherent vs seeded-divergent status trackers --------- #
+
+
+def _write_coherent_trackers(tmp_path: Path) -> dict[str, Path]:
+    """Three hermetic status-tracker fixtures that reconcile to a CLEAN qualify_sources
+    verdict: sprint-status with an epic + stories that all map to it (no orphans, known
+    statuses, fresh), and the two handoff files carrying MATCHING next-step guidance (no
+    cross-tracker next_step_conflict)."""
+    import datetime as _dt
+
+    today = _dt.datetime.now(tz=_dt.UTC).strftime("%Y-%m-%d")
+    sprint = tmp_path / "sprint-status.yaml"
+    sprint.write_text(
+        f"last_updated: {today}\n"
+        "development_status:\n"
+        "  epic-1: done\n"
+        "  1-1-alpha: done\n"
+        "  1-2-beta: in-progress\n",
+        encoding="utf-8",
+    )
+    next_step = "Dispatch story 1-2-beta then run the coverage gate before audio spend."
+    handoff = tmp_path / "SESSION-HANDOFF.md"
+    handoff.write_text(
+        f"# Handoff\n\n## What Is Next\n\n{next_step}\n\n"
+        "## Unresolved Issues\n\nNone blocking; the trackers are mutually coherent today.\n",
+        encoding="utf-8",
+    )
+    nxt = tmp_path / "next-session-start-here.md"
+    nxt.write_text(
+        f"# Next session\n\n## Immediate Next Action\n\n{next_step}\n\n"
+        "## Key Risks / Unresolved Issues\n\nNone blocking; coherent trackers this session.\n",
+        encoding="utf-8",
+    )
+    return {"sprint": sprint, "handoff": handoff, "next": nxt}
+
+
+def _write_divergent_trackers(tmp_path: Path) -> dict[str, Path]:
+    """Three hermetic status-tracker fixtures that DISAGREE (a seeded three-tracker
+    disagreement → a DEGRADED-or-worse qualify_sources verdict): (1) sprint-status carries an
+    ORPHAN story owned by no epic (tracker 1 internally incoherent); (2)+(3) the two handoff
+    files give CONFLICTING next-step guidance (the cross-tracker next_step_conflict — trackers
+    2 & 3 disagree)."""
+    import datetime as _dt
+
+    today = _dt.datetime.now(tz=_dt.UTC).strftime("%Y-%m-%d")
+    sprint = tmp_path / "sprint-status.yaml"
+    sprint.write_text(
+        f"last_updated: {today}\n"
+        "development_status:\n"
+        "  epic-1: done\n"
+        "  1-1-alpha: done\n"
+        "  zz-9-orphaned-story: done\n",  # matches no epic-* prefix → orphan_stories warn
+        encoding="utf-8",
+    )
+    handoff = tmp_path / "SESSION-HANDOFF.md"
+    handoff.write_text(
+        "# Handoff\n\n## What Is Next\n\nShip the workbook cover assembly and close Epic 40.\n\n"
+        "## Unresolved Issues\n\nThe two handoff surfaces disagree on the next action.\n",
+        encoding="utf-8",
+    )
+    nxt = tmp_path / "next-session-start-here.md"
+    nxt.write_text(
+        "# Next session\n\n## Immediate Next Action\n\nRun the Q3.4 reading-path holdout first.\n\n"
+        "## Key Risks / Unresolved Issues\n\nNext-step guidance conflicts across handoff files.\n",
+        encoding="utf-8",
+    )
+    return {"sprint": sprint, "handoff": handoff, "next": nxt}
+
+
+def _qualify_over_fixtures(monkeypatch: pytest.MonkeyPatch, files: dict[str, Path]) -> dict:
+    """Run the REAL ``progress_map.qualify_sources`` over hermetic fixture trackers by pointing
+    its module-level source paths at the fixtures (read-only — the real trackers are untouched).
+    This exercises the real qualifier end-to-end over seeded trackers (per the story)."""
+    import scripts.utilities.progress_map as pm
+
+    monkeypatch.setattr(pm, "SPRINT_STATUS", files["sprint"])
+    monkeypatch.setattr(pm, "SESSION_HANDOFF", files["handoff"])
+    monkeypatch.setattr(pm, "NEXT_SESSION", files["next"])
+    return pm.qualify_sources()
+
+
+# ---------------- pin (a) GL-7 fully-computed structural pin ---------------- #
+
+
+def test_tracker_coherence_is_fully_computed_no_judgment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Pin (a) / GL-7 (THE point of Q3.2): the tracker_coherence dimension is FULLY-COMPUTED —
+    NO criterion carries a ``judgment`` / ``judgment-with-evidence`` derivation, every criterion
+    is registered in ``_SIGNAL_DERIVED_READERS``, and every level == its reader's live output.
+    A hand-judged coherence level would be believed-green in the very dimension that scores
+    believed-green, so there is nothing to hand-judge here. GREEN today: TC1 == partial (the
+    DEGRADED qualify_sources verdict) and TC2 == partial (no active code↔doc drift)."""
+    _clear_fence_env(monkeypatch)
+    _clear_budget_env(monkeypatch)
+    _clear_coverage_env(monkeypatch)
+    block = _real_block()
+    dim = block["dimensions"][_TRACKER_KEY]
+    crit = dim["criteria"]
+    # (i) NO judgment field anywhere on this dimension — every criterion is signal-derived.
+    for key, c in crit.items():
+        assert c["derivation"] == "signal-derived", (
+            f"{key}: tracker_coherence is FULLY-COMPUTED — no judgment level allowed "
+            f"(got derivation={c['derivation']!r})"
+        )
+        assert key in _SIGNAL_DERIVED_READERS, f"{key}: no registered signal reader"
+        assert c["signal"]["reader"].startswith("app.quality.signals.")
+    # (ii) every level == level_from_signal(reader()) — the fully-computed identity.
+    for key, c in crit.items():
+        derived = level_from_signal(key, _SIGNAL_DERIVED_READERS[key]())
+        assert c["level"] == derived, f"{key}: block level {c['level']!r} != reader {derived!r}"
+    # concrete witnesses (today's honest posture):
+    assert crit[_TC1_KEY]["level"] == level_from_signal(_TC1_KEY, tracker_coherence_signal())
+    assert crit[_TC2_KEY]["level"] == level_from_signal(_TC2_KEY, tracker_doc_drift_signal())
+    assert crit[_TC1_KEY]["level"] == "partial"  # STRUCTURAL DEGRADED verdict today
+    assert crit[_TC2_KEY]["level"] == "weak"  # drift monitoring advisory / never-gates today
+    # and the shared signal-derived scan (over EVERY dimension) is clean.
+    assert _signal_derived_violations(block) == []
+
+
+def test_tracker_fully_computed_pin_reds_on_judgment_derivation() -> None:
+    """Pin (a) RED-under-seeded — the GL-7 anti-hand-judge guard: relabel a tracker_coherence
+    criterion to ``judgment-with-evidence`` (the believed-green hole — a hand-authored level)
+    AND inflate it on an in-memory copy. The doc-driven ``_signal_derived_violations`` half
+    would SKIP it (it no longer self-declares signal-derived), but the CODE-driven
+    ``_mechanical_criteria_violations`` half catches BOTH the de-mechanization and the level
+    lie — a code-known mechanical criterion cannot be relabelled to dodge the pin. Real doc
+    untouched."""
+    block = copy.deepcopy(_real_block())
+    c = block["dimensions"][_TRACKER_KEY]["criteria"][_TC1_KEY]
+    c["derivation"] = "judgment-with-evidence"  # dodge attempt (hand-judge the coherence)
+    c["level"] = "strong"  # the inflation being hidden
+    assert not any(_TC1_KEY in v for v in _signal_derived_violations(block))  # doc-half skips
+    violations = _mechanical_criteria_violations(block)
+    assert any(_TC1_KEY in v and "de-mechanized" in v for v in violations), violations
+    assert any(_TC1_KEY in v and "reader-derived" in v for v in violations), violations
+
+
+@pytest.mark.parametrize("dishonest", ["strong", "uniform"])
+def test_tracker_coherence_claim_reds_on_inflated_level(dishonest: str) -> None:
+    """Pin (a) RED-under-seeded: bump TC1 to a coherent level (``strong``/``uniform``) on an
+    in-memory copy WHILE qualify_sources reports DEGRADED → ``_signal_derived_violations``
+    FAILS (reader still says ``partial``). The real doc is never touched. The score cannot
+    CLAIM coherence while the trackers actually diverge."""
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_TRACKER_KEY]["criteria"][_TC1_KEY]["level"] = dishonest
+    violations = _signal_derived_violations(block)
+    assert any(_TC1_KEY in v for v in violations), violations
+
+
+# ---------------- pin (a') GL-7 seeded-divergence pin ---------------- #
+
+
+def test_tracker_seeded_divergence_lowers_score(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Pin (a') / GL-7 seeded-divergence (the epic AC): run the REAL ``qualify_sources`` over a
+    COHERENT three-tracker fixture set vs a seeded THREE-tracker-DISAGREEMENT fixture set, and
+    assert the seeded divergence LOWERS the computed coherence level. The coherent set → CLEAN →
+    ``strong``; the divergent set (an orphan story + conflicting handoff next-steps) → a
+    DEGRADED-or-worse verdict → a strictly LOWER level. RED-under-seeded: a machine block that
+    CLAIMS the coherent ``strong`` while the divergent fixtures diverge → ``_signal_derived_
+    violations`` FAILS. Uses REAL qualify_sources reads over hermetic fixtures — the real
+    trackers are never touched."""
+    coherent_dir = tmp_path / "coherent"
+    coherent_dir.mkdir()
+    coherent = _qualify_over_fixtures(monkeypatch, _write_coherent_trackers(coherent_dir))
+    monkeypatch.undo()
+    divergent_dir = tmp_path / "divergent"
+    divergent_dir.mkdir()
+    divergent = _qualify_over_fixtures(monkeypatch, _write_divergent_trackers(divergent_dir))
+    coherent_level = level_from_signal(_TC1_KEY, tracker_coherence_signal(coherent))
+    divergent_level = level_from_signal(_TC1_KEY, tracker_coherence_signal(divergent))
+    # the coherent set reconciles to CLEAN → strong; the seeded divergence drops it.
+    assert coherent["verdict"] == "CLEAN", coherent
+    assert coherent_level == "strong"
+    assert divergent["verdict"] in {"DEGRADED", "FAIL"}, divergent
+    assert _LEVEL_ORDER[divergent_level] < _LEVEL_ORDER[coherent_level], (
+        f"seeded divergence did not lower the score: {divergent_level} !< {coherent_level}"
+    )
+    # RED-under-seeded: a block CLAIMING the coherent 'strong' while the divergent signal says
+    # otherwise is caught by the fully-computed pin (a) comparison.
+    block = copy.deepcopy(_real_block())
+    block["dimensions"][_TRACKER_KEY]["criteria"][_TC1_KEY]["level"] = "strong"
+    assert any(_TC1_KEY in v for v in _signal_derived_violations(block))
+
+
+def test_tracker_coherence_reader_tracks_real_qualify_verdict(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The live (qualify_result=None) reader consults the REAL ``qualify_sources`` end-to-end
+    over hermetic fixtures (monkeypatched module paths) — a CLEAN fixture set → ``strong`` —
+    proving the reader is grounded in the real qualifier, not a hardcoded verdict, AND the
+    close-path to ``strong`` is reachable and READ-ONLY (the real trackers are never touched)."""
+    files = _write_coherent_trackers(tmp_path)
+    import scripts.utilities.progress_map as pm
+
+    monkeypatch.setattr(pm, "SPRINT_STATUS", files["sprint"])
+    monkeypatch.setattr(pm, "SESSION_HANDOFF", files["handoff"])
+    monkeypatch.setattr(pm, "NEXT_SESSION", files["next"])
+    live = tracker_coherence_signal()  # qualify_result=None → real qualify_sources over fixtures
+    assert live["verdict"] == "CLEAN"
+    assert level_from_signal(_TC1_KEY, live) == "strong"
+
+
+# ---------------- pin (b) tracker leak-count + slug identity ---------------- #
+
+
+def test_tracker_leak_count_reconciles_on_real_repo() -> None:
+    """Pin (b) for tracker_coherence: the dimension's ``open_leaks`` == the count of
+    ``trk_leak:``-tagged OPEN entries in the ``## Governance/Tracker-Coherence Scorecard Leak
+    Registry`` == ``len(leaks)`` == 1. A SIXTH per-dimension ``trk_leak:`` namespace. Anti-drift:
+    strike the ``trk_leak:`` tag → count drops to 0, 1 != 0 → RED. This dimension is ALSO the
+    first whose count could legitimately be 0 — ``_reconcile(0, 0)`` handles that cleanly (see
+    the zero-leak-path lock-in in test_tracker_coherence_dimension.py)."""
+    dim = _real_block()["dimensions"][_TRACKER_KEY]
+    count = tracker_leak_count_signal()["tracker_leak_count"]
+    assert _reconcile(dim.get("open_leaks"), count), (
+        f"{_TRACKER_KEY}: open_leaks {dim.get('open_leaks')!r} != counted trk_leak: {count}"
+    )
+    leaks = dim.get("leaks")
+    open_leaks = dim.get("open_leaks")
+    if isinstance(leaks, list) and isinstance(open_leaks, int) and not isinstance(
+        open_leaks, bool
+    ):
+        assert len(leaks) == open_leaks, (
+            f"{_TRACKER_KEY}: structured leaks len {len(leaks)} != open_leaks {open_leaks}"
+        )
+
+
+def test_tracker_machine_block_leak_slugs_match_registry_identity() -> None:
+    """AC4 reconcile-by-IDENTITY for tracker_coherence: SET EQUALITY of the machine-block
+    ``leaks`` slugs vs the registry ``trk_leak:`` slugs — a slug typo / rename that keeps the
+    count at 1 is caught here, which a count-only reconciliation misses."""
+    dim = _real_block()["dimensions"][_TRACKER_KEY]
+    assert _machine_block_leak_slugs(dim) == _registry_tracker_leak_slugs()
+
+
+def test_tracker_slug_identity_reds_on_seeded_typo_while_count_stays_green() -> None:
+    """AC4 RED-first: typo the tracker machine-block leak slug on a COPY → the identity pin RED
+    (set inequality) while the count still reconciles (len==open_leaks==1)."""
+    block = copy.deepcopy(_real_block())
+    dim = block["dimensions"][_TRACKER_KEY]
+    dim["leaks"][0]["slug"] = "tracker-coherence-typo"
+    assert _machine_block_leak_slugs(dim) != _registry_tracker_leak_slugs()
+    assert len(dim["leaks"]) == dim["open_leaks"] == 2
+
+
+def test_six_leak_namespaces_are_disjoint_and_dont_cross_count() -> None:
+    """AC4 SIX-namespace disjointness: the ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` /
+    ``fid_leak:`` / ``cap_leak:`` / ``trk_leak:`` readers do NOT cross-count, and their slug
+    identity sets are pairwise disjoint. A tag in one namespace must never inflate another
+    dimension's count. (Extends the Q3.1 five-namespace pin to the sixth tracker namespace.)"""
+    from itertools import combinations
+
+    did = open_leak_count_signal()["open_leak_count"]
+    cost = cost_leak_count_signal()["cost_leak_count"]
+    cov = coverage_leak_count_signal()["coverage_leak_count"]
+    fid = fidelity_leak_count_signal()["fidelity_leak_count"]
+    cap = capability_leak_count_signal()["capability_leak_count"]
+    trk = tracker_leak_count_signal()["tracker_leak_count"]
+    assert did == 5 and cost == 1 and cov == 1 and fid == 1 and cap == 1 and trk == 2
+    slug_sets = {
+        "did": _registry_did_leak_slugs(),
+        "cost": _registry_cost_leak_slugs(),
+        "cov": _registry_coverage_leak_slugs(),
+        "fid": _registry_fidelity_leak_slugs(),
+        "cap": _registry_capability_leak_slugs(),
+        "trk": _registry_tracker_leak_slugs(),
+    }
+    assert len(slug_sets["trk"]) == 2
+    for a, b in combinations(slug_sets, 2):
+        assert slug_sets[a].isdisjoint(slug_sets[b]), (
+            f"{a} and {b} leak namespaces overlap: {slug_sets[a] & slug_sets[b]}"
+        )
+
+
+# ---------------- pin (c) tracker score-arithmetic ---------------- #
+
+
+def test_tracker_score_arithmetic_is_internally_consistent() -> None:
+    """Pin (c) for tracker_coherence: score↔level per §6.5 + Σscore/max→/100 == headline
+    + band == the shared §1.5/§6.5 boundary. TC1 partial(2) + TC2 weak(1) = 3/8 → 38 → D
+    (< 40). Doc↔code: the arithmetic RULE is the code source (``_arithmetic_violations``)."""
+    dim = _real_block()["dimensions"][_TRACKER_KEY]
+    assert _arithmetic_violations(dim) == [], _arithmetic_violations(dim)
+    assert dim["score"] == 38 and dim["band"] == "D"

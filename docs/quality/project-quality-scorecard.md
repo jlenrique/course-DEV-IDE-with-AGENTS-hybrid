@@ -397,6 +397,76 @@ Every time capability substrate changes (a producer lands, a tier is party-ratif
 
 ---
 
+## Dimension 6 — Governance / tracker-coherence
+
+> **Why this dimension is load-bearing for this project.** The project is steered from its status trackers — `sprint-status.yaml`, `SESSION-HANDOFF.md` / `next-session-start-here.md`, and the horizon docs (SOTA, deferred-inventory). Every session hot-start and every dispatch decision reads them. If the trackers silently DISAGREE — a story owned by no epic, an unknown status token, next-step guidance that conflicts across the two handoff files — the operator is steered by a **believed-green map**: the trackers *look* authoritative while they quietly diverge. And if the code↔doc drift monitor that is supposed to catch docs falling behind code never actually gates anything, that's a *second* coherence gap. This dimension scores **whether the EXTERNAL status trackers are COHERENT (via `progress_map.qualify_sources()`) and whether the code↔doc drift monitor is WIRED and GATING (via `doc_drift_monitor`)**, with no parallel plumbing (GL-15). It measures the trackers, NOT the scorecard's own internal coherence (that is already pinned by Q1.3 — the mirror + leak-identity pins — and re-checking it here would be the self-referential recursion this dimension deliberately avoids).
+
+### 6.0 The rule (one line)
+
+**A project's status trackers must AGREE — with each other and with the code — and any disagreement must LOWER the coherence score, never be paintable away.** The whole point (GL-7): this coherence score is itself scored HONESTLY — it is **fully-computed from real, DETERMINISTIC signals**, so it cannot rise while the trackers actually diverge, and it cannot flap on wall-clock time or per-commit noise.
+
+**⛔ GL-7 — the FULLY-COMPUTED declaration (binding).** This is the ONLY dimension with **NO hand-authored judgment level**: BOTH criteria are `derivation: signal-derived`, and each level == `level_from_signal(reader())`. A hand-judged coherence score would be believed-green in the very dimension that exists to catch believed-green — so there is nothing to hand-judge here. A structural pin asserts no `tracker_coherence` criterion carries a `judgment` / `judgment-with-evidence` derivation.
+
+**⛔ READ-ONLY.** This dimension SCORES the tracker coherence; it CONSUMES `qualify_sources` / `doc_drift_monitor` read-only and **NEVER edits a tracker or its tooling.**
+
+**Determinism (binding, post-review).** Both signals are STABLE: TC1 recomputes coherence from qualify_sources' **structural** findings only — TIME-BASED staleness is EXCLUDED, so a structurally-coherent tracker set never flips CLEAN→DEGRADED merely because time passed. TC2 reads the drift-monitor's **wiring/gating posture**, NOT the volatile per-commit `git HEAD~1..HEAD` drift — **no git is run at scorecard-read time.** A persisted scorecard level must not change with the clock or the next commit.
+
+### 6.5 Scoring rubric
+
+Two criteria, each scored 0–4 (0 absent · 1 weak · 2 partial · 3 strong · 4 uniform/complete). Sum → /8, normalized to /100. Bands: **A** ≥90 · **B** 75–89 · **B−** 60–74 · **C** 40–59 · **D** <40 (shared with §1.5). **Both criteria are `signal-derived` (GL-7 fully-computed).**
+
+**⚠️ Band ceiling — B (disclosed, do NOT chase A).** Both criteria cap at `strong` (score 3) mechanically — `level_from_signal` never awards `uniform` (4) for a signal-derived criterion. So the maximum attainable is 3+3 = 6/8 = **75 → Band B**. An A is structurally unreachable for this fully-computed dimension; the honest target is B (both close-paths reached).
+
+| # | Criterion | What the top attainable (`strong`, 3/4) looks like |
+|---|---|---|
+| TC1 | **Tracker-divergence coherence — the status trackers agree** | `progress_map.qualify_sources()` yields a **CLEAN STRUCTURAL verdict** across the status trackers — no structural error, no structural warning (orphan-stories / next_step_conflict / heading & structure drift / status-vocab / epic-presence) → `trackers_coherent` is `True` → `strong`. Structural DEGRADED (warnings) → `partial`; structural FAIL (errors) → `weak`; the qualifier unrunnable / findings missing or malformed / a verdict↔count contradiction → `unavailable` (never silently coherent). **Time-based staleness is EXCLUDED** from the verdict (deterministic). DEGRADED→partial is coarse-by-design (the `divergence_count` is surfaced as evidence, not scaled into the level). |
+| TC2 | **Code↔doc drift monitoring — the monitor is wired AND gating** | `doc_drift_monitor` is WIRED (the drift-check functions exist) **and GATES a production run** (`gates_production` truthy) → `strong`. WIRED but **ADVISORY** (a pre-push heuristic that never gates a production run — `gates_production` false) → `weak` (the fence-not-gating pattern, exactly like coverage default-OFF / fidelity WARN-only). Monitoring not wired / substrate absent → `unavailable`. **The posture is STABLE** — the reader does NOT run git / the drift diff at read time (no per-commit flapping, no git-unavailable false-clean, no subprocess hang). |
+
+**Outcome-weighted reading (for prioritization, not a separate score):** TC1 and TC2 both most affect the *governance* lane — tracker coherence is a project-steering/governance concern. Equal-weight scoring is kept (consistent with §1/§2/§3/§4/§5); the honest reading rides the band_note.
+
+### 6.6 Current assessment — Band **D** — "coherence FULLY-COMPUTED & DETERMINISTIC; ONE structural tracker divergence + drift-monitoring is advisory (never gates)"
+
+*As of 2026-07-19. Baseline — first assessment (`trend: baseline`; first `tracker_coherence` snapshot in `docs/quality/scorecard-history.jsonl`).*
+
+**Headline (read this first).**
+
+- **Band: D.** The coherence is measured HONESTLY — **fully-computed from real, deterministic signals, with no human judgment** (GL-7). Today TC1 = `partial` (the trackers carry ONE **structural** divergence: `orphan_stories` — 269 story keys in `sprint-status.yaml` map to no declared epic; qualify_sources' structural verdict is DEGRADED) and TC2 = `weak` (code↔doc drift monitoring EXISTS but is an ADVISORY pre-push heuristic that never gates a production run — the fence-not-gating pattern). D is a HONEST TWO-gap read, NOT "trackers catastrophically broken." *(The internal 3/8 → 38/100 sum is the arithmetic-pin reasoning trace below — not a false-precise headline number.)*
+- **Trend: ▬ baseline.** First `tracker_coherence` assessment; no prior snapshot, so the trend is `baseline` (computed from the history ledger, never painted).
+- **Band ceiling: B.** Both criteria cap at `strong` (3) mechanically; A is unreachable (see §6.5). Do not chase A.
+- **Open leaks — ranked (2).** Two governance leaks; tagged `trk_leak:` in the `## Governance/Tracker-Coherence Scorecard Leak Registry` of `_bmad-output/planning-artifacts/deferred-inventory.md`, so `tracker_leak_count_signal()` == 2 == the machine block's `open_leaks` (the tracker leak-count + slug-identity pins reconcile doc↔registry). These are the tracker_coherence contribution to the shared project ranked-leak list (GL-13; governance leaks, so they sort after the paid-walk and learner-trust leaks). **This dimension's leak count could legitimately be `0`** (if the trackers reconciled to CLEAN AND the monitor gated) — the shared machinery handles that cleanly (`leak_coverage_gaps` treats `open_leaks <= 0` as no gap; the leak-count identity pin reconciles `0 == 0`).
+
+  1. **[TC1] Status trackers STRUCTURALLY DEGRADED — orphan stories (governance)** — *Leak 1, governance* → `tracker-coherence-status-trackers-degraded-orphan-stories`
+  2. **[TC2] Code↔doc drift monitoring advisory — never gates (governance)** — *Leak 2, governance* → `tracker-coherence-doc-drift-monitoring-advisory-never-gates`
+
+**⚠️ Headline caveat — do NOT read D as "the trackers are catastrophically broken" NOR as "the trackers are fully coherent" (band-honesty).** This dimension is scored equal-weight (consistent with §1–§5). The D is a **FULLY-COMPUTED, DETERMINISTIC read of TWO real, open gaps**: (1) a structural tracker divergence (orphan stories — a data-quality warning, not a hard break) and (2) drift monitoring that exists but is advisory-only (never gates a production run — the same default-off pattern coverage/fidelity carry). Read it as "measured honestly, two open coherence gaps with reachable close-paths," NOT as "the trackers are broken." The band_note carries this so it cannot be missed.
+
+**Say it plainly (honesty is the bar).** TC1: `qualify_sources()` recomputes a STRUCTURAL verdict (excluding wall-clock staleness) and returns **DEGRADED** today — `sprint-status.yaml`'s `development_status` carries 269 story keys that match no `epic-*` prefix (stories owned by no declared epic) → an `orphan_stories` warning → TC1 `partial`, deterministic (a fresh-vs-stale tracker with no structural change scores the SAME). TC2: `scripts/utilities/doc_drift_monitor.py` EXISTS (monitoring wired) but is an ADVISORY pre-push/CI heuristic — it prints ✅/⚠ and at most `sys.exit`s a non-blocking hook; it exposes no `gates_production` affordance and is not wired into `production_runner`, so it does NOT gate a production run → TC2 `weak` (the fence-not-gating pattern). **We do NOT edit the trackers or their tooling** — Q3.2 SCORES the coherence read-only. Both close-paths are reachable and pinned: reconcile `sprint-status.yaml` so every story maps to an epic until the structural verdict is CLEAN → TC1 `strong`; wire the drift monitor to gate production (a truthy `gates_production`) → TC2 `strong` (the reader reads the REAL module, and the seeded gating-module test proves the level logic reaches `strong`).
+
+**Per-criterion levels (0–4) — the reasoning trace under the Band.** Each carries `{level, signal, evidence_ref}`; BOTH are `signal-derived` (GL-7 — no judgment level on this dimension). The 0–4 scores roll up to the machine block's Σ = 3/8 = 38/100 (an internal arithmetic-pin trace — **not** a headline).
+
+| Criterion | Level | Score | Signal / derivation | Evidence (enumerated + re-checkable) |
+|---|---|:---:|---|---|
+| TC1 Tracker-divergence coherence | partial | 2/4 | signal-derived (`tracker_coherence_signal`) | **The read-only STRUCTURAL divergence signal:** `progress_map.qualify_sources()` findings recompute a structural verdict == `DEGRADED` (structural error_count 0, structural warning_count 1) → `trackers_coherent == False` → `partial` (== `level_from_signal("tracker_divergence_coherence", tracker_coherence_signal())`; the fully-computed pin agrees doc↔code). The one structural warning is `orphan_stories` (269 story keys unowned by any epic). TIME-BASED staleness is EXCLUDED (deterministic — a stale-but-structurally-coherent set scores the same). A supplied verdict/count that contradicts the findings tally → `unavailable` (FIX-C). Consults the REAL findings, not mere tracker presence (CV2/FT2/Q3.1); nothing-checked (unimportable qualifier, missing/malformed findings) → `unavailable`, never silently coherent. Close-path reachable + read-only → `strong`. This is **Leak 1**. |
+| TC2 Code↔doc drift monitoring | weak | 1/4 | signal-derived (`tracker_doc_drift_signal`) | **The read-only STABLE monitoring-posture signal:** `scripts/utilities/doc_drift_monitor.py` is WIRED (`check_documentation_drift` + `get_changed_files` callable) but exposes no `gates_production` affordance → `gates_production == False` → `weak` (== `level_from_signal("tracker_doc_drift", tracker_doc_drift_signal())`). The monitor is an ADVISORY pre-push heuristic (prints ✅/⚠, at most a non-blocking `sys.exit`); it never gates a production run — the fence-not-gating pattern (like coverage default-OFF / fidelity WARN-only). **NO git is run at read time** — the posture is STABLE (no per-commit flapping / git-unavailable false-clean / subprocess hang), the design fix over the prior HEAD~1..HEAD reader. Close-path reachable + grounded in the real module: wire the monitor to gate production → `gates_production == True` → `strong`. This is **Leak 2**. |
+
+#### Open leaks (detail — the path from D toward B)
+
+1. **[TC1] Status trackers STRUCTURALLY DEGRADED — orphan stories (governance).** qualify_sources' structural verdict is DEGRADED: 269 `development_status` story keys in `sprint-status.yaml` match no `epic-*` prefix (a story owned by no declared epic is a coherence gap the position-based reader would hide). Direction is fail-safe (a data-quality warning the qualifier surfaces, not a silent overclaim). **Closing it is a tracker-reconciliation act, not a doc edit:** reconcile `sprint-status.yaml` so every story key maps to a declared epic (or adjust the epic roster the qualifier recognizes) until the structural verdict is CLEAN, at which point `tracker_coherence_signal()` reports `trackers_coherent=True` and TC1 earns `strong`. **⛔ Q3.2 does NOT edit the trackers.** *Evidence:* qualify_sources' structural verdict `DEGRADED`, the `orphan_stories` finding; registry `tracker-coherence-status-trackers-degraded-orphan-stories`.
+2. **[TC2] Code↔doc drift monitoring advisory — never gates (governance).** `doc_drift_monitor.py` exists and detects drift, but it is an ADVISORY pre-push/CI heuristic — it never gates a production run (no `gates_production` affordance, not wired into `production_runner`). This is the DID-C3 / coverage-CV1 / fidelity-FT1 pattern (mechanism exists, never gates). Direction is fail-safe (a monitor that under-enforces, not a silent overclaim). **Closing it is a tooling/wiring act (NOT done here — read-only scope):** wire the drift monitor to gate a production run (a truthy `gates_production` affordance the reader detects), at which point `tracker_doc_drift_signal()` reports `gates_production=True` and TC2 earns `strong`. *Evidence:* `doc_drift_monitor.check_documentation_drift` is a print/`sys.exit` hook with no `gates_production`; registry `tracker-coherence-doc-drift-monitoring-advisory-never-gates`.
+
+#### The discipline that raises the Band (not just fixes)
+
+Every time a tracker changes (a story is filed, a handoff is written) or the drift tooling evolves, ask: **"did we make the trackers AGREE structurally / make the drift monitor actually GATE, or only edit one surface?"** Only the first raises TC1/TC2 toward `strong`. Ranked if forced to cut: **Leak 1** (TC1) is the live structural divergence (fail-safe — a data-quality warning); **Leak 2** (TC2) is the advisory-not-gating monitor (fail-safe — under-enforcement). Remember the disclosed **Band ceiling B** (both criteria cap at `strong`/3) — the honest target is B, not A.
+
+### Cadence (how this dimension stays honest)
+
+- **Every production run:** the tracker-coherence Band rides the run's final report alongside the other dimensions (no per-run tracker facts — this is a project posture, not a per-run claim).
+- **Every session hot-start / WRAPUP:** `qualify_sources()` already runs at session ramp; if its STRUCTURAL verdict flips CLEAN↔DEGRADED↔FAIL, refresh TC1. Re-check after any sprint-status / handoff edit. (Staleness alone does NOT change TC1 — it is excluded by design.)
+- **Every epic retrospective:** re-score the affected criteria; record the trend so believed-green in either direction (trackers look coherent while they diverge) is caught. If the drift monitor gains a production gate, refresh TC2.
+- **Honesty guard:** `tests/quality/test_scorecard_honesty_pins.py` (the `tracker_coherence` pins — the GL-7 fully-computed structural pin, the seeded-divergence pin, tracker leak-count + slug-identity, score-arithmetic) + `tests/quality/test_tracker_coherence_dimension.py` (the structural-verdict / monitoring-posture readers against fixtures + real `qualify_sources` reads + RED-under-seeded proofs incl. determinism + no-read-time-git) FAIL when a machine-block claim contradicts a code-computed reality. The **fully-computed pin** reds if any `tracker_coherence` criterion carries a judgment derivation or a level that does not match its reader; the **seeded-divergence pin** reds if the block claims a coherent level while a seeded three-tracker disagreement lowers the computed score (GL-9).
+
+---
+
 <!-- QUALITY-SCORECARD-MACHINE-BLOCK v2 — parsed by app/quality/scorecard.py (dimension_ref / did_score_ref) and scripts/utilities/quality_scorecard.py. Keep the fenced yaml below valid. The prose above is the authority; this mirrors the headline numbers for tooling. v2 (Story Q1.1): schema is dimension-agnostic — per-dimension rubric_version/as_of/as_verified + per-criterion {level, signal, evidence_ref} (score/max retained as the 0–4 reasoning trace). STRUCTURAL migration only: every value below is carried verbatim from v1. Q1.2 (post
 code-review honesty rework) adds a per-criterion `derivation` field naming HOW the
 level is justified — and it does NOT falsely mechanize a proxy:
@@ -1002,6 +1072,111 @@ dimensions:
       - rank: 1
         criterion: CH1
         slug: capability-honesty-workbook-tier-lags-produced-reality
+        lane: governance
+    trend: baseline
+  tracker_coherence:
+    # Dimension 6 (Story Q3.2) — Governance / tracker-coherence, scored ENTIRELY from the
+    # EXISTING status-tracker qualifiers (GL-15 reuse; NO parallel plumbing): progress_map.
+    # qualify_sources() (the tracker-divergence signal across sprint-status + SESSION-HANDOFF +
+    # next-session-start-here, incl. the cross-tracker next_step_conflict check) + doc_drift_
+    # monitor.get_changed_files() (the code↔doc drift signal). The §6 prose is the authority;
+    # this mirrors the headline numbers. ⛔ GL-7 FULLY-COMPUTED: this is the ONLY dimension with
+    # NO hand-authored judgment level — BOTH criteria are signal-derived, each level ==
+    # level_from_signal(reader()). A hand-judged coherence score would be believed-green in the
+    # very dimension that scores believed-green; a structural pin asserts no criterion carries a
+    # judgment/judgment-with-evidence derivation. ⛔ READ-ONLY: SCORES the tracker coherence; it
+    # NEVER edits a tracker or its tooling. ⚠️ Measures the EXTERNAL status trackers ONLY — the
+    # scorecard's own internal coherence is already pinned by Q1.3 (mirror + leak-identity).
+    # Honest baseline: qualify_sources() returns DEGRADED today (1 warning: orphan_stories — 269
+    # story keys in sprint-status.yaml own to no declared epic) → TC1 partial (a real divergence,
+    # honestly registered as a governance leak); no active code↔doc drift over HEAD~1..HEAD → TC2
+    # partial (a HEAD-only git heuristic, capped conservative). This is the FIRST dimension whose
+    # open_leaks could legitimately be 0 (if the trackers reconciled to CLEAN) — handled cleanly
+    # (leak_coverage_gaps: open_leaks<=0 is no gap; leak-count identity: 0==0).
+    label: Governance / tracker-coherence
+    rubric_version: 1
+    as_of: 2026-07-19
+    as_verified: 2026-07-19
+    score: 38
+    max: 100
+    band: "D"
+    band_note: "D is FULLY-COMPUTED from the real signals (GL-7 — no human judgment), and it is a HONEST TWO-gap read, NOT 'trackers catastrophically broken': TC1 partial — the trackers carry ONE STRUCTURAL divergence (orphan stories) per qualify_sources (staleness EXCLUDED so the level is deterministic); TC2 weak — code↔doc drift monitoring EXISTS but is ADVISORY (a pre-push heuristic that never gates a production run — the same fence-not-gating pattern as coverage default-OFF / fidelity WARN-only). Band CEILING is B (both criteria cap at strong/3 mechanically; uniform/4 is never a mechanical award — do NOT chase A). Close-paths are reachable: reconcile the trackers to a CLEAN structural verdict → TC1 strong; wire the drift monitor to gate production → TC2 strong."
+    criteria:
+      tracker_divergence_coherence:
+        # SIGNAL-DERIVED (purely mechanical, FULLY-COMPUTED — GL-7): level ==
+        # level_from_signal(tracker_coherence_signal()). The reader CONSUMES the REAL
+        # qualify_sources() findings (read-only, deferred import) and recomputes a STRUCTURAL
+        # verdict (FIX-B — TIME-BASED staleness EXCLUDED so the level is DETERMINISTIC; a
+        # structurally-coherent set never flips CLEAN→DEGRADED because time elapsed): CLEAN→strong,
+        # DEGRADED→partial, FAIL→weak, unrunnable/malformed→unavailable. Today STRUCTURAL DEGRADED
+        # (1 orphan_stories warning) → trackers_coherent=False → partial. FIX-C: a supplied
+        # verdict/count that contradicts the findings tally → unavailable. NOT a hardcoded verdict:
+        # reconcile the trackers to a CLEAN structural verdict and this earns strong (close-path
+        # reachable; the seeded coherent-fixture test proves it). DEGRADED→partial is COARSE by
+        # design (FIX-E: divergence_count is surfaced as evidence, not scaled into the level).
+        level: partial
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.tracker_coherence_signal
+          derived_level: partial
+          fact: >-
+            progress_map.qualify_sources() reconciles the status trackers (sprint-status.yaml +
+            SESSION-HANDOFF.md + next-session-start-here.md). TC1 recomputes a STRUCTURAL verdict
+            from its findings EXCLUDING time-based staleness (deterministic): today = DEGRADED
+            (structural error_count 0, structural warning_count 1: the orphan_stories warning — 269
+            story keys own to no declared epic) → trackers_coherent=False → partial. Closing it
+            (reconcile the trackers to a CLEAN structural verdict) flips trackers_coherent True and
+            the derived level becomes strong. DEGRADED→partial is coarse-by-design; the
+            divergence_count is surfaced as evidence, not scaled into the level.
+        evidence_ref: "§6.6 TC1 · Tracker Leak (status trackers STRUCTURALLY DEGRADED — orphan stories)"
+        score: 2
+        max: 4
+      tracker_doc_drift:
+        # SIGNAL-DERIVED (mechanical, FULLY-COMPUTED — GL-7; the fence-not-gating pattern, mirrors
+        # coverage CV1 / fidelity FT1): level == level_from_signal(tracker_doc_drift_signal()).
+        # FIX-A (the design fix): the reader measures the STABLE monitoring/gating POSTURE — is
+        # doc_drift_monitor WIRED, and does it GATE production or is it ADVISORY? — it does NOT run
+        # git at read time (no per-commit flapping, no git-unavailable false-clean, no subprocess
+        # hang). Today the monitor EXISTS (wired) but is an ADVISORY pre-push/CI hook that never
+        # gates a production run (no gates_production affordance) → weak (mechanism exists, never
+        # gates). Reachable close-path grounded in the real module: wire it to gate production (a
+        # truthy gates_production) → the reader detects it → strong. Substrate absent → unavailable.
+        level: weak
+        derivation: signal-derived
+        signal:
+          reader: app.quality.signals.tracker_doc_drift_signal
+          derived_level: weak
+          fact: >-
+            scripts/utilities/doc_drift_monitor.py EXISTS (monitoring wired — check_documentation_
+            drift + get_changed_files are callable) but is an ADVISORY pre-push/CI heuristic
+            (check_documentation_drift prints ✅/⚠ and at most sys.exits non-blocking; no
+            gates_production affordance, not wired into production_runner) → it does NOT gate a
+            production run → gates_production=False → weak (the fence-not-gating pattern, like
+            coverage default-OFF / fidelity WARN-only). NO git is run at read time — the posture is
+            STABLE, not per-commit. Closing it (wire the monitor to gate production) flips
+            gates_production True and the derived level becomes strong.
+        evidence_ref: "§6.6 TC2 · Tracker Leak (code↔doc drift monitoring advisory, never gates)"
+        score: 1
+        max: 4
+    # TWO open leaks: TC1 the STRUCTURAL tracker divergence (qualify_sources — orphan_stories) and
+    # TC2 the code↔doc drift monitoring is ADVISORY / never-gates. Counted (line-anchored) as
+    # `trk_leak:` in the `## Governance/Tracker-Coherence Scorecard Leak Registry` of
+    # deferred-inventory.md — a SIXTH per-dimension namespace, disjoint from the other five (so the
+    # six counts never collide). len(leaks) == open_leaks == tracker_leak_count_signal() == 2 (the
+    # tracker leak-count + slug-identity pins reconcile doc↔registry). Both lane governance:
+    # tracker coherence is a project-steering/governance concern. ⚠️ ZERO-LEAK PATH: this is the
+    # FIRST dimension whose open_leaks could be 0 (if the trackers reconciled to CLEAN AND the
+    # monitor gated) — the shared machinery handles it (leak_coverage_gaps: open_leaks<=0 is no
+    # gap; identity: 0==0).
+    open_leaks: 2
+    leaks:
+      - rank: 1
+        criterion: TC1
+        slug: tracker-coherence-status-trackers-degraded-orphan-stories
+        lane: governance
+      - rank: 2
+        criterion: TC2
+        slug: tracker-coherence-doc-drift-monitoring-advisory-never-gates
         lane: governance
     trend: baseline
 ```

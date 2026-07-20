@@ -1615,6 +1615,259 @@ def capability_leak_count_signal(inventory_path: Path | None = None) -> dict[str
     }
 
 
+# ============================ tracker-coherence (Q3.2) ============================
+#
+# Signal readers over the EXISTING status-tracker qualifiers (GL-15 — reuse, NO parallel
+# plumbing): progress_map.qualify_sources() (the divergence signal across the status
+# trackers — sprint-status.yaml + SESSION-HANDOFF.md + next-session-start-here.md, incl.
+# the cross-tracker next_step_conflict check) and doc_drift_monitor.get_changed_files()
+# (the code↔doc drift signal). ⛔ READ-ONLY: this module NEVER edits a tracker or its
+# tooling — it CONSUMES the qualifier output and SCORES the coherence. This is the ONLY
+# FULLY-COMPUTED dimension (GL-7): BOTH criteria are signal-derived — there is NO
+# hand-authored judgment level (a hand-judged coherence score would be believed-green in
+# the very dimension that scores believed-green). The tracker tooling is reached ONLY via
+# deferred LOCAL imports (GL-3 clean-leaf; ``scripts.*`` is not ``app.*``, but a deferred
+# import keeps the import graph unchanged and matches the sibling pattern). Every reader is
+# fail-soft per field — it never raises and never invents a clean value.
+#
+# ⚠️ Measures the EXTERNAL status trackers ONLY. The scorecard's OWN internal coherence
+# (machine block ↔ history ↔ registry) is already pinned by Q1.3 (mirror + leak-identity);
+# reconciling that here would be the self-referential recursion the scope fence forbids.
+
+#: ``trk_leak:`` tag, anchored to line start — a SIXTH per-dimension namespace disjoint
+#: from ``did_leak:`` / ``cost_leak:`` / ``cov_leak:`` / ``fid_leak:`` / ``cap_leak:`` so the
+#: tracker-coherence count/identity reconciliation never collides with the other five. May be
+#: 0 (the FIRST dimension that can carry zero leaks): today 2 (TC1 the qualify_sources STRUCTURAL
+#: divergence — orphan-stories; TC2 the code↔doc drift monitoring is advisory / never-gates).
+_TRACKER_LEAK_LINE_RE = re.compile(r"(?m)^[\s>]*(?:[-*+]\s+)?trk_leak:")
+
+#: qualify_sources finding checks that are TIME-BASED (wall-clock staleness of ``last_updated``)
+#: rather than STRUCTURAL tracker divergence. EXCLUDED from TC1's coherence verdict (FIX-B) so
+#: the level is DETERMINISTIC: a structurally-coherent tracker set must NEVER flip CLEAN→DEGRADED
+#: purely because time elapsed (that would mislabel "stale" as "divergent" and flap the golden/
+#: mirror on a different day). Staleness is the CLI ``--check`` nag's concern, not coherence.
+_TIME_BASED_QUALIFY_CHECKS: frozenset[str] = frozenset({"staleness", "last_updated"})
+#: The qualify_sources finding levels (mirrored). A finding carrying any other ``level`` is a
+#: malformed shape → ``unavailable`` (never a clean coherence claim).
+_QUALIFY_FINDING_LEVELS: frozenset[str] = frozenset({"ok", "warn", "error"})
+
+_TRACKER_SRC = "scripts.utilities.progress_map.qualify_sources"
+_DOC_DRIFT_SRC = "scripts.utilities.doc_drift_monitor"
+
+
+def _qualify_verdict(errors: int, warnings: int) -> str:
+    """The qualify_sources verdict rule (errors→FAIL, warnings→DEGRADED, else CLEAN), applied to
+    a chosen finding subset. TC1 applies it to the STRUCTURAL findings only."""
+    if errors:
+        return "FAIL"
+    if warnings:
+        return "DEGRADED"
+    return "CLEAN"
+
+
+def tracker_coherence_signal(qualify_result: Any = None) -> dict[str, Any]:
+    """TC1 — the tracker-DIVERGENCE coherence signal over the EXISTING status-tracker
+    qualifier (``progress_map.qualify_sources``).
+
+    ``qualify_sources`` reconciles the status trackers (sprint-status.yaml + SESSION-HANDOFF.md
+    + next-session-start-here.md — existence / YAML / expected-headings / status-vocab /
+    orphan-stories / staleness AND the cross-tracker ``next_step_conflict`` check). This reader
+    CONSUMES its ``findings`` READ-ONLY and derives a **STRUCTURAL** coherence verdict — a CLEAN
+    structural verdict means the trackers are mutually coherent; DEGRADED means soft structural
+    divergences (warnings); FAIL means hard ones (errors).
+
+    **FIX-B (deterministic):** the verdict is recomputed from the STRUCTURAL findings only —
+    TIME-BASED staleness findings (:data:`_TIME_BASED_QUALIFY_CHECKS`) are EXCLUDED, so a
+    structurally-coherent tracker set does not flip CLEAN→DEGRADED purely because time elapsed.
+    **FIX-C (verdict↔count reconcile):** if the input carries its own ``verdict`` / count fields
+    they MUST be internally consistent with the ``findings`` tally (qualify_sources' own
+    all-findings verdict) — a contradictory shape (e.g. ``{verdict: CLEAN, warning_count: 3}``)
+    is UNEXPECTED → ``unavailable``, never coerced to coherent.
+
+    **SIGNAL-DERIVED + reachable close-path:** the level keys off the recomputed structural
+    verdict (not a hardcoded value) — reconcile the trackers to a CLEAN structural verdict and
+    TC1 earns ``strong``. **Consult-real-signal, nothing-checked→unavailable (Q3.1 FIX-3):** a
+    missing/non-list ``findings``, a malformed finding, or an unimportable/raising qualifier
+    degrades to ``unavailable`` — "we could not actually qualify the trackers" is UNKNOWN, NEVER
+    silently ``coherent``.
+
+    ``qualify_result is None`` → consult the REAL ``qualify_sources()`` via a DEFERRED import
+    (GL-3 — no module-scope ``app.*``/``scripts.*``); an injectable ``Mapping`` reads a SEEDED
+    posture (a coherent or seeded-divergent fixture result) WITHOUT running the live qualifier.
+    """
+    result = qualify_result
+    if result is None:
+        try:
+            from scripts.utilities.progress_map import qualify_sources
+
+            result = qualify_sources()
+        except Exception:  # noqa: BLE001 — a signal read must never raise into a caller
+            return {"status": "unavailable", "source": _TRACKER_SRC}
+    if not isinstance(result, Mapping):
+        return {"status": "unavailable", "source": _TRACKER_SRC}
+    findings = result.get("findings")
+    # The findings list is the SSOT for divergence. A missing/non-list findings list means we
+    # cannot actually assess structural coherence → UNKNOWN, never coherent (Q3.1 FIX-3).
+    if not isinstance(findings, list):
+        return {"status": "unavailable", "source": _TRACKER_SRC}
+    all_err = all_warn = struct_err = struct_warn = 0
+    for f in findings:
+        if not isinstance(f, Mapping):
+            return {"status": "unavailable", "source": _TRACKER_SRC}  # malformed finding shape
+        level = f.get("level")
+        if level not in _QUALIFY_FINDING_LEVELS:
+            return {"status": "unavailable", "source": _TRACKER_SRC}  # malformed level
+        chk = f.get("check")
+        time_based = isinstance(chk, str) and chk in _TIME_BASED_QUALIFY_CHECKS
+        if level == "error":
+            all_err += 1
+            if not time_based:
+                struct_err += 1
+        elif level == "warn":
+            all_warn += 1
+            if not time_based:
+                struct_warn += 1
+    # FIX-C: a supplied verdict / count must reconcile with the ALL-findings tally (what
+    # qualify_sources itself computes). A contradiction is an unexpected/malformed shape.
+    in_verdict = result.get("verdict")
+    if in_verdict is not None and in_verdict != _qualify_verdict(all_err, all_warn):
+        return {"status": "unavailable", "source": _TRACKER_SRC}
+    in_err = result.get("error_count")
+    if in_err is not None and (
+        not isinstance(in_err, int) or isinstance(in_err, bool) or in_err != all_err
+    ):
+        return {"status": "unavailable", "source": _TRACKER_SRC}
+    in_warn = result.get("warning_count")
+    if in_warn is not None and (
+        not isinstance(in_warn, int) or isinstance(in_warn, bool) or in_warn != all_warn
+    ):
+        return {"status": "unavailable", "source": _TRACKER_SRC}
+    structural_verdict = _qualify_verdict(struct_err, struct_warn)
+    return {
+        "status": "ok",
+        "source": _TRACKER_SRC,
+        # STRUCTURAL verdict (time-based staleness excluded — FIX-B). ``raw_verdict`` keeps the
+        # all-findings verdict as evidence (so a staleness-only DEGRADED is visible but unscored).
+        "verdict": structural_verdict,
+        "raw_verdict": _qualify_verdict(all_err, all_warn),
+        "error_count": struct_err,
+        "warning_count": struct_warn,
+        "divergence_count": struct_err + struct_warn,
+        "trackers_coherent": structural_verdict == "CLEAN",
+        "note": (
+            "the coherence verdict is recomputed from qualify_sources' STRUCTURAL findings only "
+            "(orphan_stories / next_step_conflict / heading & structure drift / status-vocab / "
+            "epic-presence) — TIME-BASED staleness findings are EXCLUDED (FIX-B: deterministic; a "
+            "structurally-coherent set never flips CLEAN→DEGRADED because time passed). CLEAN→"
+            "strong, DEGRADED→partial, FAIL→weak — no human judgment (GL-7 fully-computed). "
+            "DEGRADED→partial is COARSE by design (FIX-E: divergence_count is surfaced as "
+            "evidence, not scaled into the level). A supplied verdict/count that contradicts the "
+            "findings tally → unavailable (FIX-C). Close-path reachable: reconcile the trackers to "
+            "a CLEAN structural verdict → trackers_coherent=True → TC1 earns strong. Nothing-"
+            "checked (unimportable qualifier, missing/malformed findings) → unavailable, NEVER "
+            "silently coherent."
+        ),
+    }
+
+
+def tracker_doc_drift_signal(monitor: Any = None) -> dict[str, Any]:
+    """TC2 — the code↔doc drift-MONITORING POSTURE signal over the EXISTING drift monitor
+    (``scripts/utilities/doc_drift_monitor.py``).
+
+    **FIX-A (the design fix): measures the STABLE monitoring/gating POSTURE, NOT the volatile
+    per-commit drift.** The prior design ran ``git HEAD~1..HEAD`` at scorecard-read time and
+    mapped the *current commit's* drift into a PERSISTED machine-block level — a latent
+    time-bomb (the level flipped on every commit that touched only code, red-ing the
+    fully-computed + arithmetic pins), and it could false-clean on git-unavailable and hang on a
+    stuck git subprocess. This reader instead asks the STABLE question every other scorecard
+    fence asks: **is code↔doc drift monitoring WIRED, and does it GATE a production run or is it
+    ADVISORY?** — mirroring coverage-gate default-OFF (CV1) / semantic-fence WARN-only (FT1).
+    It does NOT call git / run the drift diff.
+
+    Honest today: ``doc_drift_monitor`` EXISTS (monitoring wired) but is an ADVISORY pre-push/CI
+    heuristic — ``check_documentation_drift`` prints ✅/⚠ and at most ``sys.exit``s as a
+    non-blocking hook; it exposes NO production-gate affordance (no ``gates_production`` flag,
+    not wired into ``production_runner``) → the fence-not-gating pattern → ``weak`` (mechanism
+    exists, never gates), DETERMINISTIC. **Reachable close-path (grounded in the real module):**
+    if the monitor gains a truthy ``gates_production`` affordance (a real production gate) this
+    reader detects it → ``strong``. Monitoring UNIMPORTABLE / substrate absent → ``unavailable``
+    (never a clean or silently-``False`` gating claim).
+
+    ``monitor is None`` → consult the REAL ``doc_drift_monitor`` module via a DEFERRED import
+    (GL-3; importing the module runs NO git — the git calls live inside functions this reader
+    never invokes). An injectable module-like object reads a SEEDED posture (wired / gating /
+    absent) WITHOUT touching the real module.
+    """
+    mod = monitor
+    if mod is None:
+        try:
+            import scripts.utilities.doc_drift_monitor as mod  # noqa: PLC0415 — deferred (GL-3)
+        except Exception:  # noqa: BLE001 — a signal read must never raise into a caller
+            return {"status": "unavailable", "source": _DOC_DRIFT_SRC}
+    # monitoring WIRED == the real drift-check functions exist (importing runs no git).
+    monitoring_wired = callable(
+        getattr(mod, "check_documentation_drift", None)
+    ) and callable(getattr(mod, "get_changed_files", None))
+    if not monitoring_wired:
+        return {
+            "status": "unavailable",
+            "source": _DOC_DRIFT_SRC,
+            "monitoring_wired": False,
+        }
+    # gates_production: derived from the REAL module (not a hardcoded verdict). Today the monitor
+    # exposes no such affordance → False → advisory (weak). If wired to gate → True → strong.
+    gates_production = bool(getattr(mod, "gates_production", False))
+    return {
+        "status": "ok",
+        "source": _DOC_DRIFT_SRC,
+        "monitoring_wired": True,
+        "gates_production": gates_production,
+        "note": (
+            "doc_drift_monitor is a code↔doc drift heuristic that EXISTS (monitoring wired) but is "
+            "an ADVISORY pre-push/CI hook (check_documentation_drift prints ✅/⚠ and at most "
+            "sys.exits non-blocking; no gates_production affordance, not wired into "
+            "production_runner) — it does NOT gate a production run → the fence-not-gating pattern "
+            "(like coverage default-OFF / fidelity WARN-only) → weak. NO git is run at read time "
+            "(the posture is STABLE, not per-commit — FIX-A). Close-path reachable + grounded in "
+            "the real module: wire the monitor to gate production (a truthy gates_production) → "
+            "this reports gates_production=True → strong. Substrate absent/unimportable → "
+            "unavailable, never a clean gating claim."
+        ),
+    }
+
+
+def tracker_leak_count_signal(inventory_path: Path | None = None) -> dict[str, Any]:
+    """tracker leak-count — count ``trk_leak:``-tagged OPEN entries in the deferred inventory
+    (a SIXTH per-dimension namespace, disjoint from ``did_leak:`` / ``cost_leak:`` /
+    ``cov_leak:`` / ``fid_leak:`` / ``cap_leak:``).
+
+    Same scoping as the sibling leak-count readers (fenced code / HTML comments / archived
+    section stripped; line-anchored tag). **2 today** (TC1 the qualify_sources STRUCTURAL
+    divergence + TC2 the advisory-not-gating drift-monitoring leak, in the
+    ``## Governance/Tracker-Coherence Scorecard Leak Registry``) — but this is the FIRST
+    dimension whose count may legitimately be **0** (if the trackers reconcile to CLEAN),
+    which the leak-count identity pin (``_reconcile(0, 0)``) and ``leak_coverage_gaps``
+    (``open_leaks <= 0`` is not a gap) both handle cleanly. Fail-soft: unreadable file →
+    ``{"status": "unavailable", "tracker_leak_count": None}``.
+    """
+    p = inventory_path or (_repo_root() / _DEFERRED_INVENTORY_REL)
+    try:
+        text = p.read_text(encoding="utf-8")
+    except (OSError, ValueError):
+        return {
+            "status": "unavailable",
+            "source": _DEFERRED_INVENTORY_REL,
+            "tracker_leak_count": None,
+        }
+    open_text = _strip_archived_section(_strip_html_comments(_strip_fenced_code(text)))
+    count = len(_TRACKER_LEAK_LINE_RE.findall(open_text))
+    return {
+        "status": "ok",
+        "source": _DEFERRED_INVENTORY_REL,
+        "tracker_leak_count": count,
+    }
+
+
 # ============================ signal → level derivation ============================
 #
 # THE anti-believed-green rule: a level is NEVER mechanically awarded a clean/uniform
@@ -1745,6 +1998,46 @@ def _level_ch_reconciliation(signal: Any) -> str:
     return "unavailable"
 
 
+def _level_tc_divergence(signal: Any) -> str:
+    """TC1 (purely mechanical, FULLY-COMPUTED — GL-7): the qualify_sources verdict across the
+    status trackers → CLEAN (no divergences) → ``strong``; DEGRADED (warnings — soft
+    divergences) → ``partial``; FAIL (errors — hard divergences) → ``weak``; non-ok / unknown
+    verdict / malformed counts → ``unavailable`` (nothing-checked, never a clean coherence
+    claim). NO human judgment — the level derives ENTIRELY from the real divergence signal.
+
+    Reachable close-path: reconcile the trackers to CLEAN → ``trackers_coherent`` True → the
+    derived level is ``strong`` (the reader reads the REAL verdict, not a hardcoded value)."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    verdict = signal.get("verdict")
+    if verdict == "CLEAN":
+        return "strong"
+    if verdict == "DEGRADED":
+        return "partial"
+    if verdict == "FAIL":
+        return "weak"
+    return "unavailable"
+
+
+def _level_tc_doc_drift(signal: Any) -> str:
+    """TC2 (mechanical, FULLY-COMPUTED — GL-7; the fence-not-gating pattern, mirrors CV1/FT1):
+    the code↔doc drift-monitoring POSTURE (FIX-A — STABLE, not per-commit). monitoring wired +
+    gates production (``gates_production`` True) → ``strong`` (the reachable close-path); wired
+    but ADVISORY (``gates_production`` False — the monitor exists but never gates) → ``weak``
+    (mechanism exists, never gates); monitoring not wired / substrate absent / non-ok →
+    ``unavailable`` (never a clean or silently-``False`` gating claim). NO human judgment."""
+    if not isinstance(signal, dict) or signal.get("status") != "ok":
+        return "unavailable"
+    if signal.get("monitoring_wired") is not True:
+        return "unavailable"
+    gates = signal.get("gates_production")
+    if gates is True:
+        return "strong"
+    if gates is False:
+        return "weak"
+    return "unavailable"
+
+
 def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     """Derive a criterion's level from its signal (the anti-believed-green rule).
 
@@ -1754,9 +2047,12 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
     ``int == 0``, C3 on genuinely all-ON fences, CE1 on a real default budget wired, CV1
     on the coverage gate genuinely wired ON by default, FT1 on the semantic-fidelity
     audit genuinely gating production, and CH1 on the capability tiers genuinely matching
-    produced reality. Judgment / judgment-with-evidence-only criteria (C1/C5, cost
-    CE2/CE3/CE4, coverage CV2/CV3, fidelity FT2/FT3, capability CH2) and unknown keys return
-    ``None`` (no mechanical derivation; the human authors those).
+    produced reality. Q3.2 tracker_coherence is FULLY-COMPUTED (GL-7): BOTH TC1
+    (``tracker_divergence_coherence``, on the qualify_sources verdict) and TC2
+    (``tracker_doc_drift``, on the code↔doc drift heuristic — capped at partial) derive real
+    levels here. Judgment / judgment-with-evidence-only criteria (C1/C5, cost CE2/CE3/CE4,
+    coverage CV2/CV3, fidelity FT2/FT3, capability CH2) and unknown keys return ``None`` (no
+    mechanical derivation; the human authors those).
     """
     if criterion_key == "fence_enforcement_default_on":
         return _level_c3(signal)
@@ -1772,4 +2068,11 @@ def level_from_signal(criterion_key: str, signal: Any) -> str | None:
         return _level_ft_semantic_fence(signal)
     if criterion_key == "capability_tier_reconciliation_on":
         return _level_ch_reconciliation(signal)
+    # Q3.2 — tracker_coherence is the ONLY FULLY-COMPUTED dimension (GL-7): BOTH criteria are
+    # signal-derived (no judgment level). TC1 keys off the qualify_sources verdict; TC2 keys
+    # off the code↔doc drift heuristic (capped at partial — a HEAD-only git proxy).
+    if criterion_key == "tracker_divergence_coherence":
+        return _level_tc_divergence(signal)
+    if criterion_key == "tracker_doc_drift":
+        return _level_tc_doc_drift(signal)
     return None

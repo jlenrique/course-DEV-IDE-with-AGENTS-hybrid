@@ -522,15 +522,16 @@ def test_fidelity_leak_aggregates_into_shared_ranked_list() -> None:
     paid_block = [i for i, ln in enumerate(lanes) if ln == "paid-walk"]
     assert paid_block == list(range(len(paid_block)))  # contiguous at front
     assert fid_idx > max(paid_block)
-    # FIVE dimensions now contribute (cross-dimensional; Q3.1 added capability_honesty).
+    # SIX dimensions now contribute (Q3.1 added capability_honesty; Q3.2 added tracker_coherence).
     assert set(dims) == {
         _DID_KEY,
         _COST_KEY,
         _COVERAGE_KEY,
         _FIDELITY_KEY,
         "capability_honesty",
+        "tracker_coherence",
     }
-    assert len(ranked) == 9  # 5 DID + 1 cost + 1 coverage + 1 fidelity + 1 capability
+    assert len(ranked) == 11  # 5 DID + 1 cost + 1 cov + 1 fid + 1 cap + 2 tracker
 
 
 def test_leak_coverage_clean_with_fidelity_dimension() -> None:

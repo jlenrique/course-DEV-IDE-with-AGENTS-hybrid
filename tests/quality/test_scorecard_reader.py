@@ -174,13 +174,14 @@ def test_did_score_ref_delegates_to_dimension_ref(tmp_path: Path) -> None:
 def test_canonical_dimension_keys_constant() -> None:
     assert _DID_KEY in _EXPECTED_CANONICAL_DIMENSION_KEYS
     # Q2.1 added cost_efficiency (Dimension 2); Q2.2 added coverage_honesty (Dimension 3);
-    # Q2.3 added fidelity_trust (Dimension 4); Q3.1 adds capability_honesty (Dimension 5) —
-    # each in lockstep with registering its honesty-pin (GL-6). The canonical universe now
-    # names all five dimensions.
+    # Q2.3 added fidelity_trust (Dimension 4); Q3.1 added capability_honesty (Dimension 5);
+    # Q3.2 adds tracker_coherence (Dimension 6) — each in lockstep with registering its
+    # honesty-pin (GL-6). The canonical universe now names all six dimensions.
     assert _EXPECTED_CANONICAL_DIMENSION_KEYS == (
         "dynamic_intelligence_vs_determinism",
         "cost_efficiency",
         "coverage_honesty",
         "fidelity_trust",
         "capability_honesty",
+        "tracker_coherence",
     )
