@@ -1,0 +1,73 @@
+# Epic Q3 Retrospective — Project Quality Scorecard: Partial + Report-Only Siblings (capability / tracker / lane / calibration)
+
+**Date:** 2026-07-19 · **Facilitator:** Amelia (Developer) · **Format:** synthesized (autonomous close per operator direction; the interactive party dialogue is compressed; the binding Next-Epic-Preparation deferred-inventory consultation per CLAUDE.md governance #1 is recorded in full below). · **Branch:** `dev/quality-scorecard-epic-2026-07-19`.
+
+## 1. Epic summary + metrics
+
+**4/4 stories done**, serial (all touch the machine block + pin registry → serialize by rule). Each: fresh dev-agent RED-first → 3-layer `bmad-code-review` (Blind Hunter / Edge Case Hunter / Acceptance Auditor) → RED-first remediation → orchestrator re-verify → commit → push. **This epic completes the 8-dimension scorecard.**
+
+| Story | Dimension | Band | Thesis criterion (the leak / the read) |
+|---|---|---|---|
+| Q3.1 | capability_honesty | C (50) | CH1 tier↔produced reconciliation — workbook tier LAGS produced reality (conservative/fail-safe; DID Leak-5) |
+| Q3.2 | tracker_coherence | D (38) | GL-7 FULLY-COMPUTED (no judgment); TC1 orphan-stories DEGRADED + TC2 drift-monitor advisory-never-gates |
+| Q3.3 | lane_discipline | B (75) | LD1 import-linter 18/0 via shipped `importlinter.api` (GL-16); coverage-completeness UNVERIFIED = the lane_leak |
+| Q3.4 | calibration | D (25) | CAL1 REPORT-ONLY — reading-path UNCALIBRATED, fresh-naive holdout OWED (DID Leak-4); resubstitution ≠ calibrated |
+
+- The scorecard now carries **all 8 dimensions** (DID + Q2's 3 + Q3's 4). **EIGHT pairwise-disjoint leak namespaces** (`did`=5 / `cost`=1 / `cov`=1 / `fid`=1 / `cap`=1 / `trk`=2 / `lane`=1 / `cal`=1); `ranked_project_leaks` = **13**, cross-dimensional; `leak_coverage_gaps` clean.
+- Three DID leaks are cross-linked into a Q3 dimension with **no double-count** (DID-Leak-5→cap, DID-Leak-2→fid[Q2], DID-Leak-4→cal) — the same real substrate scored by two dimensions in distinct namespaces, counted once each.
+- **Review findings:** ~15 across the 4 stories; **0 BLOCKER**; **2 HIGH** (Q3.2 TC2 per-commit-volatile signal; Q3.3 declared-clean coverage over-claim) both reworked RED-first. The recurring believed-green classes (below) all caught + reworked RED-first.
+- **Test posture:** `tests/quality/` grew to **507 passing**; ruff clean; import-linter 18/0 throughout. DID stayed **65/B−** across the entire epic; every prior dimension's numbers held once landed.
+
+## 2. What went well
+
+- **The GL-13 authoring contract held for four MORE dimensions — eight total slot in with zero projector changes.** Every dimension is additive: leaks list + registered pin + canonical-key + history snapshot + a disjoint leak namespace. The projector rendered 8 dimensions with no code change. The `docs/dev-guide/quality-scorecard-dimension-authoring.md` note kept paying off.
+- **Two genuinely different dimension shapes proved the contract generalizes.** Q3.2 is the **only fully-computed dimension** (GL-7: no hand-judged level — a hand-judged coherence score would be believed-green in the very dimension that exists to catch it; a structural pin asserts no `tracker_coherence` criterion carries a judgment derivation). Q3.4 is the only **REPORT-ONLY** dimension (reports an owed posture without building the harness). The Q1 engine absorbed both without a rewrite.
+- **The phasing flag was honored, not breached (AI-Q2d).** Q3.1's reconciliation shipped BOUNDED (the curated DID-Leak-5 evidence) with the full trial-artifact-scan split to a follow-on; Q3.4 REPORTED the owed holdout without building it. Neither over-ballooned into harness-building — exactly the Q2-retro guidance.
+- **Honest number MOVEMENT, including downward.** Q3.2's review reframed TC2 from a volatile per-commit git-drift signal to a stable monitoring-gating posture — and that honest re-measurement DROPPED the band C(50)→D(38). We took the drop rather than keep a prettier-but-wrong number. That is the scorecard behaving correctly on itself.
+- **Clean-leaf (GL-3) survived all eight dimensions** — `app/quality` stayed stdlib+yaml at module scope via deferred local imports; Q1.1's recursive AST guard backstopped every reader, including Q3.3's import-linter reader (GL-16: shipped `importlinter.api`, never the CLI).
+
+## 3. Challenges + key lessons (the believed-green catalog, completed)
+
+The Q1/Q2 believed-green family kept generalizing — Q3 added the subtlest instances yet, several *inside the honesty machinery's own guards*:
+
+- **Determinism-as-honesty (Q3.2 TC2, HIGH).** A persisted honesty level must not depend on volatile read-time state. TC2 originally read `git HEAD~1..HEAD` drift at scorecard-read time → it would flap the honesty suite every commit, hang if git were slow, and false-clean if git were unavailable. **Lesson:** a persisted scorecard signal must read a STABLE posture (is the monitor *wired and gating?*), never run a subprocess / wall-clock / per-commit diff at read time. Staleness was likewise excluded from TC1's verdict.
+- **Declared-clean ≠ verified-clean (Q3.3, HIGH).** `open_leaks: 0` / "CLEAN" is itself a claim that can be believed-green: LD1 passed (18/0) but the *completeness* of the lane matrix was unverified, so "clean" over-claimed. **Lesson:** when a dimension can't verify it has covered everything, the UNVERIFIED completeness gap is itself a leak (registered as the lane_leak, DID-Leak-4 owed-precedent), not a clean pass. "Nothing checked → unavailable, never clean" — extended from a reader rule to a whole-dimension rule.
+- **Every-tier-must-be-reconciled (Q3.1, MED).** A 4th never-produced tier (`shelf`) escaped the reconciliation set → false-clean; the anti-drift pin was subset-not-cover so it couldn't catch it. **Lesson:** an enum-coverage pin must assert COVER (every tier reconciled), not a subset; nothing-reconciled reads `unavailable`, not coherent.
+- **Guard-the-authority-not-just-the-mirror (Q3.4 FIX-B, MED).** The signature never-imply-measured pin scanned only the machine-block *mirror*, while the §8 markdown prose — explicitly the *authority* — went mechanically unguarded. **Lesson:** a doc↔code honesty pin must scan the authoritative prose, not only its structured mirror.
+- **Gate the guard on the same axis the dimension gates on (Q3.4 FIX-A, MED).** The never-imply-measured pin was UNCONDITIONAL and would RED the honest *measured* fresh-naive number once the owed epic lands — blocking the very close-path the reader supports. **Lesson (reachable-close-path, extended to pins):** a pin that forbids a state must gate on the live owed-state, so it forbids the dishonest case yet permits the honest upgrade — consistent with the isolating + uncalibrated-not-passing pins.
+- **The-honest-text-refutes-the-abstract-fix (Q3.4 FIX-C).** Review proposed broadening the fresh-number regex (anchor on `held-out`, allow number-before, match bare integers). Reading the *real* text refuted it: §8 deliberately co-locates the resubstitution decimal with "held-out"/"consumed-14"/"Leak-4" and §1 carries "escalation 0.93" — those broadenings would false-RED honest prose. **Lesson:** validate a proposed hardening against the real substrate before applying; a fix that reds honest text is a regression. Only the safe percent-form broadening was taken.
+
+## 4. ⚖️ BINDING deferred-inventory consultation (Next-Epic-Preparation — CLAUDE.md governance #1)
+
+Reviewed `deferred-inventory.md` against Epic Q3's new substrate (the 4 report/score dimensions + the eight-namespace leak structure + the fully-computed and report-only dimension shapes) for **now-ready-to-reactivate** entries and for the follow-ons Q3 itself FILED. **Governing principle (epic phasing flag, upheld):** Q3 dimensions SCORE/REPORT these honestly; they do NOT build the underlying harnesses. Verdict per entry below.
+
+| Deferred entry | Q3/DID relation | Reactivation verdict |
+|---|---|---|
+| `reading-path-fresh-naive-holdout-pre-trial` (DID Leak-4 / `cal_leak`) | The OWED fresh-naive holdout; now REPORTED by Q3.4 (report-only) | **Consulted; NOT reactivated as scorecard work.** Q3.4 reports it honestly; closing it = the separate owed epic (record a fresh-naive-holdout MEASUREMENT), at which point CAL1's reader flips weak→strong (the close-path is reader-reachable + now the never-imply pin permits the honest measured number). This is the highest-value real-substrate follow-on the scorecard now surfaces at the top of its learner-trust leaks. Trigger: pre-trial calibration work, operator-scheduled. |
+| `workbook-capability-tier-honesty-lag` (DID Leak-5 / `cap_leak`) | Scored by Q3.1 (read-only reconciliation) | **Consulted; NOT reactivated as scorecard work.** The tier bump stays a PARTY-GATED governance act (CLAUDE.md pack-versioning); Q3.1 never edits a tier. Q3.1's reader will flip CH1 weak→strong the moment the party ratifies the honest *proven-on-frozen-lesson* tier. |
+| **`capability-honesty-full-trial-artifact-scan`** (FILED by Q3.1) | Q3.1 shipped BOUNDED reconciliation (curated DID-Leak-5 evidence) per the phasing flag | **Consulted; stays deferred (its own follow-on).** Landing it widens the curated set toward every produced component and could positively detect overstatement (today CH2 is a bounded-scope judgment) + surface the motion VERIFY as a real leak. Not scorecard-epic work. |
+| **`lane-discipline-coverage-completeness-verifier`** (FILED by Q3.3) | Q3.3 registered the UNVERIFIED lane-matrix completeness as the `lane_leak` | **Consulted; stays deferred (its own follow-on).** Its close-path is a coverage-verifier that proves the lane matrix covers every module; until it lands, LD1 stays strong but the completeness gap stays an open, honestly-registered leak. |
+| Q3.2 substrate — orphan-stories + advisory drift-monitor (`trk_leak` ×2) | Real, open tracker gaps now SCORED | **Consulted; the FIXES are real project hygiene, not scorecard work.** Reconciling `sprint-status.yaml` (269 orphan story keys → every story maps to an epic) flips TC1→strong; wiring `doc_drift_monitor` to gate production flips TC2→strong. Both are reachable close-paths the reader will detect; neither is reactivated here (they are operator/hygiene follow-ons the scorecard now makes visible). |
+| `braid-workbook-semantic-claim-citation-audit` (DID Leak-2 + FT1) | Already scored by two dimensions (DID-C5 + fidelity FT1) | **Consulted; no change.** The fuller claim↔source audit stays its own follow-on; the WARN-only tripwire is honestly scored as the FT1 leak (namespaced, no double-count). |
+
+**Consultation outcome:** no deferred entry is reactivated *as scorecard-epic work* — Q3 completes the scorecard's job of REPORTING them honestly. The two follow-ons Q3 FILED (capability full-trial-scan; lane coverage-verifier) are recorded as its own §Named-But-Not-Filed / registry entries. The single highest-value real-substrate item the finished scorecard elevates is **`reading-path-fresh-naive-holdout-pre-trial`** (the owed calibration measurement) — now sitting, honestly, at the top of the learner-trust leaks.
+
+## 5. Next-epic readiness + action items
+
+**The 8-dimension scorecard is COMPLETE.** There is no Q4 in scope: Q3 was the last planned epic of the Project Quality Scorecard arc. What remains is not new dimensions but the **standing R2 obligation** (live E2E wiring + the fresh-naive-holdout measurement) and the honest follow-ons the scorecard now surfaces.
+
+**Action items (carry forward — the Q1 five + Q2 four + Q3 additions):**
+1. **AI-Q3a: A persisted honesty signal must read a STABLE posture** — never a read-time subprocess / wall-clock / per-commit diff (the TC2 determinism lesson). Owner: dev + review. Status: open.
+2. **AI-Q3b: Declared-clean ≠ verified-clean** — when a dimension can't verify completeness, register the UNVERIFIED gap as a leak; "nothing checked → unavailable, never clean" (the LD1 / Q3.3 lesson). Owner: dev + review. Status: open.
+3. **AI-Q3c: A doc↔code honesty pin must guard the AUTHORITY (the prose), not only its structured mirror; and a forbidding pin must gate on the same owed-state axis its dimension gates on (permit the honest upgrade)** — the Q3.4 FIX-A/FIX-B lesson. Owner: dev + review. Status: open.
+4. **AI-Q3d: Validate a proposed hardening against the REAL substrate before applying** — a fix that reds honest text is a regression (the Q3.4 FIX-C regex lesson). Owner: review. Status: open.
+5. **(Standing) AI-Q2a…d + AI-Q1a…e** — consult-real-FAIL-predicate; isolate-the-pin's-property; reachable-close-path + read-only; honor the phasing flag; GL-13 registration; reconcile-by-identity across namespaces; GL-9 RED-under-seeded; signal-vs-judgment honesty; R2 checkable-comparison witnesses. Status: open.
+
+## 6. Readiness assessment
+
+- **Testing & quality:** ✅ 507 hermetic tests green; ruff + import-linter (18/0) clean; every honesty pin proven RED-under-seeded-edit; the eight-namespace leak structure provably pairwise-disjoint with three no-double-count DID cross-links. **Live E2E honestly DEFERRED to R2** for all eight dimensions — the scorecard's posture reflects this (no dimension claims live-proven).
+- **Deployment/integration:** the 8 dimensions + the final-report projector are functions + goldens; **not yet wired into `production_runner`'s live operator surface** (deliberately — the pipeline-lockstep trigger path stays untouched; live wiring rides R2).
+- **Branch:** `dev/quality-scorecard-epic-2026-07-19` — Q1 + Q2 + Q3 = 8 dimensions across the epic's story/retro commits (Q3.4 at `c42c03c3`). **Merge-to-master is the operator's call at arc close.**
+- **Honest residual (carried):** the trend/history axis is a judgment-ledger (can't catch coordinated doc+ledger fabrication); the equal-weight Band can under-represent a weak-thesis dimension (mitigated by band_note; weighted-scoring flagged as a future option, deliberately not taken to keep the model consistent across all 8). Q3.1's CH2 (no-overstatement) is a bounded-scope judgment until the full-trial-scan follow-on lands.
+
+**Verdict:** Epic Q3 is complete and solid — and it completes the whole Project Quality Scorecard arc. Eight dimensions, each honest about its fence / its owed state / its read; two genuinely different shapes (fully-computed, report-only) absorbed by the Q1 engine without a rewrite; a band honestly moved DOWN when re-measurement demanded it; and the adversarial review caught progressively subtler believed-green — including inside the honesty guards themselves. The machinery is measuring itself honestly. The arc is ready to close; merge-to-master and the R2 live-wiring + fresh-naive-holdout measurement are the operator's next calls.
