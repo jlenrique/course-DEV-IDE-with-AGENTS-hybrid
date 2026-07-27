@@ -6,6 +6,7 @@
 
 ### What Works Now
 
+- **Every run now grades itself — the Quality Scorecard (Epics Q1–Q4, 2026-07-20):** after a run, the system self-assesses how honestly it performed across eight discipline dimensions (did it cut corners on coverage, cost, calibration, capability claims, lane discipline, fidelity, and more). You see it two ways: a **quality tile** on the HUD (Band + per-dimension status) and a **`quality-final-report.md`** written into the run folder (ranked "leaks" + trend vs. prior runs). It is **informational, not a gate** — a low grade never stops a run; it tells you where to look in your post-run review. It is also fail-soft: a dimension that can't be measured shows as unknown rather than erroring. Ask Marcus *"show me the quality scorecard for this run."*
 - **Every gate now reads as a table, not a JSON blob (Epic 43):** at each human-in-the-loop pause Marcus surfaces a purpose-built, paginated table — gate identity, enrichment metrics, ungrounded advisories, learning objectives, and the per-gate content — instead of the raw dense JSON the first live trial dumped. All 14 operator-reviewed gate surfaces are covered; a coverage guard makes it mechanically impossible to close on a subset. You review what matters, in a readable shape.
 - **Pre-walk settings gate — confirm or change before the run starts (Epic 42, default ON):** before the production walk begins, Marcus pauses on a settings gate (G0S) that shows the resolved run settings (execution mode, preset, HUD, budget, flags) as a 16-toggle readout and lets you confirm or change them up front rather than discovering them mid-run.
 - **Watch a live run from anywhere, read-only (Epic 42):** the operator HUD now has a public overlay served over an ngrok tunnel — a scrubbed, read-only view of the live run (never secrets, decision-card internals, or export paths). The local flight-deck HUD (`http://localhost:8791`) now **survives pause** and launches windowless (no extra console window). See `docs/operator/hud-guide.md`.
@@ -239,6 +240,7 @@ Marcus proactively offers to pull source materials before starting production ta
 - *"Review [content] for accessibility compliance"*
 - *"Check brand consistency on these slides"*
 - *"Run an editorial review on the Module 2 lesson plan"*
+- *"Show me the quality scorecard for this run"* — the eight-dimension self-assessment (Band, ranked leaks, trend)
 
 ### System Operations
 - *"Run a pre-flight check"* — verify all tools are working

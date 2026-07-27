@@ -4,9 +4,9 @@
 
 **Languages:** Python (3.11+), Markdown, JSON, Jinja2 (`.j2`), YAML, JavaScript, PowerShell, Shell, SQL
 **Core frameworks:** LangChain, LangGraph, Pydantic v2, FastAPI, Uvicorn (plus httpx, Pytest in the runtime/tooling layers)
-**Branch (at analysis):** `trial/c1m1-p1-2026-07-17` (cut off consolidated `master` `12775df6`)
-**Graph baseline:** commit `bfefcc1b` · **2699 nodes / 5164 edges / 7 layers · 894 files** analyzed (`app/`, `scripts/`, `skills/`)
-**Regenerated:** 2026-07-17 (full re-scan at HEAD after the Epics 41/42/43 wave landed and master consolidated — the resume-walk dispatch-integrity, operator-surface next-pass, and HIL-surface tabular-coverage substrate is now in-graph, incl. `hil_tabular_projector`, the HUD render package, `operator_surface`, the G_SETTINGS pre-walk gate, and the SPOC anti-drift parity guard).
+**Branch (at analysis):** `dev/quality-scorecard-epic-2026-07-19` (tip `560d81ed`; Quality Scorecard merged to `master` at `656e6241`)
+**Graph baseline:** commit `560d81ed` · **2638 nodes / 4970 edges / 7 layers · 899 files** analyzed (`app/`, `scripts/`, `skills/`)
+**Regenerated:** 2026-07-27 (incremental re-scan at HEAD after the **Project Quality Scorecard** arc (Epics Q1–Q4) landed and merged to `master` — the new `app/quality/` scorecard package (signal engine + trend-history ledger + final-report projector + scorecard reader) is now in-graph, alongside its live-wiring into the operator-surface quality tile, the run-end `quality-final-report.md` hook, and the HUD quality-tile render. Prior baseline `bfefcc1b`/2026-07-17 covered the Epics 41/42/43 wave.).
 
 > This guide is generated from the `/understand` knowledge graph. It is a **map, not the territory** — file summaries are LLM-derived and occasionally reflect one representative symbol in a file. When a summary and the code disagree, the code wins. Re-run `/understand` after significant changes and `/understand-onboard` to refresh this file.
 
@@ -24,6 +24,7 @@ Three design commitments run through everything:
 
 Recent substrate milestones reflected in this graph scan:
 
+- **✅ Project Quality Scorecard — Epics Q1–Q4 (2026-07-19/20, DEV COMPLETE + LIVE-WIRED, merged to `master`)** — a self-assessment layer that scores a completed run across eight honesty/discipline dimensions (fence enablement, bone inventory, lock contract, cost posture/drift/trace, coverage honesty, calibration, capability honesty, lane discipline, tracker coherence, fidelity-trust). `app/quality/signals.py` is the ~27-function signal engine; `app/quality/history.py` owns the append-only JSONL trend-history ledger and fail-soft trend readers (baseline/rising/falling); `app/quality/scorecard.py` is a fail-soft reader over the machine-readable YAML block in `docs/quality/project-quality-scorecard.md`; `app/quality/report.py` is the deterministic final-report projector (Band + cross-dimensional ranked leaks + trend + `fence_state`). The whole package is **fail-soft by construction** — a missing or malformed signal degrades a dimension, never crashes the run. Live-wired three ways: an **operator-surface quality tile** (Q4.1), a run-end **`quality-final-report.md` hook** (Q4.2), and a **HUD quality-tile render** (Q4.3).
 - **✅ HIL Surface Tabular Coverage — Epic 43 (2026-07-17, CLOSED)** — every operator-reviewed gate surface now renders a bespoke, paginated markdown table instead of a dense JSON blob. `app/marcus/cli/hil_tabular_projector.py` re-shapes gate pause material (gate identity, enrichment metrics, ungrounded advisories, learning objectives, per-gate content) through a **content-type renderer registry** with a generic fallback; a `GATE_TO_CONTENT_TYPE` bridge resolves each gate to its renderer, and a **RED-first coverage ratchet** (canonical `GATE_CONTENT_TYPES` + shrink-only allowlist, now **empty**) makes "closed on a subset of surfaces" mechanically impossible. 14 operator-reviewed content types → 14 renderers. A **SPOC↔projector anti-drift parity guard** pins the two surfaces together.
 - **✅ Operator Surface Next-Pass — Epic 42 (2026-07-17)** — the flight-deck operator HUD and the pre-walk settings gate. `app/marcus/orchestrator/operator_surface_assembler.py` is the single writer of the `operator-surface.json` projection (`app/models/runtime/operator_surface.py` — strict producer / lenient consumer / contract-owned event derivation); `app/hud/` serves it two ways — a GET-only localhost flight deck (`server.py` + the `render/` page/client/styles package) that **survives pause** and launches windowless (`CREATE_NO_WINDOW`), and a separate tunnel-facing **public read-only overlay** (`public.py`) that serves only a positive-allowlist-scrubbed view (never `launch_nonce`, decision-card internals, error text, or export paths). The new **G_SETTINGS** pre-walk gate (`app/models/decision_cards/g_settings.py`, "G0S") presents run settings for confirm-or-change before the walk begins and is **default-ON**. The `app/notify/` service polls the projection and pushes stall/event notifications via Apprise, swallowing every failure.
 - **✅ Resume-Walk Dispatch Integrity — Epic 41 (2026-07-17)** — the fix for the `bc747b51` frozen-run defect. The real root cause was **budget starvation** (`max_specialist_calls=1`), not keyless resume: the throttle was **removed**, resume/recover now runs a live-env preflight, silent specialist skips **fail loud** in both walks, and `MARCUS_TRIAL_BUDGET_USD` became an **enforced-stop brake** rather than a passive gauge.
@@ -40,7 +41,7 @@ Recent substrate milestones reflected in this graph scan:
 
 ## 2. Architecture Layers
 
-The graph assigns all 894 file-level nodes to seven layers (the root catch-all layer from the prior scan is gone — top-level config now folds into the tooling layer). Roughly top-to-bottom:
+The graph assigns all 899 file-level nodes to seven layers (the root catch-all layer from the prior scan is gone — top-level config now folds into the tooling layer). Roughly top-to-bottom:
 
 | Layer | Nodes | What lives here |
 |---|---:|---|
@@ -48,7 +49,7 @@ The graph assigns all 894 file-level nodes to seven layers (the root catch-all l
 | **Specialist Agents** | 184 | `app/specialists/` — the 14+ per-specialist LangGraph agents (Irene, Gary, Vera, Texas, Tracy, Enrique, Vision, Wanda, Kira, Motion-Planner, Quinn-R, Workbook-Producer, …) built on the 9-node scaffold, plus `_shared` audits/research-intake, and `app/composers/` (incl. the Section 02A directive composer). |
 | **Gates, HIL & Governance** | 72 | `app/gates/`, `app/parity/`, `app/cora/`, `app/audit/`, `app/replay/`, `app/ledger/` — HIL gate decision modules + resume APIs (incl. Section 02A G0 poll surface), the parity-contract DSL + SPOC anti-drift guard, Cora block-mode dev-graph enforcement, audit, resume-and-recover replay, and the learning ledger. |
 | **Contracts & Models** | 171 | `app/models/` — Pydantic v2 domain & runtime-state models + emitted JSON schemas: RunState, decision-cards (G0–G6 + G0E/G0R/G_SETTINGS), operator verdicts, contributions side-cars, the operator-surface projection contract. Highest-fan-in layer; everything imports it. |
-| **Runtime Substrate & Observability** | 65 | `app/runtime/` (incl. the `llm_batch/` LiteLLM Batch transport + eligibility/execution/cascade config, economics), `app/http/`, `app/mcp_server/`, `app/hud/` flight-deck + public overlay, `app/notify/`, `app/styleguide/`, and `runtime_server.py`. |
+| **Runtime Substrate & Observability** | 70 | `app/runtime/` (incl. the `llm_batch/` LiteLLM Batch transport + eligibility/execution/cascade config, economics), `app/quality/` (the fail-soft Quality Scorecard: signal engine + trend-history ledger + scorecard reader + final-report projector), `app/http/`, `app/mcp_server/`, `app/hud/` flight-deck + public overlay + quality tile, `app/notify/`, `app/styleguide/`, and `runtime_server.py`. |
 | **Scripts, Tool Clients & Generators** | 130 | `scripts/` — API clients (Gamma, Descript, ElevenLabs, Kling, Notion, Canvas), content generators (v4.2 templates), diagnostics, operator/live-proof drivers, Marcus-capability tooling — plus top-level project config files. |
 | **Skills & Agent Personas** | 88 | `skills/` — operator-facing BMAD agent skill packages (`SKILL.md` persona files, reference contracts, sanctum asset templates) for the custom personas Marcus routes to. |
 
@@ -99,6 +100,8 @@ The graph assigns all 894 file-level nodes to seven layers (the root catch-all l
 **Batch LLM execution mode (opt-in, v1).** `llm_execution_config.py` declares per-node realtime vs. batch transport; `llm_batch_eligibility.py` is the A3 matrix. In batch mode, `app/runtime/llm_batch/` submits the work and raises `WaitingForProviderBatchError` — a control-flow exception the runner catches to pause until the provider batch completes (`trial resume-batch`). Vision is the first opt-in consumer.
 
 **Learning ledger.** `app/ledger/emitter.py` writes verdict/override events idempotently to Postgres `ledger_events` (append-only, deduped by idempotency key); this is how the system remembers operator decisions across trials.
+
+**Quality Scorecard (fail-soft self-assessment).** `app/quality/` scores a completed run across eight honesty/discipline dimensions. `signals.py` is the ~27-function signal engine (fence enablement, bone inventory, lock contract, cost posture/drift/trace, coverage/calibration/capability honesty, lane discipline, tracker coherence, fidelity-trust); `history.py` is the append-only JSONL trend-history ledger with fail-soft trend readers; `scorecard.py` reads the machine-readable YAML block out of `docs/quality/project-quality-scorecard.md`; `report.py` projects the deterministic final report (Band + ranked cross-dimensional leaks + trend + `fence_state`). The governing discipline is **fail-soft**: a missing or malformed signal degrades that dimension, never crashes the run. It is live-wired into the operator-surface **quality tile**, a run-end **`quality-final-report.md`** hook, and the **HUD quality-tile render**.
 
 **Parity-contract DSL.** `app/parity/contracts/` is a self-registering DSL (`@parity_contract` decorator + surface registry + sanctum-alignment API) that pins which transports (cli/http/mcp) each gate surface must support, so surfaces cannot silently diverge.
 
@@ -176,6 +179,7 @@ A 14-stop walk from the operator's-eye view inward to the substrate (from the kn
 - `runtime/cascade_config.py`, `economics.py`, `compiled_graph_digest.py`, `override_api.py`, `checkpointer.py`
 - `runtime/llm_execution_config.py`, `llm_batch_eligibility.py`, `llm_batch/` (Files+Batches adapter, JSONL budget, custom_id join, `BatchReceipt`, cost report, `WaitingForProviderBatchError`)
 - `hud/server.py`, `public.py`, `render/{page,client,styles}.py`; `notify/service.py`; `styleguide/resolver.py`, `parity.py`
+- `quality/signals.py` (~27-signal engine), `quality/history.py` (JSONL trend ledger), `quality/scorecard.py` (YAML-block reader), `quality/report.py` (final-report projector) — the fail-soft Quality Scorecard
 
 **Scripts, Tool Clients & Generators** (`scripts/`)
 - `api_clients/base_client.py` + concrete clients (Canvas, Descript, ElevenLabs, Kling, Notion, Gamma, …)
@@ -185,7 +189,7 @@ A 14-stop walk from the operator's-eye view inward to the substrate (from the kn
 
 ## 6. Complexity Hotspots — approach carefully
 
-The graph flags **165** file-level nodes as `complex`. The ones a new developer is most likely to touch:
+The graph flags **164** file-level nodes as `complex`. The ones a new developer is most likely to touch:
 
 | File | Why it's a hotspot |
 |---|---|
@@ -211,6 +215,7 @@ The graph flags **165** file-level nodes as `complex`. The ones a new developer 
 | `app/runtime/llm_batch/adapter.py` | Batch transport seam — submit/pause/resume/join control flow crosses the runner's two-walk boundary. |
 | `app/marcus/course_source/syllabus_metadata.py` | Large DOCX/MHTML parser; corpus-facing input hardening. |
 | `app/marcus/lesson_plan/log.py` | Append-only JSONL log with a single-writer matrix. |
+| `app/quality/signals.py` | The ~27-function Quality Scorecard signal engine; every dimension's headline number is computed here — read it fail-soft (a broken signal degrades a dimension, never the run). |
 | `scripts/api_clients/base_client.py` | Shared base for concrete API clients (retry/backoff/error hierarchy). |
 
 ---
@@ -227,4 +232,4 @@ The graph flags **165** file-level nodes as `complex`. The ones a new developer 
 
 ---
 
-*Generated from `.understand-anything/knowledge-graph.json` (commit `bfefcc1b`, 2026-07-17). Regenerate with `/understand` (incremental) or `/understand --full`, then `/understand-onboard`.*
+*Generated from `.understand-anything/knowledge-graph.json` (commit `560d81ed`, 2026-07-27). Regenerate with `/understand` (incremental) or `/understand --full`, then `/understand-onboard`.*

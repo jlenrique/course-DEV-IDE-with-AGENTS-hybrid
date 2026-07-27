@@ -6,14 +6,13 @@
 
 ## Current Session State
 
-Latest session close: **Session close 2026-07-19 — PROJECT QUALITY SCORECARD epic DESIGNED + GREEN-LIT + RATIFIED (planning; dev deferred to fresh session)**
+Latest session close: **Session close 2026-07-20 — PROJECT QUALITY SCORECARD **DEV COMPLETE** (Q3.4 + Q3 close + Epic Q4 live-wiring) → **MERGED TO MASTER****
 
 **What is next:**
 
-1. **DEV opens on Epic Q1 (foundation)** in the corrected order **Q1.1 → Q1.4a → Q1.2 → Q1.3 → Q1.5 → Q1.4b**, honoring GL-1…GL-16 (binding). `bmad-code-review` precedes any story `done`. Class S — dev per BMAD dev-story discipline.
-2. **Testing doctrine (operator-mandated):** live-test at the component + run-segment level; full E2E runs economically OR **rides the upcoming Operator/HIL R2 trial** (witness `fence_state` + the final-report projection as a checkable comparison, per GL-10). The measure must be VERY reliable — every dimension carries its own honesty-pin ratchet.
-3. **The R2 operator-steered live trial** (on `tejal-apc-c1m1-p1-call`) remains the standing product frontier — the quality reporting rides it as part of the shakedown.
-4. **Branch disposition:** `dev/quality-scorecard-epic-2026-07-19` merges to master at arc close (or per operator).
+1. **The R2 operator-steered live trial** (on `tejal-apc-c1m1-p1-call`) — the standing product frontier. It now CLOSES all the OPEN live-equality witnesses: `q1-4b-r2-final-report-projector-witness` (UPDATED-not-closed: wired + offline byte-match-proven; live equality-vs-env-truth rides R2), the NEW `q4-2-r2-hud-quality-tile-witness`, and the Q1–Q3 per-dimension witnesses. **Do NOT run a live trial autonomously** — it rides the operator's shakedown.
+2. **The fresh-naive-holdout MEASUREMENT** (`reading-path-fresh-naive-holdout-pre-trial` = DID Leak-4) — the top learner-trust leak the finished scorecard surfaces; recording it flips CAL1 weak→strong. Its own owed epic.
+3. **Deferred follow-ons filed** (all OPEN, none reactivated as epic work): `q4-1-report-coverage-gap-underlisting-robustness` (report.py flags only empty leak-lists, not under-listing; enforced-away today by the len==open_leaks identity pins); capability full-trial-artifact-scan; lane coverage-completeness-verifier.
 
 ## You Are Here (from STATE-OF-THE-APP.md §11.1)
 

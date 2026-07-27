@@ -26,6 +26,16 @@ The CLI HIL surface is rendered by **`app/marcus/cli/hil_tabular_projector.py`**
 - **Model-binding check (43-4 lesson):** verify the poll_surface's declared model matches the card that actually flows at the paused gate (check on-disk `state/config/runs/**/decision-card-*.json`). If a poll_surface binds a different model and fields are genuinely absent, target the renderer at the REAL card body and FILE the mismatch to deferred-inventory — do NOT fix the binding in the renderer story.
 - **Register any new test `.py` file** in `PERMITTED_PYTHON_DIFFS` (`tests/audit/test_audit_tw_7c_4_no_live_dispatch_scope_creep.py`, Epic-43 block) or the TW-7c-4 scope tripwire fires.
 
+## ⚠️ The HUD renders on TWO paths — server-side AND client-side (Q4.3 lesson, 2026-07-20)
+
+Rendering something on the operator deck is **not** one surface. There are two render paths and a new operator-surface **section** (like the Epic-Q4 `quality` tile — Band/leaks/trend) must be wired in **all** of these or it silently vanishes:
+
+1. **Allowlist** — `app/hud/public.py::build_public_view` is a **positive allowlist** (`ALLOWED_*` tuples + per-section copy). An un-enumerated section is silently dropped from the public view.
+2. **Server render** — `app/hud/render/page.py` renders each optional section via a **dedicated per-section function** (no generic renderer). This produces the cold-load HTML.
+3. **Client render** — `app/hud/render/client.py` (`POLL_JS`) **re-renders the completed brief CLIENT-SIDE from JSON on every ~3s poll**. If you wire only the server panel, the section appears on cold load and then **DISAPPEARS on the first poll** — invisible on the surface the operator actually watches. Mirror the panel in the client `context()`/completed branch too, and add a node-execution test.
+
+**Also:** render **field-level type-defensively on the RAW producer projection** (`view["proj"]`) — never assume the upstream pydantic shape; a corrupt `operator-surface.json` (a scalar where a list is expected, a truthy-but-not-`True` flag) must render an explicit honest "unavailable", never crash the deck and never read cleaner than reality (garbage → neutral, never green). Full contract: `_bmad-output/planning-artifacts/epic-q4-party-greenlight-2026-07-20.md` (QLW-1..16) + the Q4.1/Q4.2/Q4.3 stories.
+
 ## Not every gate content type is a HIL surface
 
 `research_packet` and `workbook` were in the provisional canonical set but are NOT operator-reviewed at a paused gate (workbook runs post-G5; research is consumed internally at 04.55). The honest resolution was to **remove them from `GATE_CONTENT_TYPES`** with rationale — not to build phantom renderers. Do the same for any "content type" that has no operator review gate.

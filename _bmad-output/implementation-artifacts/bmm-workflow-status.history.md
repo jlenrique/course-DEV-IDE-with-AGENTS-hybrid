@@ -1,5 +1,9 @@
 # bmm-workflow-status.yaml — archived comment history
 
+> Demoted 2026-07-20 (retention = newest 1 prior):
+
+# 2026-07-18 — 4-implementation continues; no phase/story transition. STATUS-SURFACE CONSOLIDATION arc (bmad-quick-dev, Class S, branch dev/status-surface-consolidation-2026-07-17): 7 status surfaces → 3 authored SSOTs (sprint-status/SESSION-HANDOFF/STATE-OF-THE-APP) + deferred-inventory register + 2 fail-loud GENERATED views (next-session-start-here, docs/project-context.md via scripts/utilities/generate_*.py); cold history → dated *.history.md siblings; START/WRAPUP session-protocol contract table rewritten (SSOT-of-SSOTs) + arc-close roll-down. sprint-status value-reconciled to SOTA §11 (concierge-substrate→done; WAVE_LABELS 41/42/43). Fully-spawned 6-voice party CONFIRMED COMPLETE (Murat VERIFIED-COMPLETE); 201 tests green. Commits 497eb4dc→f382e651. Prior entry below.
+
 > Cold archive of the append-only `#` comment-history blob that formerly lived at the top of
 > `bmm-workflow-status.yaml`. Newest-first. Moved here 2026-07-17 (status-surface consolidation).
 > The live file keeps only the title + newest-1-prior entry; structured YAML is unchanged.

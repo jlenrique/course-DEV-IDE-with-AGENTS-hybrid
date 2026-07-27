@@ -93,6 +93,16 @@ The 2026-07-17 wave changed how you start, watch, and budget a live trial. Opera
 
 For the end-to-end operator walk-through, see [`docs/operator/trial-run-runbook.md`](operator/trial-run-runbook.md) and the HUD reading guide `docs/operator/hud-guide.md`.
 
+### Quality Scorecard — Operational Checklist (Epics Q1–Q4)
+
+The Quality Scorecard (merged to `master` 2026-07-20) self-assesses a completed run across eight honesty/discipline dimensions and surfaces the result three ways. It is **observe-only** — it never blocks, gates, or fails a run. Operational surface:
+
+1. **Read the quality tile on the HUD.** The flight-deck HUD (`http://localhost:8791`) and its public overlay now render a **quality tile** showing the run's Band and per-dimension status. It is informational — a low Band does not halt the run; it flags where the run cut corners for your review.
+2. **Find the final report in the run dir.** At run end the runtime writes **`quality-final-report.md`** into the run directory (Band + ranked cross-dimensional leaks + trend + this-run fence state). Read it in the post-run review; it is the durable per-run scorecard artifact.
+3. **The trend ledger accumulates across runs.** `docs/quality/scorecard-history.jsonl` is an append-only trend history; a dimension is classified baseline/rising/falling against it. Do not hand-edit or truncate it — it is the trend baseline.
+4. **The scorecard is fail-soft — a blank dimension is not an error.** If a dimension shows unknown/degraded, a signal could not compute for this run; that is expected fail-soft behavior, not a crash. The run still completes normally.
+5. **`docs/quality/project-quality-scorecard.md` is the project-level SSOT.** It carries both the human-readable scorecard and the machine-readable YAML block the runtime reads. Run `python scripts/utilities/quality_scorecard.py` to regenerate/inspect; keep prose and YAML in sync (there is a drift test).
+
 ### Do Not Operate As If
 
 - Do not treat the legacy Trial-3 or prompt-pack migration banners below as the current operating plan.
