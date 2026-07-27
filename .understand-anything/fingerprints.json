@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "bfefcc1b4a460cfb4804f32eb3d9232eacf7a158",
-  "generatedAt": "2026-07-18T01:09:23.901Z",
+  "gitCommitHash": "560d81ed2c40c3d7dae2b93941483d9071b3209e",
+  "generatedAt": "2026-07-27T15:56:34.983Z",
   "files": {
     ".coverage": {
       "filePath": ".coverage",
@@ -4925,7 +4925,7 @@
     },
     "app/hud/public.py": {
       "filePath": "app/hud/public.py",
-      "contentHash": "a42ee648feeb24f492de6240f4bbe6188930a6d2f2367b5f3776da9d4bdb33f5",
+      "contentHash": "f7a7140b492b142e93acc32356efcadfbd03dacfef6fad9c96370730e087d264",
       "functions": [
         {
           "name": "_copy_allowed",
@@ -4944,7 +4944,7 @@
           ],
           "returnType": "dict[str, Any]",
           "exported": true,
-          "lineCount": 83
+          "lineCount": 87
         },
         {
           "name": "_canonical_trial_id",
@@ -5108,7 +5108,7 @@
         "_required_env",
         "run_public_hud_server"
       ],
-      "totalLines": 454,
+      "totalLines": 476,
       "hasStructuralAnalysis": true
     },
     "app/hud/render/__init__.py": {
@@ -5132,17 +5132,17 @@
     },
     "app/hud/render/client.py": {
       "filePath": "app/hud/render/client.py",
-      "contentHash": "3d71765f146bc4f6e14cb641e845f01013a8dfac031090331c1d90486a5fd5ce",
+      "contentHash": "36537f3a933c544f21fd9acdcdad68e9a6bc2e285d1465efb91a841cf73b7acc",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 427,
+      "totalLines": 472,
       "hasStructuralAnalysis": true
     },
     "app/hud/render/page.py": {
       "filePath": "app/hud/render/page.py",
-      "contentHash": "a3f61224bfc9e0389aa4886751811fc16cb85529fea8a3cc10e5854afd22a2a2",
+      "contentHash": "04535ab6f9cb3a6974bf41f5828f8f6fbe2023d197eb62e9a92971803caa3bef",
       "functions": [
         {
           "name": "_esc",
@@ -5441,7 +5441,16 @@
           ],
           "returnType": "str",
           "exported": true,
-          "lineCount": 37
+          "lineCount": 41
+        },
+        {
+          "name": "_quality_panel",
+          "params": [
+            "view"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 81
         },
         {
           "name": "_ctx_failed",
@@ -5579,6 +5588,7 @@
         "_ctx_error",
         "_ctx_batch",
         "_ctx_completed",
+        "_quality_panel",
         "_ctx_failed",
         "_zone_context",
         "_panel_message",
@@ -5587,17 +5597,17 @@
         "render_zones",
         "render_page"
       ],
-      "totalLines": 987,
+      "totalLines": 1088,
       "hasStructuralAnalysis": true
     },
     "app/hud/render/styles.py": {
       "filePath": "app/hud/render/styles.py",
-      "contentHash": "cf8289c4345e7410db758c22200fdf3b65622328d6a23aa13b65327d381188de",
+      "contentHash": "c92580949017b1f5a6e11d8934e641aab2c6f40875f63124841baa7639e9d4d5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 243,
+      "totalLines": 257,
       "hasStructuralAnalysis": true
     },
     "app/hud/server.py": {
@@ -33295,7 +33305,7 @@
     },
     "app/marcus/orchestrator/operator_surface_assembler.py": {
       "filePath": "app/marcus/orchestrator/operator_surface_assembler.py",
-      "contentHash": "a29d57b6873337e3aeac19a3f9c39a881f0b1d8bc55f252ddc2b3dec50ebfa83",
+      "contentHash": "767fe987df2870060f3f5fc3ec3442a1938295d63066dc874d3f034f14775453",
       "functions": [
         {
           "name": "_lock_for",
@@ -33457,6 +33467,10 @@
             "_read_component_selection",
             "_read_total_cost",
             "_read_export_paths",
+            "_quality_dict",
+            "_quality_unavailable",
+            "_worst_band",
+            "_leak_label",
             "update_steps",
             "update_preflight_item",
             "update_health",
@@ -33468,7 +33482,7 @@
           ],
           "properties": [],
           "exported": true,
-          "lineCount": 770
+          "lineCount": 910
         }
       ],
       "imports": [
@@ -33572,6 +33586,7 @@
             "OperatorSurfaceProjection",
             "PreflightItem",
             "PreflightSection",
+            "QualitySection",
             "RunSettingsSection",
             "SpecialistEntry",
             "SpecialistsSection",
@@ -33603,7 +33618,7 @@
         "apply_run_settings_overrides_to_run",
         "OperatorSurfaceAssembler"
       ],
-      "totalLines": 1206,
+      "totalLines": 1367,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/package_builders.py": {
@@ -34804,7 +34819,7 @@
     },
     "app/marcus/orchestrator/production_runner.py": {
       "filePath": "app/marcus/orchestrator/production_runner.py",
-      "contentHash": "1b2e5c3c3750c845111ccbe4516646c829bc935479417be92905fe087495e67d",
+      "contentHash": "f9a478a23c936f47aa724d4650771fb921b72f766540efc8b89feea579cf5f2e",
       "functions": [
         {
           "name": "_prewalk_settings_sentinel_path",
@@ -34901,6 +34916,26 @@
           "returnType": "None",
           "exported": true,
           "lineCount": 12
+        },
+        {
+          "name": "_read_fence_state_from_run_summary",
+          "params": [
+            "run_summary_path"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_emit_quality_final_report",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "run_summary_path"
+          ],
+          "returnType": "None",
+          "exported": true,
+          "lineCount": 60
         },
         {
           "name": "_emit_operator_surface_steps",
@@ -35262,6 +35297,52 @@
           "lineCount": 8
         },
         {
+          "name": "_detect_silent_bypass_events",
+          "params": [
+            "signal"
+          ],
+          "returnType": "int | str",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "_fence_fences_enabled",
+          "params": [],
+          "returnType": "dict[str, bool | str]",
+          "exported": true,
+          "lineCount": 35
+        },
+        {
+          "name": "_fence_hil_allowlist_empty",
+          "params": [],
+          "returnType": "bool | str",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_fence_cost_posture",
+          "params": [
+            "trial_id",
+            "runs_root"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "_build_fence_state",
+          "params": [
+            "trial_id",
+            "runs_root",
+            "pack_hash_binding",
+            "conversation_chain_digest",
+            "silent_bypass_signal"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 39
+        },
+        {
           "name": "_emit_run_summary_yaml",
           "params": [
             "trial_id",
@@ -35275,7 +35356,7 @@
           ],
           "returnType": "Path",
           "exported": true,
-          "lineCount": 40
+          "lineCount": 84
         },
         {
           "name": "_quartile_engagement_counts",
@@ -35834,7 +35915,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 782
+          "lineCount": 789
         },
         {
           "name": "_apply_component_overrides_to_run_state",
@@ -35917,7 +35998,7 @@
           ],
           "returnType": "ProductionTrialEnvelope",
           "exported": true,
-          "lineCount": 747
+          "lineCount": 754
         }
       ],
       "classes": [
@@ -36295,6 +36376,8 @@
         "_udac_ratify_gate",
         "_write_json",
         "_emit_operator_surface",
+        "_read_fence_state_from_run_summary",
+        "_emit_quality_final_report",
         "_emit_operator_surface_steps",
         "_append_operator_surface_trace",
         "_operator_surface_cost_reading",
@@ -36328,6 +36411,11 @@
         "_persist_conversation_turn_if_possible",
         "_pack_hash_binding",
         "_conversation_chain_digest",
+        "_detect_silent_bypass_events",
+        "_fence_fences_enabled",
+        "_fence_hil_allowlist_empty",
+        "_fence_cost_posture",
+        "_build_fence_state",
         "_emit_run_summary_yaml",
         "_quartile_engagement_counts",
         "_emit_engagement_decay_report",
@@ -36383,7 +36471,7 @@
         "recover_production_trial",
         "_continue_production_walk"
       ],
-      "totalLines": 5499,
+      "totalLines": 5788,
       "hasStructuralAnalysis": true
     },
     "app/marcus/orchestrator/research_citation.py": {
@@ -46717,7 +46805,7 @@
     },
     "app/models/runtime/operator_surface.py": {
       "filePath": "app/models/runtime/operator_surface.py",
-      "contentHash": "9695e6423beda669a81d7a6129ac4968002cbf15d0f842cf0c5945dd1a4c6386",
+      "contentHash": "b3fbc4d621754cef4ee3a86a6b367d427659862f5f682d6fd4c3d60296377748",
       "functions": [
         {
           "name": "_default_notifications",
@@ -47125,6 +47213,23 @@
           "lineCount": 12
         },
         {
+          "name": "QualitySection",
+          "methods": [
+            "_enforce_zero_lie_posture"
+          ],
+          "properties": [
+            "available",
+            "band",
+            "ranked_leak_count",
+            "top_leaks",
+            "coverage_gaps",
+            "trend",
+            "scorecard_as_of"
+          ],
+          "exported": true,
+          "lineCount": 80
+        },
+        {
           "name": "OperatorSurfaceProjection",
           "methods": [
             "_enforce_top_tz",
@@ -47150,10 +47255,11 @@
             "trace",
             "decision_card",
             "error_message",
-            "deliverables"
+            "deliverables",
+            "quality"
           ],
           "exported": true,
-          "lineCount": 97
+          "lineCount": 101
         },
         {
           "name": "Unrecognized",
@@ -47274,6 +47380,7 @@
         "ErrorMessageSection",
         "DeliverableComponents",
         "DeliverablesSection",
+        "QualitySection",
         "OperatorSurfaceProjection",
         "operator_surface_schema_text",
         "emit_operator_surface_schema",
@@ -47285,7 +47392,7 @@
         "derive_event_transitions",
         "stall_condition"
       ],
-      "totalLines": 984,
+      "totalLines": 1085,
       "hasStructuralAnalysis": true
     },
     "app/models/runtime/production_envelope.py": {
@@ -47647,12 +47754,12 @@
     },
     "app/models/schemas/operator-surface.v1.schema.json": {
       "filePath": "app/models/schemas/operator-surface.v1.schema.json",
-      "contentHash": "b6080210c24894f619aa007e7e90ac9251cd6e5f80ddadf8ccec484831108301",
+      "contentHash": "61161c55b44f56462bdf301768823d6cd6cdffcb6ec61edee8824d919cede6a5",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1354,
+      "totalLines": 1457,
       "hasStructuralAnalysis": true
     },
     "app/models/schemas/specialist_state.schema.json": {
@@ -50733,6 +50840,1122 @@
         "pass1_generation_lock"
       ],
       "totalLines": 73,
+      "hasStructuralAnalysis": true
+    },
+    "app/quality/__init__.py": {
+      "filePath": "app/quality/__init__.py",
+      "contentHash": "3f183091ad3c2e74c5aeae5e7c0dde1c4be59321738eea9d2b30463c28a109a9",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": ".report",
+          "specifiers": [
+            "leak_coverage_gaps",
+            "ranked_project_leaks",
+            "render_scorecard_final_report"
+          ]
+        },
+        {
+          "source": ".scorecard",
+          "specifiers": [
+            "did_score_ref",
+            "dimension_ref",
+            "read_scorecard_block"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 26,
+      "hasStructuralAnalysis": true
+    },
+    "app/quality/history.py": {
+      "filePath": "app/quality/history.py",
+      "contentHash": "1d3b0d76f2b1633428fbf8b33009718617b69cd89a4248b55d7768c0320538b9",
+      "functions": [
+        {
+          "name": "_repo_root",
+          "params": [],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "history_path",
+          "params": [],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "_valid_iso",
+          "params": [
+            "value"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "history_entries",
+          "params": [
+            "dimension",
+            "path"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "all_history_entries",
+          "params": [
+            "path"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_snapshot_score",
+          "params": [
+            "snapshot"
+          ],
+          "returnType": "int | None",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_dated_entries",
+          "params": [
+            "dimension",
+            "path"
+          ],
+          "returnType": "list[tuple[int, dict[str, Any]]]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "newest_snapshot",
+          "params": [
+            "dimension",
+            "path"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "latest_prior_snapshot",
+          "params": [
+            "dimension",
+            "as_of",
+            "path"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "_trend_from_dim_entries",
+          "params": [
+            "dim_entries"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 33
+        },
+        {
+          "name": "trend_from_entries",
+          "params": [
+            "entries",
+            "dimension"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "trend_from_history",
+          "params": [
+            "dimension",
+            "path"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        }
+      ],
+      "exports": [
+        "_repo_root",
+        "history_path",
+        "_valid_iso",
+        "history_entries",
+        "all_history_entries",
+        "_snapshot_score",
+        "_dated_entries",
+        "newest_snapshot",
+        "latest_prior_snapshot",
+        "_trend_from_dim_entries",
+        "trend_from_entries",
+        "trend_from_history"
+      ],
+      "totalLines": 244,
+      "hasStructuralAnalysis": true
+    },
+    "app/quality/report.py": {
+      "filePath": "app/quality/report.py",
+      "contentHash": "2583d11b3d3791cd9f8569d108f1829397a8c04a12bba286f42ca3e2ff28d1dc",
+      "functions": [
+        {
+          "name": "_md_table",
+          "params": [
+            "headers",
+            "rows"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "_dimensions",
+          "params": [
+            "block"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "_cell",
+          "params": [
+            "value"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_dig",
+          "params": [
+            "state",
+            "path"
+          ],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "_rank_key",
+          "params": [
+            "rank"
+          ],
+          "returnType": "tuple[int, int]",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "ranked_project_leaks",
+          "params": [
+            "block"
+          ],
+          "returnType": "list[dict[str, Any]]",
+          "exported": true,
+          "lineCount": 45
+        },
+        {
+          "name": "leak_coverage_gaps",
+          "params": [
+            "block"
+          ],
+          "returnType": "list[str]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_iter_leaves",
+          "params": [
+            "value"
+          ],
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_fence_state_is_marker",
+          "params": [
+            "fence_state"
+          ],
+          "returnType": "bool",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_render_fence_state",
+          "params": [
+            "fence_state"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_sorted_dims",
+          "params": [
+            "dims"
+          ],
+          "returnType": "list[tuple[str, Any]]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_render_band",
+          "params": [
+            "dims"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_render_trace",
+          "params": [
+            "dims"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_render_leaks",
+          "params": [
+            "block"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_render_trend",
+          "params": [
+            "dims",
+            "history"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_try_section",
+          "params": [
+            "fn",
+            "marker"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_render_project",
+          "params": [
+            "block",
+            "history"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "render_scorecard_final_report",
+          "params": [
+            "block",
+            "history",
+            "fence_state"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": ".history",
+          "specifiers": [
+            "all_history_entries",
+            "trend_from_entries"
+          ]
+        }
+      ],
+      "exports": [
+        "_md_table",
+        "_dimensions",
+        "_cell",
+        "_dig",
+        "_rank_key",
+        "ranked_project_leaks",
+        "leak_coverage_gaps",
+        "_iter_leaves",
+        "_fence_state_is_marker",
+        "_render_fence_state",
+        "_sorted_dims",
+        "_render_band",
+        "_render_trace",
+        "_render_leaks",
+        "_render_trend",
+        "_try_section",
+        "_render_project",
+        "render_scorecard_final_report"
+      ],
+      "totalLines": 442,
+      "hasStructuralAnalysis": true
+    },
+    "app/quality/scorecard.py": {
+      "filePath": "app/quality/scorecard.py",
+      "contentHash": "88e05bdc7b61be102e61ae074cdf3f59869677065e6ec201da5d034cb79cd007",
+      "functions": [
+        {
+          "name": "_repo_root",
+          "params": [],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "scorecard_path",
+          "params": [],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 2
+        },
+        {
+          "name": "read_scorecard_block",
+          "params": [
+            "path"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "dimension_ref",
+          "params": [
+            "key",
+            "path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "did_score_ref",
+          "params": [
+            "path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        }
+      ],
+      "exports": [
+        "_repo_root",
+        "scorecard_path",
+        "read_scorecard_block",
+        "dimension_ref",
+        "did_score_ref"
+      ],
+      "totalLines": 162,
+      "hasStructuralAnalysis": true
+    },
+    "app/quality/signals.py": {
+      "filePath": "app/quality/signals.py",
+      "contentHash": "a33a995385ebf3b2196b88b237046c7b2359d223f83ec68159de6c637a03e919",
+      "functions": [
+        {
+          "name": "_repo_root",
+          "params": [],
+          "returnType": "Path",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "_production_preset_env",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "fences_enabled_signal",
+          "params": [],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "bone_inventory_signal",
+          "params": [
+            "manifest_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 71
+        },
+        {
+          "name": "_load_run_summary",
+          "params": [
+            "run_summary"
+          ],
+          "returnType": "dict | None",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_normalize_bypass",
+          "params": [
+            "raw"
+          ],
+          "returnType": "int | str",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "lock_contract_signal",
+          "params": [
+            "run_summary"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 34
+        },
+        {
+          "name": "_strip_fenced_code",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "_strip_html_comments",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "_strip_archived_section",
+          "params": [
+            "text"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "open_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_resolve_runtime_default_budget",
+          "params": [
+            "env"
+          ],
+          "returnType": "float | None",
+          "exported": true,
+          "lineCount": 24
+        },
+        {
+          "name": "_read_cost_report",
+          "params": [
+            "source"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "budget_stop_default_signal",
+          "params": [
+            "default_budget_usd",
+            "env"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 57
+        },
+        {
+          "name": "cost_posture_signal",
+          "params": [
+            "report"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "cost_drift_signal",
+          "params": [
+            "report"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "cost_transparency_signal",
+          "params": [
+            "report"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 40
+        },
+        {
+          "name": "cost_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "coverage_fence_default_signal",
+          "params": [
+            "env"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 76
+        },
+        {
+          "name": "_load_coverage_receipt_obj",
+          "params": [
+            "source"
+          ],
+          "returnType": "Any | None",
+          "exported": true,
+          "lineCount": 43
+        },
+        {
+          "name": "coverage_receipt_honesty_signal",
+          "params": [
+            "receipt",
+            "note_bearing_content_exists"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 88
+        },
+        {
+          "name": "coverage_narration_obligation_signal",
+          "params": [
+            "receipt"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 87
+        },
+        {
+          "name": "coverage_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "_read_semantic_tripwire",
+          "params": [
+            "tripwire"
+          ],
+          "returnType": "Mapping[str, Any] | None",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "semantic_fence_gating_signal",
+          "params": [
+            "tripwire"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 58
+        },
+        {
+          "name": "_read_fidelity_trace",
+          "params": [
+            "source"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "fidelity_trace_honesty_signal",
+          "params": [
+            "trace"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 107
+        },
+        {
+          "name": "fidelity_audit_honesty_signal",
+          "params": [
+            "tripwire"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 48
+        },
+        {
+          "name": "fidelity_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_read_capability_tiers",
+          "params": [
+            "tiers"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 32
+        },
+        {
+          "name": "capability_tier_reconciliation_signal",
+          "params": [
+            "tiers",
+            "produced_evidence"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 145
+        },
+        {
+          "name": "capability_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "_qualify_verdict",
+          "params": [
+            "errors",
+            "warnings"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "tracker_coherence_signal",
+          "params": [
+            "qualify_result"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 103
+        },
+        {
+          "name": "tracker_doc_drift_signal",
+          "params": [
+            "monitor"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 64
+        },
+        {
+          "name": "tracker_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 30
+        },
+        {
+          "name": "_coerce_count",
+          "params": [
+            "value"
+          ],
+          "returnType": "int | None",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "_run_import_linter_live",
+          "params": [],
+          "returnType": "Any",
+          "exported": true,
+          "lineCount": 62
+        },
+        {
+          "name": "_read_import_linter_report",
+          "params": [
+            "report"
+          ],
+          "returnType": "dict[str, Any] | None",
+          "exported": true,
+          "lineCount": 38
+        },
+        {
+          "name": "import_linter_lane_signal",
+          "params": [
+            "report"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 59
+        },
+        {
+          "name": "lane_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 27
+        },
+        {
+          "name": "reading_path_calibration_signal",
+          "params": [
+            "posture"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 73
+        },
+        {
+          "name": "calibration_leak_count_signal",
+          "params": [
+            "inventory_path"
+          ],
+          "returnType": "dict[str, Any]",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "_level_c3",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_level_c2",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "_level_c4",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_level_ce_budget",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_level_cv_coverage_fence",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "_level_ft_semantic_fence",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 14
+        },
+        {
+          "name": "_level_ch_reconciliation",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 18
+        },
+        {
+          "name": "_level_tc_divergence",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "_level_tc_doc_drift",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 17
+        },
+        {
+          "name": "_level_ld_import_linter",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 20
+        },
+        {
+          "name": "_level_cal_reading_path",
+          "params": [
+            "signal"
+          ],
+          "returnType": "str",
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "level_from_signal",
+          "params": [
+            "criterion_key",
+            "signal"
+          ],
+          "returnType": "str | None",
+          "exported": true,
+          "lineCount": 51
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "io",
+          "specifiers": [
+            "io"
+          ]
+        },
+        {
+          "source": "json",
+          "specifiers": [
+            "json"
+          ]
+        },
+        {
+          "source": "os",
+          "specifiers": [
+            "os"
+          ]
+        },
+        {
+          "source": "re",
+          "specifiers": [
+            "re"
+          ]
+        },
+        {
+          "source": "threading",
+          "specifiers": [
+            "threading"
+          ]
+        },
+        {
+          "source": "collections.abc",
+          "specifiers": [
+            "Mapping"
+          ]
+        },
+        {
+          "source": "contextlib",
+          "specifiers": [
+            "contextmanager",
+            "redirect_stderr",
+            "redirect_stdout"
+          ]
+        },
+        {
+          "source": "pathlib",
+          "specifiers": [
+            "Path"
+          ]
+        },
+        {
+          "source": "types",
+          "specifiers": [
+            "MappingProxyType"
+          ]
+        },
+        {
+          "source": "typing",
+          "specifiers": [
+            "Any"
+          ]
+        },
+        {
+          "source": "yaml",
+          "specifiers": [
+            "yaml"
+          ]
+        }
+      ],
+      "exports": [
+        "_repo_root",
+        "_production_preset_env",
+        "fences_enabled_signal",
+        "bone_inventory_signal",
+        "_load_run_summary",
+        "_normalize_bypass",
+        "lock_contract_signal",
+        "_strip_fenced_code",
+        "_strip_html_comments",
+        "_strip_archived_section",
+        "open_leak_count_signal",
+        "_resolve_runtime_default_budget",
+        "_read_cost_report",
+        "budget_stop_default_signal",
+        "cost_posture_signal",
+        "cost_drift_signal",
+        "cost_transparency_signal",
+        "cost_leak_count_signal",
+        "coverage_fence_default_signal",
+        "_load_coverage_receipt_obj",
+        "coverage_receipt_honesty_signal",
+        "coverage_narration_obligation_signal",
+        "coverage_leak_count_signal",
+        "_read_semantic_tripwire",
+        "semantic_fence_gating_signal",
+        "_read_fidelity_trace",
+        "fidelity_trace_honesty_signal",
+        "fidelity_audit_honesty_signal",
+        "fidelity_leak_count_signal",
+        "_read_capability_tiers",
+        "capability_tier_reconciliation_signal",
+        "capability_leak_count_signal",
+        "_qualify_verdict",
+        "tracker_coherence_signal",
+        "tracker_doc_drift_signal",
+        "tracker_leak_count_signal",
+        "_coerce_count",
+        "_run_import_linter_live",
+        "_read_import_linter_report",
+        "import_linter_lane_signal",
+        "lane_leak_count_signal",
+        "reading_path_calibration_signal",
+        "calibration_leak_count_signal",
+        "_level_c3",
+        "_level_c2",
+        "_level_c4",
+        "_level_ce_budget",
+        "_level_cv_coverage_fence",
+        "_level_ft_semantic_fence",
+        "_level_ch_reconciliation",
+        "_level_tc_divergence",
+        "_level_tc_doc_drift",
+        "_level_ld_import_linter",
+        "_level_cal_reading_path",
+        "level_from_signal"
+      ],
+      "totalLines": 2542,
       "hasStructuralAnalysis": true
     },
     "app/replay/__init__.py": {
@@ -78611,7 +79834,7 @@
     },
     "skills/bmad-agent-cora/SKILL.md": {
       "filePath": "skills/bmad-agent-cora/SKILL.md",
-      "contentHash": "eb81570eef4d0ff61784731e930db7bde471e13811d47b2a716875b5ab1492bc",
+      "contentHash": "9de133ff983834adaacdd4353fe7604f4e51ac18c3eaed1b318f2a6e77cf2c6b",
       "functions": [],
       "classes": [],
       "imports": [],
