@@ -176,6 +176,28 @@ Invariants (hold these under any refactor):
 - **Public HUD is non-leak by allowlist, not by redaction.** `public.py` serves a positive allowlist; a field is invisible unless explicitly allowed. Never invert this to a denylist.
 - **G_SETTINGS default-ON is a wake-sentinel, not a hardcoded gate.** The default lives in the wake-sentinel path; changing default-on/off is a settings decision, not a manifest edit.
 
+### Quality Scorecard Seams (Epics Q1–Q4, 2026-07-19/20, merged to `master` `656e6241`)
+
+A self-assessment layer that scores a completed run across eight honesty/discipline dimensions and surfaces the result to the operator. The package is **fail-soft by construction** — a missing or malformed signal degrades that one dimension, never crashes the run. Seam map:
+
+**The `app/quality/` package (Epics Q1–Q3 — the dimensions).**
+- `app/quality/signals.py` — the ~27-function **signal engine**. Each signal computes one dimension's headline number: fence enablement, bone inventory, lock contract, cost posture/drift/trace, coverage honesty, calibration, capability honesty, lane discipline, tracker coherence, fidelity-trust. Read every signal fail-soft (bare-exception → degraded dimension, never a raised error into the run).
+- `app/quality/history.py` — the append-only JSONL **trend-history ledger** (`docs/quality/scorecard-history.jsonl`) + fail-soft trend readers that classify a dimension as baseline/rising/falling across runs.
+- `app/quality/scorecard.py` — a fail-soft **reader** that parses the machine-readable YAML block out of `docs/quality/project-quality-scorecard.md` and surfaces per-dimension headline numbers.
+- `app/quality/report.py` — the deterministic **final-report projector**: renders Band + cross-dimensional ranked leaks + computed trend + this-run `fence_state`.
+- `scripts/utilities/quality_scorecard.py` — the CLI entry point (out of graph scope — lives under `scripts/utilities/`, which the `.understandignore` excludes).
+
+**Live-wiring into the runtime (Epic Q4 — three surfaces).**
+- **Q4.1 operator-surface quality tile:** `app/marcus/orchestrator/operator_surface_assembler.py` (the single writer of `operator-surface.json`) composes a quality tile into the projection; `app/models/runtime/operator_surface.py` carries its contract (strict producer / lenient consumer — same discipline as every other tile).
+- **Q4.2 run-end `quality-final-report.md` hook:** `app/marcus/orchestrator/production_runner.py` invokes the `report.py` projector at run end and writes `quality-final-report.md` into the run dir. It rides the two-walk boundary — the hook fires on the terminal walk; do not assume it fires on the start walk.
+- **Q4.3 HUD quality-tile render:** `app/hud/render/{page,client,styles}.py` render the quality tile from the projection. Same import-linter HUD1 constraint as the rest of the render package — **never import the orchestrator** from the render layer; read only the projection.
+
+Invariants (hold these under any refactor):
+
+- **Fail-soft is the contract, not a nicety.** The scorecard must never be able to fail a run. A signal that cannot compute returns a degraded/unknown dimension; it does not raise into `production_runner.py`. Do not "harden" a signal by letting it throw.
+- **The scorecard observes; it does not gate.** It is an observability surface, not a HIL gate — it has no verdict, no resume `Command`, no manifest node. Do not wire it into gate flow.
+- **`docs/quality/project-quality-scorecard.md` is the human+machine SSOT.** The YAML block in that file is the machine-readable source `scorecard.py` reads; keep prose and YAML in sync (there is a drift test for exactly this).
+
 ### BMAD Harness v6.10.0 — uv + Windows Notes (2026-07-11)
 
 The BMAD methodology harness was upgraded to v6.10.0 stable (bmb 2.1.0, tea 1.19.0, cis 0.2.1) on 2026-07-11 — record + party gate at [`_bmad-output/implementation-artifacts/bmad-harness-upgrade-v6.10.0-2026-07-11.md`](../_bmad-output/implementation-artifacts/bmad-harness-upgrade-v6.10.0-2026-07-11.md). Three standing facts for anyone touching harness scripts:
