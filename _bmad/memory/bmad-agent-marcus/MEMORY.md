@@ -6,11 +6,13 @@ Curated long-term knowledge. Session logs live in `sessions/`; this file is the 
 
 _Updated per session. If there's an active tracked run, record:_
 
-- **Run ID:**
-- **Phase / gate:**
-- **Last action:**
-- **Next planned action:**
-- **Known blockers:**
+- **Run ID:** not minted (PHS 620 W03 recorded remake v2; conversation-space)
+- **Phase / gate:** winners locked; Pass 2 recast on Storyboard B; **Enrique held**
+- **Last action:** operator liked slides/flow; asked colleague-coach VO recast; then wrap (out of time)
+- **Next planned action:** confirm VO → Enrique → Gate 2M/Kira slide 06 only
+- **Known blockers:** staging gitignored (this clone only); VO not finally accepted
+- **Standing rule:** when ingestion is in doubt, check the live Canvas course (same content).
+- **Resume file:** `course-content/staging/tracked/source-bundles/phs-620-w03-recorded-20260909/remake-v2/NEXT-SESSION.md`
 
 ## Routing Learnings
 

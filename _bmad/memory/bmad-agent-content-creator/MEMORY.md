@@ -4,16 +4,14 @@ Curated long-term knowledge. Session logs live in `sessions/`; this file is the 
 
 ## Current Delegation State
 
-_Updated per session. If there's an active delegation cycle, record:_
-
-- **Run ID + module/lesson:**
-- **Pass:** 1 or 2
-- **Phase:** intake / design / delegation / review / assembly / return
-- **Writers engaged:**
-- **Perception status (Pass 2):**
-- **Motion plan status (Epic 14):**
-- **Next planned action:**
-- **Known blockers:**
+- **Run ID + module/lesson:** PHS620-W03-REC-20260909-v2 / PHS 620 M03 / remake Alignment Studio
+- **Pass:** 2 recast (colleague-coach) — validator PASS; operator “getting better,” not final
+- **Phase:** Storyboard B published; Enrique held
+- **Writers engaged:** named only (Paige / Sophia / Caravaggio)
+- **Perception status (Pass 2):** HIGH on locked winners in `remake-v2/gary-pass1/exports-winners/`
+- **Motion plan status (Epic 14):** seed only — Slide 06; `motion_type: static`, `motion_status: pending`
+- **Next planned action:** operator VO confirm, then Enrique
+- **Known blockers:** `course_context.yaml` is APC C1 (wrong course); staging gitignored
 
 ## Writer Performance Patterns
 

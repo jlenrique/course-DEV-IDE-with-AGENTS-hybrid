@@ -1,3 +1,53 @@
+# Session close 2026-09-10 — PHS 620 Week 3 recorded remake v2 (VO recast; wrap for resume)
+
+**Final class:** S (content production, conversation-space). **Opened as:** PHS 620 W03 recorded Alignment Studio remake. **Branch:** `dev/phs-620-week3-recorded-lesson-2026-09-09` (HEAD still `a7ae9a15` — **no production commit this wrap**; operator owns git; staging bundle is gitignored). **Do not** resume the July quality-scorecard R2 trial unless the operator names it.
+
+## What was completed
+
+- **Remake v2** of the discarded text-led 10-slide deck. Style locked: `hil-2026-apc-studio-image-card` / Studio template `g_nv5q4da69qiiu8q`. Pairing **LP-PHS620-W03-REC-V2**: **8 slides**, ~13.5 min plan.
+- **Gate 1** approved on the 8-beat remake. **Storyboard A** winners locked: `SBA-PHS620W3V2-1:B 2:A 3:B 4:A 5:A 6:A 7:A 8:A`. Slide 02 redo (drop APC physicianship leftover); operator used 02A as-is.
+- **Irene Pass 2** written after winners; validator **PASS**. Operator accepted coverage + slide-tracking; rejected strident/poster VO. **Recast** to colleague / supportive coach with linked transitions (still PASS). ~1587 words / ~10.6 min at 150 wpm (220-word/slide cap blocks a true 13.5 min on 8 cards).
+- **Storyboard B** published (v2-b leaf, not the discarded first B): https://jlenrique.github.io/assets/storyboards/PHS620-W03-REC-20260909-v2-b/index.html
+- Operator: slides and flow good; VO “getting better”; **out of time** — wrap here.
+
+## What is next
+
+1. **Cold start on this machine.** Activate **Marcus** (skill + sanctum). Settings: tracked + draft. Branch: `dev/phs-620-week3-recorded-lesson-2026-09-09`. Read `course-content/staging/tracked/source-bundles/phs-620-w03-recorded-20260909/remake-v2/NEXT-SESSION.md` before any specialist dispatch.
+2. **Confirm the recast VO** (colleague-coach, not poster). Operator said “getting better,” not final accept. If still off, recast named slides; if good, **Enrique / ElevenLabs** from `remake-v2/irene-pass2/segment-manifest.yaml`.
+3. Then, in order unless operator reorders: **Gate 2M / Kira on Slide 06 only**; workbook; Canvas deploy of the recorded lesson + existing mechanics.
+
+## Unresolved issues / risks
+
+- **`course-content/staging/` is gitignored.** All slides, scripts, winners, and Pass 2 artifacts live only on this clone. Next session must open **this worktree**. Copy the bundle if switching machines.
+- **VO not finally accepted.** Recast is on Storyboard B; Enrique is **held**.
+- **Token-tracking VO↔dense on-screen text is waived** on this remake except Slide 08 (operator remake lock). Do not reimpose it on 01–07. Global BOND invariant still stands for other runs.
+- **Studio image-text often smashes words.** VO paraphrases; do not read plaques (“Lesson Prototype / Lesson Experience”) or calendar year `20266`. Speak real tokens on 08.
+- **No engine `production_run_id`.** Conversation-space. `course_context.yaml` is APC C1 — ignore. Four module LOs verbatim, off-slide. Discussion title exact: **Modality Is a Design Tradeoff**.
+- **Step 0 coherence / sprint Kanban / Step 12 commit+push:** skipped this wrap. Rationale: no substrate story close; operator owns git; operator out of time; staging cannot be committed. Recorded as WRAPUP exception.
+
+## Key lessons
+
+- Visual-led Studio full-bleed + conversational Pass 2 after winners is the remake path; Tejal text-led is discarded for this lesson.
+- Operator wants **colleague/coach VO**: linked transitions, hard-earned tips, no poster pronouncements — while **keeping topical coverage and on-screen tracking**.
+- One elicitation at a time. Do not auto-advance gates.
+
+## Validation summary
+
+- `validate-irene-pass2-handoff.py` **PASS** (strict) after the colleague-coach recast.
+- Storyboard B generate: 8/8 narration attached, 0 missing assets; published `PHS620-W03-REC-20260909-v2-b`.
+- Step 0 `/harmonize`: skipped (content-production wrap, no app/schema/sprint close).
+- Step 1: no ruff/pytest on production code this wrap.
+
+## Content creation summary
+
+PHS 620 M03 recorded stand-in for cancelled live **Lesson Blueprint Alignment Studio**. Spine = Product 2 Lesson Blueprint v1. Continuous case Maya Rivera. Motion seed = Slide 06 only.
+
+## Artifact update checklist
+
+SESSION-HANDOFF ✓ (this) · remake-v2/NEXT-SESSION.md ✓ (local, gitignored with staging) · Marcus + Irene sanctum ✓ · next-session-start-here regenerated ✓ · sprint-status unchanged (no epic) · staging bundle gitignored (not committed) · Step 12 push deferred (operator git ownership + out of time)
+
+---
+
 # Session close 2026-07-20 — PROJECT QUALITY SCORECARD **DEV COMPLETE** (Q3.4 + Q3 close + Epic Q4 live-wiring) → **MERGED TO MASTER**
 
 **Final class:** S (substrate: `app/quality/`, `operator_surface.py` + assembler + schema, `production_runner.py`, `app/hud/**`, tests). **Branch:** `dev/quality-scorecard-epic-2026-07-19` (HEAD `9cbf2512`, pushed). **MERGED TO MASTER** `656e6241` (`--no-ff`, pushed `origin/master`). **Opened as:** continuation of the 2026-07-19 planning close (which deferred dev to a fresh session); operator directed autonomous DEV of the scorecard, then "merge to master" + this WRAPUP.
