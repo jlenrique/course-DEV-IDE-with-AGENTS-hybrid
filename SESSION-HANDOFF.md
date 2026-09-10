@@ -1,6 +1,6 @@
 # Session close 2026-09-10 — PHS 620 Week 3 recorded remake v2 (VO recast; wrap for resume)
 
-**Final class:** S (content production, conversation-space). **Opened as:** PHS 620 W03 recorded Alignment Studio remake. **Branch:** `dev/phs-620-week3-recorded-lesson-2026-09-09` (HEAD still `a7ae9a15` — **no production commit this wrap**; operator owns git; staging bundle is gitignored). **Do not** resume the July quality-scorecard R2 trial unless the operator names it.
+**Final class:** S (content production, conversation-space). **Opened as:** PHS 620 W03 recorded Alignment Studio remake. **Branch:** `dev/phs-620-week3-recorded-lesson-2026-09-09` (wrap commit `eef31a02` pushed). **Staging slides/scripts remain gitignored** and exist only on this clone. **Do not** resume the July quality-scorecard R2 trial unless the operator names it.
 
 ## What was completed
 
@@ -23,7 +23,8 @@
 - **Token-tracking VO↔dense on-screen text is waived** on this remake except Slide 08 (operator remake lock). Do not reimpose it on 01–07. Global BOND invariant still stands for other runs.
 - **Studio image-text often smashes words.** VO paraphrases; do not read plaques (“Lesson Prototype / Lesson Experience”) or calendar year `20266`. Speak real tokens on 08.
 - **No engine `production_run_id`.** Conversation-space. `course_context.yaml` is APC C1 — ignore. Four module LOs verbatim, off-slide. Discussion title exact: **Modality Is a Design Tradeoff**.
-- **Step 0 coherence / sprint Kanban / Step 12 commit+push:** skipped this wrap. Rationale: no substrate story close; operator owns git; operator out of time; staging cannot be committed. Recorded as WRAPUP exception.
+- **Step 0 coherence / sprint Kanban:** skipped this wrap (no substrate story close).
+- **Step 12:** wrap commit `eef31a02` pushed to `origin/dev/phs-620-week3-recorded-lesson-2026-09-09`. Staging bundle **not** in git (gitignore).
 
 ## Key lessons
 
@@ -44,7 +45,7 @@ PHS 620 M03 recorded stand-in for cancelled live **Lesson Blueprint Alignment St
 
 ## Artifact update checklist
 
-SESSION-HANDOFF ✓ (this) · remake-v2/NEXT-SESSION.md ✓ (local, gitignored with staging) · Marcus + Irene sanctum ✓ · next-session-start-here regenerated ✓ · sprint-status unchanged (no epic) · staging bundle gitignored (not committed) · Step 12 push deferred (operator git ownership + out of time)
+SESSION-HANDOFF ✓ (this) · remake-v2/NEXT-SESSION.md ✓ (local, gitignored with staging) · Marcus + Irene sanctum ✓ · next-session-start-here regenerated ✓ · sprint-status unchanged (no epic) · staging bundle gitignored (not committed) · wrap commit `eef31a02` pushed (handoff + sanctum only)
 
 ---
 
