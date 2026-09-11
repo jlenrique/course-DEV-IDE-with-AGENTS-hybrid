@@ -2,7 +2,7 @@
 title: 'G4-18 and Pass 2 spoken-bridge quality become Vera-agentic'
 type: 'feature'
 created: '2026-09-11'
-status: 'in-review'
+status: 'done'
 review_loop_iteration: 0
 context:
   - '{project-root}/state/config/fidelity-contracts/g4-narration-script.yaml'

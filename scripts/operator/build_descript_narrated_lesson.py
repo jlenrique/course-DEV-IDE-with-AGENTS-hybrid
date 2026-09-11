@@ -36,6 +36,7 @@ from scripts.api_clients.descript_client import (  # noqa: E402
 from scripts.operator.descript_publication_receipt import (  # noqa: E402
     DescriptPublicationError,
     build_publication_receipt,
+    select_assembled_composition,
 )
 
 logger = logging.getLogger("build_descript_narrated_lesson")
@@ -289,14 +290,6 @@ def run(args: argparse.Namespace) -> int:
         print(f"  - {c.get('name')!r} dur={c.get('duration')} "
               f"media_type={c.get('media_type')} id={c.get('id')}")
 
-    if not comps:
-        raise DescriptPublicationError(
-            f"No compositions on project {project_id} after assembly — "
-            "Underlord did not produce a timeline. NOT declaring published."
-        )
-
-    comp0 = comps[0]
-    actual_duration = comp0.get("duration")
     expected_audio_total_s = resolve_expected_audio_total_s(audio_dir)
     if expected_audio_total_s is None:
         raise DescriptPublicationError(
@@ -305,16 +298,18 @@ def run(args: argparse.Namespace) -> int:
             "declaring published."
         )
 
+    assembled = select_assembled_composition(comps, expected_audio_total_s)
+    actual_duration = assembled.get("duration")
     receipt = build_publication_receipt(
         project_id=project_id,
-        composition_id=comp0.get("id"),
+        composition_id=assembled.get("id"),
         composition_duration_s=actual_duration,
         expected_audio_total_s=expected_audio_total_s,
         attested_at_utc=datetime.now(UTC).isoformat(),
     )
     receipt["project_url"] = project_url
-    receipt["composition_name"] = comp0.get("name")
-    receipt["composition_media_type"] = comp0.get("media_type")
+    receipt["composition_name"] = assembled.get("name")
+    receipt["composition_media_type"] = assembled.get("media_type")
 
     receipt_path = Path(args.audio_dir).parent / "descript-publication-receipt.json"
     receipt_path.write_text(json.dumps(receipt, indent=2), encoding="utf-8")
@@ -328,8 +323,9 @@ def run(args: argparse.Namespace) -> int:
     #    Gated behind the passed assertion above: we only reach here if the
     #    composition was durably assembled (no detachment / drift).
     if args.publish:
-        comp_id = comp0.get("id")
-        publish_project(client, project_id, resolution=args.resolution, composition_id=comp_id)
+        publish_project(
+            client, project_id, resolution=args.resolution, composition_id=assembled.get("id")
+        )
     return 0
 
 

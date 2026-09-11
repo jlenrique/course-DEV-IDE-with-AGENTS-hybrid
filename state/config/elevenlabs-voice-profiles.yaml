@@ -1,5 +1,18 @@
 default_profile: clinical-instructional
 
+# Operator 2026-09-11: keep this American-only faculty-seminar slate until further notice.
+# Voice preview uses these IDs (in order) when all three are still in the live catalog.
+pinned_preview_slate:
+  until: further-notice
+  notes: >
+    No British / Spanish / international accents. Marc is the course-narration
+    anchor; Matilda and Chris are the approved alternatives. LP-PHS620-W03-BOXV02
+    selected Matilda for that run only.
+  voice_ids:
+    - o0t0Wz5oSDuuCV6p7rba  # Marc B. Laurent
+    - XrExE9yKIg1WjnnlVkGX  # Matilda
+    - iP95p4xoKVk53GoZ742B  # Chris
+
 content_type_profiles:
   motion-enabled narrated lesson: clinical-instructional
   narrated-lesson-with-video-or-animation: clinical-instructional
@@ -24,6 +37,10 @@ profiles:
       - hype
       - dramatic
       - parody
+      - british
+      - spanish
+      - international
+      - cosmopolitan
     preferred_use_cases:
       - narration
       - educational

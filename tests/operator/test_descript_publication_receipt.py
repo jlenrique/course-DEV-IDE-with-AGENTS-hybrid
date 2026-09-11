@@ -27,6 +27,7 @@ import pytest
 from scripts.operator.descript_publication_receipt import (
     DescriptPublicationError,
     build_publication_receipt,
+    select_assembled_composition,
 )
 
 PROJECT_ID = "d4c69938-751c-458f-be93-036874eaa81b"
@@ -111,6 +112,31 @@ def test_attested_at_utc_passthrough_is_deterministic() -> None:
         expected_audio_total_s=EXPECTED_AUDIO_TOTAL_S,
     )
     assert "attested_at_utc" not in receipt2
+
+
+def test_select_assembled_composition_skips_duration_zero_default() -> None:
+    """Underlord leaves a dur=0 default next to the real timeline — pick the match."""
+    comps = [
+        {
+            "name": "PHS 620 W03 Box v02 — Matilda theatrical",
+            "duration": 0,
+            "media_type": "video",
+            "id": "c189f8a9-1828-4422-988c-0d6924997416",
+        },
+        {
+            "name": "Narrated Slide Lesson",
+            "duration": 580.813468,
+            "media_type": "video",
+            "id": "0ecefdfd-3456-46f5-9bd5-fca999af4bbc",
+        },
+    ]
+    chosen = select_assembled_composition(comps, 580.834)
+    assert chosen["id"] == "0ecefdfd-3456-46f5-9bd5-fca999af4bbc"
+
+
+def test_select_assembled_composition_empty_raises() -> None:
+    with pytest.raises(DescriptPublicationError):
+        select_assembled_composition([], 580.834)
 
 
 def test_tolerance_boundary_just_outside_raises() -> None:

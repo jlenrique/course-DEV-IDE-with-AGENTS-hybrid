@@ -1,3 +1,50 @@
+# Session close 2026-09-11 — PHS 620 W03 Box v02 **COMPLETE** + G4-18 Vera-agentic QC → master
+
+**Final class:** S (content production + substrate: G4-18/Vera recast, Descript attestation picker, pinned American voice slate). **Opened as:** conversation-space Marcus run on `LP-PHS620-W03-BOXV02`. **Branch:** `dev/g4-18-agentic-pass2-semantics-2026-09-11`. **Staging slides/audio remain gitignored** (this clone only).
+
+## What was completed
+
+- **Production run complete.** Operator confirmed the Descript **Narrated Slide Lesson**: https://web.descript.com/79ba51c2-cdf7-4513-8499-702b39ff7a63 (18 stills + 18 theatrical Matilda clips, 580.813s vs 580.834s expected).
+- **G4-18 / spoken-bridge QC recast as Vera-agentic** (`7ded3711`): handoff validator stays a structural oracle; new-concept-in-interstitial and cluster-boundary *quality* fail closed on Vera, not word lists. Greened on this pairing.
+- **Voice:** American slate pinned until further notice (Marc / Matilda / Chris). This run locked **Matilda theatrical `eleven_v3`** throughout after A/B listen. Ordinary v2 archived locally. Operator waived Quinn-R WPM on `seg-u07` / `seg-u16`.
+- **Stills:** Gate 2 per-card picks `BBBBBAAAAAABBAABAB` (mostly B, not all-B). Gate 2M / Kira / Canvas **held**.
+- **Desmond:** import + Underlord succeeded. Builder had attested `compositions[0]` (dur=0 default); picker now selects the duration-matched timeline.
+
+## What is next
+
+1. No further Box v02 pipeline work unless the operator reopens Gate 2M / workbook / Canvas.
+2. Optional later: Pass 2 authoring rule to stop default “First / First / First” (explicitly deferred).
+3. Remake-v2 remains a parked donor, not this pairing.
+
+## Unresolved issues / risks
+
+- **`course-content/staging/` is gitignored.** Pairing artifacts (audio, stills, Descript pack) live only on this clone.
+- Formal `bmad-code-review` party was not spawned for G4-18; operator authorized merge of the product recast anyway.
+- Step 0 `/harmonize`: skipped this wrap (content-production close; G4-18 already committed + focused pytest green).
+
+## Key lessons
+
+- Spoken-bridge / interstitial QC belongs to Vera, not fail-closed phrase lists.
+- Offer ordinary vs theatrical TTS as an operator choice before Descript.
+- After Underlord, attest the composition whose duration matches expected audio — never blindly `compositions[0]`.
+
+## Validation summary
+
+- Focused pytest: 118 passed (`test_validate_irene_pass2_handoff`, Vera G4-19 rubric, elevenlabs operations, Descript publication receipt).
+- Descript live: operator confirmed correctness of Narrated Slide Lesson.
+
+## Artifact update checklist
+
+SESSION-HANDOFF ✓ (this) · Marcus sanctum ✓ · G4-18 spec `done` ✓ · staging gitignored (not committed) · product merge to master requested
+
+## Merge selection (this wrap)
+
+**To master:** G4-18/Vera recast; pinned American voice slate + preview hook; Descript assembled-composition picker + tests; wrap docs/sanctum; prior remake-v2 wrap commits already on this branch.
+
+**Not to master:** gitignored staging bundle; shadow-monitor dirt; gamma-styleguide-picks noise; HAI/tejal source dumps; module-03 one-line deletions.
+
+---
+
 # Session close 2026-09-10 — PHS 620 Week 3 recorded remake v2 (VO recast; wrap for resume)
 
 **Final class:** S (content production, conversation-space). **Opened as:** PHS 620 W03 recorded Alignment Studio remake. **Branch:** `dev/phs-620-week3-recorded-lesson-2026-09-09` (wrap commit `eef31a02` pushed). **Staging slides/scripts remain gitignored** and exist only on this clone. **Do not** resume the July quality-scorecard R2 trial unless the operator names it.
