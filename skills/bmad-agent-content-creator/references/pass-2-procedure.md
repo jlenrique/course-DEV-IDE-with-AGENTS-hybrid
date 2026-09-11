@@ -63,14 +63,14 @@ When the manifest contains clustered segments (`cluster_id` present), process th
 
 - **Head segments** (`cluster_role: head`) use `cluster_head_word_range` and establish the topic, hook, and cluster frame.
 - **Interstitials** (`cluster_role: interstitial`) use `interstitial_word_range`, focus on the slide's `isolation_target`, and assume the visual carries most of the meaning; narration supplies the missing interpretation rather than reteaching the whole topic.
-- Interstitials must not introduce new concepts outside the head segment's instructional scope. Treat the head slide's `source_ref` plus the current interstitial's perceived detail as the allowed semantic boundary.
+- Interstitials must not introduce new **teaching** concepts outside the cluster's instructional scope. Allowed scope is the head narration, the cluster's Pass 1 teaching terms (`title`, `learning_objective`, `source_refs`, `narrative_arc`), the head and interstitial `source_ref` excerpts, and this interstitial's perceived detail. Function words are not concepts.
 - **Segment `behavioral_intent`** must serve the cluster's `master_behavioral_intent`. It may intensify or modulate the cluster affect, but it must not contradict or redirect it.
 
 ### Bridge cadence discipline
 
 Follow the configured **bridge cadence** so explicit intros/outros appear often enough in **spoken** narration (not only as manifest tags): when `bridge_type` is `intro`, `outro`, `both`, `pivot`, or `cluster_boundary`, the learner-facing narration text must include natural connective language unless enforcement is off.
 
-In clustered runs, suppress routine within-cluster bridges by default. Only `cluster_position: tension` may carry `bridge_type: pivot`, and that pivot should be a brief tonal turn rather than a full seam recap. Seams between clusters should use `bridge_type: cluster_boundary` with a two-part beat: one sentence synthesizing what the prior cluster established, then one sentence pulling the learner into the next topic.
+In clustered runs, suppress routine within-cluster bridges by default. Only `cluster_position: tension` may carry `bridge_type: pivot`, and that pivot should be a brief tonal turn rather than a full seam recap. Seams between clusters should use `bridge_type: cluster_boundary` with a two-part beat: one sentence synthesizing what the prior cluster established, then one sentence pulling the learner into the next topic. That seam is not `bridge_type: both` and does not require an intro-class substring.
 
 Scale bridge verbosity with `bridge_frequency_scale` while respecting cadence caps. For every segment, record `timing_role`, `content_density`, `visual_detail_load`, a concise `duration_rationale`, and `bridge_type` when that segment carries an explicit bridge beat.
 

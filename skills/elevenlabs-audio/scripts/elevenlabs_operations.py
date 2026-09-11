@@ -119,6 +119,18 @@ def load_voice_preview_profiles() -> dict[str, Any]:
     return yaml.safe_load(VOICE_PROFILES_PATH.read_text(encoding="utf-8")) or {}
 
 
+def _pinned_preview_voice_ids(profiles_data: dict[str, Any] | None = None) -> list[str]:
+    """Return the operator-pinned preview slate, if one is configured."""
+    data = profiles_data if profiles_data is not None else load_voice_preview_profiles()
+    raw = data.get("pinned_preview_slate")
+    if not isinstance(raw, dict):
+        return []
+    ids = raw.get("voice_ids")
+    if not isinstance(ids, list):
+        return []
+    return [str(item).strip() for item in ids if str(item).strip()]
+
+
 def merge_parameters(
     style_defaults: dict[str, Any],
     overrides: dict[str, Any] | None = None,
@@ -626,6 +638,64 @@ def preview_voice_options(
     context_terms = _tokenize_voice_terms(*context_chunks)
     baseline_terms = preferred_terms
     enriched_context_terms = _merge_unique_terms(context_terms, profile_context_terms)
+
+    pinned_ids = _pinned_preview_voice_ids()
+    if mode != "description_driven_search" and pinned_ids:
+        pinned_candidates: list[dict[str, Any]] = []
+        for voice_id in pinned_ids:
+            raw_voice = voice_map.get(voice_id)
+            if raw_voice is None:
+                pinned_candidates = []
+                break
+            built = _build_voice_candidate(
+                raw_voice,
+                desired_terms=baseline_terms,
+                context_terms=enriched_context_terms,
+                clarity_hints=clarity_hints,
+                penalty_terms=penalty_terms,
+                preferred_language=preferred_language,
+                preferred_locale=preferred_locale,
+                source="pinned_preview_slate",
+                source_label="operator-pinned American faculty-seminar slate",
+            )
+            if built is None:
+                pinned_candidates = []
+                break
+            pinned_candidates.append(built)
+        if len(pinned_candidates) == len(pinned_ids):
+            for rank, candidate in enumerate(pinned_candidates, start=1):
+                candidate["rank"] = rank
+                candidate["selection_basis"] = "pinned preview slate"
+            result = {
+                "status": "selection_required",
+                "selection_mode": "pinned_preview_slate",
+                "mode": mode,
+                "profile_name": profile_name,
+                "default_voice_id": default_voice_id,
+                "previous_voice_id": resolved_previous_voice_id,
+                "presentation_context": context_chunks,
+                "candidate_voices": pinned_candidates,
+                "catalog_voice_count": len(voices),
+                "audio_buffer_seconds": resolved_audio_buffer_seconds,
+                "selected_voice_id": None,
+                "selected_voice_name": None,
+                "selected_from_rank": None,
+                "operator_notes": None,
+                "override_reason": None,
+                "presentation_voice_source": prior_voice_source,
+                "pinned_preview_slate": pinned_ids,
+            }
+            if locked_manifest_path:
+                result["locked_manifest_path"] = str(Path(locked_manifest_path))
+                result["locked_manifest_hash"] = _sha256_file(locked_manifest_path)
+            if locked_script_path:
+                result["locked_script_path"] = str(Path(locked_script_path))
+                result["locked_script_hash"] = _sha256_file(locked_script_path)
+            if output_path:
+                write_json_output(result, output_path)
+                write_voice_selection_review(result, output_path)
+                result["output_path"] = str(Path(output_path))
+            return result
 
     if mode == "description_driven_search":
         if not ideal_voice_description:

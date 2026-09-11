@@ -6,17 +6,20 @@ Curated long-term knowledge. Session logs live in `sessions/`; this file is the 
 
 _Updated per session. If there's an active tracked run, record:_
 
-- **Run ID:**
-- **Phase / gate:**
-- **Last action:**
-- **Next planned action:**
-- **Known blockers:**
+- **Run ID:** not minted (`LP-PHS620-W03-BOXV02`; conversation-space). **COMPLETE 2026-09-11.**
+- **Phase / gate:** Gate 3 approved; theatrical Matilda locked; Descript Narrated Slide Lesson confirmed.
+- **Last action:** operator confirmed Descript assembly; wrap + merge product to master.
+- **Next planned action:** none for this pairing. Do not auto Kira/Canvas/Gate 2M.
+- **Known blockers:** staging gitignored (this clone only). Pass 2 “First/First/First” authoring rule still deferred.
+- **Standing rule:** when ingestion is in doubt, check the live Canvas course (same content).
+- **Resume file:** none for Box v02 — production run complete. Remake-v2 still parked at `.../phs-620-w03-recorded-20260909/remake-v2/NEXT-SESSION.md` if that donor is ever reopened.
 
 ## Routing Learnings
 
-_Patterns about which specialist handles which content family best, when to use which workflow template, etc._
-
-- (empty until observations accumulate)
+- **G4-18 / spoken-bridge QC is Vera-agentic** (2026-09-11): the handoff validator stays a structural oracle. New-concept-in-interstitial and cluster-boundary *quality* fail closed on Vera, not word lists. Phrase lists remain authoring help.
+- **Voice preview slate** (2026-09-11, until further notice): American-only Marc / Matilda / Chris. No British/Spanish/international accents.
+- **Theatrical vs ordinary Matilda:** operator A/B then lock method before Descript. Tags are delivery metadata; canonical words stay tag-free.
+- **Desmond attestation:** after Underlord, pick the composition whose duration matches expected audio, not `compositions[0]` (often a dur=0 default).
 
 ## Lesson Plan Co-authoring Patterns (confirmed 2026-04-19)
 

@@ -222,7 +222,9 @@ def _g3(
     return {"gate_id": "G3", "storyboard": "A", "confidence_rubric": confidence}, [], perception
 
 
-def _g4() -> tuple[dict[str, Any], list[dict[str, str]]]:
+def _g4(
+    payload: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], list[dict[str, str]]]:
     criteria = yaml.safe_load(G4_CONTRACT.read_text(encoding="utf-8"))["criteria"]
     verdicts = [
         {
@@ -234,7 +236,32 @@ def _g4() -> tuple[dict[str, Any], list[dict[str, str]]]:
         }
         for item in criteria
     ]
-    return {"gate_id": "G4", "criteria": verdicts}, []
+    extra: list[dict[str, str]] = []
+    payload = payload or {}
+    if payload.get("pass2_semantic_judge"):
+        from app.specialists.vera.pass2_semantic_judge import (  # noqa: PLC0415
+            judge_pass2_semantics,
+        )
+
+        judged = judge_pass2_semantics(payload)
+        for item in verdicts:
+            if item["criterion_id"] == "G4-18":
+                item["verdict"] = judged["g4_18_verdict"]
+            if item["criterion_id"] == "G4-12" and judged.get("bridge_quality_verdict") in {
+                "pass",
+                "fail",
+            }:
+                item["verdict"] = judged["bridge_quality_verdict"]
+        for finding in judged.get("findings") or []:
+            if isinstance(finding, dict):
+                extra.append(
+                    {
+                        "category": str(finding.get("category") or "A"),
+                        "severity": str(finding.get("severity") or "medium"),
+                        "description": str(finding.get("description") or ""),
+                    }
+                )
+    return {"gate_id": "G4", "criteria": verdicts}, extra
 
 
 def _hard_fail(findings: list[dict[str, str]]) -> dict[str, str] | None:
@@ -296,7 +323,7 @@ def act(state: RunState, *, dispatch_func: Callable[..., dict[str, Any]]) -> dic
         elif gate == "G3":
             rubrics["G3"], new, perception = _g3(payload, dispatch_func)
         elif gate == "G4":
-            rubrics["G4"], new = _g4()
+            rubrics["G4"], new = _g4(payload)
         else:
             gate = "G0"
             rubrics["G0"], new = _g0(payload)

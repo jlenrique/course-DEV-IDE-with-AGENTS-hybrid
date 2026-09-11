@@ -92,3 +92,48 @@ def build_publication_receipt(
     if attested_at_utc is not None:
         receipt["attested_at_utc"] = attested_at_utc
     return receipt
+
+
+def select_assembled_composition(
+    compositions: list[dict[str, Any]],
+    expected_audio_total_s: float | int,
+    *,
+    tolerance_s: float = 1.0,
+) -> dict[str, Any]:
+    """Pick the assembled video timeline, not a duration-0 default composition.
+
+    Descript often returns TWO video compositions after Underlord: a default
+    project-named clip at duration 0, then ``Narrated Slide Lesson`` at the
+    real runtime. Attesting ``compositions[0]`` false-fails the detachment
+    gate on a successful assembly (PHS 620 W03 2026-09-11).
+    """
+    if not compositions:
+        raise DescriptPublicationError(
+            "No compositions after assembly — Underlord did not produce a "
+            "timeline. NOT declaring published."
+        )
+    expected = float(expected_audio_total_s)
+    video = [
+        row
+        for row in compositions
+        if str(row.get("media_type") or "").lower() == "video"
+    ]
+    pool = video or list(compositions)
+    matching: list[dict[str, Any]] = []
+    positive: list[tuple[float, dict[str, Any]]] = []
+    for row in pool:
+        try:
+            duration = float(row.get("duration") or 0)
+        except (TypeError, ValueError):
+            continue
+        if duration <= 0:
+            continue
+        positive.append((duration, row))
+        if abs(duration - expected) <= tolerance_s:
+            matching.append(row)
+    if matching:
+        return matching[0]
+    if positive:
+        positive.sort(key=lambda item: item[0], reverse=True)
+        return positive[0][1]
+    return pool[0]

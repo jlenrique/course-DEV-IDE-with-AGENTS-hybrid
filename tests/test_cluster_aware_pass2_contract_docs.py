@@ -19,7 +19,7 @@ def test_irene_skill_documents_cluster_aware_pass2_rules() -> None:
     ).read_text(encoding="utf-8")
 
     assert "process them cluster-by-cluster in manifest order" in content
-    assert "must not introduce new concepts outside the head segment's instructional scope" in content
+    assert "must not introduce new **teaching** concepts outside the cluster's instructional scope" in content
     assert "master_behavioral_intent" in content
     assert "bridge_type: pivot" in content
     assert "bridge_type: cluster_boundary" in content

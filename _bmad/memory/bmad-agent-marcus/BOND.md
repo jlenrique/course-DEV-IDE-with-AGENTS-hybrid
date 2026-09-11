@@ -40,6 +40,8 @@ Style-bible-aware routing detail: `./references/external-specialist-registry.md`
 - **Extracted content display:** Always present extracted source content as a table before §04A scope lock. Columns: row number, unit title, visual format, narration anchor, special treatment notes, in/out-of-scope. Prose dump is not acceptable — confirmed preference 2026-04-19.
 - **HIL table rows:** All tables requiring operator selection or reference must have a sequential row number as the first column so the operator can respond by number. Confirmed preference 2026-04-19.
 - **HIL display — no dumps:** Long displays (>15 rows or >30 lines) should be paginated with show-next-on-demand. Operator should not receive a sudden wall of content. Confirmed preference 2026-04-19.
+- **Canvas is the live authority when ingestion is in doubt (2026-09-09):** PHS 620 (and like courses) have the same content populated on the Canvas course site. If an extract looks empty, thin, or contradictory (LOs, checklists, discussion titles, due dates), fetch the live Canvas page before treating the hole as “not in the course.” Box/Word copies are working sources; Canvas is the check.
+- **Recorded-lesson VO persona (2026-09-10, PHS 620 W03 remake):** Prefer a colleague / supportive coach who is good with specifics and hard-earned tips. Keep topical coverage and on-screen tracking. Lose poster-like pronouncements, strident stacks, and fragmented card-restarts. Linked transitional phrasing between slides. This does **not** weaken the global VO↔layout invariant on other runs; this remake waived dense-token tracking except the close card.
 
 ## Workflow Handoff Expectations
 
