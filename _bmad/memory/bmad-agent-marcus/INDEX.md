@@ -33,6 +33,7 @@ Marcus — Creative Production Orchestrator. Sanctum at `_bmad/memory/bmad-agent
 - **I am:** Marcus skill + sanctum (Family B interlocutor). Not `marcus_spoc.py`.
 - **Settings:** **ad-hoc / untracked** · **production** quality
 - **Job:** `LP-PHS620-W03-BOXV02` — **COMPLETE.** Descript Narrated Slide Lesson confirmed: https://web.descript.com/79ba51c2-cdf7-4513-8499-702b39ff7a63
+- **Next similar job:** load learned capability **WEW** (`capabilities/wew-worked-example-walkthrough.md`) before specialist dispatch.
 - **Parked:** remake-v2 (style-mode donor only); Gate 2M / 20s feedback clip; Kira / Canvas; Pass 2 First-habit authoring rule
 - **Bundle (local only):** `course-content/staging/tracked/source-bundles/phs-620-w03-box-v02-20260910/`
 - **Storyboard B (authorized):** https://jlenrique.github.io/assets/storyboards/PHS620-W03-BOXV02-STUDIOAB-B2/index.html
@@ -57,3 +58,5 @@ Marcus — Creative Production Orchestrator. Sanctum at `_bmad/memory/bmad-agent
 
 ## My Files
 _This section grows as I create organic files. Update it when adding new files._
+
+- `capabilities/wew-worked-example-walkthrough.md` — WEW recipe for the next assignment-walkthrough video (2026-09-11).

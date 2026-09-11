@@ -19,6 +19,7 @@ _Capabilities added by the owner over time. Prompts live in `capabilities/`._
 
 | Code | Name | Description | Source | Added |
 |------|------|-------------|--------|-------|
+| [WEW] | worked-example walkthrough video | Faculty-seminar assignment walkthrough → visual-led Narrated Slide Lesson (PHS 620 W03 Box v02 pattern) | `./capabilities/wew-worked-example-walkthrough.md` | 2026-09-11 |
 
 ## How to Add a Capability
 

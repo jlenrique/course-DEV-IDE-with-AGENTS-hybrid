@@ -1,6 +1,6 @@
 # Session close 2026-09-11 — PHS 620 W03 Box v02 **COMPLETE** + G4-18 Vera-agentic QC → master
 
-**Final class:** S (content production + substrate: G4-18/Vera recast, Descript attestation picker, pinned American voice slate). **Opened as:** conversation-space Marcus run on `LP-PHS620-W03-BOXV02`. **Branch:** `dev/g4-18-agentic-pass2-semantics-2026-09-11`. **Staging slides/audio remain gitignored** (this clone only).
+**Final class:** S (content production + substrate: G4-18/Vera recast, Descript attestation picker, pinned American voice slate). **Opened as:** conversation-space Marcus run on `LP-PHS620-W03-BOXV02`. **On master:** `fcfa60e7` (merge) plus WEW recipe follow-on. **Staging slides/audio remain gitignored** (this clone only).
 
 ## What was completed
 
@@ -12,9 +12,9 @@
 
 ## What is next
 
-1. No further Box v02 pipeline work unless the operator reopens Gate 2M / workbook / Canvas.
-2. Optional later: Pass 2 authoring rule to stop default “First / First / First” (explicitly deferred).
-3. Remake-v2 remains a parked donor, not this pairing.
+1. **Next similar walkthrough video:** activate Marcus (skill + sanctum), then load learned capability **WEW** — `_bmad/memory/bmad-agent-marcus/capabilities/wew-worked-example-walkthrough.md`. Confirm settings. Inventory the new Box (or equivalent) pack as a finished brief. Do not reconstruct the Box v02 path from chat.
+2. **Do not auto-resume this pairing.** Gate 2M / workbook / Canvas stay parked unless Juanl names them. Local donor notes (this clone only): `course-content/staging/tracked/source-bundles/phs-620-w03-box-v02-20260910/NEXT-SESSION.md`.
+3. Optional later (not a blocker): Pass 2 authoring rule to stop default “First / First / First.” Remake-v2 remains a parked 8-slide donor, not the walkthrough recipe.
 
 ## Unresolved issues / risks
 
@@ -27,6 +27,7 @@
 - Spoken-bridge / interstitial QC belongs to Vera, not fail-closed phrase lists.
 - Offer ordinary vs theatrical TTS as an operator choice before Descript.
 - After Underlord, attest the composition whose duration matches expected audio — never blindly `compositions[0]`.
+- The next assignment-walkthrough video should start from capability **WEW**, not from reconstructing this chat.
 
 ## Validation summary
 
@@ -35,7 +36,7 @@
 
 ## Artifact update checklist
 
-SESSION-HANDOFF ✓ (this) · Marcus sanctum ✓ · G4-18 spec `done` ✓ · staging gitignored (not committed) · product merge to master requested
+SESSION-HANDOFF ✓ (this) · Marcus sanctum ✓ (WEW capability) · G4-18 spec `done` ✓ · staging gitignored (not committed) · product merge `fcfa60e7` on origin/master
 
 ## Merge selection (this wrap)
 

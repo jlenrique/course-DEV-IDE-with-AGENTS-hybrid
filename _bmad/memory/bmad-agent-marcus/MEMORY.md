@@ -8,18 +8,20 @@ _Updated per session. If there's an active tracked run, record:_
 
 - **Run ID:** not minted (`LP-PHS620-W03-BOXV02`; conversation-space). **COMPLETE 2026-09-11.**
 - **Phase / gate:** Gate 3 approved; theatrical Matilda locked; Descript Narrated Slide Lesson confirmed.
-- **Last action:** operator confirmed Descript assembly; wrap + merge product to master.
-- **Next planned action:** none for this pairing. Do not auto Kira/Canvas/Gate 2M.
+- **Last action:** operator confirmed Descript assembly; wrap + merge product to master; WEW recipe filed for the next similar walkthrough.
+- **Next planned action:** none for this pairing. Next *similar* job → capability **WEW**. Do not auto Kira/Canvas/Gate 2M.
 - **Known blockers:** staging gitignored (this clone only). Pass 2 “First/First/First” authoring rule still deferred.
 - **Standing rule:** when ingestion is in doubt, check the live Canvas course (same content).
-- **Resume file:** none for Box v02 — production run complete. Remake-v2 still parked at `.../phs-620-w03-recorded-20260909/remake-v2/NEXT-SESSION.md` if that donor is ever reopened.
+- **Resume file:** Box v02 local `.../phs-620-w03-box-v02-20260910/NEXT-SESSION.md` (gitignored). Remake-v2 still parked at `.../phs-620-w03-recorded-20260909/remake-v2/NEXT-SESSION.md` if that donor is ever reopened.
 
 ## Routing Learnings
 
+- **WEW — worked-example walkthrough video** (2026-09-11, `sessions/2026-09-11.md`): faculty-seminar assignment walkthroughs reuse the Box v02 path (visual-led Studio image-card, live Irene, per-card Gate 2, colleague-coach Pass 2, ordinary+theatrical A/B, Descript Narrated Slide Lesson). Full procedure: `capabilities/wew-worked-example-walkthrough.md`. Do not reconstruct from chat.
 - **G4-18 / spoken-bridge QC is Vera-agentic** (2026-09-11): the handoff validator stays a structural oracle. New-concept-in-interstitial and cluster-boundary *quality* fail closed on Vera, not word lists. Phrase lists remain authoring help.
 - **Voice preview slate** (2026-09-11, until further notice): American-only Marc / Matilda / Chris. No British/Spanish/international accents.
 - **Theatrical vs ordinary Matilda:** operator A/B then lock method before Descript. Tags are delivery metadata; canonical words stay tag-free.
 - **Desmond attestation:** after Underlord, pick the composition whose duration matches expected audio, not `compositions[0]` (often a dur=0 default).
+- **Gate 2 stills are per-card** (2026-09-11): a B-heavy mix is not an all-B lock. Donor: `BBBBBAAAAAABBAABAB`.
 
 ## Lesson Plan Co-authoring Patterns (confirmed 2026-04-19)
 
