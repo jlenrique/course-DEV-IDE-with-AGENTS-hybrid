@@ -131,18 +131,20 @@ criteria:
   - id: "G4-18"
     name: "No new concepts in interstitials"
     description: >
-      Interstitial narration should stay inside the concept scope established by
-      the head segment and its source-backed brief rather than introducing fresh
-      domain concepts.
+      Interstitial narration should stay inside the teaching scope established by
+      the head segment, the cluster's Pass 1 teaching terms, and this card's own
+      source-backed / perceived detail — rather than opening a new domain idea.
     fidelity_class: [creative, literal-text, literal-visual]
     severity: high
-    evaluation_type: deterministic
+    evaluation_type: agentic
     scope: cluster
-    check_type: concept-scope-heuristic
+    check_type: concept-scope-judgment
     check: >
-      Extract concept tokens from the head narration and any resolvable
-      source_ref text, then flag interstitial narration that introduces
-      concept-bearing terms outside that head scope.
+      Vera judges whether an interstitial teaches a new domain idea, not whether
+      it uses function words absent from the head VO. Allowed scope is the head
+      narration, Pass 1 title/LO/source_refs for the cluster, and this
+      interstitial's own source_ref plus perceived detail. Function words and
+      ordinary connective English are not new concepts.
     requires_perception: false
 
   - id: "G4-19"

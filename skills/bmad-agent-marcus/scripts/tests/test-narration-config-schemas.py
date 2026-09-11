@@ -394,6 +394,7 @@ class TestCrossFileConsistency:
             assert criteria[criterion_id]["severity"] == "high"
             assert criteria[criterion_id]["description"]
             assert criteria[criterion_id]["check_type"]
+        assert criteria["G4-18"]["evaluation_type"] == "agentic"
 
     def test_vera_protocol_documents_g4_16_to_g4_19_cluster_extensions(
         self, vera_g4_protocol_text: str

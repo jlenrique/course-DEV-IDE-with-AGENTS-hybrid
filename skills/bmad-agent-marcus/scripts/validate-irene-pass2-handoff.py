@@ -350,12 +350,24 @@ def _spoken_bridge_issue_message(
 ) -> str | None:
     """Return a short machine reason if narration_text lacks required spoken cues."""
     bt = str(bridge_type or "none").strip().lower() or "none"
-    if bt == "cluster_boundary":
-        bt = "both"
     if bt == "none":
         return None
     if not str(narration_text or "").strip():
         return "is empty"
+    if bt == "cluster_boundary":
+        # Advisory shape only. Seam *quality* is Vera G4-12 / G4-18, not
+        # intro+outro substring pairing.
+        sentences = [
+            part.strip()
+            for part in re.split(r"(?<=[.!?])\s+", str(narration_text).strip())
+            if part.strip()
+        ]
+        if len(sentences) < 2:
+            return (
+                "lacks a two-part cluster-boundary seam "
+                "(advisory shape; Vera judges quality)"
+            )
+        return None
     if bt == "intro":
         if not _text_matches_any_phrase_pattern(narration_text, intro_patterns):
             return f"lacks intro-class cue (expected substring from {len(intro_patterns)} pattern(s))"
@@ -1595,8 +1607,8 @@ def _validate_bundle_pass2_outputs(
             + ", ".join(details["segments_with_master_behavioral_intent_violation"])
         )
     if details["cluster_new_concept_violations"]:
-        errors.append(
-            "clustered interstitial narration introduces new concept(s) outside head scope: "
+        warnings.append(
+            "advisory G4-18 token heuristic (not fail-closed; Vera judges teaching scope): "
             + ", ".join(details["cluster_new_concept_violations"])
         )
     if details["cluster_arc_integrity_violations"]:
@@ -1658,8 +1670,9 @@ def _validate_bundle_pass2_outputs(
             + details["within_cluster_bridge_warnings"]
             + details["cluster_boundary_warnings"]
         )
-        if spoken_enforcement == "warn":
-            runtime_policy_violations += details["spoken_bridge_warnings"]
+        # Spoken-bridge substring / seam-shape notes stay advisory. Vera
+        # judges G4-12 bridge quality and G4-18 teaching-scope. Do not
+        # promote them to strict fail-closed.
         errors.extend(
             [
                 f"runtime_policy_violation: {violation}"
