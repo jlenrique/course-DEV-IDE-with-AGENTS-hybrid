@@ -33,6 +33,26 @@ _Updated per session. If there's an active tracked run, record:_
 - **Out-of-scope blueprint treatment:** Operator noted that out-of-scope units may warrant a draft blueprint treatment toward the end of a run. Flag this as a future run option when closing out §15.
 - **Operator confirmed this as "best treatment so far" on 2026-04-19 trial run B.**
 
+### PHS 620 assignment packs ship one document per job (learned W04, 2026-09-13)
+
+A Gravitas/Canvas assignment pack for this course is not one authority plus
+supporting files. Each document owns a different question, and the Instructions
+say so under *Use the resources together*. For W04: Instructions own the
+boundary of the work, the Completion Guide owns preparation plus the timed
+worked-example walkthrough, the sample PPTX owns what the deliverable looks like
+once the work is done, the rubric owns what gets assessed, and
+`PHS620_Part1_Feedback_Rehearsal_Protocol_STUDENT_v04` (shared Weeks 3–7, with a
+per-week row) owns how the peer review is conducted.
+
+**Do not read a missing walkthrough in the sample deck as a source gap.** On W04
+I flagged the fact that Maya's minute-by-minute teaching sequence lives in the
+Completion Guide rather than her PPTX as a problem to work around. The operator
+corrected this sharply: the deck is the *submission* example, the Guide is the
+*rehearsal* example, and both are legitimate. The fix was additive — one card
+naming the distinction — not a restructure. **Check the protocol document before
+concluding a week lacks procedural authority**; on W04 the 5/2/1 rhythm was
+already sourced from it.
+
 ## Operator Preferences
 
 _Promoted from BOND when they stabilize into patterns._
