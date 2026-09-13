@@ -128,7 +128,11 @@ real timeline rather than a paraphrase.
 | # | Slide | Narration job | Sec |
 |---|---|---|---|
 | 18 | **Duolingo screenshot**, cropped tight to the attempt + correction surface, with the card-4 loop overlaid as small callouts | The payoff. A system like this implements exactly the loop you just ran by hand: presents an item, scaffolds it, takes a real attempt, answers *that* attempt specifically, brings the miss back. You are the wizard behind that curtain this week. Also carries the optional invitation — spend ten minutes in a system like this one from the learner's seat — and the Part 2 pointer. | 65 |
-| 19 | Three small shape-cards (one-question lecture · demonstration + shadow attempt · worked example with faded guidance) over a closing frame | Three other shapes that fit five manual minutes, then the close: no Week 4 upload, evidence carries to Week 6, Week 5 retests this same cycle. Deliberately sparse — the closer breathes at 112 wpm. | 40 |
+| 19 | Three small shape-cards (one-question lecture · demonstration + shadow attempt · worked example with faded guidance) over a closing frame | Three other shapes that fit five manual minutes, then the close: no Week 4 upload, evidence carries to Week 6, Week 5 retests this same cycle. | 40 |
+
+The closer is deliberately sparse. It reads at 112 words per minute, the slowest
+card in the deck, so the final beat lands without crowding. That is a pacing
+decision about this card, not part of its teaching job.
 
 ## Card 18 reference images
 
