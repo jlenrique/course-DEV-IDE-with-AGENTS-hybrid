@@ -1,7 +1,7 @@
 # PHS 620 Week 4 — 15-minute presentation storyboard (v01)
 
 **Module:** Week 4 — Rehearse the Live Instructional Segment (Product 3 opens)
-**Product:** narrated slide lesson, visual-led, **18 cards / 15:00**
+**Product:** narrated slide lesson, visual-led, **19 cards / 15:45**
 **Status:** draft for operator review · not yet Gate 1
 **Authoring:** operator + Marcus, conversation-space, ad-hoc / production
 **Pairing donor:** `LP-PHS620-W03-BOXV02` (WEW capability)
@@ -22,6 +22,20 @@ stamped 2026-09-13T01:51:40Z).
 | Primary — week framing | `Module (M04)_intro.html`, `assignments.html`, `presentations.html` |
 | Context — before / after | `Module (M03)_intro.html`, `Module (M05)_intro.html` |
 | Context — course frame | `syllabus.html` |
+
+**Which document owns what** (the Instructions state this themselves, under *Use
+the resources together*): the Guide owns preparation, the teaching example, and
+panel updates; the sample PPTX owns what a Blueprint looks like once the
+rehearsal is over; the rubric owns teaching and its revision; the shared protocol
+owns how the review is conducted.
+
+The consequence for narration: **the minute-by-minute walkthrough on cards 10–12
+comes from the Completion Guide and `LiveSegment.html`, not from Maya's deck.**
+Her PPTX is a six-panel design record marked SIMULATED; it carries the residue of
+a rehearsal (a revised segment, one decision entry), not a transcript of one.
+That is not a gap in the deck — it is the correct division of labor, and card 13
+now says so out loud so students do not go looking for the walkthrough in the
+wrong artifact.
 
 ## Design constraints
 
@@ -51,11 +65,13 @@ invitation to try it is optional, after the fact, and lives in the close.
 The rehearsal is **small-scale and manual**. No custom tooling or media assets
 are expected. An interactive lecture qualifies. The student may act as **Wizard
 of Oz** — hand-running anything a later prototype might automate. Cards 5, 6,
-and 14 carry this explicitly; card 17 pays it off.
+and 15 carry this explicitly; card 18 pays it off.
 
 ## Card table
 
-Times are narration targets. Total 900s.
+Times are narration targets. Total 945s (15:45), inside the donor's
+fifteen-minute-class envelope. The per-card seconds in the companion script file
+are authoritative where the two disagree.
 
 ### Act 1 — Where this week sits (cards 1–3, 2:15)
 
@@ -81,7 +97,7 @@ Times are narration targets. Total 900s.
 | 8 | Two columns: *what the slice needs* (readable case text, criteria, timer, access route) vs *what it does not* | Prepare only the materials the five minutes consumes. Accessibility and a private response route are part of the design, not extras. | 50 |
 | 9 | A 30-second sand timer sitting *outside* a five-minute clock | Frame one consequential question before you teach — objective ID, version, what you want observed — and keep that framing outside the five minutes. | 35 |
 
-### Act 4 — Maya's five minutes, walked (cards 10–12, 2:55)
+### Act 4 — Maya's five minutes, walked (cards 10–13, 3:40)
 
 Centerpiece. Her own materials supply the clock, so narration coaches against a
 real timeline rather than a paraphrase.
@@ -91,29 +107,30 @@ real timeline rather than a paraphrase.
 | 10 | Timeline ribbon 0:00–1:15, two segments lit; speech bubble holding "*I do not want anyone at work to know*" | Move one: name the purpose and the role boundary. Move two: pose a real choice, then stop talking for twenty seconds. | 55 |
 | 11 | Timeline 1:15–3:00; a modelled question beside a bilingual case aid, scope boundary marked | Move three: explain why asking beats re-explaining, then model one sentence. Move four: connect it to the safe route — decline advice, arrange the nurse contact, confirm the choice. | 55 |
 | 12 | Timeline 3:00–5:00 with attempt → coaching → renewed attempt as a small return arrow; badge reading REVISED | Move five in full: one peer attempts, you name one useful next move, the same peer tries again. Then the close — and why her row honestly reads REVISED rather than TESTED. | 60 |
+| 13 | Two artifacts side by side, same visual weight: on the left a clock face with the five moves around it, labelled *what she does*; on the right her six-panel Blueprint thumbnail, labelled *what her design looks like afterward*. A thin arrow runs left to right only. | Separate the week's two examples so students look for each thing where it actually lives. The rehearsal is the Completion Guide's timed walkthrough. The Blueprint is the state of the design once that rehearsal is over. Students produce both. | 45 |
 
-### Act 5 — Delivering it live (cards 13–14, 1:45)
-
-| # | Slide | Narration job | Sec |
-|---|---|---|---|
-| 13 | Clean 5 / 2 / 1 block diagram — teach, feedback, transition | The rhythm from the shared protocol. Debrief and revision happen outside the teaching window; five minutes is a requirement, not a target. | 50 |
-| 14 | A fan of means side by side — slides, shared doc, chat panel, poll, shared browser window — none privileged | How you run it is yours: slides, a document, a website, chat, a poll, a shared screen. What matters is that you can get a response back, respond to *that* response specifically, and give the learner somewhere to try again. | 55 |
-
-### Act 6 — From one observation to the Blueprint (cards 15–16, 1:50)
+### Act 5 — Delivering it live (cards 14–15, 1:45)
 
 | # | Slide | Narration job | Sec |
 |---|---|---|---|
-| 15 | Two hats: peers as *learners* first, then as *design reviewers* | Peers enact your learners before they critique your design. Then the protocol sentence: I observed ___, this matters because ___, next I will change or test ___. | 55 |
-| 16 | Panel 5 row and Panel 6 row filling in; state ladder REVIEWED / TESTED / REVISED with REVISED selected | One observation, one decision, one consequence. Retaining with a reason counts. TESTED means actually observed — claiming otherwise is the failure mode the rubric catches. | 55 |
+| 14 | Clean 5 / 2 / 1 block diagram — teach, feedback, transition | The rhythm from the shared protocol. Debrief and revision happen outside the teaching window; five minutes is a requirement, not a target. | 50 |
+| 15 | A fan of means side by side — slides, shared doc, chat panel, poll, shared browser window — none privileged | How you run it is yours: slides, a document, a website, chat, a poll, a shared screen. What matters is that you can get a response back, respond to *that* response specifically, and give the learner somewhere to try again. | 55 |
 
-### Act 7 — The same loop, industrialized (cards 17–18, 1:45)
+### Act 6 — From one observation to the Blueprint (cards 16–17, 1:50)
 
 | # | Slide | Narration job | Sec |
 |---|---|---|---|
-| 17 | **Duolingo screenshot**, cropped tight to the attempt + correction surface, with the card-4 loop overlaid as small callouts | The payoff. A system like this implements exactly the loop you just ran by hand: presents an item, scaffolds it, takes a real attempt, answers *that* attempt specifically, brings the miss back. You are the wizard behind that curtain this week. Later in the course we look at what it takes to automate the curtain. | 60 |
-| 18 | Three small shape-cards (one-question lecture · demonstration + shadow attempt · worked example with faded guidance) over a closing frame | Three other shapes that fit five manual minutes. Close: no Week 4 upload, evidence carries to Week 6, Week 5 retests this same cycle. Optional afterward — spend ten minutes in a system like that one from the learner's seat; we return to the idea in Part 2. | 45 |
+| 16 | Two hats: peers as *learners* first, then as *design reviewers* | Peers enact your learners before they critique your design. Then the protocol sentence: I observed ___, this matters because ___, next I will change or test ___. | 55 |
+| 17 | Panel 5 row and Panel 6 row filling in; state ladder REVIEWED / TESTED / REVISED with REVISED selected | One observation, one decision, one consequence. Retaining with a reason counts. TESTED means actually observed — claiming otherwise is the failure mode the rubric catches. | 55 |
 
-## Card 17 reference images
+### Act 7 — The same loop, industrialized (cards 18–19, 1:45)
+
+| # | Slide | Narration job | Sec |
+|---|---|---|---|
+| 18 | **Duolingo screenshot**, cropped tight to the attempt + correction surface, with the card-4 loop overlaid as small callouts | The payoff. A system like this implements exactly the loop you just ran by hand: presents an item, scaffolds it, takes a real attempt, answers *that* attempt specifically, brings the miss back. You are the wizard behind that curtain this week. Later in the course we look at what it takes to automate the curtain. | 60 |
+| 19 | Three small shape-cards (one-question lecture · demonstration + shadow attempt · worked example with faded guidance) over a closing frame | Three other shapes that fit five manual minutes. Close: no Week 4 upload, evidence carries to Week 6, Week 5 retests this same cycle. Optional afterward — spend ten minutes in a system like that one from the learner's seat; we return to the idea in Part 2. | 45 |
+
+## Card 18 reference images
 
 Captured 2026-09-13 from the signed-out Duolingo web placement flow (Spanish
 from English), so the frames match what a student without a paid tier would

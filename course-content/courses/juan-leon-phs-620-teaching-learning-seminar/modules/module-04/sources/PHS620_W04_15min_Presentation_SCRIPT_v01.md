@@ -1,7 +1,7 @@
 # PHS 620 Week 4 — 15-minute presentation narration script (v01)
 
 **Companion to:** `PHS620_W04_15min_Presentation_STORYBOARD_v01.md`
-**Product:** narrated slide lesson, 18 cards, 900 seconds
+**Product:** narrated slide lesson, 19 cards, 945 seconds
 **Status:** draft for operator review · not yet Gate 1 · not final VO
 **Authoring:** operator + Marcus, conversation-space, ad-hoc / production
 
@@ -49,6 +49,12 @@ after the words are actually spoken.
 against a stated 900. Corrected here by trimming 20 seconds across cards 2, 3,
 5, and 7. The per-card seconds in this file are authoritative.
 
+**Card 13 added 2026-09-13** to separate what Maya *does* (the rehearsal, per the
+Completion Guide) from what her Blueprint *shows* afterward. Envelope moves to
+945 seconds, still inside the donor's fifteen-minute ceiling. No existing card
+lost time; former cards 13 through 18 kept their seconds and shifted to 14
+through 19.
+
 | Card | Sec | Target words |
 |---|---|---|
 | 1 | 50 | 117 |
@@ -63,13 +69,14 @@ against a stated 900. Corrected here by trimming 20 seconds across cards 2, 3,
 | 10 | 55 | 128 |
 | 11 | 55 | 128 |
 | 12 | 60 | 140 |
-| 13 | 50 | 117 |
-| 14 | 55 | 128 |
+| 13 | 45 | 105 |
+| 14 | 50 | 117 |
 | 15 | 55 | 128 |
 | 16 | 55 | 128 |
-| 17 | 60 | 140 |
-| 18 | 45 | 105 |
-| **Total** | **900** | **~2,100** |
+| 17 | 55 | 128 |
+| 18 | 60 | 140 |
+| 19 | 45 | 105 |
+| **Total** | **945** | **~2,205** |
 
 ---
 
@@ -198,7 +205,18 @@ pause. Her Blueprint now records that component as revised rather than tested,
 because the change itself has not yet been observed. That distinction will
 matter for your own entry.
 
-## Card 13 — The rhythm of the session · 50s
+## Card 13 — Two different examples, doing two different jobs · 45s
+
+One distinction is worth keeping straight, because this week hands you two kinds
+of example and it is easy to look for the wrong thing in the wrong place.
+Everything I have just described is what Maya *does*. That is the rehearsal
+itself, and the Completion Guide lays it out minute by minute. Her Blueprint
+shows something different: what her design looks like once the rehearsal is
+over. On screen you can see the two side by side. You will produce both as well.
+You will teach for five minutes, and you will have a design that changed because
+of it.
+
+## Card 14 — The rhythm of the session · 50s
 
 The rehearsal follows a simple rhythm, which you can see on screen. Five minutes
 of teaching, two minutes of feedback, and one minute to change over. Your
@@ -207,7 +225,7 @@ because the limit is what keeps the exercise honest. Everything else happens
 outside the teaching window. Your framing beforehand, the discussion afterward,
 and any revision you make to your Blueprint all sit outside those five minutes.
 
-## Card 14 — How you run it is your decision · 55s
+## Card 15 — How you run it is your decision · 55s
 
 How you run those five minutes is your decision. On screen you can see several
 options side by side, and none of them is preferred. Slides are fine. A shared
@@ -217,7 +235,7 @@ need a way to get a response back from a person, a way to say something specific
 about that particular response, and somewhere for them to try again. If your
 arrangement does those three things, it is the right arrangement.
 
-## Card 15 — Your colleagues do two things, in order · 55s
+## Card 16 — Your colleagues do two things, in order · 55s
 
 After you teach, your colleagues do two different things, and the order matters.
 First they were your learners, so they can tell you what it was like to be on
@@ -229,7 +247,7 @@ specific, it matters for this reason, and here is one proportionate thing to
 change or test next. A single concrete observation is enough. It does not need
 to be a study.
 
-## Card 16 — Recording one decision accurately · 55s
+## Card 17 — Recording one decision accurately · 55s
 
 Then you record one decision. Panel 5 carries the current state of the segment
 you just taught, and Panel 6 carries one entry in three parts: what you
@@ -240,7 +258,7 @@ tested only when something was genuinely tried and watched. If you changed
 something and have not yet seen the change in use, it is revised. Being accurate
 here is not paperwork. It is the difference between evidence and assertion.
 
-## Card 17 — The same cycle, running at scale · 60s
+## Card 18 — The same cycle, running at scale · 60s
 
 I want to show you this cycle running somewhere many of you have already seen
 it. On the left is an exercise from a language-learning application. It presents
@@ -253,7 +271,7 @@ that a system is performing them. This week you perform them yourself, by hand,
 which is precisely why five minutes is a reasonable amount to take on. Later in
 the course we look at what building that machinery involves.
 
-## Card 18 — Other shapes, and what comes next · 45s
+## Card 19 — Other shapes, and what comes next · 45s
 
 Three other shapes fit five manual minutes just as well. You can ask one
 well-placed question inside an otherwise ordinary explanation. You can
