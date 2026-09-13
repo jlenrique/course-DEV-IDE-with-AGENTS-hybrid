@@ -73,6 +73,72 @@ _Windows/encoding quirks, tool-version pitfalls, API rate-limit patterns — any
 - **2026-04-17**: Windows cp1252 stdio encoding crashes on `↔` characters in some CLI help output. Use `PYTHONIOENCODING=utf-8` when invoking Python subprocesses that may print Unicode. Discovered via Texas runner `--help` crash.
 - **2026-04-17**: `pyproject.toml` build-backend is broken (`setuptools.backends._legacy:_Backend` not a real module). Pre-existing; fix is one-liner to `setuptools.build_meta`. Out of scope for my orchestration work.
 
+## Pass-1 context budget: wrap binding fields, clip only non-binding ones (learned W04, 2026-09-13)
+
+The Pass-1 span catalog emits a span per line, per sentence, AND per overlapping
+15-word window, so prompt size tracks total slide-body **words**, not line
+length. An unclipped 19-slide W04 bundle produced 549 spans / 457 KB and the
+context guard correctly refused the dispatch.
+
+**My first fix was wrong in a way that passed every check I had.** I clipped
+every field at a uniform 240 characters. It fit the budget, the dispatch
+succeeded, 19 units came back, and all three pairing locks passed — so nothing I
+was measuring told me anything was wrong. Vera's G1 gate caught it: the clip had
+silently truncated 32 source passages, three of them on binding `Narration job`
+lines, including the card 18 invitation the operator had asked me to move there
+*in the same session*. Irene cannot carry what she was never shown, and a lossy
+bundle produces a plan that passes structural locks while missing substance.
+
+**The correct shape is to sort fields by whether they bind:**
+
+- **Binding** (`On screen`, `Narration job`, `Supporting fact`) — **wrap** across
+  multiple lines with indented continuations. Never truncate. Loses nothing.
+- **Non-binding** (`Starting narration`) — clip hard. Safe *only because* the
+  operator ruled the script freely editable. Carrying W04's narration in full
+  cost 489 KB against a 350,976-byte budget: not physically available at Pass 1.
+
+Two follow-through obligations. First, **assert the round-trip** — a script that
+stops at the bundle (as mine did) passes while refs downstream are still lossy;
+assert into `plan_units[].source_refs`. Second, **wrapping breaks single-line
+grep**; normalize whitespace before matching or you will get false negatives on
+any phrase straddling a wrap boundary.
+
+**Corollary: don't put production metadata in content fields.** Vera flagged a
+157-char truncation in card 19's cited span. It was the catalog's sentence-span
+boundary, and what Irene declined to cite was my own pacing note ("the closer
+breathes at 112 wpm") sitting in the `Narration job` column. Irene was right to
+exclude it. When a specialist ignores part of a field, check whether the field
+was mixing two kinds of content before assuming a defect.
+
+## Script latitude is the operator's default, not a concession (learned W04, 2026-09-13)
+
+The operator ruled that a source-side VO script is "a starting point, reference,
+and quality-control resource — not gospel," and that Irene must be free to
+modify, paraphrase, and enhance it to fit the lesson plan and the slides actually
+produced. **Record this in the envelope's claim fence, not just in prose**, or a
+fidelity gate will score legitimate Pass-2 rewording as source drift. What stays
+fixed is narrower and firmer: the per-card teaching job, claims traceable to the
+assignment documents, the register, and the explicit prohibitions.
+
+This ruling is also what makes the clipping above defensible, so the two are
+linked. Vera accepted the clip **conditionally**: Pass 2 must receive the full
+tracked script, or her ruling flips to a High Omission. Nothing in the artifacts
+enforces that — carry it forward by hand.
+
+## `irene_pass1.act` returns a state update, not the output (learned W04, 2026-09-13)
+
+`act` returns `{"cache_state": ...}` for the graph. The plan, prose artifact, and
+authority receipt are written into the **run directory as a side effect**. Read
+results from disk. The W03 donor dispatch script read the return value and so
+recorded nulls for specialist id, model id, artifact path and plan-unit count in
+its receipt — an honest-looking receipt asserting nothing.
+
+Also observed across three W04 runs 20 minutes apart: **the emitted plan schema
+is unstable with no `schema_version` bump** (`slide_scope_outline`,
+`ratification`, and a `lesson_plan` block each present in some runs and absent in
+others). Do not write a harness that assumes a field exists because the last run
+had it.
+
 ## Historical Context
 
 _Anchors that help me understand "why things are the way they are" across sessions._
