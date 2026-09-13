@@ -73,22 +73,22 @@ Times are narration targets. Total 945s (15:45), inside the donor's
 fifteen-minute-class envelope. The per-card seconds in the companion script file
 are authoritative where the two disagree.
 
-### Act 1 — Where this week sits (cards 1–3, 2:15)
+### Act 1 — Where this week sits (cards 1–3, 2:05)
 
 | # | Slide (image is the slide) | Narration job | Sec |
 |---|---|---|---|
 | 1 | A small bright slice lifted out of a larger dim lesson diagram; six-panel Blueprint beside it, Panels 5–6 lit | Name the week. Product 3 opens. Nothing restarts — the Blueprint is cumulative and this week touches two panels. | 50 |
-| 2 | Three-station track: W3 *planned* → W4 *rehearsed* → W5 *retested + prototype* | Last week finished the plan; this week rehearses a slice of it; next week retests that same slice and adds the one prototype. | 40 |
-| 3 | One of four component tiles pulled forward; other three flat, labelled PLANNED | Only the Live Instructional Segment becomes real. Three components stay plans — that boundary is protection, not limitation. | 45 |
+| 2 | Three-station track: W3 *planned* → W4 *rehearsed* → W5 *retested + prototype* | Last week finished the plan; this week rehearses a slice of it; next week retests that same slice and adds the one prototype. | 35 |
+| 3 | One of four component tiles pulled forward; other three flat, labelled PLANNED | Only the Live Instructional Segment becomes real. Three components stay plans — that boundary is protection, not limitation. | 40 |
 
-### Act 2 — What you are rehearsing, and how small it is (cards 4–7, 3:15)
+### Act 2 — What you are rehearsing, and how small it is (cards 4–7, 3:20)
 
 | # | Slide | Narration job | Sec |
 |---|---|---|---|
 | 4 | **The five moves as a closed loop:** stimulus → scaffold → learner attempt → your coaching → renewed attempt | Load-bearing card. A complete small cycle, not a small lecture. The renewed attempt makes it a cycle and is the move most often dropped. | 55 |
-| 5 | A presenter managing a room arranged around a single cycle diagram — not a lecture-hall broadcast | An interactive lecture is a legitimate shape. You are managing the room through one small cycle. The format is not the point; completing the cycle is. | 50 |
+| 5 | A presenter managing a room arranged around a single cycle diagram — not a lecture-hall broadcast | An interactive lecture is a legitimate shape. You are managing the room through one small cycle. The format is not the point; completing the cycle is. | 45 |
 | 6 | Curtain pulled back: polished automated loop on one side, a person hand-running it with a doc and a chat window on the other | **Wizard of Oz.** This week you are the engine. Anything a prototype might later automate — serving the item, judging the response, choosing what comes next — you do by hand, in the open. Not a shortcut; it is how you learn whether the design works before building anything. | 55 |
-| 7 | Panel 3 / Panel 4 grid with the Orient/Model phase circled inside a five-phase sequence | Where to find your slice: read your own Panels 3–4 and look for the phase where you model something. Five minutes usually fits there without stealing later practice. | 50 |
+| 7 | Panel 3 / Panel 4 grid with the Orient/Model phase circled inside a five-phase sequence | Where to find your slice: read your own Panels 3–4 and look for the phase where you model something. Five minutes usually fits there without stealing later practice. | 45 |
 
 ### Act 3 — Preparing (cards 8–9, 1:25)
 
@@ -97,7 +97,7 @@ are authoritative where the two disagree.
 | 8 | Two columns: *what the slice needs* (readable case text, criteria, timer, access route) vs *what it does not* | Prepare only the materials the five minutes consumes. Accessibility and a private response route are part of the design, not extras. | 50 |
 | 9 | A 30-second sand timer sitting *outside* a five-minute clock | Frame one consequential question before you teach — objective ID, version, what you want observed — and keep that framing outside the five minutes. | 35 |
 
-### Act 4 — Maya's five minutes, walked (cards 10–13, 3:40)
+### Act 4 — Maya's five minutes, walked (cards 10–13, 3:35)
 
 Centerpiece. Her own materials supply the clock, so narration coaches against a
 real timeline rather than a paraphrase.
@@ -127,8 +127,8 @@ real timeline rather than a paraphrase.
 
 | # | Slide | Narration job | Sec |
 |---|---|---|---|
-| 18 | **Duolingo screenshot**, cropped tight to the attempt + correction surface, with the card-4 loop overlaid as small callouts | The payoff. A system like this implements exactly the loop you just ran by hand: presents an item, scaffolds it, takes a real attempt, answers *that* attempt specifically, brings the miss back. You are the wizard behind that curtain this week. Later in the course we look at what it takes to automate the curtain. | 60 |
-| 19 | Three small shape-cards (one-question lecture · demonstration + shadow attempt · worked example with faded guidance) over a closing frame | Three other shapes that fit five manual minutes. Close: no Week 4 upload, evidence carries to Week 6, Week 5 retests this same cycle. Optional afterward — spend ten minutes in a system like that one from the learner's seat; we return to the idea in Part 2. | 45 |
+| 18 | **Duolingo screenshot**, cropped tight to the attempt + correction surface, with the card-4 loop overlaid as small callouts | The payoff. A system like this implements exactly the loop you just ran by hand: presents an item, scaffolds it, takes a real attempt, answers *that* attempt specifically, brings the miss back. You are the wizard behind that curtain this week. Also carries the optional invitation — spend ten minutes in a system like this one from the learner's seat — and the Part 2 pointer. | 65 |
+| 19 | Three small shape-cards (one-question lecture · demonstration + shadow attempt · worked example with faded guidance) over a closing frame | Three other shapes that fit five manual minutes, then the close: no Week 4 upload, evidence carries to Week 6, Week 5 retests this same cycle. Deliberately sparse — the closer breathes at 112 wpm. | 40 |
 
 ## Card 18 reference images
 

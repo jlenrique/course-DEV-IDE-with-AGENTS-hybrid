@@ -13,6 +13,31 @@ the final voice-over. The final narration is authored against approved stills,
 so that on-screen references can be verified rather than assumed. Treat the
 words here as the intended content and register, not as locked delivery copy.
 
+### Irene's authority over this text (operator, 2026-09-13)
+
+**This script is a starting point, a reference, and a quality-control yardstick.
+It is not gospel.** Irene is explicitly free to modify, paraphrase, condense,
+expand, reorder, or otherwise edit and enhance any of it in order to fit the
+lesson plan the pipeline actually produces and the slides and graphics that
+actually get generated. That latitude is the intended workflow, not an exception
+to it.
+
+Two consequences worth stating plainly, because they affect the fidelity gates:
+
+1. **Divergence between this draft and the final narration is expected and is
+   not a fidelity failure.** A Pass 2 line that no longer matches the wording
+   here has not drifted from source; it has been fitted to a real slide. What
+   the gates should hold constant is the *substance* — the teaching beat, the
+   claims traceable to the assignment documents, the register described below,
+   and the deliberate omissions at the end of this file.
+2. **What this text does bind** is narrower and firmer: the voice constraints,
+   the per-card instructional job, the source-grounded facts, and the explicit
+   prohibitions (module objectives off-slide, no spoken due date, no naming the
+   language-learning application). Those are not Irene's to relax.
+
+In short: rewrite the words freely to serve the slides; do not quietly change
+what the week is teaching or what the recording is allowed to claim.
+
 ## Audience
 
 Accomplished adult professionals with advanced degrees and significant
@@ -74,8 +99,8 @@ through 19.
 | 15 | 55 | 128 |
 | 16 | 55 | 128 |
 | 17 | 55 | 128 |
-| 18 | 60 | 140 |
-| 19 | 45 | 105 |
+| 18 | 65 | 145 |
+| 19 | 40 | 90 |
 | **Total** | **945** | **~2,205** |
 
 ---
@@ -258,30 +283,28 @@ tested only when something was genuinely tried and watched. If you changed
 something and have not yet seen the change in use, it is revised. Being accurate
 here is not paperwork. It is the difference between evidence and assertion.
 
-## Card 18 — The same cycle, running at scale · 60s
+## Card 18 — The same cycle, running at scale · 65s
 
 I want to show you this cycle running somewhere many of you have already seen
-it. On the left is an exercise from a language-learning application. It presents
-a task, and it offers support, because the words you might need are supplied and
-you can hover over any of them to check the meaning. You make an attempt. On the
-right is what came back after a wrong answer. Your attempt is still visible, and
-the correct version sits underneath it. Those are the same five moves we have
-been discussing, running many thousands of times a day. The only difference is
-that a system is performing them. This week you perform them yourself, by hand,
-which is precisely why five minutes is a reasonable amount to take on. Later in
-the course we look at what building that machinery involves.
+it. On the left is an exercise from a language-learning application. It sets a
+task and supplies the words you might need, so the support sits right inside the
+moment of attempt. On the right is what came back after a wrong answer: the
+attempt still visible, the correct version directly beneath it. Those are the
+same five moves we have been discussing, running many thousands of times a day,
+performed by a system rather than by a person. This week you perform them
+yourself, by hand, which is precisely why five minutes is a reasonable amount to
+take on. If you are curious afterward, spend ten minutes in an application like
+this one from the learner's side. Later in the course we look at what building
+that machinery involves.
 
-## Card 19 — Other shapes, and what comes next · 45s
+## Card 19 — Other shapes, and what comes next · 40s
 
 Three other shapes fit five manual minutes just as well. You can ask one
 well-placed question inside an otherwise ordinary explanation. You can
 demonstrate something and have a colleague attempt it immediately afterward. Or
 you can show a completed example and have someone draft one line of their own.
 To close: there is nothing to upload this week. Your evidence carries forward
-into Week 6, and next week you test this same cycle again. If you find yourself
-curious afterward, spend ten minutes in an application like the one we just
-looked at, from the learner's side. We return to that idea in the second half of
-the course.
+into Week 6, and next week you test this same cycle again.
 
 ---
 
