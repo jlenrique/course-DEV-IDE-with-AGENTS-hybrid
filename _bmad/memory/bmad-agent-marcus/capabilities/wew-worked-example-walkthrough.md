@@ -33,7 +33,7 @@ These are the Box v02 locks that made the lesson work. Re-confirm, do not silent
 | # | Lock | Box v02 value |
 |---|------|----------------|
 | 1 | Experience | Visual-led. **Image is the slide.** |
-| 2 | Look | `hil-2026-apc-studio-image-card` / Studio template `g_nv5q4da69qiiu8q`. Two rolls, **same style**, not two styles. |
+| 2 | Look | `hil-2026-apc-studio-image-card` / Studio template `g_nv5q4da69qiiu8q`. Two rolls, **same style**, not two styles. ⚠️ **This template is `Tejal-C1M1-template-B-STUDIO` — a prior project's deck, NOT a neutral shell.** See the contamination warning below before dispatching. |
 | 3 | Photoreal | Forbidden. Illustration / diagram / graphic only. |
 | 4 | Module LOs | **Off-slide.** Inform the week job; do not print the five bullets or case `LO-n` on the image. |
 | 5 | Card count | Target **17–18** from a ~12-beat assignment map. Do not invent a thirteenth teaching beat. |
@@ -45,6 +45,21 @@ These are the Box v02 locks that made the lesson work. Re-confirm, do not silent
 | 11 | TTS method | Synthesize **ordinary v2 and theatrical `eleven_v3`** into separate folders. Operator A/B **before** Descript. Canonical words stay tag-free; tags are delivery only. Donor chose theatrical Matilda throughout; populated roles were `warm_callback` / `contrast_emphasis` (`[warm]` / `[slow]` only). |
 | 12 | Timing | Stay inside the brief envelope (donor ≤15:00). No due date on the recording. |
 | 13 | Motion / LMS | Gate 2M, Kira, workbook ship, Canvas — **held** unless named. |
+
+## ⚠️ Studio template contamination — check every roll (root-caused W04, 2026-09-13)
+
+The Studio template in lock 2 (`g_nv5q4da69qiiu8q`) is titled **`Tejal-C1M1-template-B-STUDIO`** — a saved deck from the Tejal C1M1 course. Its retained card content is a physician-leadership infographic carrying a **fabricated 72% statistic**. When `generate_from_template` fails to apply the prompt, the export returns **that slide**, and `_assert_studio_image_card` does not catch it (it only checks 16:9 vs near-square, and the template is 16:9).
+
+This is the root cause of the operator's long-standing "physician slides from other projects keep slipping into PHS 620" symptom.
+
+**The tell is `credits.deducted` in the generation record:**
+
+| Credits | Meaning |
+|---|---|
+| **24** | A new image was rendered. Trust the export. |
+| **4** | Nothing was rendered — the export is the template's own prior-project content. **Discard and re-roll.** |
+
+Until the guard lands in `_generate_studio_variant` (filed HIGH in `deferred-inventory.md` as `gamma-studio-template-carries-prior-project-content` + `studio-card-subject-fidelity-unguarded`), do this by hand: after any Studio dispatch, read credits per generation from the receipt, and **inspect every still yourself before Gate 2** rather than handing the operator a contact sheet and relying on their eye. A contaminated card looks polished and can win on appearance. Also spot-check the already-shipped W03 Box v02 stills — that lesson used this same template.
 
 ## Procedure
 
