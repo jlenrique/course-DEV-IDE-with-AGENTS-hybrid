@@ -89,6 +89,16 @@ course-content/**/*.zip
 course-content/**/*.gif
 course-content/**/*.webp
 
+# Exception — literal-visual source assets must be durable in git.
+# A card whose fidelity is `literal-visual` renders one specific captured frame
+# rather than a generated illustration, so that frame IS source material: lose it
+# and the slide cannot be rebuilt, only re-captured against a site that has since
+# changed. Scoped deliberately narrow (course sources only, reference-images only)
+# so the "binaries live on Box, not git" rule still holds everywhere else.
+# Keep these few and small; large media still belongs on Box Drive.
+!course-content/courses/**/sources/reference-images/
+!course-content/courses/**/sources/reference-images/**
+
 # State runtime (SQLite + backups)
 state/runtime/*.db
 state/runtime/*.db-journal

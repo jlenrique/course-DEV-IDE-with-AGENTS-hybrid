@@ -141,9 +141,14 @@ from English), so the frames match what a student without a paid tier would
 meet. No account was created and no personal identifier appears in either
 frame.
 
-Image files live in the **gitignored** staging bundle, not beside this file:
-`course-content/staging/tracked/source-bundles/phs-620-w04-box-20260913/reference-images/`.
-They are reproducible from the capture recipe below if this clone is lost.
+Image files are **tracked source material** and live beside this file, in
+`reference-images/` under this same `sources/` leaf. Card 18 is the only
+`literal-visual` card in the deck: it renders these specific captured frames
+rather than a generated illustration, so the frames are source, not convenience
+copies. Losing them means the slide cannot be rebuilt, only re-captured against
+a site that has since changed — which is why they are exempted from the
+`course-content/**/*.png` ignore rule rather than left in staging. The capture
+recipe below remains the fallback, not the primary guarantee.
 
 | File | What it shows |
 |---|---|
