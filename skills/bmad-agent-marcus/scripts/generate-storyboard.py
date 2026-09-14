@@ -2199,6 +2199,13 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
             f'<td class="sel-status" data-card="{cn}">{pre_selected or "pending"}</td>'
             "</tr>"
         )
+    # Clusters collapse by default on an A/B sheet, where the Variant Selection
+    # table below carries the thumbnails and the clusters are secondary. A deck
+    # with no A/B pairs (an approved single-variant set) has no such table, so
+    # collapsing everything renders a page of headers with no visible slide at
+    # all — the reviewer cannot see the deck they are meant to be reviewing.
+    cluster_open_attr = "" if pair_section_rows else " open"
+
     pair_section_html = ""
     if pair_section_rows:
         total_pairs = len(pair_section_rows)
@@ -2871,7 +2878,7 @@ def render_index_html_v2(manifest: dict[str, Any]) -> str:
                     )
                     cluster_storyboard_b_summary_markup = str(cluster_storyboard_b["summary_markup"])
                 grouped_slide_cards.append(
-                    '<details class="cluster-group" data-role="cluster-group">'
+                    f'<details class="cluster-group" data-role="cluster-group"{cluster_open_attr}>'
                     '<summary class="cluster-summary">'
                     '<div class="cluster-summary-main">'
                     f'<div class="cluster-kicker">Cluster {html.escape(cluster_id)}</div>'
