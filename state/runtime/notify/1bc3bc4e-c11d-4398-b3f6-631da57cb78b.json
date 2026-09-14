@@ -1,0 +1,8 @@
+{
+  "last_processed_progress_seq": 19,
+  "last_status": "paused-at-gate",
+  "acked": {
+    "paused_at_gate:G0E": "2026-07-16T21:50:29.397947+00:00"
+  },
+  "push_attempts": {}
+}

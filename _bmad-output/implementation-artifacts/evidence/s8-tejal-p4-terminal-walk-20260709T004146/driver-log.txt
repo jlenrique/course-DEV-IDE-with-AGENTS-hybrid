@@ -1,0 +1,2 @@
+[2026-07-09T04:42:02.204022+00:00] env: OPENAI=sk-proj...oc0A (len 164); LANGSMITH+GAMMA present; corpus+intent OK
+[2026-07-09T04:42:04.883040+00:00] === start_trial (S8 Part-4 HIL; compose + edit/confirm + selection_code) ===

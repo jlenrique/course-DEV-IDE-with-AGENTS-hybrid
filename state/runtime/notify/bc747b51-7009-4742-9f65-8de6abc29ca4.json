@@ -1,0 +1,11 @@
+{
+  "last_processed_progress_seq": 35,
+  "last_status": "paused-at-error",
+  "acked": {
+    "paused_at_gate:G0E": "2026-07-16T22:34:56.889288+00:00",
+    "paused_at_gate:G0R": "2026-07-16T22:40:33.887188+00:00",
+    "paused_at_gate:G1": "2026-07-16T22:51:00.594184+00:00",
+    "paused_at_error:builder.gary.upstream-missing": "2026-07-16T22:54:21.096178+00:00"
+  },
+  "push_attempts": {}
+}

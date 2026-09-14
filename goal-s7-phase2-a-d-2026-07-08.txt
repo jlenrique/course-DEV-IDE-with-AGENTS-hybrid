@@ -1,0 +1,112 @@
+GOAL - S7 Phase 2 A-D course-source substrate (~multi-hour autonomous run)
+
+Branch dev/workbook-2026-07-06 @ ddeadc6b at session START. Class S. S7
+Phase-1 + Irene Pass-2 are formally closed; Phase-2 A-D spec is party-ratified
+and amended with the operator's source-purpose clarification: the two syllabi
+are reference/example course sources, not complete production source content.
+HAI 510 real sources will be recorded lecture videos + slides; PHS 620 real
+sources will come through Confluence/Canvas. A-D should not require those real
+sources. Missing real content is an honest source-availability gap.
+
+Strays to EXCLUDE from every commit: _bmad-output/artifacts/workbooks-test/,
+runs/*, external shadow-monitor ledgers, goal-canonical-arc-*.txt, and the
+duplicate evidence-dir workbook.docx. Do not absorb unrelated untracked files.
+
+TASK 1 - START HERE: Story A SOP pre-dispatch and dev dispatch. Review the
+latest Claude/Codex shadow-monitor notes and the amended Phase-2 spec before any
+code. Run the Story A SOP pre-dispatch poll. Dispatch a fresh dev agent RED-first
+on Story A: broad-root refusal guard FIRST at _walk_corpus_files, then the
+course_source sibling package, deterministic manifest scan, gap ledger, committed
+manifest snapshot, and drift check. Live-safe witness must prove two-course scan,
+course/module root refusal from the real entry, negative control, 15-vs-4 module
+asymmetry, honest source-availability gaps, zero API spend, and no PHS/HAI
+slug literals in app code.
+
+TASK 2 - Close Story A completely before depending on it. Run SOP dev-complete
+poll, 3-lane bmad-code-review, RED-first remediation, orchestrator re-verify,
+live-safe witness, clean commit, push per cadence, and SOP close poll. Do not
+advance to B/C on an offline-green-only Story A.
+
+TASK 3 - Story B: syllabus-derived module metadata proposals, extraction only.
+Run its SOP pre-dispatch poll and dispatch fresh RED-first. Parse the supplied
+syllabi into provenance-carrying proposal artifacts without mutating the course
+containers. Preserve the operator clarification: syllabus rows can propose
+structure/LOs/source buckets but cannot prove real module content exists. HAI
+lecture videos/slides and PHS Confluence/Canvas content remain source gaps until
+actually supplied or fetched by a later authorized story. Keep folder renames as
+operator-gated B-2, not this story.
+
+TASK 4 - Story C in parallel with or immediately after B if capacity allows:
+canonical asset/gap record contract. Run its SOP pre-dispatch poll and dispatch
+fresh RED-first. Use schema-shape discipline: pydantic-v2 checklist, closed
+enums, JSON Schema mirror, shape-pin tests, SCHEMA_CHANGELOG entry, and hard
+validation that source_grounded requires content-bearing source refs. Records
+model source evidence and gaps only; no projector family, no consumer wiring.
+
+TASK 5 - Close B and C through BMAD gates. For each story: focused component
+tests as authored/edited, live-safe witness, SOP dev-complete poll, 3-lane
+bmad-code-review, RED-first remediation, orchestrator re-verify, clean commit,
+push per cadence, and SOP close poll. If B or C hits a material design gap,
+run fully-spawned party-mode re-scope before continuing.
+
+TASK 6 - Story D: lesson-planning input bundle prototype, fenced. Only after
+A plus the needed B/C outputs are sufficiently closed, run SOP pre-dispatch and
+dispatch fresh RED-first. Build the bundle model/builder/loader that carries
+course profile, course/module LOs, learner profile, scoped source manifest,
+canonical asset records, gap ledger, operator focus, available capability list,
+and explicit source-purpose/source-availability context. Include the
+ComponentSelection boundary contract test. Do NOT build the collateral ->
+ComponentSelection derivation edge. Do NOT touch composition.py,
+component_selection.py, bundle_catalog.py, front_door.py, pipeline manifest, or
+any block_mode_trigger_paths entry.
+
+TASK 7 - Close Story D and file the next spine by name. Run Story D review,
+remediation, live-safe witness, commit, push, and SOP close poll. The close
+witness is schema-valid reproducible bundles for both courses, gap ride-along,
+source-purpose carry-through, and the ComponentSelection boundary contract test.
+At D close, file lesson-plan-directs-production-collateral-to-selection-edge BY
+NAME as the immediate next arc, with S8 prose work interleaved per operator
+priority.
+
+TASK 8 - Final session close package. Update next-session-start-here,
+SESSION-HANDOFF, and any touched status/context artifacts honestly. If A-D all
+close, state that Phase-2 A-D is complete and the selection-edge spine is next.
+If time runs out mid-arc, leave the exact next gate, committed evidence, open
+findings, and shadow-monitor dispositions clear enough for a fresh session to
+resume without rediscovery.
+
+WORKING RULES (binding):
+- BMAD-first. Use the routed BMAD workflow for all story/spec/dev work
+  (bmad-dev-story or bmad-quick-dev-style as appropriate to this repo's
+  ratified Phase-2 spec). Use fully-spawned bmad-party-mode for green-light,
+  re-scope, and close/concurrence rounds. Do not substitute an improvised single
+  persona for required party gates.
+- Fresh dev, RED-first. Each substrate story goes to a fresh dev lane with
+  failing tests first. The orchestrator reviews, verifies, remediates, and
+  commits intentionally. Keep one active dev lane unless the work is genuinely
+  path-disjoint and the gate rhythm remains intact.
+- Live testing is indispensable. Every component must be tested as it is
+  authored or edited. Offline unit tests are necessary but never sufficient for
+  close. Each story requires its live/live-safe witness; no story closes on
+  offline-green alone. First-run-stands; no retry-to-green claims.
+- Review shadow-monitor notes at every major interval. Before pre-dispatch,
+  dev-complete, review/triage, live witness, commit, and close, read the latest
+  Claude/Codex shadow-monitor notes. Treat material findings as gate input, not
+  commentary. Relay/disposition them in the story record.
+- Guardrail: this is for the Marcus-SPOC product. Do not shape production code
+  to make a course-import demo or proofing run pass. PHS 620 and HAI 510 are
+  evidence fixtures for a general source-management substrate.
+- Scope control: A-D do not require real HAI videos/slides or PHS
+  Confluence/Canvas content. Do not add remote ingestion in this run. The
+  correct behavior is honest source-availability gaps and planning context.
+- Push cadence: push meaningful safety checkpoints and at least every 2 hours
+  of active work. Do not force-push. Do not stage known strays.
+
+DONE-SIGNAL. This goal is complete only when a bmad-party-mode team, fully
+spawned for this A-D purpose, concurs that the final task in scope is
+accomplished and validated. Ideal completion = Stories A, B, C, and D live-safe
+witnessed, reviewed, remediated, committed, pushed, and closed; selection-edge
+spine filed by name; branch hygiene clean; shadow-monitor close poll carries no
+unresolved material findings. If the run cannot complete all A-D inside the AFK
+window, the goal remains active unless the final fully-spawned party explicitly
+concurs that the reduced final task in scope is accomplished and validated.

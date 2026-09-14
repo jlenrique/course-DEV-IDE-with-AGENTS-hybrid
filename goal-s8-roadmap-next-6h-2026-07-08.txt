@@ -1,0 +1,52 @@
+GOAL - S8 bridge/prose roadmap next six-hour working session (2026-07-08)
+
+OBJECTIVE
+Advance the Marcus-SPOC local runtime product from the closed first S8
+selection-edge slice into the next validated S8 bridge/prose checkpoint:
+canonicalize the remaining lesson-plan-to-production selection path, keep the
+roadmap/deferred-work picture honest, and leave a live-tested, BMAD-reviewed
+checkpoint that is ready for the next development step.
+
+TASKS
+1) Start by reviewing the active shadowing-monitor reports in their canonical
+   repo location, the updated `docs/STATE-OF-THE-APP.md`, the S8 live witness,
+   S7 Phase-2 A-D close records, `SESSION-HANDOFF.md`, `docs/project-context.md`,
+   and the current worktree/head.
+2) Convene a fully spawned BMAD party-mode team to confirm the six-hour scope,
+   the active S8 boundary, trigger-path risk, deferred-work placement, and the
+   distinction between local runtime product work and proofing-run convenience.
+3) Define the next production contract at a high level: how a ratified lesson
+   plan / planning-input artifact should feed the already-built collateral
+   selection edge without adding a projector family or course-specific shortcut.
+4) Author or edit the smallest useful S8 artifacts/components that fit the
+   session: bridge contract/spec, prose lane language, task-list shape, workflow
+   selection direction, or production-runtime wiring if the BMAD party confirms
+   the implementation slice is appropriately bounded.
+5) Live-test every component as it is authored or edited. Offline/unit tests are
+   required where appropriate, but local host-machine runtime execution is an
+   indispensable part of validation and cannot be deferred to the end.
+6) Review the GPT 3.5 shadowing-monitor notes at every major design and decision
+   point: pre-dispatch, contract boundary, implementation/documentation
+   checkpoint, live-test witness, review triage, and close.
+7) Keep deferred work explicit: Batch LLM/LiteLLM token-efficiency mode,
+   real HAI/PHS ingestion, PHS renames, LO-ratification surface, course/SME
+   routing, projector families, trust-complete follow-ons, and governance
+   hygiene must either stay parked with rationale or be deliberately selected
+   by BMAD consensus.
+8) Run the appropriate BMAD close gates: code review if code changes, focused
+   remediation, re-verification, live runtime witness, and party-mode close
+   concurrence. Record evidence and leave the next exact gate clear.
+
+WORKING PREFERENCES
+- Prefer BMAD workflow for story/spec/design/implementation sequencing.
+- Prefer party mode team use for green-light, major design choices, and close.
+- Preserve the Marcus-SPOC product guardrail: the target is the local runtime
+  orchestrator, not an externally hosted app and not a proofing-run helper.
+- Use explicit-path staging only if committing is later authorized; do not
+  absorb known untracked monitor ledgers, run directories, or stray evidence.
+
+COMPLETION CONDITION
+This goal is complete only when a fully spawned BMAD party-mode team convened
+for this purpose concurs that the final in-scope task is accomplished,
+live-tested against the local production runtime where applicable, validated,
+and ready for the next development step.

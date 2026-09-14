@@ -1,0 +1,13 @@
+{
+  "last_processed_progress_seq": 50,
+  "last_status": "paused-at-error",
+  "acked": {
+    "paused_at_gate:G0E": "2026-07-12T02:14:43.379860+00:00",
+    "paused_at_gate:G0R": "2026-07-12T02:20:33.815926+00:00",
+    "paused_at_gate:G1": "2026-07-12T02:21:58.031560+00:00",
+    "paused_at_gate:G2B": "2026-07-12T02:25:53.373272+00:00",
+    "paused_at_gate:G2C": "2026-07-12T02:27:59.905026+00:00",
+    "paused_at_error:vision.provider.transport": "2026-07-12T02:32:31.495318+00:00"
+  },
+  "push_attempts": {}
+}

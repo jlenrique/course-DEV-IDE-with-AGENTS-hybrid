@@ -1,0 +1,44 @@
+GOAL - S8 / selection-edge spine (2026-07-08)
+
+Implement the post-Phase-2 A-D production runtime edge by which ratified
+lesson-plan collateral intent directs local Marcus-SPOC production collateral
+selection into `ComponentSelection`, while interleaving S8 prose work where the
+operator prioritizes it.
+
+TASKS
+1) Start by reviewing latest Claude shadow-monitor notes, S7 Phase-2 A-D
+   close/backfill records, `SESSION-HANDOFF.md`, `docs/project-context.md`, and
+   the named next spine `lesson-plan-directs-production-collateral-to-selection-edge`.
+2) Convene fully-spawned BMAD party mode to confirm scope, risks,
+   trigger-path governance, and first story boundary.
+3) Define the minimal production-runtime contract translating lesson-plan
+   collateral intent into `ComponentSelection`, preserving Story D boundary work
+   and avoiding projector-family or course-specific shortcuts.
+4) Implement first vertical slice of the selection edge in local production
+   runtime using BMAD workflow discipline and fresh review lanes as needed.
+5) Live-test every component as authored/edited via local host-machine runtime;
+   offline tests are necessary but never sufficient.
+6) Interleave S8 prose where operator-prioritized, without blurring the
+   selection-edge contract or substituting for runtime validation.
+7) Review shadow-monitor notes at every major decision point: pre-dispatch,
+   design boundary, implementation checkpoint, live-test witness, review triage,
+   commit, and close.
+8) Run BMAD review gates before closure: 3-lane review where code warrants,
+   remediation, re-verification, live/runtime witness, and party-mode close
+   concurrence.
+9) Commit and push a clean checkpoint excluding known strays, recording
+   validation evidence, and leaving the next exact gate clear if full arc not
+   completed.
+
+WORKING RULES
+- BMAD-first governance and fully-spawned party gates apply.
+- Trigger-path governance is mandatory for this spine.
+- Preserve Marcus-SPOC product guardrail (no proofing-run convenience changes).
+- Keep B-2 PHS renames and remote ingestion operator-gated unless explicitly
+  authorized.
+
+COMPLETION CONDITION
+This goal is complete only when a fully-spawned BMAD party-mode team convened
+for this purpose concurs that the final in-scope task is accomplished,
+live-tested against the local production runtime, validated, and ready for the
+next development step.

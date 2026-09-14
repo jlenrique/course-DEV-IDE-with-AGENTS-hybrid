@@ -500,3 +500,89 @@ The run registry now contains `run.json`, `checkpoint.json`, `decision-card-G0E.
 **F-0011 / F-0021 remain open.** Runtime/evidence residue and broader Cursor/BMAD governance edits remain dirty/untracked and need deliberate disposition.
 
 **Verdict: NO MATERIAL CHANGE / STILL NOT SCOREABLE.** Since SOP-013, no new evidence has corrected the terminal error, the `claim_ok=false` result, or the missing literal preserve/no-amount proof. Continue monitoring only if the Grok/Cursor team resumes the run, patches the proof harness, or banks a narrowed/corrected evidence record.
+
+---
+
+### SOP-015 - local bank commit propagates MET close despite open proof gaps - 2026-07-09T16:29:09-04:00
+
+**Scope reviewed:** `git status --short --branch`, latest git log, `HEAD` commit stat/name-status/message, branch tracking, active authentic evidence directory listing, `driver-log.txt`, `CLAIM-ASSESSMENT.md`, trial `235f2b82-5989-4a6f-9e6b-22e9697f58d2` run status, and grep across close/handoff/state docs for Irene/literal/MET/pass-2/figure/preserve/condense claims. No tests were run by this monitor poll. No production/test/runtime files were edited by this monitor; this ledger entry is the only write.
+
+**Current repo state:** a new local commit has landed: `1f48fbf6` (`docs: close S8 books and bank Irene-literal liveproof`). Branch `dev/lesson-planning-2026-07-09` is now `ahead 1` of `origin/dev/lesson-planning-2026-07-09`, whose tip remains `6783b54b`. The working tree is otherwise much cleaner than SOP-014: tracked Cursor/BMAD governance edits, the authentic evidence directory, this monitor ledger through SOP-014, and `state/config/gamma-styleguide-picks.jsonl` are now banked in the commit. Remaining untracked residue:
+
+- `_bmad-output/implementation-artifacts/evidence/irene-literal-liveproof-20260709T143510/`
+- `runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/`
+
+**New commit contents:** `1f48fbf6` changes 36 files with ~12.8k insertions. It adds Cursor agent/rule surfaces, updates always-on governance/handoff/state docs, banks `gamma-styleguide-picks.jsonl`, banks the authentic evidence directory `_bmad-output/implementation-artifacts/evidence/irene-literal-authentic-liveproof-20260709T151200/`, and includes this monitor ledger through SOP-014. The commit message says it closes S8 books and banks Irene-literal liveproof, with "Irene-literal MET" language.
+
+**Evidence state remains nonpassing:** the banked authentic evidence still reports the same terminal state from SOP-013/SOP-014. `driver-log.txt` ends with `ERROR-PAUSE after G2C: irene.pass2.figure-contradiction` and `facts written; claim_ok=False; final_status=paused-at-error`. The run status remains `status: paused-at-error`, `paused_error_tag: irene.pass2.figure-contradiction`, `completed_at: null`, `artifact_count=11`, and `contribution_count=17`. `CLAIM-ASSESSMENT.md` still says driver `claim_ok=False` is over-strict and declares the core product claim "MET."
+
+**Propagated claim language:** the MET close is no longer isolated to `CLAIM-ASSESSMENT.md`. `_bmad-output/implementation-artifacts/s8-close-letter-claim-envelope-2026-07-08.md` now marks `irene-text-literal-supersedes-styleguide-truncation` as "MET 2026-07-09" and directs "S8 stays truly done." `docs/STATE-OF-THE-APP.md` says "post-S8 Irene-literal gate MET" and "Gary preserve-over-condense + Pass-1 fidelity emit recovery live-proven." This propagation increases the risk that partial split/call-count evidence is treated as full preserve-over-condense proof.
+
+**Positive evidence now banked:** the authentic no-stamp evidence is now tracked in git, including `facts.json`, decision cards, trial start, driver/walk logs, run snapshot, ratified LOS, and claim assessment. This partially resolves the prior evidence-banking concern for the active proof package: the monitor can now point to a durable artifact set rather than only dirty/untracked files.
+
+**F-0024 [P1] Local close commit banks and propagates a MET claim that the monitor still cannot score.** The committed close language exceeds the visible proof. The evidence proves Irene fidelity carry-through into package/Gary surfaces and Gary's two-call split, but the same banked facts record `claim_ok=false`, a terminal Pass-2 error, and visible Gary settings of `text_mode=condense` / `amount=brief`. Required before external done scoring: either bank actual raw Gary request evidence showing literal `text_mode=preserve` with `amount` absent, or amend/follow up the close language to the narrower proven claim: fidelity carry-through plus split/call-count, not preserve-over-condense.
+
+**F-0025 [P2] The evidence/close commit is local-only.** `HEAD` is ahead of `origin/dev/lesson-planning-2026-07-09` by one commit. Until pushed or explicitly recorded as local-only, the banked evidence, monitor entries, and close-language changes are not available on the remote branch the rest of the team may inspect.
+
+**F-0022 remains open and is now worse in blast radius.** The overclaim is no longer only in `CLAIM-ASSESSMENT.md`; it has been propagated into close/state docs.
+
+**F-0023 remains open.** Terminal liveproof result remains paused-at-error, not pass.
+
+**F-0018 remains open.** Preserve/no-amount request evidence is still absent or contradicted by visible persisted Gary settings.
+
+**F-0019 remains open.** The proof package and close docs still risk treating split/call-count as equivalent to preserving literal text over styleguide condense.
+
+**F-0017 remains open.** The G1 observer false-negative remains unresolved, though later Irene contributions mitigate the "no fidelity exists" interpretation.
+
+**F-0013 remains open.** No banked focused pytest output, ruff output, RED-first transcript/evidence, bmad-code-review record, or final done-bar party concurrence is visible for the Pass-1 recovery story.
+
+**F-0011 / F-0021 partly improved but not closed.** The active authentic evidence and governance edits are now banked, but the old stalled liveproof directory and `runs/235f2b82.../` mirror remain untracked. The broad Cursor/BMAD process-surface changes are committed but still deserve intentional review separate from the Irene/Gary proof claim.
+
+**Verdict: LOCAL BANKING IMPROVED; CLAIM STILL NOT SCOREABLE AS DONE.** This poll upgrades evidence durability but downgrades claim hygiene. The active implementation may have useful code shape, yet the committed record still lacks the original preserve/no-amount API proof and records a terminal error with `claim_ok=false`. External score remains: partial seam evidence only, not a closed product claim.
+
+---
+
+### SOP-016 - no material change after local MET bank; remote still behind - 2026-07-09T16:39:09-04:00
+
+**Scope reviewed:** `git status --short --branch`, latest git log, remote branch tip via `git ls-remote` without fetching, active authentic evidence directory listing, `facts.json`, `driver-log.txt`, trial `235f2b82-5989-4a6f-9e6b-22e9697f58d2` run status, grep across banked evidence/run mirror/close docs for preserve/amount/calls/claim/error signals, and current diff stat. No tests were run by this monitor poll. No production/test/runtime files were edited by this monitor; this ledger entry is the only write.
+
+**Current repo state:** unchanged from SOP-015 except for this ledger append. Local `HEAD` remains `1f48fbf6` (`docs: close S8 books and bank Irene-literal liveproof`) on `dev/lesson-planning-2026-07-09`. Local branch remains `ahead 1`; `git ls-remote origin refs/heads/dev/lesson-planning-2026-07-09` still reports `6783b54b`, so the close/evidence bank commit is not on origin. Working tree status now shows this ledger modified plus the two known untracked residue paths:
+
+- `_bmad-output/implementation-artifacts/evidence/irene-literal-liveproof-20260709T143510/`
+- `runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/`
+
+**Evidence state:** no new artifact appeared in `_bmad-output/implementation-artifacts/evidence/irene-literal-authentic-liveproof-20260709T151200/`; file timestamps remain at the 16:00-16:01 terminal package. `facts.json` still records `final_status: paused-at-error`, `final_error_tag: irene.pass2.figure-contradiction`, `irene_literal_authentic_claim_ok: false`, `irene_emitted_literal_text: false`, `gary_calls_made: 2`, `gary_variant_text_modes: [{text_mode: condense, amount: brief}]`, and `settings_still_condense: true`.
+
+**Run state:** `state/config/runs/235f2b82-5989-4a6f-9e6b-22e9697f58d2/run.json` remains `status: paused-at-error`, `paused_error_tag: irene.pass2.figure-contradiction`, and `completed_at: null`. The run mirror remains untracked. No resumed run, corrected facts package, or terminal completed evidence is visible.
+
+**Preserve/no-amount proof search:** grep still finds the target requirement in the driver script comment (`forces text_mode=preserve (amount absent)`) but not a corresponding raw Gary/Gamma request witness. Visible banked facts and run artifacts continue to show `condense` / `brief` for the Gary variant settings. Split/call-count evidence remains present via `calls_made=2`.
+
+**Close-language state:** the overclaim remains propagated. `SESSION-HANDOFF.md` says "Irene-literal->Gary-preserve product claim MET"; `docs/STATE-OF-THE-APP.md` says "post-S8 Irene-literal gate MET"; and the S8 close letter marks the post-S8 gate as MET while also parking the Pass-2 figure contradiction. No narrowing amendment appeared.
+
+**F-0025 remains open.** The bank/close commit is still local-only; origin remains at `6783b54b`.
+
+**F-0024 remains open.** The committed MET claim still exceeds the visible proof package.
+
+**F-0022 remains open.** The claim overstatement remains present in the evidence assessment and propagated close/state docs.
+
+**F-0023 remains open.** Terminal liveproof result remains paused-at-error, not pass.
+
+**F-0018 remains open.** Preserve/no-amount request evidence is still absent or contradicted by visible persisted Gary settings.
+
+**F-0019 remains open.** Split/call-count continues to be treated as sufficient in close language, without raw preserve request proof.
+
+**F-0017 remains open.** The G1 observer false-negative remains unresolved.
+
+**F-0013 remains open.** No banked focused pytest output, ruff output, RED-first transcript/evidence, bmad-code-review record, or final done-bar party concurrence is visible for the Pass-1 recovery story.
+
+**F-0011 / F-0021 remain partly improved but open.** Active evidence and governance edits are banked locally; old stalled evidence and run mirror remain untracked, and the broad process-surface changes still merit review.
+
+**Verdict: NO MATERIAL CHANGE / STILL NOT SCOREABLE.** SOP-016 confirms the same state as SOP-015: evidence durability improved locally, but the product claim remains unscoreable as done because the run is terminally error-paused, claim facts are false, preserve/no-amount proof is missing, and the close commit has not reached origin.
+
+---
+
+## Monitor Transition - Irene-literal watch retired; Phase-2 evolutionary watch opened - 2026-07-09T16:49:00-04:00
+
+The operator has ended this active shadow-monitor lane and started a new dev session for the Phase-2 evolutionary step: assessed source -> purpose/audience -> conversational build/workflow/gap-fill -> selection. This ledger remains the historical record for the Irene-literal watch through SOP-016.
+
+Open Irene-literal monitor findings at transition remain historical caveats, not active polling scope: local close commit `1f48fbf6` was still unpushed at last poll; the banked evidence still recorded `claim_ok=false`, `paused-at-error`, and no raw preserve/no-amount Gary request witness; old evidence/run residue remained untracked. The new active monitor ledger is `_bmad-output/implementation-artifacts/codex-shadow-monitor-phase2-evolutionary-step-2026-07-09.md`.

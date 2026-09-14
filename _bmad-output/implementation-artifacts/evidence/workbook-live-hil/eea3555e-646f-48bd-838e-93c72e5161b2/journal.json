@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-07-16T15:04:12.707388Z",
+  "delegate_id": "codex_hil_runner",
+  "events": [
+    {
+      "at": "2026-07-16T15:05:45.335660Z",
+      "directive_digest": "3847fd5cfb9eb9e5ff319279db02bf480eacc658fb141245d62a929998aee11e",
+      "directive_path": "directive.yaml",
+      "kind": "g0-directive-confirmed",
+      "sequence": 1
+    },
+    {
+      "at": "2026-07-16T15:10:06.401931Z",
+      "error_type": "G0EnrichmentParseError",
+      "kind": "start-refused",
+      "reason": "start-failed",
+      "sequence": 2
+    }
+  ],
+  "policy_digest": "4205b4dcb2a34846bac0da9f889365eefd22969613aac4e1a4c65e055b9a74a5",
+  "schema_version": "marcus-spoc-live-test-hil-journal.v1",
+  "trial_id": "eea3555e-646f-48bd-838e-93c72e5161b2"
+}
