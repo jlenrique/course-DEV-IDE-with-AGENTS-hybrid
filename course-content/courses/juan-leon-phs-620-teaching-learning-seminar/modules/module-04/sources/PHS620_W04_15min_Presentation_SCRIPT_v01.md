@@ -285,17 +285,16 @@ here is not paperwork. It is the difference between evidence and assertion.
 
 ## Card 18 — The same cycle, running at scale · 65s
 
-I want to show you this cycle running somewhere many of you have already seen
-it. On the left is an exercise from a language-learning application. It sets a
-task and supplies the words you might need, so the support sits right inside the
-moment of attempt. On the right is what came back after a wrong answer: the
-attempt still visible, the correct version directly beneath it. Those are the
-same five moves we have been discussing, running many thousands of times a day,
-performed by a system rather than by a person. This week you perform them
-yourself, by hand, which is precisely why five minutes is a reasonable amount to
-take on. If you are curious afterward, spend ten minutes in an application like
-this one from the learner's side. Later in the course we look at what building
-that machinery involves.
+Many of you have already seen this cycle running somewhere. These two frames
+are from Duolingo. On the left, the exercise sets a task and supplies the words
+you might need, so the support sits right inside the moment of attempt. On the
+right is what came back after a wrong answer: the attempt still visible, the
+correct version directly beneath it. Those are the same five moves, running many
+thousands of times a day, performed by a system rather than a person. This week
+you perform them yourself, by hand, which is why five minutes is a reasonable
+amount to take on. If you would like to meet that loop from the learner's side,
+a Duolingo account is free, and a single ten-minute lesson is enough. Later in
+the course we return to what building that machinery involves.
 
 ## Card 19 — Other shapes, and what comes next · 40s
 
