@@ -139,6 +139,57 @@ is unstable with no `schema_version` bump** (`slide_scope_outline`,
 others). Do not write a harness that assumes a field exists because the last run
 had it.
 
+## A constraint on TREATMENT is not a constraint on NAMING (learned W04, 2026-09-13)
+
+The operator asked for the Duolingo card to be **evergreen**, meaning: no live
+interface tour, no dependence on what is free or how the UI looks today. I wrote
+that into the Pass-1 claim fence as *"the language-learning example stays
+secondary and unnamed on-slide"*, plus two further instructions telling Irene not
+to name it. Irene, the writers, and the script all executed that faithfully. The
+result: the word *Duolingo* appeared **zero times** in a 1,872-word script, and
+card 18 rendered as two anonymous rectangles — while the operator's actual intent
+was for students to go open a free Duolingo account, which requires telling them
+what to open.
+
+**The lesson is about the dispatch boundary.** A claim fence is the highest-
+leverage text I write: every specialist downstream treats it as fact and none of
+them can see the operator conversation that produced it. When I compress an
+operator constraint into fence language, I am *interpreting*, and the
+interpretation becomes unchallengeable. Before writing a fence clause that
+**removes** something (a name, a claim, a source), check it against what the
+operator actually said rather than against my summary of it. Prohibitions
+propagate silently and look like compliance at every downstream gate — Vera
+traced fidelity against the plan and passed it, because the plan faithfully
+encoded my error.
+
+## `literal-visual` cards need their asset tracked in git (operator ruling W04, 2026-09-13)
+
+A card whose fidelity is `literal-visual` renders **one specific captured frame**,
+not a generated illustration. That frame is therefore **source material**, and it
+belongs in the canonical corpus leaf
+(`course-content/courses/<course>/modules/<module>/sources/reference-images/`),
+not in the gitignored staging bundle with a capture recipe as insurance. Lose it
+and the slide cannot be rebuilt — only re-captured against a site that has since
+changed.
+
+`.gitignore` blanket-ignores `course-content/**/*.png` ("binaries live on Box,
+not git"). A narrow negation for `courses/**/sources/reference-images/**` now
+carves out exactly this case; keep those assets few and small.
+
+Two corollaries:
+
+1. **Never send a `literal-visual` card to Gamma.** It is the one fidelity that
+   means "do not invent this." W04 card 18 went out for generation anyway and came
+   back as an abstraction, twice, while the two real frames sat unused. Build it
+   by hand and inject the PNG into the dispatch payload as its own row
+   (`dispatch_variant: "composite"`, `generation_id: None`); the storyboard
+   generator accepts it seamlessly and `--strict` confirms the asset resolves.
+2. **Match the deck when compositing.** Sample a winning still for background and
+   accent (W04: cream `#faf9f7`, terracotta `#ea653e`, 2400x1350) so the hand-built
+   card sits in sequence instead of reading as a foreign asset. Assert text fits
+   inside the margins — three of nineteen Gamma stills in this batch ran text off
+   the frame edge, and a hand-built card has no excuse for joining them.
+
 ## Historical Context
 
 _Anchors that help me understand "why things are the way they are" across sessions._
