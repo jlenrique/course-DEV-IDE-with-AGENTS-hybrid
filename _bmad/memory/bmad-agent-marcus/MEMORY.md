@@ -6,13 +6,13 @@ Curated long-term knowledge. Session logs live in `sessions/`; this file is the 
 
 _Updated per session. If there's an active tracked run, record:_
 
-- **Run ID:** not minted (`LP-PHS620-W03-BOXV02`; conversation-space). **COMPLETE 2026-09-11.**
-- **Phase / gate:** Gate 3 approved; theatrical Matilda locked; Descript Narrated Slide Lesson confirmed.
-- **Last action:** operator confirmed Descript assembly; wrap + merge product to master; WEW recipe filed for the next similar walkthrough.
-- **Next planned action:** none for this pairing. Next *similar* job → capability **WEW**. Do not auto Kira/Canvas/Gate 2M.
-- **Known blockers:** staging gitignored (this clone only). Pass 2 “First/First/First” authoring rule still deferred.
+- **Run ID:** not minted (`LP-PHS620-W04-BOXV01`; conversation-space). **COMPLETE 2026-09-13.**
+- **Phase / gate:** Descript Narrated Slide Lesson assembled; operator wrap closed.
+- **Last action:** W04 shipped; wrap landed lock 14 + BLOCK-NEXT-RUN surfaces. Do not start another lesson first.
+- **Next planned action:** address the eight W04 findings in `deferred-inventory.md` §BLOCK NEXT PRODUCTION RUN. Then the next similar job → capability **WEW**. Do not auto Kira/Canvas/Gate 2M.
+- **Known blockers:** **BLOCK NEXT PRODUCTION RUN** — six G1 findings + two HIGH contamination findings. Also `enrique-does-not-apply-existing-audio-buffer` (workaround: lock 14). Staging gitignored (this clone only).
 - **Standing rule:** when ingestion is in doubt, check the live Canvas course (same content).
-- **Resume file:** Box v02 local `.../phs-620-w03-box-v02-20260910/NEXT-SESSION.md` (gitignored). Remake-v2 still parked at `.../phs-620-w03-recorded-20260909/remake-v2/NEXT-SESSION.md` if that donor is ever reopened.
+- **Resume file:** W04 local `.../phs-620-w04-box-20260913/` (gitignored). W03 Box v02 notes remain at `.../phs-620-w03-box-v02-20260910/NEXT-SESSION.md`.
 
 ## Routing Learnings
 

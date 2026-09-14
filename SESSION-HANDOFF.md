@@ -1,3 +1,46 @@
+# Session close 2026-09-13 — PHS 620 W04 walkthrough **COMPLETE** (conversation-space)
+
+**Final class:** S (content production). **Opened as:** conversation-space Marcus WEW on Week 4 live rehearsal. **On master:** prior W04 source + learnings already pushed; this wrap adds WEW lock 14, the BLOCK-NEXT-RUN banner, and `enrique-does-not-apply-existing-audio-buffer`. **Staging slides/audio remain gitignored** (this clone only).
+
+## What was completed
+
+- **Production run complete.** Descript project `PHS 620 W04 - Live Rehearsal Walkthrough` (`96281c44-da30-47dd-88f6-ccdc38d61583`); composition **Narrated Slide Lesson** (`4384f6ea-8765-47d9-bf91-d5cc769a7666`, ~794s). https://web.descript.com/e6f11f5e-3874-4e2f-bbef-946cd29f0040
+- 19-card visual-led walkthrough; card 18 is a hand-built Duolingo composite (named on-slide; free-account invitation in VO). Theatrical Matilda. 1.5s lead-in padded post-process (12:45 → 13:14 unpadded→padded audio before Descript sync).
+- Operator wrap: land lock 14 + inventory banner only; do **not** raise Enrique’s daily budget; do **not** commit staging or leftover dirty tree.
+
+## What is next
+
+1. **⛔ BLOCK NEXT PRODUCTION RUN.** Address the eight W04 findings before any new WEW / Studio / G1 lesson. Banner + full text: `_bmad-output/planning-artifacts/deferred-inventory.md`.
+   - Contamination: `gamma-studio-template-carries-prior-project-content`, `studio-card-subject-fidelity-unguarded`
+   - G1 / Pass-1: `g1-contract-pinned-to-retired-lesson-plan-template`, `irene-pass1-plan-schema-unstable-without-version-bump`, `coverage-lo-status-gameable-by-echoing-lo-text`, `g1.5-09-interstitial-count-contradicts-zero-interstitial-lock`, `clear-guidance-affective-enum-missing-from-lesson-plan-template`, `specialist-act-returns-state-update-not-output-undocumented`
+2. Wire Enrique to the existing audio-buffer function (`enrique-does-not-apply-existing-audio-buffer`) before the next narrated-lesson ship. Until then, WEW lock 14 post-process.
+3. Do not auto-resume Gate 2M / workbook / Canvas.
+
+## Unresolved issues / risks
+
+- **`course-content/staging/` is gitignored.** W04 stills, audio, and Descript pack live only on this clone.
+- Studio template `g_nv5q4da69qiiu8q` is prior-project content. 4-credit fallback is a contamination tell.
+- G1 contract is pinned to a retired lesson-plan template — do not treat a G1 verdict as authoritative until that finding closes.
+
+## Key lessons
+
+- A constraint on treatment is not a constraint on naming (Duolingo).
+- `literal-visual` assets belong in tracked `sources/reference-images/`.
+- Lead-in silence is post-process (pad MP3 + shift VTT + record duration), not TTS tags and not hand offsets in Descript.
+- The audio buffer already exists in the ElevenLabs skill; Enrique never calls it.
+
+## Artifact update checklist
+
+SESSION-HANDOFF ✓ (this) · next-session-start-here ✓ · deferred-inventory BLOCK banner ✓ · WEW lock 14 + before-next-invoke ✓ · Marcus MEMORY current run ✓
+
+## Merge selection (this wrap)
+
+**To master:** WEW lock 14; BLOCK-NEXT-RUN surfaces; Enrique buffer finding; wrap docs/sanctum.
+
+**Not to master:** Enrique `$12` budget (reverted to `$5`); module-03 newline noise; gamma-styleguide-picks; shadow-monitor / workbook / Aziz dumps; gitignored staging.
+
+---
+
 # Session close 2026-09-11 — PHS 620 W03 Box v02 **COMPLETE** + G4-18 Vera-agentic QC → master
 
 **Final class:** S (content production + substrate: G4-18/Vera recast, Descript attestation picker, pinned American voice slate). **Opened as:** conversation-space Marcus run on `LP-PHS620-W03-BOXV02`. **On master:** `fcfa60e7` (merge) plus WEW recipe follow-on. **Staging slides/audio remain gitignored** (this clone only).

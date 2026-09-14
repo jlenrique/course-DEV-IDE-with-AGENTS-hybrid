@@ -6,7 +6,16 @@ description: Orchestrate a faculty-seminar assignment walkthrough as a visual-le
 
 # WEW — Worked-example walkthrough video
 
-Proven on `LP-PHS620-W03-BOXV02` (2026-09-11). Ship artifact = Descript **Narrated Slide Lesson**. Conversation-space is fine for this family; do not invent an engine `production_run_id` unless the operator asks for a tracked trial.
+Proven on `LP-PHS620-W03-BOXV02` (2026-09-11) and reused on W04 (2026-09-13). Ship artifact = Descript **Narrated Slide Lesson**. Conversation-space is fine for this family; do not invent an engine `production_run_id` unless the operator asks for a tracked trial.
+
+## ⛔ Before the next invoke (operator wrap 2026-09-13)
+
+Do **not** start another WEW / Studio / G1 lesson until the eight W04 findings in `_bmad-output/planning-artifacts/deferred-inventory.md` §BLOCK NEXT PRODUCTION RUN are addressed:
+
+- Contamination: `gamma-studio-template-carries-prior-project-content`, `studio-card-subject-fidelity-unguarded`
+- G1 / Pass-1: `g1-contract-pinned-to-retired-lesson-plan-template`, `irene-pass1-plan-schema-unstable-without-version-bump`, `coverage-lo-status-gameable-by-echoing-lo-text`, `g1.5-09-interstitial-count-contradicts-zero-interstitial-lock`, `clear-guidance-affective-enum-missing-from-lesson-plan-template`, `specialist-act-returns-state-update-not-output-undocumented`
+
+Until those land, a conversation-space run still owes the **manual** contamination screen (credits + inspect every still) and must not treat a G1 verdict as authoritative. Lead-in silence is lock 14 below; wiring it into Enrique is `enrique-does-not-apply-existing-audio-buffer` (workaround: post-process).
 
 ## When to invoke
 
@@ -45,6 +54,19 @@ These are the Box v02 locks that made the lesson work. Re-confirm, do not silent
 | 11 | TTS method | Synthesize **ordinary v2 and theatrical `eleven_v3`** into separate folders. Operator A/B **before** Descript. Canonical words stay tag-free; tags are delivery only. Donor chose theatrical Matilda throughout; populated roles were `warm_callback` / `contrast_emphasis` (`[warm]` / `[slow]` only). |
 | 12 | Timing | Stay inside the brief envelope (donor ≤15:00). No due date on the recording. |
 | 13 | Motion / LMS | Gate 2M, Kira, workbook ship, Canvas — **held** unless named. |
+| 14 | Lead-in silence | **1.5s of silence at the head of every narration clip** so the viewer can take the slide in before the VO starts (operator standing preference, W04 2026-09-13). Apply as **post-processing**, never via TTS tags or by hand in Descript — see below. |
+
+## Lead-in silence — pad audio, shift captions, record durations (lock 14)
+
+Three things must move together or the package is subtly wrong:
+
+1. pad each MP3 head by 1.5s,
+2. shift **every** cue in the matching `.vtt` by +1.5s — Enrique's captions start at zero, so padding audio alone makes every caption fire early,
+3. record the measured durations, because the Descript step attests a composition whose duration matches expected audio.
+
+**Do not generate the silence at ElevenLabs.** Pause tags pollute the canonical text that lock 11 requires stay tag-free, and TTS engines trim or normalize leading silence, so the lead comes out non-deterministic. **Do not add it by hand in Descript** either: that is 19 manual offsets, invisible until playback, and it means the package you hand over is not actually ready.
+
+Reference implementation: `enrique-live/apply_lead_in_silence.py` in the W04 bundle. Uses the `imageio_ffmpeg` wheel already in the venv (no operator-installed CLI), archives originals to `audio-unpadded/` + `captions-unpadded/` so it is reversible and re-runnable, and fails loud if any clip's measured delta misses 1.5s by more than 60ms. W04 cost: 28.5s added across 19 clips, 12:45 → 13:14.
 
 ## ⚠️ Studio template contamination — check every roll (root-caused W04, 2026-09-13)
 
