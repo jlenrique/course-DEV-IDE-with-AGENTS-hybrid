@@ -6,13 +6,16 @@
 
 ## Current Session State
 
-Latest session close: **Session close 2026-07-20 — PROJECT QUALITY SCORECARD **DEV COMPLETE** (Q3.4 + Q3 close + Epic Q4 live-wiring) → **MERGED TO MASTER****
+Latest session close: **Session close 2026-09-13 — PHS 620 W04 walkthrough **COMPLETE** (conversation-space)**
 
 **What is next:**
 
-1. **The R2 operator-steered live trial** (on `tejal-apc-c1m1-p1-call`) — the standing product frontier. It now CLOSES all the OPEN live-equality witnesses: `q1-4b-r2-final-report-projector-witness` (UPDATED-not-closed: wired + offline byte-match-proven; live equality-vs-env-truth rides R2), the NEW `q4-2-r2-hud-quality-tile-witness`, and the Q1–Q3 per-dimension witnesses. **Do NOT run a live trial autonomously** — it rides the operator's shakedown.
-2. **The fresh-naive-holdout MEASUREMENT** (`reading-path-fresh-naive-holdout-pre-trial` = DID Leak-4) — the top learner-trust leak the finished scorecard surfaces; recording it flips CAL1 weak→strong. Its own owed epic.
-3. **Deferred follow-ons filed** (all OPEN, none reactivated as epic work): `q4-1-report-coverage-gap-underlisting-robustness` (report.py flags only empty leak-lists, not under-listing; enforced-away today by the len==open_leaks identity pins); capability full-trial-artifact-scan; lane coverage-completeness-verifier.
+1. **⛔ BLOCK NEXT PRODUCTION RUN.** Address the eight W04 findings before any new WEW / Studio / G1 lesson. Banner + full text: `_bmad-output/planning-artifacts/deferred-inventory.md`.
+   - Contamination: `gamma-studio-template-carries-prior-project-content`, `studio-card-subject-fidelity-unguarded`
+   - G1 / Pass-1: `g1-contract-pinned-to-retired-lesson-plan-template`, `irene-pass1-plan-schema-unstable-without-version-bump`, `coverage-lo-status-gameable-by-echoing-lo-text`, `g1.5-09-interstitial-count-contradicts-zero-interstitial-lock`, `clear-guidance-affective-enum-missing-from-lesson-plan-template`, `specialist-act-returns-state-update-not-output-undocumented`
+2. **Forced Step 0a `/harmonize`.** W03 and W04 wraps both skipped coherence — tripwire fires. Run 0a at next open even if the session is otherwise docs-only.
+3. Wire Enrique to the existing audio-buffer function (`enrique-does-not-apply-existing-audio-buffer`) before the next narrated-lesson ship. Until then, WEW lock 14 post-process.
+4. Do not auto-resume Gate 2M / workbook / Canvas.
 
 ## You Are Here (from STATE-OF-THE-APP.md §11.1)
 

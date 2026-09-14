@@ -13,8 +13,9 @@
 1. **⛔ BLOCK NEXT PRODUCTION RUN.** Address the eight W04 findings before any new WEW / Studio / G1 lesson. Banner + full text: `_bmad-output/planning-artifacts/deferred-inventory.md`.
    - Contamination: `gamma-studio-template-carries-prior-project-content`, `studio-card-subject-fidelity-unguarded`
    - G1 / Pass-1: `g1-contract-pinned-to-retired-lesson-plan-template`, `irene-pass1-plan-schema-unstable-without-version-bump`, `coverage-lo-status-gameable-by-echoing-lo-text`, `g1.5-09-interstitial-count-contradicts-zero-interstitial-lock`, `clear-guidance-affective-enum-missing-from-lesson-plan-template`, `specialist-act-returns-state-update-not-output-undocumented`
-2. Wire Enrique to the existing audio-buffer function (`enrique-does-not-apply-existing-audio-buffer`) before the next narrated-lesson ship. Until then, WEW lock 14 post-process.
-3. Do not auto-resume Gate 2M / workbook / Canvas.
+2. **Forced Step 0a `/harmonize`.** W03 and W04 wraps both skipped coherence — tripwire fires. Run 0a at next open even if the session is otherwise docs-only.
+3. Wire Enrique to the existing audio-buffer function (`enrique-does-not-apply-existing-audio-buffer`) before the next narrated-lesson ship. Until then, WEW lock 14 post-process.
+4. Do not auto-resume Gate 2M / workbook / Canvas.
 
 ## Unresolved issues / risks
 
@@ -29,9 +30,21 @@
 - Lead-in silence is post-process (pad MP3 + shift VTT + record duration), not TTS tags and not hand offsets in Descript.
 - The audio buffer already exists in the ElevenLabs skill; Enrique never calls it.
 
+## Validation summary
+
+- **Step 0a `/harmonize`:** SKIP this wrap (content-production close; wrap commit is docs/sanctum only; dirty tree is ambient pre-existing, not session substrate). **Tripwire:** W03 wrap also skipped Step 0 — this is the second consecutive skip. **Next session MUST run 0a** even if it opens as Class D.
+- **Step 0b:** SKIP — no story flipped to `done`.
+- **Step 1:** SKIP — wrap files are markdown; no `app/` / test edits in `5533455f`.
+- **Steps 2 / 3 / 4a / 4b:** SKIP — no PRD/epic/story Kanban, no workflow-phase change, no new agent/skill.
+- **Step 5:** regenerate `docs/project-context.md` header from this section at close.
+- **Step 6:** SKIP — W04 sources already tracked; staging remains gitignored.
+- **Step 9:** SKIP — SPOC product truth unchanged (conversation-space WEW; CRITICAL DESIGN GUARDRAIL). Guides not rewritten; defects live in deferred-inventory + WEW.
+- **Step 10 ambient worktree (leave untouched):** shadow-monitor markdown, module-03 trailing-newline deletions, `gamma-styleguide-picks.jsonl` July Tejal rows, untracked workbook/Aziz/notify dumps.
+- Focused pytest: not re-run this wrap.
+
 ## Artifact update checklist
 
-SESSION-HANDOFF ✓ (this) · next-session-start-here ✓ · deferred-inventory BLOCK banner ✓ · WEW lock 14 + before-next-invoke ✓ · Marcus MEMORY current run ✓
+SESSION-HANDOFF ✓ (this) · next-session-start-here GENERATED at close · deferred-inventory BLOCK banner ✓ · WEW lock 14 + before-next-invoke ✓ · Marcus MEMORY current run ✓ · wrap SHA `5533455f` on `origin/master`
 
 ## Merge selection (this wrap)
 
