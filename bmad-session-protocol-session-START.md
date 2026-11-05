@@ -1,5 +1,8 @@
 # BMAD v6 Session Protocol: Start-of-Session
 
+Read [START_HERE.md](START_HERE.md) for the Agents-first resource map. At every meaningful session close, follow its rapid currency AND quality audit and record the result in the existing handoff; preserve the detailed procedures below.
+
+
 Companion to `bmad-session-protocol-session-WRAPUP.md`. Together these two files guarantee reliable context transfer between sessions.
 
 ## Canonical session protocol set

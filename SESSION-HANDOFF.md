@@ -1,5 +1,19 @@
 # Session close 2026-09-13 — PHS 620 W04 walkthrough **COMPLETE** (conversation-space)
 
+## 2026-11-05 — START_HERE rollout (Class D)
+
+Registry identity: PRJ-0006; host: TOWER. Installed standard 1.0.0 entry map and
+startup/closeout links without changing the product work plan. Structural review:
+zero errors, with disclosed external/mapping warnings. Semantic audit covered the
+six resource roles, authority, reading order, Agents and affected links; map updated.
+Known gaps and context-sensitive remediation are in START_HERE. No runtime/live
+preflight or platform operation was run; no skill installation or graph refresh.
+Existing uncommitted work was preserved. Review/stage only the entry-map changes
+before ordinary Git publication; other checkouts/cloud copies are not live mirrors.
+Next: retain the existing product next action and resolve relevant mapping gaps
+before relying on those resources. Validator: project-registry-maintenance/tools/check_start_here.py.
+
+
 **Final class:** S (content production). **Opened as:** conversation-space Marcus WEW on Week 4 live rehearsal. **On master:** prior W04 source + learnings already pushed; this wrap adds WEW lock 14, the BLOCK-NEXT-RUN banner, and `enrique-does-not-apply-existing-audio-buffer`. **Staging slides/audio remain gitignored** (this clone only).
 
 ## What was completed

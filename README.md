@@ -1,5 +1,8 @@
 # course-DEV-IDE-with-AGENTS — Hybrid Migration Clone
 
+Read [START_HERE.md](START_HERE.md) for the Agents-first resource map. At every meaningful session close, follow its rapid currency AND quality audit and record the result in the existing handoff; preserve the detailed procedures below.
+
+
 **Status (refreshed 2026-06-25):** Migration **unconditionally SHIPPED** 2026-04-27 (commit `97842ac`; severed from upstream/master @ `3ed7c56` since 2026-04-24). **Slab 7 orchestrational arc COMPLETE** (7a/7b/7c, closed 2026-05-01 → 05-07) and the pre-Trial-3 cleanup arc landed (v5 canonical pack at `docs/workflow/production-prompt-pack-v5-narrated-lesson-with-video-or-animation.md`). Since then: the **clustering + per-sub-slide A/B** capability (published live to Descript); the **braid arc** — the **Marcus-SPOC** conversational surface (stop-and-chat LLM REPL with a deterministic guard so the chatting model never drives the engine), the research-citation leg (live Scite OAuth → Texas retrieval → cited references), and the learner-workbook companion (Markdown→DOCX); and the **fidelity-perception arc** (the **Vision** slide-perception specialist). Current working branch: `fidelity-perception-arc-2026-06-19`. Trial methodology at `docs/trials/methodology.md`.
 
 **One-line elevator:** Collaborative intelligence platform for course content production — a deterministic, manifest-compiled multi-agent orchestrator (operator surface: **Marcus-SPOC**) + Cora dev-graph + per-specialist 9-node scaffold (gates G1/G2C/G3/G4 with HIL DecisionCard verdicts) + tamper-evident operator-verdict + learning ledger + frozen-graph reproducibility ceremony, built on LangChain/LangGraph.

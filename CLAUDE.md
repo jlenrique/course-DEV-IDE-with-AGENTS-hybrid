@@ -191,3 +191,16 @@ For migration stories (Slab 1–5 under `_bmad-output/planning-artifacts/epics-l
 - `bmad-create-story` on a migration story **reads that file for the gate mode** — do not relitigate at story-authoring time.
 - Changing a story's gate mode requires party-mode consensus and a version bump in the governance JSON.
 - Slab 2b stories 2b.2–2b.14 are pre-designated single-gate (they follow the 2b.1 TEMPLATE scaffold pattern) — do not escalate to dual without a scaffold-breaking reason.
+
+## Project entry and rapid closeout audit
+
+At session start, read [START_HERE.md](START_HERE.md), beginning with Agents,
+then follow the mapped project-specific startup/preflight and authority rules.
+At every meaningful session close, perform its bounded currency AND quality
+audit on affected resources and known gaps, including agent ownership,
+definitions, runtime availability and shared-resource references. Update the
+authoritative resources first; change START_HERE only when its mapping changes.
+Record validator outcome or not-run reason, semantic findings, map/Agents result,
+context-sensitive repairs, tool prerequisites/fallbacks and next action in the
+existing handoff (or closing response when none exists). Do not claim another
+host's files, skills or runtime are synchronized. Existing project rules still apply.
