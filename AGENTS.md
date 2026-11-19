@@ -47,3 +47,15 @@ Record validator outcome or not-run reason, semantic findings, map/Agents result
 context-sensitive repairs, tool prerequisites/fallbacks and next action in the
 existing handoff (or closing response when none exists). Do not claim another
 host's files, skills or runtime are synchronized. Existing project rules still apply.
+
+## Shared session boundary contract — 1.1.0
+
+Read [START_HERE.md](START_HERE.md) at startup and follow the
+[shared closeout standard 1.1.0](https://github.com/jlenrique/project-registry-maintenance/blob/6d73d85dac19b23b47144959f4bbf0698bb0b4e0/docs/standards/START_HERE_STANDARD.md#every-session-closeout-contract).
+Before another registry submission, check the existing handoff for pending entries
+and reconcile uncertain writes by Session ID through the designated writer.
+Every closeout, including sessions without a commit, reports two independent outcomes:
+START HERE: updated / checked, no change / blocked; Registry: written and verified /
+not warranted (why) / pending (why and where to resume). Assess meaningful checkpoints
+separately from map changes; routine exports and scratch files do not qualify merely
+by existing. Preserve the project-specific procedures and authorization rules above.

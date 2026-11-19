@@ -240,3 +240,15 @@ If your team intentionally skips the master-merge for a session, explicitly reco
 ### 13. Optional: session close
 
 Morale summary, party-mode wrap-up, or any other team ritual.
+
+## Shared session boundary contract — 1.1.0
+
+Read [START_HERE.md](START_HERE.md) at startup and follow the
+[shared closeout standard 1.1.0](https://github.com/jlenrique/project-registry-maintenance/blob/6d73d85dac19b23b47144959f4bbf0698bb0b4e0/docs/standards/START_HERE_STANDARD.md#every-session-closeout-contract).
+Before another registry submission, check the existing handoff for pending entries
+and reconcile uncertain writes by Session ID through the designated writer.
+Every closeout, including sessions without a commit, reports two independent outcomes:
+START HERE: updated / checked, no change / blocked; Registry: written and verified /
+not warranted (why) / pending (why and where to resume). Assess meaningful checkpoints
+separately from map changes; routine exports and scratch files do not qualify merely
+by existing. Preserve the project-specific procedures and authorization rules above.

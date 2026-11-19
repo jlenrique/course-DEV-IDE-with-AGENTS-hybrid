@@ -1,8 +1,8 @@
 # Project Entry Point — course-DEV-IDE-with-AGENTS — hybrid implementation
 
-Standard-Version: 1.0.0
+Standard-Version: 1.1.0
 Standard-Source: project-registry-maintenance/docs/standards/START_HERE_STANDARD.md
-Standard-Revision: 3da386e2c0c65ae49c2beba21e9a3f8d5b9d0bfe
+Standard-Revision: 6d73d85dac19b23b47144959f4bbf0698bb0b4e0
 Status: Active
 Project: PRJ-0006 — course-DEV-IDE-with-AGENTS — hybrid implementation
 
@@ -11,7 +11,7 @@ Collaborative agent-assisted course-content production, hybrid LangGraph/Marcus-
 This is the project-owned entry map. Existing detailed instructions remain at
 their sources. Discovery does not authorize live actions or agent activation.
 
-[Shared standard](https://github.com/jlenrique/project-registry-maintenance/blob/3da386e2c0c65ae49c2beba21e9a3f8d5b9d0bfe/docs/standards/START_HERE_STANDARD.md) · [Audit procedure](https://github.com/jlenrique/project-registry-maintenance/blob/3da386e2c0c65ae49c2beba21e9a3f8d5b9d0bfe/docs/standards/START_HERE_AUDIT.md)
+[Shared standard](https://github.com/jlenrique/project-registry-maintenance/blob/6d73d85dac19b23b47144959f4bbf0698bb0b4e0/docs/standards/START_HERE_STANDARD.md) · [Audit procedure](https://github.com/jlenrique/project-registry-maintenance/blob/6d73d85dac19b23b47144959f4bbf0698bb0b4e0/docs/standards/START_HERE_AUDIT.md)
 
 Location: repository/project root on the current host. Relative paths resolve
 against this root, not a fixed username or drive. Git clones remain one project;
@@ -25,7 +25,7 @@ verify remote identity and local revision. Host deployment is verified separatel
 | **Resource Directory** | Mapped | [README.md](<README.md>); [directory-responsibilities.md](<docs/directory-responsibilities.md>); [parameter-directory.md](<docs/parameter-directory.md>) | README routes by audience and distinguishes current hybrid workflows from legacy guides. See Agents. |
 | **Session Start** | Mapped | [AGENTS.md](<AGENTS.md>); [CLAUDE.md](<CLAUDE.md>); [bmad-session-protocol-session-START.md](<bmad-session-protocol-session-START.md>) | Existing hybrid startup/classification and agent-environment instructions apply; do not substitute the legacy checkout routine. |
 | **Preflight** | Mapped | [trial-run-runbook.md](<docs/operator/trial-run-runbook.md>); [ready_for_trial.ps1](<scripts/setup/ready_for_trial.ps1>); [bmad-session-protocol-session-START.md](<bmad-session-protocol-session-START.md>) | Run trial readiness only for an authorized trial; dependencies and environment are host-specific. Documentation mapping does not run production. |
-| **Session Handoff** | Mapped | [SESSION-HANDOFF.md](<SESSION-HANDOFF.md>); [next-session-start-here.md](<next-session-start-here.md>); [bmad-session-protocol-session-WRAPUP.md](<bmad-session-protocol-session-WRAPUP.md>) | Canonical authored handoff and immediate cache, with existing generators/upkeep controlled by WRAPUP. |
+| **Session Handoff** | Pending verification | [SESSION-HANDOFF.md](<SESSION-HANDOFF.md>); `next-session-start-here.md` (host-local or unavailable in this published version); [bmad-session-protocol-session-WRAPUP.md](<bmad-session-protocol-session-WRAPUP.md>) | Canonical authored handoff and immediate cache, with existing generators/upkeep controlled by WRAPUP. |
 | **Role Guides** | Mapped | [trial-run-runbook.md](<docs/operator/trial-run-runbook.md>); [production-trial-playbook.md](<docs/operator/production-trial-playbook.md>); [admin-guide.md](<docs/admin-guide.md>); [dev-guide.md](<docs/dev-guide.md>); [langgraph-migration-guide.md](<docs/dev-guide/langgraph-migration-guide.md>) | Current hybrid operator/admin/developer routes. README labels docs/user-guide.md legacy pre-migration reference; do not use it as current production instructions. |
 
 ## Reading order
@@ -73,7 +73,7 @@ working elsewhere). Cloud-only sessions use the same checklist manually if no
 Python/file access exists; record why automated validation was not run.
 
 Record in the existing handoff, or the session's closing response if no durable
-handoff exists: project ID; host/platform/revision; standard 1.0.0; structural
+handoff exists: project ID; host/platform/revision; standard 1.1.0; structural
 result or not-run reason; currency AND quality audit scope/findings; Agents check;
 map unchanged/updated/blocked; recommendations, prerequisites/fallbacks and next
 action. No unperformed check may be reported as passed. Unchanged mappings need
@@ -85,3 +85,15 @@ identity/access or deployment status, under its own update contract.
 Same project purpose/lineage as PRJ-0006; this is the distinct hybrid implementation, with its own remote and diverged history. The README records the upstream separation. Do not treat BAMBOO legacy and Tower hybrid checkouts as interchangeable or merge/sync them automatically. Runtime availability and live trial readiness were not tested in this documentation rollout.
 
 Deployment observation (2026-11-05): Git HEAD `67af77e77cae3c7d8ccaf88138dfaf89505311cc`; this is evidence, not a required dependency pin or proof of a clean worktree.
+
+## Shared session boundary contract — 1.1.0
+
+Read [START_HERE.md](START_HERE.md) at startup and follow the
+[shared closeout standard 1.1.0](https://github.com/jlenrique/project-registry-maintenance/blob/6d73d85dac19b23b47144959f4bbf0698bb0b4e0/docs/standards/START_HERE_STANDARD.md#every-session-closeout-contract).
+Before another registry submission, check the existing handoff for pending entries
+and reconcile uncertain writes by Session ID through the designated writer.
+Every closeout, including sessions without a commit, reports two independent outcomes:
+START HERE: updated / checked, no change / blocked; Registry: written and verified /
+not warranted (why) / pending (why and where to resume). Assess meaningful checkpoints
+separately from map changes; routine exports and scratch files do not qualify merely
+by existing. Preserve the project-specific procedures and authorization rules above.
